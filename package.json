@@ -1,0 +1,31 @@
+{
+  "name": "react-native-auth0",
+  "version": "0.0.1",
+  "description": "React Native toolkit for Auth0 API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/auth0/react-native-auth0.git"
+  },
+  "keywords": [
+    "react-native",
+    "react",
+    "auth0",
+    "jwt",
+    "authentication",
+    "lock",
+    "auth0-lock",
+    "login",
+    "sdk",
+    "api"
+  ],
+  "author": "Auth0",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/auth0/react-native-auth0/issues"
+  },
+  "homepage": "https://github.com/auth0/react-native-auth0#readme"
+}
