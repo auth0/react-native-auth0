@@ -15,6 +15,10 @@ class Auth0 {
   authentication(clientId) {
     return new Authentication(clientId, this.baseUrl);
   }
+
+  users(token) {
+    return new Users(token, this.baseUrl);
+  }
 }
 
 module.exports = Auth0;
