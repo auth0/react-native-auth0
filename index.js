@@ -1,4 +1,5 @@
 var Authentication = require('./authentication-api');
+var Users = require('./users-api');
 
 class Auth0 {
   constructor(domain) {

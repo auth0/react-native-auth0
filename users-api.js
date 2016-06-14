@@ -27,6 +27,28 @@ class UsersAPI {
     })
     .then(response => response.json());
   }
+
+  link(id, otherUserToken) {
+    if (id == null) {
+      return Promise.reject("must supply an identifier of the user to to link to");
+    }
+    if (otherUserToken == null) {
+      return Promise.reject("must supply a valid token of the user to to link");
+    }
+    const payload = {
+      "link_with": otherUserToken
+    };
+    return fetch(`${this.baseUrl}/api/v2/users/${encodeURIComponent(id)}/identities`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.token}`
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(response => response.json());
+  }
 }
 
 module.exports = UsersAPI;
