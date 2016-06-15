@@ -35,6 +35,14 @@ auth0
     .catch(error => console.log(error));
 ```
 
+The valid parameters are:
+
+* **idToken** (`string`): valid user id_token obtained during login.
+* **refreshToken** (`string`): user's refresh_token used to request new id_token.
+* **apiType** (`string`): for what api the new token will be for. e.g. `firebase` or `aws`.
+* **target** (`string`): what Auth0 client the token will be requested from.
+* **scope** (`string`): scope required in the token.
+
 ### Refresh token
 ```js
 auth0
