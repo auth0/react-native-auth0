@@ -34,6 +34,10 @@ class AuthenticationAPI {
       payload["scope"] = options.scope;
     }
 
+    if (options.nonce != null) {
+      payload["nonce"] = options.nonce;
+    }
+
     return fetch(`${this.baseUrl}/delegation`, {
       method: 'POST',
       headers: {
@@ -72,7 +76,7 @@ class AuthenticationAPI {
       },
       body: JSON.stringify({"id_token": token})
     })
-    .then(response => response.json());    
+    .then(response => response.json());
   }
 
   userInfo(token) {
@@ -88,7 +92,7 @@ class AuthenticationAPI {
         'Authorization': `Bearer ${token}`
       }
     })
-    .then(response => response.json());    
+    .then(response => response.json());
   }
 }
 
