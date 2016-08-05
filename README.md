@@ -28,7 +28,7 @@ const auth0 = new Auth0('samples.auth0.com');
 auth0
     .authenticationAPI()
     .delegation({
-        "id_token": "user token",
+        "idToken": "user token",
         // Other Delegation parameters
     })
     .then(response => console.log(response))
