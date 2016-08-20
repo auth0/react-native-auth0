@@ -26,7 +26,7 @@ const auth0 = new Auth0('samples.auth0.com');
 ### Delegation
 ```js
 auth0
-    .authenticationAPI()
+    .authentication("client_id")
     .delegation({
         "idToken": "user token",
         // Other Delegation parameters
@@ -46,7 +46,7 @@ The valid parameters are:
 ### Refresh token
 ```js
 auth0
-    .authenticationAPI()
+    .authentication("client_id")
     .refreshToken("user refresh token")
     .then(response => console.log(response))
     .catch(error => console.log(error));
@@ -55,7 +55,7 @@ auth0
 ### Get User Info
 ```js
 auth0
-    .authenticationAPI()
+    .authentication("client_id")
     .userInfo("user access token")
     .then(response => console.log(response))
     .catch(error => console.log(error));
@@ -103,4 +103,3 @@ This project is licensed under the MIT license. See the [LICENSE](LICENSE.txt) f
 [npm-url]: https://npmjs.org/package/react-native-auth0
 [travis-image]: http://img.shields.io/travis/auth0/react-native-auth0.svg?style=flat
 [travis-url]: https://travis-ci.org/auth0/react-native-auth0
-
