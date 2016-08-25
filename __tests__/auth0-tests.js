@@ -1,6 +1,6 @@
 jest.unmock('../');
-jest.unmock('../authentication-api');
-jest.unmock('../users-api');
+jest.unmock('../auth/authentication-api');
+jest.unmock('../management/users-api');
 
 import Auth0 from '../';
 

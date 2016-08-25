@@ -1,8 +1,8 @@
-jest.unmock('../authentication-api');
-jest.unmock('../authentication-error');
-jest.unmock('../networking');
+jest.unmock('../auth/authentication-api');
+jest.unmock('../auth/authentication-error');
+jest.unmock('../utils/networking');
 
-import AuthenticationAPI from '../authentication-api';
+import AuthenticationAPI from '../auth/authentication-api';
 import MockedAuthAPI from '../test-utils/mocks';
 
 describe('AuthenticationAPI', () => {

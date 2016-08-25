@@ -1,4 +1,4 @@
-import AuthenticationError from './authentication-error'
+import AuthenticationError from '../auth/authentication-error'
 
 module.exports = {
   checkStatus: (response) => {
@@ -22,5 +22,5 @@ module.exports = {
       'Content-Type': 'application/json'
     }, headers);
   }
-  
+
 };

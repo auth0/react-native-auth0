@@ -1,4 +1,4 @@
-import { checkStatus, headers } from './networking'
+import { checkStatus, headers } from '../utils/networking'
 
 class AuthenticationAPI {
   constructor(clientId, baseUrl) {

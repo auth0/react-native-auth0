@@ -12,4 +12,3 @@ addons:
 branches:
   only:
     - master
-    - chore-tests
