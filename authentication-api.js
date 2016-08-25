@@ -1,26 +1,4 @@
-import AuthenticationError from './authentication-error'
-
-const checkStatus = response => {
-  if (response.ok) {
-    return response;
-  }
-  return response.json()
-    .catch(() => {
-      var error = new Error(response.statusText || response.status);
-      error.response = response;
-      throw error;
-    })
-    .then(json => {
-      throw new AuthenticationError(json);
-    });
-};
-
-const headers = (headers = {}) => {
-  return Object.assign({
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
-  }, headers);
-};
+import { checkStatus, headers } from './networking'
 
 class AuthenticationAPI {
   constructor(clientId, baseUrl) {

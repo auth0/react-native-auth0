@@ -39,7 +39,8 @@
   "jest": {
     "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
     "unmockedModulePathPatterns": [
-      "<rootDir>/node_modules/fetch-mock"
+      "<rootDir>/node_modules/fetch-mock",
+      "<rootDir>/test-utils/mocks"
     ]
   }
 }
