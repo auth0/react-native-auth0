@@ -1,7 +1,3 @@
-jest.unmock('../');
-jest.unmock('../auth/authentication-api');
-jest.unmock('../management/users-api');
-
 import Auth0 from '../';
 
 describe('Auth0', () => {

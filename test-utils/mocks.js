@@ -43,6 +43,16 @@ class AuthAPI {
     this.mockResponse(`${this.baseUrl}/userinfo`, profile, 200);
     return profile;
   }
+
+  returnCredentials() {
+    const credentials = {
+      'accessToken': Math.random().toString(36).substring(7),
+      'token_type': 'bearer',
+      'expires_in': Math.random()
+    };
+    this.mockResponse(`${this.baseUrl}/oauth/ro`, credentials, 200);
+    return credentials;
+  }
 }
 
 module.exports = AuthAPI;

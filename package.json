@@ -37,10 +37,8 @@
     "jest-cli": "^14.1.0"
   },
   "jest": {
+    "automock": false,
     "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
-    "unmockedModulePathPatterns": [
-      "<rootDir>/node_modules/fetch-mock",
-      "<rootDir>/test-utils/mocks"
-    ]
+    "verbose": true
   }
 }

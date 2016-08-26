@@ -1,9 +1,36 @@
-import { checkStatus, headers } from '../utils/networking'
+import {
+  checkStatus,
+  headers,
+  jsonRequest
+} from '../utils/networking';
+
+import {
+  nonNull,
+  anObject
+} from '../utils/validation';
 
 class AuthenticationAPI {
   constructor(clientId, baseUrl) {
     this.clientId = clientId;
     this.baseUrl = baseUrl;
+  }
+
+  login(usernameOrEmail, password, connection, parameters = { 'scope': 'openid' }) {
+    return Promise.all([
+      nonNull(usernameOrEmail, 'must supply an email or username'),
+      nonNull(password, 'must supply a password'),
+      nonNull(connection, 'must supply a connection name'),
+      anObject(parameters, 'must supply parameters as an object')
+    ]).then(([usernameOrEmail, password, connection, parameters]) => {
+      const payload = Object.assign({
+        'username': usernameOrEmail,
+        'password': password,
+        'connection': connection,
+        'grant_type': 'password',
+        'client_id': this.clientId
+      }, parameters);
+      return jsonRequest('POST', `${this.baseUrl}/oauth/ro`, payload);
+    });
   }
 
   delegation(options) {

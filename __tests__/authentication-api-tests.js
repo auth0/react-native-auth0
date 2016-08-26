@@ -1,7 +1,3 @@
-jest.unmock('../auth/authentication-api');
-jest.unmock('../auth/authentication-error');
-jest.unmock('../utils/networking');
-
 import AuthenticationAPI from '../auth/authentication-api';
 import MockedAuthAPI from '../test-utils/mocks';
 
@@ -94,4 +90,54 @@ describe('AuthenticationAPI', () => {
     });
   });
 
+  describe('login', () => {
+
+    const resourceOwner = `${baseUrl}/oauth/ro`;
+    const auth = new AuthenticationAPI(clientId, baseUrl);
+
+    it('should fail with empty values', () => auth.login().catch(error => expect(error.message).toBe('must supply an email or username')));
+
+    it('should fail with null email or username', () => auth.login(null, 'password', 'connection').catch(error => expect(error.message).toBe('must supply an email or username')));
+
+    it('should fail with null password', () => auth.login('samples@auth0.com', null, 'connection').catch(error => expect(error.message).toBe('must supply a password')));
+
+    it('should fail with null connection', () => auth.login('samples@auth0.com', 'password', null).catch(error => expect(error.message).toBe('must supply a connection name')));
+
+    it('should fail with non object parameters', () => auth.login('samples@auth0.com', 'password', 'connection', 'invalid').catch(error => expect(error.message).toBe('must supply parameters as an object')));
+
+    it('should login with email/password', async () => {
+      let expected = api.returnCredentials();
+      const credentials = await auth.login('samples@auth0.com', 'password', 'Username-Password-Autentication');
+      expect(credentials).toEqual(expected);
+      expect(api.lastRequestBody(resourceOwner)).toEqual({
+        'username': 'samples@auth0.com',
+        'password': 'password',
+        'connection': 'Username-Password-Autentication',
+        'grant_type': 'password',
+        'scope': 'openid',
+        'client_id': clientId
+      });
+    });
+
+    it('should login with email/password and custom scope', async () => {
+      api.returnCredentials();
+      const credentials = await auth.login('samples@auth0.com', 'password', 'Username-Password-Autentication', {'scope': 'openid email offline_access'});
+      const body = api.lastRequestBody(resourceOwner);
+      expect(body.scope).toBe('openid email offline_access');
+    });
+
+    it('should login with extra parameters', async () => {
+      api.returnCredentials();
+      await auth.login('samples@auth0.com', 'password', 'Username-Password-Autentication', {'state': 'state'});
+      const body = api.lastRequestBody(resourceOwner);
+      expect(body.state).toBe('state');
+    });
+
+    it('should report api error', () => {
+      api.failResponse(resourceOwner, 'Bad Request', 'Bad Token');
+      return auth.login('samples@auth0.com', 'password', 'Username-Password-Autentication')
+        .then(json => fail('not supposed to succeed'))
+        .catch(error => expect(error.name).toEqual('Bad Request'));
+    });
+  });
 });
