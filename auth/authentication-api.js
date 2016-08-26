@@ -1,3 +1,5 @@
+import { checkStatus, headers } from '../utils/networking'
+
 class AuthenticationAPI {
   constructor(clientId, baseUrl) {
     this.clientId = clientId;
@@ -65,33 +67,30 @@ class AuthenticationAPI {
 
   tokenInfo(token) {
     if (token == null) {
-      return Promise.reject("must supply a idToken");
+      return Promise.reject(new Error("must supply an idToken"));
     }
 
     return fetch(`${this.baseUrl}/tokeninfo`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+      headers: headers(),
       body: JSON.stringify({"id_token": token})
     })
+    .then(checkStatus)
     .then(response => response.json());
   }
 
   userInfo(token) {
     if (token == null) {
-      return Promise.reject("must supply an accessToken");
+      return Promise.reject(new Error("must supply an accessToken"));
     }
 
     return fetch(`${this.baseUrl}/userinfo`, {
       method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+      headers: headers({
         'Authorization': `Bearer ${token}`
-      }
+      })
     })
+    .then(checkStatus)
     .then(response => response.json());
   }
 }

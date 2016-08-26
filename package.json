@@ -4,7 +4,7 @@
   "description": "React Native toolkit for Auth0 API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -27,5 +27,20 @@
   "bugs": {
     "url": "https://github.com/auth0/react-native-auth0/issues"
   },
-  "homepage": "https://github.com/auth0/react-native-auth0#readme"
+  "homepage": "https://github.com/auth0/react-native-auth0#readme",
+  "devDependencies": {
+    "babel-jest": "^14.1.0",
+    "babel-polyfill": "^6.13.0",
+    "babel-preset-es2015": "^6.13.2",
+    "babel-preset-stage-3": "^6.11.0",
+    "fetch-mock": "^5.1.1",
+    "jest-cli": "^14.1.0"
+  },
+  "jest": {
+    "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
+    "unmockedModulePathPatterns": [
+      "<rootDir>/node_modules/fetch-mock",
+      "<rootDir>/test-utils/mocks"
+    ]
+  }
 }
