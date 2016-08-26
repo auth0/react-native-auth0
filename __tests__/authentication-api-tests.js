@@ -211,11 +211,7 @@ describe('AuthenticationAPI', () => {
     it('should refresh token', async () => {
       let expected = api.returnDelegation();
       const response = await auth.refreshToken('token');
-      expect(response).toEqual({
-        idToken: expected.id_token,
-        tokenType: expected.token_type,
-        expiresIn: expected.expires_in
-      });
+      expect(response).toEqual(expected);
       expect(api.lastRequestBody(refreshToken)).toEqual({
         'refresh_token': 'token',
         'api_type': 'app',
@@ -239,4 +235,60 @@ describe('AuthenticationAPI', () => {
     });
   });
 
+  describe('createUser', () => {
+
+    const createUser = `${baseUrl}/dbconnections/signup`;
+    const auth = new AuthenticationAPI(clientId, baseUrl);
+
+    it('should fail with empty values', () => auth.createUser().catch(error => expect(error.message).toBe('must supply an email')));
+
+    it('should fail with null email', () => auth.createUser(null).catch(error => expect(error.message).toBe('must supply an email')));
+
+    it('should fail with null password', () => auth.createUser('samples@auth0.com', null, null, 'Username-Password-Autentication').catch(error => expect(error.message).toBe('must supply a password')));
+
+    it('should fail with null connection', () => auth.createUser('samples@auth0.com', null, 'password', null).catch(error => expect(error.message).toBe('must supply a connection name')));
+
+    it('should fail with non object metadata', () => auth.createUser('samples@auth0.com', null, 'password', 'Username-Password-Autentication', 'invalid').catch(error => expect(error.message).toBe('must supply metadata as an object')));
+
+    it('should create user with just email', async () => {
+      let expected = api.returnCreatedUser('samples@auth0.com');
+      const response = await auth.createUser('samples@auth0.com', null, 'password', 'Username-Password-Autentication');
+      expect(response).toEqual(expected);
+      expect(api.lastRequestBody(createUser)).toEqual({
+        'email': 'samples@auth0.com',
+        'password': 'password',
+        'client_id': clientId,
+        'connection': 'Username-Password-Autentication'
+      });
+    });
+
+    it('should create user with email & username', async () => {
+      let expected = api.returnCreatedUser('samples@auth0.com');
+      const response = await auth.createUser('samples@auth0.com', 'samples', 'password', 'Username-Password-Autentication');
+      expect(response).toEqual(expected);
+      expect(api.lastRequestBody(createUser)).toEqual({
+        'email': 'samples@auth0.com',
+        'username': 'samples',
+        'password': 'password',
+        'client_id': clientId,
+        'connection': 'Username-Password-Autentication'
+      });
+    });
+
+    it('should send user metadata', async () => {
+      api.returnCreatedUser('samples@auth0.com');
+      await auth.createUser('samples@auth0.com', 'samples', 'password', 'Username-Password-Autentication', {'first_name': 'John', 'last_name': 'Doe'});
+      const body = api.lastRequestBody(createUser);
+      expect(body.user_metadata.first_name).toBe('John');
+      expect(body.user_metadata.last_name).toBe('Doe');
+    });
+
+    it('should report api error', () => {
+      api.failResponse(createUser, 'Bad Request', 'Bad Token');
+      return auth.createUser('samples@auth0.com', null, 'password', 'Username-Password-Autentication')
+        .then(json => fail('not supposed to succeed'))
+        .catch(error => expect(error.name).toEqual('Bad Request'));
+    });
+
+  });
 });

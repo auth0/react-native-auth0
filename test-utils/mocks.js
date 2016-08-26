@@ -63,6 +63,14 @@ class AuthAPI {
     this.mockResponse(`${this.baseUrl}/delegation`, delegation, 200);
     return delegation;
   }
+
+  returnCreatedUser(email = 'samples@auth0.com') {
+    const user = {
+      'email': email
+    };
+    this.mockResponse(`${this.baseUrl}/dbconnections/signup`, user, 200);
+    return user;
+  }
 }
 
 module.exports = AuthAPI;

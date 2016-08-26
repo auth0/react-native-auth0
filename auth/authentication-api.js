@@ -8,6 +8,10 @@ import {
   anyOf
 } from '../utils/validation';
 
+const isEmpty = object => {
+  return Object.keys(object).length === 0 && object.constructor === Object
+};
+
 class AuthenticationAPI {
   constructor(clientId, baseUrl) {
     this.clientId = clientId;
@@ -32,6 +36,29 @@ class AuthenticationAPI {
     });
   }
 
+  createUser(email, username, password, connection, metadata = {}) {
+    return Promise.all([
+      nonNull(email, 'must supply an email'),
+      nonNull(password, 'must supply a password'),
+      nonNull(connection, 'must supply a connection name'),
+      anObject(metadata, 'must supply metadata as an object')
+    ]).then(([email, password, connection, metadata]) => {
+      let payload = {
+        'email': email,
+        'password': password,
+        'connection': connection,
+        'client_id': this.clientId
+      };
+      if (!isEmpty(metadata)) {
+        payload['user_metadata'] = metadata;
+      }
+      if (username != null) {
+        payload['username'] = username;
+      }
+      return jsonRequest('POST', `${this.baseUrl}/dbconnections/signup`, payload);
+    });
+  }
+
   delegation(token, type, api, parameters = {}) {
     return Promise.all([
       nonNull(token, 'must supply either a refreshToken or idToken'),
@@ -53,16 +80,7 @@ class AuthenticationAPI {
     return Promise.all([
       nonNull(refreshToken, 'must supply a refreshToken'),
       anObject(parameters, 'must supply parameters as an object')
-    ]).then(([refreshToken, parameters]) => {
-      return this.delegation(refreshToken, 'refresh_token', 'app', parameters)
-      .then(json => {
-        return {
-          idToken: json.id_token,
-          expiresIn: json.expires_in,
-          tokenType: json.token_type
-        };
-      });
-    });
+    ]).then(([refreshToken, parameters]) => this.delegation(refreshToken, 'refresh_token', 'app', parameters));
   }
 
   tokenInfo(token) {
