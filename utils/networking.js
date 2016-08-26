@@ -23,11 +23,16 @@ const headers = (headers = {}) => {
 };
 
 const jsonRequest = (method, url, body, additionalHeaders = {}) => {
-  return fetch(url, {
+  let options = {
     method: method,
     headers: headers(additionalHeaders),
-    body: JSON.stringify(body)
-  })
+  };
+
+  if (body != null) {
+    options.body = JSON.stringify(body);
+  }
+
+  return fetch(url, options)
   .then(checkStatus)
   .then(response => response.json());
 };

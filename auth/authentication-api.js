@@ -67,15 +67,7 @@ class AuthenticationAPI {
       payload["nonce"] = options.nonce;
     }
 
-    return fetch(`${this.baseUrl}/delegation`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload)
-    })
-    .then(response => response.json());
+    return jsonRequest('POST', `${this.baseUrl}/delegation`, payload);
   }
 
   refreshToken(refreshToken, options) {
@@ -93,32 +85,17 @@ class AuthenticationAPI {
   }
 
   tokenInfo(token) {
-    if (token == null) {
-      return Promise.reject(new Error("must supply an idToken"));
-    }
-
-    return fetch(`${this.baseUrl}/tokeninfo`, {
-      method: 'POST',
-      headers: headers(),
-      body: JSON.stringify({"id_token": token})
-    })
-    .then(checkStatus)
-    .then(response => response.json());
+    return nonNull(token, 'must supply an idToken').then(token => {
+      return jsonRequest('POST', `${this.baseUrl}/tokeninfo`, {'id_token': token})
+    });
   }
 
   userInfo(token) {
-    if (token == null) {
-      return Promise.reject(new Error("must supply an accessToken"));
-    }
-
-    return fetch(`${this.baseUrl}/userinfo`, {
-      method: 'GET',
-      headers: headers({
+    return nonNull(token, 'must supply an accessToken').then(token => {
+      return jsonRequest('GET', `${this.baseUrl}/userinfo`, null, {
         'Authorization': `Bearer ${token}`
       })
-    })
-    .then(checkStatus)
-    .then(response => response.json());
+    });
   }
 }
 
