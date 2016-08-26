@@ -1,4 +1,4 @@
-import AuthenticationError from '../auth/authentication-error'
+import AuthenticationError from '../authentication/error';
 
 const checkStatus = (response) => {
   if (response.ok) {

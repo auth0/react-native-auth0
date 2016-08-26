@@ -1,4 +1,4 @@
-import AuthenticationAPI from '../auth/authentication-api';
+import AuthenticationAPI from '../authentication/api';
 import MockedAuthAPI from '../test-utils/mocks';
 
 describe('AuthenticationAPI', () => {

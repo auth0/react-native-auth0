@@ -1,4 +1,4 @@
-import Authentication from './auth/authentication-api';
+import Authentication from './authentication/api';
 import Users from './management/users-api';
 
 class Auth0 {
