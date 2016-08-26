@@ -1,11 +1,11 @@
-class AuthenticationError extends Error {
+class Auth0Error extends Error {
   constructor (json) {
     super();
     Error.captureStackTrace(this, this.constructor);
-    this.name = json.error || json.code || 'A0.AuthError';
+    this.name = json.error || json.code || 'a0.internal.failed';
     this.message = json.description || json.error_description || response.statusText || response.status;
     this.json = json;
   }
 }
 
-module.exports = AuthenticationError;
+module.exports = Auth0Error;

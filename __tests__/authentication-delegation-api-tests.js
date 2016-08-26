@@ -60,7 +60,7 @@ describe('AuthenticationAPI', () => {
     });
 
     it('should report api error', () => {
-      api.failResponse(delegation, 'Bad Request', 'Bad Token');
+      api.failResponse('POST', delegation, 'Bad Request', 'Bad Token');
       return auth.delegation('token', 'refresh_token', 'app')
         .then(json => fail('not supposed to succeed'))
         .catch(error => expect(error.name).toEqual('Bad Request'));
@@ -98,7 +98,7 @@ describe('AuthenticationAPI', () => {
     });
 
     it('should report api error', () => {
-      api.failResponse(refreshToken, 'Bad Request', 'Bad Token');
+      api.failResponse('POST', refreshToken, 'Bad Request', 'Bad Token');
       return auth.refreshToken('token')
         .then(json => fail('not supposed to succeed'))
         .catch(error => expect(error.name).toEqual('Bad Request'));

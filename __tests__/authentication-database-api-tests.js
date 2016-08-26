@@ -63,7 +63,7 @@ describe('AuthenticationAPI', () => {
       expect(body.state).toBe(state);
     });
 
-    it('should report api error', () => verifyError(auth.login(email, password, connection), api, resourceOwner));
+    it('should report api error', () => verifyError(auth.login(email, password, connection), api, 'POST', resourceOwner));
   });
 
   describe('createUser', () => {
@@ -116,7 +116,7 @@ describe('AuthenticationAPI', () => {
       expect(body.user_metadata.last_name).toBe(lastName);
     });
 
-    it('should report api error', () => verifyError(auth.createUser(email, null, password, connection), api, createUser));
+    it('should report api error', () => verifyError(auth.createUser(email, null, password, connection), api, 'POST', createUser));
 
   });
 
@@ -141,7 +141,7 @@ describe('AuthenticationAPI', () => {
       });
     });
 
-    it('should report api error', () => verifyError(auth.resetPassword(email, connection), api, resetPassword));
+    it('should report api error', () => verifyError(auth.resetPassword(email, connection), api, 'POST', resetPassword));
 
   });
 
