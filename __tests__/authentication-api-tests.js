@@ -52,7 +52,7 @@ describe('AuthenticationAPI', () => {
     });
 
     it('should report api error', () => {
-      api.failResponse(tokenInfo, 'Bad Request', 'Bad Token');
+      api.failResponse('POST', tokenInfo, 'Bad Request', 'Bad Token');
       return auth.tokenInfo('JWT')
         .then(json => fail('not supposed to succeed'))
         .catch(error => expect(error.name).toEqual('Bad Request'));
@@ -83,7 +83,7 @@ describe('AuthenticationAPI', () => {
     });
 
     it('should report api error', () => {
-      api.failResponse(userInfo, 'Bad Request', 'Bad Token');
+      api.failResponse('GET', userInfo, 'Bad Request', 'Bad Token');
       return auth.userInfo('JWT')
         .then(json => fail('not supposed to succeed'))
         .catch(error => expect(error.name).toEqual('Bad Request'));

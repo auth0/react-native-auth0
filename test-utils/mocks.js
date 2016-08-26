@@ -7,7 +7,7 @@ const mockedProfile = (email) => {
   };
 };
 
-class AuthAPI {
+class Auth0API {
   constructor(baseUrl) {
       this.baseUrl = baseUrl;
   }
@@ -27,8 +27,8 @@ class AuthAPI {
     fetchMock.mock(url, response, {method: method, headers: defaults});
   }
 
-  failResponse(url, code, message) {
-    this.mockResponse(url, {'code': code, 'description': message}, 400);
+  failResponse(method, url, code, message) {
+    this.mockResponse(url, {'code': code, 'description': message}, 400, method);
   }
 
   reset() {
@@ -80,4 +80,4 @@ class AuthAPI {
   }
 }
 
-module.exports = AuthAPI;
+module.exports = Auth0API;

@@ -9,9 +9,7 @@ import {
   anyOf
 } from '../utils/validation';
 
-const isEmpty = object => {
-  return Object.keys(object).length === 0 && object.constructor === Object
-};
+import { isEmpty } from '../utils/helper';
 
 class AuthenticationAPI {
   constructor(clientId, baseUrl) {

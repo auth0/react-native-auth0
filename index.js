@@ -1,5 +1,5 @@
 import Authentication from './authentication/api';
-import Users from './management/users-api';
+import Users from './management/api';
 
 class Auth0 {
   constructor(domain) {

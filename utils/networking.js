@@ -1,4 +1,4 @@
-import AuthenticationError from '../authentication/error';
+import Auth0Error from './error';
 
 const checkStatus = (response) => {
   if (response.ok) {
@@ -11,7 +11,7 @@ const checkStatus = (response) => {
       throw error;
     })
     .then(json => {
-      throw new AuthenticationError(json);
+      throw new Auth0Error(json);
     });
 };
 
