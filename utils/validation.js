@@ -10,9 +10,17 @@ const anObject = (value, message) => {
     return Promise.resolve(value);
   }
   return Promise.reject(new Error(message));
-}
+};
+
+const anyOf = (value, list = [], message) => {
+  if (list.indexOf(value) != -1) {
+    return Promise.resolve(value);
+  }
+  return Promise.reject(new Error(message));
+};
 
 module.exports = {
   nonNull: nonNull,
-  anObject: anObject
-}
+  anObject: anObject,
+  anyOf: anyOf
+};

@@ -1,12 +1,11 @@
 import {
-  checkStatus,
-  headers,
   jsonRequest
 } from '../utils/networking';
 
 import {
   nonNull,
-  anObject
+  anObject,
+  anyOf
 } from '../utils/validation';
 
 class AuthenticationAPI {
@@ -15,7 +14,7 @@ class AuthenticationAPI {
     this.baseUrl = baseUrl;
   }
 
-  login(usernameOrEmail, password, connection, parameters = { 'scope': 'openid' }) {
+  login(usernameOrEmail, password, connection, parameters = { scope: 'openid' }) {
     return Promise.all([
       nonNull(usernameOrEmail, 'must supply an email or username'),
       nonNull(password, 'must supply a password'),
@@ -33,54 +32,36 @@ class AuthenticationAPI {
     });
   }
 
-  delegation(options) {
-    let payload = {
-      "client_id": this.clientId,
-      "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
-    };
-
-    let token = options.refreshToken || options.idToken;
-    if (token == null) {
-        return Promise.reject("must supply either a refreshToken or idToken");
-    }
-
-    let attrName = "refresh_token";
-    if (options.refreshToken == null) {
-      attrName = "id_token";
-    }
-
-    payload[attrName] = token;
-
-    if (options.apiType != null) {
-      payload["api_type"] = options.apiType;
-    }
-
-    if (options.target != null) {
-      payload["target"] = options.target;
-    }
-
-    if (options.scope != null) {
-      payload["scope"] = options.scope;
-    }
-
-    if (options.nonce != null) {
-      payload["nonce"] = options.nonce;
-    }
-
-    return jsonRequest('POST', `${this.baseUrl}/delegation`, payload);
+  delegation(token, type, api, parameters = {}) {
+    return Promise.all([
+      nonNull(token, 'must supply either a refreshToken or idToken'),
+      anyOf(type, ['refresh_token', 'id_token'], 'must be either refresh_token or id_token'),
+      nonNull(api, 'must supply an api type'),
+      anObject(parameters, 'must supply parameters as an object')
+    ]).then(([token, type, api, parameters]) => {
+      let payload = Object.assign({
+        'api_type': api,
+        'client_id': this.clientId,
+        'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+      }, parameters);
+      payload[type] = token;
+      return jsonRequest('POST', `${this.baseUrl}/delegation`, payload);
+    });
   }
 
-  refreshToken(refreshToken, options) {
-    const delegationOptions = Object.assign({}, options);
-    delegationOptions.refreshToken = refreshToken;
-    delegationOptions.apiType = "app";
-    return this.delegation(delegationOptions)
-    .then(json => {
-      return {
-        idToken: json.id_token,
-        expiresIn: json.expires_in,
-        tokenType: json.token_type
-      };
+  refreshToken(refreshToken, parameters = {}) {
+    return Promise.all([
+      nonNull(refreshToken, 'must supply a refreshToken'),
+      anObject(parameters, 'must supply parameters as an object')
+    ]).then(([refreshToken, parameters]) => {
+      return this.delegation(refreshToken, 'refresh_token', 'app', parameters)
+      .then(json => {
+        return {
+          idToken: json.id_token,
+          expiresIn: json.expires_in,
+          tokenType: json.token_type
+        };
+      });
     });
   }
 
@@ -94,7 +75,7 @@ class AuthenticationAPI {
     return nonNull(token, 'must supply an accessToken').then(token => {
       return jsonRequest('GET', `${this.baseUrl}/userinfo`, null, {
         'Authorization': `Bearer ${token}`
-      })
+      });
     });
   }
 }

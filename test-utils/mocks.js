@@ -53,6 +53,16 @@ class AuthAPI {
     this.mockResponse(`${this.baseUrl}/oauth/ro`, credentials, 200);
     return credentials;
   }
+
+  returnDelegation() {
+    const delegation = {
+      'id_token': Math.random().toString(36).substring(7),
+      'expires_in': Math.random(),
+      'token_type': 'bearer'
+    };
+    this.mockResponse(`${this.baseUrl}/delegation`, delegation, 200);
+    return delegation;
+  }
 }
 
 module.exports = AuthAPI;
