@@ -22,7 +22,12 @@ const headers = (headers = {}) => {
   }, headers);
 };
 
-const jsonRequest = (method, url, body, additionalHeaders = {}) => {
+const json = (method, url, body, additionalHeaders = {}) => {
+  return request(method, url, body, additionalHeaders)
+    .then(response => response.json());
+};
+
+const request = (method, url, body, additionalHeaders = {}) => {
   let options = {
     method: method,
     headers: headers(additionalHeaders),
@@ -33,12 +38,10 @@ const jsonRequest = (method, url, body, additionalHeaders = {}) => {
   }
 
   return fetch(url, options)
-  .then(checkStatus)
-  .then(response => response.json());
+    .then(checkStatus);
 };
 
 module.exports = {
-  checkStatus: checkStatus,
-  headers: headers,
-  jsonRequest: jsonRequest
+  json: json,
+  request: request
 };

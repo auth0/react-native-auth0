@@ -291,4 +291,35 @@ describe('AuthenticationAPI', () => {
     });
 
   });
+
+  describe('resetPassword', () => {
+
+    const resetPassword = `${baseUrl}/dbconnections/change_password`;
+    const auth = new AuthenticationAPI(clientId, baseUrl);
+
+    it('should fail with empty values', () => auth.resetPassword().catch(error => expect(error.message).toBe('must supply an email')));
+
+    it('should fail with null email', () => auth.resetPassword(null).catch(error => expect(error.message).toBe('must supply an email')));
+
+    it('should fail with null connection', () => auth.resetPassword('samples@auth0.com', null).catch(error => expect(error.message).toBe('must supply a connection name')));
+
+    it('should reset password', async () => {
+      api.returnResetPassword();
+      await auth.resetPassword('samples@auth0.com', 'Username-Password-Autentication');
+      expect(api.lastRequestBody(resetPassword)).toEqual({
+        'email': 'samples@auth0.com',
+        'client_id': clientId,
+        'connection': 'Username-Password-Autentication'
+      });
+    });
+
+    it('should report api error', () => {
+      api.failResponse(resetPassword, 'Bad Request', 'Bad Token');
+      return auth.resetPassword('samples@auth0.com', 'Username-Password-Autentication')
+        .then(json => fail('not supposed to succeed'))
+        .catch(error => expect(error.name).toEqual('Bad Request'));
+    });
+
+  });
+
 });

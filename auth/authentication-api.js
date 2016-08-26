@@ -1,5 +1,6 @@
 import {
-  jsonRequest
+  json,
+  request
 } from '../utils/networking';
 
 import {
@@ -32,7 +33,7 @@ class AuthenticationAPI {
         'grant_type': 'password',
         'client_id': this.clientId
       }, parameters);
-      return jsonRequest('POST', `${this.baseUrl}/oauth/ro`, payload);
+      return json('POST', `${this.baseUrl}/oauth/ro`, payload);
     });
   }
 
@@ -55,7 +56,21 @@ class AuthenticationAPI {
       if (username != null) {
         payload['username'] = username;
       }
-      return jsonRequest('POST', `${this.baseUrl}/dbconnections/signup`, payload);
+      return json('POST', `${this.baseUrl}/dbconnections/signup`, payload);
+    });
+  }
+
+  resetPassword(email, connection) {
+    return Promise.all([
+      nonNull(email, 'must supply an email'),
+      nonNull(connection, 'must supply a connection name')
+    ]).then(([email, connection]) => {
+      const payload = {
+        'email': email,
+        'connection': connection,
+        'client_id': this.clientId
+      };
+      return request('POST', `${this.baseUrl}/dbconnections/change_password`, payload);
     });
   }
 
@@ -72,7 +87,7 @@ class AuthenticationAPI {
         'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer'
       }, parameters);
       payload[type] = token;
-      return jsonRequest('POST', `${this.baseUrl}/delegation`, payload);
+      return json('POST', `${this.baseUrl}/delegation`, payload);
     });
   }
 
@@ -84,14 +99,13 @@ class AuthenticationAPI {
   }
 
   tokenInfo(token) {
-    return nonNull(token, 'must supply an idToken').then(token => {
-      return jsonRequest('POST', `${this.baseUrl}/tokeninfo`, {'id_token': token})
-    });
+    return nonNull(token, 'must supply an idToken')
+      .then(token => json('POST', `${this.baseUrl}/tokeninfo`, {'id_token': token}));
   }
 
   userInfo(token) {
     return nonNull(token, 'must supply an accessToken').then(token => {
-      return jsonRequest('GET', `${this.baseUrl}/userinfo`, null, {
+      return json('GET', `${this.baseUrl}/userinfo`, null, {
         'Authorization': `Bearer ${token}`
       });
     });

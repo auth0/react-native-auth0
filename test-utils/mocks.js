@@ -16,7 +16,10 @@ class AuthAPI {
   lastRequestHeaders(url) { return fetchMock.lastOptions(url).headers; }
 
   mockResponse(url, body, status, method, headers = {}) {
-    const response = {'body': body, 'status': status};
+    let response = {'status': status};
+    if (body != null) {
+      response.body = body;
+    }
     const defaults = Object.assign({
       'Accept': 'application/json',
       'Content-Type': 'application/json'
@@ -70,6 +73,10 @@ class AuthAPI {
     };
     this.mockResponse(`${this.baseUrl}/dbconnections/signup`, user, 200);
     return user;
+  }
+
+  returnResetPassword() {
+    this.mockResponse(`${this.baseUrl}/dbconnections/change_password`, null, 200);
   }
 }
 
