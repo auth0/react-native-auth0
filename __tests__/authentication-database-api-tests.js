@@ -1,13 +1,21 @@
 import AuthenticationAPI from '../auth/authentication-api';
 import MockedAuthAPI from '../test-utils/mocks';
+import faker from 'faker';
+import { verifyError } from '../test-utils/matchers.js';
 
 describe('AuthenticationAPI', () => {
 
-  const baseUrl = 'https://samples.auth0.com';
-  const clientId = 'CLIENT_ID';
+  const baseUrl = faker.internet.url();
+  const clientId = faker.random.uuid();
   const api = new MockedAuthAPI(baseUrl);
 
+  let email, password, username, connection;
+
   beforeEach(() => {
+    email = faker.internet.email();
+    password = faker.internet.password();
+    connection = faker.fake('connection-{{random.number}}');
+    username = faker.internet.userName();
     api.reset();
   });
 
@@ -18,22 +26,22 @@ describe('AuthenticationAPI', () => {
 
     it('should fail with empty values', () => auth.login().catch(error => expect(error.message).toBe('must supply an email or username')));
 
-    it('should fail with null email or username', () => auth.login(null, 'password', 'connection').catch(error => expect(error.message).toBe('must supply an email or username')));
+    it('should fail with null email or username', () => auth.login(null, password, connection).catch(error => expect(error.message).toBe('must supply an email or username')));
 
-    it('should fail with null password', () => auth.login('samples@auth0.com', null, 'connection').catch(error => expect(error.message).toBe('must supply a password')));
+    it('should fail with null password', () => auth.login(email, null, connection).catch(error => expect(error.message).toBe('must supply a password')));
 
-    it('should fail with null connection', () => auth.login('samples@auth0.com', 'password', null).catch(error => expect(error.message).toBe('must supply a connection name')));
+    it('should fail with null connection', () => auth.login(email, password, null).catch(error => expect(error.message).toBe('must supply a connection name')));
 
-    it('should fail with non object parameters', () => auth.login('samples@auth0.com', 'password', 'connection', 'invalid').catch(error => expect(error.message).toBe('must supply parameters as an object')));
+    it('should fail with non object parameters', () => auth.login(email, password, connection, 'invalid').catch(error => expect(error.message).toBe('must supply parameters as an object')));
 
     it('should login with email/password', async () => {
       let expected = api.returnCredentials();
-      const credentials = await auth.login('samples@auth0.com', 'password', 'Username-Password-Autentication');
+      const credentials = await auth.login(email, password, connection);
       expect(credentials).toEqual(expected);
       expect(api.lastRequestBody(resourceOwner)).toEqual({
-        'username': 'samples@auth0.com',
-        'password': 'password',
-        'connection': 'Username-Password-Autentication',
+        'username': email,
+        'password': password,
+        'connection': connection,
         'grant_type': 'password',
         'scope': 'openid',
         'client_id': clientId
@@ -42,24 +50,20 @@ describe('AuthenticationAPI', () => {
 
     it('should login with email/password and custom scope', async () => {
       api.returnCredentials();
-      const credentials = await auth.login('samples@auth0.com', 'password', 'Username-Password-Autentication', {'scope': 'openid email offline_access'});
+      const credentials = await auth.login(email, password, connection, {'scope': 'openid email offline_access'});
       const body = api.lastRequestBody(resourceOwner);
       expect(body.scope).toBe('openid email offline_access');
     });
 
     it('should login with extra parameters', async () => {
       api.returnCredentials();
-      await auth.login('samples@auth0.com', 'password', 'Username-Password-Autentication', {'state': 'state'});
+      const state = faker.random.uuid();
+      await auth.login(email, password, connection, {'state': state});
       const body = api.lastRequestBody(resourceOwner);
-      expect(body.state).toBe('state');
+      expect(body.state).toBe(state);
     });
 
-    it('should report api error', () => {
-      api.failResponse(resourceOwner, 'Bad Request', 'Bad Token');
-      return auth.login('samples@auth0.com', 'password', 'Username-Password-Autentication')
-        .then(json => fail('not supposed to succeed'))
-        .catch(error => expect(error.name).toEqual('Bad Request'));
-    });
+    it('should report api error', () => verifyError(auth.login(email, password, connection), api, resourceOwner));
   });
 
   describe('createUser', () => {
@@ -71,51 +75,48 @@ describe('AuthenticationAPI', () => {
 
     it('should fail with null email', () => auth.createUser(null).catch(error => expect(error.message).toBe('must supply an email')));
 
-    it('should fail with null password', () => auth.createUser('samples@auth0.com', null, null, 'Username-Password-Autentication').catch(error => expect(error.message).toBe('must supply a password')));
+    it('should fail with null password', () => auth.createUser(email, null, null, connection).catch(error => expect(error.message).toBe('must supply a password')));
 
-    it('should fail with null connection', () => auth.createUser('samples@auth0.com', null, 'password', null).catch(error => expect(error.message).toBe('must supply a connection name')));
+    it('should fail with null connection', () => auth.createUser(email, null, password, null).catch(error => expect(error.message).toBe('must supply a connection name')));
 
-    it('should fail with non object metadata', () => auth.createUser('samples@auth0.com', null, 'password', 'Username-Password-Autentication', 'invalid').catch(error => expect(error.message).toBe('must supply metadata as an object')));
+    it('should fail with non object metadata', () => auth.createUser(email, null, password, connection, 'invalid').catch(error => expect(error.message).toBe('must supply metadata as an object')));
 
     it('should create user with just email', async () => {
-      let expected = api.returnCreatedUser('samples@auth0.com');
-      const response = await auth.createUser('samples@auth0.com', null, 'password', 'Username-Password-Autentication');
+      let expected = api.returnCreatedUser(email);
+      const response = await auth.createUser(email, null, password, connection);
       expect(response).toEqual(expected);
       expect(api.lastRequestBody(createUser)).toEqual({
-        'email': 'samples@auth0.com',
-        'password': 'password',
+        'email': email,
+        'password': password,
         'client_id': clientId,
-        'connection': 'Username-Password-Autentication'
+        'connection': connection
       });
     });
 
     it('should create user with email & username', async () => {
-      let expected = api.returnCreatedUser('samples@auth0.com');
-      const response = await auth.createUser('samples@auth0.com', 'samples', 'password', 'Username-Password-Autentication');
+      let expected = api.returnCreatedUser(email);
+      const response = await auth.createUser(email, username, password, connection);
       expect(response).toEqual(expected);
       expect(api.lastRequestBody(createUser)).toEqual({
-        'email': 'samples@auth0.com',
-        'username': 'samples',
-        'password': 'password',
+        'email': email,
+        'username': username,
+        'password': password,
         'client_id': clientId,
-        'connection': 'Username-Password-Autentication'
+        'connection': connection
       });
     });
 
     it('should send user metadata', async () => {
-      api.returnCreatedUser('samples@auth0.com');
-      await auth.createUser('samples@auth0.com', 'samples', 'password', 'Username-Password-Autentication', {'first_name': 'John', 'last_name': 'Doe'});
+      api.returnCreatedUser(email);
+      const firstName = faker.name.firstName();
+      const lastName = faker.name.lastName();
+      await auth.createUser(email, 'samples', password, connection, {'first_name': firstName, 'last_name': lastName});
       const body = api.lastRequestBody(createUser);
-      expect(body.user_metadata.first_name).toBe('John');
-      expect(body.user_metadata.last_name).toBe('Doe');
+      expect(body.user_metadata.first_name).toBe(firstName);
+      expect(body.user_metadata.last_name).toBe(lastName);
     });
 
-    it('should report api error', () => {
-      api.failResponse(createUser, 'Bad Request', 'Bad Token');
-      return auth.createUser('samples@auth0.com', null, 'password', 'Username-Password-Autentication')
-        .then(json => fail('not supposed to succeed'))
-        .catch(error => expect(error.name).toEqual('Bad Request'));
-    });
+    it('should report api error', () => verifyError(auth.createUser(email, null, password, connection), api, createUser));
 
   });
 
@@ -128,24 +129,19 @@ describe('AuthenticationAPI', () => {
 
     it('should fail with null email', () => auth.resetPassword(null).catch(error => expect(error.message).toBe('must supply an email')));
 
-    it('should fail with null connection', () => auth.resetPassword('samples@auth0.com', null).catch(error => expect(error.message).toBe('must supply a connection name')));
+    it('should fail with null connection', () => auth.resetPassword(email, null).catch(error => expect(error.message).toBe('must supply a connection name')));
 
     it('should reset password', async () => {
       api.returnResetPassword();
-      await auth.resetPassword('samples@auth0.com', 'Username-Password-Autentication');
+      await auth.resetPassword(email, connection);
       expect(api.lastRequestBody(resetPassword)).toEqual({
-        'email': 'samples@auth0.com',
+        'email': email,
         'client_id': clientId,
-        'connection': 'Username-Password-Autentication'
+        'connection': connection
       });
     });
 
-    it('should report api error', () => {
-      api.failResponse(resetPassword, 'Bad Request', 'Bad Token');
-      return auth.resetPassword('samples@auth0.com', 'Username-Password-Autentication')
-        .then(json => fail('not supposed to succeed'))
-        .catch(error => expect(error.name).toEqual('Bad Request'));
-    });
+    it('should report api error', () => verifyError(auth.resetPassword(email, connection), api, resetPassword));
 
   });
 
