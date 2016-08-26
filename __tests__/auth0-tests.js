@@ -1,7 +1,3 @@
-jest.unmock('../');
-jest.unmock('../auth/authentication-api');
-jest.unmock('../management/users-api');
-
 import Auth0 from '../';
 
 describe('Auth0', () => {
@@ -23,7 +19,7 @@ describe('Auth0', () => {
     });
 
     it('should fail with no domain', () => {
-      expect(() => new Auth0()).toThrow('Must supply a valid Auth0 domain');
+      expect(() => new Auth0()).toThrow(new Error('must supply a valid Auth0 domain'));
     });
 
   });

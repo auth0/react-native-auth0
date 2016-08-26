@@ -1,10 +1,10 @@
-var Authentication = require('./auth/authentication-api');
-var Users = require('./management/users-api');
+import Authentication from './authentication/api';
+import Users from './management/users-api';
 
 class Auth0 {
   constructor(domain) {
     if (domain == null) {
-      throw "Must supply a valid Auth0 domain";
+      throw new Error("must supply a valid Auth0 domain");
     }
     let baseUrl = domain
     if (!domain.startsWith("http")) {
