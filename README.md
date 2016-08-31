@@ -18,54 +18,71 @@ npm install react-native-auth0 --save
 
 ## Usage
 
-```
-const Auth0 = require('react-native-auth0');
-const auth0 = new Auth0('samples.auth0.com');
+```js
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0('{YOUR_DOMAIN}');
 ```
 
-### Delegation
+### Authentication API
+
+#### Login with database connection
+
 ```js
 auth0
-    .authentication("client_id")
-    .delegation({
-        "idToken": "user token",
-        // Other Delegation parameters
-    })
+    .authentication('{YOUR_CLIENT_ID}')
+    .login("info@auth0.com", "password", "myconnection")
+    .then(credentials => console.log(credentials))
+    .catch(error => console.log(error));
+```
+
+#### Create user in database connection
+
+```js
+auth0
+    .authentication('{YOUR_CLIENT_ID}')
+    .createUser('info@auth0.com', 'username', 'password', 'myconnection')
+    .then(user => console.log(user))
+    .catch(error => console.log(error));
+```
+
+#### Get user information
+
+```js
+auth0
+    .authentication('{YOUR_CLIENT_ID}')
+    .tokenInfo('user id_token')
+    .then(profile => console.log(profile))
+    .catch(error => console.log(error));
+```
+
+#### Using refresh token
+```js
+auth0
+    .authentication('{YOUR_CLIENT_ID}')
+    .refreshToken('user refresh_token')
     .then(response => console.log(response))
     .catch(error => console.log(error));
 ```
 
-The valid parameters are:
+### Management API (Users)
 
-* **idToken** (`string`): valid user id_token obtained during login.
-* **refreshToken** (`string`): user's refresh_token used to request new id_token.
-* **apiType** (`string`): for what api the new token will be for. e.g. `firebase` or `aws`.
-* **target** (`string`): what Auth0 client the token will be requested from.
-* **scope** (`string`): scope required in the token.
+#### Patch user with user_metadata
 
-### Refresh token
 ```js
 auth0
-    .authentication("client_id")
-    .refreshToken("user refresh token")
+    .users('user token')
+    .patch('user_id', {'first_name': 'John', 'last_name': 'Doe'})
     .then(response => console.log(response))
     .catch(error => console.log(error));
 ```
 
-### Get User Info
-```js
-auth0
-    .authentication("client_id")
-    .userInfo("user access token")
-    .then(response => console.log(response))
-    .catch(error => console.log(error));
-```
+### Link users
 
-### Patch user with user_metadata
 ```js
 auth0
-    .users("user token")
-    .patch("user id", {"first_name": "John", "last_name": "Doe"})
+    .user('user token')
+    .link("user_id", "other user token")
     .then(response => console.log(response))
     .catch(error => console.log(error));
 ```

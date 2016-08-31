@@ -13,10 +13,20 @@ export default class Auth0 {
     this.baseUrl = baseUrl
   }
 
+  /**
+   * Creates an Authentication API client
+   * @param  {String} clientId
+   * @return {AuthenticationAPI}
+   */
   authentication(clientId) {
     return new Authentication(clientId, this.baseUrl);
   }
 
+  /**
+   * Creates a Users API client
+   * @param  {String} token for Management API
+   * @return {UsersAPI}
+   */
   users(token) {
     return new Users(token, this.baseUrl);
   }
