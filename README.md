@@ -81,7 +81,7 @@ auth0
 
 ```js
 auth0
-    .user('user token')
+    .users('user token')
     .link("user_id", "other user token")
     .then(response => console.log(response))
     .catch(error => console.log(error));
