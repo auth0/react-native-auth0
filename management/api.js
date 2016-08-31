@@ -11,7 +11,7 @@ import {
 
 import { isEmpty } from '../utils/helper';
 
-class UsersAPI {
+export default class UsersAPI {
   constructor(token, baseUrl) {
     this.token = token;
     this.baseUrl = baseUrl;
@@ -44,6 +44,4 @@ class UsersAPI {
       return json('DELETE', `${this.baseUrl}/api/v2/users/${encodeURIComponent(id)}/identities/${encodeURIComponent(provider)}/${encodeURIComponent(identityId)}`, null, {'Authorization': `Bearer ${this.token}`});
     });
   }
-}
-
-module.exports = UsersAPI;
+};

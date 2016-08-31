@@ -7,7 +7,7 @@ const mockedProfile = (email) => {
   };
 };
 
-class Auth0API {
+export default class Auth0API {
   constructor(baseUrl) {
       this.baseUrl = baseUrl;
   }
@@ -78,6 +78,4 @@ class Auth0API {
   returnResetPassword() {
     this.mockResponse(`${this.baseUrl}/dbconnections/change_password`, null, 200);
   }
-}
-
-module.exports = Auth0API;
+};

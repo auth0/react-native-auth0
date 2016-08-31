@@ -1,4 +1,4 @@
-class Auth0Error extends Error {
+export default class Auth0Error extends Error {
   constructor (json) {
     super();
     Error.captureStackTrace(this, this.constructor);
@@ -6,6 +6,4 @@ class Auth0Error extends Error {
     this.message = json.description || json.error_description || response.statusText || response.status;
     this.json = json;
   }
-}
-
-module.exports = Auth0Error;
+};

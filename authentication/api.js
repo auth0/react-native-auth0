@@ -11,7 +11,7 @@ import {
 
 import { isEmpty } from '../utils/helper';
 
-class AuthenticationAPI {
+export default class AuthenticationAPI {
   constructor(clientId, baseUrl) {
     this.clientId = clientId;
     this.baseUrl = baseUrl;
@@ -108,6 +108,4 @@ class AuthenticationAPI {
       });
     });
   }
-}
-
-module.exports = AuthenticationAPI;
+};

@@ -1,7 +1,7 @@
 import Authentication from './authentication/api';
 import Users from './management/api';
 
-class Auth0 {
+export default class Auth0 {
   constructor(domain) {
     if (domain == null) {
       throw new Error("must supply a valid Auth0 domain");
@@ -20,6 +20,4 @@ class Auth0 {
   users(token) {
     return new Users(token, this.baseUrl);
   }
-}
-
-module.exports = Auth0;
+};
