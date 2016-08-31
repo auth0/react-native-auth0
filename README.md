@@ -13,7 +13,7 @@ React Native 0.26+
 ## Installation
 
 ```
-npm install react-native-auth0 --save
+npm install react-native-auth0@beta --save
 ```
 
 ## Usage
