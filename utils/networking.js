@@ -11,7 +11,7 @@ const checkStatus = (response) => {
       throw error;
     })
     .then(json => {
-      throw new Auth0Error(json);
+      throw new Auth0Error(json, response);
     });
 };
 
