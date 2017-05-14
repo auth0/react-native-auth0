@@ -2,3 +2,4 @@ __tests__/*
 test-utils/*
 .babelrc
 .travis.yml
+sample-app/
