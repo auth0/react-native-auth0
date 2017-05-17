@@ -9,25 +9,39 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  View
+  View,
+  TouchableHighlight,
+  Linking
 } from 'react-native';
 
 export default class auth0 extends Component {
+
+  componentDidMount() {
+    Linking.addEventListener('url', this.onRedirect);
+  }
+
+  componentWillUnmount() {
+    Linking.removeEventListener('url', this.onRedirect);
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
+        <TouchableHighlight underlayColor="black" onPress={this.showBrowser}>
+          <Text style={styles.openBrowser}>
+          Open Browser
+          </Text>
+        </TouchableHighlight>
       </View>
     );
+  }
+
+  showBrowser() {
+    Linking.openURL("https://overmind.auth0.com/authorize?client_id=4DCWVEwbnzqsyedUsXFlZ8v1a8sObJPp&response_type=token&redirect_uri=org.reactjs.native.example.auth0://overmind.auth0.com/ios/org.reactjs.native.example.auth0/callback");
+  }
+
+  onRedirect(event) {
+    console.log(`Received url ${event.url}`);
   }
 }
 
@@ -38,15 +52,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
-  welcome: {
+  openBrowser: {
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
   },
 });
 
