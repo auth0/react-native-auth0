@@ -34,6 +34,6 @@ export default class Auth0 {
   }
 
   webAuth(clientId) {
-    return new WebAuth(clientId, this.domain);
+    return new WebAuth(clientId, this.domain, this.authentication(clientId));
   }
 };

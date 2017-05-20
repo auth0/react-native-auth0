@@ -8,13 +8,14 @@ export default class WebAuth {
    * @param  {String} domain of Auth0 account
    * @return {AuthenticationAPI}
    */
-  constructor(clientId, domain) {
+  constructor(clientId, domain, client) {
     if (domain == null) {
       throw new Error("must supply a valid Auth0 domain");
     }
     this.domain = domain;
     this.clientId = clientId;
     this.browser = new Browser();
+    this.client = client;
   }
 
   authorize() {
@@ -28,7 +29,7 @@ export default class WebAuth {
   resume(url) {
     this.browser.hide();
     if (this.currentSession) {
-      this.currentSession.resume(this.browser, url);
+      this.currentSession.resume(this.browser, url, this.client);
     }
     this.currentSession = null;
   }

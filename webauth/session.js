@@ -20,7 +20,7 @@ export default class Session {
     browser.show(this.authorizeUrl, this.reject);
   }
 
-  resume(browser, redirectUrl) {
+  resume(browser, redirectUrl, client) {
     if (!redirectUrl || !redirectUrl.startsWith(this.redirectUri)) {
       return
     }
@@ -29,20 +29,8 @@ export default class Session {
     if (this.state !== state) {
       return this.reject(new Error('Invalid state'));
     }
-    fetch(this.tokenUrl, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        code,
-        code_verifier: this.verifier,
-        client_id: this.clientId,
-        redirect_uri: this.redirectUri,
-        grant_type: 'authorization_code'
-      })
-    })
+    client
+    .token(code, this.verifier, this.redirectUri)
     .then(this.resolve)
     .catch(this.reject);
   }
