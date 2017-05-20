@@ -1,5 +1,12 @@
-import { newSession } from './oauth';
-import Browser from './browser';
+import Agent from './agent';
+import {
+  NativeModules,
+  Platform
+} from 'react-native';
+
+import url from 'url';
+
+const { A0Auth0 } = NativeModules;
 
 export default class WebAuth {
 
@@ -14,23 +21,43 @@ export default class WebAuth {
     }
     this.domain = domain;
     this.clientId = clientId;
-    this.browser = new Browser();
+    this.agent = new Agent();
     this.client = client;
   }
 
   authorize() {
-    let self = this;
-    return newSession(this.clientId, this.domain, (session) => {
-      session.start(self.browser);
-      self.currentSession = session;
-    });
-  }
-
-  resume(url) {
-    this.browser.hide();
-    if (this.currentSession) {
-      this.currentSession.resume(this.browser, url, this.client);
-    }
-    this.currentSession = null;
+    const { clientId, domain, client, agent } = this;
+    return agent
+      .newTransaction()
+      .then(({state, verifier, ...query}) => {
+        const bundleIdentifier = A0Auth0.bundleIdentifier;
+        const redirectUri = `${bundleIdentifier}://${domain}/${Platform.OS}/${bundleIdentifier}/callback`
+        const authorizeUrl = url.format({
+          protocol: 'https',
+          host: domain,
+          pathname: `authorize`,
+          query: {
+            client_id: clientId,
+            response_type: 'code',
+            redirect_uri: redirectUri,
+            state,
+            ...query
+          }
+        });
+        return agent
+          .show(authorizeUrl)
+          .then((redirectUrl) => {
+            if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
+              throw new Error('Unexpected url');
+            }
+            agent.hide();
+            const { code, state: resultState } = url.parse(redirectUrl, true).query;
+            if (resultState !== state) {
+              throw new Error('Invalid state');
+            }
+            return client
+              .token(code, verifier, redirectUri)
+          });
+      });
   }
 }
