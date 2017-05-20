@@ -1,5 +1,0 @@
-rootProject.name = 'auth0'
-include ':react-native-auth0'
-project(':react-native-auth0').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-auth0/android')
-
-include ':app'
