@@ -21,10 +21,6 @@ export default class IntentActivity {
     });
   }
 
-  hide() {
-    // NOOP
-  }
-
   newTransaction() {
     return new Promise((resolve, reject) => {
       A0Auth0.oauthParameters((parameters) => {

@@ -10,6 +10,7 @@ export default class Safari {
   show(url) {
     return new Promise((resolve, reject) => {
       const urlHandler = (event) => {
+        A0Auth0.hide();
         Linking.removeEventListener('url', urlHandler);
         resolve(event.url);
       };
@@ -19,10 +20,6 @@ export default class Safari {
         reject(err);
       });
     });
-  }
-
-  hide() {
-    A0Auth0.hide();
   }
 
   newTransaction() {

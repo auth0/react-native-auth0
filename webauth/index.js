@@ -50,7 +50,6 @@ export default class WebAuth {
             if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
               throw new Error('Unexpected url');
             }
-            agent.hide();
             const { code, state: resultState } = url.parse(redirectUrl, true).query;
             if (resultState !== state) {
               throw new Error('Invalid state');
