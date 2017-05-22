@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.homepage     = ""
   s.license      = "MIT"
   # s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
-  s.author             = { "author" => "author@domain.cn" }
+  s.author             = { "auth0" => "oss@auth0.com" }
   s.platform     = :ios, "7.0"
   s.source       = { :git => "https://github.com/author/A0Auth0.git", :tag => "master" }
   s.source_files  = "A0Auth0/**/*.{h,m}"
@@ -21,4 +21,3 @@ Pod::Spec.new do |s|
 
 end
 
-  

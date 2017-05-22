@@ -119,7 +119,10 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
     @Override
     public void onHostResume() {
         if (this.callback != null) {
-            this.callback.invoke("user_canceled");
+            final WritableMap error = Arguments.createMap();
+            error.putString("error", "a0.session.user_cancelled");
+            error.putString("error_description", "User cancelled the Auth");
+            this.callback.invoke(error);
             this.callback = null;
         }
     }

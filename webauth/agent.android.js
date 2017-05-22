@@ -3,6 +3,8 @@ import {
   Linking
 } from 'react-native';
 
+import AuthError from '../utils/error';
+
 const { A0Auth0 } = NativeModules;
 
 export default class IntentActivity {
@@ -15,7 +17,7 @@ export default class IntentActivity {
       };
       A0Auth0.showUrl(url, (err) => {
         Linking.removeEventListener('url', resume);
-        reject(err);
+        reject(new AuthError(err));
       });
       Linking.addEventListener('url', resume);
     });

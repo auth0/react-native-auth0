@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 
 import url from 'url';
+import Auth0Error from '../utils/error';
 
 const { A0Auth0 } = NativeModules;
 
@@ -25,34 +26,59 @@ export default class WebAuth {
     this.client = client;
   }
 
-  authorize() {
+  authorize(options = {}) {
     const { clientId, domain, client, agent } = this;
     return agent
       .newTransaction()
-      .then(({state, verifier, ...query}) => {
+      .then(({state, verifier, ...defaults}) => {
         const bundleIdentifier = A0Auth0.bundleIdentifier;
         const redirectUri = `${bundleIdentifier}://${domain}/${Platform.OS}/${bundleIdentifier}/callback`
+        const expectedState = options.state || state;
+        let query = {
+          client_id: clientId,
+          response_type: 'code',
+          redirect_uri: redirectUri,
+          state: expectedState,
+          ...defaults,
+        };
+        if (options.audience) {
+          query.audience = options.audience;
+        }
+        if (options.scope) {
+          query.scope = options.scope;
+        }
+        if (options.nonce) {
+          query.nonce = options.nonce;
+        }
         const authorizeUrl = url.format({
           protocol: 'https',
           host: domain,
           pathname: `authorize`,
-          query: {
-            client_id: clientId,
-            response_type: 'code',
-            redirect_uri: redirectUri,
-            state,
-            ...query
-          }
+          query
         });
         return agent
           .show(authorizeUrl)
           .then((redirectUrl) => {
             if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
-              throw new Error('Unexpected url');
+              throw new AuthError({
+                error: 'a0.redirect_uri.not_expected',
+                error_description: `Expected ${redirectUri} but got ${redirectUrl}`
+              });
             }
-            const { code, state: resultState } = url.parse(redirectUrl, true).query;
-            if (resultState !== state) {
-              throw new Error('Invalid state');
+            const query = url.parse(redirectUrl, true).query
+            const {
+              code,
+              state: resultState,
+              error
+            } = query;
+            if (error) {
+              throw new Auth0Error(query);
+            }
+            if (resultState !== expectedState) {
+              throw new Error({
+                error: 'a0.state.invalid',
+                error_description: `Invalid state recieved in redirect url`
+              });
             }
             return client
               .token(code, verifier, redirectUri)

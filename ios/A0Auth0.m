@@ -113,12 +113,20 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
 #pragma mark - SFSafariViewControllerDelegate
 
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
-    [self terminateWithError:RCTMakeError(@"User closed Safari", nil, nil) dismissing:NO animated:NO];
+    NSDictionary *error = @{
+        @"error": @"a0.session.user_cancelled",
+        @"error_description": @"User cancelled the Auth"
+    };
+    [self terminateWithError:error dismissing:NO animated:NO];
 }
 
 - (void)safariViewController:(SFSafariViewController *)controller didCompleteInitialLoad:(BOOL)didLoadSuccessfully {
     if (!didLoadSuccessfully) {
-        [self terminateWithError:RCTMakeError(@"Failed to load hosted login page", nil, nil) dismissing:YES animated:YES];
+        NSDictionary *error = @{
+            @"error": @"a0.session.failed_load",
+            @"error_description": @"Failed to load authorize url"
+        };
+        [self terminateWithError:error dismissing:YES animated:YES];
     }
 }
 @end

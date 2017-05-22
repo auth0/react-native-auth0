@@ -3,6 +3,8 @@ import {
   Linking
 } from 'react-native';
 
+import AuthError from '../utils/error';
+
 const { A0Auth0 } = NativeModules;
 
 export default class Safari {
@@ -17,7 +19,7 @@ export default class Safari {
       Linking.addEventListener('url', urlHandler);
       A0Auth0.showUrl(url, (err) => {
         Linking.removeEventListener('url', urlHandler);
-        reject(err);
+        reject(new AuthError(err));
       });
     });
   }
