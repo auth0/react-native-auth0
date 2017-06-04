@@ -52,11 +52,11 @@ describe('UsersAPI', () => {
     const users = new UsersAPI(token, baseUrl);
     const otherUserToken = faker.random.uuid();
 
-    it('should fail with empty values', () => users.link().catch(error => expect(error.message).toBe('must supply an identifier of the user to to link to')));
+    it('should fail with empty values', () => users.link().catch(error => expect(error.message).toBe('must supply an identifier of the user to link to')));
 
-    it('should fail with null id', () => users.link(null).catch(error => expect(error.message).toBe('must supply an identifier of the user to to link to')));
+    it('should fail with null id', () => users.link(null).catch(error => expect(error.message).toBe('must supply an identifier of the user to link to')));
 
-    it('should fail with null other id', () => users.link(userId, null).catch(error => expect(error.message).toBe('must supply a valid token of the user to to link')));
+    it('should fail with null other id', () => users.link(userId, null).catch(error => expect(error.message).toBe('must supply a valid token of the user to link')));
 
     it('should report api error', () => verifyError(users.link(userId, otherUserToken), api, 'POST', link));
 
@@ -79,9 +79,9 @@ describe('UsersAPI', () => {
     const provider = faker.internet.domainName();
     const unlink = `${baseUrl}/api/v2/users/${encodeURIComponent(userId)}/identities/${encodeURIComponent(provider)}/${encodeURIComponent(identityId)}`;
 
-    it('should fail with empty values', () => users.unlink().catch(error => expect(error.message).toBe('must provider a user identifier from where the identity will be unlinked')));
+    it('should fail with empty values', () => users.unlink().catch(error => expect(error.message).toBe('must provider an user identifier from where the identity will be unlinked')));
 
-    it('should fail with null id', () => users.unlink(null).catch(error => expect(error.message).toBe('must provider a user identifier from where the identity will be unlinked')));
+    it('should fail with null id', () => users.unlink(null).catch(error => expect(error.message).toBe('must provider an user identifier from where the identity will be unlinked')));
 
     it('should fail with null identity id', () => users.unlink(userId, null).catch(error => expect(error.message).toBe('must supply an identity identifier to be unlinked')));
 
