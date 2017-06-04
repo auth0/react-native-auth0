@@ -7,19 +7,20 @@ import AuthError from '../utils/error';
 
 const { A0Auth0 } = NativeModules;
 
-export default class IntentActivity {
+export default class Agent {
 
   show(url) {
     return new Promise((resolve, reject) => {
-      const resume = (event) => {
-        Linking.removeEventListener('url', resume);
+      const urlHandler = (event) => {
+        A0Auth0.hide();
+        Linking.removeEventListener('url', urlHandler);
         resolve(event.url);
       };
+      Linking.addEventListener('url', urlHandler);
       A0Auth0.showUrl(url, (err) => {
-        Linking.removeEventListener('url', resume);
+        Linking.removeEventListener('url', urlHandler);
         reject(new AuthError(err));
       });
-      Linking.addEventListener('url', resume);
     });
   }
 
