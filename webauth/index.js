@@ -50,6 +50,9 @@ export default class WebAuth {
         if (options.nonce) {
           query.nonce = options.nonce;
         }
+        if (options.connection) {
+          query.connection = options.connection
+        }
         const authorizeUrl = url.format({
           protocol: 'https',
           host: domain,
