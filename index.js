@@ -1,16 +1,18 @@
 import Authentication from './authentication/api';
 import Users from './management/api';
+import WebAuth from './webauth';
 
 export default class Auth0 {
   constructor(domain) {
     if (domain == null) {
       throw new Error("must supply a valid Auth0 domain");
     }
-    let baseUrl = domain
+    let baseUrl = domain;
     if (!domain.startsWith("http")) {
       baseUrl = `https://${domain}`;
     }
-    this.baseUrl = baseUrl
+    this.baseUrl = baseUrl;
+    this.domain = domain;
   }
 
   /**
@@ -29,5 +31,9 @@ export default class Auth0 {
    */
   users(token) {
     return new Users(token, this.baseUrl);
+  }
+
+  webAuth(clientId) {
+    return new WebAuth(clientId, this.domain, this.authentication(clientId));
   }
 };

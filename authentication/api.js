@@ -161,4 +161,18 @@ export default class AuthenticationAPI {
       });
     });
   }
+
+  token(code, verifier, redirectUri) {
+    return Promise.all([
+      nonNull(code, 'must supply a code'),
+      nonNull(verifier, 'must supply a verifier'),
+      nonNull(redirectUri, 'must supply a redirectUri')
+    ]).then(([code, verifier, redirectUri]) => json('POST', `${this.baseUrl}/oauth/token`, {
+        code,
+        code_verifier: verifier,
+        client_id: this.clientId,
+        redirect_uri: redirectUri,
+        grant_type: 'authorization_code'
+    }));
+  }
 };

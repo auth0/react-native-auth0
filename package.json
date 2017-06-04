@@ -43,5 +43,8 @@
     "automock": false,
     "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
     "verbose": true
+  },
+  "dependencies": {
+    "url": "^0.11.0"
   }
 }
