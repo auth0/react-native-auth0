@@ -106,6 +106,8 @@ and then register a URL type entry using the value of `CFBundleIdentifier` as th
 
 > The value `org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)` is the default for apps created with RN cli, you will probably have a different value.
 
+> For more info please read [react native docs](https://facebook.github.io/react-native/docs/linking.html)
+
 ## Usage
 
 ```js
@@ -118,7 +120,7 @@ const auth0 = new Auth0('{YOUR_DOMAIN}');
 
 ```js
 auth0
-    .webAuth('{YOUR_CLIENT_ID})
+    .webAuth('{YOUR_CLIENT_ID}')
     .authorize({scope: 'openid email'})
     .then(credentials => console.log(credentials))
     .catch(error => console.log(error));
