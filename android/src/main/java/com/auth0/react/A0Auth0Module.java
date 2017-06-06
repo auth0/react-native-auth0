@@ -77,6 +77,11 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
         callback.invoke(parameters);
     }
 
+    @ReactMethod
+    public void hide() {
+        // NO OP
+    }
+
     private String getBase64String(byte[] source) {
         return Base64.encodeToString(source, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
     }
