@@ -1,6 +1,5 @@
 import {
   json,
-  request
 } from '../utils/networking';
 
 import {
@@ -97,7 +96,7 @@ export default class AuthenticationAPI {
         'connection': connection,
         'client_id': this.clientId
       };
-      return request('POST', `${this.baseUrl}/dbconnections/change_password`, payload);
+      return json('POST', `${this.baseUrl}/dbconnections/change_password`, payload);
     });
   }
 
