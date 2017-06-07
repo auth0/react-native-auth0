@@ -1,5 +1,5 @@
 export default class Auth0Error extends Error {
-  constructor (json) {
+  constructor (json, response) {
     super();
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
