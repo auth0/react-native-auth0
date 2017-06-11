@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`whitelist should fail if required key is not found 1`] = `"must have a state"`;
-
-exports[`whitelist should fail with default message 1`] = `"The parameter state is required"`;
+exports[`whitelist should fail if required key is not found 1`] = `
+"Missing required parameters: [
+  \\"state\\"
+]"
+`;
