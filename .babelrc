@@ -1,3 +1,4 @@
 {
-  "presets": ["es2015", "stage-3"]
+  "presets": ["react-native"],
+  "sourceMaps": true
 }
