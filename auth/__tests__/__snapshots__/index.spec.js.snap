@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`auth authorizeUrl should return default authorize url 1`] = `"https://samples.auth0.com/authorize?response_type=code&redirect_uri=https%3A%2F%2Fmysite.com%2Fcallback&state=a_random_state&client_id=A_CLIENT_ID_OF_YOUR_ACCOUNT&auth0Client=eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0"`;
+
+exports[`auth authorizeUrl should return default authorize url with extra parameters 1`] = `"https://samples.auth0.com/authorize?response_type=code&redirect_uri=https%3A%2F%2Fmysite.com%2Fcallback&state=a_random_state&connection=facebook&client_id=A_CLIENT_ID_OF_YOUR_ACCOUNT&auth0Client=eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0"`;
+
+exports[`auth code exchange should handle oauth error 1`] = `[invalid_request: Invalid grant]`;
+
+exports[`auth code exchange should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+
+exports[`auth code exchange should return successful response 1`] = `
+Object {
+  "accessToken": "an access token",
+  "expiresIn": 1234567890,
+  "idToken": "an id token",
+  "scope": "openid",
+  "state": "a random state for auth",
+}
+`;
+
+exports[`auth code exchange should send correct payload 1`] = `
+Array [
+  "https://samples.auth0.com/oauth/token",
+  Object {
+    "body": "{\\"code\\":\\"a code\\",\\"code_verifier\\":\\"a verifier\\",\\"redirect_uri\\":\\"https://mysite.com/callback\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"authorization_code\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth constructor should fail without clientId 1`] = `"Missing clientId in parameters"`;
+
+exports[`auth constructor should fail without domain 1`] = `"Missing Auth0 domain"`;
+
+exports[`auth password realm should handle oauth error 1`] = `[invalid_request: Invalid grant]`;
+
+exports[`auth password realm should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+
+exports[`auth password realm should return successful response 1`] = `
+Object {
+  "accessToken": "an access token",
+  "expiresIn": 1234567890,
+  "idToken": "an id token",
+  "scope": "openid",
+  "state": "a random state for auth",
+}
+`;
+
+exports[`auth password realm should send correct payload 1`] = `
+Array [
+  "https://samples.auth0.com/oauth/token",
+  Object {
+    "body": "{\\"username\\":\\"info@auth0.com\\",\\"password\\":\\"secret pass\\",\\"realm\\":\\"Username-Password-Authentication\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/password-realm\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
