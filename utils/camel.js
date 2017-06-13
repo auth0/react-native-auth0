@@ -5,15 +5,15 @@ function snakeToCamel(str) {
   }, parts.shift());
 }
 
-function toCamelCase(object, exceptions) {
+function toCamelCase(object, options = {}) {
   if (typeof object !== 'object' || toString.call(object) === '[object Array]' || object === null) {
     return object;
   }
 
-  exceptions = exceptions || [];
+  const { attributes = [], whitelist = false } = options;
 
   return Object.keys(object).reduce(function(p, key) {
-    var newKey = exceptions.indexOf(key) === -1 ? snakeToCamel(key) : key;
+    var newKey = (attributes.indexOf(key) === -1 || whitelist) ? snakeToCamel(key) : key;
     p[newKey] = toCamelCase(object[key]);
     return p;
   }, {});

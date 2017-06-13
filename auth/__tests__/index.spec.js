@@ -106,27 +106,235 @@ describe('auth', () => {
     it('should send correct payload', async () => {
       fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
       expect.assertions(1);
-      await auth.realm(parameters);
+      await auth.passwordRealm(parameters);
       expect(fetchMock.lastCall()).toMatchSnapshot();
     });
 
     it('should return successful response', async () => {
       fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
       expect.assertions(1);
-      await expect(auth.realm(parameters)).resolves.toMatchSnapshot();
+      await expect(auth.passwordRealm(parameters)).resolves.toMatchSnapshot();
     });
 
     it('should handle oauth error', async () => {
       fetchMock.postOnce('https://samples.auth0.com/oauth/token', oauthError);
       expect.assertions(1);
-      await expect(auth.realm(parameters)).rejects.toMatchSnapshot();
+      await expect(auth.passwordRealm(parameters)).rejects.toMatchSnapshot();
     });
 
     it('should handle unexpected error', async () => {
       fetchMock.postOnce('https://samples.auth0.com/oauth/token', unexpectedError);
       expect.assertions(1);
-      await expect(auth.realm(parameters)).rejects.toMatchSnapshot();
+      await expect(auth.passwordRealm(parameters)).rejects.toMatchSnapshot();
     });
   });
 
+  describe('refresh token', () => {
+    const parameters = {refreshToken: 'a refresh token of a user', scope: 'openid'};
+    it('should send correct payload', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
+      expect.assertions(1);
+      await auth.refreshToken(parameters);
+      expect(fetchMock.lastCall()).toMatchSnapshot();
+    });
+
+    it('should return successful response', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
+      expect.assertions(1);
+      await expect(auth.refreshToken(parameters)).resolves.toMatchSnapshot();
+    });
+
+    it('should handle oauth error', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', oauthError);
+      expect.assertions(1);
+      await expect(auth.refreshToken(parameters)).rejects.toMatchSnapshot();
+    });
+
+    it('should handle unexpected error', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', unexpectedError);
+      expect.assertions(1);
+      await expect(auth.refreshToken(parameters)).rejects.toMatchSnapshot();
+    });
+  });
+
+  describe('revoke token', () => {
+    const parameters = {refreshToken: 'a refresh token of a user'};
+    const success = {
+      status: 200,
+      body: null,
+      headers: { 'Content-Type': 'application/json' }
+    };
+    it('should send correct payload', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/revoke', success);
+      expect.assertions(1);
+      await auth.revoke(parameters);
+      expect(fetchMock.lastCall()).toMatchSnapshot();
+    });
+
+    it('should return successful response', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/revoke', success);
+      expect.assertions(1);
+      await expect(auth.revoke(parameters)).resolves.toMatchSnapshot();
+    });
+
+    it('should handle oauth error', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/revoke', oauthError);
+      expect.assertions(1);
+      await expect(auth.revoke(parameters)).rejects.toMatchSnapshot();
+    });
+
+    it('should handle unexpected error', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/revoke', unexpectedError);
+      expect.assertions(1);
+      await expect(auth.revoke(parameters)).rejects.toMatchSnapshot();
+    });
+  });
+
+  describe('user info', () => {
+    const parameters = {token: 'an access token of a user'};
+    const success = {
+      status: 200,
+      body: {
+        sub: '248289761001',
+        name: 'Jane Doe',
+        given_name: 'Jane',
+        family_name: 'Doe',
+        preferred_username: 'j.doe',
+        email: 'janedoe@example.com',
+        updated_at: 1497317424,
+        picture: 'http://example.com/janedoe/me.jpg',
+        'http://mysite.com/claims/customer': 192837465,
+        'http://mysite.com/claims/status': 'closed'
+      },
+      headers: { 'Content-Type': 'application/json' }
+    };
+    it('should send correct payload', async () => {
+      fetchMock.getOnce('https://samples.auth0.com/userinfo', success);
+      expect.assertions(1);
+      await auth.userInfo(parameters);
+      expect(fetchMock.lastCall()).toMatchSnapshot();
+    });
+
+    it('should return successful oidc response', async () => {
+      fetchMock.getOnce('https://samples.auth0.com/userinfo', success);
+      expect.assertions(1);
+      await expect(auth.userInfo(parameters)).resolves.toMatchSnapshot();
+    });
+
+    it('should return successful non-oidc response', async () => {
+      fetchMock.getOnce('https://samples.auth0.com/userinfo', { sub: "auth0|1029837475" });
+      expect.assertions(1);
+      await expect(auth.userInfo(parameters)).resolves.toMatchSnapshot();
+    });
+
+    it('should handle oauth error', async () => {
+      fetchMock.getOnce('https://samples.auth0.com/userinfo', oauthError);
+      expect.assertions(1);
+      await expect(auth.userInfo(parameters)).rejects.toMatchSnapshot();
+    });
+
+    it('should handle unexpected error', async () => {
+      fetchMock.getOnce('https://samples.auth0.com/userinfo', unexpectedError);
+      expect.assertions(1);
+      await expect(auth.userInfo(parameters)).rejects.toMatchSnapshot();
+    });
+  });
+
+  describe('change password', () => {
+    const parameters = {email: 'info@auth0.com', connection: 'Username-Password-Authentication'};
+    const success = {
+      status: 200,
+      body: "We've just sent you an email to reset your password.",
+      headers: { 'Content-Type': 'text/html' }
+    };
+    it('should send correct payload', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/dbconnections/change_password', success);
+      expect.assertions(1);
+      await auth.resetPassword(parameters);
+      expect(fetchMock.lastCall()).toMatchSnapshot();
+    });
+
+    it('should return successful response', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/dbconnections/change_password', success);
+      expect.assertions(1);
+      await expect(auth.resetPassword(parameters)).resolves.toMatchSnapshot();
+    });
+
+    it('should handle oauth error', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/dbconnections/change_password', oauthError);
+      expect.assertions(1);
+      await expect(auth.resetPassword(parameters)).rejects.toMatchSnapshot();
+    });
+
+    it('should handle unexpected error', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/dbconnections/change_password', unexpectedError);
+      expect.assertions(1);
+      await expect(auth.resetPassword(parameters)).rejects.toMatchSnapshot();
+    });
+  });
+
+  describe('create user', () => {
+    const parameters = {
+      email: 'info@auth0.com',
+      password: 'secret',
+      connection: 'aconnection'
+    };
+    const success = {
+      status: 200,
+      body: {
+        email: 'info@auth0.com',
+        email_verified: false
+      },
+      headers: { 'Content-Type': 'application/json' }
+    };
+    const auth0Error = {
+      status: 400,
+      body: {
+        "code": "user_exists",
+        "description": "The user already exists.",
+        "name": "BadRequestError",
+        "statusCode": 400
+      },
+      headers: { 'Content-Type': 'application/json' }
+    };
+
+    it('should send correct payload', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/dbconnections/signup', success);
+      expect.assertions(1);
+      await auth.createUser(parameters);
+      expect(fetchMock.lastCall()).toMatchSnapshot();
+    });
+
+    it('should send correct payload with username', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/dbconnections/signup', success);
+      expect.assertions(1);
+      await auth.createUser({ ...parameters, usename: 'info' });
+      expect(fetchMock.lastCall()).toMatchSnapshot();
+    });
+
+    it('should send correct payload with metadata', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/dbconnections/signup', success);
+      expect.assertions(1);
+      await auth.createUser({ ...parameters, metadata: {customerId: 12345} });
+      expect(fetchMock.lastCall()).toMatchSnapshot();
+    });
+
+    it('should return successful response', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/dbconnections/signup', success);
+      expect.assertions(1);
+      await expect(auth.createUser(parameters)).resolves.toMatchSnapshot();
+    });
+
+    it('should handle auth0 error', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/dbconnections/signup', auth0Error);
+      expect.assertions(1);
+      await expect(auth.createUser(parameters)).rejects.toMatchSnapshot();
+    });
+
+    it('should handle unexpected error', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/dbconnections/signup', unexpectedError);
+      expect.assertions(1);
+      await expect(auth.createUser(parameters)).rejects.toMatchSnapshot();
+    });
+  });
 });
