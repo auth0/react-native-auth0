@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "jsdocs": "jsdoc --configure .jsdoc.json --verbose"
+    "jsdoc:generate": "jsdoc --configure .jsdoc.json --verbose"
   },
   "repository": "git+https://github.com/auth0/react-native-auth0.git",
   "keywords": [
