@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 
 import url from 'url';
-import Auth0Error from '../utils/error';
+import Auth0Error from '../auth/authError';
 
 const { A0Auth0 } = NativeModules;
 
@@ -16,14 +16,12 @@ export default class WebAuth {
    * @param  {String} domain of Auth0 account
    * @return {AuthenticationAPI}
    */
-  constructor(clientId, domain, client) {
-    if (domain == null) {
-      throw new Error("must supply a valid Auth0 domain");
-    }
+  constructor(auth) {
+    this.client = auth;
+    const { baseUrl, clientId, domain } = auth;
     this.domain = domain;
     this.clientId = clientId;
     this.agent = new Agent();
-    this.client = client;
   }
 
   authorize(options = {}) {
@@ -35,37 +33,24 @@ export default class WebAuth {
         const redirectUri = `${bundleIdentifier}://${domain}/${Platform.OS}/${bundleIdentifier}/callback`
         const expectedState = options.state || state;
         let query = {
-          client_id: clientId,
-          response_type: 'code',
-          redirect_uri: redirectUri,
+          ...options,
+          clientId,
+          responseType: 'code',
+          redirectUri,
           state: expectedState,
           ...defaults,
         };
-        if (options.audience) {
-          query.audience = options.audience;
-        }
-        if (options.scope) {
-          query.scope = options.scope;
-        }
-        if (options.nonce) {
-          query.nonce = options.nonce;
-        }
-        if (options.connection) {
-          query.connection = options.connection
-        }
-        const authorizeUrl = url.format({
-          protocol: 'https',
-          host: domain,
-          pathname: `authorize`,
-          query
-        });
+        const authorizeUrl = this.client.authorizeUrl(query);
         return agent
           .show(authorizeUrl)
           .then((redirectUrl) => {
             if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
               throw new AuthError({
-                error: 'a0.redirect_uri.not_expected',
-                error_description: `Expected ${redirectUri} but got ${redirectUrl}`
+                json: {
+                  error: 'a0.redirect_uri.not_expected',
+                  error_description: `Expected ${redirectUri} but got ${redirectUrl}`
+                },
+                status: 0
               });
             }
             const query = url.parse(redirectUrl, true).query
@@ -75,16 +60,18 @@ export default class WebAuth {
               error
             } = query;
             if (error) {
-              throw new Auth0Error(query);
+              throw new Auth0Error({json: query, status: 0});
             }
             if (resultState !== expectedState) {
-              throw new Error({
-                error: 'a0.state.invalid',
-                error_description: `Invalid state recieved in redirect url`
+              throw new AuthError({
+                json: {
+                  error: 'a0.state.invalid',
+                  error_description: `Invalid state recieved in redirect url`
+                },
+                status: 0
               });
             }
-            return client
-              .token(code, verifier, redirectUri)
+            return client.exchange({code, verifier, redirectUri})
           });
       });
   }

@@ -1,39 +1,25 @@
-import Authentication from './authentication/api';
-import Users from './management/api';
+import Auth from './auth';
+import Users from './management';
 import WebAuth from './webauth';
 
 export default class Auth0 {
-  constructor(domain) {
-    if (domain == null) {
-      throw new Error("must supply a valid Auth0 domain");
-    }
-    let baseUrl = domain;
-    if (!domain.startsWith("http")) {
-      baseUrl = `https://${domain}`;
-    }
-    this.baseUrl = baseUrl;
-    this.domain = domain;
-  }
-
-  /**
-   * Creates an Authentication API client
-   * @param  {String} clientId
-   * @return {AuthenticationAPI}
-   */
-  authentication(clientId) {
-    return new Authentication(clientId, this.baseUrl);
+  constructor(options = {}) {
+    const { domain, clientId, ...extras } = options;
+    this.auth = new Auth({baseUrl: domain, clientId, ...extras});
+    this.options = options;
   }
 
   /**
    * Creates a Users API client
    * @param  {String} token for Management API
-   * @return {UsersAPI}
+   * @return {Users}
    */
   users(token) {
-    return new Users(token, this.baseUrl);
+    const { domain, clientId, ...extras } = options;
+    return new Users({baseUrl: domain, clientId, ...extras, token});
   }
 
-  webAuth(clientId) {
-    return new WebAuth(clientId, this.domain, this.authentication(clientId));
+  webAuth() {
+    return new WebAuth(this.auth);
   }
 };

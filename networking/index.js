@@ -1,6 +1,6 @@
 import defaults from './telemetry';
 import url from 'url';
-import base64 from 'base64-url';
+import base64 from 'base-64';
 
 export default class Client {
   constructor(options) {
@@ -17,6 +17,7 @@ export default class Client {
     }
     const parsed = url.parse(baseUrl);
     this.baseUrl = parsed.protocol === 'https:' || parsed.protocol === 'http:' ? baseUrl : `https://${baseUrl}`;
+    this.domain = parsed.hostname || baseUrl;
     if (token) {
       this.bearer = `Bearer ${token}`;
     }

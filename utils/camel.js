@@ -10,11 +10,12 @@ function toCamelCase(object, options = {}) {
     return object;
   }
 
-  const { attributes = [], whitelist = false } = options;
+  const { attributes = [], whitelist = false, rootOnly = false } = options;
 
   return Object.keys(object).reduce(function(p, key) {
-    var newKey = (attributes.indexOf(key) === -1 || whitelist) ? snakeToCamel(key) : key;
-    p[newKey] = toCamelCase(object[key]);
+    const inList = attributes.indexOf(key) !== -1;
+    var newKey = (inList && whitelist) || (!inList && !whitelist) ? snakeToCamel(key) : key;
+    p[newKey] = rootOnly ? object[key] : toCamelCase(object[key]);
     return p;
   }, {});
 }

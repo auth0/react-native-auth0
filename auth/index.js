@@ -18,6 +18,7 @@ export default class Auth {
     if (!clientId) {
       throw new Error('Missing clientId in parameters');
     }
+    this.domain = this.client.domain;
     this.clientId = clientId;
   }
 
