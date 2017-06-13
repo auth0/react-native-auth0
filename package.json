@@ -4,7 +4,8 @@
   "description": "React Native toolkit for Auth0 API",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "jsdocs": "jsdoc --configure .jsdoc.json --verbose"
   },
   "repository": "git+https://github.com/auth0/react-native-auth0.git",
   "keywords": [
@@ -33,7 +34,10 @@
     "eslint-plugin-react": "^6.2.0",
     "faker": "^3.1.0",
     "fetch-mock": "^5.1.1",
-    "jest": "^20.0.4"
+    "jest": "^20.0.4",
+    "jsdoc": "^3.4.3",
+    "jsdoc-to-markdown": "^3.0.0",
+    "minami": "^1.2.3"
   },
   "jest": {},
   "dependencies": {

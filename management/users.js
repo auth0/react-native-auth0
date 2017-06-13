@@ -23,7 +23,14 @@ const attributes = [
   "family_name"
 ];
 
-export default class Management {
+/**
+ * Auth0 Management API User endpoints
+ *
+ * @export
+ * @see https://auth0.com/docs/api/management/v2#!/Users/
+ * @class Users
+ */
+export default class Users {
   constructor(options = {}) {
     this.client = new Client(options);
     if (!options.token) {
@@ -31,6 +38,16 @@ export default class Management {
     }
   }
 
+  /**
+   * Returns the user by identifier
+   *
+   * @param {Object} parameters get user by identifier parameters
+   * @param {String} parameters.id identifier of the user to obtain
+   * @returns {Promise}
+   * @see https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
+   *
+   * @memberof Users
+   */
   getUser(parameters = {}) {
     const payload = apply({
       parameters: {
@@ -42,6 +59,17 @@ export default class Management {
       .then((response) => responseHandler(response, {attributes, whitelist: true, rootOnly: true}));
   }
 
+  /**
+   * Patch a user's `user_metadata`
+   *
+   * @param {Object} parameters patch user metadata parameters
+   * @param {String} parameters.id identifier of the user to patch
+   * @param {Object} parameters.metadata object with attributes to store in user_metadata.
+   * @returns {Promise}
+   * @see https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id
+   *
+   * @memberof Users
+   */
   patchUser(parameters = {}) {
     const payload = apply({
       parameters: {

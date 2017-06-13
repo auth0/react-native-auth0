@@ -9,13 +9,18 @@ import Auth0Error from '../auth/authError';
 
 const { A0Auth0 } = NativeModules;
 
+/**
+ * Helper to perform Auth against Auth0 hosted login page
+ *
+ * It will use `/authorize` endpoint of the Authorization Server (AS)
+ * with Code Grant and Proof Key for Challenge Exchange (PKCE).
+ *
+ * @export
+ * @class WebAuth
+ * @see https://auth0.com/docs/api-auth/grant/authorization-code-pkce
+ */
 export default class WebAuth {
 
-  /**
-   * @param  {String} clientId
-   * @param  {String} domain of Auth0 account
-   * @return {AuthenticationAPI}
-   */
   constructor(auth) {
     this.client = auth;
     const { baseUrl, clientId, domain } = auth;
@@ -24,6 +29,21 @@ export default class WebAuth {
     this.agent = new Agent();
   }
 
+  /**
+   * Starts the AuthN/AuthZ transaction against the AS in the in-app browser.
+   *
+   * In iOS it will use `SFSafariViewController` and in Android Chrome Custom Tabs.
+   *
+   * @param {Object} parameters parameters to send
+   * @param {String} [parameters.state] random string to prevent CSRF attacks and used to discard unexepcted results. By default its a cryptographically secure random.
+   * @param {String} [parameters.nonce] random string to prevent replay attacks of id_tokens.
+   * @param {String} [parameters.audience] identifier of Resource Server (RS) to be included as audience (aud claim) of the issued access token
+   * @param {String} [parameters.scope] scopes requested for the issued tokens. e.g. `openid profile`
+   * @returns {Promise}
+   * @see https://auth0.com/docs/api/authentication#authorize-client
+   *
+   * @memberof WebAuth
+   */
   authorize(options = {}) {
     const { clientId, domain, client, agent } = this;
     return agent

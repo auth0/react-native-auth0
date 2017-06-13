@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`management GET user should handle oauth error 1`] = `[Forbidden: User to be acted on does not match subject in bearer token.]`;
+exports[`users GET user should handle oauth error 1`] = `[Forbidden: User to be acted on does not match subject in bearer token.]`;
 
-exports[`management GET user should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+exports[`users GET user should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
 
-exports[`management GET user should return successful response 1`] = `
+exports[`users GET user should return successful response 1`] = `
 Object {
   "appMetadata": Object {
     "name": "info@auth0.com",
@@ -117,7 +117,7 @@ Object {
 }
 `;
 
-exports[`management GET user should send correct payload 1`] = `
+exports[`users GET user should send correct payload 1`] = `
 Array [
   "https://samples.auth0.com/api/v2/users/auth0%7C53b995f8bce68d9fc900099c",
   Object {
@@ -132,11 +132,11 @@ Array [
 ]
 `;
 
-exports[`management PATCH user should handle oauth error 1`] = `[Forbidden: User to be acted on does not match subject in bearer token.]`;
+exports[`users PATCH user should handle oauth error 1`] = `[Forbidden: User to be acted on does not match subject in bearer token.]`;
 
-exports[`management PATCH user should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+exports[`users PATCH user should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
 
-exports[`management PATCH user should return successful response 1`] = `
+exports[`users PATCH user should return successful response 1`] = `
 Object {
   "appMetadata": Object {
     "name": "info@auth0.com",
@@ -249,7 +249,7 @@ Object {
 }
 `;
 
-exports[`management PATCH user should send correct payload 1`] = `
+exports[`users PATCH user should send correct payload 1`] = `
 Array [
   "https://samples.auth0.com/api/v2/users/auth0%7C53b995f8bce68d9fc900099c",
   Object {
@@ -265,6 +265,6 @@ Array [
 ]
 `;
 
-exports[`management constructor should fail without domain 1`] = `"Missing Auth0 domain"`;
+exports[`users constructor should fail without domain 1`] = `"Missing Auth0 domain"`;
 
-exports[`management constructor should fail without token 1`] = `"Missing token in parameters"`;
+exports[`users constructor should fail without token 1`] = `"Missing token in parameters"`;

@@ -11,6 +11,13 @@ function responseHandler (response, exceptions = {}) {
   throw new AuthError(response);
 }
 
+/**
+ * Auth0 Auth API
+ *
+ * @export Auth
+ * @see https://auth0.com/docs/api/authentication
+ * @class Auth
+ */
 export default class Auth {
   constructor(options = {}) {
     this.client = new Client(options);
@@ -22,6 +29,18 @@ export default class Auth {
     this.clientId = clientId;
   }
 
+  /**
+   * Builds the full authorize endpoint url in the Authorization Server (AS) with given parameters.
+   *
+   * @param {Object} parameters parameters to send to `/authorize`
+   * @param {String} parameters.responseType type of the response to get from `/authorize`.
+   * @param {String} parameters.redirectUri where the AS will redirect back after success or failure.
+   * @param {String} parameters.state random string to prevent CSRF attacks.
+   * @returns {String} authorize url with specified parameters to redirect to for AuthZ/AuthN.
+   * @see https://auth0.com/docs/api/authentication#authorize-client
+   *
+   * @memberof Auth
+   */
   authorizeUrl(parameters = {}) {
     const query = apply({
       parameters: {
@@ -34,6 +53,18 @@ export default class Auth {
     return this.client.url('/authorize', {...query, client_id: this.clientId}, true);
   }
 
+  /**
+   * Exchanges a code obtained via `/authorize` (w/PKCE) for the user's tokens
+   *
+   * @param {Object} parameters parameters used to obtain tokens from a code
+   * @param {String} parameters.code code returned by `/authorize`.
+   * @param {String} parameters.redirectUri original redirectUri used when calling `/authorize`.
+   * @param {String} parameters.verifier value used to generate the code challenge sent to `/authorize`.
+   * @returns {Promise}
+   * @see https://auth0.com/docs/api-auth/grant/authorization-code-pkce
+   *
+   * @memberof Auth
+   */
   exchange(parameters = {}) {
     const payload = apply({
       parameters: {
@@ -47,6 +78,20 @@ export default class Auth {
       .then(responseHandler);
   }
 
+  /**
+   * Performs Auth with user credentials using the Password Realm Grant
+   *
+   * @param {Object} parameters password realm parameters
+   * @param {String} parameters.username user's username or email
+   * @param {String} parameters.password user's password
+   * @param {String} parameters.realm name of the Realm where to Auth (or connection name)
+   * @param {String} [parameters.audience] identifier of Resource Server (RS) to be included as audience (aud claim) of the issued access token
+   * @param {String} [parameters.scope] scopes requested for the issued tokens. e.g. `openid profile`
+   * @returns {Promise}
+   * @see https://auth0.com/docs/api-auth/grant/password#realm-support
+   *
+   * @memberof Auth
+   */
   passwordRealm(parameters = {}) {
     const payload = apply({
       parameters: {
@@ -65,6 +110,17 @@ export default class Auth {
       .then(responseHandler);
   }
 
+  /**
+   * Obtain new tokens using the Refresh Token obtained during Auth (requesting `offline_access` scope)
+   *
+   * @param {Object} parameters refresh token parameters
+   * @param {String} parameters.refreshToken user's issued refresh token
+   * @param {String} [parameters.scope] scopes requested for the issued tokens. e.g. `openid profile`
+   * @returns {Promise}
+   * @see https://auth0.com/docs/tokens/refresh-token/current#use-a-refresh-token
+   *
+   * @memberof Auth
+   */
   refreshToken(parameters = {}) {
     const payload = apply({
       parameters: {
@@ -81,6 +137,15 @@ export default class Auth {
       .then(responseHandler);
   }
 
+  /**
+   * Revoke an issued refresh token
+   *
+   * @param {Object} parameters revoke token parameters
+   * @param {String} parameters.refreshToken user's issued refresh token
+   * @returns {Promise}
+   *
+   * @memberof Auth
+   */
   revoke(parameters = {}) {
     const payload = apply({
       parameters: {
@@ -100,6 +165,15 @@ export default class Auth {
       });
   }
 
+  /**
+   * Return user information using an access token
+   *
+   * @param {Object} parameters user info parameters
+   * @param {String} parameters.token user's access token
+   * @returns {Promise}
+   *
+   * @memberof Auth
+   */
   userInfo(parameters = {}) {
     const payload = apply({
       parameters: {
@@ -114,6 +188,16 @@ export default class Auth {
       .then((response) => responseHandler(response, {attributes: claims, whitelist: true}));
   }
 
+  /**
+   * Request an email with instructions to change password of a user
+   *
+   * @param {Object} parameters reset password parameters
+   * @param {String} parameters.email user's email
+   * @param {String} parameters.connection name of the connection of the user
+   * @returns {Promise}
+   *
+   * @memberof Auth
+   */
   resetPassword(parameters = {}) {
     const payload = apply({
       parameters: {
@@ -134,6 +218,19 @@ export default class Auth {
       });
   }
 
+  /**
+   *
+   *
+   * @param {Object} parameters create user parameters
+   * @param {String} parameters.email user's email
+   * @param {String} [parameters.username] user's username
+   * @param {String} parameters.password user's password
+   * @param {String} parameters.connection name of the database connection where to create the user
+   * @param {String} [parameters.metadata] additional user information that will be stored in `user_metadata`
+   * @returns {Promise}
+   *
+   * @memberof Auth
+   */
   createUser(parameters = {}) {
     const payload = apply({
       parameters: {

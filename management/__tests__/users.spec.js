@@ -1,7 +1,7 @@
-import Management from '../';
+import Users from '../users';
 import fetchMock from 'fetch-mock';
 
-describe('management', () => {
+describe('users', () => {
 
   const baseUrl = 'samples.auth0.com';
   const telemetry = {name: 'react-native-auth0', version: '1.0.0'};
@@ -22,22 +22,22 @@ describe('management', () => {
     headers: { 'Content-Type': 'application/json' }
   };
 
-  const management = new Management({baseUrl, telemetry, token});
+  const users = new Users({baseUrl, telemetry, token});
 
   beforeEach(fetchMock.restore);
 
   describe('constructor', () => {
     it('should build with domain', () => {
-      const management = new Management({baseUrl, token});
-      expect(management.client.bearer).toContain(token);
+      const users = new Users({baseUrl, token});
+      expect(users.client.bearer).toContain(token);
     });
 
     it('should fail without token', () => {
-      expect(() => new Management({baseUrl})).toThrowErrorMatchingSnapshot();
+      expect(() => new Users({baseUrl})).toThrowErrorMatchingSnapshot();
     });
 
     it('should fail without domain', () => {
-      expect(() => new Management({token})).toThrowErrorMatchingSnapshot();
+      expect(() => new Users({token})).toThrowErrorMatchingSnapshot();
     });
   });
 
@@ -47,26 +47,26 @@ describe('management', () => {
     it('should send correct payload', async () => {
       fetchMock.getOnce(`https://samples.auth0.com/api/v2/users/${encodeURIComponent(userId)}`, user);
       expect.assertions(1);
-      await management.getUser({id: userId});
+      await users.getUser({id: userId});
       expect(fetchMock.lastCall()).toMatchSnapshot();
     });
 
     it('should return successful response', async () => {
       fetchMock.getOnce(`https://samples.auth0.com/api/v2/users/${encodeURIComponent(userId)}`, user);
       expect.assertions(1);
-      await expect(management.getUser({id: userId})).resolves.toMatchSnapshot();
+      await expect(users.getUser({id: userId})).resolves.toMatchSnapshot();
     });
 
     it('should handle oauth error', async () => {
       fetchMock.getOnce(`https://samples.auth0.com/api/v2/users/${encodeURIComponent(userId)}`, auth0Error);
       expect.assertions(1);
-      await expect(management.getUser({id: userId})).rejects.toMatchSnapshot();
+      await expect(users.getUser({id: userId})).rejects.toMatchSnapshot();
     });
 
     it('should handle unexpected error', async () => {
       fetchMock.getOnce(`https://samples.auth0.com/api/v2/users/${encodeURIComponent(userId)}`, unexpectedError);
       expect.assertions(1);
-      await expect(management.getUser({id: userId})).rejects.toMatchSnapshot();
+      await expect(users.getUser({id: userId})).rejects.toMatchSnapshot();
     });
   });
 
@@ -75,26 +75,26 @@ describe('management', () => {
     it('should send correct payload', async () => {
       fetchMock.patchOnce(`https://samples.auth0.com/api/v2/users/${encodeURIComponent(userId)}`, user);
       expect.assertions(1);
-      await management.patchUser({id: userId, metadata});
+      await users.patchUser({id: userId, metadata});
       expect(fetchMock.lastCall()).toMatchSnapshot();
     });
 
     it('should return successful response', async () => {
       fetchMock.patchOnce(`https://samples.auth0.com/api/v2/users/${encodeURIComponent(userId)}`, user);
       expect.assertions(1);
-      await expect(management.patchUser({id: userId, metadata})).resolves.toMatchSnapshot();
+      await expect(users.patchUser({id: userId, metadata})).resolves.toMatchSnapshot();
     });
 
     it('should handle oauth error', async () => {
       fetchMock.patchOnce(`https://samples.auth0.com/api/v2/users/${encodeURIComponent(userId)}`, auth0Error);
       expect.assertions(1);
-      await expect(management.patchUser({id: userId, metadata})).rejects.toMatchSnapshot();
+      await expect(users.patchUser({id: userId, metadata})).rejects.toMatchSnapshot();
     });
 
     it('should handle unexpected error', async () => {
       fetchMock.patchOnce(`https://samples.auth0.com/api/v2/users/${encodeURIComponent(userId)}`, unexpectedError);
       expect.assertions(1);
-      await expect(management.patchUser({id: userId, metadata})).rejects.toMatchSnapshot();
+      await expect(users.patchUser({id: userId, metadata})).rejects.toMatchSnapshot();
     });
   });
 });
