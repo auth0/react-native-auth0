@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "jsdoc": "jsdoc --configure .jsdoc.json --verbose;rm -r docs;lib_version=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\", ]//g');mv out/react-native-auth0/$lib_version/ docs"
+    "jsdoc:generate": "jsdoc --configure .jsdoc.json --verbose",
+    "release:jsdoc": "node scripts/jsdocs.js",
+    "release:telemetry": "node scripts/telemetry.js",
+    "version": "npm run release:jsdoc && npm run release:telemetry && git add docs networking/telemetry.js"
   },
   "repository": "git+https://github.com/auth0/react-native-auth0.git",
   "keywords": [
