@@ -50,7 +50,7 @@ export default class WebAuth {
       .newTransaction()
       .then(({state, verifier, ...defaults}) => {
         const bundleIdentifier = A0Auth0.bundleIdentifier;
-        const redirectUri = `${bundleIdentifier}://${domain}/${Platform.OS}/${bundleIdentifier}/callback`
+        const redirectUri = `${bundleIdentifier.toLowerCase()}://${domain}/${Platform.OS}/${bundleIdentifier}/callback`
         const expectedState = options.state || state;
         let query = {
           ...options,
