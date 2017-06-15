@@ -205,6 +205,8 @@ auth0
     .catch(console.error);
 ```
 
+For more info please check our generated [documentation](http://auth0.github.io/react-native-auth0/index.html)
+
 ## What is Auth0?
 
 Auth0 helps you to:
