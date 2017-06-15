@@ -31,4 +31,7 @@ stream.once('open', function(fd) {
   stream.write(previous);
   stream.end();
 });
-execSync('git add CHANGELOG.md');
+stream.once('close', function(fd) {
+  execSync(`mv ${changelogPath} CHANGELOG.md`, {stdio: 'inherit'});
+  execSync('git add CHANGELOG.md', {stdio: 'inherit'});
+});
