@@ -7,9 +7,10 @@
     "test": "jest",
     "test:ci": "jest --coverage && codecov",
     "jsdoc:generate": "jsdoc --configure .jsdoc.json --verbose",
-    "release:jsdoc": "node scripts/jsdocs.js",
-    "release:telemetry": "node scripts/telemetry.js",
-    "version": "npm run release:jsdoc && npm run release:telemetry && git add docs networking/telemetry.js"
+    "release:clean": "node scripts/cleanup.js",
+    "preversion": "node scripts/prepare.js",
+    "version": "node scripts/changelog.js && node scripts/jsdocs.js && node scripts/telemetry.js",
+    "postversion": "npm run release:clean"
   },
   "repository": "git+https://github.com/auth0/react-native-auth0.git",
   "keywords": [
@@ -42,7 +43,8 @@
     "jest": "^20.0.4",
     "jsdoc": "^3.4.3",
     "jsdoc-to-markdown": "^3.0.0",
-    "minami": "^1.2.3"
+    "minami": "^1.2.3",
+    "moment": "^2.18.1"
   },
   "jest": {
     "coverageDirectory": "./coverage/"

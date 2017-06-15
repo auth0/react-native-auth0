@@ -234,3 +234,7 @@ gen-external-apklibs
 .Spotlight-V100
 .TemporaryItems
 .Trashes
+
+# Release process
+.release
+.release-tmp-*/
