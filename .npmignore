@@ -1,9 +1,1 @@
-__tests__/*
-test-utils/*
-.babelrc
-.travis.yml
-sample-app/
-
-android/gradle/
-android/gradlew
-android/gradlew.bat
+circle.yml

@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`whitelist should fail if required key is not found 1`] = `
+"Missing required parameters: [
+  \\"state\\"
+]"
+`;

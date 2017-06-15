@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>management/users.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Auth.html">Auth</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Auth.html#.authorizeUrl">authorizeUrl</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Auth.html#.createUser">createUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Auth.html#.exchange">exchange</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Auth.html#.passwordRealm">passwordRealm</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Auth.html#.refreshToken">refreshToken</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Auth.html#.resetPassword">resetPassword</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Auth.html#.revoke">revoke</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Auth.html#.userInfo">userInfo</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Auth0.html">Auth0</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Auth0.module.exports.html">module.exports</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Users.html">Users</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Users.html#.getUser">getUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Users.html#.patchUser">patchUser</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="WebAuth.html">WebAuth</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="WebAuth.html#.authorize">authorize</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#users">users</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">management/users.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Client from '../networking';
+import { apply } from '../utils/whitelist';
+import { toCamelCase } from '../utils/camel';
+import Auth0Error from './error';
+
+function responseHandler (response, exceptions = {}) {
+  if (response.ok &amp;&amp; response.json) {
+    return toCamelCase(response.json, exceptions);
+  }
+  throw new Auth0Error(response);
+}
+
+const attributes = [
+  "name",
+  "nickname",
+  "picture",
+  "user_id",
+  "user_metadata",
+  "app_metadata",
+  "email",
+  "email_verified",
+  "given_name",
+  "family_name"
+];
+
+/**
+ * Auth0 Management API User endpoints
+ *
+ * @export
+ * @see https://auth0.com/docs/api/management/v2#!/Users/
+ * @class Users
+ */
+export default class Users {
+  constructor(options = {}) {
+    this.client = new Client(options);
+    if (!options.token) {
+      throw new Error('Missing token in parameters');
+    }
+  }
+
+  /**
+   * Returns the user by identifier
+   *
+   * @param {Object} parameters get user by identifier parameters
+   * @param {String} parameters.id identifier of the user to obtain
+   * @returns {Promise}
+   * @see https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
+   *
+   * @memberof Users
+   */
+  getUser(parameters = {}) {
+    const payload = apply({
+      parameters: {
+        id: { required: true }
+      }
+    }, parameters);
+    return this.client
+      .get(`/api/v2/users/${encodeURIComponent(payload.id)}`)
+      .then((response) => responseHandler(response, {attributes, whitelist: true, rootOnly: true}));
+  }
+
+  /**
+   * Patch a user's `user_metadata`
+   *
+   * @param {Object} parameters patch user metadata parameters
+   * @param {String} parameters.id identifier of the user to patch
+   * @param {Object} parameters.metadata object with attributes to store in user_metadata.
+   * @returns {Promise}
+   * @see https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id
+   *
+   * @memberof Users
+   */
+  patchUser(parameters = {}) {
+    const payload = apply({
+      parameters: {
+        id: { required: true },
+        metadata: { required: true }
+      }
+    }, parameters);
+    return this.client
+      .patch(`/api/v2/users/${encodeURIComponent(payload.id)}`, {user_metadata: payload.metadata})
+      .then((response) => responseHandler(response, {attributes, whitelist: true, rootOnly: true}));
+  }
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Jun 13 2017 18:24:14 GMT-0300 (-03) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

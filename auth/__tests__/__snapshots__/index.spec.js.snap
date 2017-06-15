@@ -1,0 +1,234 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`auth authorizeUrl should return default authorize url 1`] = `"https://samples.auth0.com/authorize?response_type=code&redirect_uri=https%3A%2F%2Fmysite.com%2Fcallback&state=a_random_state&client_id=A_CLIENT_ID_OF_YOUR_ACCOUNT&auth0Client=eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0%3D"`;
+
+exports[`auth authorizeUrl should return default authorize url with extra parameters 1`] = `"https://samples.auth0.com/authorize?response_type=code&redirect_uri=https%3A%2F%2Fmysite.com%2Fcallback&state=a_random_state&connection=facebook&client_id=A_CLIENT_ID_OF_YOUR_ACCOUNT&auth0Client=eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0%3D"`;
+
+exports[`auth change password should handle oauth error 1`] = `[invalid_request: Invalid grant]`;
+
+exports[`auth change password should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+
+exports[`auth change password should return successful response 1`] = `Object {}`;
+
+exports[`auth change password should send correct payload 1`] = `
+Array [
+  "https://samples.auth0.com/dbconnections/change_password",
+  Object {
+    "body": "{\\"email\\":\\"info@auth0.com\\",\\"connection\\":\\"Username-Password-Authentication\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth code exchange should handle oauth error 1`] = `[invalid_request: Invalid grant]`;
+
+exports[`auth code exchange should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+
+exports[`auth code exchange should return successful response 1`] = `
+Object {
+  "accessToken": "an access token",
+  "expiresIn": 1234567890,
+  "idToken": "an id token",
+  "scope": "openid",
+  "state": "a random state for auth",
+}
+`;
+
+exports[`auth code exchange should send correct payload 1`] = `
+Array [
+  "https://samples.auth0.com/oauth/token",
+  Object {
+    "body": "{\\"code\\":\\"a code\\",\\"code_verifier\\":\\"a verifier\\",\\"redirect_uri\\":\\"https://mysite.com/callback\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"authorization_code\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth constructor should fail without clientId 1`] = `"Missing clientId in parameters"`;
+
+exports[`auth constructor should fail without domain 1`] = `"Missing Auth0 domain"`;
+
+exports[`auth create user should handle auth0 error 1`] = `[BadRequestError: The user already exists.]`;
+
+exports[`auth create user should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+
+exports[`auth create user should return successful response 1`] = `
+Object {
+  "email": "info@auth0.com",
+  "emailVerified": false,
+}
+`;
+
+exports[`auth create user should send correct payload 1`] = `
+Array [
+  "https://samples.auth0.com/dbconnections/signup",
+  Object {
+    "body": "{\\"email\\":\\"info@auth0.com\\",\\"password\\":\\"secret\\",\\"connection\\":\\"aconnection\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth create user should send correct payload with metadata 1`] = `
+Array [
+  "https://samples.auth0.com/dbconnections/signup",
+  Object {
+    "body": "{\\"email\\":\\"info@auth0.com\\",\\"password\\":\\"secret\\",\\"connection\\":\\"aconnection\\",\\"user_metadata\\":{\\"customerId\\":12345},\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth create user should send correct payload with username 1`] = `
+Array [
+  "https://samples.auth0.com/dbconnections/signup",
+  Object {
+    "body": "{\\"email\\":\\"info@auth0.com\\",\\"password\\":\\"secret\\",\\"connection\\":\\"aconnection\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth password realm should handle oauth error 1`] = `[invalid_request: Invalid grant]`;
+
+exports[`auth password realm should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+
+exports[`auth password realm should return successful response 1`] = `
+Object {
+  "accessToken": "an access token",
+  "expiresIn": 1234567890,
+  "idToken": "an id token",
+  "scope": "openid",
+  "state": "a random state for auth",
+}
+`;
+
+exports[`auth password realm should send correct payload 1`] = `
+Array [
+  "https://samples.auth0.com/oauth/token",
+  Object {
+    "body": "{\\"username\\":\\"info@auth0.com\\",\\"password\\":\\"secret pass\\",\\"realm\\":\\"Username-Password-Authentication\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/password-realm\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth refresh token should handle oauth error 1`] = `[invalid_request: Invalid grant]`;
+
+exports[`auth refresh token should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+
+exports[`auth refresh token should return successful response 1`] = `
+Object {
+  "accessToken": "an access token",
+  "expiresIn": 1234567890,
+  "idToken": "an id token",
+  "scope": "openid",
+  "state": "a random state for auth",
+}
+`;
+
+exports[`auth refresh token should send correct payload 1`] = `
+Array [
+  "https://samples.auth0.com/oauth/token",
+  Object {
+    "body": "{\\"refresh_token\\":\\"a refresh token of a user\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"refresh_token\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth revoke token should handle oauth error 1`] = `[invalid_request: Invalid grant]`;
+
+exports[`auth revoke token should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+
+exports[`auth revoke token should return successful response 1`] = `Object {}`;
+
+exports[`auth revoke token should send correct payload 1`] = `
+Array [
+  "https://samples.auth0.com/oauth/revoke",
+  Object {
+    "body": "{\\"token\\":\\"a refresh token of a user\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth user info should handle oauth error 1`] = `[invalid_request: Invalid grant]`;
+
+exports[`auth user info should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+
+exports[`auth user info should return successful non-oidc response 1`] = `
+Object {
+  "sub": "auth0|1029837475",
+}
+`;
+
+exports[`auth user info should return successful oidc response 1`] = `
+Object {
+  "email": "janedoe@example.com",
+  "familyName": "Doe",
+  "givenName": "Jane",
+  "http://mysite.com/claims/customer": 192837465,
+  "http://mysite.com/claims/status": "closed",
+  "name": "Jane Doe",
+  "picture": "http://example.com/janedoe/me.jpg",
+  "preferredUsername": "j.doe",
+  "sub": "248289761001",
+  "updatedAt": 1497317424,
+}
+`;
+
+exports[`auth user info should send correct payload 1`] = `
+Array [
+  "https://samples.auth0.com/userinfo",
+  Object {
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Authorization": "Bearer an access token of a user",
+      "Content-Type": "application/json",
+    },
+    "method": "GET",
+  },
+]
+`;

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Home - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Auth.html">Auth</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Auth.html#.authorizeUrl">authorizeUrl</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Auth.html#.createUser">createUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Auth.html#.exchange">exchange</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Auth.html#.passwordRealm">passwordRealm</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Auth.html#.refreshToken">refreshToken</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Auth.html#.resetPassword">resetPassword</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Auth.html#.revoke">revoke</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Auth.html#.userInfo">userInfo</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Auth0.html">Auth0</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Auth0.module.exports.html">module.exports</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Users.html">Users</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Users.html#.getUser">getUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Users.html#.patchUser">patchUser</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="WebAuth.html">WebAuth</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="WebAuth.html#.authorize">authorize</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#users">users</a></span></li>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1>react-native-auth0</h1><p><a href="https://npmjs.org/package/react-native-auth0"><img src="https://img.shields.io/npm/v/react-native-auth0.svg?style=flat" alt="NPM version"></a></p>
+<p>React Native toolkit for Auth0 API</p>
+<blockquote>
+<p>This library is currently in Beta and it's missing some Authentication API methods. Feel free to contribute</p>
+</blockquote>
+<h2>Requirements</h2><p>React Native 0.26+</p>
+<h2>Installation</h2><pre class="prettyprint source"><code>npm install react-native-auth0@beta --save
+react-native link react-native-auth0</code></pre><h3>Configuration</h3><blockquote>
+<p>This section is for those that want to use <a href="#webauth">WebAuth</a>, if you dont need it just ignore this section.</p>
+</blockquote>
+<h4>Android</h4><p>In the file <code>android/src/app/AndroidManifest.xml</code> you must make sure the main activity of the app has launch mode value of <code>singleTask</code> and that it has the following intent filter</p>
+<pre class="prettyprint source lang-xml"><code>&lt;intent-filter>
+    &lt;action android:name=&quot;android.intent.action.VIEW&quot; />
+    &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; />
+    &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; />
+    &lt;data
+        android:host=&quot;YOUR_AUTH0_DOMAIN&quot;
+        android:pathPrefix=&quot;/android/${applicationId}/callback&quot;
+        android:scheme=&quot;${applicationId}&quot; />
+&lt;/intent-filter></code></pre><p>So if you have <code>samples.auth0.com</code> as your Auth0 domain you would have the following activity configuration:</p>
+<pre class="prettyprint source lang-xml"><code>&lt;activity
+android:name=&quot;.MainActivity&quot;
+android:label=&quot;@string/app_name&quot;
+android:launchMode=&quot;singleTask&quot;
+android:configChanges=&quot;keyboard|keyboardHidden|orientation|screenSize&quot;
+android:windowSoftInputMode=&quot;adjustResize&quot;>
+&lt;intent-filter>
+    &lt;action android:name=&quot;android.intent.action.MAIN&quot; />
+    &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; />
+&lt;/intent-filter>
+&lt;intent-filter>
+    &lt;action android:name=&quot;android.intent.action.VIEW&quot; />
+    &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; />
+    &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; />
+    &lt;data
+        android:host=&quot;samples.auth0.com&quot;
+        android:pathPrefix=&quot;/android/${applicationId}/callback&quot;
+        android:scheme=&quot;${applicationId}&quot; />
+&lt;/intent-filter>
+&lt;/activity></code></pre><blockquote>
+<p>For more info please read <a href="https://facebook.github.io/react-native/docs/linking.html">react native docs</a></p>
+</blockquote>
+<h4>iOS</h4><p>Inside the <code>ios</code> folder find the file <code>AppDelegate.[swift|m]</code> add the following to it</p>
+<pre class="prettyprint source lang-objc"><code>#import &lt;React/RCTLinkingManager.h>
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+  return [RCTLinkingManager application:application openURL:url
+                      sourceApplication:sourceApplication annotation:annotation];
+}</code></pre><p>Then in your <code>Info.plist</code> file, find the value of the entry of <code>CFBundleIdentifier</code>, e.g.</p>
+<pre class="prettyprint source lang-xml"><code>&lt;key>CFBundleIdentifier&lt;/key>
+&lt;string>org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)&lt;/string></code></pre><p>and then register a URL type entry using the value of <code>CFBundleIdentifier</code> as the value of <code>CFBundleURLSchemes</code></p>
+<pre class="prettyprint source lang-xml"><code>&lt;key>CFBundleURLTypes&lt;/key>
+&lt;array>
+    &lt;dict>
+        &lt;key>CFBundleTypeRole&lt;/key>
+        &lt;string>None&lt;/string>
+        &lt;key>CFBundleURLName&lt;/key>
+        &lt;string>auth0&lt;/string>
+        &lt;key>CFBundleURLSchemes&lt;/key>
+        &lt;array>
+            &lt;string>org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)&lt;/string>
+        &lt;/array>
+    &lt;/dict>
+&lt;/array></code></pre><blockquote>
+<p>The value <code>org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)</code> is the default for apps created with RN cli, you will probably have a different value.</p>
+<p>For more info please read <a href="https://facebook.github.io/react-native/docs/linking.html">react native docs</a></p>
+</blockquote>
+<h2>Usage</h2><pre class="prettyprint source lang-js"><code>import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({ domain: '{YOUR_AUTH0_DOMAIN}', clientId: '{YOUR_CLIENT_ID}' });</code></pre><h3>WebAuth</h3><pre class="prettyprint source lang-js"><code>auth0
+    .webAuth
+    .authorize({scope: 'openid email'})
+    .then(credentials => console.log(credentials))
+    .catch(error => console.log(error));</code></pre><h3>Authentication API</h3><h4>Login with Password Realm Grant</h4><pre class="prettyprint source lang-js"><code>auth0
+    .auth
+    .passwordRealm({username: &quot;info@auth0.com&quot;, password: &quot;password&quot;, realm: &quot;myconnection&quot;})
+    .then(console.log)
+    .catch(console.error);</code></pre><h4>Get user information using user's access_token</h4><pre class="prettyprint source lang-js"><code>auth0
+    .auth
+    .userInfo({token: 'user access_token'})
+    .then(console.log)
+    .catch(console.error);</code></pre><h4>Getting new access token with refresh token</h4><pre class="prettyprint source lang-js"><code>auth0
+    .auth
+    .refreshToken({refreshToken: 'user refresh_token'})
+    .then(console.log)
+    .catch(console.error);</code></pre><h4>Create user in database connection</h4><pre class="prettyprint source lang-js"><code>auth0
+    .auth
+    .createUser({email: 'info@auth0.com', username: 'username', pasword: 'password', connection: 'myconnection'})
+    .then(console.log)
+    .catch(console.error);</code></pre><h3>Management API (Users)</h3><h4>Patch user with user_metadata</h4><pre class="prettyprint source lang-js"><code>auth0
+    .users('user token')
+    .patchUser({id: 'user_id', metadata: {'first_name': 'John', 'last_name': 'Doe'}})
+    .then(console.log)
+    .catch(console.error);</code></pre><h3>Get full user profile</h3><pre class="prettyprint source lang-js"><code>auth0
+    .users('user token')
+    .getUser({id: &quot;user_id&quot;})
+    .then(console.log)
+    .catch(console.error);</code></pre><h2>What is Auth0?</h2><p>Auth0 helps you to:</p>
+<ul>
+<li>Add authentication with <a href="https://docs.auth0.com/identityproviders">multiple authentication sources</a>, either social like <strong>Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce, amont others</strong>, or enterprise identity systems like <strong>Windows Azure AD, Google Apps, Active Directory, ADFS or any SAML Identity Provider</strong>.</li>
+<li>Add authentication through more traditional <strong><a href="https://docs.auth0.com/mysql-connection-tutorial">username/password databases</a></strong>.</li>
+<li>Add support for <strong><a href="https://docs.auth0.com/link-accounts">linking different user accounts</a></strong> with the same user.</li>
+<li>Support for generating signed <a href="https://docs.auth0.com/jwt">Json Web Tokens</a> to call your APIs and <strong>flow the user identity</strong> securely.</li>
+<li>Analytics of how, when and where users are logging in.</li>
+<li>Pull data from other sources and add it to the user profile, through <a href="https://docs.auth0.com/rules">JavaScript rules</a>.</li>
+</ul>
+<h2>Create a free Auth0 Account</h2><ol>
+<li>Go to <a href="https://auth0.com">Auth0</a> and click Sign Up.</li>
+<li>Use Google, GitHub or Microsoft Account to login.</li>
+</ol>
+<h2>Issue Reporting</h2><p>If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The <a href="https://auth0.com/whitehat">Responsible Disclosure Program</a> details the procedure for disclosing security issues.</p>
+<h2>Author</h2><p><a href="auth0.com">Auth0</a></p>
+<h2>License</h2><p>This project is licensed under the MIT license. See the <a href="LICENSE.txt">LICENSE</a> file for more info.</p>
+<!-- Variables --></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Jun 13 2017 18:24:14 GMT-0300 (-03) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

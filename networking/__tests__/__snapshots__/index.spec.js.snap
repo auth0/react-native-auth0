@@ -1,0 +1,191 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`client constructor should fail with no domain 1`] = `"Cannot read property 'baseUrl' of undefined"`;
+
+exports[`client requests GET json should build proper request with no query 1`] = `
+Array [
+  "https://samples.auth0.com/method",
+  Object {
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Authorization": "Bearer a.bearer.token",
+      "Content-Type": "application/json",
+    },
+    "method": "GET",
+  },
+]
+`;
+
+exports[`client requests GET json should build proper request with query 1`] = `
+Array [
+  "https://samples.auth0.com/method?string=value&number=10",
+  Object {
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Authorization": "Bearer a.bearer.token",
+      "Content-Type": "application/json",
+    },
+    "method": "GET",
+  },
+]
+`;
+
+exports[`client requests GET json should handle no response 1`] = `
+Object {
+  "headers": Headers {
+    "_headers": Object {},
+  },
+  "ok": true,
+  "status": 201,
+  "text": "Created",
+}
+`;
+
+exports[`client requests GET json should handle request error 1`] = `[Error: pawned!]`;
+
+exports[`client requests GET json should return json on success 1`] = `
+Object {
+  "headers": Headers {
+    "_headers": Object {
+      "content-type": Array [
+        "application/json",
+      ],
+    },
+  },
+  "json": Object {
+    "key": "value",
+  },
+  "ok": true,
+  "status": 200,
+}
+`;
+
+exports[`client requests PATCH json should build proper request with body 1`] = `
+Array [
+  "https://samples.auth0.com/method",
+  Object {
+    "body": "{\\"string\\":\\"value\\",\\"number\\":10}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Authorization": "Bearer a.bearer.token",
+      "Content-Type": "application/json",
+    },
+    "method": "PATCH",
+  },
+]
+`;
+
+exports[`client requests PATCH json should build proper request with no body 1`] = `
+Array [
+  "https://samples.auth0.com/method",
+  Object {
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Authorization": "Bearer a.bearer.token",
+      "Content-Type": "application/json",
+    },
+    "method": "PATCH",
+  },
+]
+`;
+
+exports[`client requests PATCH json should handle no response 1`] = `
+Object {
+  "headers": Headers {
+    "_headers": Object {},
+  },
+  "ok": true,
+  "status": 201,
+  "text": "Created",
+}
+`;
+
+exports[`client requests PATCH json should handle request error 1`] = `[Error: pawned!]`;
+
+exports[`client requests PATCH json should return json on success 1`] = `
+Object {
+  "headers": Headers {
+    "_headers": Object {
+      "content-type": Array [
+        "application/json",
+      ],
+    },
+  },
+  "json": Object {
+    "key": "value",
+  },
+  "ok": true,
+  "status": 200,
+}
+`;
+
+exports[`client requests POST json should build proper request with body 1`] = `
+Array [
+  "https://samples.auth0.com/method",
+  Object {
+    "body": "{\\"string\\":\\"value\\",\\"number\\":10}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Authorization": "Bearer a.bearer.token",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`client requests POST json should build proper request with no body 1`] = `
+Array [
+  "https://samples.auth0.com/method",
+  Object {
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Authorization": "Bearer a.bearer.token",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`client requests POST json should handle no response 1`] = `
+Object {
+  "headers": Headers {
+    "_headers": Object {},
+  },
+  "ok": true,
+  "status": 201,
+  "text": "Created",
+}
+`;
+
+exports[`client requests POST json should handle request error 1`] = `[Error: pawned!]`;
+
+exports[`client requests POST json should return json on success 1`] = `
+Object {
+  "headers": Headers {
+    "_headers": Object {
+      "content-type": Array [
+        "application/json",
+      ],
+    },
+  },
+  "json": Object {
+    "key": "value",
+  },
+  "ok": true,
+  "status": 200,
+}
+`;
+
+exports[`client url should build url with no query 1`] = `"https://samples.auth0.com/authorize?auth0Client=eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0%3D"`;
+
+exports[`client url should build url with no query and no telemetry 1`] = `"https://samples.auth0.com/authorize"`;
+
+exports[`client url should build url with query 1`] = `"https://samples.auth0.com/authorize?client_id=A_CLIENT_ID&auth0Client=eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0%3D"`;

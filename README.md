@@ -113,14 +113,14 @@ and then register a URL type entry using the value of `CFBundleIdentifier` as th
 ```js
 import Auth0 from 'react-native-auth0';
 
-const auth0 = new Auth0('{YOUR_DOMAIN}');
+const auth0 = new Auth0({ domain: '{YOUR_AUTH0_DOMAIN}', clientId: '{YOUR_CLIENT_ID}' });
 ```
 
 ### WebAuth
 
 ```js
 auth0
-    .webAuth('{YOUR_CLIENT_ID}')
+    .webAuth
     .authorize({scope: 'openid email'})
     .then(credentials => console.log(credentials))
     .catch(error => console.log(error));
@@ -128,43 +128,44 @@ auth0
 
 ### Authentication API
 
-#### Login with database connection
+#### Login with Password Realm Grant
 
 ```js
 auth0
-    .authentication('{YOUR_CLIENT_ID}')
-    .login("info@auth0.com", "password", "myconnection")
-    .then(credentials => console.log(credentials))
-    .catch(error => console.log(error));
+    .auth
+    .passwordRealm({username: "info@auth0.com", password: "password", realm: "myconnection"})
+    .then(console.log)
+    .catch(console.error);
+```
+
+#### Get user information using user's access_token
+
+```js
+auth0
+    .auth
+    .userInfo({token: 'user access_token'})
+    .then(console.log)
+    .catch(console.error);
+```
+
+#### Getting new access token with refresh token
+
+```js
+auth0
+    .auth
+    .refreshToken({refreshToken: 'user refresh_token'})
+    .then(console.log)
+    .catch(console.error);
 ```
 
 #### Create user in database connection
 
 ```js
 auth0
-    .authentication('{YOUR_CLIENT_ID}')
-    .createUser('info@auth0.com', 'username', 'password', 'myconnection')
-    .then(user => console.log(user))
-    .catch(error => console.log(error));
-```
-
-#### Get user information
-
-```js
-auth0
-    .authentication('{YOUR_CLIENT_ID}')
-    .tokenInfo('user id_token')
-    .then(profile => console.log(profile))
-    .catch(error => console.log(error));
-```
-
-#### Using refresh token
-```js
-auth0
-    .authentication('{YOUR_CLIENT_ID}')
-    .refreshToken('user refresh_token')
-    .then(response => console.log(response))
-    .catch(error => console.log(error));
+    .auth
+    .createUser({email: 'info@auth0.com', username: 'username', pasword: 'password', connection: 'myconnection'})
+    .then(console.log)
+    .catch(console.error);
 ```
 
 ### Management API (Users)
@@ -174,19 +175,19 @@ auth0
 ```js
 auth0
     .users('user token')
-    .patch('user_id', {'first_name': 'John', 'last_name': 'Doe'})
-    .then(response => console.log(response))
-    .catch(error => console.log(error));
+    .patchUser({id: 'user_id', metadata: {'first_name': 'John', 'last_name': 'Doe'}})
+    .then(console.log)
+    .catch(console.error);
 ```
 
-### Link users
+### Get full user profile
 
 ```js
 auth0
     .users('user token')
-    .link("user_id", "other user token")
-    .then(response => console.log(response))
-    .catch(error => console.log(error));
+    .getUser({id: "user_id"})
+    .then(console.log)
+    .catch(console.error);
 ```
 
 ## What is Auth0?
