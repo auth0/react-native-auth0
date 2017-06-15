@@ -8,8 +8,6 @@
 
 React Native toolkit for Auth0 API
 
-> This library is currently in Beta and it's missing some Authentication API methods. Feel free to contribute
-
 ## Requirements
 
 React Native 0.26+
