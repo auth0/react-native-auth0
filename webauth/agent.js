@@ -3,8 +3,6 @@ import {
   Linking
 } from 'react-native';
 
-import AuthError from '../utils/error';
-
 const { A0Auth0 } = NativeModules;
 
 export default class Agent {
@@ -19,7 +17,7 @@ export default class Agent {
       Linking.addEventListener('url', urlHandler);
       A0Auth0.showUrl(url, (err) => {
         Linking.removeEventListener('url', urlHandler);
-        reject(new AuthError(err));
+        reject(err);
       });
     });
   }

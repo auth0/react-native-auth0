@@ -1,39 +1,37 @@
-import Authentication from './authentication/api';
-import Users from './management/api';
+import Auth from './auth';
+import Users from './management/users';
 import WebAuth from './webauth';
 
+/**
+ * Auth0 for React Native client
+ *
+ * @export
+ * @class Auth0
+ */
 export default class Auth0 {
-  constructor(domain) {
-    if (domain == null) {
-      throw new Error("must supply a valid Auth0 domain");
-    }
-    let baseUrl = domain;
-    if (!domain.startsWith("http")) {
-      baseUrl = `https://${domain}`;
-    }
-    this.baseUrl = baseUrl;
-    this.domain = domain;
-  }
 
   /**
-   * Creates an Authentication API client
-   * @param  {String} clientId
-   * @return {AuthenticationAPI}
+   * Creates an instance of Auth0.
+   * @param {Object} options your Auth0 client information
+   * @param {String} options.domain your Auth0 domain
+   * @param {String} options.clientId your Auth0 client identifier
+   *
+   * @memberof Auth0
    */
-  authentication(clientId) {
-    return new Authentication(clientId, this.baseUrl);
+  constructor(options = {}) {
+    const { domain, clientId, ...extras } = options;
+    this.auth = new Auth({baseUrl: domain, clientId, ...extras});
+    this.webAuth = new WebAuth(this.auth);
+    this.options = options;
   }
 
   /**
    * Creates a Users API client
    * @param  {String} token for Management API
-   * @return {UsersAPI}
+   * @return {Users}
    */
   users(token) {
-    return new Users(token, this.baseUrl);
-  }
-
-  webAuth(clientId) {
-    return new WebAuth(clientId, this.domain, this.authentication(clientId));
+    const { domain, clientId, ...extras } = options;
+    return new Users({baseUrl: domain, clientId, ...extras, token});
   }
 };

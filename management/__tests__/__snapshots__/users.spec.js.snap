@@ -1,0 +1,270 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`users GET user should handle oauth error 1`] = `[Forbidden: User to be acted on does not match subject in bearer token.]`;
+
+exports[`users GET user should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+
+exports[`users GET user should return successful response 1`] = `
+Object {
+  "appMetadata": Object {
+    "name": "info@auth0.com",
+    "nickname": "info",
+    "picture": "https://secure.gravatar.com/avatar/cfacbe113a96fdfc85134534771d88b4?s=480&r=pg&d=https%3A%2F%2Fssl.gstatic.com%2Fs2%2Fprofiles%2Fimages%2Fsilhouette80.png",
+    "username": "info",
+  },
+  "blocked": false,
+  "created_at": "2014-07-06T18:33:49.005Z",
+  "email": "info@auth0.com",
+  "emailVerified": false,
+  "identities": Array [
+    Object {
+      "connection": "Username-Password-Authentication",
+      "isSocial": false,
+      "provider": "auth0",
+      "user_id": "53b995f8bce68d9fc900099c",
+    },
+    Object {
+      "connection": "wordpress",
+      "isSocial": true,
+      "profileData": Object {
+        "display_name": "csauth0",
+        "email": "cs.auth0@gmail.com",
+        "email_verified": false,
+        "language": "en",
+        "meta": Object {
+          "links": Object {
+            "flags": "https://public-api.wordpress.com/rest/v1/me/flags",
+            "help": "https://public-api.wordpress.com/rest/v1/me/help",
+            "self": "https://public-api.wordpress.com/rest/v1/me",
+            "site": "https://public-api.wordpress.com/rest/v1/sites/76327566",
+          },
+        },
+        "nickname": "csauth0",
+        "picture": "https://1.gravatar.com/avatar/1ef438e4fd0867a8b85ba255c2023ae3?s=96&d=identicon&r=G",
+        "primary_blog": 76327566,
+        "profile_URL": "http://en.gravatar.com/csauth0",
+        "site_count": 1,
+        "token_scope": Array [
+          "",
+        ],
+        "token_site_id": 76327566,
+        "verified": true,
+        "visible_site_count": 1,
+      },
+      "provider": "wordpress",
+      "user_id": 72894558,
+    },
+    Object {
+      "connection": "facebook",
+      "isSocial": true,
+      "profileData": Object {
+        "age_range": Object {
+          "min": 21,
+        },
+        "context": Object {
+          "id": "dXNlcl9jb250ZAA0ZD",
+          "mutual_likes": Object {
+            "data": Array [],
+            "summary": Object {
+              "total_count": 0,
+            },
+          },
+        },
+        "devices": Array [
+          Object {
+            "os": "Android",
+          },
+        ],
+        "email": "cs.auth0@gmail.com",
+        "email_verified": true,
+        "family_name": "Foobar",
+        "gender": "male",
+        "given_name": "John",
+        "installed": true,
+        "is_verified": false,
+        "link": "http://www.facebook.com/100050452676",
+        "locale": "en_US",
+        "name": "Foobar John",
+        "name_format": "{first} {last}",
+        "picture": "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xpf1/v/t1.0-1/c15.0.50.50/p50x50/10354686_10150004552801856_220367501106153455_n.jpg?oh=e0b37ad2914032931c273619126878aa&oe=56496A2F&__gda__=1447695355_10ff74ec6ef8e26e46c4751a34c49bd0",
+        "third_party_id": "tQc5Y4aHE7Lu7fBQo5IB5OI2G6s",
+        "timezone": -3,
+        "updated_time": "2014-09-23T18:26:31+0000",
+        "verified": true,
+      },
+      "provider": "facebook",
+      "user_id": "100007950452676",
+    },
+  ],
+  "last_ip": "181.47.186.202",
+  "last_login": "2017-06-13T02:47:41.914Z",
+  "logins_count": 1151,
+  "multifactor": Array [
+    "google-authenticator",
+  ],
+  "name": "info@auth0.com",
+  "nickname": "info",
+  "persistent": Object {},
+  "picture": "https://s.gravatar.com/avatar/cfacbe113a96fdfc85134534771d88b4?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fp.png",
+  "updated_at": "2017-06-13T02:47:41.914Z",
+  "userId": "auth0|53b995f8bce68d9fc900099c",
+  "userMetadata": Object {
+    "first_name": "Info",
+    "from": "react-native",
+    "last_name": "Auth0",
+  },
+  "username": "info",
+}
+`;
+
+exports[`users GET user should send correct payload 1`] = `
+Array [
+  "https://samples.auth0.com/api/v2/users/auth0%7C53b995f8bce68d9fc900099c",
+  Object {
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Authorization": "Bearer a.token.from.the.user",
+      "Content-Type": "application/json",
+    },
+    "method": "GET",
+  },
+]
+`;
+
+exports[`users PATCH user should handle oauth error 1`] = `[Forbidden: User to be acted on does not match subject in bearer token.]`;
+
+exports[`users PATCH user should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+
+exports[`users PATCH user should return successful response 1`] = `
+Object {
+  "appMetadata": Object {
+    "name": "info@auth0.com",
+    "nickname": "info",
+    "picture": "https://secure.gravatar.com/avatar/cfacbe113a96fdfc85134534771d88b4?s=480&r=pg&d=https%3A%2F%2Fssl.gstatic.com%2Fs2%2Fprofiles%2Fimages%2Fsilhouette80.png",
+    "username": "info",
+  },
+  "blocked": false,
+  "created_at": "2014-07-06T18:33:49.005Z",
+  "email": "info@auth0.com",
+  "emailVerified": false,
+  "identities": Array [
+    Object {
+      "connection": "Username-Password-Authentication",
+      "isSocial": false,
+      "provider": "auth0",
+      "user_id": "53b995f8bce68d9fc900099c",
+    },
+    Object {
+      "connection": "wordpress",
+      "isSocial": true,
+      "profileData": Object {
+        "display_name": "csauth0",
+        "email": "cs.auth0@gmail.com",
+        "email_verified": false,
+        "language": "en",
+        "meta": Object {
+          "links": Object {
+            "flags": "https://public-api.wordpress.com/rest/v1/me/flags",
+            "help": "https://public-api.wordpress.com/rest/v1/me/help",
+            "self": "https://public-api.wordpress.com/rest/v1/me",
+            "site": "https://public-api.wordpress.com/rest/v1/sites/76327566",
+          },
+        },
+        "nickname": "csauth0",
+        "picture": "https://1.gravatar.com/avatar/1ef438e4fd0867a8b85ba255c2023ae3?s=96&d=identicon&r=G",
+        "primary_blog": 76327566,
+        "profile_URL": "http://en.gravatar.com/csauth0",
+        "site_count": 1,
+        "token_scope": Array [
+          "",
+        ],
+        "token_site_id": 76327566,
+        "verified": true,
+        "visible_site_count": 1,
+      },
+      "provider": "wordpress",
+      "user_id": 72894558,
+    },
+    Object {
+      "connection": "facebook",
+      "isSocial": true,
+      "profileData": Object {
+        "age_range": Object {
+          "min": 21,
+        },
+        "context": Object {
+          "id": "dXNlcl9jb250ZAA0ZD",
+          "mutual_likes": Object {
+            "data": Array [],
+            "summary": Object {
+              "total_count": 0,
+            },
+          },
+        },
+        "devices": Array [
+          Object {
+            "os": "Android",
+          },
+        ],
+        "email": "cs.auth0@gmail.com",
+        "email_verified": true,
+        "family_name": "Foobar",
+        "gender": "male",
+        "given_name": "John",
+        "installed": true,
+        "is_verified": false,
+        "link": "http://www.facebook.com/100050452676",
+        "locale": "en_US",
+        "name": "Foobar John",
+        "name_format": "{first} {last}",
+        "picture": "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xpf1/v/t1.0-1/c15.0.50.50/p50x50/10354686_10150004552801856_220367501106153455_n.jpg?oh=e0b37ad2914032931c273619126878aa&oe=56496A2F&__gda__=1447695355_10ff74ec6ef8e26e46c4751a34c49bd0",
+        "third_party_id": "tQc5Y4aHE7Lu7fBQo5IB5OI2G6s",
+        "timezone": -3,
+        "updated_time": "2014-09-23T18:26:31+0000",
+        "verified": true,
+      },
+      "provider": "facebook",
+      "user_id": "100007950452676",
+    },
+  ],
+  "last_ip": "181.47.186.202",
+  "last_login": "2017-06-13T02:47:41.914Z",
+  "logins_count": 1151,
+  "multifactor": Array [
+    "google-authenticator",
+  ],
+  "name": "info@auth0.com",
+  "nickname": "info",
+  "persistent": Object {},
+  "picture": "https://s.gravatar.com/avatar/cfacbe113a96fdfc85134534771d88b4?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fp.png",
+  "updated_at": "2017-06-13T02:47:41.914Z",
+  "userId": "auth0|53b995f8bce68d9fc900099c",
+  "userMetadata": Object {
+    "first_name": "Info",
+    "from": "react-native",
+    "last_name": "Auth0",
+  },
+  "username": "info",
+}
+`;
+
+exports[`users PATCH user should send correct payload 1`] = `
+Array [
+  "https://samples.auth0.com/api/v2/users/auth0%7C53b995f8bce68d9fc900099c",
+  Object {
+    "body": "{\\"user_metadata\\":{\\"first_name\\":\\"Mike\\",\\"lastName\\":\\"Doe\\"}}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Authorization": "Bearer a.token.from.the.user",
+      "Content-Type": "application/json",
+    },
+    "method": "PATCH",
+  },
+]
+`;
+
+exports[`users constructor should fail without domain 1`] = `"Missing Auth0 domain"`;
+
+exports[`users constructor should fail without token 1`] = `"Missing token in parameters"`;
