@@ -1,5 +1,11 @@
 # Change Log
 
+## [v1.0.1](https://github.com/auth0/react-native-auth0/tree/v1.0.1) (2017-06-15)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.0.0...v1.0.1)
+
+**Fixed**
+- Bundle identifier must be made lowercase [\#38](https://github.com/auth0/react-native-auth0/pull/38) ([trondwernerhansen](https://github.com/trondwernerhansen))
+
 ## [v1.0.0](https://github.com/auth0/auth0.js/tree/v1.0.0) (2017-06-14)
 [Full Changelog](https://github.com/auth0/auth0.js/tree/v1.0.0)
 
