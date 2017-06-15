@@ -1,6 +1,6 @@
 # Change Log
 
-## [v8.7.0](https://github.com/auth0/auth0.js/tree/v1.0.0) (2017-06-14)
+## [v1.0.0](https://github.com/auth0/auth0.js/tree/v1.0.0) (2017-06-14)
 [Full Changelog](https://github.com/auth0/auth0.js/tree/v1.0.0)
 
 ### Installation
