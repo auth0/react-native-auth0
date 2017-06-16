@@ -31,7 +31,7 @@ export default class Auth0 {
    * @return {Users}
    */
   users(token) {
-    const { domain, clientId, ...extras } = options;
+    const { domain, clientId, ...extras } = this.options;
     return new Users({baseUrl: domain, clientId, ...extras, token});
   }
 };
