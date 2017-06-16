@@ -1,5 +1,11 @@
 # Change Log
 
+## [v1.0.2](https://github.com/auth0/react-native-auth0/tree/v1.0.2) (2017-06-16)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.0.1...v1.0.2)
+
+**Fixed**
+- Fix options not found error [\#43](https://github.com/auth0/react-native-auth0/pull/43) ([sebirdman](https://github.com/sebirdman))
+
 ## [v1.0.1](https://github.com/auth0/react-native-auth0/tree/v1.0.1) (2017-06-15)
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.0.0...v1.0.1)
 
