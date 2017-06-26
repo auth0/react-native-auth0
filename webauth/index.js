@@ -5,7 +5,8 @@ import {
 } from 'react-native';
 
 import url from 'url';
-import Auth0Error from '../auth/authError';
+import Auth0Error from '../auth/auth0Error';
+import AuthError from '../auth/authError';
 
 const { A0Auth0 } = NativeModules;
 
