@@ -1,5 +1,11 @@
 # Change Log
 
+## [v1.0.3](https://github.com/auth0/react-native-auth0/tree/v1.0.3) (2017-06-26)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.0.2...v1.0.3)
+
+**Fixed**
+- Add missing import to the WebAuth controller file [\#50](https://github.com/auth0/react-native-auth0/pull/50) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [v1.0.2](https://github.com/auth0/react-native-auth0/tree/v1.0.2) (2017-06-16)
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.0.1...v1.0.2)
 
