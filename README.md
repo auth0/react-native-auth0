@@ -136,10 +136,12 @@ const auth0 = new Auth0({ domain: '{YOUR_AUTH0_DOMAIN}', clientId: '{YOUR_CLIENT
 ```js
 auth0
     .webAuth
-    .authorize({scope: 'openid email'})
+    .authorize({scope: 'openid email', audience: 'https://{YOUR_AUTH0_DOMAIN}/userinfo'})
     .then(credentials => console.log(credentials))
     .catch(error => console.log(error));
 ```
+
+> This snippet sets the `audience` to ensure OIDC compliant responses, this can also be achieved by enabling the **OIDC Conformant** switch in your Auth0 dashboard under `Client / Settings / Advanced OAuth`. For more information please check [this documentation](https://auth0.com/docs/api-auth/intro#how-to-use-the-new-flows).
 
 ### Authentication API
 
