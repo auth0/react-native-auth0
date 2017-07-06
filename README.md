@@ -136,7 +136,7 @@ const auth0 = new Auth0({ domain: '{YOUR_AUTH0_DOMAIN}', clientId: '{YOUR_CLIENT
 ```js
 auth0
     .webAuth
-    .authorize({scope: 'openid email'})
+    .authorize({scope: 'openid email', audience: 'https://{YOUR_AUTH0_DOMAIN}/userinfo'})
     .then(credentials => console.log(credentials))
     .catch(error => console.log(error));
 ```
