@@ -23,7 +23,7 @@ npm install react-native-auth0 --save
 Or via [yarn](https://yarnpkg.com/en/package/jest)
 
 ```bash
-yarn add --dev react-native-auth0
+yarn add react-native-auth0
 ```
 
 then you need to link the native module in `react-native-auth0`
