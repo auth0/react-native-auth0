@@ -13,6 +13,7 @@
 @interface A0Auth0 () <SFSafariViewControllerDelegate>
 @property (weak, nonatomic) SFSafariViewController *last;
 @property (copy, nonatomic) RCTResponseSenderBlock sessionCallback;
+@property (copy, nonatomic) RCTResponseSenderBlock didLoadCallback;
 @end
 
 @implementation A0Auth0
@@ -29,14 +30,19 @@ RCT_EXPORT_METHOD(hide) {
 }
 
 RCT_EXPORT_METHOD(showUrl:(NSString *)urlString callback:(RCTResponseSenderBlock)callback) {
-    NSURL *url = [NSURL URLWithString:urlString];
-    UIWindow *window = [[UIApplication sharedApplication] keyWindow];
-    SFSafariViewController *controller = [[SFSafariViewController alloc] initWithURL:url];
-    controller.delegate = self;
-    [self terminateWithError:RCTMakeError(@"Only one Safari can be visible", nil, nil) dismissing:YES animated:NO];
-    [window.rootViewController presentViewController:controller animated:YES completion:nil];
-    self.last = controller;
+    [self presentSafariWithURL:[NSURL URLWithString:urlString]];
     self.sessionCallback = callback;
+}
+
+RCT_EXPORT_METHOD(clearSession:(NSString *)domain federated:(BOOL)federated callback:(RCTResponseSenderBlock)callback) {
+    NSString *urlString = [NSString stringWithFormat:@"https://%@/v2/logout", domain];
+    if (federated) { urlString = [urlString stringByAppendingString:@"?federated"]; }
+    [self presentSafariWithURL:[NSURL URLWithString:urlString]];
+    __weak A0Auth0 *weakSelf = self;
+    self.didLoadCallback = ^void(NSArray *response) {
+        [weakSelf.last.presentingViewController dismissViewControllerAnimated:NO completion:nil];
+        callback(response);
+    };
 }
 
 RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
@@ -44,20 +50,29 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
 }
 
 - (NSDictionary *)constantsToExport {
-  return @{ @"bundleIdentifier": [[NSBundle mainBundle] bundleIdentifier] };
+    return @{ @"bundleIdentifier": [[NSBundle mainBundle] bundleIdentifier] };
 }
 
 #pragma mark - Internal methods
+
+- (void)presentSafariWithURL:(NSURL *)url {
+    UIWindow *window = [[UIApplication sharedApplication] keyWindow];
+    SFSafariViewController *controller = [[SFSafariViewController alloc] initWithURL:url];
+    controller.delegate = self;
+    [self terminateWithError:RCTMakeError(@"Only one Safari can be visible", nil, nil) dismissing:YES animated:NO];
+    [window.rootViewController presentViewController:controller animated:YES completion:nil];
+    self.last = controller;
+}
 
 - (void)terminateWithError:(id)error dismissing:(BOOL)dismissing animated:(BOOL)animated {
     RCTResponseSenderBlock callback = self.sessionCallback ? self.sessionCallback : ^void(NSArray *_unused) {};
     if (dismissing) {
         [self.last.presentingViewController dismissViewControllerAnimated:animated
-                                                        completion:^{
-                                                            if (error) {
-                                                                callback(@[error]);
-                                                            }
-                                                        }];
+                                                               completion:^{
+                                                                   if (error) {
+                                                                       callback(@[error]);
+                                                                   }
+                                                               }];
     } else if (error) {
         callback(@[error]);
     }
@@ -70,8 +85,8 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
     int result __attribute__((unused)) = SecRandomCopyBytes(kSecRandomDefault, 32, data.mutableBytes);
     NSString *value = [[[[data base64EncodedStringWithOptions:0]
                          stringByReplacingOccurrencesOfString:@"+" withString:@"-"]
-                         stringByReplacingOccurrencesOfString:@"/" withString:@"_"]
-                         stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"="]];
+                        stringByReplacingOccurrencesOfString:@"/" withString:@"_"]
+                       stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"="]];
     return value;
 }
 
@@ -101,31 +116,33 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
 
 - (NSDictionary *)generateOAuthParameters {
     NSString *verifier = [self randomValue];
-    NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
     return @{
-        @"verifier": verifier,
-        @"code_challenge": [self sign:verifier],
-        @"code_challenge_method": @"S256",
-        @"state": [self randomValue]
-    };
+             @"verifier": verifier,
+             @"code_challenge": [self sign:verifier],
+             @"code_challenge_method": @"S256",
+             @"state": [self randomValue]
+             };
 }
 
 #pragma mark - SFSafariViewControllerDelegate
 
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
     NSDictionary *error = @{
-        @"error": @"a0.session.user_cancelled",
-        @"error_description": @"User cancelled the Auth"
-    };
+                            @"error": @"a0.session.user_cancelled",
+                            @"error_description": @"User cancelled the Auth"
+                            };
     [self terminateWithError:error dismissing:NO animated:NO];
 }
 
 - (void)safariViewController:(SFSafariViewController *)controller didCompleteInitialLoad:(BOOL)didLoadSuccessfully {
-    if (!didLoadSuccessfully) {
+    if (self.didLoadCallback) {
+        didLoadSuccessfully ? self.didLoadCallback(@[[NSNull null]]) : self.didLoadCallback(@[@{@"error": @"failed to clear session"}]);
+        self.didLoadCallback = nil;
+    } else if (!didLoadSuccessfully) {
         NSDictionary *error = @{
-            @"error": @"a0.session.failed_load",
-            @"error_description": @"Failed to load authorize url"
-        };
+                                @"error": @"a0.session.failed_load",
+                                @"error_description": @"Failed to load authorize url"
+                                };
         [self terminateWithError:error dismissing:YES animated:YES];
     }
 }
