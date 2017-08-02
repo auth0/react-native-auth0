@@ -18,7 +18,7 @@ public class A0Auth0Package implements ReactPackage {
 
     // Required @Override for RN v0.46.x and earlier
     public List<Class<? extends JavaScriptModule>> createJSModules() {
-        return Collections.emptyList();
+      return Collections.emptyList();
     }
 
     @Override
