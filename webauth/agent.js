@@ -3,19 +3,21 @@ import {
   Linking
 } from 'react-native';
 
-const { A0Auth0 } = NativeModules;
-
 export default class Agent {
 
   show(url, closeOnLoad = false) {
+    if (!NativeModules.A0Auth0) {
+      return Promise.reject(new Error('Missing NativeModule. Please make sure you run `react-native link react-native-auth0`'));
+    }
+
     return new Promise((resolve, reject) => {
       const urlHandler = (event) => {
-        A0Auth0.hide();
+        NativeModules.A0Auth0.hide();
         Linking.removeEventListener('url', urlHandler);
         resolve(event.url);
       };
       Linking.addEventListener('url', urlHandler);
-      A0Auth0.showUrl(url, closeOnLoad, (err) => {
+      NativeModules.A0Auth0.showUrl(url, closeOnLoad, (err) => {
         Linking.removeEventListener('url', urlHandler);
         if (err) {
           reject(err);
@@ -27,8 +29,12 @@ export default class Agent {
   }
 
   newTransaction() {
+    if (!NativeModules.A0Auth0) {
+      return Promise.reject(new Error('Missing NativeModule. Please make sure you run `react-native link react-native-auth0`'));
+    }
+
     return new Promise((resolve, reject) => {
-      A0Auth0.oauthParameters((parameters) => {
+      NativeModules.A0Auth0.oauthParameters((parameters) => {
         resolve(parameters);
       });
     });
