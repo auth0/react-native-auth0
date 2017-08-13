@@ -1,5 +1,11 @@
 # Change Log
 
+## [v1.0.4](https://github.com/auth0/react-native-auth0/tree/v1.0.4) (2017-08-13)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.0.3...v1.0.4)
+
+**Changed**
+- Remove override annotation on createJSModules method [\#70](https://github.com/auth0/react-native-auth0/pull/70) ([lukecwilliams](https://github.com/lukecwilliams))
+
 ## [v1.0.3](https://github.com/auth0/react-native-auth0/tree/v1.0.3) (2017-06-26)
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.0.2...v1.0.3)
 
