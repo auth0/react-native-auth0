@@ -136,7 +136,7 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
 
 - (void)safariViewController:(SFSafariViewController *)controller didCompleteInitialLoad:(BOOL)didLoadSuccessfully {
     if (self.didLoadCallback) {
-        didLoadSuccessfully ? self.didLoadCallback(@[[NSNull null]]) : self.didLoadCallback(@[@{@"error": @"failed to clear session"}]);
+        didLoadSuccessfully ? self.didLoadCallback(@[[NSNull null]]) : self.didLoadCallback(@[@{@"error": @"failed to load"}]);
         self.didLoadCallback = nil;
     } else if (!didLoadSuccessfully) {
         NSDictionary *error = @{

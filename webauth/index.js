@@ -103,14 +103,20 @@ export default class WebAuth {
    *
    * @param {Object} parameters parameters to send
    * @param {Bool} [parameters.federated] Optionally remove the IdP session.
-   * @returns {Callback}
+   * @returns {Promise}
    * @see https://auth0.com/docs/logout
    *
    * @memberof WebAuth
    */
-  clearSession(options = {}, callback) {
+  clearSession(options = {}) {
     const { clientId, domain, client, agent } = this;
     const federated = options.federated || false;
-    A0Auth0.clearSession(domain, federated, callback);
+    return new Promise(function (resolve, reject) {
+      if (Platform.OS !== 'ios') { reject(new Error('clearSession only supported in iOS')); }
+      A0Auth0.clearSession(domain, federated, function (err, data) {
+        if (err !== null) return reject(err);
+        resolve();
+      });
+    });
   }
 }
