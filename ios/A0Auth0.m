@@ -134,7 +134,7 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
 
 - (void)safariViewController:(SFSafariViewController *)controller didCompleteInitialLoad:(BOOL)didLoadSuccessfully {
     if (self.didLoadCallback) {
-        NSDictionary *response = didLoadSuccessfully ? response = @[[NSNull null]] : response = @[@{@"error": @"failed to load url"}];
+        NSArray *response = didLoadSuccessfully ? @[[NSNull null]] : @[@{@"error": @"failed to load url"}];
         self.didLoadCallback(response);
         self.didLoadCallback = nil;
     } else if (!didLoadSuccessfully) {
