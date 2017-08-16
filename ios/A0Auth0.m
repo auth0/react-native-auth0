@@ -34,9 +34,8 @@ RCT_EXPORT_METHOD(showUrl:(NSString *)urlString callback:(RCTResponseSenderBlock
     self.sessionCallback = callback;
 }
 
-RCT_EXPORT_METHOD(didLoadURL:(NSString *)url callback:(RCTResponseSenderBlock)callback) {
-    NSLog(@"%@",url);
-    [self presentSafariWithURL:[NSURL URLWithString:url]];
+RCT_EXPORT_METHOD(didLoadURL:(NSString *)urlString callback:(RCTResponseSenderBlock)callback) {
+    [self presentSafariWithURL:[NSURL URLWithString:urlString]];
     __weak A0Auth0 *weakSelf = self;
     self.didLoadCallback = ^void(NSArray *response) {
         [weakSelf.last.presentingViewController dismissViewControllerAnimated:NO completion:nil];
