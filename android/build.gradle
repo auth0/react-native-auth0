@@ -32,6 +32,6 @@ repositories {
 
 dependencies {
     compile 'com.facebook.react:react-native:+'
-    compile 'com.android.support:customtabs:23.3.0'
+    compile 'com.android.support:customtabs:23.0.1'
 }
   
