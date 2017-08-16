@@ -34,10 +34,9 @@ RCT_EXPORT_METHOD(showUrl:(NSString *)urlString callback:(RCTResponseSenderBlock
     self.sessionCallback = callback;
 }
 
-RCT_EXPORT_METHOD(clearSession:(NSString *)domain federated:(BOOL)federated callback:(RCTResponseSenderBlock)callback) {
-    NSString *urlString = [NSString stringWithFormat:@"https://%@/v2/logout", domain];
-    if (federated) { urlString = [urlString stringByAppendingString:@"?federated"]; }
-    [self presentSafariWithURL:[NSURL URLWithString:urlString]];
+RCT_EXPORT_METHOD(didLoadURL:(NSString *)url callback:(RCTResponseSenderBlock)callback) {
+    NSLog(@"%@",url);
+    [self presentSafariWithURL:[NSURL URLWithString:url]];
     __weak A0Auth0 *weakSelf = self;
     self.didLoadCallback = ^void(NSArray *response) {
         [weakSelf.last.presentingViewController dismissViewControllerAnimated:NO completion:nil];
@@ -136,7 +135,8 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
 
 - (void)safariViewController:(SFSafariViewController *)controller didCompleteInitialLoad:(BOOL)didLoadSuccessfully {
     if (self.didLoadCallback) {
-        didLoadSuccessfully ? self.didLoadCallback(@[[NSNull null]]) : self.didLoadCallback(@[@{@"error": @"failed to load"}]);
+        NSDictionary *response = didLoadSuccessfully ? response = @[[NSNull null]] : response = @[@{@"error": @"failed to load url"}];
+        self.didLoadCallback(response);
         self.didLoadCallback = nil;
     } else if (!didLoadSuccessfully) {
         NSDictionary *error = @{

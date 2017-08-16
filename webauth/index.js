@@ -113,8 +113,10 @@ export default class WebAuth {
     const federated = options.federated || false;
     return new Promise(function (resolve, reject) {
       if (Platform.OS !== 'ios') { reject(new Error('clearSession only supported in iOS')); }
-      A0Auth0.clearSession(domain, federated, function (err, data) {
-        if (err !== null) return reject(err);
+      const logoutURL = `https://${domain}/v2/logout${federated ? '?federated' : ''}`;
+      console.log(logoutURL);
+      A0Auth0.didLoadURL(logoutURL, function (err, data) {
+        if (err !== null) { return reject(err); }
         resolve();
       });
     });
