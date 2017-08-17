@@ -109,10 +109,18 @@ export default class WebAuth {
    * @memberof WebAuth
    */
   clearSession(options = {}) {
+    if (Platform.OS !== 'ios') {
+      return Promise.reject(new AuthError({
+        json: {
+          error: 'a0.platform.not_available',
+          error_description: `Cannot perform operation in platform ${Platform.OS}`
+        },
+        status: 0
+      }));
+    }
     const { clientId, domain, client, agent } = this;
     const federated = options.federated || false;
     return new Promise(function (resolve, reject) {
-      if (Platform.OS !== 'ios') { reject(new Error('clearSession only supported in iOS')); }
       const logoutURL = `https://${domain}/v2/logout${federated ? '?federated' : ''}`;
       console.log(logoutURL);
       A0Auth0.didLoadURL(logoutURL, function (err, data) {
