@@ -1,5 +1,11 @@
 # Change Log
 
+## [v1.1.1](https://github.com/auth0/react-native-auth0/tree/v1.1.1) (2017-08-18)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.1.0...v1.1.1)
+
+**Fixed**
+- Call resolve on logout load [\#80](https://github.com/auth0/react-native-auth0/pull/80) ([hzalaz](https://github.com/hzalaz))
+
 ## [v1.1.0](https://github.com/auth0/react-native-auth0/tree/v1.1.0) (2017-08-18)
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.0.4...v1.1.0)
 **Closed issues**
