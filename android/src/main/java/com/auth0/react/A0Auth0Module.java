@@ -51,7 +51,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
     }
 
     @ReactMethod
-    public void showUrl(String url, Callback callback) {
+    public void showUrl(String url, boolean closeOnLoad, Callback callback) {
         final Activity activity = getCurrentActivity();
 
         this.callback = callback;

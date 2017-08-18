@@ -7,7 +7,7 @@ const { A0Auth0 } = NativeModules;
 
 export default class Agent {
 
-  show(url) {
+  show(url, closeOnLoad = false) {
     return new Promise((resolve, reject) => {
       const urlHandler = (event) => {
         A0Auth0.hide();
@@ -15,7 +15,7 @@ export default class Agent {
         resolve(event.url);
       };
       Linking.addEventListener('url', urlHandler);
-      A0Auth0.showUrl(url, (err) => {
+      A0Auth0.showUrl(url, closeOnLoad, (err) => {
         Linking.removeEventListener('url', urlHandler);
         reject(err);
       });

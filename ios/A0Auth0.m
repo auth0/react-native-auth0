@@ -13,6 +13,7 @@
 @interface A0Auth0 () <SFSafariViewControllerDelegate>
 @property (weak, nonatomic) SFSafariViewController *last;
 @property (copy, nonatomic) RCTResponseSenderBlock sessionCallback;
+@property (assign, nonatomic) BOOL closeOnLoad;
 @end
 
 @implementation A0Auth0
@@ -28,14 +29,9 @@ RCT_EXPORT_METHOD(hide) {
     [self terminateWithError:nil dismissing:YES animated:YES];
 }
 
-RCT_EXPORT_METHOD(showUrl:(NSString *)urlString callback:(RCTResponseSenderBlock)callback) {
-    NSURL *url = [NSURL URLWithString:urlString];
-    UIWindow *window = [[UIApplication sharedApplication] keyWindow];
-    SFSafariViewController *controller = [[SFSafariViewController alloc] initWithURL:url];
-    controller.delegate = self;
-    [self terminateWithError:RCTMakeError(@"Only one Safari can be visible", nil, nil) dismissing:YES animated:NO];
-    [window.rootViewController presentViewController:controller animated:YES completion:nil];
-    self.last = controller;
+RCT_EXPORT_METHOD(showUrl:(NSString *)urlString closeOnLoad:(BOOL)closeOnLoad callback:(RCTResponseSenderBlock)callback) {
+    [self presentSafariWithURL:[NSURL URLWithString:urlString]];
+    self.closeOnLoad = closeOnLoad;
     self.sessionCallback = callback;
 }
 
@@ -44,25 +40,35 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
 }
 
 - (NSDictionary *)constantsToExport {
-  return @{ @"bundleIdentifier": [[NSBundle mainBundle] bundleIdentifier] };
+    return @{ @"bundleIdentifier": [[NSBundle mainBundle] bundleIdentifier] };
 }
 
 #pragma mark - Internal methods
+
+- (void)presentSafariWithURL:(NSURL *)url {
+    UIWindow *window = [[UIApplication sharedApplication] keyWindow];
+    SFSafariViewController *controller = [[SFSafariViewController alloc] initWithURL:url];
+    controller.delegate = self;
+    [self terminateWithError:RCTMakeError(@"Only one Safari can be visible", nil, nil) dismissing:YES animated:NO];
+    [window.rootViewController presentViewController:controller animated:YES completion:nil];
+    self.last = controller;
+}
 
 - (void)terminateWithError:(id)error dismissing:(BOOL)dismissing animated:(BOOL)animated {
     RCTResponseSenderBlock callback = self.sessionCallback ? self.sessionCallback : ^void(NSArray *_unused) {};
     if (dismissing) {
         [self.last.presentingViewController dismissViewControllerAnimated:animated
-                                                        completion:^{
-                                                            if (error) {
-                                                                callback(@[error]);
-                                                            }
-                                                        }];
+                                                               completion:^{
+                                                                   if (error) {
+                                                                       callback(@[error]);
+                                                                   }
+                                                               }];
     } else if (error) {
         callback(@[error]);
     }
     self.sessionCallback = nil;
     self.last = nil;
+    self.closeOnLoad = NO;
 }
 
 - (NSString *)randomValue {
@@ -70,8 +76,8 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
     int result __attribute__((unused)) = SecRandomCopyBytes(kSecRandomDefault, 32, data.mutableBytes);
     NSString *value = [[[[data base64EncodedStringWithOptions:0]
                          stringByReplacingOccurrencesOfString:@"+" withString:@"-"]
-                         stringByReplacingOccurrencesOfString:@"/" withString:@"_"]
-                         stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"="]];
+                        stringByReplacingOccurrencesOfString:@"/" withString:@"_"]
+                       stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"="]];
     return value;
 }
 
@@ -101,31 +107,32 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
 
 - (NSDictionary *)generateOAuthParameters {
     NSString *verifier = [self randomValue];
-    NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
     return @{
-        @"verifier": verifier,
-        @"code_challenge": [self sign:verifier],
-        @"code_challenge_method": @"S256",
-        @"state": [self randomValue]
-    };
+             @"verifier": verifier,
+             @"code_challenge": [self sign:verifier],
+             @"code_challenge_method": @"S256",
+             @"state": [self randomValue]
+             };
 }
 
 #pragma mark - SFSafariViewControllerDelegate
 
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
     NSDictionary *error = @{
-        @"error": @"a0.session.user_cancelled",
-        @"error_description": @"User cancelled the Auth"
-    };
+                            @"error": @"a0.session.user_cancelled",
+                            @"error_description": @"User cancelled the Auth"
+                            };
     [self terminateWithError:error dismissing:NO animated:NO];
 }
 
 - (void)safariViewController:(SFSafariViewController *)controller didCompleteInitialLoad:(BOOL)didLoadSuccessfully {
-    if (!didLoadSuccessfully) {
+    if (self.closeOnLoad && didLoadSuccessfully) {
+        [self terminateWithError:nil dismissing:YES animated:YES];
+    } else if (!didLoadSuccessfully) {
         NSDictionary *error = @{
-            @"error": @"a0.session.failed_load",
-            @"error_description": @"Failed to load authorize url"
-        };
+                                @"error": @"a0.session.failed_load",
+                                @"error_description": @"Failed to load url"
+                                };
         [self terminateWithError:error dismissing:YES animated:YES];
     }
 }

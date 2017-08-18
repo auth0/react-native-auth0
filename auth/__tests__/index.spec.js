@@ -71,6 +71,27 @@ describe('auth', () => {
     });
   });
 
+  describe('logoutUrl', () => {
+    it('should return default logout url', () => {
+      expect(auth.logoutUrl({})).toMatchSnapshot();
+    });
+
+    it('should return logout url with extra parameters', () => {
+      expect(auth.logoutUrl({
+        federated: true,
+        clientId: 'CLIENT_ID',
+        redirectTo: 'https://auth0.com'
+      })).toMatchSnapshot();
+    });
+
+    it('should return logout url with skipping unknown parameters', () => {
+      expect(auth.logoutUrl({
+       federated: true,
+        shouldNotBeThere: 'really'
+      })).toMatchSnapshot();
+    });
+  });
+
   describe('code exchange', () => {
     it('should send correct payload', async () => {
       fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
