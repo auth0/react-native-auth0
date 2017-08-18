@@ -17,7 +17,11 @@ export default class Agent {
       Linking.addEventListener('url', urlHandler);
       A0Auth0.showUrl(url, closeOnLoad, (err) => {
         Linking.removeEventListener('url', urlHandler);
-        reject(err);
+        if (err) {
+          reject(err);
+        } else if (closeOnLoad) {
+          resolve();
+        }
       });
     });
   }
