@@ -13,7 +13,7 @@
 @interface A0Auth0 () <SFSafariViewControllerDelegate>
 @property (weak, nonatomic) SFSafariViewController *last;
 @property (copy, nonatomic) RCTResponseSenderBlock sessionCallback;
-@property (copy, nonatomic) RCTResponseSenderBlock didLoadCallback;
+@property (assign, nonatomic) BOOL closeOnLoad;
 @end
 
 @implementation A0Auth0
@@ -29,18 +29,10 @@ RCT_EXPORT_METHOD(hide) {
     [self terminateWithError:nil dismissing:YES animated:YES];
 }
 
-RCT_EXPORT_METHOD(showUrl:(NSString *)urlString callback:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(showUrl:(NSString *)urlString closeOnLoad:(BOOL)closeOnLoad callback:(RCTResponseSenderBlock)callback) {
     [self presentSafariWithURL:[NSURL URLWithString:urlString]];
+    self.closeOnLoad = closeOnLoad;
     self.sessionCallback = callback;
-}
-
-RCT_EXPORT_METHOD(didLoadURL:(NSString *)urlString callback:(RCTResponseSenderBlock)callback) {
-    [self presentSafariWithURL:[NSURL URLWithString:urlString]];
-    __weak A0Auth0 *weakSelf = self;
-    self.didLoadCallback = ^void(NSArray *response) {
-        [weakSelf.last.presentingViewController dismissViewControllerAnimated:NO completion:nil];
-        callback(response);
-    };
 }
 
 RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
@@ -76,6 +68,7 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
     }
     self.sessionCallback = nil;
     self.last = nil;
+    self.closeOnLoad = NO;
 }
 
 - (NSString *)randomValue {
@@ -133,14 +126,12 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
 }
 
 - (void)safariViewController:(SFSafariViewController *)controller didCompleteInitialLoad:(BOOL)didLoadSuccessfully {
-    if (self.didLoadCallback) {
-        NSArray *response = didLoadSuccessfully ? @[[NSNull null]] : @[@{@"error": @"failed to load url"}];
-        self.didLoadCallback(response);
-        self.didLoadCallback = nil;
+    if (self.closeOnLoad && didLoadSuccessfully) {
+        [self terminateWithError:nil dismissing:YES animated:YES];
     } else if (!didLoadSuccessfully) {
         NSDictionary *error = @{
                                 @"error": @"a0.session.failed_load",
-                                @"error_description": @"Failed to load authorize url"
+                                @"error_description": @"Failed to load url"
                                 };
         [self terminateWithError:error dismissing:YES animated:YES];
     }

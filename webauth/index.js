@@ -118,15 +118,9 @@ export default class WebAuth {
         status: 0
       }));
     }
-    const { clientId, domain, client, agent } = this;
+    const { client, agent } = this;
     const federated = options.federated || false;
-    return new Promise(function (resolve, reject) {
-      const logoutURL = `https://${domain}/v2/logout${federated ? '?federated' : ''}`;
-      console.log(logoutURL);
-      A0Auth0.didLoadURL(logoutURL, function (err, data) {
-        if (err !== null) { return reject(err); }
-        resolve();
-      });
-    });
+    const logoutUrl = client.logoutUrl(options);
+    return agent.show(logoutUrl, true);
   }
 }
