@@ -96,4 +96,31 @@ export default class WebAuth {
           });
       });
   }
+
+  /**
+   *  Removes Auth0 session and optionally remove the Identity Provider session.
+   *  In iOS it will use `SFSafariViewController`
+   *
+   * @param {Object} parameters parameters to send
+   * @param {Bool} [parameters.federated] Optionally remove the IdP session.
+   * @returns {Promise}
+   * @see https://auth0.com/docs/logout
+   *
+   * @memberof WebAuth
+   */
+  clearSession(options = {}) {
+    if (Platform.OS !== 'ios') {
+      return Promise.reject(new AuthError({
+        json: {
+          error: 'a0.platform.not_available',
+          error_description: `Cannot perform operation in platform ${Platform.OS}`
+        },
+        status: 0
+      }));
+    }
+    const { client, agent } = this;
+    const federated = options.federated || false;
+    const logoutUrl = client.logoutUrl(options);
+    return agent.show(logoutUrl, true);
+  }
 }

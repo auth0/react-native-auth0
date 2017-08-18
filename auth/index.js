@@ -53,6 +53,29 @@ export default class Auth {
     return this.client.url('/authorize', {...query, client_id: this.clientId}, true);
   }
 
+    /**
+   * Builds the full logout endpoint url in the Authorization Server (AS) with given parameters.
+   *
+   * @param {Object} parameters parameters to send to `/v2/logout`
+   * @param {Boolean} [parameters.federated] if the logout should include removing session for federated IdP.
+   * @param {String} [parameters.clientId] client identifier of the one requesting the logout
+   * @param {String} [parameters.returnTo] url where the user is redirected to after logout. It must be declared in you Auth0 Dashboard
+   * @returns {String} logout url with specified parameters
+   * @see https://auth0.com/docs/api/authentication#logout
+   *
+   * @memberof Auth
+   */
+  logoutUrl(parameters = {}) {
+    const query = apply({
+      parameters: {
+        federated: { required: false },
+        clientId: { required: false, toName: 'client_id' },
+        returnTo: { required: false }
+      }
+    }, parameters);
+    return this.client.url('/v2/logout', {...query});
+  }
+
   /**
    * Exchanges a code obtained via `/authorize` (w/PKCE) for the user's tokens
    *
