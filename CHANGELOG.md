@@ -1,5 +1,16 @@
 # Change Log
 
+## [v1.1.0](https://github.com/auth0/react-native-auth0/tree/v1.1.0) (2017-08-18)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.0.4...v1.1.0)
+**Closed issues**
+- Could not invoke A0Auth.showUrl [\#67](https://github.com/auth0/react-native-auth0/issues/67)
+
+**Added**
+- Added clearSession iOS Safari Method [\#65](https://github.com/auth0/react-native-auth0/pull/65) ([cocojoe](https://github.com/cocojoe))
+
+**Fixed**
+- Change customtabs version to the same as default build tools [\#78](https://github.com/auth0/react-native-auth0/pull/78) ([lukecwilliams](https://github.com/lukecwilliams))
+
 ## [v1.0.4](https://github.com/auth0/react-native-auth0/tree/v1.0.4) (2017-08-13)
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.0.3...v1.0.4)
 
