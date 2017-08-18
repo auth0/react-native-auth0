@@ -1,3 +1,6 @@
+project.ext {
+    buildToolsVersion = "23.0.1"
+}
 
 buildscript {
     repositories {
@@ -13,7 +16,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "${project.ext.buildToolsVersion}"
 
     defaultConfig {
         minSdkVersion 16
@@ -32,6 +35,6 @@ repositories {
 
 dependencies {
     compile 'com.facebook.react:react-native:+'
-    compile 'com.android.support:customtabs:23.0.1'
+    compile "com.android.support:customtabs:${project.ext.buildToolsVersion}"
 }
-  
+
