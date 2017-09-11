@@ -1,5 +1,17 @@
 # Change Log
 
+## [v1.2.0](https://github.com/auth0/react-native-auth0/tree/v1.2.0) (2017-09-11)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.1.1...v1.2.0)
+**Closed issues**
+- Browser tabs not closed upon webauth success/failure [\#87](https://github.com/auth0/react-native-auth0/issues/87)
+- WebAuth never opens safari on iOS [\#84](https://github.com/auth0/react-native-auth0/issues/84)
+
+**Added**
+- Close Browser app tab after finishing Auth [\#90](https://github.com/auth0/react-native-auth0/pull/90) ([cocojoe](https://github.com/cocojoe))
+
+**Fixed**
+- Fix Present SFSafariViewController from Top ViewController [\#89](https://github.com/auth0/react-native-auth0/pull/89) ([cocojoe](https://github.com/cocojoe))
+
 ## [v1.1.1](https://github.com/auth0/react-native-auth0/tree/v1.1.1) (2017-08-18)
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.1.0...v1.1.1)
 
