@@ -133,7 +133,7 @@ Go to the [Auth0 Dashboard](https://manage.auth0.com/#/clients), select your cli
 #### iOS
 
 ```text
-{YOUR_BUNDLE_IDENTIFIER}://${YOUR_DOMAIN}/ios/{YOUR_BUNDLE_IDENTIFIER}/callback
+{YOUR_BUNDLE_IDENTIFIER}://${YOUR_AUTH0_DOMAIN}/ios/{YOUR_BUNDLE_IDENTIFIER}/callback
 ```
 
 #### Android
