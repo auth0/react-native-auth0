@@ -29,6 +29,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
 
     private static final String US_ASCII = "US-ASCII";
     private static final String SHA_256 = "SHA-256";
+    private static final int CANCEL_EVENT_DELAY = 100;
 
     private final ReactApplicationContext reactContext;
     private Callback callback;
@@ -139,7 +140,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
                     A0Auth0Module.this.callback = null;
                 }
             }
-        }, 100);
+        }, CANCEL_EVENT_DELAY);
     }
 
     @Override
