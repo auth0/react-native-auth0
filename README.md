@@ -38,7 +38,7 @@ react-native link react-native-auth0
 
 #### Android
 
-In the file `android/src/app/AndroidManifest.xml` you must make sure the main activity of the app has launch mode value of `singleTask` and that it has the following intent filter
+In the file `android/app/src/main/AndroidManifest.xml` you must make sure the **MainActivity** of the app has a **launchMode** value of `singleTask` and that it has the following intent filter:
 
 ```xml
 <intent-filter>
@@ -52,7 +52,7 @@ In the file `android/src/app/AndroidManifest.xml` you must make sure the main ac
 </intent-filter>
 ```
 
-So if you have `samples.auth0.com` as your Auth0 domain you would have the following activity configuration:
+So if you have `samples.auth0.com` as your Auth0 domain you would have the following **MainActivity**  configuration:
 
 ```xml
 <activity
@@ -94,7 +94,7 @@ Inside the `ios` folder find the file `AppDelegate.[swift|m]` add the following 
 }
 ```
 
-Then in your `Info.plist` file, find the value of the entry of `CFBundleIdentifier`, e.g.
+Inside the `ios` folder open the `Info.plist` and locate the value for `CFBundleIdentifier`, e.g.
 
 ```xml
 <key>CFBundleIdentifier</key>
@@ -119,9 +119,28 @@ and then register a URL type entry using the value of `CFBundleIdentifier` as th
 </array>
 ```
 
-> The value `org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)` is the default for apps created with RN cli, you will probably have a different value.
+
+> The value `org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)` is the default for apps created with React Native CLI, you may have a different value.
 
 > For more info please read [react native docs](https://facebook.github.io/react-native/docs/linking.html)
+
+### Callback URL(s)
+
+Callback URLs are the URLs that Auth0 invokes after the authentication process. Auth0 routes your application back to this URL and appends additional parameters to it, including a token. Since callback URLs can be manipulated, you will need to add your application's URL to your client's **Allowed Callback URLs for security**. This will enable Auth0 to recognize these URLs as valid. If omitted, authentication will not be successful.
+
+Go to the [Auth0 Dashboard](https://manage.auth0.com/#/clients), select your client and make sure that **Allowed Callback URLs** contains the following:
+
+#### iOS
+
+```text
+{YOUR_BUNDLE_IDENTIFIER}://${YOUR_AUTH0_DOMAIN}/ios/{YOUR_BUNDLE_IDENTIFIER}/callback
+```
+
+#### Android
+
+```text
+{YOUR_APP_PACKAGE_NAME}://{YOUR_AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
+```
 
 ## Usage
 
