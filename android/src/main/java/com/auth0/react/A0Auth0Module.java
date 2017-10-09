@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsIntent;
 import android.util.Base64;
@@ -28,6 +29,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
 
     private static final String US_ASCII = "US-ASCII";
     private static final String SHA_256 = "SHA-256";
+    private static final int CANCEL_EVENT_DELAY = 100;
 
     private final ReactApplicationContext reactContext;
     private Callback callback;
@@ -59,6 +61,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             CustomTabsIntent customTabsIntent = builder.build();
             customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             customTabsIntent.launchUrl(activity, Uri.parse(url));
         } else {
             final Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -125,13 +128,19 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
 
     @Override
     public void onHostResume() {
-        if (this.callback != null) {
-            final WritableMap error = Arguments.createMap();
-            error.putString("error", "a0.session.user_cancelled");
-            error.putString("error_description", "User cancelled the Auth");
-            this.callback.invoke(error);
-            this.callback = null;
-        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Callback cb = A0Auth0Module.this.callback;
+                if (cb != null) {
+                    final WritableMap error = Arguments.createMap();
+                    error.putString("error", "a0.session.user_cancelled");
+                    error.putString("error_description", "User cancelled the Auth");
+                    cb.invoke(error);
+                    A0Auth0Module.this.callback = null;
+                }
+            }
+        }, CANCEL_EVENT_DELAY);
     }
 
     @Override
