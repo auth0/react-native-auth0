@@ -1,5 +1,11 @@
 # Change Log
 
+## [v1.2.1](https://github.com/auth0/react-native-auth0/tree/v1.2.1) (2017-10-11)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.2.0...v1.2.1)
+
+**Fixed**
+- Fixed race condition in callback when using React Native Navigation [\#100](https://github.com/auth0/react-native-auth0/pull/100) ([cocojoe](https://github.com/cocojoe))
+
 ## [v1.2.0](https://github.com/auth0/react-native-auth0/tree/v1.2.0) (2017-09-11)
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.1.1...v1.2.0)
 **Closed issues**
