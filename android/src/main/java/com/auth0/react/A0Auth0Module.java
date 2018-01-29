@@ -63,7 +63,6 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
             customTabsIntent.launchUrl(activity, Uri.parse(url));
         } else {
             final Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setData(Uri.parse(url));
             getReactApplicationContext().startActivity(intent);
