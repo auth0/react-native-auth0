@@ -1,5 +1,11 @@
 # Change Log
 
+## [v1.2.2](https://github.com/auth0/react-native-auth0/tree/v1.2.2) (2018-01-31)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.2.1...v1.2.2)
+
+**Fixed**
+- Fix android web authentication [\#126](https://github.com/auth0/react-native-auth0/pull/126) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [v1.2.1](https://github.com/auth0/react-native-auth0/tree/v1.2.1) (2017-10-11)
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.2.0...v1.2.1)
 
