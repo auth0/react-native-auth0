@@ -78,8 +78,12 @@ export default class WebAuth {
             const {
               code,
               state: resultState,
-              error
+              error,
+              error_description
             } = query;
+            if (error_description) {
+              throw new AuthError({json: query, status: 0});
+            }
             if (error) {
               throw new Auth0Error({json: query, status: 0});
             }
