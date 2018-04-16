@@ -12,9 +12,9 @@ export default class Auth0 {
 
   /**
    * Creates an instance of Auth0.
-   * @param {Object} options your Auth0 client information
+   * @param {Object} options your Auth0 application information
    * @param {String} options.domain your Auth0 domain
-   * @param {String} options.clientId your Auth0 client identifier
+   * @param {String} options.clientId your Auth0 application client identifier
    *
    * @memberof Auth0
    */
