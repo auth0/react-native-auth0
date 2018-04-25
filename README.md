@@ -77,6 +77,8 @@ android:windowSoftInputMode="adjustResize">
 </activity>
 ```
 
+In order to reduce the potential for conflict which may be caused by the presence of differing versions of the Android support libraries, you may wish to [configure project-wide properties](https://developer.android.com/studio/build/gradle-tips.html#configure-project-wide-properties) setting the compile SDK version, build tools version, target SDK, and support library, in your root project's `build.gradle`, which will then be respected by `react-native-auth0` and many other React Native modules.
+
 > For more info please read [react native docs](https://facebook.github.io/react-native/docs/linking.html)
 
 #### iOS
