@@ -1,7 +1,3 @@
-project.ext {
-    buildToolsVersion = "23.0.1"
-}
-
 buildscript {
     repositories {
         jcenter()
@@ -14,13 +10,18 @@ buildscript {
 
 apply plugin: 'com.android.library'
 
+def DEFAULT_COMPILE_SDK_VERSION = 23
+def DEFAULT_BUILD_TOOLS_VERSION = "23.0.1"
+def DEFAULT_TARGET_SDK_VERSION = 22
+def DEFAULT_SUPPORT_LIB_VERSION = "23.0.1"
+
 android {
-    compileSdkVersion 23
-    buildToolsVersion "${project.ext.buildToolsVersion}"
+    compileSdkVersion rootProject.hasProperty('compileSdkVersion') ? rootProject.compileSdkVersion : DEFAULT_COMPILE_SDK_VERSION
+    buildToolsVersion rootProject.hasProperty('buildToolsVersion') ? rootProject.buildToolsVersion : DEFAULT_BUILD_TOOLS_VERSION
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion rootProject.hasProperty('targetSdkVersion') ? rootProject.targetSdkVersion : DEFAULT_TARGET_SDK_VERSION
         versionCode 1
         versionName "1.0"
     }
@@ -33,8 +34,10 @@ repositories {
     mavenCentral()
 }
 
+def supportVersion = rootProject.hasProperty('supportLibVersion') ? rootProject.supportLibVersion : DEFAULT_SUPPORT_LIB_VERSION
+
 dependencies {
     compile 'com.facebook.react:react-native:+'
-    compile "com.android.support:customtabs:${project.ext.buildToolsVersion}"
+    compile "com.android.support:customtabs:${supportVersion}"
 }
 
