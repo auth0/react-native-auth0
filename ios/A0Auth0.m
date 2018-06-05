@@ -13,6 +13,7 @@
 @interface A0Auth0 () <SFSafariViewControllerDelegate>
 @property (weak, nonatomic) SFSafariViewController *last;
 @property (copy, nonatomic) RCTResponseSenderBlock sessionCallback;
+@property (strong, nonatomic) SFAuthenticationSession *authentication;
 @property (assign, nonatomic) BOOL closeOnLoad;
 @end
 
@@ -24,6 +25,35 @@
 }
 
 RCT_EXPORT_MODULE();
+
+RCT_REMAP_METHOD(showAuthorization, showAuthorizationWithUrl:(NSString *)urlString callbackScheme:(NSString *)callbackScheme resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+    if (@available(iOS 11.0, *)) {
+        __weak __typeof(self) weakSelf = self;
+        self.authentication = [[SFAuthenticationSession alloc] initWithURL:[NSURL URLWithString:urlString]
+                                                         callbackURLScheme:callbackScheme
+                                                         completionHandler: ^(NSURL *callbackUrl, NSError *error) {
+                                                             __typeof(self) strongSelf = weakSelf;
+                                                             strongSelf.authentication = nil;
+                                                             
+                                                             if (error != nil) {
+                                                                 reject(@"3", @"Error authenticating", error);
+                                                             } else if (callbackUrl == nil) {
+                                                                 reject(@"4", @"No callback URL returned", nil);
+                                                             } else {
+                                                                 resolve([callbackUrl absoluteString]);
+                                                             }
+                                                         }
+                               ];
+        BOOL success = [self.authentication start];
+        
+        if (success == NO) {
+            reject(@"2", @"Could not open safari", nil);
+        }
+    } else {
+        reject(@"1", @"Can only call showAuthorization on iOS 11+", nil);
+    }
+}
 
 RCT_EXPORT_METHOD(hide) {
     [self terminateWithError:nil dismissing:YES animated:YES];

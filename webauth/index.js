@@ -27,13 +27,14 @@ export default class WebAuth {
     const { baseUrl, clientId, domain } = auth;
     this.domain = domain;
     this.clientId = clientId;
+
     this.agent = new Agent();
   }
 
   /**
    * Starts the AuthN/AuthZ transaction against the AS in the in-app browser.
    *
-   * In iOS it will use `SFSafariViewController` and in Android Chrome Custom Tabs.
+   * In iOS it will use `SFSafariViewController` or `SFAuthenticationSession` and in Android Chrome Custom Tabs.
    *
    * @param {Object} parameters parameters to send
    * @param {String} [parameters.state] random string to prevent CSRF attacks and used to discard unexepcted results. By default its a cryptographically secure random.
@@ -51,7 +52,8 @@ export default class WebAuth {
       .newTransaction()
       .then(({state, verifier, ...defaults}) => {
         const bundleIdentifier = A0Auth0.bundleIdentifier;
-        const redirectUri = `${bundleIdentifier.toLowerCase()}://${domain}/${Platform.OS}/${bundleIdentifier}/callback`
+        const callbackScheme = bundleIdentifier.toLowerCase();
+        const redirectUri = `${callbackScheme}://${domain}/${Platform.OS}/${bundleIdentifier}/callback`
         const expectedState = options.state || state;
         let query = {
           ...options,
@@ -62,8 +64,14 @@ export default class WebAuth {
           ...defaults,
         };
         const authorizeUrl = this.client.authorizeUrl(query);
+        const showOptions = {
+          url: authorizeUrl,
+          callbackScheme,
+          allowAuthenticationSession: options.allowAuthenticationSession,
+          closeOnLoad: false
+        };
         return agent
-          .show(authorizeUrl)
+          .show(showOptions)
           .then((redirectUrl) => {
             if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
               throw new AuthError({
