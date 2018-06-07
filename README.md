@@ -79,6 +79,9 @@ android:windowSoftInputMode="adjustResize">
 
 > For more info please read [react native docs](https://facebook.github.io/react-native/docs/linking.html)
 
+
+In order to reduce the potential for conflict which may be caused by the presence of differing versions of the Android support libraries, you may wish to [configure project-wide properties](https://developer.android.com/studio/build/gradle-tips.html#configure-project-wide-properties). Setting the Compile and Target SDK versions, Build Tools version, and Support Library version in your **root project's** `build.gradle` file will make `react-native-auth0` and many other React Native modules use them.
+
 #### iOS
 
 Inside the `ios` folder find the file `AppDelegate.[swift|m]` add the following to it
@@ -119,6 +122,7 @@ and then register a URL type entry using the value of `CFBundleIdentifier` as th
 </array>
 ```
 
+The `<string>` value should be the literal value of the Bundle Identifier with no $ variables, for example: `samples.auth0.com`.
 
 > The value `org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)` is the default for apps created with React Native CLI, you may have a different value.
 
@@ -166,6 +170,11 @@ auth0
 > This snippet sets the `audience` to ensure OIDC compliant responses, this can also be achieved by enabling the **OIDC Conformant** switch in your Auth0 dashboard under `Application / Settings / Advanced OAuth`. For more information please check [this documentation](https://auth0.com/docs/api-auth/intro#how-to-use-the-new-flows).
 
 ### Authentication API
+
+### Important: Database Connection Authentication
+
+Since June 2017 new Clients no longer have the **Password Grant Type*** enabled by default.
+If you are accessing a Database Connection using `passwordRealm` then you will need to enable the Password Grant Type, please follow [this guide](https://auth0.com/docs/clients/client-grant-types#how-to-edit-the-client-grant_types-property).
 
 #### Login with Password Realm Grant
 
