@@ -122,6 +122,7 @@ and then register a URL type entry using the value of `CFBundleIdentifier` as th
 </array>
 ```
 
+The `<string>` value should be the literal value of the Bundle Identifier with no $ variables, for example: `samples.auth0.com`.
 
 > The value `org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)` is the default for apps created with React Native CLI, you may have a different value.
 
