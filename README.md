@@ -130,7 +130,10 @@ The `<string>` value should be the literal value of the Bundle Identifier with n
 
 ### Callback URL(s)
 
-Callback URLs are the URLs that Auth0 invokes after the authentication process. Auth0 routes your application back to this URL and appends additional parameters to it, including a token. Since callback URLs can be manipulated, you will need to add this URL to your Application's **Allowed Callback URLs for security**. This will enable Auth0 to recognize these URLs as valid. If omitted, authentication will not be successful.
+Callback URLs are the URLs that Auth0 invokes after the authentication process. Auth0 routes your application back to this URL and appends additional parameters to it, including a token. Since callback URLs can be manipulated, you will need to add this URL to your Application's **Allowed Callback URLs** for security. This will enable Auth0 to recognize these URLs as valid. If omitted, authentication will not be successful.
+
+> Callback URLs must have a valid scheme value as defined by the [specification](https://tools.ietf.org/html/rfc3986#page-17). A "Redirect URI is not valid" error will raise if this format is not respected.
+
 
 Go to the [Auth0 Dashboard](https://manage.auth0.com/#/applications), select your application and make sure that **Allowed Callback URLs** contains the following:
 
