@@ -79,6 +79,9 @@ android:windowSoftInputMode="adjustResize">
 
 > For more info please read [react native docs](https://facebook.github.io/react-native/docs/linking.html)
 
+
+In order to reduce the potential for conflict which may be caused by the presence of differing versions of the Android support libraries, you may wish to [configure project-wide properties](https://developer.android.com/studio/build/gradle-tips.html#configure-project-wide-properties). Setting the Compile and Target SDK versions, Build Tools version, and Support Library version in your **root project's** `build.gradle` file will make `react-native-auth0` and many other React Native modules use them.
+
 #### iOS
 
 Inside the `ios` folder find the file `AppDelegate.[swift|m]` add the following to it
@@ -127,12 +130,12 @@ The `<string>` value should be the literal value of the Bundle Identifier with n
 
 ### Callback URL(s)
 
-Callback URLs are the URLs that Auth0 invokes after the authentication process. Auth0 routes your application back to this URL and appends additional parameters to it, including a token. Since callback URLs can be manipulated, you will need to add your application's URL to your client's **Allowed Callback URLs for security**. This will enable Auth0 to recognize these URLs as valid. If omitted, authentication will not be successful.
+Callback URLs are the URLs that Auth0 invokes after the authentication process. Auth0 routes your application back to this URL and appends additional parameters to it, including a token. Since callback URLs can be manipulated, you will need to add this URL to your Application's **Allowed Callback URLs for security**. This will enable Auth0 to recognize these URLs as valid. If omitted, authentication will not be successful.
 
-Go to the [Auth0 Dashboard](https://manage.auth0.com/#/clients), select your client and make sure that **Allowed Callback URLs** contains the following:
+Go to the [Auth0 Dashboard](https://manage.auth0.com/#/applications), select your application and make sure that **Allowed Callback URLs** contains the following:
 
 #### iOS
-
+sq
 ```text
 {YOUR_BUNDLE_IDENTIFIER}://${YOUR_AUTH0_DOMAIN}/ios/{YOUR_BUNDLE_IDENTIFIER}/callback
 ```
@@ -161,7 +164,7 @@ auth0
     .catch(error => console.log(error));
 ```
 
-> This snippet sets the `audience` to ensure OIDC compliant responses, this can also be achieved by enabling the **OIDC Conformant** switch in your Auth0 dashboard under `Client / Settings / Advanced OAuth`. For more information please check [this documentation](https://auth0.com/docs/api-auth/intro#how-to-use-the-new-flows).
+> This snippet sets the `audience` to ensure OIDC compliant responses, this can also be achieved by enabling the **OIDC Conformant** switch in your Auth0 dashboard under `Application / Settings / Advanced OAuth`. For more information please check [this documentation](https://auth0.com/docs/api-auth/intro#how-to-use-the-new-flows).
 
 ### Authentication API
 
