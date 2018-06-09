@@ -40,6 +40,7 @@ export default class WebAuth {
    * @param {String} [parameters.nonce] random string to prevent replay attacks of id_tokens.
    * @param {String} [parameters.audience] identifier of Resource Server (RS) to be included as audience (aud claim) of the issued access token
    * @param {String} [parameters.scope] scopes requested for the issued tokens. e.g. `openid profile`
+   * @param {String} [parameters.connection] The name of a social identity provider configured to your application, for example google-oauth2 or facebook. If null, it will redirect to the Auth0 Login Page and show the Login Widget.
    * @returns {Promise}
    * @see https://auth0.com/docs/api/authentication#authorize-client
    *
