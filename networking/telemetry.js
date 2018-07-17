@@ -1,5 +1,5 @@
-// Generated file by lbalmaceda on Wed Jan 31 2018 13:07:43 GMT-0300 (-03);
+// Generated file by lbalmaceda on Tue Jul 17 2018 16:52:11 GMT-0300 (-03);
 module.exports = {
   "name": "react-native-auth0",
-  "version": "1.2.2"
+  "version": "1.3.0"
 };
