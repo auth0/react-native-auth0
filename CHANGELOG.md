@@ -1,5 +1,15 @@
 # Change Log
 
+## [v1.3.0](https://github.com/auth0/react-native-auth0/tree/v1.3.0) (2018-07-17)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.2.2...v1.3.0)
+
+**Added**
+- android: allow root project to specify dependency versions [\#149](https://github.com/auth0/react-native-auth0/pull/149) ([mlc](https://github.com/mlc))
+
+**Fixed**
+- Add requiresMainQueueSetup to fix warning in RN 0.49+ [\#165](https://github.com/auth0/react-native-auth0/pull/165) ([frankrowe](https://github.com/frankrowe))
+- Fixed broken podspec for Cocoapods installations [\#136](https://github.com/auth0/react-native-auth0/pull/136) ([danieljvdm](https://github.com/danieljvdm))
+
 ## [v1.2.2](https://github.com/auth0/react-native-auth0/tree/v1.2.2) (2018-01-31)
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.2.1...v1.2.2)
 

@@ -73,6 +73,10 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
     return @{ @"bundleIdentifier": [[NSBundle mainBundle] bundleIdentifier] };
 }
 
++ (BOOL)requiresMainQueueSetup {
+    return YES;
+}
+
 #pragma mark - Internal methods
 
 - (void)presentSafariWithURL:(NSURL *)url {
