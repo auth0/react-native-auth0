@@ -1,5 +1,11 @@
 # Change Log
 
+## [v1.3.1](https://github.com/auth0/react-native-auth0/tree/v1.3.1) (2018-10-01)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.3.0...v1.3.1)
+
+**Changed**
+- Update Minimum iOS Deployment Target, inline with React Libs [\#176](https://github.com/auth0/react-native-auth0/pull/176) ([coosamatt](https://github.com/coosamatt))
+
 ## [v1.3.0](https://github.com/auth0/react-native-auth0/tree/v1.3.0) (2018-07-17)
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.2.2...v1.3.0)
 
