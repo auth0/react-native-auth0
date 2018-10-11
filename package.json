@@ -12,6 +12,11 @@
     "version": "node scripts/changelog.js && node scripts/jsdocs.js && node scripts/telemetry.js",
     "postversion": "npm run release:clean"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
   "repository": "git+https://github.com/auth0/react-native-auth0.git",
   "keywords": [
     "react-native",
@@ -40,11 +45,14 @@
     "eslint-plugin-react": "^6.2.0",
     "faker": "^3.1.0",
     "fetch-mock": "^5.1.1",
+    "husky": "^1.1.2",
     "jest": "^20.0.4",
     "jsdoc": "^3.4.3",
     "jsdoc-to-markdown": "^3.0.0",
     "minami": "^1.2.3",
-    "moment": "^2.18.1"
+    "moment": "^2.18.1",
+    "prettier": "^1.14.3",
+    "pretty-quick": "^1.7.0"
   },
   "jest": {
     "coverageDirectory": "./coverage/"

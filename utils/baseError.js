@@ -1,5 +1,5 @@
 export default class BaseError extends Error {
-  constructor (name, message) {
+  constructor(name, message) {
     super();
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
@@ -7,4 +7,4 @@ export default class BaseError extends Error {
     this.name = name;
     this.message = message;
   }
-};
+}

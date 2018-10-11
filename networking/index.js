@@ -4,19 +4,24 @@ import base64 from 'base-64';
 
 export default class Client {
   constructor(options) {
-    const {baseUrl, telemetry = {}, token} = options;
-    if (!baseUrl) { throw new Error('Missing Auth0 domain'); }
+    const { baseUrl, telemetry = {}, token } = options;
+    if (!baseUrl) {
+      throw new Error('Missing Auth0 domain');
+    }
     const {
       name = defaults.name,
       version = defaults.version,
       ...extras
     } = telemetry;
-    this.telemetry = {name, version, ...extras};
+    this.telemetry = { name, version, ...extras };
     if (name !== defaults.name) {
       this.telemetry.lib_version = defaults.version;
     }
     const parsed = url.parse(baseUrl);
-    this.baseUrl = parsed.protocol === 'https:' || parsed.protocol === 'http:' ? baseUrl : `https://${baseUrl}`;
+    this.baseUrl =
+      parsed.protocol === 'https:' || parsed.protocol === 'http:'
+        ? baseUrl
+        : `https://${baseUrl}`;
     this.domain = parsed.hostname || baseUrl;
     if (token) {
       this.bearer = `Bearer ${token}`;
@@ -52,7 +57,7 @@ export default class Client {
     const options = {
       method: method,
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
         'Auth0-Client': this._encodedTelemetry()
       }
@@ -63,26 +68,31 @@ export default class Client {
     if (body) {
       options.body = JSON.stringify(body);
     }
-    return fetch(url, options)
-      .then((response) => {
-        const payload = { status: response.status, ok: response.ok, headers: response.headers };
-        return response.json()
-          .then((json) => {
-            return { ...payload, json };
-          })
-          .catch(() => {
-            return response.text()
-              .then((text) => {
-                return { ...payload, text };
-              })
-              .catch(() => {
-                return { ...payload, text: response.statusText };
-              });
-          });
-      });
+    return fetch(url, options).then(response => {
+      const payload = {
+        status: response.status,
+        ok: response.ok,
+        headers: response.headers
+      };
+      return response
+        .json()
+        .then(json => {
+          return { ...payload, json };
+        })
+        .catch(() => {
+          return response
+            .text()
+            .then(text => {
+              return { ...payload, text };
+            })
+            .catch(() => {
+              return { ...payload, text: response.statusText };
+            });
+        });
+    });
   }
 
   _encodedTelemetry() {
-    return base64.encode(JSON.stringify(this.telemetry))
+    return base64.encode(JSON.stringify(this.telemetry));
   }
 }

@@ -1,18 +1,17 @@
-import { apply } from '../whitelist'
+import { apply } from '../whitelist';
 import faker from 'faker';
 
 describe('whitelist', () => {
-
   const rules = {
     parameters: {
-      state: {required: true},
-      nonce: {required: false},
-      clientId: {required: false, toName: 'client_id'},
+      state: { required: true },
+      nonce: { required: false },
+      clientId: { required: false, toName: 'client_id' },
       realm: {}
     },
     aliases: {
-      connection: "realm",
-      clientID: "clientId"
+      connection: 'realm',
+      clientID: 'clientId'
     }
   };
 
@@ -45,21 +44,21 @@ describe('whitelist', () => {
   });
 
   it('should remove non declared keys by default', () => {
-    const state = faker.random.uuid()
+    const state = faker.random.uuid();
     const value = {
       state,
       initialState: faker.random.uuid()
     };
-    expect(apply(rules, value)).toMatchObject({state});
+    expect(apply(rules, value)).toMatchObject({ state });
   });
 
   it('should keep non declared keys', () => {
-    const state = faker.random.uuid()
+    const state = faker.random.uuid();
     const value = {
       state,
       initialState: faker.random.uuid()
     };
-    const allowNonDeclared = { whitelist: false, ...rules};
+    const allowNonDeclared = { whitelist: false, ...rules };
     expect(apply(allowNonDeclared, value)).toMatchObject(value);
   });
 
@@ -67,19 +66,19 @@ describe('whitelist', () => {
     const value = {
       state: faker.random.uuid()
     };
-    expect(apply(rules, value)).toMatchObject({state: value.state});
+    expect(apply(rules, value)).toMatchObject({ state: value.state });
   });
 
   it('should use mapped name if available', () => {
-    const state = faker.random.uuid()
-    const clientId = faker.random.uuid()
+    const state = faker.random.uuid();
+    const clientId = faker.random.uuid();
     const value = {
       state,
       clientId
     };
     expect(apply(rules, value)).toMatchObject({
       state,
-      'client_id': clientId
+      client_id: clientId
     });
   });
 });
