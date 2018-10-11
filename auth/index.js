@@ -4,7 +4,7 @@ import { toCamelCase } from '../utils/camel';
 import AuthError from './authError';
 import Auth0Error from './auth0Error';
 
-function responseHandler (response, exceptions = {}) {
+function responseHandler(response, exceptions = {}) {
   if (response.ok && response.json) {
     return toCamelCase(response.json, exceptions);
   }
@@ -42,18 +42,25 @@ export default class Auth {
    * @memberof Auth
    */
   authorizeUrl(parameters = {}) {
-    const query = apply({
-      parameters: {
-        redirectUri: { required: true, toName: 'redirect_uri' },
-        responseType: { required: true, toName: 'response_type' },
-        state: { required: true }
+    const query = apply(
+      {
+        parameters: {
+          redirectUri: { required: true, toName: 'redirect_uri' },
+          responseType: { required: true, toName: 'response_type' },
+          state: { required: true }
+        },
+        whitelist: false
       },
-      whitelist: false
-    }, parameters);
-    return this.client.url('/authorize', {...query, client_id: this.clientId}, true);
+      parameters
+    );
+    return this.client.url(
+      '/authorize',
+      { ...query, client_id: this.clientId },
+      true
+    );
   }
 
-    /**
+  /**
    * Builds the full logout endpoint url in the Authorization Server (AS) with given parameters.
    *
    * @param {Object} parameters parameters to send to `/v2/logout`
@@ -66,14 +73,17 @@ export default class Auth {
    * @memberof Auth
    */
   logoutUrl(parameters = {}) {
-    const query = apply({
-      parameters: {
-        federated: { required: false },
-        clientId: { required: false, toName: 'client_id' },
-        returnTo: { required: false }
-      }
-    }, parameters);
-    return this.client.url('/v2/logout', {...query});
+    const query = apply(
+      {
+        parameters: {
+          federated: { required: false },
+          clientId: { required: false, toName: 'client_id' },
+          returnTo: { required: false }
+        }
+      },
+      parameters
+    );
+    return this.client.url('/v2/logout', { ...query });
   }
 
   /**
@@ -89,15 +99,22 @@ export default class Auth {
    * @memberof Auth
    */
   exchange(parameters = {}) {
-    const payload = apply({
-      parameters: {
-        code: { required: true },
-        verifier: { required: true, toName: 'code_verifier'},
-        redirectUri: { required: true, toName: 'redirect_uri' }
-      }
-    }, parameters);
+    const payload = apply(
+      {
+        parameters: {
+          code: { required: true },
+          verifier: { required: true, toName: 'code_verifier' },
+          redirectUri: { required: true, toName: 'redirect_uri' }
+        }
+      },
+      parameters
+    );
     return this.client
-      .post('/oauth/token', {...payload, client_id: this.clientId, grant_type: 'authorization_code'})
+      .post('/oauth/token', {
+        ...payload,
+        client_id: this.clientId,
+        grant_type: 'authorization_code'
+      })
       .then(responseHandler);
   }
 
@@ -116,20 +133,24 @@ export default class Auth {
    * @memberof Auth
    */
   passwordRealm(parameters = {}) {
-    const payload = apply({
-      parameters: {
-        username: { required: true },
-        password: { required: true },
-        realm: { required: true },
-        audience: { required: false },
-        scope: { required: false }
-      }
-    }, parameters);
+    const payload = apply(
+      {
+        parameters: {
+          username: { required: true },
+          password: { required: true },
+          realm: { required: true },
+          audience: { required: false },
+          scope: { required: false }
+        }
+      },
+      parameters
+    );
     return this.client
       .post('/oauth/token', {
         ...payload,
         client_id: this.clientId,
-        grant_type: 'http://auth0.com/oauth/grant-type/password-realm'})
+        grant_type: 'http://auth0.com/oauth/grant-type/password-realm'
+      })
       .then(responseHandler);
   }
 
@@ -145,12 +166,15 @@ export default class Auth {
    * @memberof Auth
    */
   refreshToken(parameters = {}) {
-    const payload = apply({
-      parameters: {
-        refreshToken: { required: true, toName: 'refresh_token' },
-        scope: { required: false }
-      }
-    }, parameters);
+    const payload = apply(
+      {
+        parameters: {
+          refreshToken: { required: true, toName: 'refresh_token' },
+          scope: { required: false }
+        }
+      },
+      parameters
+    );
     return this.client
       .post('/oauth/token', {
         ...payload,
@@ -170,17 +194,20 @@ export default class Auth {
    * @memberof Auth
    */
   revoke(parameters = {}) {
-    const payload = apply({
-      parameters: {
-        refreshToken: { required: true, toName: 'token' }
-      }
-    }, parameters);
+    const payload = apply(
+      {
+        parameters: {
+          refreshToken: { required: true, toName: 'token' }
+        }
+      },
+      parameters
+    );
     return this.client
       .post('/oauth/revoke', {
         ...payload,
-        client_id: this.clientId,
+        client_id: this.clientId
       })
-      .then((response) => {
+      .then(response => {
         if (response.ok) {
           return {};
         }
@@ -198,17 +225,43 @@ export default class Auth {
    * @memberof Auth
    */
   userInfo(parameters = {}) {
-    const payload = apply({
-      parameters: {
-        token: { required: true }
-      }
-    }, parameters);
-    const {baseUrl, telemetry} = this.client;
-    const client = new Client({baseUrl, telemetry, token: payload.token});
-    const claims = ["sub", "name", "given_name", "family_name", "middle_name", "nickname", "preferred_username", "profile", "picture", "website", "email", "email_verified", "gender", "birthdate", "zoneinfo", "locale", "phone_number", "phone_number_verified", "address", "updated_at"];
+    const payload = apply(
+      {
+        parameters: {
+          token: { required: true }
+        }
+      },
+      parameters
+    );
+    const { baseUrl, telemetry } = this.client;
+    const client = new Client({ baseUrl, telemetry, token: payload.token });
+    const claims = [
+      'sub',
+      'name',
+      'given_name',
+      'family_name',
+      'middle_name',
+      'nickname',
+      'preferred_username',
+      'profile',
+      'picture',
+      'website',
+      'email',
+      'email_verified',
+      'gender',
+      'birthdate',
+      'zoneinfo',
+      'locale',
+      'phone_number',
+      'phone_number_verified',
+      'address',
+      'updated_at'
+    ];
     return client
       .get('/userinfo')
-      .then((response) => responseHandler(response, {attributes: claims, whitelist: true}));
+      .then(response =>
+        responseHandler(response, { attributes: claims, whitelist: true })
+      );
   }
 
   /**
@@ -222,18 +275,21 @@ export default class Auth {
    * @memberof Auth
    */
   resetPassword(parameters = {}) {
-    const payload = apply({
-      parameters: {
-        email: { required: true },
-        connection: { required: true }
-      }
-    }, parameters);
+    const payload = apply(
+      {
+        parameters: {
+          email: { required: true },
+          connection: { required: true }
+        }
+      },
+      parameters
+    );
     return this.client
       .post('/dbconnections/change_password', {
         ...payload,
         client_id: this.clientId
       })
-      .then((response) => {
+      .then(response => {
         if (response.ok) {
           return {};
         }
@@ -255,22 +311,25 @@ export default class Auth {
    * @memberof Auth
    */
   createUser(parameters = {}) {
-    const payload = apply({
-      parameters: {
-        email: { required: true },
-        password: { required: true },
-        connection: { required: true },
-        username: { required: false },
-        metadata: { required: false, toName: 'user_metadata' }
-      }
-    }, parameters);
+    const payload = apply(
+      {
+        parameters: {
+          email: { required: true },
+          password: { required: true },
+          connection: { required: true },
+          username: { required: false },
+          metadata: { required: false, toName: 'user_metadata' }
+        }
+      },
+      parameters
+    );
 
     return this.client
       .post('/dbconnections/signup', {
         ...payload,
         client_id: this.clientId
       })
-      .then((response) => {
+      .then(response => {
         if (response.ok && response.json) {
           return toCamelCase(response.json);
         }

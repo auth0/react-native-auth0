@@ -6,7 +6,11 @@ function snakeToCamel(str) {
 }
 
 function toCamelCase(object, options = {}) {
-  if (typeof object !== 'object' || toString.call(object) === '[object Array]' || object === null) {
+  if (
+    typeof object !== 'object' ||
+    toString.call(object) === '[object Array]' ||
+    object === null
+  ) {
     return object;
   }
 
@@ -14,7 +18,10 @@ function toCamelCase(object, options = {}) {
 
   return Object.keys(object).reduce(function(p, key) {
     const inList = attributes.indexOf(key) !== -1;
-    var newKey = (inList && whitelist) || (!inList && !whitelist) ? snakeToCamel(key) : key;
+    var newKey =
+      (inList && whitelist) || (!inList && !whitelist)
+        ? snakeToCamel(key)
+        : key;
     p[newKey] = rootOnly ? object[key] : toCamelCase(object[key]);
     return p;
   }, {});
