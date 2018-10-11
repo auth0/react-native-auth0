@@ -21,7 +21,6 @@ function responseHandler(response, exceptions = {}) {
  */
 export default class Auth {
   constructor(options = {}) {
-    this.options = options;
     this.client = new Client(options);
     const { clientId } = options;
     if (!clientId) {
