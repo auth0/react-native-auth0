@@ -1,3 +1,4 @@
+import IdTokenVerifier from 'idtoken-verifier';
 import Client from '../networking';
 import { apply } from '../utils/whitelist';
 import { toCamelCase } from '../utils/camel';
@@ -20,6 +21,7 @@ function responseHandler(response, exceptions = {}) {
  */
 export default class Auth {
   constructor(options = {}) {
+    this.options = options;
     this.client = new Client(options);
     const { clientId } = options;
     if (!clientId) {
@@ -27,7 +29,27 @@ export default class Auth {
     }
     this.domain = this.client.domain;
     this.clientId = clientId;
+    this.verifier = new IdTokenVerifier({
+      issuer: `https://${this.domain}/`,
+      audience: this.clientId
+    });
   }
+  _verifyIdTokenIfAvailable = (response, nonce) => {
+    if (!response.idToken || typeof nonce === 'undefined') {
+      return response;
+    }
+    return new Promise((res, rej) => {
+      this.verifier.verify(response.idToken, nonce, (err, status) => {
+        if (err || !status) {
+          return rej({
+            error: 'invalid_token',
+            error_description: err.message || 'Invalid Token'
+          });
+        }
+        return res(response);
+      });
+    });
+  };
 
   /**
    * Builds the full authorize endpoint url in the Authorization Server (AS) with given parameters.
@@ -93,12 +115,13 @@ export default class Auth {
    * @param {String} parameters.code code returned by `/authorize`.
    * @param {String} parameters.redirectUri original redirectUri used when calling `/authorize`.
    * @param {String} parameters.verifier value used to generate the code challenge sent to `/authorize`.
+   * @param {String} [nonce] Nonce to verify the id_token. If `undefined`, then no verification will be made.
    * @returns {Promise}
    * @see https://auth0.com/docs/api-auth/grant/authorization-code-pkce
    *
    * @memberof Auth
    */
-  exchange(parameters = {}) {
+  exchange(parameters = {}, nonce) {
     const payload = apply(
       {
         parameters: {
@@ -115,7 +138,8 @@ export default class Auth {
         client_id: this.clientId,
         grant_type: 'authorization_code'
       })
-      .then(responseHandler);
+      .then(responseHandler)
+      .then(r => this._verifyIdTokenIfAvailable(r, nonce));
   }
 
   /**

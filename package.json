@@ -59,6 +59,7 @@
   },
   "dependencies": {
     "base-64": "^0.1.0",
+    "idtoken-verifier": "^1.2.0",
     "url": "^0.11.0"
   }
 }
