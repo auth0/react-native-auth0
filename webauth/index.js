@@ -86,7 +86,7 @@ export default class WebAuth {
             status: 0
           });
         }
-        return client.exchange({ code, verifier, redirectUri }, 'foo');
+        return client.exchange({ code, verifier, redirectUri }, options.nonce);
       });
     });
   }
