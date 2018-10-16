@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "test:watch": "jest --watch",
     "test:ci": "jest --coverage && codecov",
     "jsdoc:generate": "jsdoc --configure .jsdoc.json --verbose",
     "release:clean": "node scripts/cleanup.js",
@@ -38,6 +39,7 @@
   "homepage": "https://github.com/auth0/react-native-auth0#readme",
   "devDependencies": {
     "@types/jest": "^19.2.4",
+    "babel-helper-replace-supers": "^6.24.1",
     "babel-jest": "^20.0.3",
     "babel-preset-react-native": "^1.9.2",
     "codecov": "^2.2.0",

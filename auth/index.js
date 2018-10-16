@@ -42,7 +42,7 @@ export default class Auth {
         if (err || !status) {
           return rej({
             error: 'invalid_token',
-            error_description: err.message || 'Invalid Token'
+            error_description: (err && err.message) || 'Invalid Token'
           });
         }
         return res(response);

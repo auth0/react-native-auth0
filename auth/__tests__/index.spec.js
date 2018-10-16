@@ -1,5 +1,5 @@
-import Auth from '../';
 import fetchMock from 'fetch-mock';
+const mockIdToken = 'an id token';
 
 describe('auth', () => {
   const baseUrl = 'samples.auth0.com';
@@ -11,7 +11,7 @@ describe('auth', () => {
     status: 200,
     body: {
       access_token: 'an access token',
-      id_token: 'an id token',
+      id_token: mockIdToken,
       expires_in: 1234567890,
       state,
       scope: 'openid'
@@ -31,14 +31,40 @@ describe('auth', () => {
     body: 'Internal Server Error....',
     headers: { 'Content-Type': 'text/plain' }
   };
-  const auth = new Auth({ baseUrl, clientId, telemetry });
+  let auth;
 
-  beforeEach(fetchMock.restore);
+  beforeEach(() => {
+    fetchMock.restore();
+    jest.resetModules();
+    jest.mock('idtoken-verifier', () => {
+      return jest.fn().mockImplementation(() => {
+        return {
+          verify: (idtoken, nonce, cb) => {
+            if (idtoken === mockIdToken && nonce === 'nonce') {
+              return cb(null, true);
+            }
+            if (idtoken !== mockIdToken) {
+              return cb(new Error('not-today'));
+            }
+            //nonce !== 'nonce'
+            return cb(null, false);
+          }
+        };
+      });
+    });
+    const Auth = require('../').default;
+    auth = new Auth({ baseUrl, clientId, telemetry });
+  });
 
   describe('constructor', () => {
+    const Auth = require('../').default;
     it('should build with domain', () => {
       const auth = new Auth({ baseUrl, clientId });
       expect(auth.clientId).toEqual(clientId);
+    });
+    it('should create idtoken-verifier correctly', () => {
+      new Auth({ baseUrl, clientId });
+      expect(require('idtoken-verifier').mock.calls[0][0]).toMatchSnapshot();
     });
 
     it('should fail without clientId', () => {
@@ -123,6 +149,48 @@ describe('auth', () => {
         scope: 'openid'
       };
       await expect(auth.exchange(parameters)).resolves.toMatchSnapshot();
+    });
+
+    it('should validate id_token when a nonce is used', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
+      const parameters = {
+        code: 'a code',
+        verifier: 'a verifier',
+        redirectUri,
+        state,
+        scope: 'openid'
+      };
+      await expect(
+        auth.exchange(parameters, 'nonce')
+      ).resolves.toMatchSnapshot();
+    });
+    it('should return invalid_token error when id_token validation throws an error', async () => {
+      const newTokens = { ...tokens, body: { ...tokens.body } };
+      newTokens.body.id_token = 'wrong-idtoken';
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', newTokens);
+      const parameters = {
+        code: 'a code',
+        verifier: 'a verifier',
+        redirectUri,
+        state,
+        scope: 'openid'
+      };
+      await expect(
+        auth.exchange(parameters, 'nonce')
+      ).rejects.toMatchSnapshot();
+    });
+    it('should return invalid_token error when id_token validation returns status false', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
+      const parameters = {
+        code: 'a code',
+        verifier: 'a verifier',
+        redirectUri,
+        state,
+        scope: 'openid'
+      };
+      await expect(
+        auth.exchange(parameters, 'wrong-nonce')
+      ).rejects.toMatchSnapshot();
     });
 
     it('should handle oauth error', async () => {

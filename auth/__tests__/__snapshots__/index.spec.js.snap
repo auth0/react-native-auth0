@@ -29,6 +29,20 @@ exports[`auth code exchange should handle oauth error 1`] = `[invalid_request: I
 
 exports[`auth code exchange should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
 
+exports[`auth code exchange should return invalid_token error when id_token validation returns status false 1`] = `
+Object {
+  "error": "invalid_token",
+  "error_description": "Invalid Token",
+}
+`;
+
+exports[`auth code exchange should return invalid_token error when id_token validation throws an error 1`] = `
+Object {
+  "error": "invalid_token",
+  "error_description": "not-today",
+}
+`;
+
 exports[`auth code exchange should return successful response 1`] = `
 Object {
   "accessToken": "an access token",
@@ -52,6 +66,23 @@ Array [
     "method": "POST",
   },
 ]
+`;
+
+exports[`auth code exchange should validate id_token when a nonce is used 1`] = `
+Object {
+  "accessToken": "an access token",
+  "expiresIn": 1234567890,
+  "idToken": "an id token",
+  "scope": "openid",
+  "state": "a random state for auth",
+}
+`;
+
+exports[`auth constructor should create idtoken-verifier correctly 1`] = `
+Object {
+  "audience": "A_CLIENT_ID_OF_YOUR_ACCOUNT",
+  "issuer": "https://samples.auth0.com/",
+}
 `;
 
 exports[`auth constructor should fail without clientId 1`] = `"Missing clientId in parameters"`;
