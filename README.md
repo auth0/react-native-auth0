@@ -32,6 +32,12 @@ then you need to link the native module in `react-native-auth0`
 react-native link react-native-auth0
 ```
 
+alternatively, on iOS, edit your Podfile to link via CocoaPods
+
+```bash
+pod 'A0Auth0', :path => '../node_modules/react-native-auth0'
+```
+
 ### Configuration
 
 > This section is for those that want to use [WebAuth](#webauth), if you dont need it just ignore this section.
