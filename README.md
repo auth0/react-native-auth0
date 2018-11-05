@@ -6,7 +6,7 @@
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
 
-React Native toolkit for Auth0 API
+React Native toolkit for Auth0 API, compliant with [RFC 8252](https://tools.ietf.org/html/rfc8252)
 
 ## Requirements
 
