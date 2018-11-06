@@ -54,12 +54,12 @@ export default class WebAuth {
       }/${bundleIdentifier}/callback`;
       const expectedState = options.state || state;
       let query = {
-        ...options,
+        ...defaults
         clientId,
         responseType: 'code',
         redirectUri,
         state: expectedState,
-        ...defaults
+        ...options,
       };
       const authorizeUrl = this.client.authorizeUrl(query);
       return agent.show(authorizeUrl).then(redirectUrl => {
