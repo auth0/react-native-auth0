@@ -138,7 +138,7 @@ Callback URLs are the URLs that Auth0 invokes after the authentication process. 
 Go to the [Auth0 Dashboard](https://manage.auth0.com/#/applications), select your application and make sure that **Allowed Callback URLs** contains the following:
 
 #### iOS
-sq
+
 ```text
 {YOUR_BUNDLE_IDENTIFIER}://${YOUR_AUTH0_DOMAIN}/ios/{YOUR_BUNDLE_IDENTIFIER}/callback
 ```
