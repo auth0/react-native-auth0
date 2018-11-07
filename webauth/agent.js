@@ -17,10 +17,12 @@ export default class Agent {
         resolve(event.url);
       };
       Linking.addEventListener('url', urlHandler);
-      NativeModules.A0Auth0.showUrl(url, closeOnLoad, err => {
+      NativeModules.A0Auth0.showUrl(url, closeOnLoad, result => {
         Linking.removeEventListener('url', urlHandler);
-        if (err) {
-          reject(err);
+        if (result && result.url) {
+          resolve(result.url);
+        } else if (result) {
+          reject(result);
         } else if (closeOnLoad) {
           resolve();
         }
