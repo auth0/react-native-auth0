@@ -37,14 +37,13 @@ RCT_EXPORT_METHOD(hide) {
 }
 
 RCT_EXPORT_METHOD(showUrl:(NSString *)urlString closeOnLoad:(BOOL)closeOnLoad callback:(RCTResponseSenderBlock)callback) {
-    self.sessionCallback = callback;
-    self.closeOnLoad = closeOnLoad;
-    
-    if (@available(iOS 13.0, *)) {
+    if (@available(iOS 11.0, *)) {
         [self presentAuthenticationSession:[NSURL URLWithString:urlString]];
     } else {
         [self presentSafariWithURL:[NSURL URLWithString:urlString]];
     }
+    self.sessionCallback = callback;
+    self.closeOnLoad = closeOnLoad;
 }
 
 RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
