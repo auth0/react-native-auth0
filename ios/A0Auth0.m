@@ -79,13 +79,13 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
                                   filteredArrayUsingPredicate:predicate]
                                  firstObject];
     NSString *callbackURLScheme = queryItem.value;
+    RCTResponseSenderBlock callback = self.sessionCallback ? self.sessionCallback : ^void(NSArray *_unused) {};
     
     if (@available(iOS 12.0, *)) {
         self.authenticationSession = [[ASWebAuthenticationSession alloc]
                                       initWithURL:url callbackURLScheme:callbackURLScheme
                                       completionHandler:^(NSURL * _Nullable callbackURL,
                                                           NSError * _Nullable error) {
-                                          RCTResponseSenderBlock callback = self.sessionCallback ? self.sessionCallback : ^void(NSArray *_unused) {};
                                           if ([[error domain] isEqualToString:ASWebAuthenticationSessionErrorDomain]) {
                                               switch ([error code]) {
                                                   case SFAuthenticationErrorCanceledLogin:
@@ -99,12 +99,11 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
                                           self.authenticationSession = nil;
                                       }];
         [(ASWebAuthenticationSession*) self.authenticationSession start];
-    } else if (@available(iOS 12.0, *)) {
+    } else if (@available(iOS 11.0, *)) {
         self.authenticationSession = [[SFAuthenticationSession alloc]
                                       initWithURL:url callbackURLScheme:callbackURLScheme
                                       completionHandler:^(NSURL * _Nullable callbackURL,
                                                           NSError * _Nullable error) {
-                                          RCTResponseSenderBlock callback = self.sessionCallback ? self.sessionCallback : ^void(NSArray *_unused) {};
                                           if ([[error domain] isEqualToString:SFAuthenticationErrorDomain]) {
                                               switch ([error code]) {
                                                   case SFAuthenticationErrorCanceledLogin:
