@@ -54,7 +54,7 @@ export default class WebAuth {
       }/${bundleIdentifier}/callback`;
       const expectedState = options.state || state;
       let query = {
-        ...defaults
+        ...defaults,
         clientId,
         responseType: 'code',
         redirectUri,
