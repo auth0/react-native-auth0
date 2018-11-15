@@ -336,4 +336,44 @@ export default class Auth {
         throw new Auth0Error(response);
       });
   }
+
+  /**
+   * Based on https://auth0.com/docs/api/authentication?http#passwordless
+   *
+   * @param {Object} parameters start user parameters
+   * @param {String} parameters.email user's email //set for connection=email
+   * @param {String} parameters.phone_number user's phone number //set for connection=sms
+   * @param {String} parameters.connection 'email'|'sms'
+   * @param {String} parameters.send 'link'|'code'
+   * @param {Object} parameters.authParams any authentication parameters that you would like to add
+   * @returns {Promise}
+   *
+   * @memberof Auth
+   */
+  passwordlessStart(parameters = {}) {
+    const payload = apply(
+      {
+        parameters: {
+          email: { required: false },
+          phone_number: { required: false },
+          connection: { required: true },
+          send: { required: false },
+          authPArams: { required: false }
+        }
+      },
+      parameters
+    );
+
+    return this.client
+      .post('/passwordless/start', {
+        ...payload,
+        client_id: this.clientId
+      })
+      .then(response => {
+        if (response.ok && response.json) {
+          return toCamelCase(response.json);
+        }
+        throw new Auth0Error(response);
+      });
+  }
 }
