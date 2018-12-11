@@ -37,13 +37,13 @@ RCT_EXPORT_METHOD(hide) {
 }
 
 RCT_EXPORT_METHOD(showUrl:(NSString *)urlString closeOnLoad:(BOOL)closeOnLoad callback:(RCTResponseSenderBlock)callback) {
-    if (@available(iOS 11.0, *)) {
+    self.sessionCallback = callback;
+    self.closeOnLoad = closeOnLoad;
+    if (@available(iOS 13.0, *)) {
         [self presentAuthenticationSession:[NSURL URLWithString:urlString]];
     } else {
         [self presentSafariWithURL:[NSURL URLWithString:urlString]];
     }
-    self.sessionCallback = callback;
-    self.closeOnLoad = closeOnLoad;
 }
 
 RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
@@ -89,12 +89,12 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
                                           if ([[error domain] isEqualToString:ASWebAuthenticationSessionErrorDomain]) {
                                               switch ([error code]) {
                                                   case SFAuthenticationErrorCanceledLogin:
-                                                      callback(@[ERROR_CANCELLED]);
+                                                      callback(@[ERROR_CANCELLED, [NSNull null]]);
                                               }
                                           } else if(error) {
-                                              callback(@[error]);
+                                              callback(@[error, [NSNull null]]);
                                           } else if(callbackURL) {
-                                              callback(@[@{@"url": callbackURL.absoluteString}]);
+                                              callback(@[[NSNull null], callbackURL.absoluteString]);
                                           }
                                           self.authenticationSession = nil;
                                       }];
@@ -107,12 +107,12 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
                                           if ([[error domain] isEqualToString:SFAuthenticationErrorDomain]) {
                                               switch ([error code]) {
                                                   case SFAuthenticationErrorCanceledLogin:
-                                                      callback(@[ERROR_CANCELLED]);
+                                                      callback(@[ERROR_CANCELLED, [NSNull null]]);
                                               }
                                           } else if(error) {
-                                              callback(@[error]);
+                                              callback(@[error, [NSNull null]]);
                                           } else if(callbackURL) {
-                                              callback(@[@{@"url": callbackURL.absoluteString}]);
+                                              callback(@[[NSNull null], callbackURL.absoluteString]);
                                           }
                                           self.authenticationSession = nil;
                                       }];
@@ -127,11 +127,11 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
         [self.last.presentingViewController dismissViewControllerAnimated:animated
                                                                completion:^{
                                                                    if (error) {
-                                                                       callback(@[error]);
+                                                                       callback(@[error, [NSNull null]]);
                                                                    }
                                                                }];
     } else if (error) {
-        callback(@[error]);
+        callback(@[error, [NSNull null]]);
     }
     self.sessionCallback = nil;
     self.last = nil;
