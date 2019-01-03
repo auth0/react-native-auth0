@@ -103,7 +103,7 @@ export default class WebAuth {
    * @memberof WebAuth
    */
   clearSession(options = {}) {
-    if (Platform.OS !== 'ios') {
+    if (Platform.OS !== 'ios' || Platform.OS !== 'android') {
       return Promise.reject(
         new AuthError({
           json: {
