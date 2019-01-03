@@ -103,22 +103,21 @@ export default class WebAuth {
    * @memberof WebAuth
    */
   clearSession(options = {}) {
-    if (Platform.OS !== 'ios' || Platform.OS !== 'android') {
-      return Promise.reject(
-        new AuthError({
-          json: {
-            error: 'a0.platform.not_available',
-            error_description: `Cannot perform operation in platform ${
-              Platform.OS
-            }`
-          },
-          status: 0
-        })
-      );
-    }
-    const { client, agent } = this;
-    const federated = options.federated || false;
-    const logoutUrl = client.logoutUrl(options);
-    return agent.show(logoutUrl, true);
+    if (Platform.OS == 'ios' || Platform.OS == 'android' ) {
+      const { client, agent } = this;
+      const federated = options.federated || false;
+      const logoutUrl = client.logoutUrl(options);
+      return agent.show(logoutUrl, true);
+    } else {
+        return Promise.reject(
+          new AuthError({
+            json: {
+              error: 'a0.platform.not_available',
+              error_description: `Cannot perform operation in platform ${Platform.OS}`
+            },
+            status: 0
+          })
+        );
+     }
   }
 }
