@@ -155,6 +155,38 @@ export default class Auth {
   }
 
   /**
+   * Performs Auth with client secret using the Client Credentials Grant
+   *
+   * @param {Object} parameters client credentials parameters
+   * @param {String} parameters.client_secret client secret
+   * @param {String} [parameters.audience] identifier of Resource Server (RS) to be included as audience (aud claim) of the issued access token
+   * @param {String} [parameters.scope] scopes requested for the issued tokens. e.g. `openid profile`
+   * @returns {Promise}
+   * @see https://auth0.com/docs/flows/guides/m2m-flow/call-api-using-m2m-flow
+   *
+   * @memberof Auth
+   */
+  clientCredentials(parameters = {}) {
+    const payload = apply(
+      {
+        parameters: {
+          client_secret: { required: true },
+          audience: { required: false },
+          scope: { required: false }
+        }
+      },
+      parameters
+    );
+    return this.client
+      .post('/oauth/token', {
+        ...payload,
+        client_id: this.clientId,
+        grant_type: 'client_credentials'
+      })
+      .then(responseHandler);
+  }
+
+  /**
    * Obtain new tokens using the Refresh Token obtained during Auth (requesting `offline_access` scope)
    *
    * @param {Object} parameters refresh token parameters

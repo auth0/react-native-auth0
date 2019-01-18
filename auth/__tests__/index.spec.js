@@ -155,6 +155,48 @@ describe('auth', () => {
     });
   });
 
+  describe('client credentials', () => {
+    const parameters = {
+      client_id: 'client id',
+      client_secret: 'client secret',
+      audience: 'http://myapi.com',
+      scope: 'openid'
+    };
+    it('should send correct payload', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
+      expect.assertions(1);
+      await auth.clientCredentials(parameters);
+      expect(fetchMock.lastCall()).toMatchSnapshot();
+    });
+
+    it('should return successful response', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
+      expect.assertions(1);
+      await expect(
+        auth.clientCredentials(parameters)
+      ).resolves.toMatchSnapshot();
+    });
+
+    it('should handle oauth error', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', oauthError);
+      expect.assertions(1);
+      await expect(
+        auth.clientCredentials(parameters)
+      ).rejects.toMatchSnapshot();
+    });
+
+    it('should handle unexpected error', async () => {
+      fetchMock.postOnce(
+        'https://samples.auth0.com/oauth/token',
+        unexpectedError
+      );
+      expect.assertions(1);
+      await expect(
+        auth.clientCredentials(parameters)
+      ).rejects.toMatchSnapshot();
+    });
+  });
+
   describe('password realm', () => {
     const parameters = {
       username: 'info@auth0.com',
