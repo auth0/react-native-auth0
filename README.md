@@ -180,6 +180,8 @@ auth0
     .catch(error => console.log(error));
 ```
 
+For more info please check our generated [documentation](http://auth0.github.io/react-native-auth0/index.html)
+
 ### Authentication API
 
 ### Important: Database Connection Authentication
