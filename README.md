@@ -168,6 +168,9 @@ auth0
     .then(credentials => console.log(credentials))
     .catch(error => console.log(error));
 ```
+
+> This snippet sets the `audience` to ensure OIDC compliant responses, this can also be achieved by enabling the **OIDC Conformant** switch in your Auth0 dashboard under `Application / Settings / Advanced OAuth`. For more information please check [this documentation](https://auth0.com/docs/api-auth/intro#how-to-use-the-new-flows).
+
 #### Logout with WebAuth
 
 ```js
@@ -176,8 +179,6 @@ auth0
     .clearSession()
     .catch(error => console.log(error));
 ```
-
-> This snippet sets the `audience` to ensure OIDC compliant responses, this can also be achieved by enabling the **OIDC Conformant** switch in your Auth0 dashboard under `Application / Settings / Advanced OAuth`. For more information please check [this documentation](https://auth0.com/docs/api-auth/intro#how-to-use-the-new-flows).
 
 ### Authentication API
 
