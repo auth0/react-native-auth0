@@ -159,11 +159,21 @@ const auth0 = new Auth0({ domain: '{YOUR_AUTH0_DOMAIN}', clientId: '{YOUR_CLIENT
 
 ### WebAuth
 
+#### Login with WebAuth
+
 ```js
 auth0
     .webAuth
     .authorize({scope: 'openid email', audience: 'https://{YOUR_AUTH0_DOMAIN}/userinfo'})
     .then(credentials => console.log(credentials))
+    .catch(error => console.log(error));
+```
+#### Logout with WebAuth
+
+```js
+auth0
+    .webAuth
+    .clearSession()
     .catch(error => console.log(error));
 ```
 
