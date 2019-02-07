@@ -1,5 +1,13 @@
 # Change Log
 
+## [v1.4.0](https://github.com/auth0/react-native-auth0/tree/v1.4.0) (2019-02-07)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.3.1...v1.4.0)
+
+**Changed**
+- Remove obsolete React dependency from podspec. [\#192](https://github.com/auth0/react-native-auth0/pull/192) ([rnevius](https://github.com/rnevius))
+- Added iOS SF/ASWeb AuthenticationSession support [\#187](https://github.com/auth0/react-native-auth0/pull/187) ([cocojoe](https://github.com/cocojoe))
+- Allow authorize options to override default values [\#177](https://github.com/auth0/react-native-auth0/pull/177) ([kenzic](https://github.com/kenzic))
+
 ## [v1.3.1](https://github.com/auth0/react-native-auth0/tree/v1.3.1) (2018-10-01)
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.3.0...v1.3.1)
 
