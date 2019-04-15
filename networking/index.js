@@ -10,12 +10,12 @@ export default class Client {
     }
     const {
       name = defaults.name,
-      version = defaults.version,
-      ...extras
+      version = defaults.version
     } = telemetry;
-    this.telemetry = { name, version, ...extras };
+    this.telemetry = { name, version };
     if (name !== defaults.name) {
-      this.telemetry.lib_version = defaults.version;
+      this.telemetry.env = {}
+      this.telemetry.env[defaults.name] = defaults.version;
     }
     const parsed = url.parse(baseUrl);
     this.baseUrl =
