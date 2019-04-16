@@ -83,7 +83,7 @@ export default class Auth {
       },
       parameters
     );
-    return this.client.url('/v2/logout', { ...query });
+    return this.client.url('/v2/logout', { ...query }, true);
   }
 
   /**
