@@ -1,6 +1,6 @@
 {
   "name": "react-native-auth0",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "React Native toolkit for Auth0 API",
   "main": "index.js",
   "scripts": {
@@ -47,10 +47,10 @@
     "fetch-mock": "^5.1.1",
     "husky": "^1.1.2",
     "jest": "^20.0.4",
-    "jsdoc": "^3.4.3",
+    "jsdoc": "^3.5.5",
     "jsdoc-to-markdown": "^3.0.0",
     "minami": "^1.2.3",
-    "moment": "^2.18.1",
+    "moment": "^2.24.0",
     "prettier": "^1.14.3",
     "pretty-quick": "^1.7.0"
   },

@@ -1,5 +1,11 @@
 # Change Log
 
+## [v1.4.1](https://github.com/auth0/react-native-auth0/tree/v1.4.1) (2019-04-18)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.4.0...v1.4.1)
+
+**Fixed**
+- Podspec restore react dependency [\#214](https://github.com/auth0/react-native-auth0/pull/214) ([cocojoe](https://github.com/cocojoe))
+
 ## [v1.4.0](https://github.com/auth0/react-native-auth0/tree/v1.4.0) (2019-02-07)
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.3.1...v1.4.0)
 
