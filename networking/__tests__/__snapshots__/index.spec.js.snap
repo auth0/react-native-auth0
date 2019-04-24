@@ -35,7 +35,7 @@ Array [
 exports[`client requests GET json should handle no response 1`] = `
 Object {
   "headers": Headers {
-    "_headers": Object {},
+    Symbol(map): Object {},
   },
   "ok": true,
   "status": 201,
@@ -48,8 +48,11 @@ exports[`client requests GET json should handle request error 1`] = `[Error: paw
 exports[`client requests GET json should return json on success 1`] = `
 Object {
   "headers": Headers {
-    "_headers": Object {
-      "content-type": Array [
+    Symbol(map): Object {
+      "Content-Length": Array [
+        "15",
+      ],
+      "Content-Type": Array [
         "application/json",
       ],
     },
@@ -96,7 +99,7 @@ Array [
 exports[`client requests PATCH json should handle no response 1`] = `
 Object {
   "headers": Headers {
-    "_headers": Object {},
+    Symbol(map): Object {},
   },
   "ok": true,
   "status": 201,
@@ -109,8 +112,11 @@ exports[`client requests PATCH json should handle request error 1`] = `[Error: p
 exports[`client requests PATCH json should return json on success 1`] = `
 Object {
   "headers": Headers {
-    "_headers": Object {
-      "content-type": Array [
+    Symbol(map): Object {
+      "Content-Length": Array [
+        "15",
+      ],
+      "Content-Type": Array [
         "application/json",
       ],
     },
@@ -157,7 +163,7 @@ Array [
 exports[`client requests POST json should handle no response 1`] = `
 Object {
   "headers": Headers {
-    "_headers": Object {},
+    Symbol(map): Object {},
   },
   "ok": true,
   "status": 201,
@@ -170,8 +176,11 @@ exports[`client requests POST json should handle request error 1`] = `[Error: pa
 exports[`client requests POST json should return json on success 1`] = `
 Object {
   "headers": Headers {
-    "_headers": Object {
-      "content-type": Array [
+    Symbol(map): Object {
+      "Content-Length": Array [
+        "15",
+      ],
+      "Content-Type": Array [
         "application/json",
       ],
     },

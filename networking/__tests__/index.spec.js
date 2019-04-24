@@ -30,7 +30,9 @@ describe('client', () => {
       const client = new Client({ baseUrl, telemetry: custom });
       expect(client.telemetry).toMatchObject({
         ...custom,
-        lib_version: defaults.version
+        env: {
+          'react-native-auth0': defaults.version
+        }
       });
     });
 
