@@ -34,7 +34,7 @@ react-native link react-native-auth0
 
 ### Configuration
 
-> This section is for those that want to use [WebAuth](#webauth), if you dont need it just ignore this section.
+> This section is for those that want to use [Web Authentication](#web-authentication), if you dont need it just ignore this section.
 
 #### Android
 
@@ -157,7 +157,9 @@ import Auth0 from 'react-native-auth0';
 const auth0 = new Auth0({ domain: '{YOUR_AUTH0_DOMAIN}', clientId: '{YOUR_CLIENT_ID}' });
 ```
 
-### WebAuth
+### Web Authentication
+
+#### Log in
 
 ```js
 auth0
@@ -168,6 +170,15 @@ auth0
 ```
 
 > This snippet sets the `audience` to ensure OIDC compliant responses, this can also be achieved by enabling the **OIDC Conformant** switch in your Auth0 dashboard under `Application / Settings / Advanced OAuth`. For more information please check [this documentation](https://auth0.com/docs/api-auth/intro#how-to-use-the-new-flows).
+
+#### Log out
+
+```js
+auth0
+    .webAuth
+    .clearSession()
+    .catch(error => console.log(error));
+```
 
 ### Authentication API
 
