@@ -114,11 +114,11 @@ Array [
 ]
 `;
 
-exports[`auth logoutUrl should return default logout url 1`] = `"https://samples.auth0.com/v2/logout"`;
+exports[`auth logoutUrl should return default logout url 1`] = `"https://samples.auth0.com/v2/logout?auth0Client=eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0%3D"`;
 
-exports[`auth logoutUrl should return logout url with extra parameters 1`] = `"https://samples.auth0.com/v2/logout?federated=true&client_id=CLIENT_ID"`;
+exports[`auth logoutUrl should return logout url with extra parameters 1`] = `"https://samples.auth0.com/v2/logout?federated=true&client_id=CLIENT_ID&auth0Client=eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0%3D"`;
 
-exports[`auth logoutUrl should return logout url with skipping unknown parameters 1`] = `"https://samples.auth0.com/v2/logout?federated=true"`;
+exports[`auth logoutUrl should return logout url with skipping unknown parameters 1`] = `"https://samples.auth0.com/v2/logout?federated=true&auth0Client=eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0%3D"`;
 
 exports[`auth password realm should handle oauth error 1`] = `[invalid_request: Invalid grant]`;
 

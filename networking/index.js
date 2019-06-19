@@ -8,14 +8,11 @@ export default class Client {
     if (!baseUrl) {
       throw new Error('Missing Auth0 domain');
     }
-    const {
-      name = defaults.name,
-      version = defaults.version,
-      ...extras
-    } = telemetry;
-    this.telemetry = { name, version, ...extras };
+    const { name = defaults.name, version = defaults.version } = telemetry;
+    this.telemetry = { name, version };
     if (name !== defaults.name) {
-      this.telemetry.lib_version = defaults.version;
+      this.telemetry.env = {};
+      this.telemetry.env[defaults.name] = defaults.version;
     }
     const parsed = url.parse(baseUrl);
     this.baseUrl =

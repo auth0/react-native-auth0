@@ -224,7 +224,7 @@ auth0
 ```js
 auth0
     .auth
-    .createUser({email: 'info@auth0.com', username: 'username', pasword: 'password', connection: 'myconnection'})
+    .createUser({email: 'info@auth0.com', username: 'username', password: 'password', connection: 'myconnection'})
     .then(console.log)
     .catch(console.error);
 ```
