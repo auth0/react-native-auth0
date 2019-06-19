@@ -34,7 +34,7 @@ react-native link react-native-auth0
 
 ### Configuration
 
-> This section is for those that want to use [WebAuth](#webauth), if you dont need it just ignore this section.
+> This section is for those that want to use [Web Authentication](#web-authentication), if you dont need it just ignore this section.
 
 #### Android
 
