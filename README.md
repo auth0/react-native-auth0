@@ -157,9 +157,9 @@ import Auth0 from 'react-native-auth0';
 const auth0 = new Auth0({ domain: '{YOUR_AUTH0_DOMAIN}', clientId: '{YOUR_CLIENT_ID}' });
 ```
 
-### WebAuth
+### Web Authentication
 
-#### Login with WebAuth
+#### Log in
 
 ```js
 auth0
@@ -171,7 +171,7 @@ auth0
 
 > This snippet sets the `audience` to ensure OIDC compliant responses, this can also be achieved by enabling the **OIDC Conformant** switch in your Auth0 dashboard under `Application / Settings / Advanced OAuth`. For more information please check [this documentation](https://auth0.com/docs/api-auth/intro#how-to-use-the-new-flows).
 
-#### Logout with WebAuth
+#### Log out
 
 ```js
 auth0
@@ -179,8 +179,6 @@ auth0
     .clearSession()
     .catch(error => console.log(error));
 ```
-
-For more info please check our generated [documentation](http://auth0.github.io/react-native-auth0/index.html)
 
 ### Authentication API
 
