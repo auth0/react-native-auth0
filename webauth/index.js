@@ -7,6 +7,13 @@ import AuthError from '../auth/authError';
 
 const { A0Auth0 } = NativeModules;
 
+const callbackUri = domain => {
+  const bundleIdentifier = A0Auth0.bundleIdentifier;
+  return `${bundleIdentifier.toLowerCase()}://${domain}/${
+    Platform.OS
+  }/${bundleIdentifier}/callback`;
+};
+
 /**
  * Helper to perform Auth against Auth0 hosted login page
  *
@@ -48,10 +55,7 @@ export default class WebAuth {
   authorize(options = {}) {
     const { clientId, domain, client, agent } = this;
     return agent.newTransaction().then(({ state, verifier, ...defaults }) => {
-      const bundleIdentifier = A0Auth0.bundleIdentifier;
-      const redirectUri = `${bundleIdentifier.toLowerCase()}://${domain}/${
-        Platform.OS
-      }/${bundleIdentifier}/callback`;
+      const redirectUri = callbackUri(domain);
       const expectedState = options.state || state;
       let query = {
         ...defaults,
@@ -59,7 +63,7 @@ export default class WebAuth {
         responseType: 'code',
         redirectUri,
         state: expectedState,
-        ...options,
+        ...options
       };
       const authorizeUrl = this.client.authorizeUrl(query);
       return agent.show(authorizeUrl).then(redirectUrl => {
@@ -93,7 +97,8 @@ export default class WebAuth {
 
   /**
    *  Removes Auth0 session and optionally remove the Identity Provider session.
-   *  In iOS it will use `SFSafariViewController`
+   *
+   *  In iOS it will use `SFSafariViewController` and in Android Chrome Custom Tabs.
    *
    * @param {Object} parameters parameters to send
    * @param {Bool} [parameters.federated] Optionally remove the IdP session.
@@ -103,21 +108,10 @@ export default class WebAuth {
    * @memberof WebAuth
    */
   clearSession(options = {}) {
-    if (Platform.OS !== 'ios') {
-      return Promise.reject(
-        new AuthError({
-          json: {
-            error: 'a0.platform.not_available',
-            error_description: `Cannot perform operation in platform ${
-              Platform.OS
-            }`
-          },
-          status: 0
-        })
-      );
-    }
-    const { client, agent } = this;
-    const federated = options.federated || false;
+    const { client, agent, domain, clientId } = this;
+    options.clientId = clientId;
+    options.returnTo = callbackUri(domain);
+    options.federated = options.federated || false;
     const logoutUrl = client.logoutUrl(options);
     return agent.show(logoutUrl, true);
   }
