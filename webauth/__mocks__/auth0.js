@@ -24,4 +24,6 @@ export default class A0Auth0 {
   oauthParameters(callback) {
     callback(this.parameters);
   }
+
+  bundleIdentifier = 'com.My.App';
 }
