@@ -1,5 +1,17 @@
 # Change Log
 
+## [v1.5.0](https://github.com/auth0/react-native-auth0/tree/v1.5.0) (2019-07-15)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.4.2...v1.5.0)
+
+**Changed**
+
+- Enable WebAuth Logout for Android & Fix iOS Logout. [\#223](https://github.com/auth0/react-native-auth0/pull/223) ([lbalmaceda](https://github.com/lbalmaceda))
+
+**Fixed**
+
+- Fix error handling by using authentication error class [\#228](https://github.com/auth0/react-native-auth0/pull/228) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [v1.4.2](https://github.com/auth0/react-native-auth0/tree/v1.4.2) (2019-04-24)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.4.2...v1.4.2)
