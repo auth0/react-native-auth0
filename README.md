@@ -52,7 +52,7 @@ In the file `android/app/src/main/AndroidManifest.xml` you must make sure the **
 </intent-filter>
 ```
 
-So if you have `samples.auth0.com` as your Auth0 domain you would have the following **MainActivity**  configuration:
+So if you have `samples.auth0.com` as your Auth0 domain you would have the following **MainActivity** configuration:
 
 ```xml
 <activity
@@ -78,7 +78,6 @@ android:windowSoftInputMode="adjustResize">
 ```
 
 > For more info please read [react native docs](https://facebook.github.io/react-native/docs/linking.html)
-
 
 In order to reduce the potential for conflict which may be caused by the presence of differing versions of the Android support libraries, you may wish to [configure project-wide properties](https://developer.android.com/studio/build/gradle-tips.html#configure-project-wide-properties). Setting the Compile and Target SDK versions, Build Tools version, and Support Library version in your **root project's** `build.gradle` file will make `react-native-auth0` and many other React Native modules use them.
 
@@ -122,7 +121,7 @@ and then register a URL type entry using the value of `CFBundleIdentifier` as th
 </array>
 ```
 
-The `<string>` value should be the literal value of the Bundle Identifier with no $ variables, for example: `samples.auth0.com`.
+The `<string>` value should be the literal value of the Bundle Identifier with no \$ variables, for example: `samples.auth0.com`.
 
 > The value `org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)` is the default for apps created with React Native CLI, you may have a different value.
 
@@ -133,7 +132,6 @@ The `<string>` value should be the literal value of the Bundle Identifier with n
 Callback URLs are the URLs that Auth0 invokes after the authentication process. Auth0 routes your application back to this URL and appends additional parameters to it, including a token. Since callback URLs can be manipulated, you will need to add this URL to your Application's **Allowed Callback URLs** for security. This will enable Auth0 to recognize these URLs as valid. If omitted, authentication will not be successful.
 
 > Callback URLs must have a valid scheme value as defined by the [specification](https://tools.ietf.org/html/rfc3986#page-17). A "Redirect URI is not valid" error will raise if this format is not respected.
-
 
 Go to the [Auth0 Dashboard](https://manage.auth0.com/#/applications), select your application and make sure that **Allowed Callback URLs** contains the following:
 
@@ -154,7 +152,10 @@ Go to the [Auth0 Dashboard](https://manage.auth0.com/#/applications), select you
 ```js
 import Auth0 from 'react-native-auth0';
 
-const auth0 = new Auth0({ domain: '{YOUR_AUTH0_DOMAIN}', clientId: '{YOUR_CLIENT_ID}' });
+const auth0 = new Auth0({
+  domain: '{YOUR_AUTH0_DOMAIN}',
+  clientId: '{YOUR_CLIENT_ID}'
+});
 ```
 
 ### Web Authentication
@@ -162,69 +163,75 @@ const auth0 = new Auth0({ domain: '{YOUR_AUTH0_DOMAIN}', clientId: '{YOUR_CLIENT
 #### Log in
 
 ```js
-auth0
-    .webAuth
-    .authorize({scope: 'openid email', audience: 'https://{YOUR_AUTH0_DOMAIN}/userinfo'})
-    .then(credentials => console.log(credentials))
-    .catch(error => console.log(error));
+auth0.webAuth
+  .authorize({
+    scope: 'openid email',
+    audience: 'https://{YOUR_AUTH0_DOMAIN}/userinfo'
+  })
+  .then(credentials => console.log(credentials))
+  .catch(error => console.log(error));
 ```
 
 > This snippet sets the `audience` to ensure OIDC compliant responses, this can also be achieved by enabling the **OIDC Conformant** switch in your Auth0 dashboard under `Application / Settings / Advanced OAuth`. For more information please check [this documentation](https://auth0.com/docs/api-auth/intro#how-to-use-the-new-flows).
 
+Pass `useLegacyAuthentication: true` to use the legacy authentication method (`SFSafariViewController` instead of `SFAuthenticationSession`). Typically used in non SSO applications. iOS only.
+
 #### Log out
 
 ```js
-auth0
-    .webAuth
-    .clearSession()
-    .catch(error => console.log(error));
+auth0.webAuth.clearSession().catch(error => console.log(error));
 ```
 
 ### Authentication API
 
 ### Important: Database Connection Authentication
 
-Since June 2017 new Clients no longer have the **Password Grant Type*** enabled by default.
+Since June 2017 new Clients no longer have the **Password Grant Type\*** enabled by default.
 If you are accessing a Database Connection using `passwordRealm` then you will need to enable the Password Grant Type, please follow [this guide](https://auth0.com/docs/clients/client-grant-types#how-to-edit-the-client-grant_types-property).
 
 #### Login with Password Realm Grant
 
 ```js
-auth0
-    .auth
-    .passwordRealm({username: "info@auth0.com", password: "password", realm: "myconnection"})
-    .then(console.log)
-    .catch(console.error);
+auth0.auth
+  .passwordRealm({
+    username: 'info@auth0.com',
+    password: 'password',
+    realm: 'myconnection'
+  })
+  .then(console.log)
+  .catch(console.error);
 ```
 
 #### Get user information using user's access_token
 
 ```js
-auth0
-    .auth
-    .userInfo({token: 'user access_token'})
-    .then(console.log)
-    .catch(console.error);
+auth0.auth
+  .userInfo({ token: 'user access_token' })
+  .then(console.log)
+  .catch(console.error);
 ```
 
 #### Getting new access token with refresh token
 
 ```js
-auth0
-    .auth
-    .refreshToken({refreshToken: 'user refresh_token'})
-    .then(console.log)
-    .catch(console.error);
+auth0.auth
+  .refreshToken({ refreshToken: 'user refresh_token' })
+  .then(console.log)
+  .catch(console.error);
 ```
 
 #### Create user in database connection
 
 ```js
-auth0
-    .auth
-    .createUser({email: 'info@auth0.com', username: 'username', password: 'password', connection: 'myconnection'})
-    .then(console.log)
-    .catch(console.error);
+auth0.auth
+  .createUser({
+    email: 'info@auth0.com',
+    username: 'username',
+    password: 'password',
+    connection: 'myconnection'
+  })
+  .then(console.log)
+  .catch(console.error);
 ```
 
 ### Management API (Users)
@@ -233,20 +240,23 @@ auth0
 
 ```js
 auth0
-    .users('user token')
-    .patchUser({id: 'user_id', metadata: {'first_name': 'John', 'last_name': 'Doe'}})
-    .then(console.log)
-    .catch(console.error);
+  .users('user token')
+  .patchUser({
+    id: 'user_id',
+    metadata: { first_name: 'John', last_name: 'Doe' }
+  })
+  .then(console.log)
+  .catch(console.error);
 ```
 
 ### Get full user profile
 
 ```js
 auth0
-    .users('user token')
-    .getUser({id: "user_id"})
-    .then(console.log)
-    .catch(console.error);
+  .users('user token')
+  .getUser({ id: 'user_id' })
+  .then(console.log)
+  .catch(console.error);
 ```
 
 For more info please check our generated [documentation](http://auth0.github.io/react-native-auth0/index.html)
@@ -255,12 +265,12 @@ For more info please check our generated [documentation](http://auth0.github.io/
 
 Auth0 helps you to:
 
-* Add authentication with [multiple authentication sources](https://docs.auth0.com/identityproviders), either social like **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce, amont others**, or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS or any SAML Identity Provider**.
-* Add authentication through more traditional **[username/password databases](https://docs.auth0.com/mysql-connection-tutorial)**.
-* Add support for **[linking different user accounts](https://docs.auth0.com/link-accounts)** with the same user.
-* Support for generating signed [Json Web Tokens](https://docs.auth0.com/jwt) to call your APIs and **flow the user identity** securely.
-* Analytics of how, when and where users are logging in.
-* Pull data from other sources and add it to the user profile, through [JavaScript rules](https://docs.auth0.com/rules).
+- Add authentication with [multiple authentication sources](https://docs.auth0.com/identityproviders), either social like **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce, amont others**, or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS or any SAML Identity Provider**.
+- Add authentication through more traditional **[username/password databases](https://docs.auth0.com/mysql-connection-tutorial)**.
+- Add support for **[linking different user accounts](https://docs.auth0.com/link-accounts)** with the same user.
+- Support for generating signed [Json Web Tokens](https://docs.auth0.com/jwt) to call your APIs and **flow the user identity** securely.
+- Analytics of how, when and where users are logging in.
+- Pull data from other sources and add it to the user profile, through [JavaScript rules](https://docs.auth0.com/rules).
 
 ## Create a free Auth0 Account
 
@@ -280,6 +290,7 @@ If you have found a bug or if you have a feature request, please report them at 
 This project is licensed under the MIT license. See the [LICENSE](LICENSE.txt) file for more info.
 
 <!-- Variables -->
+
 [npm-image]: https://img.shields.io/npm/v/react-native-auth0.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/react-native-auth0
 [circleci-image]: http://img.shields.io/circleci/project/github/auth0/react-native-auth0.svg?branch=master&style=flat-square
