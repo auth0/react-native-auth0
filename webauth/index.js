@@ -2,7 +2,6 @@ import Agent from './agent';
 import { NativeModules, Platform } from 'react-native';
 
 import url from 'url';
-import Auth0Error from '../auth/auth0Error';
 import AuthError from '../auth/authError';
 
 const { A0Auth0 } = NativeModules;
@@ -79,7 +78,7 @@ export default class WebAuth {
         const query = url.parse(redirectUrl, true).query;
         const { code, state: resultState, error } = query;
         if (error) {
-          throw new Auth0Error({ json: query, status: 0 });
+          throw new AuthError({ json: query, status: 0 });
         }
         if (resultState !== expectedState) {
           throw new AuthError({
