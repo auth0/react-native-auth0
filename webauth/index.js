@@ -52,7 +52,7 @@ export default class WebAuth {
    *
    * @memberof WebAuth
    */
-  authorize({ disableAuthenticatedSession, ...options } = {}) {
+  authorize(options = {}) {
     const { clientId, domain, client, agent } = this;
     return agent.newTransaction().then(({ state, verifier, ...defaults }) => {
       const redirectUri = callbackUri(domain);
@@ -66,32 +66,34 @@ export default class WebAuth {
         ...options
       };
       const authorizeUrl = this.client.authorizeUrl(query);
-      return agent.show(authorizeUrl, disableAuthenticatedSession).then(redirectUrl => {
-        if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
-          throw new AuthError({
-            json: {
-              error: 'a0.redirect_uri.not_expected',
-              error_description: `Expected ${redirectUri} but got ${redirectUrl}`
-            },
-            status: 0
-          });
-        }
-        const query = url.parse(redirectUrl, true).query;
-        const { code, state: resultState, error } = query;
-        if (error) {
-          throw new Auth0Error({ json: query, status: 0 });
-        }
-        if (resultState !== expectedState) {
-          throw new AuthError({
-            json: {
-              error: 'a0.state.invalid',
-              error_description: `Invalid state recieved in redirect url`
-            },
-            status: 0
-          });
-        }
-        return client.exchange({ code, verifier, redirectUri });
-      });
+      return agent
+        .show(authorizeUrl, false, options.useLegacyAuthentication)
+        .then(redirectUrl => {
+          if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
+            throw new AuthError({
+              json: {
+                error: 'a0.redirect_uri.not_expected',
+                error_description: `Expected ${redirectUri} but got ${redirectUrl}`
+              },
+              status: 0
+            });
+          }
+          const query = url.parse(redirectUrl, true).query;
+          const { code, state: resultState, error } = query;
+          if (error) {
+            throw new Auth0Error({ json: query, status: 0 });
+          }
+          if (resultState !== expectedState) {
+            throw new AuthError({
+              json: {
+                error: 'a0.state.invalid',
+                error_description: `Invalid state recieved in redirect url`
+              },
+              status: 0
+            });
+          }
+          return client.exchange({ code, verifier, redirectUri });
+        });
     });
   }
 

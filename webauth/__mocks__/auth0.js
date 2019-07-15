@@ -1,5 +1,5 @@
 export default class A0Auth0 {
-  showUrl(url, closeOnLoad, disableAuthenticatedSession, callback) {
+  showUrl(url, closeOnLoad, useLegacyAuthentication, callback) {
     this.url = url;
     this.hidden = false;
     if (this.error || closeOnLoad) {

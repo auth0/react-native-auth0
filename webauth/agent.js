@@ -1,7 +1,7 @@
 import { NativeModules, Linking } from 'react-native';
 
 export default class Agent {
-  show(url, closeOnLoad = false, disableAuthenticatedSession = false) {
+  show(url, closeOnLoad = false, useLegacyAuthentication = false) {
     if (!NativeModules.A0Auth0) {
       return Promise.reject(
         new Error(
@@ -20,7 +20,7 @@ export default class Agent {
       NativeModules.A0Auth0.showUrl(
         url,
         closeOnLoad,
-        disableAuthenticatedSession,
+        useLegacyAuthentication,
         (error, redirectURL) => {
           Linking.removeEventListener('url', urlHandler);
           if (error) {
