@@ -1,7 +1,7 @@
 import { NativeModules, Linking } from 'react-native';
 
 export default class Agent {
-  show(url, closeOnLoad = false) {
+  show(url, closeOnLoad = false, disableAuthenticatedSession = false) {
     if (!NativeModules.A0Auth0) {
       return Promise.reject(
         new Error(
@@ -17,16 +17,21 @@ export default class Agent {
         resolve(event.url);
       };
       Linking.addEventListener('url', urlHandler);
-      NativeModules.A0Auth0.showUrl(url, closeOnLoad, (error, redirectURL) => {
-        Linking.removeEventListener('url', urlHandler);
-        if (error) {
-          reject(error);
-        } else if(redirectURL) {
-          resolve(redirectURL);
-        } else if(closeOnLoad) {
-          resolve();
+      NativeModules.A0Auth0.showUrl(
+        url,
+        closeOnLoad,
+        disableAuthenticatedSession,
+        (error, redirectURL) => {
+          Linking.removeEventListener('url', urlHandler);
+          if (error) {
+            reject(error);
+          } else if (redirectURL) {
+            resolve(redirectURL);
+          } else if (closeOnLoad) {
+            resolve();
+          }
         }
-      });
+      );
     });
   }
 

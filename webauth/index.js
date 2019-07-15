@@ -52,7 +52,7 @@ export default class WebAuth {
    *
    * @memberof WebAuth
    */
-  authorize(options = {}) {
+  authorize({ disableAuthenticatedSession, ...options } = {}) {
     const { clientId, domain, client, agent } = this;
     return agent.newTransaction().then(({ state, verifier, ...defaults }) => {
       const redirectUri = callbackUri(domain);
@@ -66,7 +66,7 @@ export default class WebAuth {
         ...options
       };
       const authorizeUrl = this.client.authorizeUrl(query);
-      return agent.show(authorizeUrl).then(redirectUrl => {
+      return agent.show(authorizeUrl, disableAuthenticatedSession).then(redirectUrl => {
         if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
           throw new AuthError({
             json: {
