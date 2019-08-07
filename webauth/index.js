@@ -75,6 +75,7 @@ export default class WebAuth {
             status: 0
           });
         }
+        redirectUrl = redirectUrl.replace('#', '?');
         const query = url.parse(redirectUrl, true).query;
         const { code, state: resultState, error } = query;
         if (error) {
