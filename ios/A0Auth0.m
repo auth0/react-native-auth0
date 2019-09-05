@@ -107,9 +107,11 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
                                           self.authenticationSession = nil;
                                       }];
         #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-            authenticationSession.presentationContextProvider = self
+        if (@available(iOS 13.0, *)) {
+            authenticationSession.presentationContextProvider = self;
+        }
         #endif
-        self.authenticationSession = authenticationSession
+        self.authenticationSession = authenticationSession;
         [(ASWebAuthenticationSession*) self.authenticationSession start];
     } else if (@available(iOS 11.0, *)) {
         self.authenticationSession = [[SFAuthenticationSession alloc]
