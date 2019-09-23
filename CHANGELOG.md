@@ -1,5 +1,13 @@
 # Change Log
 
+## [v1.6.0](https://github.com/auth0/react-native-auth0/tree/v1.6.0) (2019-09-23)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.5.0...v1.6.0)
+
+**Added**
+
+- Support for iOS 13 Web Authentication [\#234](https://github.com/auth0/react-native-auth0/pull/234) ([cocojoe](https://github.com/cocojoe))
+
 ## [v1.5.0](https://github.com/auth0/react-native-auth0/tree/v1.5.0) (2019-07-15)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.4.2...v1.5.0)
