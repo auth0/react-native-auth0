@@ -7,7 +7,7 @@ var library = require('../package.json');
 var execSync = require('child_process').execSync;
 var fs = require('fs');
 
-execSync('npm run jsdocs', {stdio: 'inherit'});
+execSync('yarn run jsdocs', {stdio: 'inherit'});
 if (fs.existsSync('docs')) {
   execSync('rm -r docs', {stdio: 'inherit'});
 }

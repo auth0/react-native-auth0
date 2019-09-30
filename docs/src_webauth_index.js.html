@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>src/webauth/index.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"
+    />
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="styles/prettify-tomorrow.css"
+    />
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css" />
+  </head>
+  <body>
+    <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+    <label for="nav-trigger" class="navicon-button x">
+      <div class="navicon"></div>
+    </label>
+
+    <label for="nav-trigger" class="overlay"></label>
+
+    <nav>
+      <li class="nav-link nav-home-link"><a href="index.html">Home</a></li>
+      <li class="nav-heading">Classes</li>
+      <li class="nav-heading">
+        <span class="nav-item-type type-class">C</span
+        ><span class="nav-item-name"><a href="Auth.html">Auth</a></span>
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.authorizeUrl">authorizeUrl</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.createUser">createUser</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.exchange">exchange</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.logoutUrl">logoutUrl</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.passwordRealm">passwordRealm</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.refreshToken">refreshToken</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.resetPassword">resetPassword</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.revoke">revoke</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.userInfo">userInfo</a></span
+        >
+      </li>
+      <li class="nav-heading">
+        <span class="nav-item-type type-class">C</span
+        ><span class="nav-item-name"><a href="Auth0.html">Auth0</a></span>
+      </li>
+      <li class="nav-heading">
+        <span class="nav-item-type type-class">C</span
+        ><span class="nav-item-name"
+          ><a href="Auth0.module.exports.html">module.exports</a></span
+        >
+      </li>
+      <li class="nav-heading">
+        <span class="nav-item-type type-class">C</span
+        ><span class="nav-item-name"><a href="Users.html">Users</a></span>
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Users.html#.getUser">getUser</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Users.html#.patchUser">patchUser</a></span
+        >
+      </li>
+      <li class="nav-heading">
+        <span class="nav-item-type type-class">C</span
+        ><span class="nav-item-name"><a href="WebAuth.html">WebAuth</a></span>
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="WebAuth.html#.authorize">authorize</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="WebAuth.html#.clearSession">clearSession</a></span
+        >
+      </li>
+      <li class="nav-heading"><a href="global.html">Globals</a></li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="global.html#users">users</a></span
+        >
+      </li>
+    </nav>
+
+    <div id="main">
+      <h1 class="page-title">src/webauth/index.js</h1>
+
+      <section>
+        <article>
+          <pre
+            class="prettyprint source linenums"
+          ><code>import Agent from './agent';
+import { NativeModules, Platform } from 'react-native';
+
+import url from 'url';
+import AuthError from '../auth/authError';
+
+const { A0Auth0 } = NativeModules;
+
+const callbackUri = domain => {
+  const bundleIdentifier = A0Auth0.bundleIdentifier;
+  return `${bundleIdentifier.toLowerCase()}://${domain}/${
+    Platform.OS
+  }/${bundleIdentifier}/callback`;
+};
+
+/**
+ * Helper to perform Auth against Auth0 hosted login page
+ *
+ * It will use `/authorize` endpoint of the Authorization Server (AS)
+ * with Code Grant and Proof Key for Challenge Exchange (PKCE).
+ *
+ * @export
+ * @class WebAuth
+ * @see https://auth0.com/docs/api-auth/grant/authorization-code-pkce
+ */
+export default class WebAuth {
+  constructor(auth) {
+    this.client = auth;
+    const { baseUrl, clientId, domain } = auth;
+    this.domain = domain;
+    this.clientId = clientId;
+    this.agent = new Agent();
+  }
+
+  /**
+   * Starts the AuthN/AuthZ transaction against the AS in the in-app browser.
+   *
+   * In iOS it will use `SFSafariViewController` and in Android Chrome Custom Tabs.
+   *
+   * To learn more about how to customize the authorize call, check the Universal Login Page
+   * article at https://auth0.com/docs/hosted-pages/login
+   *
+   * @param {Object} parameters parameters to send
+   * @param {String} [parameters.state] random string to prevent CSRF attacks and used to discard unexepcted results. By default its a cryptographically secure random.
+   * @param {String} [parameters.nonce] random string to prevent replay attacks of id_tokens.
+   * @param {String} [parameters.audience] identifier of Resource Server (RS) to be included as audience (aud claim) of the issued access token
+   * @param {String} [parameters.scope] scopes requested for the issued tokens. e.g. `openid profile`
+   * @param {String} [parameters.connection] The name of the identity provider to use, e.g. "google-oauth2" or "facebook". When not set, it will display Auth0's Universal Login Page.
+   * @returns {Promise}
+   * @see https://auth0.com/docs/api/authentication#authorize-client
+   *
+   * @memberof WebAuth
+   */
+  authorize(options = {}) {
+    const { clientId, domain, client, agent } = this;
+    return agent.newTransaction().then(({ state, verifier, ...defaults }) => {
+      const redirectUri = callbackUri(domain);
+      const expectedState = options.state || state;
+      let query = {
+        ...defaults,
+        clientId,
+        responseType: 'code',
+        redirectUri,
+        state: expectedState,
+        ...options
+      };
+      const authorizeUrl = this.client.authorizeUrl(query);
+      return agent.show(authorizeUrl).then(redirectUrl => {
+        if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
+          throw new AuthError({
+            json: {
+              error: 'a0.redirect_uri.not_expected',
+              error_description: `Expected ${redirectUri} but got ${redirectUrl}`
+            },
+            status: 0
+          });
+        }
+        const query = url.parse(redirectUrl, true).query;
+        const { code, state: resultState, error } = query;
+        if (error) {
+          throw new AuthError({ json: query, status: 0 });
+        }
+        if (resultState !== expectedState) {
+          throw new AuthError({
+            json: {
+              error: 'a0.state.invalid',
+              error_description: `Invalid state recieved in redirect url`
+            },
+            status: 0
+          });
+        }
+        return client.exchange({ code, verifier, redirectUri });
+      });
+    });
+  }
+
+  /**
+   *  Removes Auth0 session and optionally remove the Identity Provider session.
+   *
+   *  In iOS it will use `SFSafariViewController` and in Android Chrome Custom Tabs.
+   *
+   * @param {Object} parameters parameters to send
+   * @param {Bool} [parameters.federated] Optionally remove the IdP session.
+   * @returns {Promise}
+   * @see https://auth0.com/docs/logout
+   *
+   * @memberof WebAuth
+   */
+  clearSession(options = {}) {
+    const { client, agent, domain, clientId } = this;
+    options.clientId = clientId;
+    options.returnTo = callbackUri(domain);
+    options.federated = options.federated || false;
+    const logoutUrl = client.logoutUrl(options);
+    return agent.show(logoutUrl, true);
+  }
+}
+</code></pre>
+        </article>
+      </section>
+    </div>
+
+    <br class="clear" />
+
+    <footer>
+      Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on
+      Mon Sep 30 2019 17:51:28 GMT-0300 (Argentina Standard Time) using the
+      Minami theme.
+    </footer>
+
+    <script>
+      prettyPrint();
+    </script>
+    <script src="scripts/linenumber.js"></script>
+  </body>
+</html>
