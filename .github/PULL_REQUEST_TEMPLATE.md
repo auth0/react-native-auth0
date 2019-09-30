@@ -22,11 +22,11 @@ Please note any links that are not publicly accessible.
 
 Please describe how this can be tested by reviewers. Be specific about anything not tested and reasons why. If this library has unit and/or integration testing, tests should be added for new functionality and existing tests should complete without errors.
 
-* [ ] This change adds unit test coverage
-* [ ] This change has been tested on the latest version of the platform/language or why not
+- [ ] This change adds unit test coverage
+- [ ] This change has been tested on the latest version of the platform/language or why not
 
 ### Checklist
 
-* [ ] I have read the [Auth0 general contribution guidelines](https://github.com/auth0/open-source-template/blob/master/GENERAL-CONTRIBUTING.md)
-* [ ] All existing and new tests complete without errors
-* [ ] All active GitHub checks have passed
+- [ ] I have read the [Auth0 general contribution guidelines](https://github.com/auth0/open-source-template/blob/master/GENERAL-CONTRIBUTING.md)
+- [ ] All existing and new tests complete without errors
+- [ ] All active GitHub checks have passed

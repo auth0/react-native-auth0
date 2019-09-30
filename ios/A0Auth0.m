@@ -1,4 +1,3 @@
-
 #import "A0Auth0.h"
 
 #import <SafariServices/SafariServices.h>
@@ -230,6 +229,6 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
 - (ASPresentationAnchor)presentationAnchorForWebAuthenticationSession:(ASWebAuthenticationSession *)session API_AVAILABLE(ios(13.0)){
     return [UIApplication sharedApplication].keyWindow;
 }
-#endif // __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+#endif
 
 @end

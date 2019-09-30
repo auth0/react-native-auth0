@@ -1,13 +1,11 @@
-
 package com.auth0.react;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.customtabs.CustomTabsIntent;
+import androidx.annotation.NonNull;
+import androidx.browser.customtabs.CustomTabsIntent;
 import android.util.Base64;
 
 import com.facebook.react.bridge.Arguments;
@@ -26,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class A0Auth0Module extends ReactContextBaseJavaModule implements LifecycleEventListener {
-
     private static final String US_ASCII = "US-ASCII";
     private static final String SHA_256 = "SHA-256";
     private static final int CANCEL_EVENT_DELAY = 100;
@@ -41,15 +38,15 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
     }
 
     @Override
-    public String getName() {
-        return "A0Auth0";
-    }
-
-    @Override
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
         constants.put("bundleIdentifier", reactContext.getApplicationInfo().packageName);
         return constants;
+    }
+
+    @Override
+    public String getName() {
+        return "A0Auth0";
     }
 
     @ReactMethod
@@ -143,11 +140,11 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
 
     @Override
     public void onHostPause() {
-
+        // NO OP
     }
 
     @Override
     public void onHostDestroy() {
-
+        // NO OP
     }
 }

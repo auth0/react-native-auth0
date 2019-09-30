@@ -11,10 +11,10 @@ Description of the bug or feature request and why it's a problem. Consider inclu
 
 ### Prerequisites
 
-* [ ] Did you check the documentation? [Add a link]
-* [ ] Did you check the [Auth0 Community](https://community.auth0.com/)?
-* [ ] Are you reporting this to the correct repository?
-* [ ] Are there any related or duplicate Issues or PRs for this issue?
+- [ ] Did you check the documentation? [Add a link]
+- [ ] Did you check the [Auth0 Community](https://community.auth0.com/)?
+- [ ] Are you reporting this to the correct repository?
+- [ ] Are there any related or duplicate Issues or PRs for this issue?
 
 ### Environment
 

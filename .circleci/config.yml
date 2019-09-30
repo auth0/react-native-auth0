@@ -7,17 +7,18 @@ jobs:
       - checkout
 
       - restore_cache:
-          key: yarn-v1-{{ checksum "yarn.lock" }}
+          key: yarn-v2-{{ checksum "yarn.lock" }}
       - restore_cache:
-          key: node-v1-{{ checksum "package.json" }}
+          key: node-v2-{{ checksum "package.json" }}
       - run: yarn install
       - save_cache:
-          key: yarn-v1-{{ checksum "yarn.lock" }}
+          key: yarn-v2-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
       - save_cache:
-          key: node-v1-{{ checksum "package.json" }}
+          key: node-v2-{{ checksum "package.json" }}
           paths:
             - node_modules
 
       - run: yarn run test:ci
+      - run: bash <(curl -s https://codecov.io/bash) -f coverage/coverage-final.json
