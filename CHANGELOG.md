@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.0.0](https://github.com/auth0/react-native-auth0/tree/v2.0.0) (2019-10-08)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.0.0...v2.0.0)
+
+**Breaking changes**
+
+- Prepare release 2.0.0 [\#240](https://github.com/auth0/react-native-auth0/pull/240) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [v1.6.0](https://github.com/auth0/react-native-auth0/tree/v1.6.0) (2019-09-23)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.5.0...v1.6.0)
