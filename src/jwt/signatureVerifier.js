@@ -10,8 +10,7 @@ const ALLOWED_ALGORITHMS = ['RS256', 'HS256'];
  * @param {Object} options required to verify an ID token's signature
  * @param {String} [options.idToken] the ID token
  * @param {String} [options.domain] the Auth0 domain of the token's issuer
- * @returns {Promise} A promise that resolves to the decoced payload of the ID token, or will reject if there
- * the verification fails.
+ * @returns {Promise} A promise that resolves to the decoded payload of the ID token, or rejects if the verification fails.
  */
 export const verifySignature = options => {
   let header, payload;
