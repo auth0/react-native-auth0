@@ -13,7 +13,7 @@ For more information, see [yarn docs](https://yarnpkg.com/lang/en/docs/cli/add/)
 
 - Create a new milestone in Github with the name `vx.y.z` where `x.y.z` mean major, minor and patch versions (semver).
 - Add any issues or pull request to the milestone. Make sure they are assigned one of the changelog labels (CH).
-- Run `yarn release` and follow the instructions. If making a _patch_ release run `yarn version patch`. If making a _minor_ release run `yarn version minor`. The version will be updated in the package.json file and the changelog retrieved. If this step fails make sure the version in the package.json file matches the milestone you've created in Github.
+- Run `yarn release` and follow the instructions. If making a _patch_ release run `yarn release patch`. If making a _minor_ release run `yarn release minor`. The version will be updated in the package.json file and the changelog retrieved. If this step fails make sure the version in the package.json file matches the milestone you've created in Github.
 - The release script will generate the updated docs, bump the package version in the package.json and telemetry.js files and update the CHANGELOG.md file.
 - A new commit will be created for you containing these changes. A new git tag will reference this new release.
 - Create a new pull request and wait for it to be merged. Once merged when the CI build for the base branch passes, you're ready to upload the package to npm.

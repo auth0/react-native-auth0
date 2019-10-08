@@ -1,5 +1,20 @@
 # Change Log
 
+## [v2.0.0](https://github.com/auth0/react-native-auth0/tree/v2.0.0) (2019-10-08)
+
+This is a major release that supports **CocoaPods** and **Android X**.
+
+It requires at minimum React Native SDK version 0.60.5. If you need to run it on a different version, check the Compatibility Matrix on the README for reference.
+
+### Migration notes:
+
+- Install the SDK with yarn `add react-native-auth0` or npm `npm install react-native-auth0 --save`.
+- Install the Pod for the iOS native module. Change into the `ios` directory of your application and run `pod install`.
+
+Every iOS application after React Native SDK version 0.60.0 has a `podfile` file. If yours doesn't, please check the [documentation](https://facebook.github.io/react-native/docs/integration-with-existing-apps) on how to generate a valid one.
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.6.0...v2.0.0)
+
 ## [v1.6.0](https://github.com/auth0/react-native-auth0/tree/v1.6.0) (2019-09-23)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v1.5.0...v1.6.0)
