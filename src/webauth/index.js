@@ -47,7 +47,7 @@ export default class WebAuth {
    * @param {String} [parameters.audience] identifier of Resource Server (RS) to be included as audience (aud claim) of the issued access token
    * @param {String} [parameters.scope] scopes requested for the issued tokens. e.g. `openid profile`
    * @param {String} [parameters.connection] The name of the identity provider to use, e.g. "google-oauth2" or "facebook". When not set, it will display Auth0's Universal Login Page.
-   * @param {Number} [parameters.max_age] The allowable elapsed time in seconds since the last time the user was authenticated.
+   * @param {Number} [parameters.max_age] The allowable elapsed time in seconds since the last time the user was authenticated (optional).
    * @param {Object} options options for ID token validation configuration.
    * @param {Number} [options.leeway] The amount of leeway, in seconds, to accommodate potential clock skew when validating an ID token's claims. Defaults to 60 seconds if not specified.
    * @returns {Promise}
@@ -100,14 +100,10 @@ export default class WebAuth {
             return verifyToken(credentials, {
               clientId: clientId,
               domain: domain,
-              ...(parameters.nonce && {nonce: parameters.nonce}),
-              ...(typeof parameters.max_age === 'number' && {
-                maxAge: parameters.max_age,
-              }),
-              ...(parameters.scope && {scope: parameters.scope}),
-              ...(typeof options.leeway === 'number' && {
-                leeway: options.leeway,
-              }),
+              nonce: parameters.nonce,
+              maxAge: parameters.max_age,
+              scope: parameters.scope,
+              leeway: options.leeway,
             });
           });
       });
