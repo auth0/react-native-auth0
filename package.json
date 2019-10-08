@@ -48,6 +48,8 @@
   },
   "dependencies": {
     "base-64": "^0.1.0",
+    "jsrsasign": "^8.0.12",
+    "jwt-decode": "^2.2.0",
     "url": "^0.11.0"
   },
   "jest": {
