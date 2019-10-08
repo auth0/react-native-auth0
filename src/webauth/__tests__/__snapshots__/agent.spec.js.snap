@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Agent newTransaction should call native integration 1`] = `
+Object {
+  "state": "state",
+}
+`;
+
+exports[`Agent newTransaction should fail if native module is not linked 1`] = `[Error: Missing NativeModule. React Native versions 0.60 and up perform auto-linking. Please see https://github.com/react-native-community/cli/blob/master/docs/autolinking.md.]`;
+
+exports[`Agent show complete web flow should resolve promise with url result 1`] = `"https://auth0.com"`;
+
+exports[`Agent show failed flow should reject with error 1`] = `[Error: failed to load]`;
+
+exports[`Agent show should fail if native module is not linked 1`] = `[Error: Missing NativeModule. React Native versions 0.60 and up perform auto-linking. Please see https://github.com/react-native-community/cli/blob/master/docs/autolinking.md.]`;

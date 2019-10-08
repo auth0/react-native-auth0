@@ -178,44 +178,72 @@
             <a href="https://tools.ietf.org/html/rfc8252">RFC 8252</a>
           </p>
           <h2>Requirements</h2>
-          <p>React Native 0.26+</p>
-          <h2>Installation</h2>
           <p>
-            Install <code>react-native-auth0</code> using
-            <a href="https://www.npmjs.com">npm</a>
+            This SDK targets apps that are using React Native SDK version
+            <code>0.60.5</code> and up. If you're using an older React Native
+            version, see the compatibility matrix below.
           </p>
-          <pre
-            class="prettyprint source lang-bash"
-          ><code>npm install react-native-auth0 --save
-</code></pre>
-          <p>Or via <a href="https://yarnpkg.com/en/package/jest">yarn</a></p>
-          <pre
-            class="prettyprint source lang-bash"
-          ><code>yarn add react-native-auth0
-</code></pre>
+          <h3>Compatibility Matrix</h3>
           <p>
-            then you need to link the native module in
-            <code>react-native-auth0</code>
+            This SDK attempts to follow
+            <a href="https://semver.org/">semver</a> in a best-effort basis, but
+            React Native is still making releases that eventually include
+            breaking changes on it making this approach difficult for any React
+            Native library module. Use the table below to find the version that
+            best suites your application.
           </p>
-          <pre
-            class="prettyprint source lang-bash"
-          ><code>react-native link react-native-auth0
-</code></pre>
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:center">React Native SDK</th>
+                <th style="text-align:center">Auth0 SDK</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="text-align:center">v0.60.5</td>
+                <td style="text-align:center">v2.0.0</td>
+              </tr>
+              <tr>
+                <td style="text-align:center">v0.59.0 or lower</td>
+                <td style="text-align:center">v1.6.0</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            The contents of previous release can be found on the
+            <a href="https://github.com/auth0/react-native-auth0/tree/v1"
+              >branch v1</a
+            >.
+          </p>
+          <h2>Getting started</h2>
+          <p>First install the native library module:</p>
+          <p>Using <a href="https://www.npmjs.com">npm</a></p>
+          <p><code>$ npm install react-native-auth0 --save</code></p>
+          <p>or <a href="https://yarnpkg.com/en/">yarn</a></p>
+          <p><code>$ yarn add react-native-auth0</code></p>
+          <p>
+            Then, you need to run the following command to install the ios app
+            pods with Cocoapods. That will auto-link the iOS library.
+          </p>
+          <p><code>$ cd ios &amp;&amp; pod install</code></p>
           <h3>Configuration</h3>
-          <blockquote>
-            <p>
-              This section is for those that want to use
-              <a href="#web-authentication">Web Authentication</a>, if you dont
-              need it just ignore this section.
-            </p>
-          </blockquote>
+          <p>
+            You need make your Android and iOS applications aware that an
+            authentication result will be received from the browser. This SDK
+            makes use of the Android's Package Name and its analogous iOS's
+            Product Bundle Identifier to generate the redirect URL. Each
+            platform has its own set of instructions.
+          </p>
           <h4>Android</h4>
           <p>
-            In the file
-            <code>android/app/src/main/AndroidManifest.xml</code> you must make
-            sure the <strong>MainActivity</strong> of the app has a
-            <strong>launchMode</strong> value of <code>singleTask</code> and
-            that it has the following intent filter:
+            Open the <code>AndroidManifest.xml</code> file of your application
+            typically at
+            <code>android/app/src/main/AndroidManifest.xml</code> and
+            <strong>make sure</strong> the Activity on which you're going to
+            receive the authentication result has a
+            <strong>launchMode</strong> of <code>singleTask</code>. Additionally
+            inside this Activity definition include the following intent filter.
           </p>
           <pre class="prettyprint source lang-xml"><code>&lt;intent-filter>
     &lt;action android:name=&quot;android.intent.action.VIEW&quot; />
@@ -228,8 +256,9 @@
 &lt;/intent-filter>
 </code></pre>
           <p>
-            So if you have <code>samples.auth0.com</code> as your Auth0 domain
-            you would have the following
+            The <code>android:host</code> value must be replaced with your Auth0
+            domain value. So if you have <code>samples.auth0.com</code> as your
+            Auth0 domain you would have the following
             <strong>MainActivity</strong> configuration:
           </p>
           <pre class="prettyprint source lang-xml"><code>&lt;activity
@@ -253,6 +282,14 @@ android:windowSoftInputMode=&quot;adjustResize&quot;>
 &lt;/intent-filter>
 &lt;/activity>
 </code></pre>
+          <p>
+            The <code>applicationId</code> value will be auto-replaced on
+            runtime with the package name or id of your application (e.g.
+            <code>com.example.app</code>). You can change this value from the
+            <code>build.gradle</code> file. You can also check it at the top of
+            your <code>AndroidManifest.xml</code> file. Take note of this value
+            as you'll be requiring it to define the callback URLs below.
+          </p>
           <blockquote>
             <p>
               For more info please read
@@ -262,19 +299,6 @@ android:windowSoftInputMode=&quot;adjustResize&quot;>
               >
             </p>
           </blockquote>
-          <p>
-            In order to reduce the potential for conflict which may be caused by
-            the presence of differing versions of the Android support libraries,
-            you may wish to
-            <a
-              href="https://developer.android.com/studio/build/gradle-tips.html#configure-project-wide-properties"
-              >configure project-wide properties</a
-            >. Setting the Compile and Target SDK versions, Build Tools version,
-            and Support Library version in your <strong>root project's</strong>
-            <code>build.gradle</code> file will make
-            <code>react-native-auth0</code> and many other React Native modules
-            use them.
-          </p>
           <h4>iOS</h4>
           <p>
             Inside the <code>ios</code> folder find the file
@@ -299,11 +323,11 @@ android:windowSoftInputMode=&quot;adjustResize&quot;>
           <pre
             class="prettyprint source lang-xml"
           ><code>&lt;key>CFBundleIdentifier&lt;/key>
-&lt;string>org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)&lt;/string>
+&lt;string>$(PRODUCT_BUNDLE_IDENTIFIER)&lt;/string>
 </code></pre>
           <p>
-            and then register a URL type entry using the value of
-            <code>CFBundleIdentifier</code> as the value of
+            and then below it register a URL type entry using the value of
+            <code>CFBundleIdentifier</code> as the value for
             <code>CFBundleURLSchemes</code>
           </p>
           <pre
@@ -317,26 +341,41 @@ android:windowSoftInputMode=&quot;adjustResize&quot;>
         &lt;string>auth0&lt;/string>
         &lt;key>CFBundleURLSchemes&lt;/key>
         &lt;array>
-            &lt;string>org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)&lt;/string>
+            &lt;string>$(PRODUCT_BUNDLE_IDENTIFIER)&lt;/string>
         &lt;/array>
     &lt;/dict>
 &lt;/array>
 </code></pre>
           <p>
-            The <code>&lt;string&gt;</code> value should be the literal value of
-            the Bundle Identifier with no $ variables, for example:
-            <code>samples.auth0.com</code>.
+            If your application is generated using the React Native CLI, the
+            default value of <code>$(PRODUCT_BUNDLE_IDENTIFIER)</code> matches
+            <code
+              >org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)</code
+            >. Take note of this value as you'll be requiring it to define the
+            callback URLs below. If desired, you can change its value using
+            XCode in the following way:
           </p>
-          <blockquote>
-            <p>
-              The value
-              <code
-                >org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)</code
-              >
-              is the default for apps created with React Native CLI, you may
-              have a different value.
-            </p>
-          </blockquote>
+          <ul>
+            <li>
+              Open the <code>ios/TestApp.xcodeproj</code> file replacing
+              'TestApp' with the name of your app or run
+              <code>xed ios</code> from a Terminal.
+            </li>
+            <li>
+              Open your project's or desired target's
+              <strong>Build Settings</strong> tab and on the search bar at the
+              right type &quot;Product Bundle Identifier&quot;.
+            </li>
+            <li>
+              Replace the <strong>Product Bundle Identifier</strong> value with
+              your desired application's bundle identifier name (e.g.
+              <code>com.example.app</code>).
+            </li>
+            <li>
+              If you've changed the project wide settings, make sure the same
+              were applied to each of the targets your app has.
+            </li>
+          </ul>
           <blockquote>
             <p>
               For more info please read
@@ -361,45 +400,66 @@ android:windowSoftInputMode=&quot;adjustResize&quot;>
               Callback URLs must have a valid scheme value as defined by the
               <a href="https://tools.ietf.org/html/rfc3986#page-17"
                 >specification</a
-              >. A &quot;Redirect URI is not valid&quot; error will raise if
-              this format is not respected.
+              >. Note however that platforms like Android don't follow this RFC
+              and define the scheme and host values as case-sensitive. Since
+              this SDK makes use of the Android's Package Name and its analogous
+              iOS's Product Bundle Identifier to generate the redirect URL, it's
+              advised to use lower case values for such. A &quot;Redirect URI is
+              not valid&quot; error will raise if this format is not respected.
             </p>
           </blockquote>
           <p>
             Go to the
             <a href="https://manage.auth0.com/#/applications">Auth0 Dashboard</a
             >, select your application and make sure that
-            <strong>Allowed Callback URLs</strong> contains the following:
+            <strong>Allowed Callback URLs</strong> contains the URLs defined
+            below.
           </p>
-          <h4>iOS</h4>
-          <pre
-            class="prettyprint source lang-text"
-          ><code>{YOUR_BUNDLE_IDENTIFIER}://${YOUR_AUTH0_DOMAIN}/ios/{YOUR_BUNDLE_IDENTIFIER}/callback
-</code></pre>
+          <p>
+            If in addition you plan to use the log out method, you must also add
+            these URLs to the <strong>Allowed Logout URLs</strong>.
+          </p>
           <h4>Android</h4>
           <pre
             class="prettyprint source lang-text"
           ><code>{YOUR_APP_PACKAGE_NAME}://{YOUR_AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
 </code></pre>
+          <blockquote>
+            <p>
+              Make sure to replace {YOUR_APP_PACKAGE_NAME} and
+              {YOUR_AUTH0_DOMAIN} with the actual values for your application.
+            </p>
+          </blockquote>
+          <h4>iOS</h4>
+          <pre
+            class="prettyprint source lang-text"
+          ><code>{YOUR_BUNDLE_IDENTIFIER}://{YOUR_AUTH0_DOMAIN}/ios/{YOUR_BUNDLE_IDENTIFIER}/callback
+</code></pre>
+          <blockquote>
+            <p>
+              Make sure to replace {YOUR_BUNDLE_IDENTIFIER} and
+              {YOUR_AUTH0_DOMAIN} with the actual values for your application.
+            </p>
+          </blockquote>
           <h2>Usage</h2>
+          <p>
+            Create a new instance of the client using the Auth0 domain and
+            client ID values from your Application's
+            <a href="https://manage.auth0.com/">dashboard page</a>.
+          </p>
           <pre
             class="prettyprint source lang-js"
           ><code>import Auth0 from 'react-native-auth0';
 
-const auth0 = new Auth0({ domain: '{YOUR_AUTH0_DOMAIN}', clientId: '{YOUR_CLIENT_ID}' });
-</code></pre>
-          <h3>Web Authentication</h3>
-          <h4>Log in</h4>
-          <pre class="prettyprint source lang-js"><code>auth0
-    .webAuth
-    .authorize({scope: 'openid email', audience: 'https://{YOUR_AUTH0_DOMAIN}/userinfo'})
-    .then(credentials => console.log(credentials))
-    .catch(error => console.log(error));
+const auth0 = new Auth0({
+  domain: '{YOUR_AUTH0_DOMAIN}',
+  clientId: '{YOUR_CLIENT_ID}',
+});
 </code></pre>
           <blockquote>
             <p>
-              This snippet sets the <code>audience</code> to ensure OIDC
-              compliant responses, this can also be achieved by enabling the
+              This SDK is OIDC compliant. To ensure OIDC compliant responses
+              from the Auth0 servers enable the
               <strong>OIDC Conformant</strong> switch in your Auth0 dashboard
               under <code>Application / Settings / Advanced OAuth</code>. For
               more information please check
@@ -409,17 +469,23 @@ const auth0 = new Auth0({ domain: '{YOUR_AUTH0_DOMAIN}', clientId: '{YOUR_CLIENT
               >.
             </p>
           </blockquote>
+          <h3>Web Authentication</h3>
+          <h4>Log in</h4>
+          <pre class="prettyprint source lang-js"><code>auth0.webAuth
+  .authorize({scope: 'openid email profile'})
+  .then(credentials => console.log(credentials))
+  .catch(error => console.log(error));
+</code></pre>
           <h4>Log out</h4>
-          <pre class="prettyprint source lang-js"><code>auth0
-    .webAuth
-    .clearSession()
-    .catch(error => console.log(error));
+          <pre
+            class="prettyprint source lang-js"
+          ><code>auth0.webAuth.clearSession().catch(error => console.log(error));
 </code></pre>
           <h3>Authentication API</h3>
           <h3>Important: Database Connection Authentication</h3>
           <p>
             Since June 2017 new Clients no longer have the
-            <strong>Password Grant Type</strong>* enabled by default. If you are
+            <strong>Password Grant Type*</strong> enabled by default. If you are
             accessing a Database Connection using
             <code>passwordRealm</code> then you will need to enable the Password
             Grant Type, please follow
@@ -429,47 +495,58 @@ const auth0 = new Auth0({ domain: '{YOUR_AUTH0_DOMAIN}', clientId: '{YOUR_CLIENT
             >.
           </p>
           <h4>Login with Password Realm Grant</h4>
-          <pre class="prettyprint source lang-js"><code>auth0
-    .auth
-    .passwordRealm({username: &quot;info@auth0.com&quot;, password: &quot;password&quot;, realm: &quot;myconnection&quot;})
-    .then(console.log)
-    .catch(console.error);
+          <pre class="prettyprint source lang-js"><code>auth0.auth
+  .passwordRealm({
+    username: 'info@auth0.com',
+    password: 'password',
+    realm: 'myconnection',
+  })
+  .then(console.log)
+  .catch(console.error);
 </code></pre>
           <h4>Get user information using user's access_token</h4>
-          <pre class="prettyprint source lang-js"><code>auth0
-    .auth
-    .userInfo({token: 'user access_token'})
-    .then(console.log)
-    .catch(console.error);
+          <pre class="prettyprint source lang-js"><code>auth0.auth
+  .userInfo({token: 'the user access_token'})
+  .then(console.log)
+  .catch(console.error);
 </code></pre>
+          <p>
+            This endpoint requires an Access Token that was granted the
+            <code>/userinfo</code> audience. Check that the authentication
+            request that returned the Access Token included an audience value of
+            <code>https://{YOUR_AUTH0_DOMAIN}.auth0.com/userinfo</code>.
+          </p>
           <h4>Getting new access token with refresh token</h4>
-          <pre class="prettyprint source lang-js"><code>auth0
-    .auth
-    .refreshToken({refreshToken: 'user refresh_token'})
-    .then(console.log)
-    .catch(console.error);
+          <pre class="prettyprint source lang-js"><code>auth0.auth
+  .refreshToken({refreshToken: 'the user refresh_token'})
+  .then(console.log)
+  .catch(console.error);
 </code></pre>
           <h4>Create user in database connection</h4>
-          <pre class="prettyprint source lang-js"><code>auth0
-    .auth
-    .createUser({email: 'info@auth0.com', username: 'username', password: 'password', connection: 'myconnection'})
-    .then(console.log)
-    .catch(console.error);
+          <pre class="prettyprint source lang-js"><code>auth0.auth
+  .createUser({
+    email: 'info@auth0.com',
+    username: 'username',
+    password: 'password',
+    connection: 'myconnection',
+  })
+  .then(console.log)
+  .catch(console.error);
 </code></pre>
           <h3>Management API (Users)</h3>
           <h4>Patch user with user_metadata</h4>
           <pre class="prettyprint source lang-js"><code>auth0
-    .users('user token')
-    .patchUser({id: 'user_id', metadata: {'first_name': 'John', 'last_name': 'Doe'}})
-    .then(console.log)
-    .catch(console.error);
+  .users('the user access_token')
+  .patchUser({id: 'user_id', metadata: {first_name: 'John', last_name: 'Doe'}})
+  .then(console.log)
+  .catch(console.error);
 </code></pre>
           <h3>Get full user profile</h3>
           <pre class="prettyprint source lang-js"><code>auth0
-    .users('user token')
-    .getUser({id: &quot;user_id&quot;})
-    .then(console.log)
-    .catch(console.error);
+  .users('the user access_token')
+  .getUser({id: 'user_id'})
+  .then(console.log)
+  .catch(console.error);
 </code></pre>
           <p>
             For more info please check our generated
@@ -545,7 +622,7 @@ const auth0 = new Auth0({ domain: '{YOUR_AUTH0_DOMAIN}', clientId: '{YOUR_CLIENT
           <h2>License</h2>
           <p>
             This project is licensed under the MIT license. See the
-            <a href="LICENSE.txt">LICENSE</a> file for more info.
+            <a href="LICENSE">LICENSE</a> file for more info.
           </p>
           <!-- Variables -->
         </article>
@@ -556,7 +633,7 @@ const auth0 = new Auth0({ domain: '{YOUR_AUTH0_DOMAIN}', clientId: '{YOUR_CLIENT
 
     <footer>
       Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on
-      Mon Sep 23 2019 15:03:22 GMT-0300 (Argentina Standard Time) using the
+      Mon Sep 30 2019 17:51:28 GMT-0300 (Argentina Standard Time) using the
       Minami theme.
     </footer>
 

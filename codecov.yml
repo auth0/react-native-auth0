@@ -2,6 +2,8 @@ coverage:
   precision: 2
   round: down
   range: '70...100'
+  ignore:
+    - 'src/networking/telemetry.js'
   status:
     project:
       default:

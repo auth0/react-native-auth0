@@ -1,6 +1,6 @@
-import Auth from './auth';
-import Users from './management/users';
-import WebAuth from './webauth';
+import Auth from './src/auth';
+import Users from './src/management/users';
+import WebAuth from './src/webauth';
 
 /**
  * Auth0 for React Native client

@@ -1,4 +1,3 @@
-
 #if __has_include("RCTBridgeModule.h")
 #import "RCTBridgeModule.h"
 #else
@@ -8,4 +7,3 @@
 @interface A0Auth0 : NSObject <RCTBridgeModule>
 
 @end
-  

@@ -1,66 +1,62 @@
 {
   "name": "react-native-auth0",
-  "version": "1.6.0",
+  "title": "React Native Auth0",
+  "version": "2.0.0",
   "description": "React Native toolkit for Auth0 API",
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "test:ci": "jest --coverage && codecov",
-    "jsdoc:generate": "jsdoc --configure .jsdoc.json --verbose",
-    "release:clean": "node scripts/cleanup.js",
-    "preversion": "node scripts/prepare.js",
-    "version": "node scripts/changelog.js && node scripts/jsdocs.js && node scripts/telemetry.js",
-    "postversion": "npm run release:clean"
+    "test:ci": "jest --coverage",
+    "jsdocs": "jsdoc --configure .jsdoc.json --verbose",
+    "release": "scripts/release.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/auth0/react-native-auth0.git",
+    "baseUrl": "https://github.com/auth0/react-native-auth0"
+  },
+  "keywords": [
+    "react-native"
+  ],
+  "author": {
+    "name": "Auth0",
+    "email": "support@auth0.com"
+  },
+  "license": "MIT",
+  "licenseFilename": "LICENSE",
+  "readmeFilename": "README.md",
+  "peerDependencies": {
+    "react": "^16.8.6",
+    "react-native": ">=0.60.5 <1.0.x"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.18",
+    "babel-jest": "^24.9.0",
+    "faker": "^4.1.0",
+    "fetch-mock": "^7.3.9",
+    "husky": "^3.0.5",
+    "jest": "^24.9.0",
+    "jsdoc": "^3.6.3",
+    "jsdoc-to-markdown": "^5.0.1",
+    "metro-react-native-babel-preset": "^0.56.0",
+    "minami": "^1.2.3",
+    "prettier": "^1.18.2",
+    "pretty-quick": "^1.11.1",
+    "react": "^16.8.6",
+    "react-native": "^0.60.5",
+    "semver": "^6.3.0"
+  },
+  "dependencies": {
+    "base-64": "^0.1.0",
+    "url": "^0.11.0"
+  },
+  "jest": {
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": false
   },
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
-  },
-  "repository": "git+https://github.com/auth0/react-native-auth0.git",
-  "keywords": [
-    "react-native",
-    "react",
-    "auth0",
-    "jwt",
-    "authentication",
-    "lock",
-    "auth0-lock",
-    "login",
-    "sdk",
-    "api"
-  ],
-  "author": "Auth0",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/auth0/react-native-auth0/issues"
-  },
-  "homepage": "https://github.com/auth0/react-native-auth0#readme",
-  "devDependencies": {
-    "@types/jest": "^19.2.4",
-    "babel-jest": "^20.0.3",
-    "babel-preset-react-native": "^1.9.2",
-    "codecov": "^3.3.0",
-    "eslint": "^3.4.0",
-    "eslint-plugin-react": "^6.2.0",
-    "faker": "^3.1.0",
-    "fetch-mock": "^7.3.1",
-    "husky": "^1.1.2",
-    "jest": "^20.0.4",
-    "jsdoc": "^3.5.5",
-    "jsdoc-to-markdown": "^3.0.0",
-    "minami": "^1.2.3",
-    "moment": "^2.24.0",
-    "node-fetch": "^2.3.0",
-    "prettier": "^1.14.3",
-    "pretty-quick": "^1.7.0"
-  },
-  "jest": {
-    "coverageDirectory": "./coverage/",
-    "collectCoverage": true
-  },
-  "dependencies": {
-    "base-64": "^0.1.0",
-    "url": "^0.11.0"
   }
 }

@@ -56,11 +56,11 @@ export default class Client {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        'Auth0-Client': this._encodedTelemetry()
-      }
+        'Auth0-Client': this._encodedTelemetry(),
+      },
     };
     if (this.bearer) {
-      options.headers['Authorization'] = this.bearer;
+      options.headers.Authorization = this.bearer;
     }
     if (body) {
       options.body = JSON.stringify(body);
@@ -69,7 +69,7 @@ export default class Client {
       const payload = {
         status: response.status,
         ok: response.ok,
-        headers: response.headers
+        headers: response.headers,
       };
       return response
         .json()

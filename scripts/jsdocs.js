@@ -7,11 +7,11 @@ var library = require('../package.json');
 var execSync = require('child_process').execSync;
 var fs = require('fs');
 
-execSync('npm run jsdoc:generate', { stdio: 'inherit' });
+execSync('yarn run jsdocs', {stdio: 'inherit'});
 if (fs.existsSync('docs')) {
-  execSync('rm -r docs', { stdio: 'inherit' });
+  execSync('rm -r docs', {stdio: 'inherit'});
 }
 execSync(`mv out/react-native-auth0/${library.version}/ docs`, {
-  stdio: 'inherit'
+  stdio: 'inherit',
 });
 execSync('git add docs');
