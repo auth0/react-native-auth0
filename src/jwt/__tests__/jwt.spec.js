@@ -288,8 +288,9 @@ describe('id token verification tests', () => {
 
       setupSignatureMock(testJwt);
 
+      // token exp claim of 2019-09-01T05:00:00.000Z
+      const clock = new Date('2019-09-01T05:00:00.000Z');
       // default leeway of 60 seconds
-      const clock = new Date('2019-9-01');
       clock.setSeconds(clock.getSeconds() + 61);
 
       const overrides = {
@@ -309,8 +310,9 @@ describe('id token verification tests', () => {
 
       setupSignatureMock(testJwt);
 
+      // token exp claim of 2019-09-01T05:00:00.000Z
+      const clock = new Date('2019-09-01T05:00:00.000Z');
       // default leeway of 60 seconds
-      const clock = new Date('2019-9-01');
       clock.setSeconds(clock.getSeconds() + 59);
 
       const overrides = {
@@ -329,10 +331,11 @@ describe('id token verification tests', () => {
 
       setupSignatureMock(testJwt);
 
-      const clock = new Date('2019-9-01');
+      // token exp claim of 2019-09-01T05:00:00.000Z
+      const clock = new Date('2019-09-01T05:00:00.000Z');
+      // custom leeway of 120 seconds
       clock.setSeconds(clock.getSeconds() + 121);
 
-      // set custom leeway of 120 seconds
       const overrides = {
         leeway: 120,
         _clock: clock,
@@ -351,7 +354,9 @@ describe('id token verification tests', () => {
 
       setupSignatureMock(testJwt);
 
-      const clock = new Date('2019-9-01');
+      // token exp claim of 2019-09-01T05:00:00.000Z
+      const clock = new Date('2019-09-01T05:00:00.000Z');
+      // custom leeway of 120 seconds
       clock.setSeconds(clock.getSeconds() + 119);
 
       const overrides = {
@@ -397,8 +402,9 @@ describe('id token verification tests', () => {
 
       setupSignatureMock(testJwt);
 
+      // token iat claim of 2019-09-03T05:00:00.000Z
+      const clock = new Date('2019-09-03T05:00:00.000Z');
       // default leeway is 60 seconds
-      const clock = new Date('2019-9-03');
       clock.setSeconds(clock.getSeconds() - 61);
 
       const overrides = {
@@ -418,8 +424,9 @@ describe('id token verification tests', () => {
 
       setupSignatureMock(testJwt);
 
+      // token iat claim of 2019-09-03T05:00:00.000Z
+      const clock = new Date('2019-09-03T05:00:00.000Z');
       // default leeway is 60 seconds
-      const clock = new Date('2019-9-03');
       clock.setSeconds(clock.getSeconds() - 59);
 
       const overrides = {
@@ -438,8 +445,9 @@ describe('id token verification tests', () => {
 
       setupSignatureMock(testJwt);
 
-      // custom leeway is 60 seconds
-      const clock = new Date('2019-9-03');
+      // token iat claim of 2019-09-03T05:00:00.000Z
+      const clock = new Date('2019-09-03T05:00:00.000Z');
+      // custom leeway of 120 seconds
       clock.setSeconds(clock.getSeconds() - 121);
 
       const overrides = {
@@ -460,8 +468,9 @@ describe('id token verification tests', () => {
 
       setupSignatureMock(testJwt);
 
+      // token iat claim of 2019-09-03T05:00:00.000Z
+      const clock = new Date('2019-09-03T05:00:00.000Z');
       // custom leeway is 120 seconds
-      const clock = new Date('2019-9-03');
       clock.setSeconds(clock.getSeconds() - 119);
 
       const overrides = {
@@ -582,7 +591,8 @@ describe('id token verification tests', () => {
       setupSignatureMock(testJwt);
 
       const maxAge = 120;
-      const clock = new Date('2019-9-1');
+      // token auth_time claim of 2019-09-01T05:00:00.000Z
+      const clock = new Date('2019-09-01T05:00:00.000Z');
       // default leeway 60 secondds
       clock.setSeconds(clock.getSeconds() + maxAge + 61);
 
@@ -605,7 +615,8 @@ describe('id token verification tests', () => {
       setupSignatureMock(testJwt);
 
       const maxAge = 120;
-      const clock = new Date('2019-9-1');
+      // token auth_time claim of 2019-09-01T05:00:00.000Z
+      const clock = new Date('2019-09-01T05:00:00.000Z');
       // default leeway 60 secondds
       clock.setSeconds(clock.getSeconds() + maxAge + 59);
 
@@ -625,7 +636,8 @@ describe('id token verification tests', () => {
       setupSignatureMock(testJwt);
 
       const maxAge = 120;
-      const clock = new Date('2019-9-1');
+      // token auth_time claim of 2019-09-01T05:00:00.000Z
+      const clock = new Date('2019-09-01T05:00:00.000Z');
       // custom leeway 120 secondds
       clock.setSeconds(clock.getSeconds() + maxAge + 121);
 
@@ -649,7 +661,8 @@ describe('id token verification tests', () => {
       setupSignatureMock(testJwt);
 
       const maxAge = 120;
-      const clock = new Date('2019-9-1');
+      // token auth_time claim of 2019-09-01T05:00:00.000Z
+      const clock = new Date('2019-09-01T05:00:00.000Z');
       // custom leeway 120 secondds
       clock.setSeconds(clock.getSeconds() + maxAge + 119);
 
@@ -690,7 +703,7 @@ describe('id token verification tests', () => {
       clientId: BASE_EXPECTATIONS.clientId,
       scope: 'openid profile email',
       nonce: BASE_EXPECTATIONS.nonce,
-      _clock: new Date('2019-9-2'),
+      _clock: new Date('2019-09-02T05:00:00.000Z'),
     };
 
     const clientInfo = Object.assign(
