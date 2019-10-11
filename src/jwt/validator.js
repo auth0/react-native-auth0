@@ -105,7 +105,9 @@ const validateClaims = (payload, opts) => {
   }
 
   //--Time validation (epoch)--
-  const now = opts._clock ? opts._clock : new Date();
+  const now = opts._clock
+    ? getEpochTimeInSeconds(opts._clock)
+    : getEpochTimeInSeconds(new Date());
   const leeway = typeof opts.leeway === 'number' ? opts.leeway : DEFAULT_LEEWAY;
 
   //Expires at
@@ -119,14 +121,13 @@ const validateClaims = (payload, opts) => {
     );
   }
 
-  const expDate = new Date((payload.exp + leeway) * 1000);
+  const expTime = payload.exp + leeway;
 
-  if (now > expDate) {
+  if (now > expTime) {
     return Promise.reject(
       idTokenError({
         error: 'invalid_expires_at_claim',
-        desc: `Expiration Time (exp) claim error; current time (${now.getTime() /
-          1000}) is after expiration time (${payload.exp + leeway})`,
+        desc: `Expiration Time (exp) claim error; current time "${now}" is after expiration time "${expTime}"`,
       }),
     );
   }
@@ -141,14 +142,13 @@ const validateClaims = (payload, opts) => {
     );
   }
 
-  const iatDate = new Date((payload.iat - leeway) * 1000);
+  const iatTime = payload.iat - leeway;
 
-  if (now < iatDate) {
+  if (now < iatTime) {
     return Promise.reject(
       idTokenError({
         error: 'invalid_issued_at_claim',
-        desc: `Issued At (iat) claim error; current time (${now.getTime() /
-          1000}) is before issued at time (${payload.iat - leeway})`,
+        desc: `Issued At (iat) claim error; current time "${now}" is before issued at time "${iatTime}"`,
       }),
     );
   }
@@ -208,20 +208,22 @@ const validateClaims = (payload, opts) => {
     }
 
     const authValidUntil = payload.auth_time + opts.maxAge + leeway;
-    const authTimeDate = new Date(authValidUntil * 1000);
 
-    if (now > authTimeDate) {
+    if (now > authValidUntil) {
       return Promise.reject(
         idTokenError({
           error: 'invalid_authorization_time_claim',
-          desc: `Authentication Time (auth_time) claim indicates that too much time has passed since the last end-user authentication. Current time (${now.getTime() /
-            1000}) is after last auth at ${authValidUntil}`,
+          desc: `Authentication Time (auth_time) claim indicates that too much time has passed since the last end-user authentication. Current time "${now}" is after last auth at ${authValidUntil}`,
         }),
       );
     }
   }
 
   return Promise.resolve();
+};
+
+const getEpochTimeInSeconds = date => {
+  return Math.round(date.getTime() / 1000);
 };
 
 const idTokenError = ({
