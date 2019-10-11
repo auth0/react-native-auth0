@@ -60,7 +60,7 @@ const validateClaims = (payload, opts) => {
     return Promise.reject(
       idTokenError({
         error: 'invalid_issuer_claim',
-        desc: `Issuer (iss) claim mismatch; expected "https://${opts.domain}/", found "${payload.iss}"`,
+        desc: `Issuer (iss) claim mismatch in the ID token; expected "https://${opts.domain}/", found "${payload.iss}"`,
       }),
     );
   }
@@ -90,7 +90,7 @@ const validateClaims = (payload, opts) => {
     return Promise.reject(
       idTokenError({
         error: 'invalid_audience_claim',
-        desc: `Audience (aud) claim mismatch; expected "${
+        desc: `Audience (aud) claim mismatch in the ID token; expected "${
           opts.clientId
         }" but was not one of "${payload.aud.join(', ')}"`,
       }),
@@ -99,7 +99,7 @@ const validateClaims = (payload, opts) => {
     return Promise.reject(
       idTokenError({
         error: 'invalid_audience_claim',
-        desc: `Audience (aud) claim mismatch; expected "${opts.clientId}" but found "${payload.aud}"`,
+        desc: `Audience (aud) claim mismatch in the ID token; expected "${opts.clientId}" but found "${payload.aud}"`,
       }),
     );
   }
@@ -127,7 +127,7 @@ const validateClaims = (payload, opts) => {
     return Promise.reject(
       idTokenError({
         error: 'invalid_expires_at_claim',
-        desc: `Expiration Time (exp) claim error; current time "${now}" is after expiration time "${expTime}"`,
+        desc: `Expiration Time (exp) claim error in the ID token; current time "${now}" is after expiration time "${expTime}"`,
       }),
     );
   }
@@ -148,7 +148,7 @@ const validateClaims = (payload, opts) => {
     return Promise.reject(
       idTokenError({
         error: 'invalid_issued_at_claim',
-        desc: `Issued At (iat) claim error; current time "${now}" is before issued at time "${iatTime}"`,
+        desc: `Issued At (iat) claim error in the ID token; current time "${now}" is before issued at time "${iatTime}"`,
       }),
     );
   }
@@ -167,7 +167,7 @@ const validateClaims = (payload, opts) => {
       return Promise.reject(
         idTokenError({
           error: 'invalid_nonce_claim',
-          desc: `Nonce (nonce) claim mismatch; expected "${opts.nonce}", found "${payload.nonce}"`,
+          desc: `Nonce (nonce) claim mismatch in the ID token; expected "${opts.nonce}", found "${payload.nonce}"`,
         }),
       );
     }
@@ -189,7 +189,7 @@ const validateClaims = (payload, opts) => {
       return Promise.reject(
         idTokenError({
           error: 'invalid_authorized_party_claim',
-          desc: `Authorized Party (azp) claim mismatch; expected "${opts.clientId}", found "${payload.azp}"`,
+          desc: `Authorized Party (azp) claim mismatch in the ID token; expected "${opts.clientId}", found "${payload.azp}"`,
         }),
       );
     }
@@ -213,7 +213,7 @@ const validateClaims = (payload, opts) => {
       return Promise.reject(
         idTokenError({
           error: 'invalid_authorization_time_claim',
-          desc: `Authentication Time (auth_time) claim indicates that too much time has passed since the last end-user authentication. Current time "${now}" is after last auth at ${authValidUntil}`,
+          desc: `Authentication Time (auth_time) claim in the ID token indicates that too much time has passed since the last end-user authentication. Current time "${now}" is after last auth time "${authValidUntil}"`,
         }),
       );
     }

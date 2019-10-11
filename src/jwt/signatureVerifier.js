@@ -22,7 +22,7 @@ export const verifySignature = options => {
     return Promise.reject(
       idTokenError({
         error: 'token_decoding_error',
-        desc: 'Error decoding token',
+        desc: 'ID token could not be decoded',
       }),
     );
   }
@@ -33,7 +33,7 @@ export const verifySignature = options => {
     return Promise.reject(
       idTokenError({
         error: 'invalid_algorithm',
-        desc: 'Token signing algorithm must be either RS256 or HS256',
+        desc: `Signature algorithm of "${alg}" is not supported. Expected "RS256" or "HS256".`,
       }),
     );
   }
@@ -58,7 +58,7 @@ export const verifySignature = options => {
       return Promise.reject(
         idTokenError({
           error: 'invalid_signature',
-          desc: 'Token signature is not valid',
+          desc: 'Invalid token signature',
         }),
       );
     })
