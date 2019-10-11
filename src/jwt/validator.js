@@ -5,17 +5,18 @@ import {verifySignature} from './signatureVerifier';
 const DEFAULT_LEEWAY = 60;
 
 /**
- * Verifies an ID token according to the OIDC spec
- * @param {Object} credentials the credentials obtained from the token exchange
- * @param {Object} clientInfo the information about the client required to validate the ID token
- * @returns {Promise} A promise containing the credentials, or will reject the promise if validation fails
+ * Verifies an ID token according to the OIDC specification. Note that this function is specific to the internals of this SDK,
+ * and is not supported for general use.
+ * @param {String} idToken the string token to verify
+ * @param {Object} options the options required to run this verification
+ * @returns {Promise} A promise that resolves if the verification is successful, or will reject the promise if validation fails
  */
-export const verifyToken = (credentials, clientInfo) => {
-  if (!tokenValidationRequired(credentials, clientInfo)) {
-    return Promise.resolve(credentials);
+export const verifyToken = (idToken, options) => {
+  if (!tokenValidationRequired(options.scope)) {
+    return Promise.resolve();
   }
 
-  if (!credentials.idToken) {
+  if (typeof idToken !== 'string') {
     return Promise.reject(
       idTokenError({
         error: 'missing_id_token',
@@ -25,19 +26,19 @@ export const verifyToken = (credentials, clientInfo) => {
   }
 
   const sigOptions = {
-    idToken: credentials.idToken,
-    domain: clientInfo.domain,
+    idToken,
+    domain: options.domain,
   };
 
   return verifySignature(sigOptions)
-    .then(payload => validateClaims(payload, clientInfo))
-    .then(() => Promise.resolve(credentials));
+    .then(payload => validateClaims(payload, options))
+    .then(() => Promise.resolve());
 };
 
-const tokenValidationRequired = (credentials, clientInfo) => {
+const tokenValidationRequired = scope => {
   // If client did not specify scope of "openid", we do not expect an ID token thus no validation is needed
-  if (clientInfo.scope && typeof clientInfo.scope === 'string') {
-    const scopes = clientInfo.scope.split(/(\s+)/);
+  if (typeof scope === 'string') {
+    const scopes = scope.split(/(\s+)/);
     if (scopes.includes('openid')) {
       return true;
     }

@@ -97,14 +97,14 @@ export default class WebAuth {
         return client
           .exchange({code, verifier, redirectUri})
           .then(credentials => {
-            return verifyToken(credentials, {
-              clientId: clientId,
-              domain: domain,
+            return verifyToken(credentials.idToken, {
+              domain,
+              clientId,
               nonce: parameters.nonce,
               maxAge: parameters.max_age,
               scope: parameters.scope,
               leeway: options.leeway,
-            });
+            }).then(() => Promise.resolve(credentials));
           });
       });
     });

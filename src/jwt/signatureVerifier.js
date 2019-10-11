@@ -6,7 +6,7 @@ const ALLOWED_ALGORITHMS = ['RS256', 'HS256'];
 
 /**
  * Verifies that an ID token is signed with a supported algorithm (HS256 or RS256), and verifies the signature
- * if signed with RS256.
+ * if signed with RS256. Note that this function is specific to the internals of this SDK, and not supported for general use.
  * @param {Object} options required to verify an ID token's signature
  * @param {String} [options.idToken] the ID token
  * @param {String} [options.domain] the Auth0 domain of the token's issuer
