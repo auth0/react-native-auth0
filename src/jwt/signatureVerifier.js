@@ -53,14 +53,14 @@ export const verifySignature = options => {
 
       if (signatureValid) {
         return Promise.resolve(payload);
-      } else {
-        return Promise.reject(
-          idTokenError({
-            error: 'invalid_signature',
-            desc: 'Token signature is not valid',
-          }),
-        );
       }
+
+      return Promise.reject(
+        idTokenError({
+          error: 'invalid_signature',
+          desc: 'Token signature is not valid',
+        }),
+      );
     })
     .catch(err => {
       if (err.json && err.status === 0) {
@@ -78,7 +78,7 @@ export const verifySignature = options => {
 
 const getJwk = (domain, kid) => {
   return getJwksUri(domain)
-    .then(uri => getJwkFromUri(uri))
+    .then(uri => fetchJson(uri))
     .then(jwk => {
       const keys = jwk.keys;
       const key = keys
@@ -96,7 +96,7 @@ const getJwksUri = domain => {
     .then(openIdConfig => openIdConfig.jwks_uri);
 };
 
-const getJwkFromUri = uri => {
+const fetchJson = uri => {
   return fetch(uri).then(resp => resp.json());
 };
 
