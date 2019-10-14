@@ -258,7 +258,7 @@ describe('id token verification tests', () => {
       );
     });
 
-    it('fails when "exp" is invalid outside of default leeway', async () => {
+    it('fails when "exp" is in the past and outside of default leeway', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY3MzE0MDAwLCJpYXQiOjE1NjczMTQwMDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.uDn-4wtiigGddUw2kis_QyfDE3w75rWvu9NolMgD3b7l4_fedhQOk-z_mYID588ZXpnpLRKKiD5I2IFsXl7Qcc10rx1LIZxNqdzyc3VrgFf677x7fFZ4guR2WalH-zdJEluruMRdCIFQczIjXnGKPHGQ8gPH1LRozv43dl-bO2viX6MU4pTgNq3GIsU4ureyHrx1o9JSqF4b_RzuYvVWVVX7ABC2csMJP_ocVbEIQjUBhp1V7VcQY-Zgq0prk_HvY13g8FxK4KvSza637ZWAfonn599SKuy22PeMJqDfd64SbunWrt-mKBz9PHeAo9t4LJPLsAqSd3IQ2aJTsnqJRA';
 
@@ -297,7 +297,7 @@ describe('id token verification tests', () => {
       await expect(verify(testJwt, overrides)).resolves;
     });
 
-    it('fails when "exp" is invalid outside of custom leeway', async () => {
+    it('fails when "exp" is in the past and outside of custom leeway', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY3MzE0MDAwLCJpYXQiOjE1NjczMTQwMDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.uDn-4wtiigGddUw2kis_QyfDE3w75rWvu9NolMgD3b7l4_fedhQOk-z_mYID588ZXpnpLRKKiD5I2IFsXl7Qcc10rx1LIZxNqdzyc3VrgFf677x7fFZ4guR2WalH-zdJEluruMRdCIFQczIjXnGKPHGQ8gPH1LRozv43dl-bO2viX6MU4pTgNq3GIsU4ureyHrx1o9JSqF4b_RzuYvVWVVX7ABC2csMJP_ocVbEIQjUBhp1V7VcQY-Zgq0prk_HvY13g8FxK4KvSza637ZWAfonn599SKuy22PeMJqDfd64SbunWrt-mKBz9PHeAo9t4LJPLsAqSd3IQ2aJTsnqJRA';
 
@@ -362,7 +362,7 @@ describe('id token verification tests', () => {
       );
     });
 
-    it('fails when "iat" is invalid outside of default leeway', async () => {
+    it('fails when "iat" is in the future but outside of default leeway', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY4MDkxNjAwLCJpYXQiOjE1Njc0ODY4MDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.KQWivvmcmWt5a3maRLFcMY8ev-gdeae-3Hm50BilmHjL31__S5G8dbHUOIjMg0zPIVbuml2SjXxEkOSiC-NZcupo7tknXuy76NdsMXWn1z7Cz1kI2XGFaR_PtY1lqpHc5FkQf1KiGhq4tMSk0RQDDu1U0E7WTDikV2mSrejOumL9qhj1lFwzCAr3ElDSnkHfcTuFQRMD0AdKFGD5oXOh4MgMFIE7GNFVAGnJ1Ld9JDbl1nqWTdrXZ3hYVDJDOc4DG8PdriFW3boyQKWqmV7eQZORKUW5C94VjcywZ9VROHqKyZXB6zc7s3FJ0zY2LxXEmTgOMEUgM2NtZVyMAhn0pQ';
 
@@ -401,7 +401,7 @@ describe('id token verification tests', () => {
       await expect(verify(testJwt, overrides)).resolves;
     });
 
-    it('fails when "iat" is invalid outside of custom leeway', async () => {
+    it('fails when "iat" is in the future and outside of custom leeway', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY4MDkxNjAwLCJpYXQiOjE1Njc0ODY4MDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.KQWivvmcmWt5a3maRLFcMY8ev-gdeae-3Hm50BilmHjL31__S5G8dbHUOIjMg0zPIVbuml2SjXxEkOSiC-NZcupo7tknXuy76NdsMXWn1z7Cz1kI2XGFaR_PtY1lqpHc5FkQf1KiGhq4tMSk0RQDDu1U0E7WTDikV2mSrejOumL9qhj1lFwzCAr3ElDSnkHfcTuFQRMD0AdKFGD5oXOh4MgMFIE7GNFVAGnJ1Ld9JDbl1nqWTdrXZ3hYVDJDOc4DG8PdriFW3boyQKWqmV7eQZORKUW5C94VjcywZ9VROHqKyZXB6zc7s3FJ0zY2LxXEmTgOMEUgM2NtZVyMAhn0pQ';
 
@@ -535,7 +535,7 @@ describe('id token verification tests', () => {
       );
     });
 
-    it('fails when "max_age" was sent on the authentication request but "auth_time" is invalid within default leeway', async () => {
+    it('fails when "max_age" was sent on the authentication request but "auth_time" is outside of default leeway', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY3NDg2ODAwLCJpYXQiOjE1NjczMTQwMDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.AbSYZ_Tu0-ZelCRPuu9jOd9y1M19yIlk8bjSQDVVgAekRZLdRA_T_gi_JeWyFysKZVpRcHC1YJhTH4YH8CCMRTwviq3woIsLmdUecjydyZkHcUlhHXj2DbC15cyELalPNe3T9eZ4ySwk9qRJSOkjBAgXAT0a7M6rwri6QHnL0WxTLX4us4rGu8Ui3kuf1WaZH9DNoeWYs1N3xUnOwTkRKaqXnuKjnwSVmsuwxFSlnIPJOiMUUZksiaBq_OUvOkB-dEG7OFiDX9XWj1m62yBHkvZHun8LBr9VW3mt1IrcBdbbtzjWwfn6ioK2c4dbtPFhuYohXsmRDaSekP63Dmlw3A';
 
@@ -558,7 +558,7 @@ describe('id token verification tests', () => {
       );
     });
 
-    it('succeeds when "max_age" was sent on the authentication request but "auth_time" and within default leeway', async () => {
+    it('succeeds when "max_age" was sent on the authentication request and "auth_time" is within default leeway', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY3NDg2ODAwLCJpYXQiOjE1NjczMTQwMDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.AbSYZ_Tu0-ZelCRPuu9jOd9y1M19yIlk8bjSQDVVgAekRZLdRA_T_gi_JeWyFysKZVpRcHC1YJhTH4YH8CCMRTwviq3woIsLmdUecjydyZkHcUlhHXj2DbC15cyELalPNe3T9eZ4ySwk9qRJSOkjBAgXAT0a7M6rwri6QHnL0WxTLX4us4rGu8Ui3kuf1WaZH9DNoeWYs1N3xUnOwTkRKaqXnuKjnwSVmsuwxFSlnIPJOiMUUZksiaBq_OUvOkB-dEG7OFiDX9XWj1m62yBHkvZHun8LBr9VW3mt1IrcBdbbtzjWwfn6ioK2c4dbtPFhuYohXsmRDaSekP63Dmlw3A';
 
@@ -578,7 +578,7 @@ describe('id token verification tests', () => {
       ).resolves;
     });
 
-    it('fails when "max_age" was sent on the authentication request but "auth_time" is invalid within custom leeway', async () => {
+    it('fails when "max_age" was sent on the authentication request but "auth_time" is outside of custom leeway', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY3NDg2ODAwLCJpYXQiOjE1NjczMTQwMDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.AbSYZ_Tu0-ZelCRPuu9jOd9y1M19yIlk8bjSQDVVgAekRZLdRA_T_gi_JeWyFysKZVpRcHC1YJhTH4YH8CCMRTwviq3woIsLmdUecjydyZkHcUlhHXj2DbC15cyELalPNe3T9eZ4ySwk9qRJSOkjBAgXAT0a7M6rwri6QHnL0WxTLX4us4rGu8Ui3kuf1WaZH9DNoeWYs1N3xUnOwTkRKaqXnuKjnwSVmsuwxFSlnIPJOiMUUZksiaBq_OUvOkB-dEG7OFiDX9XWj1m62yBHkvZHun8LBr9VW3mt1IrcBdbbtzjWwfn6ioK2c4dbtPFhuYohXsmRDaSekP63Dmlw3A';
 
@@ -602,7 +602,7 @@ describe('id token verification tests', () => {
       );
     });
 
-    it('succeeds when "max_age" was sent on the authentication request but "auth_time" and within custom leeway', async () => {
+    it('succeeds when "max_age" was sent on the authentication request and "auth_time" is within custom leeway', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY3NDg2ODAwLCJpYXQiOjE1NjczMTQwMDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.AbSYZ_Tu0-ZelCRPuu9jOd9y1M19yIlk8bjSQDVVgAekRZLdRA_T_gi_JeWyFysKZVpRcHC1YJhTH4YH8CCMRTwviq3woIsLmdUecjydyZkHcUlhHXj2DbC15cyELalPNe3T9eZ4ySwk9qRJSOkjBAgXAT0a7M6rwri6QHnL0WxTLX4us4rGu8Ui3kuf1WaZH9DNoeWYs1N3xUnOwTkRKaqXnuKjnwSVmsuwxFSlnIPJOiMUUZksiaBq_OUvOkB-dEG7OFiDX9XWj1m62yBHkvZHun8LBr9VW3mt1IrcBdbbtzjWwfn6ioK2c4dbtPFhuYohXsmRDaSekP63Dmlw3A';
 
