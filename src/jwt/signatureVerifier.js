@@ -7,17 +7,17 @@ const ALLOWED_ALGORITHMS = ['RS256', 'HS256'];
 /**
  * Verifies that an ID token is signed with a supported algorithm (HS256 or RS256), and verifies the signature
  * if signed with RS256. Note that this function is specific to the internals of this SDK, and not supported for general use.
+ * @param {String} idToken the ID token
  * @param {Object} options required to verify an ID token's signature
- * @param {String} [options.idToken] the ID token
  * @param {String} [options.domain] the Auth0 domain of the token's issuer
  * @returns {Promise} A promise that resolves to the decoded payload of the ID token, or rejects if the verification fails.
  */
-export const verifySignature = options => {
+export const verifySignature = (idToken, options) => {
   let header, payload;
 
   try {
-    header = jwtDecoder(options.idToken, {header: true});
-    payload = jwtDecoder(options.idToken);
+    header = jwtDecoder(idToken, {header: true});
+    payload = jwtDecoder(idToken);
   } catch (err) {
     return Promise.reject(
       idTokenError({
@@ -44,36 +44,21 @@ export const verifySignature = options => {
     return Promise.resolve(payload);
   }
 
-  return getJwk(options.domain, header.kid)
-    .then(jwk => {
-      const pubKey = KEYUTIL.getKey(jwk);
-      const signatureValid = KJUR.jws.JWS.verify(options.idToken, pubKey, [
-        'RS256',
-      ]);
+  return getJwk(options.domain, header.kid).then(jwk => {
+    const pubKey = KEYUTIL.getKey(jwk);
+    const signatureValid = KJUR.jws.JWS.verify(idToken, pubKey, ['RS256']);
 
-      if (signatureValid) {
-        return Promise.resolve(payload);
-      }
+    if (signatureValid) {
+      return Promise.resolve(payload);
+    }
 
-      return Promise.reject(
-        idTokenError({
-          error: 'invalid_signature',
-          desc: 'Invalid token signature',
-        }),
-      );
-    })
-    .catch(err => {
-      if (err.json && err.status === 0) {
-        return Promise.reject(err);
-      } else {
-        return Promise.reject(
-          idTokenError({
-            error: 'key_retrieval_error',
-            desc: 'Unable to retrieve public keyset needed to verify token',
-          }),
-        );
-      }
-    });
+    return Promise.reject(
+      idTokenError({
+        error: 'invalid_signature',
+        desc: 'Invalid token signature',
+      }),
+    );
+  });
 };
 
 const getJwk = (domain, kid) => {
@@ -87,6 +72,14 @@ const getJwk = (domain, kid) => {
         )
         .find(k => k.kid == kid);
       return Promise.resolve(key);
+    })
+    .catch(err => {
+      return Promise.reject(
+        idTokenError({
+          error: 'key_retrieval_error',
+          desc: 'Unable to retrieve public keyset needed to verify token',
+        }),
+      );
     });
 };
 
@@ -100,14 +93,11 @@ const fetchJson = uri => {
   return fetch(uri).then(resp => resp.json());
 };
 
-const idTokenError = ({
-  error = 'verification_error',
-  desc = 'Error verifying ID token',
-} = {}) => {
+const idTokenError = err => {
   return new AuthError({
     json: {
-      error: `a0.idtoken.${error}`,
-      error_description: desc,
+      error: `a0.idtoken.${err.error}`,
+      error_description: err.desc,
     },
     status: 0,
   });

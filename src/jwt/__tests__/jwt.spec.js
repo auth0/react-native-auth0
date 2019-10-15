@@ -9,23 +9,8 @@ describe('id token verification tests', () => {
       fetchMock.restore();
     });
 
-    it('resolves when scope not specified', async () => {
-      await expect(verify(undefined, {scope: undefined})).resolves;
-    });
-
-    it('resolves when scope does not include "openid"', async () => {
-      await expect(
-        verify(undefined, {
-          scope: 'profile email',
-        }),
-      ).resolves;
-    });
-
-    it('fails when "openid" scope used but no ID token is present', async () => {
-      await expect(verify(undefined)).rejects.toHaveProperty(
-        'name',
-        'a0.idtoken.missing_id_token',
-      );
+    it('resolves when no idToken present', async () => {
+      await expect(verify(undefined)).resolves.toBeUndefined();
     });
 
     it('fails when token not signed with RS256 or HS256', async () => {
@@ -116,6 +101,8 @@ describe('id token verification tests', () => {
   });
 
   describe('token claims verification', () => {
+    // default clock skew in seconds
+    const DEFAULT_LEEWAY = 60;
     let sigMock;
 
     beforeEach(() => {
@@ -266,8 +253,7 @@ describe('id token verification tests', () => {
 
       // token exp claim of 2019-09-01T05:00:00.000Z
       const clock = new Date('2019-09-01T05:00:00.000Z');
-      // default leeway of 60 seconds
-      clock.setSeconds(clock.getSeconds() + 61);
+      clock.setSeconds(clock.getSeconds() + (DEFAULT_LEEWAY + 1));
 
       const overrides = {
         _clock: clock,
@@ -287,29 +273,28 @@ describe('id token verification tests', () => {
 
       // token exp claim of 2019-09-01T05:00:00.000Z
       const clock = new Date('2019-09-01T05:00:00.000Z');
-      // default leeway of 60 seconds
-      clock.setSeconds(clock.getSeconds() + 59);
+      clock.setSeconds(clock.getSeconds() + (DEFAULT_LEEWAY - 1));
 
       const overrides = {
         _clock: clock,
       };
 
-      await expect(verify(testJwt, overrides)).resolves;
+      await expect(verify(testJwt, overrides)).resolves.toBeUndefined();
     });
 
     it('fails when "exp" is in the past and outside of custom leeway', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY3MzE0MDAwLCJpYXQiOjE1NjczMTQwMDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.uDn-4wtiigGddUw2kis_QyfDE3w75rWvu9NolMgD3b7l4_fedhQOk-z_mYID588ZXpnpLRKKiD5I2IFsXl7Qcc10rx1LIZxNqdzyc3VrgFf677x7fFZ4guR2WalH-zdJEluruMRdCIFQczIjXnGKPHGQ8gPH1LRozv43dl-bO2viX6MU4pTgNq3GIsU4ureyHrx1o9JSqF4b_RzuYvVWVVX7ABC2csMJP_ocVbEIQjUBhp1V7VcQY-Zgq0prk_HvY13g8FxK4KvSza637ZWAfonn599SKuy22PeMJqDfd64SbunWrt-mKBz9PHeAo9t4LJPLsAqSd3IQ2aJTsnqJRA';
 
+      const leeway = 120;
       setupSignatureMock(testJwt);
 
       // token exp claim of 2019-09-01T05:00:00.000Z
       const clock = new Date('2019-09-01T05:00:00.000Z');
-      // custom leeway of 120 seconds
-      clock.setSeconds(clock.getSeconds() + 121);
+      clock.setSeconds(clock.getSeconds() + (leeway + 1));
 
       const overrides = {
-        leeway: 120,
+        leeway,
         _clock: clock,
       };
 
@@ -323,19 +308,20 @@ describe('id token verification tests', () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY3MzE0MDAwLCJpYXQiOjE1NjczMTQwMDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.uDn-4wtiigGddUw2kis_QyfDE3w75rWvu9NolMgD3b7l4_fedhQOk-z_mYID588ZXpnpLRKKiD5I2IFsXl7Qcc10rx1LIZxNqdzyc3VrgFf677x7fFZ4guR2WalH-zdJEluruMRdCIFQczIjXnGKPHGQ8gPH1LRozv43dl-bO2viX6MU4pTgNq3GIsU4ureyHrx1o9JSqF4b_RzuYvVWVVX7ABC2csMJP_ocVbEIQjUBhp1V7VcQY-Zgq0prk_HvY13g8FxK4KvSza637ZWAfonn599SKuy22PeMJqDfd64SbunWrt-mKBz9PHeAo9t4LJPLsAqSd3IQ2aJTsnqJRA';
 
+      const leeway = 120;
+
       setupSignatureMock(testJwt);
 
       // token exp claim of 2019-09-01T05:00:00.000Z
       const clock = new Date('2019-09-01T05:00:00.000Z');
-      // custom leeway of 120 seconds
-      clock.setSeconds(clock.getSeconds() + 119);
+      clock.setSeconds(clock.getSeconds() + (leeway - 1));
 
       const overrides = {
-        leeway: 120,
+        leeway,
         _clock: clock,
       };
 
-      await expect(verify(testJwt, overrides)).resolves;
+      await expect(verify(testJwt, overrides)).resolves.toBeUndefined();
     });
 
     it('fails when "iat" is missing', async () => {
@@ -370,8 +356,7 @@ describe('id token verification tests', () => {
 
       // token iat claim of 2019-09-03T05:00:00.000Z
       const clock = new Date('2019-09-03T05:00:00.000Z');
-      // default leeway is 60 seconds
-      clock.setSeconds(clock.getSeconds() - 61);
+      clock.setSeconds(clock.getSeconds() - (DEFAULT_LEEWAY + 1));
 
       const overrides = {
         _clock: clock,
@@ -391,29 +376,29 @@ describe('id token verification tests', () => {
 
       // token iat claim of 2019-09-03T05:00:00.000Z
       const clock = new Date('2019-09-03T05:00:00.000Z');
-      // default leeway is 60 seconds
-      clock.setSeconds(clock.getSeconds() - 59);
+      clock.setSeconds(clock.getSeconds() - (DEFAULT_LEEWAY - 1));
 
       const overrides = {
         _clock: clock,
       };
 
-      await expect(verify(testJwt, overrides)).resolves;
+      await expect(verify(testJwt, overrides)).resolves.toBeUndefined();
     });
 
     it('fails when "iat" is in the future and outside of custom leeway', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY4MDkxNjAwLCJpYXQiOjE1Njc0ODY4MDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.KQWivvmcmWt5a3maRLFcMY8ev-gdeae-3Hm50BilmHjL31__S5G8dbHUOIjMg0zPIVbuml2SjXxEkOSiC-NZcupo7tknXuy76NdsMXWn1z7Cz1kI2XGFaR_PtY1lqpHc5FkQf1KiGhq4tMSk0RQDDu1U0E7WTDikV2mSrejOumL9qhj1lFwzCAr3ElDSnkHfcTuFQRMD0AdKFGD5oXOh4MgMFIE7GNFVAGnJ1Ld9JDbl1nqWTdrXZ3hYVDJDOc4DG8PdriFW3boyQKWqmV7eQZORKUW5C94VjcywZ9VROHqKyZXB6zc7s3FJ0zY2LxXEmTgOMEUgM2NtZVyMAhn0pQ';
 
+      const leeway = 120;
+
       setupSignatureMock(testJwt);
 
       // token iat claim of 2019-09-03T05:00:00.000Z
       const clock = new Date('2019-09-03T05:00:00.000Z');
-      // custom leeway of 120 seconds
-      clock.setSeconds(clock.getSeconds() - 121);
+      clock.setSeconds(clock.getSeconds() - (leeway + 1));
 
       const overrides = {
-        leeway: 120,
+        leeway,
         _clock: clock,
       };
 
@@ -427,19 +412,20 @@ describe('id token verification tests', () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY4MDkxNjAwLCJpYXQiOjE1Njc0ODY4MDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.KQWivvmcmWt5a3maRLFcMY8ev-gdeae-3Hm50BilmHjL31__S5G8dbHUOIjMg0zPIVbuml2SjXxEkOSiC-NZcupo7tknXuy76NdsMXWn1z7Cz1kI2XGFaR_PtY1lqpHc5FkQf1KiGhq4tMSk0RQDDu1U0E7WTDikV2mSrejOumL9qhj1lFwzCAr3ElDSnkHfcTuFQRMD0AdKFGD5oXOh4MgMFIE7GNFVAGnJ1Ld9JDbl1nqWTdrXZ3hYVDJDOc4DG8PdriFW3boyQKWqmV7eQZORKUW5C94VjcywZ9VROHqKyZXB6zc7s3FJ0zY2LxXEmTgOMEUgM2NtZVyMAhn0pQ';
 
+      const leeway = 120;
+
       setupSignatureMock(testJwt);
 
       // token iat claim of 2019-09-03T05:00:00.000Z
       const clock = new Date('2019-09-03T05:00:00.000Z');
-      // custom leeway is 120 seconds
-      clock.setSeconds(clock.getSeconds() - 119);
+      clock.setSeconds(clock.getSeconds() - (leeway - 1));
 
       const overrides = {
-        leeway: 120,
+        leeway,
         _clock: clock,
       };
 
-      await expect(verify(testJwt, overrides)).resolves;
+      await expect(verify(testJwt, overrides)).resolves.toBeUndefined();
     });
 
     it('fails when "nonce" sent on authentication request but missing from token claims', async () => {
@@ -544,8 +530,7 @@ describe('id token verification tests', () => {
       const maxAge = 120;
       // token auth_time claim of 2019-09-01T05:00:00.000Z
       const clock = new Date('2019-09-01T05:00:00.000Z');
-      // default leeway 60 secondds
-      clock.setSeconds(clock.getSeconds() + maxAge + 61);
+      clock.setSeconds(clock.getSeconds() + maxAge + (DEFAULT_LEEWAY + 1));
 
       await expect(
         verify(testJwt, {
@@ -567,15 +552,14 @@ describe('id token verification tests', () => {
       const maxAge = 120;
       // token auth_time claim of 2019-09-01T05:00:00.000Z
       const clock = new Date('2019-09-01T05:00:00.000Z');
-      // default leeway 60 secondds
-      clock.setSeconds(clock.getSeconds() + maxAge + 59);
+      clock.setSeconds(clock.getSeconds() + maxAge + (DEFAULT_LEEWAY - 1));
 
       await expect(
         verify(testJwt, {
           maxAge,
           _clock: clock,
         }),
-      ).resolves;
+      ).resolves.toBeUndefined();
     });
 
     it('fails when "max_age" was sent on the authentication request but "auth_time" is outside of custom leeway', async () => {
@@ -585,16 +569,17 @@ describe('id token verification tests', () => {
       setupSignatureMock(testJwt);
 
       const maxAge = 120;
+      const leeway = 15;
+
       // token auth_time claim of 2019-09-01T05:00:00.000Z
       const clock = new Date('2019-09-01T05:00:00.000Z');
-      // custom leeway 120 secondds
-      clock.setSeconds(clock.getSeconds() + maxAge + 121);
+      clock.setSeconds(clock.getSeconds() + maxAge + (leeway + 1));
 
       await expect(
         verify(testJwt, {
           maxAge,
           _clock: clock,
-          leeway: 120,
+          leeway,
         }),
       ).rejects.toHaveProperty(
         'name',
@@ -609,18 +594,19 @@ describe('id token verification tests', () => {
       setupSignatureMock(testJwt);
 
       const maxAge = 120;
+      const leeway = 15;
+
       // token auth_time claim of 2019-09-01T05:00:00.000Z
       const clock = new Date('2019-09-01T05:00:00.000Z');
-      // custom leeway 120 secondds
-      clock.setSeconds(clock.getSeconds() + maxAge + 119);
+      clock.setSeconds(clock.getSeconds() + maxAge + (leeway - 1));
 
       await expect(
         verify(testJwt, {
           maxAge,
           _clock: clock,
-          leeway: 120,
+          leeway,
         }),
-      ).resolves;
+      ).resolves.toBeUndefined();
     });
 
     const setupSignatureMock = jwt => {

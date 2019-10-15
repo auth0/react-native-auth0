@@ -8,42 +8,17 @@ const DEFAULT_LEEWAY = 60;
  * Verifies an ID token according to the OIDC specification. Note that this function is specific to the internals of this SDK,
  * and is not supported for general use.
  * @param {String} idToken the string token to verify
- * @param {Object} options the options required to run this verification
+ * @param {Object}options the options required to run this verification
  * @returns {Promise} A promise that resolves if the verification is successful, or will reject the promise if validation fails
  */
 export const verifyToken = (idToken, options) => {
-  if (!tokenValidationRequired(options.scope)) {
+  if (typeof idToken !== 'string') {
     return Promise.resolve();
   }
 
-  if (typeof idToken !== 'string') {
-    return Promise.reject(
-      idTokenError({
-        error: 'missing_id_token',
-        desc: 'ID token is required but missing',
-      }),
-    );
-  }
-
-  const sigOptions = {
-    idToken,
-    domain: options.domain,
-  };
-
-  return verifySignature(sigOptions)
+  return verifySignature(idToken, {domain: options.domain})
     .then(payload => validateClaims(payload, options))
     .then(() => Promise.resolve());
-};
-
-const tokenValidationRequired = scope => {
-  // If client did not specify scope of "openid", we do not expect an ID token thus no validation is needed
-  if (typeof scope === 'string') {
-    const scopes = scope.split(/(\s+)/);
-    if (scopes.includes('openid')) {
-      return true;
-    }
-  }
-  return false;
 };
 
 const validateClaims = (payload, opts) => {
