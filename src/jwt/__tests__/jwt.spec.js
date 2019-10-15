@@ -1,7 +1,10 @@
 import verifyToken from '../index';
-import fetchMock from 'fetch-mock';
 import * as signatureVerifier from '../signatureVerifier';
 const jwtDecoder = require('jwt-decode');
+import {KEYUTIL} from 'jsrsasign';
+import * as fs from 'fs';
+import * as path from 'path';
+import fetchMock from 'fetch-mock';
 
 describe('id token verification tests', () => {
   describe('token signature verification', () => {
@@ -70,6 +73,30 @@ describe('id token verification tests', () => {
       await verify(testJwt);
 
       expect(fetchMock.called()).toBe(false);
+    });
+
+    it('passes verification with valid token signed with RS256', async () => {
+      const testJwt =
+        'eyJhbGciOiJSUzI1NiIsImtpZCI6MTIzNH0.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIl0sImV4cCI6MTU2NzQ4NjgwMCwiaWF0IjoxNTY3MzE0MDAwLCJub25jZSI6ImE1OXZrNTkyIiwiYXpwIjoidG9rZW5zLXRlc3QtMTIzIiwiYXV0aF90aW1lIjoxNTcxMTcxOTAxLjIyNX0.fH5o91IddbI9-R5ODwO4-pOm9f4SvyTjmnSjyhEMe_llO1SKF105JbohYkHDSkp6eMcJFz0pkgtqP5OtVNWODuIcekqj6_wC10H9i1On3q58DZxfsXMSfySPBgqyl0XnNkYVXojjazir-X_HPN7BxPSjPKfwq6_bkMraKNUADgDXGi2P6DFSBNvWrpFgkNYu7ydCO109VFawxCRLMQS94TXzk6tdTjIF4oEhWBhjHoo5YYOGA82qkXNRoJqwoFdIfIFqcxty4sYlMTdCfrEl5ACPxiYIUIqwlb1TXELln28_isPL0gObxo7it5uoRTp-_eTf9rIzRYW8ehqAOD0_sA';
+      const contents = fs.readFileSync(
+        path.resolve(__dirname, './pubkey.pem'),
+        'utf8',
+      );
+
+      const pubKey = KEYUTIL.getKey(contents);
+      const jwkFromKey = KEYUTIL.getJWKFromKey(pubKey);
+
+      jwkFromKey.kid = '1234';
+      jwkFromKey.alg = 'RS256';
+      jwkFromKey.use = 'sig';
+
+      const jwks = {
+        keys: [jwkFromKey],
+      };
+
+      setupFetchMock({jwks});
+
+      await expect(verify(testJwt)).resolves.toBeUndefined();
     });
 
     const setupFetchMock = ({
@@ -605,6 +632,28 @@ describe('id token verification tests', () => {
           maxAge,
           _clock: clock,
           leeway,
+        }),
+      ).resolves.toBeUndefined();
+    });
+
+    it('succeeds with valid token claims using default clock', async () => {
+      const yesterday = Math.round(Date.now() / 1000 - 3600 * 24);
+      const tomorrow = Math.round(Date.now() / 1000 + 3600 * 24);
+
+      const decodedJwt = {
+        iss: `https://${BASE_EXPECTATIONS.domain}/`,
+        sub: 'auth0|123456789',
+        aud: BASE_EXPECTATIONS.clientId,
+        exp: tomorrow,
+        iat: yesterday,
+        nonce: BASE_EXPECTATIONS.nonce,
+      };
+
+      sigMock.mockImplementation(() => Promise.resolve(decodedJwt));
+
+      await expect(
+        verify('jwt-string-mocked', {
+          _clock: undefined,
         }),
       ).resolves.toBeUndefined();
     });
