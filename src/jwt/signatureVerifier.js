@@ -70,7 +70,7 @@ const getJwk = (domain, kid) => {
         .filter(
           k => k.use === 'sig' && k.kty === 'RSA' && k.kid && (k.n && k.e),
         )
-        .find(k => k.kid == kid);
+        .find(k => k.kid === kid);
       return Promise.resolve(key);
     })
     .catch(err => {
