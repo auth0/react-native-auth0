@@ -1,12 +1,31 @@
 # react-native-auth0
 
+React Native toolkit for Auth0 API, compliant with [RFC 8252](https://tools.ietf.org/html/rfc8252)
+
 [![Build Status][circleci-image]][circleci-url]
 [![NPM version][npm-image]][npm-url]
 [![Coverage][codecov-image]][codecov-url]
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
 
-React Native toolkit for Auth0 API, compliant with [RFC 8252](https://tools.ietf.org/html/rfc8252)
+## Table of Contents
+
+- [Documentation](#documentation)
+- [Requirements](#requirements)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+- [Support + Feedback](#support--feedback)
+- [Vulnerability Reporting](#vulnerability-reporting)
+- [Thank You](#thank-you)
+- [What is Auth0](#what-is-auth0)
+- [License](#license)
+
+## Documentation
+
+- The [React Native Quickstart](https://auth0.com/docs/quickstart/native/react-native) shows how to get an iOS or Android app running from scratch.
+- The [React Native Sample](https://github.com/auth0-samples/auth0-react-native-sample/tree/master/00-Login) has complete, running iOS and Android applications you can try.
+- The [Usage](#usage) section below covers specific use cases outside of basic authentication.
+- The [API documentation](https://auth0.github.io/react-native-auth0/) is generated from the code and explains all methods that are able to be used.
 
 ## Requirements
 
@@ -23,7 +42,7 @@ This SDK attempts to follow [semver](https://semver.org/) in a best-effort basis
 
 The contents of previous release can be found on the [branch v1](https://github.com/auth0/react-native-auth0/tree/v1).
 
-## Getting started
+## Getting Started
 
 First install the native library module:
 
@@ -273,29 +292,35 @@ auth0
 
 For more info please check our generated [documentation](http://auth0.github.io/react-native-auth0/index.html)
 
+## Contributing
+
+We appreciate feedback and contribution to this repo! Before you get started, please see the following:
+
+- [Auth0's general contribution guidelines](https://github.com/auth0/.github/blob/master/CONTRIBUTING.md)
+- [Auth0's code of conduct guidelines](https://github.com/auth0/open-source-template/blob/master/CODE-OF-CONDUCT.md)
+- [This repo's development guide](DEVELOPMENT.md)
+
+## Support + Feedback
+
+- Use [Issues](https://github.com/auth0/react-native-auth0/issues) for code-level support
+- Use [Community](https://community.auth0.com/) for usage, questions, specific cases
+
+## Vulnerability Reporting
+
+Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/responsible-disclosure-policy/) details the procedure for disclosing security issues.
+
 ## What is Auth0?
 
-Auth0 helps you to:
+Auth0 helps you to easily:
 
-- Add authentication with [multiple authentication sources](https://docs.auth0.com/identityproviders), either social like **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce, amont others**, or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS or any SAML Identity Provider**.
-- Add authentication through more traditional **[username/password databases](https://docs.auth0.com/mysql-connection-tutorial)**.
-- Add support for **[linking different user accounts](https://docs.auth0.com/link-accounts)** with the same user.
-- Support for generating signed [Json Web Tokens](https://docs.auth0.com/jwt) to call your APIs and **flow the user identity** securely.
-- Analytics of how, when and where users are logging in.
-- Pull data from other sources and add it to the user profile, through [JavaScript rules](https://docs.auth0.com/rules).
+- implement authentication with multiple identity providers, including social (e.g., Google, Facebook, Microsoft, LinkedIn, GitHub, Twitter, etc), or enterprise (e.g., Windows Azure AD, Google Apps, Active Directory, ADFS, SAML, etc.)
+- log in users with username/password databases, passwordless, or multi-factor authentication
+- link multiple user accounts together
+- generate signed JSON Web Tokens to authorize your API calls and flow the user identity securely
+- access demographics and analytics detailing how, when, and where users are logging in
+- enrich user profiles from other data sources using customizable JavaScript rules
 
-## Create a free Auth0 Account
-
-1. Go to [Auth0](https://auth0.com) and click Sign Up.
-2. Use Google, GitHub or Microsoft Account to login.
-
-## Issue Reporting
-
-If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
-
-## Author
-
-[Auth0](auth0.com)
+[Why Auth0?](https://auth0.com/why-auth0)
 
 ## License
 
