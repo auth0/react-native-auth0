@@ -21,4 +21,4 @@ jobs:
             - node_modules
 
       - run: yarn run test:ci
-      - run: bash <(curl -s https://codecov.io/bash) -f coverage/coverage-final.json
+      - run: bash <(curl -s https://codecov.io/bash) -Z -C $CIRCLE_SHA1 -f coverage/coverage-final.json
