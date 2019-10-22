@@ -12,6 +12,16 @@ describe('id token verification tests', () => {
       fetchMock.restore();
     });
 
+    it('uses fixed version of jsrsasign', () => {
+      // jsrsasign has not been updated recently; we want to verify that the dependency is pinned to 8.0.12
+      const packageData = fs.readFileSync(
+        path.resolve(__dirname, '../../../package.json'),
+      );
+      const packageJson = JSON.parse(packageData);
+      const jsrsasignDepVersion = packageJson.dependencies.jsrsasign;
+      expect(jsrsasignDepVersion).toBe('8.0.12');
+    });
+
     it('resolves when no idToken present', async () => {
       await expect(verify(undefined)).resolves.toBeUndefined();
     });
