@@ -147,6 +147,10 @@
         <article>
           <h1>react-native-auth0</h1>
           <p>
+            React Native toolkit for Auth0 API, compliant with
+            <a href="https://tools.ietf.org/html/rfc8252">RFC 8252</a>
+          </p>
+          <p>
             <a href="https://circleci.com/gh/auth0/react-native-auth0"
               ><img
                 src="http://img.shields.io/circleci/project/github/auth0/react-native-auth0.svg?branch=master&amp;style=flat-square"
@@ -173,10 +177,50 @@
                 alt="Downloads"
             /></a>
           </p>
-          <p>
-            React Native toolkit for Auth0 API, compliant with
-            <a href="https://tools.ietf.org/html/rfc8252">RFC 8252</a>
-          </p>
+          <h2>Table of Contents</h2>
+          <ul>
+            <li><a href="#documentation">Documentation</a></li>
+            <li><a href="#requirements">Requirements</a></li>
+            <li><a href="#getting-started">Getting Started</a></li>
+            <li><a href="#usage">Usage</a></li>
+            <li><a href="#support--feedback">Support + Feedback</a></li>
+            <li>
+              <a href="#vulnerability-reporting">Vulnerability Reporting</a>
+            </li>
+            <li><a href="#thank-you">Thank You</a></li>
+            <li><a href="#what-is-auth0">What is Auth0</a></li>
+            <li><a href="#license">License</a></li>
+          </ul>
+          <h2>Documentation</h2>
+          <ul>
+            <li>
+              The
+              <a href="https://auth0.com/docs/quickstart/native/react-native"
+                >React Native Quickstart</a
+              >
+              shows how to get an iOS or Android app running from scratch.
+            </li>
+            <li>
+              The
+              <a
+                href="https://github.com/auth0-samples/auth0-react-native-sample/tree/master/00-Login"
+                >React Native Sample</a
+              >
+              has complete, running iOS and Android applications you can try.
+            </li>
+            <li>
+              The <a href="#usage">Usage</a> section below covers specific use
+              cases outside of basic authentication.
+            </li>
+            <li>
+              The
+              <a href="https://auth0.github.io/react-native-auth0/"
+                >API documentation</a
+              >
+              is generated from the code and explains all methods that are able
+              to be used.
+            </li>
+          </ul>
           <h2>Requirements</h2>
           <p>
             This SDK targets apps that are using React Native SDK version
@@ -216,7 +260,7 @@
               >branch v1</a
             >.
           </p>
-          <h2>Getting started</h2>
+          <h2>Getting Started</h2>
           <p>First install the native library module:</p>
           <p>Using <a href="https://www.npmjs.com">npm</a></p>
           <p><code>$ npm install react-native-auth0 --save</code></p>
@@ -554,71 +598,77 @@ const auth0 = new Auth0({
               >documentation</a
             >
           </p>
-          <h2>What is Auth0?</h2>
-          <p>Auth0 helps you to:</p>
+          <h2>Contributing</h2>
+          <p>
+            We appreciate feedback and contribution to this repo! Before you get
+            started, please see the following:
+          </p>
           <ul>
             <li>
-              Add authentication with
-              <a href="https://docs.auth0.com/identityproviders"
-                >multiple authentication sources</a
-              >, either social like
-              <strong
-                >Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter,
-                Box, Salesforce, amont others</strong
-              >, or enterprise identity systems like
-              <strong
-                >Windows Azure AD, Google Apps, Active Directory, ADFS or any
-                SAML Identity Provider</strong
-              >.
-            </li>
-            <li>
-              Add authentication through more traditional
-              <strong
-                ><a href="https://docs.auth0.com/mysql-connection-tutorial"
-                  >username/password databases</a
-                ></strong
-              >.
-            </li>
-            <li>
-              Add support for
-              <strong
-                ><a href="https://docs.auth0.com/link-accounts"
-                  >linking different user accounts</a
-                ></strong
+              <a
+                href="https://github.com/auth0/.github/blob/master/CONTRIBUTING.md"
+                >Auth0's general contribution guidelines</a
               >
-              with the same user.
             </li>
             <li>
-              Support for generating signed
-              <a href="https://docs.auth0.com/jwt">Json Web Tokens</a> to call
-              your APIs and <strong>flow the user identity</strong> securely.
+              <a
+                href="https://github.com/auth0/open-source-template/blob/master/CODE-OF-CONDUCT.md"
+                >Auth0's code of conduct guidelines</a
+              >
             </li>
-            <li>Analytics of how, when and where users are logging in.</li>
+            <li><a href="DEVELOPMENT.md">This repo's development guide</a></li>
+          </ul>
+          <h2>Support + Feedback</h2>
+          <ul>
             <li>
-              Pull data from other sources and add it to the user profile,
-              through
-              <a href="https://docs.auth0.com/rules">JavaScript rules</a>.
+              Use
+              <a href="https://github.com/auth0/react-native-auth0/issues"
+                >Issues</a
+              >
+              for code-level support
+            </li>
+            <li>
+              Use <a href="https://community.auth0.com/">Community</a> for
+              usage, questions, specific cases
             </li>
           </ul>
-          <h2>Create a free Auth0 Account</h2>
-          <ol>
-            <li>
-              Go to <a href="https://auth0.com">Auth0</a> and click Sign Up.
-            </li>
-            <li>Use Google, GitHub or Microsoft Account to login.</li>
-          </ol>
-          <h2>Issue Reporting</h2>
+          <h2>Vulnerability Reporting</h2>
           <p>
-            If you have found a bug or if you have a feature request, please
-            report them at this repository issues section. Please do not report
-            security vulnerabilities on the public GitHub issue tracker. The
-            <a href="https://auth0.com/whitehat"
+            Please do not report security vulnerabilities on the public GitHub
+            issue tracker. The
+            <a href="https://auth0.com/responsible-disclosure-policy/"
               >Responsible Disclosure Program</a
             >
             details the procedure for disclosing security issues.
           </p>
-          <h2>Author</h2>
-          <p><a href="auth0.com">Auth0</a></p>
+          <h2>What is Auth0?</h2>
+          <p>Auth0 helps you to easily:</p>
+          <ul>
+            <li>
+              implement authentication with multiple identity providers,
+              including social (e.g., Google, Facebook, Microsoft, LinkedIn,
+              GitHub, Twitter, etc), or enterprise (e.g., Windows Azure AD,
+              Google Apps, Active Directory, ADFS, SAML, etc.)
+            </li>
+            <li>
+              log in users with username/password databases, passwordless, or
+              multi-factor authentication
+            </li>
+            <li>link multiple user accounts together</li>
+            <li>
+              generate signed JSON Web Tokens to authorize your API calls and
+              flow the user identity securely
+            </li>
+            <li>
+              access demographics and analytics detailing how, when, and where
+              users are logging in
+            </li>
+            <li>
+              enrich user profiles from other data sources using customizable
+              JavaScript rules
+            </li>
+          </ul>
+          <p><a href="https://auth0.com/why-auth0">Why Auth0?</a></p>
           <h2>License</h2>
           <p>
             This project is licensed under the MIT license. See the
@@ -633,7 +683,7 @@ const auth0 = new Auth0({
 
     <footer>
       Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on
-      Tue Oct 08 2019 15:17:20 GMT-0300 (Argentina Standard Time) using the
+      Wed Oct 23 2019 15:23:35 GMT-0300 (Argentina Standard Time) using the
       Minami theme.
     </footer>
 

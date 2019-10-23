@@ -1,7 +1,7 @@
 {
   "name": "react-native-auth0",
   "title": "React Native Auth0",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "React Native toolkit for Auth0 API",
   "main": "index.js",
   "scripts": {
