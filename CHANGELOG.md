@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.1.0](https://github.com/auth0/react-native-auth0/tree/v2.1.0) (2019-10-23)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.0.0...v2.1.0)
+
+**Security**
+
+- Improved OIDC compliance [\#243](https://github.com/auth0/react-native-auth0/pull/243) ([jimmyjames](https://github.com/jimmyjames))
+
 ## [v2.0.0](https://github.com/auth0/react-native-auth0/tree/v2.0.0) (2019-10-08)
 
 This is a major release that supports **CocoaPods** and **Android X**.
