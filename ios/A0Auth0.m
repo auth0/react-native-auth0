@@ -69,6 +69,8 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
 
 #pragma mark - Internal methods
 
+UIBackgroundTaskIdentifier taskId;
+
 - (void)presentSafariWithURL:(NSURL *)url {
     UIWindow *window = [[UIApplication sharedApplication] keyWindow];
     SFSafariViewController *controller = [[SFSafariViewController alloc] initWithURL:url];
@@ -91,6 +93,10 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
     RCTResponseSenderBlock callback = self.sessionCallback ? self.sessionCallback : ^void(NSArray *_unused) {};
 
     if (@available(iOS 12.0, *)) {
+        taskId = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
+            [UIApplication.sharedApplication endBackgroundTask:taskId];
+            taskId = UIBackgroundTaskInvalid;
+        }];
         ASWebAuthenticationSession* authenticationSession = [[ASWebAuthenticationSession alloc]
                                       initWithURL:url callbackURLScheme:callbackURLScheme
                                       completionHandler:^(NSURL * _Nullable callbackURL,
@@ -104,6 +110,8 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
                                               callback(@[[NSNull null], callbackURL.absoluteString]);
                                           }
                                           self.authenticationSession = nil;
+                                          [UIApplication.sharedApplication endBackgroundTask:taskId];
+                                          taskId = UIBackgroundTaskInvalid;
                                       }];
         #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
         if (@available(iOS 13.0, *)) {
