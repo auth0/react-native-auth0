@@ -121,6 +121,10 @@ UIBackgroundTaskIdentifier taskId;
         self.authenticationSession = authenticationSession;
         [(ASWebAuthenticationSession*) self.authenticationSession start];
     } else if (@available(iOS 11.0, *)) {
+        taskId = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
+            [UIApplication.sharedApplication endBackgroundTask:taskId];
+            taskId = UIBackgroundTaskInvalid;
+        }];
         self.authenticationSession = [[SFAuthenticationSession alloc]
                                       initWithURL:url callbackURLScheme:callbackURLScheme
                                       completionHandler:^(NSURL * _Nullable callbackURL,
@@ -134,6 +138,8 @@ UIBackgroundTaskIdentifier taskId;
                                               callback(@[[NSNull null], callbackURL.absoluteString]);
                                           }
                                           self.authenticationSession = nil;
+                                          [UIApplication.sharedApplication endBackgroundTask:taskId];
+                                          taskId = UIBackgroundTaskInvalid;
                                       }];
         [(SFAuthenticationSession*) self.authenticationSession start];
     }
