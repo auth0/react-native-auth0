@@ -118,17 +118,6 @@ const validateClaims = (payload, opts) => {
     );
   }
 
-  const iatTime = payload.iat - leeway;
-
-  if (now < iatTime) {
-    return Promise.reject(
-      idTokenError({
-        error: 'invalid_issued_at_claim',
-        desc: `Issued At (iat) claim error in the ID token; current time "${now}" is before issued at time "${iatTime}"`,
-      }),
-    );
-  }
-
   //Nonce
   if (opts.nonce) {
     if (typeof payload.nonce !== 'string') {
