@@ -1,5 +1,21 @@
 # Change Log
 
+## [v2.1.1](https://github.com/auth0/react-native-auth0/tree/v2.1.1) (2020-01-10)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.1.0...v2.1.1)
+
+**Removed**
+
+- Remove issued_at claim value check [\#266](https://github.com/auth0/react-native-auth0/pull/266) ([lbalmaceda](https://github.com/lbalmaceda))
+
+**Fixed**
+
+- Fix gradle javaCompile warning [\#265](https://github.com/auth0/react-native-auth0/pull/265) ([lbalmaceda](https://github.com/lbalmaceda))
+
+**Security**
+
+- Bump handlebars from 4.2.0 to 4.5.3 [\#262](https://github.com/auth0/react-native-auth0/pull/262) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v2.1.0](https://github.com/auth0/react-native-auth0/tree/v2.1.0) (2019-10-23)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.0.0...v2.1.0)
