@@ -75,13 +75,25 @@ describe('id token verification tests', () => {
       );
     });
 
-    it('fails when signature is not verified', async () => {
+    it('fails when public key is invalid and cannot be reconstructed', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMzQifQ.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTcwMjAzMjgxLCJpYXQiOjE1NzAwMzA0ODEsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NzAxMTY4ODAuNjk0fQ.ZNPsQq_U8NGyi5WFNgvuT0QlxfGFS9w6YIHWiF4dnwz_Zf3mv3gh4wybDR8vaLCE8ONTXvT9V_rW6oqNHSvEwa0nvPy2Vi3gVAvSfusoiYhkuQG_6SuqbeOrNJ1cejGzqw_iv2s6yEyN3B9wp0TCuIKL5jLPttaRi6ouGCbYeReANecaLOVZstrO4GhlY0NwtT4j5Dn1tDYavWxi1DZBisxBvMEFA6N0aQa51gJm6RYtUjBTo50j1xG5b7TIF4edjjT85FYQgrwEzA7Ss3HpnrYXEEvHn4nCsc585T3GKQuF21Nli-qGgQ3MywPOOqqiCSvL254Cp88Gt3xDS1hnqg';
-      const jwks = getJwks();
-      jwks.keys[0].n += 'bad';
+      const corruptedJwks = getExpectedJwks();
+      corruptedJwks.keys[0].n += 'bad-modulus';
 
-      setupFetchMock({jwks});
+      setupFetchMock({corruptedJwks});
+
+      await expect(verify(testJwt)).rejects.toHaveProperty(
+        'name',
+        'a0.idtoken.invalid_signature',
+      );
+    });
+
+    it('fails when signature is invalid', async () => {
+      const testJwt =
+        'eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMzQifQ.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTcwMjAzMjgxLCJpYXQiOjE1NzAwMzA0ODEsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NzAxMTY4ODAuNjk0fQ.invalid-signature';
+
+      setupFetchMock();
 
       await expect(verify(testJwt)).rejects.toHaveProperty(
         'name',
@@ -103,19 +115,15 @@ describe('id token verification tests', () => {
     it('passes verification with valid token signed with RS256', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMzQifQ.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY3NDg2ODAwLCJpYXQiOjE1NjczMTQwMDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.ObH7oG3NsGaxWnB8rzbLOgAD2I0fr9dyZC81YUrbju3RwC3lRAxqJkbesiSdGKry9OamIhKYwUGpPK0wrBaRJo8UjDjICkhM6lGP23plysemxhDnFK1qjj-NaUaW1yKg14v2lVpQl7glW9LIhFDhpqIf4bILA2wt9-z8Uvi31ETZvGb8PDY2bEvjXR-69-yLuoTNT2skP9loKfz6hHDMQCTWrGA61BMMjkZBLo9UotD9BzN8V7bLrFFT25v6q9N83mWaGLsHntzPIl3EYPOwX0NbE0lXKar59TUqtaTB3uNFHbGjIYi8wuuIp4PV9arpE3YrjWOOmrMurD1KpIyQrQ';
-      const jwks = fs.readFileSync(
-        path.resolve(__dirname, './jwks.json'),
-        'utf8',
-      );
 
-      setupFetchMock({jwks});
+      setupFetchMock();
 
       await expect(verify(testJwt)).resolves.toBeUndefined();
     });
 
     const setupFetchMock = ({
       domain = BASE_EXPECTATIONS.domain,
-      jwks = getJwks(),
+      jwks = getExpectedJwks(),
     } = {}) => {
       const expectedDiscoveryUri = `https://${domain}/.well-known/openid-configuration`;
       const expectedJwksUri = `https://${domain}/.well-known/jwks.json`;
@@ -124,20 +132,10 @@ describe('id token verification tests', () => {
       fetchMock.get(expectedJwksUri, jwks);
     };
 
-    const getJwks = () => {
-      return {
-        keys: [
-          {
-            kty: 'RSA',
-            n:
-              'st69ml_DI8MhepFSV9o8zjzRFiEst1_1-XJe0ib-g_aMauGTFOqeITdVqWTJMzZsjtwsPFD1CXbmEtI282GBbniJ7XkrZwpjzXangbvJpFE-aBmKeogTq6B94a19H9umCtV7eC55xDmOylXYPFdcVFvolWajdYGywqH8d4Cu_pIB25ELoA78goP4MqweJhnOt4r5jORea2paLXa04ojvglbOGnFec65Y4Hyw2mWGu06f0sxW-LMGzwP_SgbpRDKKnn-W8grguPq63sLexDTBFLyPNCcFQ8wnEQzLCaNNJItu-OFwgwgJhiB3d0et5m3lF2_lEJ2Pwndp0ORlOWcJbQbad',
-            e: 'AQAB',
-            kid: '1234',
-            alg: 'RS256',
-            use: 'sig',
-          },
-        ],
-      };
+    const getExpectedJwks = () => {
+      return JSON.parse(
+        fs.readFileSync(path.resolve(__dirname, './jwks.json'), 'utf8'),
+      );
     };
   });
 
