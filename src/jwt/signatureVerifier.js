@@ -1,5 +1,6 @@
 import AuthError from '../auth/authError';
-import {KEYUTIL, KJUR} from 'jsrsasign';
+import RSAVerifier from './rsa-verifier';
+import * as base64 from './base64';
 const jwtDecoder = require('jwt-decode');
 
 const ALLOWED_ALGORITHMS = ['RS256', 'HS256'];
@@ -44,21 +45,30 @@ export const verifySignature = (idToken, options) => {
     return Promise.resolve(payload);
   }
 
-  return getJwk(options.domain, header.kid).then(jwk => {
-    const pubKey = KEYUTIL.getKey(jwk);
-    const signatureValid = KJUR.jws.JWS.verify(idToken, pubKey, ['RS256']);
+  return getJwk(options.domain, header.kid)
+    .then(jwk => rsaVerifierForKey(jwk))
+    .then(rsaVerifier => {
+      const encodedParts = idToken.split('.');
+      const headerAndPayload = encodedParts[0] + '.' + encodedParts[1];
+      const signature = base64.decodeToHEX(encodedParts[2]);
 
-    if (signatureValid) {
-      return Promise.resolve(payload);
-    }
+      if (rsaVerifier.verify(headerAndPayload, signature)) {
+        return Promise.resolve(payload);
+      }
 
-    return Promise.reject(
-      idTokenError({
-        error: 'invalid_signature',
-        desc: 'Invalid token signature',
-      }),
-    );
-  });
+      return Promise.reject(
+        idTokenError({
+          error: 'invalid_signature',
+          desc: 'Invalid ID token signature',
+        }),
+      );
+    });
+};
+
+const rsaVerifierForKey = jwk => {
+  const modulus = base64.decodeToHEX(jwk.n);
+  const exponent = base64.decodeToHEX(jwk.e);
+  return Promise.resolve(new RSAVerifier(modulus, exponent));
 };
 
 const getJwk = (domain, kid) => {
