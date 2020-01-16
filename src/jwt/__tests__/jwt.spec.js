@@ -1,7 +1,6 @@
 import verifyToken from '../index';
 import * as signatureVerifier from '../signatureVerifier';
 const jwtDecoder = require('jwt-decode');
-import {KEYUTIL} from 'jsrsasign';
 import * as fs from 'fs';
 import * as path from 'path';
 import fetchMock from 'fetch-mock';
@@ -10,16 +9,6 @@ describe('id token verification tests', () => {
   describe('token signature verification', () => {
     beforeEach(() => {
       fetchMock.restore();
-    });
-
-    it('uses fixed version of jsrsasign', () => {
-      // jsrsasign has not been updated recently; we want to verify that the dependency is pinned to 8.0.12
-      const packageData = fs.readFileSync(
-        path.resolve(__dirname, '../../../package.json'),
-      );
-      const packageJson = JSON.parse(packageData);
-      const jsrsasignDepVersion = packageJson.dependencies.jsrsasign;
-      expect(jsrsasignDepVersion).toBe('8.0.12');
     });
 
     it('resolves when no idToken present', async () => {
@@ -114,21 +103,10 @@ describe('id token verification tests', () => {
     it('passes verification with valid token signed with RS256', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMzQifQ.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY3NDg2ODAwLCJpYXQiOjE1NjczMTQwMDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.ObH7oG3NsGaxWnB8rzbLOgAD2I0fr9dyZC81YUrbju3RwC3lRAxqJkbesiSdGKry9OamIhKYwUGpPK0wrBaRJo8UjDjICkhM6lGP23plysemxhDnFK1qjj-NaUaW1yKg14v2lVpQl7glW9LIhFDhpqIf4bILA2wt9-z8Uvi31ETZvGb8PDY2bEvjXR-69-yLuoTNT2skP9loKfz6hHDMQCTWrGA61BMMjkZBLo9UotD9BzN8V7bLrFFT25v6q9N83mWaGLsHntzPIl3EYPOwX0NbE0lXKar59TUqtaTB3uNFHbGjIYi8wuuIp4PV9arpE3YrjWOOmrMurD1KpIyQrQ';
-      const contents = fs.readFileSync(
-        path.resolve(__dirname, './pubkey.pem'),
+      const jwks = fs.readFileSync(
+        path.resolve(__dirname, './jwks.json'),
         'utf8',
       );
-
-      const pubKey = KEYUTIL.getKey(contents);
-      const jwkFromKey = KEYUTIL.getJWKFromKey(pubKey);
-
-      jwkFromKey.kid = '1234';
-      jwkFromKey.alg = 'RS256';
-      jwkFromKey.use = 'sig';
-
-      const jwks = {
-        keys: [jwkFromKey],
-      };
 
       setupFetchMock({jwks});
 
