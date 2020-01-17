@@ -71,13 +71,16 @@ const getJwk = (domain, kid) => {
           k => k.use === 'sig' && k.kty === 'RSA' && k.kid && (k.n && k.e),
         )
         .find(k => k.kid === kid);
+      if (!key) {
+        throw new Error('Key not present');
+      }
       return Promise.resolve(key);
     })
     .catch(err => {
       return Promise.reject(
         idTokenError({
           error: 'key_retrieval_error',
-          desc: 'Unable to retrieve public keyset needed to verify token',
+          desc: `Could not find a public key for Key ID (kid) "${kid}"`,
         }),
       );
     });
