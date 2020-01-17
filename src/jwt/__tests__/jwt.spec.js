@@ -59,7 +59,7 @@ describe('id token verification tests', () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMzQifQ.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTcwMjAyOTMxLCJpYXQiOjE1NzAwMzAxMzEsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NzAxMTY1MzAuNzk2fQ.Xad-J3PtImY3z--Gvj-H61tH18mCGQUUBkcug-CB5ehkjd56PXrA-AJHZK7OLryB_uj6sFKVn-V8Wr6t3KW7_Fd2n-__Ca2h6PtgIrjceZlHAQY4SgAk9tPmeeTOhs6KyXDeW0Ot0j3CP9p7nWxgCGMu_H5J5ZgJSVUVlffVpaIMEGiFZ_r71PLPtuTL3GsDwtICG_5xuqoR2YBLSpNuuc46t15i94E3JC1UXGryRfxVbeHg3x5DF9nf6eVkMHRdi-CdNQn2iD0G9OmxxELh-40pecbyUxLv4NfTHmbxOdvWRK00N8sgkElnPnoWXb5pacxLShFsBTJdXIsyqF_onA';
 
-      const jwks = getJwks();
+      const jwks = getExpectedJwks();
       jwks.keys[0].kid = '4321';
 
       setupFetchMock({jwks});
