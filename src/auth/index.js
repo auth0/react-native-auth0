@@ -190,7 +190,7 @@ export default class Auth {
    * @param {Object} parameters passwordless parameters
    * @param {String} parameters.email the email to send the link/code to
    * @param {String} parameters.send the passwordless strategy, either 'link' or 'code'
-   * @param {String} parameters.authParams optional authentication parameters, such as 'audience' or 'scope
+   * @param {String} parameters.authParams optional parameters, used when strategy is 'linḱ'
    * @returns {Promise}
    *
    * @memberof Auth
@@ -221,7 +221,7 @@ export default class Auth {
    * @param {Object} parameters passwordless parameters
    * @param {String} parameters.phoneNumber the phone number to send the link/code to
    * @param {String} parameters.send the passwordless strategy, either 'link' or 'code'
-   * @param {String} parameters.authParams optional authentication parameters, such as 'audience' or 'scope
+   * @param {String} parameters.authParams optional parameters, used when strategy is 'linḱ'
    * @returns {Promise}
    *
    * @memberof Auth
