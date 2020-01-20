@@ -160,7 +160,7 @@ describe('auth', () => {
     });
   });
 
-  describe.only('passwordless flow', () => {
+  describe('passwordless flow', () => {
     describe('with email connection', () => {
       it('should begin with code and authParams', async () => {
         fetchMock.postOnce(
@@ -214,7 +214,58 @@ describe('auth', () => {
       });
     });
 
-    describe('with SMS connection', () => {});
+    describe('with SMS connection', () => {
+      it('should begin with code and authParams', async () => {
+        fetchMock.postOnce(
+          'https://samples.auth0.com/passwordless/start',
+          emptySuccess,
+        );
+        expect.assertions(1);
+        await auth.passwordlessWithSMS({
+          phoneNumber: '+5491159991000',
+          send: 'code',
+          authParams: {
+            scope: 'openid profile',
+          },
+        });
+        expect(fetchMock.lastCall()).toMatchSnapshot();
+      });
+
+      it('should begin with link', async () => {
+        fetchMock.postOnce(
+          'https://samples.auth0.com/passwordless/start',
+          emptySuccess,
+        );
+        expect.assertions(1);
+        await auth.passwordlessWithSMS({
+          phoneNumber: '+5491159991000',
+          send: 'link',
+        });
+        expect(fetchMock.lastCall()).toMatchSnapshot();
+      });
+
+      it('should continue', async () => {
+        fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
+        expect.assertions(1);
+        await auth.loginWithSMS({
+          phoneNumber: '+5491159991000',
+          code: '123456',
+        });
+        expect(fetchMock.lastCall()).toMatchSnapshot();
+      });
+
+      it('should continue with optional params', async () => {
+        fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
+        expect.assertions(1);
+        await auth.loginWithSMS({
+          phoneNumber: '+5491159991000',
+          code: '123456',
+          audience: 'http://myapi.com',
+          scope: 'openid',
+        });
+        expect(fetchMock.lastCall()).toMatchSnapshot();
+      });
+    });
   });
 
   describe('password realm', () => {

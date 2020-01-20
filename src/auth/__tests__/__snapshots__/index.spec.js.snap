@@ -149,6 +149,66 @@ Array [
 ]
 `;
 
+exports[`auth passwordless flow with SMS connection should begin with code and authParams 1`] = `
+Array [
+  "https://samples.auth0.com/passwordless/start",
+  Object {
+    "body": "{\\"phone_number\\":\\"+5491159991000\\",\\"send\\":\\"code\\",\\"authParams\\":{\\"scope\\":\\"openid profile\\"},\\"connection\\":\\"sms\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth passwordless flow with SMS connection should begin with link 1`] = `
+Array [
+  "https://samples.auth0.com/passwordless/start",
+  Object {
+    "body": "{\\"phone_number\\":\\"+5491159991000\\",\\"send\\":\\"link\\",\\"connection\\":\\"sms\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth passwordless flow with SMS connection should continue 1`] = `
+Array [
+  "https://samples.auth0.com/oauth/token",
+  Object {
+    "body": "{\\"username\\":\\"+5491159991000\\",\\"otp\\":\\"123456\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"sms\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth passwordless flow with SMS connection should continue with optional params 1`] = `
+Array [
+  "https://samples.auth0.com/oauth/token",
+  Object {
+    "body": "{\\"username\\":\\"+5491159991000\\",\\"otp\\":\\"123456\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"sms\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
 exports[`auth passwordless flow with email connection should begin with code and authParams 1`] = `
 Array [
   "https://samples.auth0.com/passwordless/start",
