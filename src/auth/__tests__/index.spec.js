@@ -162,7 +162,7 @@ describe('auth', () => {
 
   describe('passwordless flow', () => {
     describe('with email connection', () => {
-      it('should begin with code and authParams', async () => {
+      it('should begin with code', async () => {
         fetchMock.postOnce(
           'https://samples.auth0.com/passwordless/start',
           emptySuccess,
@@ -170,10 +170,7 @@ describe('auth', () => {
         expect.assertions(1);
         await auth.passwordlessWithEmail({
           email: 'info@auth0.com',
-          send: 'code',
-          authParams: {
-            scope: 'openid profile',
-          },
+          send: 'link',
         });
         expect(fetchMock.lastCall()).toMatchSnapshot();
       });
@@ -187,6 +184,22 @@ describe('auth', () => {
         await auth.passwordlessWithEmail({
           email: 'info@auth0.com',
           send: 'link',
+        });
+        expect(fetchMock.lastCall()).toMatchSnapshot();
+      });
+
+      it('should begin with optional parameters', async () => {
+        fetchMock.postOnce(
+          'https://samples.auth0.com/passwordless/start',
+          emptySuccess,
+        );
+        expect.assertions(1);
+        await auth.passwordlessWithEmail({
+          email: 'info@auth0.com',
+          send: 'code',
+          authParams: {
+            scope: 'openid profile',
+          },
         });
         expect(fetchMock.lastCall()).toMatchSnapshot();
       });
@@ -201,7 +214,7 @@ describe('auth', () => {
         expect(fetchMock.lastCall()).toMatchSnapshot();
       });
 
-      it('should continue with optional params', async () => {
+      it('should continue with optional parameters', async () => {
         fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
         expect.assertions(1);
         await auth.loginWithEmail({
@@ -215,7 +228,7 @@ describe('auth', () => {
     });
 
     describe('with SMS connection', () => {
-      it('should begin with code and authParams', async () => {
+      it('should begin with code', async () => {
         fetchMock.postOnce(
           'https://samples.auth0.com/passwordless/start',
           emptySuccess,
@@ -224,9 +237,6 @@ describe('auth', () => {
         await auth.passwordlessWithSMS({
           phoneNumber: '+5491159991000',
           send: 'code',
-          authParams: {
-            scope: 'openid profile',
-          },
         });
         expect(fetchMock.lastCall()).toMatchSnapshot();
       });
@@ -240,6 +250,22 @@ describe('auth', () => {
         await auth.passwordlessWithSMS({
           phoneNumber: '+5491159991000',
           send: 'link',
+        });
+        expect(fetchMock.lastCall()).toMatchSnapshot();
+      });
+
+      it('should begin with optional parameters', async () => {
+        fetchMock.postOnce(
+          'https://samples.auth0.com/passwordless/start',
+          emptySuccess,
+        );
+        expect.assertions(1);
+        await auth.passwordlessWithSMS({
+          phoneNumber: '+5491159991000',
+          send: 'code',
+          authParams: {
+            scope: 'openid profile',
+          },
         });
         expect(fetchMock.lastCall()).toMatchSnapshot();
       });
@@ -254,7 +280,7 @@ describe('auth', () => {
         expect(fetchMock.lastCall()).toMatchSnapshot();
       });
 
-      it('should continue with optional params', async () => {
+      it('should continue with optional parameters', async () => {
         fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
         expect.assertions(1);
         await auth.loginWithSMS({
