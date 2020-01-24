@@ -149,11 +149,11 @@ Array [
 ]
 `;
 
-exports[`auth passwordless flow with SMS connection should begin with code and authParams 1`] = `
+exports[`auth passwordless flow with SMS connection should begin with code 1`] = `
 Array [
   "https://samples.auth0.com/passwordless/start",
   Object {
-    "body": "{\\"phone_number\\":\\"+5491159991000\\",\\"send\\":\\"code\\",\\"authParams\\":{\\"scope\\":\\"openid profile\\"},\\"connection\\":\\"sms\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "body": "{\\"phone_number\\":\\"+5491159991000\\",\\"send\\":\\"code\\",\\"connection\\":\\"sms\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
     "headers": Object {
       "Accept": "application/json",
       "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
@@ -179,6 +179,21 @@ Array [
 ]
 `;
 
+exports[`auth passwordless flow with SMS connection should begin with optional parameters 1`] = `
+Array [
+  "https://samples.auth0.com/passwordless/start",
+  Object {
+    "body": "{\\"phone_number\\":\\"+5491159991000\\",\\"send\\":\\"code\\",\\"authParams\\":{\\"scope\\":\\"openid profile\\"},\\"connection\\":\\"sms\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
 exports[`auth passwordless flow with SMS connection should continue 1`] = `
 Array [
   "https://samples.auth0.com/oauth/token",
@@ -194,7 +209,7 @@ Array [
 ]
 `;
 
-exports[`auth passwordless flow with SMS connection should continue with optional params 1`] = `
+exports[`auth passwordless flow with SMS connection should continue with optional parameters 1`] = `
 Array [
   "https://samples.auth0.com/oauth/token",
   Object {
@@ -209,11 +224,11 @@ Array [
 ]
 `;
 
-exports[`auth passwordless flow with email connection should begin with code and authParams 1`] = `
+exports[`auth passwordless flow with email connection should begin with code 1`] = `
 Array [
   "https://samples.auth0.com/passwordless/start",
   Object {
-    "body": "{\\"email\\":\\"info@auth0.com\\",\\"send\\":\\"code\\",\\"authParams\\":{\\"scope\\":\\"openid profile\\"},\\"connection\\":\\"email\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "body": "{\\"email\\":\\"info@auth0.com\\",\\"send\\":\\"link\\",\\"connection\\":\\"email\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
     "headers": Object {
       "Accept": "application/json",
       "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
@@ -239,6 +254,21 @@ Array [
 ]
 `;
 
+exports[`auth passwordless flow with email connection should begin with optional parameters 1`] = `
+Array [
+  "https://samples.auth0.com/passwordless/start",
+  Object {
+    "body": "{\\"email\\":\\"info@auth0.com\\",\\"send\\":\\"code\\",\\"authParams\\":{\\"scope\\":\\"openid profile\\"},\\"connection\\":\\"email\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
 exports[`auth passwordless flow with email connection should continue 1`] = `
 Array [
   "https://samples.auth0.com/oauth/token",
@@ -254,7 +284,7 @@ Array [
 ]
 `;
 
-exports[`auth passwordless flow with email connection should continue with optional params 1`] = `
+exports[`auth passwordless flow with email connection should continue with optional parameters 1`] = `
 Array [
   "https://samples.auth0.com/oauth/token",
   Object {
