@@ -120,23 +120,6 @@ describe('id token verification tests', () => {
 
       await expect(verify(testJwt)).resolves.toBeUndefined();
     });
-
-    const setupFetchMock = ({
-      domain = BASE_EXPECTATIONS.domain,
-      jwks = getExpectedJwks(),
-    } = {}) => {
-      const expectedDiscoveryUri = `https://${domain}/.well-known/openid-configuration`;
-      const expectedJwksUri = `https://${domain}/.well-known/jwks.json`;
-
-      fetchMock.get(expectedDiscoveryUri, {jwks_uri: expectedJwksUri});
-      fetchMock.get(expectedJwksUri, jwks);
-    };
-
-    const getExpectedJwks = () => {
-      return JSON.parse(
-        fs.readFileSync(path.resolve(__dirname, './jwks.json'), 'utf8'),
-      );
-    };
   });
 
   describe('token claims verification', () => {
@@ -614,5 +597,22 @@ describe('id token verification tests', () => {
 
     const options = Object.assign({}, optionsDefaults, optionsOverrides);
     return verifyToken(idToken, options);
+  };
+
+  const setupFetchMock = ({
+    domain = BASE_EXPECTATIONS.domain,
+    jwks = getExpectedJwks(),
+  } = {}) => {
+    const expectedDiscoveryUri = `https://${domain}/.well-known/openid-configuration`;
+    const expectedJwksUri = `https://${domain}/.well-known/jwks.json`;
+
+    fetchMock.get(expectedDiscoveryUri, {jwks_uri: expectedJwksUri});
+    fetchMock.get(expectedJwksUri, jwks);
+  };
+
+  const getExpectedJwks = () => {
+    return JSON.parse(
+      fs.readFileSync(path.resolve(__dirname, './jwks.json'), 'utf8'),
+    );
   };
 });
