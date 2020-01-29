@@ -220,8 +220,6 @@ export default class Auth {
    *
    * @param {Object} parameters passwordless parameters
    * @param {String} parameters.phoneNumber the phone number to send the link/code to
-   * @param {String} parameters.send the passwordless strategy, either 'link' or 'code'
-   * @param {String} parameters.authParams optional parameters, used when strategy is 'linḱ'
    * @returns {Promise}
    *
    * @memberof Auth
@@ -284,7 +282,7 @@ export default class Auth {
    * Finishes the Passworldess authentication with an SMS connection
    *
    * @param {Object} parameters passwordless parameters
-   * @param {String} parameters.phoneNumber the phone number where the link/code was received
+   * @param {String} parameters.phoneNumber the phone number where the code was received
    * @param {String} parameters.code the code numeric value (OTP)
    * @param {String} parameters.audience optional API audience to request
    * @param {String} parameters.scope optional scopes to request

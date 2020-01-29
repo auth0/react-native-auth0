@@ -256,7 +256,7 @@ auth0.auth
 
 #### Login with Passwordless
 
-Passwordless is a two-step authentication flow, and requires the **Passwordless OTP** grant to be enabled in your Auth0 application before-hand. Check [our guide](https://auth0.com/docs/dashboard/guides/applications/update-grant-types) to learn how to enable it.
+Passwordless is a two-step authentication flow, and requires the **Passwordless OTP** grant to be enabled in your Auth0 application beforehand. Check [our guide](https://auth0.com/docs/dashboard/guides/applications/update-grant-types) to learn how to enable it.
 
 To start the flow, you request a link or code to be sent to the user's email or phone number:
 
