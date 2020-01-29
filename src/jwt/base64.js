@@ -5,8 +5,9 @@
 import base64 from 'base64-js';
 
 export function padding(str) {
-  var mod = str.length % 4;
-  var pad = 4 - mod;
+  const paddingLength = 4;
+  const mod = str.length % paddingLength;
+  const pad = paddingLength - mod;
 
   if (mod === 0) {
     return str;
@@ -16,10 +17,10 @@ export function padding(str) {
 }
 
 function byteArrayToHex(raw) {
-  var HEX = '';
+  let HEX = '';
 
-  for (var i = 0; i < raw.length; i++) {
-    var _hex = raw[i].toString(16);
+  for (let i = 0; i < raw.length; i++) {
+    const _hex = raw[i].toString(16);
     HEX += _hex.length === 2 ? _hex : '0' + _hex;
   }
 
