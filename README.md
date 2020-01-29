@@ -256,9 +256,9 @@ auth0.auth
 
 #### Login with Passwordless
 
-Passwordless is a two-step authentication flow, and requires the **Passwordless OTP** grant to be enabled in your Auth0 application beforehand. Check [our guide](https://auth0.com/docs/dashboard/guides/applications/update-grant-types) to learn how to enable it.
+Passwordless is a two-step authentication flow that makes use of this type of connection. The **Passwordless OTP** grant is required to be enabled in your Auth0 application beforehand. Check [our guide](https://auth0.com/docs/dashboard/guides/applications/update-grant-types) to learn how to enable it.
 
-To start the flow, you request a link or code to be sent to the user's email or phone number:
+To start the flow, you request a code to be sent to the user's email or phone number. For email scenarios only, a link can be sent in place of the code.
 
 ```js
 auth0.auth
@@ -276,7 +276,6 @@ or
 auth0.auth
   .passwordlessWithSMS({
     phoneNumber: '+5491159991000',
-    send: 'code',
   })
   .then(console.log)
   .catch(console.error);
