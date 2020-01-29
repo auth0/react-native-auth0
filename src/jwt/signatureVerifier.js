@@ -45,30 +45,29 @@ export const verifySignature = (idToken, options) => {
     return Promise.resolve(payload);
   }
 
-  return getJwk(options.domain, header.kid)
-    .then(jwk => rsaVerifierForKey(jwk))
-    .then(rsaVerifier => {
-      const encodedParts = idToken.split('.');
-      const headerAndPayload = encodedParts[0] + '.' + encodedParts[1];
-      const signature = base64.decodeToHEX(encodedParts[2]);
+  return getJwk(options.domain, header.kid).then(jwk => {
+    const rsaVerifier = rsaVerifierForKey(jwk);
+    const encodedParts = idToken.split('.');
+    const headerAndPayload = encodedParts[0] + '.' + encodedParts[1];
+    const signature = base64.decodeToHEX(encodedParts[2]);
 
-      if (rsaVerifier.verify(headerAndPayload, signature)) {
-        return Promise.resolve(payload);
-      }
+    if (rsaVerifier.verify(headerAndPayload, signature)) {
+      return Promise.resolve(payload);
+    }
 
-      return Promise.reject(
-        idTokenError({
-          error: 'invalid_signature',
-          desc: 'Invalid ID token signature',
-        }),
-      );
-    });
+    return Promise.reject(
+      idTokenError({
+        error: 'invalid_signature',
+        desc: 'Invalid ID token signature',
+      }),
+    );
+  });
 };
 
 const rsaVerifierForKey = jwk => {
   const modulus = base64.decodeToHEX(jwk.n);
   const exponent = base64.decodeToHEX(jwk.e);
-  return Promise.resolve(new RSAVerifier(modulus, exponent));
+  return new RSAVerifier(modulus, exponent);
 };
 
 const getJwk = (domain, kid) => {
