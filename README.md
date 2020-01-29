@@ -254,6 +254,57 @@ auth0.auth
   .catch(console.error);
 ```
 
+#### Login with Passwordless
+
+Passwordless is a two-step authentication flow that makes use of this type of connection. The **Passwordless OTP** grant is required to be enabled in your Auth0 application beforehand. Check [our guide](https://auth0.com/docs/dashboard/guides/applications/update-grant-types) to learn how to enable it.
+
+To start the flow, you request a code to be sent to the user's email or phone number. For email scenarios only, a link can be sent in place of the code.
+
+```js
+auth0.auth
+  .passwordlessWithEmail({
+    email: 'info@auth0.com',
+    send: 'link',
+  })
+  .then(console.log)
+  .catch(console.error);
+```
+
+or
+
+```js
+auth0.auth
+  .passwordlessWithSMS({
+    phoneNumber: '+5491159991000',
+  })
+  .then(console.log)
+  .catch(console.error);
+```
+
+Then, in order to complete the authentication, you must send back that received code value along with the email or phone number used:
+
+```js
+auth0.auth
+  .loginWithEmail({
+    email: 'info@auth0.com',
+    code: '123456',
+  })
+  .then(console.log)
+  .catch(console.error);
+```
+
+or
+
+```js
+auth0.auth
+  .loginWithSMS({
+    phoneNumber: 'info@auth0.com',
+    code: '123456',
+  })
+  .then(console.log)
+  .catch(console.error);
+```
+
 #### Create user in database connection
 
 ```js
