@@ -58,7 +58,35 @@
       <li class="nav-item">
         <span class="nav-item-type type-function">F</span
         ><span class="nav-item-name"
+          ><a href="Auth.html#.loginWithEmail">loginWithEmail</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.loginWithSMS">loginWithSMS</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
           ><a href="Auth.html#.logoutUrl">logoutUrl</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.passwordlessWithEmail"
+            >passwordlessWithEmail</a
+          ></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.passwordlessWithSMS"
+            >passwordlessWithSMS</a
+          ></span
         >
       </li>
       <li class="nav-item">
@@ -351,7 +379,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line313">line 313</a>
+                    <a href="src_auth_index.js.html#line441">line 441</a>
                   </li>
                 </ul>
               </dd>
@@ -629,6 +657,267 @@
           </div>
 
           <div class="section-method">
+            <h4 class="name" id=".loginWithEmail">
+              <span class="type-signature">(static) </span>loginWithEmail<span
+                class="signature"
+                >(parameters)</span
+              ><span class="type-signature"> &rarr; {Promise}</span>
+            </h4>
+
+            <div class="description">
+              <p>
+                Finishes the Passworldess authentication with an email
+                connection
+              </p>
+            </div>
+
+            <dl class="details">
+              <dt class="tag-source">Source:</dt>
+              <dd class="tag-source">
+                <ul class="dummy">
+                  <li>
+                    <a href="src_auth_index.js.html">src/auth/index.js</a>,
+                    <a href="src_auth_index.js.html#line259">line 259</a>
+                  </li>
+                </ul>
+              </dd>
+            </dl>
+
+            <h5>Parameters:</h5>
+
+            <table class="params">
+              <thead>
+                <tr>
+                  <th>Name</th>
+
+                  <th>Type</th>
+
+                  <th class="last">Description</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td class="name"><code>parameters</code></td>
+
+                  <td class="type">
+                    <span class="param-type"><code>Object</code></span>
+                  </td>
+
+                  <td class="description last">
+                    <p>passwordless parameters</p>
+
+                    <table class="params">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+
+                          <th>Type</th>
+
+                          <th class="last">Description</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td class="name"><code>email</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>the email where the link/code was received</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>code</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>the code numeric value (OTP)</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>audience</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>optional API audience to request</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>scope</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>optional scopes to request</p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="section-returns">
+              <h5>Returns:</h5>
+
+              <dl class="param-type">
+                <dt>
+                  Type:
+                </dt>
+                <dd>
+                  <span class="param-type"><code>Promise</code></span>
+                </dd>
+              </dl>
+            </div>
+          </div>
+
+          <div class="section-method">
+            <h4 class="name" id=".loginWithSMS">
+              <span class="type-signature">(static) </span>loginWithSMS<span
+                class="signature"
+                >(parameters)</span
+              ><span class="type-signature"> &rarr; {Promise}</span>
+            </h4>
+
+            <div class="description">
+              <p>
+                Finishes the Passworldess authentication with an SMS connection
+              </p>
+            </div>
+
+            <dl class="details">
+              <dt class="tag-source">Source:</dt>
+              <dd class="tag-source">
+                <ul class="dummy">
+                  <li>
+                    <a href="src_auth_index.js.html">src/auth/index.js</a>,
+                    <a href="src_auth_index.js.html#line293">line 293</a>
+                  </li>
+                </ul>
+              </dd>
+            </dl>
+
+            <h5>Parameters:</h5>
+
+            <table class="params">
+              <thead>
+                <tr>
+                  <th>Name</th>
+
+                  <th>Type</th>
+
+                  <th class="last">Description</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td class="name"><code>parameters</code></td>
+
+                  <td class="type">
+                    <span class="param-type"><code>Object</code></span>
+                  </td>
+
+                  <td class="description last">
+                    <p>passwordless parameters</p>
+
+                    <table class="params">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+
+                          <th>Type</th>
+
+                          <th class="last">Description</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td class="name"><code>phoneNumber</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>the phone number where the code was received</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>code</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>the code numeric value (OTP)</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>audience</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>optional API audience to request</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>scope</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>optional scopes to request</p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="section-returns">
+              <h5>Returns:</h5>
+
+              <dl class="param-type">
+                <dt>
+                  Type:
+                </dt>
+                <dd>
+                  <span class="param-type"><code>Promise</code></span>
+                </dd>
+              </dl>
+            </div>
+          </div>
+
+          <div class="section-method">
             <h4 class="name" id=".logoutUrl">
               <span class="type-signature">(static) </span>logoutUrl<span
                 class="signature"
@@ -775,6 +1064,216 @@
               <div class="param-desc">
                 <p>logout url with specified parameters</p>
               </div>
+            </div>
+          </div>
+
+          <div class="section-method">
+            <h4 class="name" id=".passwordlessWithEmail">
+              <span class="type-signature">(static) </span
+              >passwordlessWithEmail<span class="signature">(parameters)</span
+              ><span class="type-signature"> &rarr; {Promise}</span>
+            </h4>
+
+            <div class="description">
+              <p>Starts the Passworldess flow with an email connection</p>
+            </div>
+
+            <dl class="details">
+              <dt class="tag-source">Source:</dt>
+              <dd class="tag-source">
+                <ul class="dummy">
+                  <li>
+                    <a href="src_auth_index.js.html">src/auth/index.js</a>,
+                    <a href="src_auth_index.js.html#line198">line 198</a>
+                  </li>
+                </ul>
+              </dd>
+            </dl>
+
+            <h5>Parameters:</h5>
+
+            <table class="params">
+              <thead>
+                <tr>
+                  <th>Name</th>
+
+                  <th>Type</th>
+
+                  <th class="last">Description</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td class="name"><code>parameters</code></td>
+
+                  <td class="type">
+                    <span class="param-type"><code>Object</code></span>
+                  </td>
+
+                  <td class="description last">
+                    <p>passwordless parameters</p>
+
+                    <table class="params">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+
+                          <th>Type</th>
+
+                          <th class="last">Description</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td class="name"><code>email</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>the email to send the link/code to</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>send</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>
+                              the passwordless strategy, either 'link' or 'code'
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>authParams</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>
+                              optional parameters, used when strategy is 'linḱ'
+                            </p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="section-returns">
+              <h5>Returns:</h5>
+
+              <dl class="param-type">
+                <dt>
+                  Type:
+                </dt>
+                <dd>
+                  <span class="param-type"><code>Promise</code></span>
+                </dd>
+              </dl>
+            </div>
+          </div>
+
+          <div class="section-method">
+            <h4 class="name" id=".passwordlessWithSMS">
+              <span class="type-signature">(static) </span
+              >passwordlessWithSMS<span class="signature">(parameters)</span
+              ><span class="type-signature"> &rarr; {Promise}</span>
+            </h4>
+
+            <div class="description">
+              <p>Starts the Passworldess flow with an SMS connection</p>
+            </div>
+
+            <dl class="details">
+              <dt class="tag-source">Source:</dt>
+              <dd class="tag-source">
+                <ul class="dummy">
+                  <li>
+                    <a href="src_auth_index.js.html">src/auth/index.js</a>,
+                    <a href="src_auth_index.js.html#line227">line 227</a>
+                  </li>
+                </ul>
+              </dd>
+            </dl>
+
+            <h5>Parameters:</h5>
+
+            <table class="params">
+              <thead>
+                <tr>
+                  <th>Name</th>
+
+                  <th>Type</th>
+
+                  <th class="last">Description</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td class="name"><code>parameters</code></td>
+
+                  <td class="type">
+                    <span class="param-type"><code>Object</code></span>
+                  </td>
+
+                  <td class="description last">
+                    <p>passwordless parameters</p>
+
+                    <table class="params">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+
+                          <th>Type</th>
+
+                          <th class="last">Description</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td class="name"><code>phoneNumber</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>the phone number to send the link/code to</p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="section-returns">
+              <h5>Returns:</h5>
+
+              <dl class="param-type">
+                <dt>
+                  Type:
+                </dt>
+                <dd>
+                  <span class="param-type"><code>Promise</code></span>
+                </dd>
+              </dl>
             </div>
           </div>
 
@@ -1102,7 +1601,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line277">line 277</a>
+                    <a href="src_auth_index.js.html#line405">line 405</a>
                   </li>
                 </ul>
               </dd>
@@ -1206,7 +1705,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line196">line 196</a>
+                    <a href="src_auth_index.js.html#line324">line 324</a>
                   </li>
                 </ul>
               </dd>
@@ -1298,7 +1797,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line227">line 227</a>
+                    <a href="src_auth_index.js.html#line355">line 355</a>
                   </li>
                 </ul>
               </dd>
@@ -1379,7 +1878,7 @@
 
     <footer>
       Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on
-      Fri Jan 10 2020 17:13:55 GMT-0300 (Argentina Standard Time) using the
+      Thu Jan 30 2020 15:56:51 GMT-0300 (Argentina Standard Time) using the
       Minami theme.
     </footer>
 

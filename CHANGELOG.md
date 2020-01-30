@@ -1,5 +1,18 @@
 # Change Log
 
+## [v2.2.0](https://github.com/auth0/react-native-auth0/tree/v2.2.0) (2020-01-30)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.1.1...v2.2.0)
+
+**Added**
+
+- Add passwordless endpoints [\#270](https://github.com/auth0/react-native-auth0/pull/270) ([lbalmaceda](https://github.com/lbalmaceda))
+- Handle missing kid (key id) on the JWKS [\#269](https://github.com/auth0/react-native-auth0/pull/269) ([lbalmaceda](https://github.com/lbalmaceda))
+
+**Changed**
+
+- Refactor RSA verification: Replace jsrsasign with crypto-js [\#268](https://github.com/auth0/react-native-auth0/pull/268) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [v2.1.1](https://github.com/auth0/react-native-auth0/tree/v2.1.1) (2020-01-10)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.1.0...v2.1.1)
