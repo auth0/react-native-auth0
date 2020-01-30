@@ -78,14 +78,19 @@ describe('id token verification tests', () => {
     it('fails when public key is invalid and cannot be reconstructed', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMzQifQ.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTcwMjAzMjgxLCJpYXQiOjE1NzAwMzA0ODEsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NzAxMTY4ODAuNjk0fQ.ZNPsQq_U8NGyi5WFNgvuT0QlxfGFS9w6YIHWiF4dnwz_Zf3mv3gh4wybDR8vaLCE8ONTXvT9V_rW6oqNHSvEwa0nvPy2Vi3gVAvSfusoiYhkuQG_6SuqbeOrNJ1cejGzqw_iv2s6yEyN3B9wp0TCuIKL5jLPttaRi6ouGCbYeReANecaLOVZstrO4GhlY0NwtT4j5Dn1tDYavWxi1DZBisxBvMEFA6N0aQa51gJm6RYtUjBTo50j1xG5b7TIF4edjjT85FYQgrwEzA7Ss3HpnrYXEEvHn4nCsc585T3GKQuF21Nli-qGgQ3MywPOOqqiCSvL254Cp88Gt3xDS1hnqg';
-      const corruptedJwks = getExpectedJwks();
-      corruptedJwks.keys[0].n += 'bad-modulus';
+      const jwks = getExpectedJwks();
+      jwks.keys[0].n = 'bad-modulus';
 
-      setupFetchMock({corruptedJwks});
+      setupFetchMock({jwks});
 
-      await expect(verify(testJwt)).rejects.toHaveProperty(
+      const result = verify(testJwt);
+      expect(result).rejects.toHaveProperty(
         'name',
         'a0.idtoken.invalid_signature',
+      );
+      expect(result).rejects.toHaveProperty(
+        'message',
+        'Invalid ID token signature',
       );
     });
 

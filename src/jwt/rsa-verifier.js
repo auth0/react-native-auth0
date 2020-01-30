@@ -54,7 +54,8 @@ RSAVerifier.prototype.verify = function(msg, encodedSignature) {
 
   const signature = new BigInteger(decodedSignature, 16);
   if (signature.bitLength() > this.n.bitLength()) {
-    throw new Error('Signature does not match with the key modulus.');
+    //Signature does not match with the key modulus.
+    return false;
   }
 
   const decryptedSignature = signature.modPowInt(this.e, this.n);
@@ -62,11 +63,13 @@ RSAVerifier.prototype.verify = function(msg, encodedSignature) {
 
   const digestInfo = getAlgorithmFromDigest(digest);
   if (digestInfo.length === 0) {
+    //Hashing algorithm is not found
     return false;
   }
 
   if (!digestAlgs.hasOwnProperty(digestInfo.alg)) {
-    throw new Error('Hashing algorithm is not supported.');
+    //Hashing algorithm is not supported
+    return false;
   }
 
   const msgHash = digestAlgs[digestInfo.alg](msg).toString();

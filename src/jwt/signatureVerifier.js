@@ -50,11 +50,9 @@ export const verifySignature = (idToken, options) => {
     const encodedParts = idToken.split('.');
     const headerAndPayload = encodedParts[0] + '.' + encodedParts[1];
     const signature = base64.decodeToHEX(encodedParts[2]);
-
     if (rsaVerifier.verify(headerAndPayload, signature)) {
       return Promise.resolve(payload);
     }
-
     return Promise.reject(
       idTokenError({
         error: 'invalid_signature',
