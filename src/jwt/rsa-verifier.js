@@ -26,7 +26,7 @@ function RSAVerifier(modulus, exp) {
   this.n = null;
   this.e = 0;
 
-  if (modulus != null && exp != null && modulus.length > 0 && exp.length > 0) {
+  if (modulus && modulus.length > 0 && exp && exp.length > 0) {
     this.n = new BigInteger(modulus, 16);
     this.e = parseInt(exp, 16);
   } else {
