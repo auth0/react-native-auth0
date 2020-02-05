@@ -122,7 +122,7 @@ export default class Auth {
    * Exchanges an external token obtained via a native social authentication solution for the user's tokens
    *
    * @param {Object} parameters parameters used to obtain user tokens from an external provider's token
-   * @param {String} parameters.subjectToken code returned by the native social authentication solution
+   * @param {String} parameters.subjectToken token returned by the native social authentication solution
    * @param {String} parameters.subjectTokenType identifier that indicates the type of `subjectToken`
    * @param {String} parameters.userProfile optional element used for native iOS interactions for which profile updates can occur. Only for `APPLE-AUTHZ-CODE`
    * @param {String} parameters.audience optional API audience to request
