@@ -119,7 +119,7 @@ export default class Auth {
   }
 
   /**
-   * Exchanges a code obtained via a native social authentication solution for the user's tokens
+   * Exchanges an external token obtained via a native social authentication solution for the user's tokens
    *
    * @param {Object} parameters parameters used to obtain tokens from a code
    * @param {String} parameters.subjectToken code returned by the native social authentication solution
