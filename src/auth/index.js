@@ -124,9 +124,9 @@ export default class Auth {
    * @param {Object} parameters parameters used to obtain user tokens from an external provider's token
    * @param {String} parameters.subjectToken token returned by the native social authentication solution
    * @param {String} parameters.subjectTokenType identifier that indicates the native social authentication solution
-   * @param {Object} parameters.userProfile additional profile attributes to set or override, only on select native social authentication solutions
-   * @param {String} parameters.audience optional API audience to request
-   * @param {String} parameters.scope optional scopes to request
+   * @param {Object} [parameters.userProfile] additional profile attributes to set or override, only on select native social authentication solutions
+   * @param {String} [parameters.audience] API audience to request
+   * @param {String} [parameters.scope] scopes to request
    * @returns {Promise}
    *
    * @see https://auth0.com/docs/api/authentication#token-exchange-for-native-social
