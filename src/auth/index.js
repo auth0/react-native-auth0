@@ -119,6 +119,43 @@ export default class Auth {
   }
 
   /**
+   * Exchanges an external token obtained via a native social authentication solution for the user's tokens
+   *
+   * @param {Object} parameters parameters used to obtain user tokens from an external provider's token
+   * @param {String} parameters.subjectToken token returned by the native social authentication solution
+   * @param {String} parameters.subjectTokenType identifier that indicates the native social authentication solution
+   * @param {Object} [parameters.userProfile] additional profile attributes to set or override, only on select native social authentication solutions
+   * @param {String} [parameters.audience] API audience to request
+   * @param {String} [parameters.scope] scopes requested for the issued tokens. e.g. `openid profile`
+   * @returns {Promise}
+   *
+   * @see https://auth0.com/docs/api/authentication#token-exchange-for-native-social
+   *
+   * @memberof Auth
+   */
+  exchangeNativeSocial(parameters = {}) {
+    const payload = apply(
+      {
+        parameters: {
+          subjectToken: {required: true, toName: 'subject_token'},
+          subjectTokenType: {required: true, toName: 'subject_token_type'},
+          userProfile: {required: false, toName: 'user_profile'},
+          audience: {required: false},
+          scope: {required: false},
+        },
+      },
+      parameters,
+    );
+    return this.client
+      .post('/oauth/token', {
+        ...payload,
+        client_id: this.clientId,
+        grant_type: 'urn:ietf:params:oauth:grant-type:token-exchange',
+      })
+      .then(responseHandler);
+  }
+
+  /**
    * Performs Auth with user credentials using the Password Realm Grant
    *
    * @param {Object} parameters password realm parameters

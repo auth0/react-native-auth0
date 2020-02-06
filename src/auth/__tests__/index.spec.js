@@ -160,6 +160,95 @@ describe('auth', () => {
     });
   });
 
+  describe('code exchange for native social', () => {
+    it('should send correct payload', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
+      expect.assertions(1);
+      await auth.exchangeNativeSocial({
+        subjectToken: 'a subject token',
+        subjectTokenType: 'a subject token type',
+      });
+      expect(fetchMock.lastCall()).toMatchSnapshot();
+    });
+
+    it('should send correct payload with optional parameters', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
+      expect.assertions(1);
+      await auth.exchangeNativeSocial({
+        subjectToken: 'a subject token',
+        subjectTokenType: 'a subject token type',
+        userProfile: {
+          name: {
+            firstName: 'John',
+            lastName: 'Smith',
+          },
+        },
+        audience: 'http://myapi.com',
+        scope: 'openid',
+      });
+      expect(fetchMock.lastCall()).toMatchSnapshot();
+    });
+
+    it('should return successful response', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
+      expect.assertions(1);
+      const parameters = {
+        subjectToken: 'a subject token',
+        subjectTokenType: 'a subject token type',
+      };
+      await expect(
+        auth.exchangeNativeSocial(parameters),
+      ).resolves.toMatchSnapshot();
+    });
+
+    it('should return successful response with optional parameters', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
+      expect.assertions(1);
+      const parameters = {
+        subjectToken: 'a subject token',
+        subjectTokenType: 'a subject token type',
+        userProfile: {
+          name: {
+            firstName: 'John',
+            lastName: 'Smith',
+          },
+        },
+        audience: 'http://myapi.com',
+        scope: 'openid',
+      };
+      await expect(
+        auth.exchangeNativeSocial(parameters),
+      ).resolves.toMatchSnapshot();
+    });
+
+    it('should handle oauth error', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', oauthError);
+      expect.assertions(1);
+      const parameters = {
+        subjectToken: 'a subject token',
+        subjectTokenType: 'a subject token type',
+      };
+      await expect(
+        auth.exchangeNativeSocial(parameters),
+      ).rejects.toMatchSnapshot();
+    });
+
+    it('should handle unexpected error', async () => {
+      fetchMock.postOnce(
+        'https://samples.auth0.com/oauth/token',
+        unexpectedError,
+      );
+      expect.assertions(1);
+      const parameters = {
+        subjectToken: 'a subject token',
+        subjectTokenType: 'a subject token type',
+      };
+      await expect(
+        auth.exchangeNativeSocial(parameters),
+      ).rejects.toMatchSnapshot();
+    });
+  });
+
   describe('passwordless flow', () => {
     describe('with email connection', () => {
       it('should begin with code', async () => {
