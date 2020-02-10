@@ -58,6 +58,14 @@
       <li class="nav-item">
         <span class="nav-item-type type-function">F</span
         ><span class="nav-item-name"
+          ><a href="Auth.html#.exchangeNativeSocial"
+            >exchangeNativeSocial</a
+          ></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
           ><a href="Auth.html#.loginWithEmail">loginWithEmail</a></span
         >
       </li>
@@ -379,7 +387,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line441">line 441</a>
+                    <a href="src_auth_index.js.html#line478">line 478</a>
                   </li>
                 </ul>
               </dd>
@@ -657,6 +665,188 @@
           </div>
 
           <div class="section-method">
+            <h4 class="name" id=".exchangeNativeSocial">
+              <span class="type-signature">(static) </span
+              >exchangeNativeSocial<span class="signature">(parameters)</span
+              ><span class="type-signature"> &rarr; {Promise}</span>
+            </h4>
+
+            <div class="description">
+              <p>
+                Exchanges an external token obtained via a native social
+                authentication solution for the user's tokens
+              </p>
+            </div>
+
+            <dl class="details">
+              <dt class="tag-source">Source:</dt>
+              <dd class="tag-source">
+                <ul class="dummy">
+                  <li>
+                    <a href="src_auth_index.js.html">src/auth/index.js</a>,
+                    <a href="src_auth_index.js.html#line136">line 136</a>
+                  </li>
+                </ul>
+              </dd>
+
+              <dt class="tag-see">See:</dt>
+              <dd class="tag-see">
+                <ul>
+                  <li>
+                    <a
+                      href="https://auth0.com/docs/api/authentication#token-exchange-for-native-social"
+                      >https://auth0.com/docs/api/authentication#token-exchange-for-native-social</a
+                    >
+                  </li>
+                </ul>
+              </dd>
+            </dl>
+
+            <h5>Parameters:</h5>
+
+            <table class="params">
+              <thead>
+                <tr>
+                  <th>Name</th>
+
+                  <th>Type</th>
+
+                  <th class="last">Description</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td class="name"><code>parameters</code></td>
+
+                  <td class="type">
+                    <span class="param-type"><code>Object</code></span>
+                  </td>
+
+                  <td class="description last">
+                    <p>
+                      parameters used to obtain user tokens from an external
+                      provider's token
+                    </p>
+
+                    <table class="params">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+
+                          <th>Type</th>
+
+                          <th>Attributes</th>
+
+                          <th class="last">Description</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td class="name"><code>subjectToken</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes"></td>
+
+                          <td class="description last">
+                            <p>
+                              token returned by the native social authentication
+                              solution
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>subjectTokenType</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes"></td>
+
+                          <td class="description last">
+                            <p>
+                              identifier that indicates the native social
+                              authentication solution
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>userProfile</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>Object</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>
+                              additional profile attributes to set or override,
+                              only on select native social authentication
+                              solutions
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>audience</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>API audience to request</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>scope</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>
+                              scopes requested for the issued tokens. e.g.
+                              <code>openid profile</code>
+                            </p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="section-returns">
+              <h5>Returns:</h5>
+
+              <dl class="param-type">
+                <dt>
+                  Type:
+                </dt>
+                <dd>
+                  <span class="param-type"><code>Promise</code></span>
+                </dd>
+              </dl>
+            </div>
+          </div>
+
+          <div class="section-method">
             <h4 class="name" id=".loginWithEmail">
               <span class="type-signature">(static) </span>loginWithEmail<span
                 class="signature"
@@ -677,7 +867,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line259">line 259</a>
+                    <a href="src_auth_index.js.html#line296">line 296</a>
                   </li>
                 </ul>
               </dd>
@@ -807,7 +997,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line293">line 293</a>
+                    <a href="src_auth_index.js.html#line330">line 330</a>
                   </li>
                 </ul>
               </dd>
@@ -1084,7 +1274,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line198">line 198</a>
+                    <a href="src_auth_index.js.html#line235">line 235</a>
                   </li>
                 </ul>
               </dd>
@@ -1203,7 +1393,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line227">line 227</a>
+                    <a href="src_auth_index.js.html#line264">line 264</a>
                   </li>
                 </ul>
               </dd>
@@ -1298,7 +1488,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line135">line 135</a>
+                    <a href="src_auth_index.js.html#line172">line 172</a>
                   </li>
                 </ul>
               </dd>
@@ -1474,7 +1664,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line168">line 168</a>
+                    <a href="src_auth_index.js.html#line205">line 205</a>
                   </li>
                 </ul>
               </dd>
@@ -1601,7 +1791,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line405">line 405</a>
+                    <a href="src_auth_index.js.html#line442">line 442</a>
                   </li>
                 </ul>
               </dd>
@@ -1705,7 +1895,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line324">line 324</a>
+                    <a href="src_auth_index.js.html#line361">line 361</a>
                   </li>
                 </ul>
               </dd>
@@ -1797,7 +1987,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line355">line 355</a>
+                    <a href="src_auth_index.js.html#line392">line 392</a>
                   </li>
                 </ul>
               </dd>
@@ -1878,7 +2068,7 @@
 
     <footer>
       Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on
-      Thu Jan 30 2020 15:56:51 GMT-0300 (Argentina Standard Time) using the
+      Mon Feb 10 2020 16:18:14 GMT-0300 (Argentina Standard Time) using the
       Minami theme.
     </footer>
 

@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.3.0](https://github.com/auth0/react-native-auth0/tree/v2.3.0) (2020-02-10)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.2.0...v2.3.0)
+
+**Added**
+
+- Added token exchange for native social endpoint [SDK-1307][\#273](https://github.com/auth0/react-native-auth0/pull/273) ([Widcket](https://github.com/Widcket))
+
 ## [v2.2.0](https://github.com/auth0/react-native-auth0/tree/v2.2.0) (2020-01-30)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.1.1...v2.2.0)
