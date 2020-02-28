@@ -1,6 +1,6 @@
 import Client from '../networking';
-import { apply } from '../utils/whitelist';
-import { toCamelCase } from '../utils/camel';
+import {apply} from '../utils/whitelist';
+import {toCamelCase} from '../utils/camel';
 import AuthError from './authError';
 import Auth0Error from './auth0Error';
 
@@ -21,7 +21,7 @@ function responseHandler(response, exceptions = {}) {
 export default class Auth {
   constructor(options = {}) {
     this.client = new Client(options);
-    const { clientId } = options;
+    const {clientId} = options;
     if (!clientId) {
       throw new Error('Missing clientId in parameters');
     }
@@ -45,18 +45,18 @@ export default class Auth {
     const query = apply(
       {
         parameters: {
-          redirectUri: { required: true, toName: 'redirect_uri' },
-          responseType: { required: true, toName: 'response_type' },
-          state: { required: true }
+          redirectUri: {required: true, toName: 'redirect_uri'},
+          responseType: {required: true, toName: 'response_type'},
+          state: {required: true},
         },
-        whitelist: false
+        whitelist: false,
       },
-      parameters
+      parameters,
     );
     return this.client.url(
       '/authorize',
-      { ...query, client_id: this.clientId },
-      true
+      {...query, client_id: this.clientId},
+      true,
     );
   }
 
@@ -76,14 +76,14 @@ export default class Auth {
     const query = apply(
       {
         parameters: {
-          federated: { required: false },
-          clientId: { required: false, toName: 'client_id' },
-          returnTo: { required: false }
-        }
+          federated: {required: false},
+          clientId: {required: false, toName: 'client_id'},
+          returnTo: {required: false},
+        },
       },
-      parameters
+      parameters,
     );
-    return this.client.url('/v2/logout', { ...query }, true);
+    return this.client.url('/v2/logout', {...query}, true);
   }
 
   /**
@@ -102,18 +102,55 @@ export default class Auth {
     const payload = apply(
       {
         parameters: {
-          code: { required: true },
-          verifier: { required: true, toName: 'code_verifier' },
-          redirectUri: { required: true, toName: 'redirect_uri' }
-        }
+          code: {required: true},
+          verifier: {required: true, toName: 'code_verifier'},
+          redirectUri: {required: true, toName: 'redirect_uri'},
+        },
       },
-      parameters
+      parameters,
     );
     return this.client
       .post('/oauth/token', {
         ...payload,
         client_id: this.clientId,
-        grant_type: 'authorization_code'
+        grant_type: 'authorization_code',
+      })
+      .then(responseHandler);
+  }
+
+  /**
+   * Exchanges an external token obtained via a native social authentication solution for the user's tokens
+   *
+   * @param {Object} parameters parameters used to obtain user tokens from an external provider's token
+   * @param {String} parameters.subjectToken token returned by the native social authentication solution
+   * @param {String} parameters.subjectTokenType identifier that indicates the native social authentication solution
+   * @param {Object} [parameters.userProfile] additional profile attributes to set or override, only on select native social authentication solutions
+   * @param {String} [parameters.audience] API audience to request
+   * @param {String} [parameters.scope] scopes requested for the issued tokens. e.g. `openid profile`
+   * @returns {Promise}
+   *
+   * @see https://auth0.com/docs/api/authentication#token-exchange-for-native-social
+   *
+   * @memberof Auth
+   */
+  exchangeNativeSocial(parameters = {}) {
+    const payload = apply(
+      {
+        parameters: {
+          subjectToken: {required: true, toName: 'subject_token'},
+          subjectTokenType: {required: true, toName: 'subject_token_type'},
+          userProfile: {required: false, toName: 'user_profile'},
+          audience: {required: false},
+          scope: {required: false},
+        },
+      },
+      parameters,
+    );
+    return this.client
+      .post('/oauth/token', {
+        ...payload,
+        client_id: this.clientId,
+        grant_type: 'urn:ietf:params:oauth:grant-type:token-exchange',
       })
       .then(responseHandler);
   }
@@ -136,20 +173,20 @@ export default class Auth {
     const payload = apply(
       {
         parameters: {
-          username: { required: true },
-          password: { required: true },
-          realm: { required: true },
-          audience: { required: false },
-          scope: { required: false }
-        }
+          username: {required: true},
+          password: {required: true},
+          realm: {required: true},
+          audience: {required: false},
+          scope: {required: false},
+        },
       },
-      parameters
+      parameters,
     );
     return this.client
       .post('/oauth/token', {
         ...payload,
         client_id: this.clientId,
-        grant_type: 'http://auth0.com/oauth/grant-type/password-realm'
+        grant_type: 'http://auth0.com/oauth/grant-type/password-realm',
       })
       .then(responseHandler);
   }
@@ -169,17 +206,145 @@ export default class Auth {
     const payload = apply(
       {
         parameters: {
-          refreshToken: { required: true, toName: 'refresh_token' },
-          scope: { required: false }
-        }
+          refreshToken: {required: true, toName: 'refresh_token'},
+          scope: {required: false},
+        },
       },
-      parameters
+      parameters,
     );
     return this.client
       .post('/oauth/token', {
         ...payload,
         client_id: this.clientId,
-        grant_type: 'refresh_token'
+        grant_type: 'refresh_token',
+      })
+      .then(responseHandler);
+  }
+
+  /**
+   * Starts the Passworldess flow with an email connection
+   *
+   * @param {Object} parameters passwordless parameters
+   * @param {String} parameters.email the email to send the link/code to
+   * @param {String} parameters.send the passwordless strategy, either 'link' or 'code'
+   * @param {String} parameters.authParams optional parameters, used when strategy is 'linḱ'
+   * @returns {Promise}
+   *
+   * @memberof Auth
+   */
+  passwordlessWithEmail(parameters = {}) {
+    const payload = apply(
+      {
+        parameters: {
+          email: {required: true},
+          send: {required: false},
+          authParams: {required: false},
+        },
+      },
+      parameters,
+    );
+    return this.client
+      .post('/passwordless/start', {
+        ...payload,
+        connection: 'email',
+        client_id: this.clientId,
+      })
+      .then(responseHandler);
+  }
+
+  /**
+   * Starts the Passworldess flow with an SMS connection
+   *
+   * @param {Object} parameters passwordless parameters
+   * @param {String} parameters.phoneNumber the phone number to send the link/code to
+   * @returns {Promise}
+   *
+   * @memberof Auth
+   */
+  passwordlessWithSMS(parameters = {}) {
+    const payload = apply(
+      {
+        parameters: {
+          phoneNumber: {required: true, toName: 'phone_number'},
+          send: {required: false},
+          authParams: {required: false},
+        },
+      },
+      parameters,
+    );
+    return this.client
+      .post('/passwordless/start', {
+        ...payload,
+        connection: 'sms',
+        client_id: this.clientId,
+      })
+      .then(responseHandler);
+  }
+
+  /**
+   * Finishes the Passworldess authentication with an email connection
+   *
+   * @param {Object} parameters passwordless parameters
+   * @param {String} parameters.email the email where the link/code was received
+   * @param {String} parameters.code the code numeric value (OTP)
+   * @param {String} parameters.audience optional API audience to request
+   * @param {String} parameters.scope optional scopes to request
+   * @returns {Promise}
+   *
+   * @memberof Auth
+   */
+  loginWithEmail(parameters = {}) {
+    const payload = apply(
+      {
+        parameters: {
+          email: {required: true, toName: 'username'},
+          code: {required: true, toName: 'otp'},
+          audience: {required: false},
+          scope: {required: false},
+        },
+      },
+      parameters,
+    );
+    return this.client
+      .post('/oauth/token', {
+        ...payload,
+        client_id: this.clientId,
+        realm: 'email',
+        grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
+      })
+      .then(responseHandler);
+  }
+
+  /**
+   * Finishes the Passworldess authentication with an SMS connection
+   *
+   * @param {Object} parameters passwordless parameters
+   * @param {String} parameters.phoneNumber the phone number where the code was received
+   * @param {String} parameters.code the code numeric value (OTP)
+   * @param {String} parameters.audience optional API audience to request
+   * @param {String} parameters.scope optional scopes to request
+   * @returns {Promise}
+   *
+   * @memberof Auth
+   */
+  loginWithSMS(parameters = {}) {
+    const payload = apply(
+      {
+        parameters: {
+          phoneNumber: {required: true, toName: 'username'},
+          code: {required: true, toName: 'otp'},
+          audience: {required: false},
+          scope: {required: false},
+        },
+      },
+      parameters,
+    );
+    return this.client
+      .post('/oauth/token', {
+        ...payload,
+        client_id: this.clientId,
+        realm: 'sms',
+        grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
       })
       .then(responseHandler);
   }
@@ -197,15 +362,15 @@ export default class Auth {
     const payload = apply(
       {
         parameters: {
-          refreshToken: { required: true, toName: 'token' }
-        }
+          refreshToken: {required: true, toName: 'token'},
+        },
       },
-      parameters
+      parameters,
     );
     return this.client
       .post('/oauth/revoke', {
         ...payload,
-        client_id: this.clientId
+        client_id: this.clientId,
       })
       .then(response => {
         if (response.ok) {
@@ -228,13 +393,13 @@ export default class Auth {
     const payload = apply(
       {
         parameters: {
-          token: { required: true }
-        }
+          token: {required: true},
+        },
       },
-      parameters
+      parameters,
     );
-    const { baseUrl, telemetry } = this.client;
-    const client = new Client({ baseUrl, telemetry, token: payload.token });
+    const {baseUrl, telemetry} = this.client;
+    const client = new Client({baseUrl, telemetry, token: payload.token});
     const claims = [
       'sub',
       'name',
@@ -255,12 +420,12 @@ export default class Auth {
       'phone_number',
       'phone_number_verified',
       'address',
-      'updated_at'
+      'updated_at',
     ];
     return client
       .get('/userinfo')
       .then(response =>
-        responseHandler(response, { attributes: claims, whitelist: true })
+        responseHandler(response, {attributes: claims, whitelist: true}),
       );
   }
 
@@ -278,16 +443,16 @@ export default class Auth {
     const payload = apply(
       {
         parameters: {
-          email: { required: true },
-          connection: { required: true }
-        }
+          email: {required: true},
+          connection: {required: true},
+        },
       },
-      parameters
+      parameters,
     );
     return this.client
       .post('/dbconnections/change_password', {
         ...payload,
-        client_id: this.clientId
+        client_id: this.clientId,
       })
       .then(response => {
         if (response.ok) {
@@ -314,20 +479,20 @@ export default class Auth {
     const payload = apply(
       {
         parameters: {
-          email: { required: true },
-          password: { required: true },
-          connection: { required: true },
-          username: { required: false },
-          metadata: { required: false, toName: 'user_metadata' }
-        }
+          email: {required: true},
+          password: {required: true},
+          connection: {required: true},
+          username: {required: false},
+          metadata: {required: false, toName: 'user_metadata'},
+        },
       },
-      parameters
+      parameters,
     );
 
     return this.client
       .post('/dbconnections/signup', {
         ...payload,
-        client_id: this.clientId
+        client_id: this.clientId,
       })
       .then(response => {
         if (response.ok && response.json) {

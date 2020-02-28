@@ -1,5 +1,6 @@
 import AuthError from '../auth/authError';
-import {KEYUTIL, KJUR} from 'jsrsasign';
+import RSAVerifier from './rsa-verifier';
+import * as base64 from './base64';
 const jwtDecoder = require('jwt-decode');
 
 const ALLOWED_ALGORITHMS = ['RS256', 'HS256'];
@@ -45,20 +46,26 @@ export const verifySignature = (idToken, options) => {
   }
 
   return getJwk(options.domain, header.kid).then(jwk => {
-    const pubKey = KEYUTIL.getKey(jwk);
-    const signatureValid = KJUR.jws.JWS.verify(idToken, pubKey, ['RS256']);
-
-    if (signatureValid) {
+    const rsaVerifier = rsaVerifierForKey(jwk);
+    const encodedParts = idToken.split('.');
+    const headerAndPayload = encodedParts[0] + '.' + encodedParts[1];
+    const signature = base64.decodeToHEX(encodedParts[2]);
+    if (rsaVerifier.verify(headerAndPayload, signature)) {
       return Promise.resolve(payload);
     }
-
     return Promise.reject(
       idTokenError({
         error: 'invalid_signature',
-        desc: 'Invalid token signature',
+        desc: 'Invalid ID token signature',
       }),
     );
   });
+};
+
+const rsaVerifierForKey = jwk => {
+  const modulus = base64.decodeToHEX(jwk.n);
+  const exponent = base64.decodeToHEX(jwk.e);
+  return new RSAVerifier(modulus, exponent);
 };
 
 const getJwk = (domain, kid) => {
@@ -71,13 +78,16 @@ const getJwk = (domain, kid) => {
           k => k.use === 'sig' && k.kty === 'RSA' && k.kid && (k.n && k.e),
         )
         .find(k => k.kid === kid);
+      if (!key) {
+        throw new Error('Key not present');
+      }
       return Promise.resolve(key);
     })
     .catch(err => {
       return Promise.reject(
         idTokenError({
           error: 'key_retrieval_error',
-          desc: 'Unable to retrieve public keyset needed to verify token',
+          desc: `Could not find a public key for Key ID (kid) "${kid}"`,
         }),
       );
     });

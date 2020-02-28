@@ -1,7 +1,6 @@
 import verifyToken from '../index';
 import * as signatureVerifier from '../signatureVerifier';
 const jwtDecoder = require('jwt-decode');
-import {KEYUTIL} from 'jsrsasign';
 import * as fs from 'fs';
 import * as path from 'path';
 import fetchMock from 'fetch-mock';
@@ -10,16 +9,6 @@ describe('id token verification tests', () => {
   describe('token signature verification', () => {
     beforeEach(() => {
       fetchMock.restore();
-    });
-
-    it('uses fixed version of jsrsasign', () => {
-      // jsrsasign has not been updated recently; we want to verify that the dependency is pinned to 8.0.12
-      const packageData = fs.readFileSync(
-        path.resolve(__dirname, '../../../package.json'),
-      );
-      const packageJson = JSON.parse(packageData);
-      const jsrsasignDepVersion = packageJson.dependencies.jsrsasign;
-      expect(jsrsasignDepVersion).toBe('8.0.12');
     });
 
     it('resolves when no idToken present', async () => {
@@ -54,19 +43,62 @@ describe('id token verification tests', () => {
         500,
       );
 
-      await expect(verify(testJwt)).rejects.toHaveProperty(
+      const result = verify(testJwt);
+
+      expect(result).rejects.toHaveProperty(
         'name',
         'a0.idtoken.key_retrieval_error',
       );
+      expect(result).rejects.toHaveProperty(
+        'message',
+        'Could not find a public key for Key ID (kid) "1234"',
+      );
     });
 
-    it('fails when signature is not verified', async () => {
+    it('fails when jwk set does not contain the expected key id', async () => {
       const testJwt =
-        'eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMzQifQ.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTcwMjAzMjgxLCJpYXQiOjE1NzAwMzA0ODEsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NzAxMTY4ODAuNjk0fQ.ZNPsQq_U8NGyi5WFNgvuT0QlxfGFS9w6YIHWiF4dnwz_Zf3mv3gh4wybDR8vaLCE8ONTXvT9V_rW6oqNHSvEwa0nvPy2Vi3gVAvSfusoiYhkuQG_6SuqbeOrNJ1cejGzqw_iv2s6yEyN3B9wp0TCuIKL5jLPttaRi6ouGCbYeReANecaLOVZstrO4GhlY0NwtT4j5Dn1tDYavWxi1DZBisxBvMEFA6N0aQa51gJm6RYtUjBTo50j1xG5b7TIF4edjjT85FYQgrwEzA7Ss3HpnrYXEEvHn4nCsc585T3GKQuF21Nli-qGgQ3MywPOOqqiCSvL254Cp88Gt3xDS1hnqg';
-      const jwks = getJwks();
-      jwks.keys[0].n += 'bad';
+        'eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMzQifQ.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTcwMjAyOTMxLCJpYXQiOjE1NzAwMzAxMzEsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NzAxMTY1MzAuNzk2fQ.Xad-J3PtImY3z--Gvj-H61tH18mCGQUUBkcug-CB5ehkjd56PXrA-AJHZK7OLryB_uj6sFKVn-V8Wr6t3KW7_Fd2n-__Ca2h6PtgIrjceZlHAQY4SgAk9tPmeeTOhs6KyXDeW0Ot0j3CP9p7nWxgCGMu_H5J5ZgJSVUVlffVpaIMEGiFZ_r71PLPtuTL3GsDwtICG_5xuqoR2YBLSpNuuc46t15i94E3JC1UXGryRfxVbeHg3x5DF9nf6eVkMHRdi-CdNQn2iD0G9OmxxELh-40pecbyUxLv4NfTHmbxOdvWRK00N8sgkElnPnoWXb5pacxLShFsBTJdXIsyqF_onA';
+
+      const jwks = getExpectedJwks();
+      jwks.keys[0].kid = '4321';
 
       setupFetchMock({jwks});
+      const result = verify(testJwt);
+
+      expect(result).rejects.toHaveProperty(
+        'name',
+        'a0.idtoken.key_retrieval_error',
+      );
+      expect(result).rejects.toHaveProperty(
+        'message',
+        'Could not find a public key for Key ID (kid) "1234"',
+      );
+    });
+
+    it('fails when public key is invalid and cannot be reconstructed', async () => {
+      const testJwt =
+        'eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMzQifQ.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTcwMjAzMjgxLCJpYXQiOjE1NzAwMzA0ODEsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NzAxMTY4ODAuNjk0fQ.ZNPsQq_U8NGyi5WFNgvuT0QlxfGFS9w6YIHWiF4dnwz_Zf3mv3gh4wybDR8vaLCE8ONTXvT9V_rW6oqNHSvEwa0nvPy2Vi3gVAvSfusoiYhkuQG_6SuqbeOrNJ1cejGzqw_iv2s6yEyN3B9wp0TCuIKL5jLPttaRi6ouGCbYeReANecaLOVZstrO4GhlY0NwtT4j5Dn1tDYavWxi1DZBisxBvMEFA6N0aQa51gJm6RYtUjBTo50j1xG5b7TIF4edjjT85FYQgrwEzA7Ss3HpnrYXEEvHn4nCsc585T3GKQuF21Nli-qGgQ3MywPOOqqiCSvL254Cp88Gt3xDS1hnqg';
+      const jwks = getExpectedJwks();
+      jwks.keys[0].n = 'bad-modulus';
+
+      setupFetchMock({jwks});
+
+      const result = verify(testJwt);
+      expect(result).rejects.toHaveProperty(
+        'name',
+        'a0.idtoken.invalid_signature',
+      );
+      expect(result).rejects.toHaveProperty(
+        'message',
+        'Invalid ID token signature',
+      );
+    });
+
+    it('fails when signature is invalid', async () => {
+      const testJwt =
+        'eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMzQifQ.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTcwMjAzMjgxLCJpYXQiOjE1NzAwMzA0ODEsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NzAxMTY4ODAuNjk0fQ.invalid-signature';
+
+      setupFetchMock();
 
       await expect(verify(testJwt)).rejects.toHaveProperty(
         'name',
@@ -88,53 +120,11 @@ describe('id token verification tests', () => {
     it('passes verification with valid token signed with RS256', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMzQifQ.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY3NDg2ODAwLCJpYXQiOjE1NjczMTQwMDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.ObH7oG3NsGaxWnB8rzbLOgAD2I0fr9dyZC81YUrbju3RwC3lRAxqJkbesiSdGKry9OamIhKYwUGpPK0wrBaRJo8UjDjICkhM6lGP23plysemxhDnFK1qjj-NaUaW1yKg14v2lVpQl7glW9LIhFDhpqIf4bILA2wt9-z8Uvi31ETZvGb8PDY2bEvjXR-69-yLuoTNT2skP9loKfz6hHDMQCTWrGA61BMMjkZBLo9UotD9BzN8V7bLrFFT25v6q9N83mWaGLsHntzPIl3EYPOwX0NbE0lXKar59TUqtaTB3uNFHbGjIYi8wuuIp4PV9arpE3YrjWOOmrMurD1KpIyQrQ';
-      const contents = fs.readFileSync(
-        path.resolve(__dirname, './pubkey.pem'),
-        'utf8',
-      );
 
-      const pubKey = KEYUTIL.getKey(contents);
-      const jwkFromKey = KEYUTIL.getJWKFromKey(pubKey);
-
-      jwkFromKey.kid = '1234';
-      jwkFromKey.alg = 'RS256';
-      jwkFromKey.use = 'sig';
-
-      const jwks = {
-        keys: [jwkFromKey],
-      };
-
-      setupFetchMock({jwks});
+      setupFetchMock();
 
       await expect(verify(testJwt)).resolves.toBeUndefined();
     });
-
-    const setupFetchMock = ({
-      domain = BASE_EXPECTATIONS.domain,
-      jwks = getJwks(),
-    } = {}) => {
-      const expectedDiscoveryUri = `https://${domain}/.well-known/openid-configuration`;
-      const expectedJwksUri = `https://${domain}/.well-known/jwks.json`;
-
-      fetchMock.get(expectedDiscoveryUri, {jwks_uri: expectedJwksUri});
-      fetchMock.get(expectedJwksUri, jwks);
-    };
-
-    const getJwks = () => {
-      return {
-        keys: [
-          {
-            kty: 'RSA',
-            n:
-              'st69ml_DI8MhepFSV9o8zjzRFiEst1_1-XJe0ib-g_aMauGTFOqeITdVqWTJMzZsjtwsPFD1CXbmEtI282GBbniJ7XkrZwpjzXangbvJpFE-aBmKeogTq6B94a19H9umCtV7eC55xDmOylXYPFdcVFvolWajdYGywqH8d4Cu_pIB25ELoA78goP4MqweJhnOt4r5jORea2paLXa04ojvglbOGnFec65Y4Hyw2mWGu06f0sxW-LMGzwP_SgbpRDKKnn-W8grguPq63sLexDTBFLyPNCcFQ8wnEQzLCaNNJItu-OFwgwgJhiB3d0et5m3lF2_lEJ2Pwndp0ORlOWcJbQbad',
-            e: 'AQAB',
-            kid: '1234',
-            alg: 'RS256',
-            use: 'sig',
-          },
-        ],
-      };
-    };
   });
 
   describe('token claims verification', () => {
@@ -385,86 +375,6 @@ describe('id token verification tests', () => {
       );
     });
 
-    it('fails when "iat" is in the future but outside of default leeway', async () => {
-      const testJwt =
-        'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY4MDkxNjAwLCJpYXQiOjE1Njc0ODY4MDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.KQWivvmcmWt5a3maRLFcMY8ev-gdeae-3Hm50BilmHjL31__S5G8dbHUOIjMg0zPIVbuml2SjXxEkOSiC-NZcupo7tknXuy76NdsMXWn1z7Cz1kI2XGFaR_PtY1lqpHc5FkQf1KiGhq4tMSk0RQDDu1U0E7WTDikV2mSrejOumL9qhj1lFwzCAr3ElDSnkHfcTuFQRMD0AdKFGD5oXOh4MgMFIE7GNFVAGnJ1Ld9JDbl1nqWTdrXZ3hYVDJDOc4DG8PdriFW3boyQKWqmV7eQZORKUW5C94VjcywZ9VROHqKyZXB6zc7s3FJ0zY2LxXEmTgOMEUgM2NtZVyMAhn0pQ';
-
-      setupSignatureMock(testJwt);
-
-      // token iat claim of 2019-09-03T05:00:00.000Z
-      const clock = new Date('2019-09-03T05:00:00.000Z');
-      clock.setSeconds(clock.getSeconds() - (DEFAULT_LEEWAY + 1));
-
-      const overrides = {
-        _clock: clock,
-      };
-
-      await expect(verify(testJwt, overrides)).rejects.toHaveProperty(
-        'name',
-        'a0.idtoken.invalid_issued_at_claim',
-      );
-    });
-
-    it('succeeds when "iat" is in the future but within the default leeway', async () => {
-      const testJwt =
-        'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY4MDkxNjAwLCJpYXQiOjE1Njc0ODY4MDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.KQWivvmcmWt5a3maRLFcMY8ev-gdeae-3Hm50BilmHjL31__S5G8dbHUOIjMg0zPIVbuml2SjXxEkOSiC-NZcupo7tknXuy76NdsMXWn1z7Cz1kI2XGFaR_PtY1lqpHc5FkQf1KiGhq4tMSk0RQDDu1U0E7WTDikV2mSrejOumL9qhj1lFwzCAr3ElDSnkHfcTuFQRMD0AdKFGD5oXOh4MgMFIE7GNFVAGnJ1Ld9JDbl1nqWTdrXZ3hYVDJDOc4DG8PdriFW3boyQKWqmV7eQZORKUW5C94VjcywZ9VROHqKyZXB6zc7s3FJ0zY2LxXEmTgOMEUgM2NtZVyMAhn0pQ';
-
-      setupSignatureMock(testJwt);
-
-      // token iat claim of 2019-09-03T05:00:00.000Z
-      const clock = new Date('2019-09-03T05:00:00.000Z');
-      clock.setSeconds(clock.getSeconds() - (DEFAULT_LEEWAY - 1));
-
-      const overrides = {
-        _clock: clock,
-      };
-
-      await expect(verify(testJwt, overrides)).resolves.toBeUndefined();
-    });
-
-    it('fails when "iat" is in the future and outside of custom leeway', async () => {
-      const testJwt =
-        'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY4MDkxNjAwLCJpYXQiOjE1Njc0ODY4MDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.KQWivvmcmWt5a3maRLFcMY8ev-gdeae-3Hm50BilmHjL31__S5G8dbHUOIjMg0zPIVbuml2SjXxEkOSiC-NZcupo7tknXuy76NdsMXWn1z7Cz1kI2XGFaR_PtY1lqpHc5FkQf1KiGhq4tMSk0RQDDu1U0E7WTDikV2mSrejOumL9qhj1lFwzCAr3ElDSnkHfcTuFQRMD0AdKFGD5oXOh4MgMFIE7GNFVAGnJ1Ld9JDbl1nqWTdrXZ3hYVDJDOc4DG8PdriFW3boyQKWqmV7eQZORKUW5C94VjcywZ9VROHqKyZXB6zc7s3FJ0zY2LxXEmTgOMEUgM2NtZVyMAhn0pQ';
-
-      const leeway = 120;
-
-      setupSignatureMock(testJwt);
-
-      // token iat claim of 2019-09-03T05:00:00.000Z
-      const clock = new Date('2019-09-03T05:00:00.000Z');
-      clock.setSeconds(clock.getSeconds() - (leeway + 1));
-
-      const overrides = {
-        leeway,
-        _clock: clock,
-      };
-
-      await expect(verify(testJwt, overrides)).rejects.toHaveProperty(
-        'name',
-        'a0.idtoken.invalid_issued_at_claim',
-      );
-    });
-
-    it('succeeds when "iat" is in the future but within the custom leeway', async () => {
-      const testJwt =
-        'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY4MDkxNjAwLCJpYXQiOjE1Njc0ODY4MDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhenAiOiJ0b2tlbnMtdGVzdC0xMjMiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.KQWivvmcmWt5a3maRLFcMY8ev-gdeae-3Hm50BilmHjL31__S5G8dbHUOIjMg0zPIVbuml2SjXxEkOSiC-NZcupo7tknXuy76NdsMXWn1z7Cz1kI2XGFaR_PtY1lqpHc5FkQf1KiGhq4tMSk0RQDDu1U0E7WTDikV2mSrejOumL9qhj1lFwzCAr3ElDSnkHfcTuFQRMD0AdKFGD5oXOh4MgMFIE7GNFVAGnJ1Ld9JDbl1nqWTdrXZ3hYVDJDOc4DG8PdriFW3boyQKWqmV7eQZORKUW5C94VjcywZ9VROHqKyZXB6zc7s3FJ0zY2LxXEmTgOMEUgM2NtZVyMAhn0pQ';
-
-      const leeway = 120;
-
-      setupSignatureMock(testJwt);
-
-      // token iat claim of 2019-09-03T05:00:00.000Z
-      const clock = new Date('2019-09-03T05:00:00.000Z');
-      clock.setSeconds(clock.getSeconds() - (leeway - 1));
-
-      const overrides = {
-        leeway,
-        _clock: clock,
-      };
-
-      await expect(verify(testJwt, overrides)).resolves.toBeUndefined();
-    });
-
     it('fails when "nonce" sent on authentication request but missing from token claims', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY3NDg2ODAwLCJpYXQiOjE1NjczMTQwMDAsImF6cCI6InRva2Vucy10ZXN0LTEyMyIsImF1dGhfdGltZSI6MTU2NzMxNDAwMH0.ZRYK4s72pKXJUSadByPp_MNyuaACmPCyj9RaIfxuTTLXE45YJ0toLK6XjjDv_861E_fRmEKMthnJAmHcKXiDWGb73l3iDtD7noWBOo3KJO2cwkM1uYNpG1kbNkg6WDvgGlVsC7buxr8dbL8fI2e0g53Jl48lE9Ohi5Z_7iRmRoVAx5HE60UDfEqFeAKZyu5VsAahp9q3PwhLfaJVDobtAzWP0LcRA3x8FOA0ZdBBNpvRmeBRugU2GQTSDLSMtGzgi5xXUwXly7pr5bX-lIYICU1Q9R5n-8uYlEaFuiaYTqzxY0fmSzzGeFkwrj7b0yTQ2OwAFVT3MWCSbvjKsy-JWQ';
@@ -692,5 +602,22 @@ describe('id token verification tests', () => {
 
     const options = Object.assign({}, optionsDefaults, optionsOverrides);
     return verifyToken(idToken, options);
+  };
+
+  const setupFetchMock = ({
+    domain = BASE_EXPECTATIONS.domain,
+    jwks = getExpectedJwks(),
+  } = {}) => {
+    const expectedDiscoveryUri = `https://${domain}/.well-known/openid-configuration`;
+    const expectedJwksUri = `https://${domain}/.well-known/jwks.json`;
+
+    fetchMock.get(expectedDiscoveryUri, {jwks_uri: expectedJwksUri});
+    fetchMock.get(expectedJwksUri, jwks);
+  };
+
+  const getExpectedJwks = () => {
+    return JSON.parse(
+      fs.readFileSync(path.resolve(__dirname, './jwks.json'), 'utf8'),
+    );
   };
 });

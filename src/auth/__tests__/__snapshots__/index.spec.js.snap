@@ -25,6 +25,60 @@ Array [
 ]
 `;
 
+exports[`auth code exchange for native social should handle oauth error 1`] = `[invalid_request: Invalid grant]`;
+
+exports[`auth code exchange for native social should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+
+exports[`auth code exchange for native social should return successful response 1`] = `
+Object {
+  "accessToken": "an access token",
+  "expiresIn": 1234567890,
+  "idToken": "an id token",
+  "scope": "openid",
+  "state": "a random state for auth",
+}
+`;
+
+exports[`auth code exchange for native social should return successful response with optional parameters 1`] = `
+Object {
+  "accessToken": "an access token",
+  "expiresIn": 1234567890,
+  "idToken": "an id token",
+  "scope": "openid",
+  "state": "a random state for auth",
+}
+`;
+
+exports[`auth code exchange for native social should send correct payload 1`] = `
+Array [
+  "https://samples.auth0.com/oauth/token",
+  Object {
+    "body": "{\\"subject_token\\":\\"a subject token\\",\\"subject_token_type\\":\\"a subject token type\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"urn:ietf:params:oauth:grant-type:token-exchange\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth code exchange for native social should send correct payload with optional parameters 1`] = `
+Array [
+  "https://samples.auth0.com/oauth/token",
+  Object {
+    "body": "{\\"subject_token\\":\\"a subject token\\",\\"subject_token_type\\":\\"a subject token type\\",\\"user_profile\\":{\\"name\\":{\\"firstName\\":\\"John\\",\\"lastName\\":\\"Smith\\"}},\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"urn:ietf:params:oauth:grant-type:token-exchange\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
 exports[`auth code exchange should handle oauth error 1`] = `[invalid_request: Invalid grant]`;
 
 exports[`auth code exchange should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
@@ -139,6 +193,156 @@ Array [
   "https://samples.auth0.com/oauth/token",
   Object {
     "body": "{\\"username\\":\\"info@auth0.com\\",\\"password\\":\\"secret pass\\",\\"realm\\":\\"Username-Password-Authentication\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/password-realm\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth passwordless flow with SMS connection should begin with code 1`] = `
+Array [
+  "https://samples.auth0.com/passwordless/start",
+  Object {
+    "body": "{\\"phone_number\\":\\"+5491159991000\\",\\"send\\":\\"code\\",\\"connection\\":\\"sms\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth passwordless flow with SMS connection should begin with link 1`] = `
+Array [
+  "https://samples.auth0.com/passwordless/start",
+  Object {
+    "body": "{\\"phone_number\\":\\"+5491159991000\\",\\"send\\":\\"link\\",\\"connection\\":\\"sms\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth passwordless flow with SMS connection should begin with optional parameters 1`] = `
+Array [
+  "https://samples.auth0.com/passwordless/start",
+  Object {
+    "body": "{\\"phone_number\\":\\"+5491159991000\\",\\"send\\":\\"code\\",\\"authParams\\":{\\"scope\\":\\"openid profile\\"},\\"connection\\":\\"sms\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth passwordless flow with SMS connection should continue 1`] = `
+Array [
+  "https://samples.auth0.com/oauth/token",
+  Object {
+    "body": "{\\"username\\":\\"+5491159991000\\",\\"otp\\":\\"123456\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"sms\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth passwordless flow with SMS connection should continue with optional parameters 1`] = `
+Array [
+  "https://samples.auth0.com/oauth/token",
+  Object {
+    "body": "{\\"username\\":\\"+5491159991000\\",\\"otp\\":\\"123456\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"sms\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth passwordless flow with email connection should begin with code 1`] = `
+Array [
+  "https://samples.auth0.com/passwordless/start",
+  Object {
+    "body": "{\\"email\\":\\"info@auth0.com\\",\\"send\\":\\"link\\",\\"connection\\":\\"email\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth passwordless flow with email connection should begin with link 1`] = `
+Array [
+  "https://samples.auth0.com/passwordless/start",
+  Object {
+    "body": "{\\"email\\":\\"info@auth0.com\\",\\"send\\":\\"link\\",\\"connection\\":\\"email\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth passwordless flow with email connection should begin with optional parameters 1`] = `
+Array [
+  "https://samples.auth0.com/passwordless/start",
+  Object {
+    "body": "{\\"email\\":\\"info@auth0.com\\",\\"send\\":\\"code\\",\\"authParams\\":{\\"scope\\":\\"openid profile\\"},\\"connection\\":\\"email\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth passwordless flow with email connection should continue 1`] = `
+Array [
+  "https://samples.auth0.com/oauth/token",
+  Object {
+    "body": "{\\"username\\":\\"info@auth0.com\\",\\"otp\\":\\"123456\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"email\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`auth passwordless flow with email connection should continue with optional parameters 1`] = `
+Array [
+  "https://samples.auth0.com/oauth/token",
+  Object {
+    "body": "{\\"username\\":\\"info@auth0.com\\",\\"otp\\":\\"123456\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"email\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
     "headers": Object {
       "Accept": "application/json",
       "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
