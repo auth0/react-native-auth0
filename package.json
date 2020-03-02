@@ -4,11 +4,13 @@
   "version": "2.3.0",
   "description": "React Native toolkit for Auth0 API",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "test": "jest",
     "test:ci": "jest --coverage",
     "jsdocs": "jsdoc --configure .jsdoc.json --verbose",
-    "release": "scripts/release.sh"
+    "release": "declaration:build && scripts/release.sh",
+    "declaration:build": "cd src && find . -name \"*.d.ts\" -type f -delete && cd .. & rm -f index.d.ts && node_modules/.bin/tsc -p declarations.tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -44,7 +46,8 @@
     "pretty-quick": "^1.11.1",
     "react": "^16.8.6",
     "react-native": "^0.60.5",
-    "semver": "^6.3.0"
+    "semver": "^6.3.0",
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "base-64": "^0.1.0",

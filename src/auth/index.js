@@ -93,7 +93,7 @@ export default class Auth {
    * @param {String} parameters.code code returned by `/authorize`.
    * @param {String} parameters.redirectUri original redirectUri used when calling `/authorize`.
    * @param {String} parameters.verifier value used to generate the code challenge sent to `/authorize`.
-   * @returns {Promise}
+   * @returns {Promise<string>}
    * @see https://auth0.com/docs/api-auth/grant/authorization-code-pkce
    *
    * @memberof Auth
@@ -156,6 +156,16 @@ export default class Auth {
   }
 
   /**
+   * @typedef {Object} PasswordRealmResponse
+   * @property {string} accessToken
+   * @property {number} expiresIn
+   * @property {string} idToken
+   * @property {string} scope
+   * @property {string} tokenType
+   * @property {string=} refreshToken
+   */
+
+  /**
    * Performs Auth with user credentials using the Password Realm Grant
    *
    * @param {Object} parameters password realm parameters
@@ -164,7 +174,7 @@ export default class Auth {
    * @param {String} parameters.realm name of the Realm where to Auth (or connection name)
    * @param {String} [parameters.audience] identifier of Resource Server (RS) to be included as audience (aud claim) of the issued access token
    * @param {String} [parameters.scope] scopes requested for the issued tokens. e.g. `openid profile`
-   * @returns {Promise}
+   * @returns {Promise<PasswordRealmResponse>}
    * @see https://auth0.com/docs/api-auth/grant/password#realm-support
    *
    * @memberof Auth
@@ -463,6 +473,12 @@ export default class Auth {
   }
 
   /**
+   * @typedef {Object} CreateUserResponse
+   * @property {string} Id
+   * @property {boolean} emailVerified
+   * @property {string} email
+   */
+  /**
    *
    *
    * @param {Object} parameters create user parameters
@@ -471,7 +487,7 @@ export default class Auth {
    * @param {String} parameters.password user's password
    * @param {String} parameters.connection name of the database connection where to create the user
    * @param {String} [parameters.metadata] additional user information that will be stored in `user_metadata`
-   * @returns {Promise}
+   * @returns {Promise<CreateUserResponse>}
    *
    * @memberof Auth
    */
