@@ -25,6 +25,12 @@ const callbackUri = domain => {
  * @see https://auth0.com/docs/api-auth/grant/authorization-code-pkce
  */
 export default class WebAuth {
+  /**
+   * Creates an instance of WebAuth.
+   * @param {Object} auth your Auth0 application information
+   * @param {String} auth.domain your Auth0 domain
+   * @param {String} auth.clientId your Auth0 application client identifier
+   */
   constructor(auth) {
     this.client = auth;
     const {baseUrl, clientId, domain} = auth;
