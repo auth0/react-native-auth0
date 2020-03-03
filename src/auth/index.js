@@ -156,7 +156,7 @@ export default class Auth {
   }
 
   /**
-   * @typedef {Object} PasswordRealmResponse
+   * @typedef {Object} AuthResponse
    * @property {string} accessToken
    * @property {number} expiresIn
    * @property {string} idToken
@@ -174,7 +174,7 @@ export default class Auth {
    * @param {String} parameters.realm name of the Realm where to Auth (or connection name)
    * @param {String} [parameters.audience] identifier of Resource Server (RS) to be included as audience (aud claim) of the issued access token
    * @param {String} [parameters.scope] scopes requested for the issued tokens. e.g. `openid profile`
-   * @returns {Promise<PasswordRealmResponse>}
+   * @returns {Promise<AuthResponse>}
    * @see https://auth0.com/docs/api-auth/grant/password#realm-support
    *
    * @memberof Auth
@@ -236,8 +236,8 @@ export default class Auth {
    *
    * @param {Object} parameters passwordless parameters
    * @param {String} parameters.email the email to send the link/code to
-   * @param {String} parameters.send the passwordless strategy, either 'link' or 'code'
-   * @param {String} parameters.authParams optional parameters, used when strategy is 'linḱ'
+   * @param {String=} parameters.send the passwordless strategy, either 'link' or 'code'
+   * @param {String=} parameters.authParams optional parameters, used when strategy is 'linḱ'
    * @returns {Promise}
    *
    * @memberof Auth
@@ -299,7 +299,7 @@ export default class Auth {
    * @param {String} parameters.code the code numeric value (OTP)
    * @param {String} parameters.audience optional API audience to request
    * @param {String} parameters.scope optional scopes to request
-   * @returns {Promise}
+   * @returns {Promise<AuthResponse>}
    *
    * @memberof Auth
    */
@@ -333,7 +333,7 @@ export default class Auth {
    * @param {String} parameters.code the code numeric value (OTP)
    * @param {String} parameters.audience optional API audience to request
    * @param {String} parameters.scope optional scopes to request
-   * @returns {Promise}
+   * @returns {Promise<AuthResponse>}
    *
    * @memberof Auth
    */
