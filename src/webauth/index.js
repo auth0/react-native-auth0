@@ -97,10 +97,7 @@ export default class WebAuth {
         }
 
         return client
-          .exchange(
-            {code, verifier, redirectUri, audiences},
-            {Authorization: 'Bearer ' + accessToken},
-          )
+          .exchange({audiences}, {Authorization: 'Bearer ' + accessToken})
           .then(credentials => {
             return verifyToken(credentials.idToken, {
               domain,
