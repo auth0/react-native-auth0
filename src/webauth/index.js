@@ -55,7 +55,7 @@ export default class WebAuth {
    *
    * @memberof WebAuth
    */
-  authorize(parameters = {}, options = {}) {
+  authorize(parameters = {}, options = {}, audiences = []) {
     const {clientId, domain, client, agent} = this;
     return agent.newTransaction().then(({state, verifier, ...defaults}) => {
       const redirectUri = callbackUri(domain);
@@ -79,8 +79,10 @@ export default class WebAuth {
             status: 0,
           });
         }
-        const query = url.parse(redirectUrl, true).query;
-        const {code, state: resultState, error} = query;
+        const urlHash = url.parse(redirectUrl, true).hash;
+        const accessToken = this.parseHash(urlHash, 'access_token');
+        const resultState = this.parseHash(urlHash, 'state');
+        const error = this.parseHash(urlHash, 'error');
         if (error) {
           throw new AuthError({json: query, status: 0});
         }
@@ -95,7 +97,10 @@ export default class WebAuth {
         }
 
         return client
-          .exchange({code, verifier, redirectUri})
+          .exchange(
+            {code, verifier, redirectUri, audiences},
+            {Authorization: 'Bearer ' + accessToken},
+          )
           .then(credentials => {
             return verifyToken(credentials.idToken, {
               domain,
@@ -129,5 +134,12 @@ export default class WebAuth {
     options.federated = options.federated || false;
     const logoutUrl = client.logoutUrl(options);
     return agent.show(logoutUrl, true);
+  }
+
+  parseHash(hash, key) {
+    return hash
+      .substr(hash.search(key))
+      .split('&')[0]
+      .split('=')[1];
   }
 }

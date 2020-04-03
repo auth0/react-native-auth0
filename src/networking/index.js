@@ -4,12 +4,12 @@ import base64 from 'base-64';
 
 export default class Client {
   constructor(options) {
-    const { baseUrl, telemetry = {}, token } = options;
+    const {baseUrl, telemetry = {}, token} = options;
     if (!baseUrl) {
       throw new Error('Missing Auth0 domain');
     }
-    const { name = defaults.name, version = defaults.version } = telemetry;
-    this.telemetry = { name, version };
+    const {name = defaults.name, version = defaults.version} = telemetry;
+    this.telemetry = {name, version};
     if (name !== defaults.name) {
       this.telemetry.env = {};
       this.telemetry.env[defaults.name] = defaults.version;
@@ -25,8 +25,8 @@ export default class Client {
     }
   }
 
-  post(path, body) {
-    return this.request('POST', this.url(path), body);
+  post(path, body, headers = {}) {
+    return this.request('POST', this.url(path), body, headers);
   }
 
   patch(path, body) {
@@ -50,13 +50,14 @@ export default class Client {
     return endpoint;
   }
 
-  request(method, url, body) {
+  request(method, url, body, headers = {}) {
     const options = {
       method: method,
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
         'Auth0-Client': this._encodedTelemetry(),
+        ...headers,
       },
     };
     if (this.bearer) {
@@ -74,16 +75,16 @@ export default class Client {
       return response
         .json()
         .then(json => {
-          return { ...payload, json };
+          return {...payload, json};
         })
         .catch(() => {
           return response
             .text()
             .then(text => {
-              return { ...payload, text };
+              return {...payload, text};
             })
             .catch(() => {
-              return { ...payload, text: response.statusText };
+              return {...payload, text: response.statusText};
             });
         });
     });

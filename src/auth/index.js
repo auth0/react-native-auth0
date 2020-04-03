@@ -98,23 +98,26 @@ export default class Auth {
    *
    * @memberof Auth
    */
-  exchange(parameters = {}) {
+  exchange(parameters = {}, headers = {}) {
     const payload = apply(
       {
         parameters: {
-          code: {required: true},
-          verifier: {required: true, toName: 'code_verifier'},
-          redirectUri: {required: true, toName: 'redirect_uri'},
+          audiences: {required: true, toName: 'audiences'},
         },
       },
       parameters,
     );
+    this.client.baseUrl = 'https://contxtauth.com';
     return this.client
-      .post('/oauth/token', {
-        ...payload,
-        client_id: this.clientId,
-        grant_type: 'authorization_code',
-      })
+      .post(
+        '/v1/token',
+        {
+          ...payload,
+          client_id: this.clientId,
+          grant_type: 'authorization_code',
+        },
+        headers,
+      )
       .then(responseHandler);
   }
 
