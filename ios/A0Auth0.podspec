@@ -11,11 +11,10 @@ Pod::Spec.new do |s|
   s.license      = { :type => "MIT", :file => "../LICENSE" }
   s.authors      = { "Auth0" => "support@auth0.com" }
   s.platforms    = { :ios => "9.0" }
-  s.source       = { :git => "https://github.com/auth0/react-native-auth0.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/auth0/react-native-auth0.git", :tag => "v#{s.version}" }
 
   s.source_files = "*.{h,m,swift}"
   s.requires_arc = true
 
   s.dependency "React"
 end
-
