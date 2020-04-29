@@ -1,5 +1,19 @@
 # Change Log
 
+## [v2.3.1](https://github.com/auth0/react-native-auth0/tree/v2.3.1) (2020-04-29)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.3.0...v2.3.1)
+
+**Fixed**
+
+- Fixed tag in Podspec [\#300](https://github.com/auth0/react-native-auth0/pull/300) ([Widcket](https://github.com/Widcket))
+- handle invalid token error [\#285](https://github.com/auth0/react-native-auth0/pull/285) ([emiliokyp](https://github.com/emiliokyp))
+
+**Security**
+
+- [Snyk] Security upgrade crypto-js from 3.1.9-1 to 3.3.0 [\#299](https://github.com/auth0/react-native-auth0/pull/299) ([crew-security](https://github.com/crew-security))
+- Bump acorn from 5.7.3 to 5.7.4 [\#287](https://github.com/auth0/react-native-auth0/pull/287) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v2.3.0](https://github.com/auth0/react-native-auth0/tree/v2.3.0) (2020-02-10)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.2.0...v2.3.0)
