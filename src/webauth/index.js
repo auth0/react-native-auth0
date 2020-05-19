@@ -41,15 +41,16 @@ export default class WebAuth {
    * To learn more about how to customize the authorize call, check the Universal Login Page
    * article at https://auth0.com/docs/hosted-pages/login
    *
-   * @param {Object} parameters parameters to send on the AuthN/AuthZ request.
-   * @param {String} [parameters.state] random string to prevent CSRF attacks and used to discard unexepcted results. By default its a cryptographically secure random.
-   * @param {String} [parameters.nonce] random string to prevent replay attacks of id_tokens.
-   * @param {String} [parameters.audience] identifier of Resource Server (RS) to be included as audience (aud claim) of the issued access token
-   * @param {String} [parameters.scope] scopes requested for the issued tokens. e.g. `openid profile`
-   * @param {String} [parameters.connection] The name of the identity provider to use, e.g. "google-oauth2" or "facebook". When not set, it will display Auth0's Universal Login Page.
-   * @param {Number} [parameters.max_age] The allowable elapsed time in seconds since the last time the user was authenticated (optional).
-   * @param {Object} options options for ID token validation configuration.
-   * @param {Number} [options.leeway] The amount of leeway, in seconds, to accommodate potential clock skew when validating an ID token's claims. Defaults to 60 seconds if not specified.
+   * @param {Object}  parameters Parameters to send on the AuthN/AuthZ request.
+   * @param {String}  [parameters.state] Random string to prevent CSRF attacks and used to discard unexepcted results. By default its a cryptographically secure random.
+   * @param {String}  [parameters.nonce] Random string to prevent replay attacks of id_tokens.
+   * @param {String}  [parameters.audience] Identifier of Resource Server (RS) to be included as audience (aud claim) of the issued access token
+   * @param {String}  [parameters.scope] Scopes requested for the issued tokens. e.g. `openid profile`
+   * @param {String}  [parameters.connection] The name of the identity provider to use, e.g. "google-oauth2" or "facebook". When not set, it will display Auth0's Universal Login Page.
+   * @param {Number}  [parameters.max_age] The allowable elapsed time in seconds since the last time the user was authenticated (optional).
+   * @param {Object}  options Other configuration options.
+   * @param {Number}  [options.leeway] The amount of leeway, in seconds, to accommodate potential clock skew when validating an ID token's claims. Defaults to 60 seconds if not specified.
+   * @param {Boolean} [options.ephemeralSession] Disable SSO on iOS 13+. Has no effect on older versions of iOS.
    * @returns {Promise}
    * @see https://auth0.com/docs/api/authentication#authorize-client
    *
@@ -69,44 +70,46 @@ export default class WebAuth {
         ...parameters,
       };
       const authorizeUrl = this.client.authorizeUrl(query);
-      return agent.show(authorizeUrl).then(redirectUrl => {
-        if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
-          throw new AuthError({
-            json: {
-              error: 'a0.redirect_uri.not_expected',
-              error_description: `Expected ${redirectUri} but got ${redirectUrl}`,
-            },
-            status: 0,
-          });
-        }
-        const query = url.parse(redirectUrl, true).query;
-        const {code, state: resultState, error} = query;
-        if (error) {
-          throw new AuthError({json: query, status: 0});
-        }
-        if (resultState !== expectedState) {
-          throw new AuthError({
-            json: {
-              error: 'a0.state.invalid',
-              error_description: `Invalid state received in redirect url`,
-            },
-            status: 0,
-          });
-        }
+      return agent
+        .show(authorizeUrl, options.ephemeralSession)
+        .then(redirectUrl => {
+          if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
+            throw new AuthError({
+              json: {
+                error: 'a0.redirect_uri.not_expected',
+                error_description: `Expected ${redirectUri} but got ${redirectUrl}`,
+              },
+              status: 0,
+            });
+          }
+          const query = url.parse(redirectUrl, true).query;
+          const {code, state: resultState, error} = query;
+          if (error) {
+            throw new AuthError({json: query, status: 0});
+          }
+          if (resultState !== expectedState) {
+            throw new AuthError({
+              json: {
+                error: 'a0.state.invalid',
+                error_description: `Invalid state received in redirect url`,
+              },
+              status: 0,
+            });
+          }
 
-        return client
-          .exchange({code, verifier, redirectUri})
-          .then(credentials => {
-            return verifyToken(credentials.idToken, {
-              domain,
-              clientId,
-              nonce: parameters.nonce,
-              maxAge: parameters.max_age,
-              scope: parameters.scope,
-              leeway: options.leeway,
-            }).then(() => Promise.resolve(credentials));
-          });
-      });
+          return client
+            .exchange({code, verifier, redirectUri})
+            .then(credentials => {
+              return verifyToken(credentials.idToken, {
+                domain,
+                clientId,
+                nonce: parameters.nonce,
+                maxAge: parameters.max_age,
+                scope: parameters.scope,
+                leeway: options.leeway,
+              }).then(() => Promise.resolve(credentials));
+            });
+        });
     });
   }
 
@@ -115,7 +118,7 @@ export default class WebAuth {
    *
    *  In iOS it will use `SFSafariViewController` and in Android Chrome Custom Tabs.
    *
-   * @param {Object} parameters parameters to send
+   * @param {Object} parameters Parameters to send
    * @param {Bool} [parameters.federated] Optionally remove the IdP session.
    * @returns {Promise}
    * @see https://auth0.com/docs/logout
@@ -128,6 +131,6 @@ export default class WebAuth {
     options.returnTo = callbackUri(domain);
     options.federated = options.federated || false;
     const logoutUrl = client.logoutUrl(options);
-    return agent.show(logoutUrl, true);
+    return agent.show(logoutUrl, false, true);
   }
 }

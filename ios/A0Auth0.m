@@ -43,11 +43,14 @@ RCT_EXPORT_METHOD(hide) {
     [self terminateWithError:nil dismissing:YES animated:YES];
 }
 
-RCT_EXPORT_METHOD(showUrl:(NSString *)urlString closeOnLoad:(BOOL)closeOnLoad callback:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(showUrl:(NSString *)urlString
+                  usingEphemeralSession:(BOOL)ephemeralSession
+                  closeOnLoad:(BOOL)closeOnLoad
+                  callback:(RCTResponseSenderBlock)callback) {
     if (@available(iOS 11.0, *)) {
         self.sessionCallback = callback;
         self.closeOnLoad = closeOnLoad;
-        [self presentAuthenticationSession:[NSURL URLWithString:urlString]];
+        [self presentAuthenticationSession:[NSURL URLWithString:urlString] usingEphemeralSession:ephemeralSession];
     } else {
         [self presentSafariWithURL:[NSURL URLWithString:urlString]];
         self.sessionCallback = callback;
@@ -80,7 +83,7 @@ UIBackgroundTaskIdentifier taskId;
     self.last = controller;
 }
 
-- (void)presentAuthenticationSession:(NSURL *)url {
+- (void)presentAuthenticationSession:(NSURL *)url usingEphemeralSession:(BOOL)ephemeralSession {
     
     NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:url
                                                 resolvingAgainstBaseURL:NO];
@@ -116,6 +119,7 @@ UIBackgroundTaskIdentifier taskId;
         #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
         if (@available(iOS 13.0, *)) {
             authenticationSession.presentationContextProvider = self;
+            authenticationSession.prefersEphemeralWebBrowserSession = ephemeralSession;
         }
         #endif
         self.authenticationSession = authenticationSession;
