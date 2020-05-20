@@ -1,6 +1,6 @@
 jest.mock('react-native');
 import Agent from '../agent';
-import {NativeModules, Linking} from 'react-native';
+import {NativeModules, Linking, Platform} from 'react-native';
 const A0Auth0 = NativeModules.A0Auth0;
 
 describe('Agent', () => {
@@ -37,6 +37,22 @@ describe('Agent', () => {
         const url = 'https://auth0.com/authorize';
         await agent.show(url);
         expect(A0Auth0.url).toEqual(url);
+      });
+
+      it('should not use ephemeral session by default', async () => {
+        Platform.OS = 'ios';
+        expect.assertions(1);
+        const url = 'https://auth0.com';
+        await agent.show(url);
+        expect(A0Auth0.ephemeralSession).toEqual(false);
+      });
+
+      it('should set ephemeral session', async () => {
+        Platform.OS = 'ios';
+        expect.assertions(1);
+        const url = 'https://auth0.com';
+        await agent.show(url, true);
+        expect(A0Auth0.ephemeralSession).toEqual(true);
       });
     });
 
