@@ -50,7 +50,7 @@ export default class WebAuth {
    * @param {Number}  [parameters.max_age] The allowable elapsed time in seconds since the last time the user was authenticated (optional).
    * @param {Object}  options Other configuration options.
    * @param {Number}  [options.leeway] The amount of leeway, in seconds, to accommodate potential clock skew when validating an ID token's claims. Defaults to 60 seconds if not specified.
-   * @param {Boolean} [options.ephemeralSession] Disable SSO on iOS 13+. Has no effect on older versions of iOS.
+   * @param {Boolean} [options.ephemeralSession] Disable Single-Sign-On (SSO). It only affects iOS with versions 13 and above.
    * @returns {Promise}
    * @see https://auth0.com/docs/api/authentication#authorize-client
    *
