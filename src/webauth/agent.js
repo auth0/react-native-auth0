@@ -5,7 +5,7 @@ export default class Agent {
     if (!NativeModules.A0Auth0) {
       return Promise.reject(
         new Error(
-          'Missing NativeModule. React Native versions 0.60 and up perform auto-linking. Please see https://github.com/react-native-community/cli/blob/master/docs/autolinking.md.',
+          'Missing NativeModule. React Native versions 0.60 and up perform auto-linking. Please see https://github.com/react-native-community/cli/blob/master/docs/autolinking.md.'
         ),
       );
     }
