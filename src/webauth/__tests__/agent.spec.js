@@ -39,6 +39,13 @@ describe('Agent', () => {
         expect(A0Auth0.url).toEqual(url);
       });
 
+      it('should not pass ephemeral session parameter', async () => {
+        expect.assertions(1);
+        const url = 'https://auth0.com';
+        await agent.show(url);
+        expect(A0Auth0.ephemeralSession).toBeUndefined();
+      });
+
       it('should not use ephemeral session by default', async () => {
         Platform.OS = 'ios';
         expect.assertions(1);
