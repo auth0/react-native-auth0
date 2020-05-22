@@ -46,15 +46,15 @@ The contents of previous release can be found on the [branch v1](https://github.
 
 First install the native library module:
 
-Using [npm](https://www.npmjs.com)
+### With [npm](https://www.npmjs.com)
 
 `$ npm install react-native-auth0 --save`
 
-or [yarn](https://yarnpkg.com/en/)
+### With [Yarn](https://yarnpkg.com/en/)
 
 `$ yarn add react-native-auth0`
 
-Then, you need to run the following command to install the ios app pods with Cocoapods. That will auto-link the iOS library.
+Then, you need to run the following command to install the ios app pods with Cocoapods. That will auto-link the iOS library:
 
 `$ cd ios && pod install`
 
@@ -105,11 +105,11 @@ android:windowSoftInputMode="adjustResize">
 
 The `applicationId` value will be auto-replaced on runtime with the package name or id of your application (e.g. `com.example.app`). You can change this value from the `build.gradle` file. You can also check it at the top of your `AndroidManifest.xml` file. Take note of this value as you'll be requiring it to define the callback URLs below.
 
-> For more info please read [react native docs](https://facebook.github.io/react-native/docs/linking.html)
+> For more info please read the [React Native docs](https://facebook.github.io/react-native/docs/linking.html).
 
 #### iOS
 
-Inside the `ios` folder find the file `AppDelegate.[swift|m]` add the following to it
+Inside the `ios` folder find the file `AppDelegate.[swift|m]` add the following to it:
 
 ```objc
 #import <React/RCTLinkingManager.h>
@@ -129,7 +129,7 @@ Inside the `ios` folder open the `Info.plist` and locate the value for `CFBundle
 <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 ```
 
-and then below it register a URL type entry using the value of `CFBundleIdentifier` as the value for `CFBundleURLSchemes`
+and then below it register a URL type entry using the value of `CFBundleIdentifier` as the value for `CFBundleURLSchemes`:
 
 ```xml
 <key>CFBundleURLTypes</key>
@@ -154,7 +154,7 @@ If your application is generated using the React Native CLI, the default value o
 - Replace the **Product Bundle Identifier** value with your desired application's bundle identifier name (e.g. `com.example.app`).
 - If you've changed the project wide settings, make sure the same were applied to each of the targets your app has.
 
-> For more info please read [react native docs](https://facebook.github.io/react-native/docs/linking.html)
+> For more info please read the [React Native docs](https://facebook.github.io/react-native/docs/linking.html).
 
 ### Callback URL(s)
 
@@ -199,7 +199,7 @@ const auth0 = new Auth0({
 
 ### Web Authentication
 
-#### Log in
+#### Login
 
 ```js
 auth0.webAuth
@@ -208,7 +208,18 @@ auth0.webAuth
   .catch(error => console.log(error));
 ```
 
-#### Log out
+##### Disable Single Sign On (iOS 13+ only)
+
+Use the `ephemeralSession` parameter to disable SSO on iOS 13+. This way iOS will not display the consent popup that otherwise shows up when SSO is enabled. It has no effect on older versions of iOS or Android.
+
+```js
+auth0.webAuth
+  .authorize({scope: 'openid email profile'}, {ephemeralSession: true})
+  .then(credentials => console.log(credentials))
+  .catch(error => console.log(error));
+```
+
+#### Logout
 
 ```js
 auth0.webAuth.clearSession().catch(error => console.log(error));

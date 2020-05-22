@@ -1,12 +1,12 @@
-import { NativeModules, Linking } from 'react-native';
+import {NativeModules, Linking, Platform} from 'react-native';
 
 export default class Agent {
-  show(url, closeOnLoad = false) {
+  show(url, ephemeralSession = false, closeOnLoad = false) {
     if (!NativeModules.A0Auth0) {
       return Promise.reject(
         new Error(
           'Missing NativeModule. React Native versions 0.60 and up perform auto-linking. Please see https://github.com/react-native-community/cli/blob/master/docs/autolinking.md.'
-        )
+        ),
       );
     }
 
@@ -16,14 +16,16 @@ export default class Agent {
         Linking.removeEventListener('url', urlHandler);
         resolve(event.url);
       };
+      const params =
+        Platform.OS === 'ios' ? [ephemeralSession, closeOnLoad] : [closeOnLoad];
       Linking.addEventListener('url', urlHandler);
-      NativeModules.A0Auth0.showUrl(url, closeOnLoad, (error, redirectURL) => {
+      NativeModules.A0Auth0.showUrl(url, ...params, (error, redirectURL) => {
         Linking.removeEventListener('url', urlHandler);
         if (error) {
           reject(error);
-        } else if(redirectURL) {
+        } else if (redirectURL) {
           resolve(redirectURL);
-        } else if(closeOnLoad) {
+        } else if (closeOnLoad) {
           resolve();
         }
       });
@@ -34,8 +36,8 @@ export default class Agent {
     if (!NativeModules.A0Auth0) {
       return Promise.reject(
         new Error(
-          'Missing NativeModule. React Native versions 0.60 and up perform auto-linking. Please see https://github.com/react-native-community/cli/blob/master/docs/autolinking.md.'
-        )
+          'Missing NativeModule. React Native versions 0.60 and up perform auto-linking. Please see https://github.com/react-native-community/cli/blob/master/docs/autolinking.md.',
+        ),
       );
     }
 
