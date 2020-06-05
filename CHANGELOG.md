@@ -1,5 +1,17 @@
 # Change Log
 
+## [v2.4.0](https://github.com/auth0/react-native-auth0/tree/v2.4.0) (2020-06-05)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.3.1...v2.4.0)
+
+**Added**
+
+- Added support for ephemeral sessions [SDK-1412][\#305](https://github.com/auth0/react-native-auth0/pull/305) ([Widcket](https://github.com/Widcket))
+
+**Security**
+
+- Bump dependencies in the lock file [\#313](https://github.com/auth0/react-native-auth0/pull/313) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [v2.3.1](https://github.com/auth0/react-native-auth0/tree/v2.3.1) (2020-04-29)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.3.0...v2.3.1)
