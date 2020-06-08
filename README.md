@@ -161,7 +161,7 @@ If your application is generated using the React Native CLI, the default value o
 
 Callback URLs are the URLs that Auth0 invokes after the authentication process. Auth0 routes your application back to this URL and appends additional parameters to it, including a token. Since callback URLs can be manipulated, you will need to add this URL to your Application's **Allowed Callback URLs** for security. This will enable Auth0 to recognize these URLs as valid. If omitted, authentication will not be successful.
 
-> Callback URLs must have a valid scheme value as defined by the [specification](https://tools.ietf.org/html/rfc3986#page-17). Note however that platforms like Android don't follow this RFC and define the scheme and host values as case-sensitive. Since this SDK makes use of the Android's Package Name and its analogous iOS's Product Bundle Identifier to generate the redirect URL, it's advised to use lower case values for such. A "Redirect URI is not valid" error will raise if this format is not respected.
+On the Android platform this URL is case-sensitive. Because of that, this SDK will auto convert the Bundle Identifier (iOS) and Application ID (Android) values to lowercase in order to build the Callback URL with them. If any of these values contains uppercase characters a warning message will be printed in the console. Make sure to check that the right Callback URL is whitelisted in the Auth0 dashboard or the browser will not route succesfully back to your application.
 
 Go to the [Auth0 Dashboard](https://manage.auth0.com/#/applications), select your application and make sure that **Allowed Callback URLs** contains the URLs defined below.
 
