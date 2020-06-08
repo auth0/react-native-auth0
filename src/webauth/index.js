@@ -9,9 +9,13 @@ const {A0Auth0} = NativeModules;
 
 const callbackUri = domain => {
   const bundleIdentifier = A0Auth0.bundleIdentifier;
-  return `${bundleIdentifier.toLowerCase()}://${domain}/${
-    Platform.OS
-  }/${bundleIdentifier}/callback`;
+  const lowerCasedIdentifier = bundleIdentifier.toLowerCase();
+  if (bundleIdentifier !== lowerCasedIdentifier) {
+    console.warn(
+      'The Bundle Identifier or Application ID of your app contains uppercase characters and will be lowercased to build the Callback URL. Check the Auth0 dashboard to whitelist the right URL value.',
+    );
+  }
+  return `${lowerCasedIdentifier}://${domain}/${Platform.OS}/${bundleIdentifier}/callback`;
 };
 
 /**
