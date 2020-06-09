@@ -1,5 +1,19 @@
 # Change Log
 
+## [v2.5.0](https://github.com/auth0/react-native-auth0/tree/v2.5.0) (2020-06-09)
+
+This release requires at minimum React Native SDK version 0.62.2. If you need to run it on a different version, check the Compatibility Matrix on the README for reference.
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.4.0...v2.5.0)
+
+**Added**
+
+- Warn when bundle identifier contains uppercase characters [\#316](https://github.com/auth0/react-native-auth0/pull/316) ([lbalmaceda](https://github.com/lbalmaceda))
+
+**Security**
+
+- Breaking: Require ReactNative version 0.62.2 [\#315](https://github.com/auth0/react-native-auth0/pull/315) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [v2.4.0](https://github.com/auth0/react-native-auth0/tree/v2.4.0) (2020-06-05)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.3.1...v2.4.0)
