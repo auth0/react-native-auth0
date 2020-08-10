@@ -14,6 +14,6 @@ export default class AuthError extends BaseError {
 }
 
 const handleInvalidToken = response =>
-  response?.headers?.map['www-authenticate'].match(/error="invalid_token"/g)
+  response?.headers?.get('www-authenticate')?.match(/error="invalid_token"/g)
     ? 'invalid_token'
     : null;
