@@ -452,6 +452,26 @@ describe('auth', () => {
       expect.assertions(1);
       await expect(auth.refreshToken(parameters)).rejects.toMatchSnapshot();
     });
+
+    it('should handle invalid token error', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', {
+        status: 401,
+        body: {},
+        headers: {'www-authenticate': 'Bearer error="invalid_token"'},
+      });
+      expect.assertions(1);
+      await expect(auth.refreshToken(parameters)).rejects.toMatchSnapshot();
+    });
+
+    it('should handle unknown error', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', {
+        status: 401,
+        body: {},
+        headers: {},
+      });
+      expect.assertions(1);
+      await expect(auth.refreshToken(parameters)).rejects.toMatchSnapshot();
+    });
   });
 
   describe('revoke token', () => {
