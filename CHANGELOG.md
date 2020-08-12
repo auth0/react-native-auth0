@@ -1,5 +1,21 @@
 # Change Log
 
+## [v2.6.0](https://github.com/auth0/react-native-auth0/tree/v2.6.0) (2020-08-11)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.5.0...v2.6.0)
+
+**Added**
+
+- Add compileOptions for JDK 8 [\#323](https://github.com/auth0/react-native-auth0/pull/323) ([immackay](https://github.com/immackay))
+
+**Fixed**
+
+- Fix the www-authenticate header parsing logic [\#329](https://github.com/auth0/react-native-auth0/pull/329) ([lbalmaceda](https://github.com/lbalmaceda))
+
+**Security**
+
+- Bump lodash from 4.17.15 to 4.17.19 [\#320](https://github.com/auth0/react-native-auth0/pull/320) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v2.5.0](https://github.com/auth0/react-native-auth0/tree/v2.5.0) (2020-06-09)
 
 This release requires at minimum React Native SDK version 0.62.2. If you need to run it on a different version, check the Compatibility Matrix on the README for reference.
