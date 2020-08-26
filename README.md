@@ -395,12 +395,13 @@ auth0.auth
 In the case of signup, you can add [an additional parameter](https://auth0.com/docs/universal-login/new-experience#signup) to make the user land directly on the signup page:
 
 ```js
-auth0.webAuth.authorize({
-  connection: realm,
-  scope: scope,
-  login_hint: email,
-  screen_hint: 'signup', // 👈🏻
-});
+auth0.webAuth
+  .authorize({
+    connection: realm,
+    scope: scope,
+    login_hint: email,
+    screen_hint: 'signup', // 👈🏻
+  });
 ```
 
 Check out how to set up Universal Login in the [Getting Started](#getting-started) section.
