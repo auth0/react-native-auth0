@@ -371,7 +371,9 @@ auth0.auth
     realm: realm,
     scope: scope,
   })
-  .then(console.log)
+  .then(credentials => {
+    // Logged in!
+  })
   .catch(error => {
     if (error.name === 'requires_verification') {
       auth0.webAuth
@@ -380,7 +382,9 @@ auth0.auth
           scope: scope,
           login_hint: email, // So the user doesn't have to type it again
         })
-        .then(console.log)
+        .then(credentials => {
+          // Logged in!
+        })
         .catch(console.error);
     } else {
       console.error(error);
@@ -391,7 +395,7 @@ auth0.auth
 In the case of signup, you can add [an additional parameter](https://auth0.com/docs/universal-login/new-experience#signup) to make the user land directly on the signup page:
 
 ```js
-authorize({
+auth0.webAuth.authorize({
   connection: realm,
   scope: scope,
   login_hint: email,
