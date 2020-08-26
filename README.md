@@ -355,6 +355,53 @@ auth0
 
 For more info please check our generated [documentation](http://auth0.github.io/react-native-auth0/index.html)
 
+### Bot Protection
+
+If you are using the [Bot Protection](https://auth0.com/docs/anomaly-detection/bot-protection) feature and performing database login/signup via the Authentication API, you need to handle the `requires_verification` error. It indicates that the request was flagged as suspicious and an additional verification step is necessary to log the user in. That verification step is web-based, so you need to use Universal Login to complete it.
+
+```js
+const email = 'support@auth0.com';
+const realm = 'Username-Password-Authentication';
+const scope = 'openid profile';
+
+auth0.auth
+  .passwordRealm({
+    // Or createUser for signup
+    username: email,
+    password: 'secret-password',
+    realm: realm,
+    scope: scope,
+  })
+  .then(console.log)
+  .catch(error => {
+    if (error.name === 'requires_verification') {
+      auth0.webAuth
+        .authorize({
+          connection: realm,
+          scope: scope,
+          login_hint: email, // So the user doesn't have to type it again
+        })
+        .then(console.log)
+        .catch(console.error);
+    } else {
+      console.error(error);
+    }
+  });
+```
+
+In the case of signup, you can add [an additional parameter](https://auth0.com/docs/universal-login/new-experience#signup) to make the user land directly on the signup page:
+
+```js
+authorize({
+  connection: realm,
+  scope: scope,
+  login_hint: email,
+  screen_hint: 'signup', // 👈🏻
+});
+```
+
+Check out how to set up Universal Login in the [Getting Started](#getting-started) section.
+
 ## Contributing
 
 We appreciate feedback and contribution to this repo! Before you get started, please see the following:
