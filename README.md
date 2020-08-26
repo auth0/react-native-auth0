@@ -366,7 +366,6 @@ const scope = 'openid profile';
 
 auth0.auth
   .passwordRealm({
-    // Or createUser for signup
     username: email,
     password: 'secret-password',
     realm: realm,
