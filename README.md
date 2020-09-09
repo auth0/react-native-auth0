@@ -7,6 +7,7 @@ React Native toolkit for Auth0 API, compliant with [RFC 8252](https://tools.ietf
 [![Coverage][codecov-image]][codecov-url]
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0?ref=badge_shield)
 
 ## Table of Contents
 
@@ -452,3 +453,6 @@ This project is licensed under the MIT license. See the [LICENSE](LICENSE) file 
 [license-url]: #license
 [downloads-image]: http://img.shields.io/npm/dm/react-native-auth0.svg?style=flat-square
 [downloads-url]: https://npmjs.org/package/react-native-auth0
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0?ref=badge_large)
