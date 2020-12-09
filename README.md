@@ -116,11 +116,10 @@ Inside the `ios` folder find the file `AppDelegate.[swift|m]` add the following 
 ```objc
 #import <React/RCTLinkingManager.h>
 
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
-  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
-  return [RCTLinkingManager application:application openURL:url
-                      sourceApplication:sourceApplication annotation:annotation];
+  return [RCTLinkingManager application:app openURL:url options:options];
 }
 ```
 
@@ -396,13 +395,12 @@ auth0.auth
 In the case of signup, you can add [an additional parameter](https://auth0.com/docs/universal-login/new-experience#signup) to make the user land directly on the signup page:
 
 ```js
-auth0.webAuth
-  .authorize({
-    connection: realm,
-    scope: scope,
-    login_hint: email,
-    screen_hint: 'signup', // 👈🏻
-  });
+auth0.webAuth.authorize({
+  connection: realm,
+  scope: scope,
+  login_hint: email,
+  screen_hint: 'signup', // 👈🏻
+});
 ```
 
 Check out how to set up Universal Login in the [Getting Started](#getting-started) section.
@@ -453,6 +451,5 @@ This project is licensed under the MIT license. See the [LICENSE](LICENSE) file 
 [license-url]: #license
 [downloads-image]: http://img.shields.io/npm/dm/react-native-auth0.svg?style=flat-square
 [downloads-url]: https://npmjs.org/package/react-native-auth0
-
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0?ref=badge_large)
