@@ -9,6 +9,10 @@ React Native toolkit for Auth0 API, compliant with [RFC 8252](https://tools.ietf
 [![Downloads][downloads-image]][downloads-url]
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0?ref=badge_shield)
 
+## Important Notices
+
+Version **2.7.0** introduced a **breaking change** to the Android configuration. Previously it was required to add an intent filter in the definition of the Activity that receives the authentication result. Now that intent filter must be removed and a new Activity definition must be added to the Manifest. Check out the [Android](#android) section for more details.
+
 ## Table of Contents
 
 - [Documentation](#documentation)
@@ -66,42 +70,54 @@ You need make your Android and iOS applications aware that an authentication res
 
 #### Android
 
-Open the `AndroidManifest.xml` file of your application typically at `android/app/src/main/AndroidManifest.xml` and **make sure** the Activity on which you're going to receive the authentication result has a **launchMode** of `singleTask`. Additionally inside this Activity definition include the following intent filter.
+Open the `AndroidManifest.xml` file of your application typically at `android/app/src/main/AndroidManifest.xml` and **make sure** the Activity on which you're going to receive the authentication result has a **launchMode** of `singleTask`.
 
-```xml
-<intent-filter>
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-    <data
-        android:host="YOUR_AUTH0_DOMAIN"
-        android:pathPrefix="/android/${applicationId}/callback"
-        android:scheme="${applicationId}" />
-</intent-filter>
-```
+> Before version 2.7.0, this SDK required you to add an intent filter to that Activity. To migrate your app to version 2.7.0+, remove it and then continue with the instructions below.
 
-The `android:host` value must be replaced with your Auth0 domain value. So if you have `samples.auth0.com` as your Auth0 domain you would have the following **MainActivity** configuration:
+Now you need to export the SDK Activity that will handle the authentication callback. To do so, add the following Activity definition:
 
 ```xml
 <activity
-android:name=".MainActivity"
-android:label="@string/app_name"
-android:launchMode="singleTask"
-android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-android:windowSoftInputMode="adjustResize">
-<intent-filter>
-    <action android:name="android.intent.action.MAIN" />
-    <category android:name="android.intent.category.LAUNCHER" />
-</intent-filter>
-<intent-filter>
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-    <data
-        android:host="samples.auth0.com"
-        android:pathPrefix="/android/${applicationId}/callback"
-        android:scheme="${applicationId}" />
-</intent-filter>
+    android:name="com.auth0.react.RedirectActivity"
+    android:exported="true">
+    <intent-filter android:autoVerify="true" tools:targetApi="m">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data
+          android:host="YOUR_AUTH0_DOMAIN"
+          android:pathPrefix="/android/${applicationId}/callback"
+          android:scheme="${applicationId}" />
+    </intent-filter>
+</activity>
+```
+
+The `android:host` value must be replaced with your Auth0 domain value. So if you have `samples.auth0.com` as your Auth0 domain you would have a configuration like the following:
+
+```xml
+<activity
+    android:name=".MainActivity"
+    android:label="@string/app_name"
+    android:launchMode="singleTask"
+    android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+    android:windowSoftInputMode="adjustResize">
+    <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+    </intent-filter>
+</activity>
+<activity
+    android:name="com.auth0.react.RedirectActivity"
+    android:exported="true">
+    <intent-filter android:autoVerify="true" tools:targetApi="m">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data
+          android:host="samples.auth0.com"
+          android:pathPrefix="/android/${applicationId}/callback"
+          android:scheme="${applicationId}" />
+    </intent-filter>
 </activity>
 ```
 
@@ -353,7 +369,7 @@ auth0
   .catch(console.error);
 ```
 
-For more info please check our generated [documentation](http://auth0.github.io/react-native-auth0/index.html)
+For more info please check our generated [documentation](https://auth0.github.io/react-native-auth0/index.html)
 
 ### Bot Protection
 
@@ -443,13 +459,13 @@ This project is licensed under the MIT license. See the [LICENSE](LICENSE) file 
 
 [npm-image]: https://img.shields.io/npm/v/react-native-auth0.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/react-native-auth0
-[circleci-image]: http://img.shields.io/circleci/project/github/auth0/react-native-auth0.svg?branch=master&style=flat-square
+[circleci-image]: https://img.shields.io/circleci/project/github/auth0/react-native-auth0.svg?branch=master&style=flat-square
 [circleci-url]: https://circleci.com/gh/auth0/react-native-auth0
 [codecov-image]: https://img.shields.io/codecov/c/github/auth0/react-native-auth0.svg?style=flat-square
 [codecov-url]: https://codecov.io/github/auth0/react-native-auth0
-[license-image]: http://img.shields.io/npm/l/react-native-auth0.svg?style=flat-square
+[license-image]: https://img.shields.io/npm/l/react-native-auth0.svg?style=flat-square
 [license-url]: #license
-[downloads-image]: http://img.shields.io/npm/dm/react-native-auth0.svg?style=flat-square
+[downloads-image]: https://img.shields.io/npm/dm/react-native-auth0.svg?style=flat-square
 [downloads-url]: https://npmjs.org/package/react-native-auth0
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0?ref=badge_large)
