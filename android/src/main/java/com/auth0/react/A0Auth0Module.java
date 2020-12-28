@@ -57,9 +57,8 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
         final Uri parsedUrl = Uri.parse(url);
         this.callback = callback;
 
-        if (activity != null) {
-            AuthenticationActivity.authenticateUsingBrowser(activity, parsedUrl);
-        } else {
+        if (activity != null) AuthenticationActivity.authenticateUsingBrowser(activity, parsedUrl);
+        else {
             final Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setData(parsedUrl);
@@ -124,29 +123,22 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
 
     @Override
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                Callback cb = A0Auth0Module.this.callback;
+        Callback cb = A0Auth0Module.this.callback;
 
-                if (cb != null) {
-                    if (resultCode == RESULT_OK &&
-                            requestCode == AuthenticationActivity.AUTHENTICATION_REQUEST &&
-                            data.getData() != null) {
-                        cb.invoke(null, data.getData().toString());
-                    }
-                    else {
-                        final WritableMap error = Arguments.createMap();
-                        error.putString("error", "a0.session.user_cancelled");
-                        error.putString("error_description", "User cancelled the Auth");
-                        cb.invoke(error);
-                    }
-
-                    A0Auth0Module.this.callback = null;
-                }
+        if (cb != null) {
+            boolean hasResult = resultCode == RESULT_OK && 
+                requestCode == AuthenticationActivity.AUTHENTICATION_REQUEST &&
+                data.getData() != null;
+            if (hasResult) cb.invoke(null, data.getData().toString());
+            else {
+                final WritableMap error = Arguments.createMap();
+                error.putString("error", "a0.session.user_cancelled");
+                error.putString("error_description", "User cancelled the Auth");
+                cb.invoke(error);
             }
-        });
 
+            A0Auth0Module.this.callback = null;
+        }
     }
 
     @Override
