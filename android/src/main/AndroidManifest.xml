@@ -1,4 +1,22 @@
+<!--Ignore rule required due to the 'queries' tag, fix only available for targetSdk=30 -->
+<!--suppress AndroidElementNotAllowed -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.auth0.react">
+    package="com.auth0.react">
+    <uses-permission android:name="android.permission.INTERNET" />
 
+    <application>
+        <activity
+            android:name="com.auth0.react.AuthenticationActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+    </application>
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
 </manifest>
