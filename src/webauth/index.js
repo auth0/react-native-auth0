@@ -7,15 +7,17 @@ import verifyToken from '../jwt';
 
 const {A0Auth0} = NativeModules;
 
-const callbackUri = domain => {
+const callbackUri = (domain, customScheme) => {
   const bundleIdentifier = A0Auth0.bundleIdentifier;
   const lowerCasedIdentifier = bundleIdentifier.toLowerCase();
-  if (bundleIdentifier !== lowerCasedIdentifier) {
+  if (!customScheme && bundleIdentifier !== lowerCasedIdentifier) {
     console.warn(
       'The Bundle Identifier or Application ID of your app contains uppercase characters and will be lowercased to build the Callback URL. Check the Auth0 dashboard to whitelist the right URL value.',
     );
   }
-  return `${lowerCasedIdentifier}://${domain}/${Platform.OS}/${bundleIdentifier}/callback`;
+  return `${customScheme || lowerCasedIdentifier}://${domain}/${
+    Platform.OS
+  }/${bundleIdentifier}/callback`;
 };
 
 /**
@@ -63,7 +65,7 @@ export default class WebAuth {
   authorize(parameters = {}, options = {}) {
     const {clientId, domain, client, agent} = this;
     return agent.newTransaction().then(({state, verifier, ...defaults}) => {
-      const redirectUri = callbackUri(domain);
+      const redirectUri = callbackUri(domain, options.customScheme);
       const expectedState = parameters.state || state;
       let query = {
         ...defaults,
@@ -132,7 +134,7 @@ export default class WebAuth {
   clearSession(options = {}) {
     const {client, agent, domain, clientId} = this;
     options.clientId = clientId;
-    options.returnTo = callbackUri(domain);
+    options.returnTo = callbackUri(domain, options.customScheme);
     options.federated = options.federated || false;
     const logoutUrl = client.logoutUrl(options);
     return agent.show(logoutUrl, false, true);
