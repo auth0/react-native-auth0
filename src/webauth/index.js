@@ -57,6 +57,7 @@ export default class WebAuth {
    * @param {Object}  options Other configuration options.
    * @param {Number}  [options.leeway] The amount of leeway, in seconds, to accommodate potential clock skew when validating an ID token's claims. Defaults to 60 seconds if not specified.
    * @param {Boolean} [options.ephemeralSession] Disable Single-Sign-On (SSO). It only affects iOS with versions 13 and above.
+   * @param {String}  [options.customScheme] Custom scheme to build the callback URL with.
    * @returns {Promise}
    * @see https://auth0.com/docs/api/authentication#authorize-client
    *
@@ -126,6 +127,7 @@ export default class WebAuth {
    *
    * @param {Object} parameters Parameters to send
    * @param {Bool} [parameters.federated] Optionally remove the IdP session.
+   * @param {String} [parameters.customScheme] Custom scheme to build the callback URL with.
    * @returns {Promise}
    * @see https://auth0.com/docs/logout
    *
