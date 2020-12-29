@@ -105,7 +105,11 @@ android:windowSoftInputMode="adjustResize">
 </activity>
 ```
 
-The `applicationId` value will be auto-replaced on runtime with the package name or id of your application (e.g. `com.example.app`). You can change this value from the `build.gradle` file. You can also check it at the top of your `AndroidManifest.xml` file. Take note of this value as you'll be requiring it to define the callback URLs below.
+The `applicationId` value will be auto-replaced on runtime with the package name or id of your application (e.g. `com.example.app`). You can change this value from the `build.gradle` file. You can also check it at the top of your `AndroidManifest.xml` file.
+
+If you use a value other than `applicationId` in `android:scheme` you will also need to pass it as the `customScheme` option parameter of the `authorize` and `clearSession` methods.
+
+Take note of this value as you'll be requiring it to define the callback URLs below.
 
 > For more info please read the [React Native docs](https://facebook.github.io/react-native/docs/linking.html).
 
@@ -155,6 +159,8 @@ If your application is generated using the React Native CLI, the default value o
 - Replace the **Product Bundle Identifier** value with your desired application's bundle identifier name (e.g. `com.example.app`).
 - If you've changed the project wide settings, make sure the same were applied to each of the targets your app has.
 
+If you use a value other than `$(PRODUCT_BUNDLE_IDENTIFIER)` in the `CFBundleURLSchemes` field of the `Info.plist` you will also need to pass it as the `customScheme` option parameter of the `authorize` and `clearSession` methods.
+
 > For more info please read the [React Native docs](https://facebook.github.io/react-native/docs/linking.html).
 
 ### Callback URL(s)
@@ -170,18 +176,18 @@ If in addition you plan to use the log out method, you must also add these URLs 
 #### Android
 
 ```text
-{YOUR_APP_PACKAGE_NAME}://{YOUR_AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
+{YOUR_APP_PACKAGE_NAME_OR_CUSTOM_SCHEME}://{YOUR_AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
 ```
 
-> Make sure to replace {YOUR_APP_PACKAGE_NAME} and {YOUR_AUTH0_DOMAIN} with the actual values for your application.
+> Make sure to replace {YOUR_APP_PACKAGE_NAME_OR_CUSTOM_SCHEME} and {YOUR_AUTH0_DOMAIN} with the actual values for your application.
 
 #### iOS
 
 ```text
-{YOUR_BUNDLE_IDENTIFIER}://{YOUR_AUTH0_DOMAIN}/ios/{YOUR_BUNDLE_IDENTIFIER}/callback
+{YOUR_BUNDLE_IDENTIFIER_OR_CUSTOM_SCHEME}://{YOUR_AUTH0_DOMAIN}/ios/{YOUR_BUNDLE_IDENTIFIER}/callback
 ```
 
-> Make sure to replace {YOUR_BUNDLE_IDENTIFIER} and {YOUR_AUTH0_DOMAIN} with the actual values for your application.
+> Make sure to replace {YOUR_BUNDLE_IDENTIFIER_OR_CUSTOM_SCHEME} and {YOUR_AUTH0_DOMAIN} with the actual values for your application.
 
 ## Usage
 
