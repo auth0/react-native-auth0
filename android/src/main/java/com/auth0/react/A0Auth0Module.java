@@ -3,7 +3,6 @@ package com.auth0.react;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Handler;
 import androidx.annotation.NonNull;
 import android.util.Base64;
 
