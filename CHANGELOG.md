@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.7.0](https://github.com/auth0/react-native-auth0/tree/v2.7.0) (2021-01-05)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.6.0...v2.7.0)
+
+**Added**
+
+- Added support for using a custom scheme in the callback URL [SDK-2223][\#351](https://github.com/auth0/react-native-auth0/pull/351) ([Widcket](https://github.com/Widcket))
+
 ## [v2.6.0](https://github.com/auth0/react-native-auth0/tree/v2.6.0) (2020-08-11)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.5.0...v2.6.0)

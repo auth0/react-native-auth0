@@ -212,6 +212,12 @@
                 src="http://img.shields.io/npm/dm/react-native-auth0.svg?style=flat-square"
                 alt="Downloads"
             /></a>
+            <a
+              href="https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0?ref=badge_shield"
+              ><img
+                src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=shield"
+                alt="FOSSA Status"
+            /></a>
           </p>
           <h2>Table of Contents</h2>
           <ul>
@@ -371,8 +377,17 @@ android:windowSoftInputMode=&quot;adjustResize&quot;>
             runtime with the package name or id of your application (e.g.
             <code>com.example.app</code>). You can change this value from the
             <code>build.gradle</code> file. You can also check it at the top of
-            your <code>AndroidManifest.xml</code> file. Take note of this value
-            as you'll be requiring it to define the callback URLs below.
+            your <code>AndroidManifest.xml</code> file.
+          </p>
+          <p>
+            If you use a value other than <code>applicationId</code> in
+            <code>android:scheme</code> you will also need to pass it as the
+            <code>customScheme</code> option parameter of the
+            <code>authorize</code> and <code>clearSession</code> methods.
+          </p>
+          <p>
+            Take note of this value as you'll be requiring it to define the
+            callback URLs below.
           </p>
           <blockquote>
             <p>
@@ -392,11 +407,10 @@ android:windowSoftInputMode=&quot;adjustResize&quot;>
             class="prettyprint source lang-objc"
           ><code>#import &lt;React/RCTLinkingManager.h>
 
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
-  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url
+            options:(NSDictionary&lt;UIApplicationOpenURLOptionsKey, id> *)options
 {
-  return [RCTLinkingManager application:application openURL:url
-                      sourceApplication:sourceApplication annotation:annotation];
+  return [RCTLinkingManager application:app openURL:url options:options];
 }
 </code></pre>
           <p>
@@ -460,6 +474,14 @@ android:windowSoftInputMode=&quot;adjustResize&quot;>
               were applied to each of the targets your app has.
             </li>
           </ul>
+          <p>
+            If you use a value other than
+            <code>$(PRODUCT_BUNDLE_IDENTIFIER)</code> in the
+            <code>CFBundleURLSchemes</code> field of the
+            <code>Info.plist</code> you will also need to pass it as the
+            <code>customScheme</code> option parameter of the
+            <code>authorize</code> and <code>clearSession</code> methods.
+          </p>
           <blockquote>
             <p>
               For more info please read the
@@ -503,22 +525,22 @@ android:windowSoftInputMode=&quot;adjustResize&quot;>
           <h4>Android</h4>
           <pre
             class="prettyprint source lang-text"
-          ><code>{YOUR_APP_PACKAGE_NAME}://{YOUR_AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
+          ><code>{YOUR_APP_PACKAGE_NAME_OR_CUSTOM_SCHEME}://{YOUR_AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
 </code></pre>
           <blockquote>
             <p>
-              Make sure to replace {YOUR_APP_PACKAGE_NAME} and
+              Make sure to replace {YOUR_APP_PACKAGE_NAME_OR_CUSTOM_SCHEME} and
               {YOUR_AUTH0_DOMAIN} with the actual values for your application.
             </p>
           </blockquote>
           <h4>iOS</h4>
           <pre
             class="prettyprint source lang-text"
-          ><code>{YOUR_BUNDLE_IDENTIFIER}://{YOUR_AUTH0_DOMAIN}/ios/{YOUR_BUNDLE_IDENTIFIER}/callback
+          ><code>{YOUR_BUNDLE_IDENTIFIER_OR_CUSTOM_SCHEME}://{YOUR_AUTH0_DOMAIN}/ios/{YOUR_BUNDLE_IDENTIFIER}/callback
 </code></pre>
           <blockquote>
             <p>
-              Make sure to replace {YOUR_BUNDLE_IDENTIFIER} and
+              Make sure to replace {YOUR_BUNDLE_IDENTIFIER_OR_CUSTOM_SCHEME} and
               {YOUR_AUTH0_DOMAIN} with the actual values for your application.
             </p>
           </blockquote>
@@ -701,6 +723,73 @@ const auth0 = new Auth0({
               >documentation</a
             >
           </p>
+          <h3>Bot Protection</h3>
+          <p>
+            If you are using the
+            <a href="https://auth0.com/docs/anomaly-detection/bot-protection"
+              >Bot Protection</a
+            >
+            feature and performing database login/signup via the Authentication
+            API, you need to handle the
+            <code>requires_verification</code> error. It indicates that the
+            request was flagged as suspicious and an additional verification
+            step is necessary to log the user in. That verification step is
+            web-based, so you need to use Universal Login to complete it.
+          </p>
+          <pre
+            class="prettyprint source lang-js"
+          ><code>const email = 'support@auth0.com';
+const realm = 'Username-Password-Authentication';
+const scope = 'openid profile';
+
+auth0.auth
+  .passwordRealm({
+    username: email,
+    password: 'secret-password',
+    realm: realm,
+    scope: scope,
+  })
+  .then(credentials => {
+    // Logged in!
+  })
+  .catch(error => {
+    if (error.name === 'requires_verification') {
+      auth0.webAuth
+        .authorize({
+          connection: realm,
+          scope: scope,
+          login_hint: email, // So the user doesn't have to type it again
+        })
+        .then(credentials => {
+          // Logged in!
+        })
+        .catch(console.error);
+    } else {
+      console.error(error);
+    }
+  });
+</code></pre>
+          <p>
+            In the case of signup, you can add
+            <a
+              href="https://auth0.com/docs/universal-login/new-experience#signup"
+              >an additional parameter</a
+            >
+            to make the user land directly on the signup page:
+          </p>
+          <pre
+            class="prettyprint source lang-js"
+          ><code>auth0.webAuth.authorize({
+  connection: realm,
+  scope: scope,
+  login_hint: email,
+  screen_hint: 'signup', // 👈🏻
+});
+</code></pre>
+          <p>
+            Check out how to set up Universal Login in the
+            <a href="#getting-started">Getting Started</a> section.
+          </p>
           <h2>Contributing</h2>
           <p>
             We appreciate feedback and contribution to this repo! Before you get
@@ -778,6 +867,14 @@ const auth0 = new Auth0({
             <a href="LICENSE">LICENSE</a> file for more info.
           </p>
           <!-- Variables -->
+          <p>
+            <a
+              href="https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0?ref=badge_large"
+              ><img
+                src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=large"
+                alt="FOSSA Status"
+            /></a>
+          </p>
         </article>
       </section>
     </div>
@@ -785,8 +882,8 @@ const auth0 = new Auth0({
     <br class="clear" />
 
     <footer>
-      Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on
-      Tue Aug 11 2020 23:19:12 GMT-0300 (Argentina Standard Time) using the
+      Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on
+      Tue Jan 05 2021 17:43:27 GMT-0300 (Argentina Standard Time) using the
       Minami theme.
     </footer>
 
