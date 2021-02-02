@@ -8,6 +8,9 @@ import verifyToken from '../jwt';
 const {A0Auth0} = NativeModules;
 
 const callbackUri = (domain, customScheme) => {
+  if (Platform.OS == 'windows') {
+    return A0Auth0.callbackUri
+  }
   const bundleIdentifier = A0Auth0.bundleIdentifier;
   const lowerCasedIdentifier = bundleIdentifier.toLowerCase();
   if (!customScheme && bundleIdentifier !== lowerCasedIdentifier) {
@@ -123,7 +126,8 @@ export default class WebAuth {
   /**
    *  Removes Auth0 session and optionally remove the Identity Provider session.
    *
-   *  In iOS it will use `SFSafariViewController` and in Android Chrome Custom Tabs.
+   *  In iOS it will use `SFSafariViewController`, in Android Chrome Custom Tabs and in
+   *  UWP WebAuthenticationBroker.
    *
    * @param {Object} parameters Parameters to send
    * @param {Bool} [parameters.federated] Optionally remove the IdP session.

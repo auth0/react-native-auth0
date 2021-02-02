@@ -17,6 +17,7 @@ export default class Agent {
         resolve(event.url);
       };
       const params =
+        Platform.OS === 'windows' ? [] :
         Platform.OS === 'ios' ? [ephemeralSession, closeOnLoad] : [closeOnLoad];
       Linking.addEventListener('url', urlHandler);
       NativeModules.A0Auth0.showUrl(url, ...params, (error, redirectURL) => {

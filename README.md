@@ -163,6 +163,22 @@ If you use a value other than `$(PRODUCT_BUNDLE_IDENTIFIER)` in the `CFBundleURL
 
 > For more info please read the [React Native docs](https://facebook.github.io/react-native/docs/linking.html).
 
+### Windows
+
+In this platform, the callback URI is calculated internally by UWP and is composed as:
+
+```text
+ms-app://{PACKAGE_SID}/
+```
+
+`PACKAGE_SID` represents the [Package SID](https://docs.microsoft.com/en-us/windows/uwp/publish/view-app-identity-details#additional-values-for-package-family).
+
+It should look like this fully specified: `ms-app://s-1-15-2-3086575416-2154211046-1914954810-380264240-1103265468-394654818-2095687793/`.
+
+You can get the full URI by calling `WebAuthenticationBroker::GetCurrentApplicationCallbackUri()`.
+Alternatively put a breakpoint in `RNAuth0.cpp`, method `A0Auth0::GetConstantProvider` and copy the value from `callbackUri`.
+
+
 ### Callback URL(s)
 
 Callback URLs are the URLs that Auth0 invokes after the authentication process. Auth0 routes your application back to this URL and appends additional parameters to it, including a token. Since callback URLs can be manipulated, you will need to add this URL to your Application's **Allowed Callback URLs** for security. This will enable Auth0 to recognize these URLs as valid. If omitted, authentication will not be successful.
@@ -188,6 +204,12 @@ If in addition you plan to use the log out method, you must also add these URLs 
 ```
 
 > Make sure to replace {YOUR_BUNDLE_IDENTIFIER_OR_CUSTOM_SCHEME} and {YOUR_AUTH0_DOMAIN} with the actual values for your application.
+
+### Windows
+
+```text
+ms-app://{PACKAGE_SID}/
+```
 
 ## Usage
 
