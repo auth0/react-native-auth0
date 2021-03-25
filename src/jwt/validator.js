@@ -138,6 +138,27 @@ const validateClaims = (payload, opts) => {
     }
   }
 
+  // Organization ID
+  if (opts.orgId) {
+    if (typeof payload.org_id !== 'string') {
+      return Promise.reject(
+        idTokenError({
+          error: 'missing_org_id_claim',
+          desc:
+            'Organization ID (org_id) claim must be a string present in the ID token',
+        }),
+      );
+    }
+    if (payload.org_id !== opts.orgId) {
+      return Promise.reject(
+        idTokenError({
+          error: 'invalid_org_id_claim',
+          desc: `Organization ID (org_id) claim mismatch in the ID token; expected "${opts.orgId}", found "${payload.org_id}"`,
+        }),
+      );
+    }
+  }
+
   //Authorized party
   if (Array.isArray(payload.aud) && payload.aud.length > 1) {
     if (typeof payload.azp !== 'string') {

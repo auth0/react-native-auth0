@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WebAuth organizations during log in should throw an error when the values are not present in the invitation URL 1`] = `[a0.invalid_invitation_url: The invitation URL provided doesn't contain the 'organization' or 'invitation' values.]`;
+
+exports[`WebAuth organizations during log in should throw an error when the values are not present in the invitation URL 2`] = `[a0.invalid_invitation_url: The invitation URL provided doesn't contain the 'organization' or 'invitation' values.]`;

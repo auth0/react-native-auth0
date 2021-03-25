@@ -400,6 +400,45 @@ describe('id token verification tests', () => {
       ).rejects.toHaveProperty('name', 'a0.idtoken.invalid_nonce_claim');
     });
 
+    it('fails when "organization" sent on authentication request but "org_id" is missing from token claims', async () => {
+      const testJwt =
+        'eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY3NDg2ODAwLCJpYXQiOjE1NjczMTQwMDAsImF6cCI6InRva2Vucy10ZXN0LTEyMyIsImF1dGhfdGltZSI6MTU2NzMxNDAwMCwibm9uY2UiOiJhNTl2azU5MiJ9.nfnx9bMtDJa4EuGMMps5-Yh_Ma-in6k9bzVEcQT648g';
+
+      setupSignatureMock(testJwt);
+
+      await expect(
+        verify(testJwt, {
+          orgId: 'org-test',
+        }),
+      ).rejects.toHaveProperty('name', 'a0.idtoken.missing_org_id_claim');
+    });
+
+    it('fails when "organization" sent on authentication request but "org_id" claim is invalid', async () => {
+      const testJwt =
+        'eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY3NDg2ODAwLCJpYXQiOjE1NjczMTQwMDAsIm9yZ19pZCI6InRlc3Qtb3JnIiwiYXpwIjoidG9rZW5zLXRlc3QtMTIzIiwiYXV0aF90aW1lIjoxNTY3MzE0MDAwLCJub25jZSI6ImE1OXZrNTkyIn0.mP50Orcdc-n-tUm_MqKKbpiC0hi9Gh2j_eUaIOHo8qA';
+
+      setupSignatureMock(testJwt);
+
+      await expect(
+        verify(testJwt, {
+          orgId: 'nope',
+        }),
+      ).rejects.toHaveProperty('name', 'a0.idtoken.invalid_org_id_claim');
+    });
+
+    it('succeeds when "organization" sent on authentication request matches the received "org_id" claim', async () => {
+      const testJwt =
+        'eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY3NDg2ODAwLCJpYXQiOjE1NjczMTQwMDAsIm9yZ19pZCI6InRlc3Qtb3JnIiwiYXpwIjoidG9rZW5zLXRlc3QtMTIzIiwiYXV0aF90aW1lIjoxNTY3MzE0MDAwLCJub25jZSI6ImE1OXZrNTkyIn0.mP50Orcdc-n-tUm_MqKKbpiC0hi9Gh2j_eUaIOHo8qA';
+
+      setupSignatureMock(testJwt);
+
+      await expect(
+        verify(testJwt, {
+          orgId: 'test-org',
+        }),
+      ).resolves.toBeUndefined();
+    });
+
     it('fails when "aud" is array with multiple items, and "azp" is missing', async () => {
       const testJwt =
         'eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2Vucy10ZXN0LmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHwxMjM0NTY3ODkiLCJhdWQiOlsidG9rZW5zLXRlc3QtMTIzIiwiZXh0ZXJuYWwtdGVzdC0xMjMiXSwiZXhwIjoxNTY3NDg2ODAwLCJpYXQiOjE1NjczMTQwMDAsIm5vbmNlIjoiYTU5dms1OTIiLCJhdXRoX3RpbWUiOjE1NjczMTQwMDB9.ab1cp7PTjoRNQwlJ6-ENjmFmxuoKtDHOzgB_3YiCxsIVN3WqSgv-l-AonhvnTg8qV1YXArYXlRxkE7IeXVTgB6981cHhaOywQJgZ_8NeNN7eMOyTVlcmQBP-1Ar2-Hgb8RKjNVFb-rMOGqhn2B9yu_E5amSGyPzHrATQ1wcfO-XSuzYdCbTokurEA2LsE8Sr4eMMUlRLNLjBSy-aLmIyggFOKkvw1qCiJq28tBfI24p0Al0NLfyS3EbimJIqk6JIMyOh40sdlxi9wrVt6iUjbxhN6xYA2JYBXHjMmF8l4xWPL4I4aX5g-5vpj_w10A0kepvFDhw_EbKpR-XqZ-GW3Q';
