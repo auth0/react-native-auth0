@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.8.0](https://github.com/auth0/react-native-auth0/tree/v2.8.0) (2021-03-26)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.7.0...v2.8.0)
+
+**Added**
+
+- Add support for Organizations [SDK-2398][\#361](https://github.com/auth0/react-native-auth0/pull/361) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [v2.7.0](https://github.com/auth0/react-native-auth0/tree/v2.7.0) (2021-01-05)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.6.0...v2.7.0)
