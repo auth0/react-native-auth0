@@ -215,6 +215,8 @@ auth0.webAuth
   .catch(error => console.log(error));
 ```
 
+> Web Authentication flows require a Browser application installed on the device. When no Browser is available, an error of type `a0.browser_not_available` will be raised via the provided callback.
+
 ##### Disable Single Sign On (iOS 13+ only)
 
 Use the `ephemeralSession` parameter to disable SSO on iOS 13+. This way iOS will not display the consent popup that otherwise shows up when SSO is enabled. It has no effect on older versions of iOS or Android.
