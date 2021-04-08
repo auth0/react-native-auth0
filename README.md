@@ -363,9 +363,9 @@ auth0
 
 For more info please check our generated [documentation](http://auth0.github.io/react-native-auth0/index.html)
 
-### Organizations (Closed Beta)
+### Organizations
 
-Organizations is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.
+[Organizations](https://auth0.com/docs/organizations) is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.
 
 Using Organizations, you can:
 
