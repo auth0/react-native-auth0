@@ -2,6 +2,7 @@ package com.auth0.react;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.ActivityNotFoundException;
 import android.net.Uri;
 import android.os.Handler;
 import androidx.annotation.NonNull;
@@ -52,18 +53,26 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
     @ReactMethod
     public void showUrl(String url, boolean closeOnLoad, Callback callback) {
         final Activity activity = getCurrentActivity();
-
         this.callback = callback;
-        if (activity != null) {
-            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-            CustomTabsIntent customTabsIntent = builder.build();
-            customTabsIntent.launchUrl(activity, Uri.parse(url));
-        } else {
-            final Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(Uri.parse(url));
-            getReactApplicationContext().startActivity(intent);
+
+        try {
+            if (activity != null) {
+                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                CustomTabsIntent customTabsIntent = builder.build();
+                customTabsIntent.launchUrl(activity, Uri.parse(url));
+            } else {
+                final Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setData(Uri.parse(url));
+                getReactApplicationContext().startActivity(intent);
+            }
+        } catch (ActivityNotFoundException e){
+            final WritableMap error = Arguments.createMap();
+            error.putString("error", "a0.browser_not_available");
+            error.putString("error_description", "No Browser application is installed.");
+            callback.invoke(error);
         }
+        
     }
 
     @ReactMethod
