@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.8.1](https://github.com/auth0/react-native-auth0/tree/v2.8.1) (2021-04-19)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.8.0...v2.8.1)
+
+**Fixed**
+
+- Capture and surface error when browser app is not available [SDK-2224][\#363](https://github.com/auth0/react-native-auth0/pull/363) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [v2.8.0](https://github.com/auth0/react-native-auth0/tree/v2.8.0) (2021-03-26)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.7.0...v2.8.0)
