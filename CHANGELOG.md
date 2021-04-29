@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.8.2](https://github.com/auth0/react-native-auth0/tree/v2.8.2) (2021-04-29)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.8.1...v2.8.2)
+
+**Fixed**
+
+- Fix for Xcode 12.5 [SDK-2545][\#369](https://github.com/auth0/react-native-auth0/pull/369) ([Widcket](https://github.com/Widcket))
+
 ## [v2.8.1](https://github.com/auth0/react-native-auth0/tree/v2.8.1) (2021-04-19)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.8.0...v2.8.1)
