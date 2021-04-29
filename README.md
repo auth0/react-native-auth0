@@ -234,6 +234,8 @@ auth0.webAuth
 auth0.webAuth.clearSession().catch(error => console.log(error));
 ```
 
+If you're using the `ephemeralSession` parameter, you do not need to call `clearSession()` to perform logout on iOS, as there will be no cookies to remove. Just deleting the credentials will suffice. You will still need to call `clearSession()` on Android, though, as `ephemeralSession` is iOS-only.
+
 ### Authentication API
 
 ### Important: Database Connection Authentication
