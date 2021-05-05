@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.8.3](https://github.com/auth0/react-native-auth0/tree/v2.8.3) (2021-05-05)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.8.2...v2.8.3)
+
+**Changed**
+
+- Add React 17 to the package.json semver range [\#373](https://github.com/auth0/react-native-auth0/pull/373) ([Widcket](https://github.com/Widcket))
+
 ## [v2.8.2](https://github.com/auth0/react-native-auth0/tree/v2.8.2) (2021-04-29)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.8.1...v2.8.2)
