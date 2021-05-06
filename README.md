@@ -504,5 +504,3 @@ This project is licensed under the MIT license. See the [LICENSE](LICENSE) file 
 [license-url]: #license
 [downloads-image]: http://img.shields.io/npm/dm/react-native-auth0.svg?style=flat-square
 [downloads-url]: https://npmjs.org/package/react-native-auth0
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0?ref=badge_large)
