@@ -108,7 +108,7 @@ UIBackgroundTaskIdentifier taskId;
                                               [error code] == ASWebAuthenticationSessionErrorCodeCanceledLogin) {
                                               callback(@[ERROR_CANCELLED, [NSNull null]]);
                                           } else if(error) {
-                                              callback(@[error, [NSNull null]]);
+                                              callback(@[[self generateErrorParameters:error], [NSNull null]]);
                                           } else if(callbackURL) {
                                               callback(@[[NSNull null], callbackURL.absoluteString]);
                                           }
@@ -137,7 +137,7 @@ UIBackgroundTaskIdentifier taskId;
                                               [error code] == SFAuthenticationErrorCanceledLogin) {
                                               callback(@[ERROR_CANCELLED, [NSNull null]]);
                                           } else if(error) {
-                                              callback(@[error, [NSNull null]]);
+                                              callback(@[[self generateErrorParameters:error], [NSNull null]]);
                                           } else if(callbackURL) {
                                               callback(@[[NSNull null], callbackURL.absoluteString]);
                                           }
@@ -207,6 +207,13 @@ UIBackgroundTaskIdentifier taskId;
              @"code_challenge": [self sign:verifier],
              @"code_challenge_method": @"S256",
              @"state": [self randomValue]
+             };
+}
+
+- (NSDictionary *)generateErrorParameters:(NSError *)error {
+    return @{
+             @"error": [error localizedDescription],
+             @"error_code": [NSNumber numberWithInt:[error code]]
              };
 }
 
