@@ -11,7 +11,7 @@ React Native toolkit for Auth0 API, compliant with [RFC 8252](https://tools.ietf
 
 ## Important Notices
 
-Version **2.7.0** introduced a **breaking change** to the Android configuration. Previously it was required to add an intent filter in the definition of the Activity that receives the authentication result. Now that intent filter must be removed and a new Activity definition must be added to the Manifest. Check out the [Android](#android) section for more details.
+Version **2.9.0** introduced a **breaking change** to the Android configuration. Previously it was required to add an intent filter in the definition of the Activity that receives the authentication result. Now that intent filter must be removed and instead you need to add a couple of manifest placeholders. Check out the [Android](#android) section for more details.
 
 ## Table of Contents
 
@@ -72,58 +72,34 @@ You need make your Android and iOS applications aware that an authentication res
 
 Open the `AndroidManifest.xml` file of your application typically at `android/app/src/main/AndroidManifest.xml` and **make sure** the Activity on which you're going to receive the authentication result has a **launchMode** of `singleTask`.
 
-> Before version 2.7.0, this SDK required you to add an intent filter to that Activity. To migrate your app to version 2.7.0+, remove it and then continue with the instructions below.
+> Before version 2.9.0, this SDK required you to add an intent filter to that Activity. To migrate your app to version 2.9.0+, remove it and then continue with the instructions below.
 
-Now you need to export the SDK Activity that will handle the authentication callback. To do so, add the following Activity definition:
+Open your app's `build.gradle` file (typically at `android/app/build.gradle`) and add the following manifest placeholders:
 
-```xml
-<activity
-    android:name="com.auth0.react.RedirectActivity"
-    android:exported="true">
-    <intent-filter android:autoVerify="true" tools:targetApi="m">
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data
-          android:host="YOUR_AUTH0_DOMAIN"
-          android:pathPrefix="/android/${applicationId}/callback"
-          android:scheme="${applicationId}" />
-    </intent-filter>
-</activity>
+```groovy
+android {
+    defaultConfig {
+        // Add the next line
+        manifestPlaceholders = [auth0Domain: "YOUR_AUTH0_DOMAIN", auth0Scheme: "${applicationId}"]
+    }
+    ...
+}
 ```
 
-The `android:host` value must be replaced with your Auth0 domain value. So if you have `samples.auth0.com` as your Auth0 domain you would have a configuration like the following:
+The `auth0Domain` value must be replaced with your Auth0 domain value. So if you have `samples.auth0.com` as your Auth0 domain you would have a configuration like the following:
 
-```xml
-<activity
-    android:name=".MainActivity"
-    android:label="@string/app_name"
-    android:launchMode="singleTask"
-    android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-    android:windowSoftInputMode="adjustResize">
-    <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <category android:name="android.intent.category.LAUNCHER" />
-    </intent-filter>
-</activity>
-<activity
-    android:name="com.auth0.react.RedirectActivity"
-    android:exported="true">
-    <intent-filter android:autoVerify="true" tools:targetApi="m">
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data
-          android:host="samples.auth0.com"
-          android:pathPrefix="/android/${applicationId}/callback"
-          android:scheme="${applicationId}" />
-    </intent-filter>
-</activity>
+```groovy
+android {
+    defaultConfig {
+        manifestPlaceholders = [auth0Domain: "samples.auth0.com", auth0Scheme: "${applicationId}"]
+    }
+    ...
+}
 ```
 
 The `applicationId` value will be auto-replaced on runtime with the package name or id of your application (e.g. `com.example.app`). You can change this value from the `build.gradle` file. You can also check it at the top of your `AndroidManifest.xml` file.
 
-If you use a value other than `applicationId` in `android:scheme` you will also need to pass it as the `customScheme` option parameter of the `authorize` and `clearSession` methods.
+If you use a value other than `applicationId` in `auth0Scheme` you will also need to pass it as the `customScheme` option parameter of the `authorize` and `clearSession` methods.
 
 Take note of this value as you'll be requiring it to define the callback URLs below.
 
