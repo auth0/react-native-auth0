@@ -60,10 +60,10 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
         try {
             if (activity != null) AuthenticationActivity.authenticateUsingBrowser(activity, parsedUrl);
             else {
-                final Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setData(parsedUrl);
-                getReactApplicationContext().startActivity(intent);
+                final WritableMap error = Arguments.createMap();
+                error.putString("error", "a0.activity_not_available");
+                error.putString("error_description", "Android Activity is null.");
+                callback.invoke(error);
             }
         } catch (ActivityNotFoundException e){
             final WritableMap error = Arguments.createMap();
