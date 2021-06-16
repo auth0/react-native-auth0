@@ -11,7 +11,7 @@ React Native toolkit for Auth0 API, compliant with [RFC 8252](https://tools.ietf
 
 ## Important Notices
 
-Version **2.9.0** introduced a **breaking change** to the Android configuration. Previously it was required to add an intent filter in the definition of the Activity that receives the authentication result. Now that intent filter must be removed and instead you need to add a couple of manifest placeholders. Check out the [Android](#android) section for more details.
+Version **2.9.0** introduced a **breaking change** to the Android configuration. Previously it was required to add an intent filter in the definition of the Activity that receives the authentication result, and to use the `singleTask` **launchMode** in that activity. Now both the intent filter and the launch mode must be removed and instead you need to add a couple of manifest placeholders. Check out the [Android](#android) section for more details.
 
 ## Table of Contents
 
@@ -70,9 +70,7 @@ You need make your Android and iOS applications aware that an authentication res
 
 #### Android
 
-Open the `AndroidManifest.xml` file of your application typically at `android/app/src/main/AndroidManifest.xml` and **make sure** the Activity on which you're going to receive the authentication result has a **launchMode** of `singleTask`.
-
-> Before version 2.9.0, this SDK required you to add an intent filter to that Activity. To migrate your app to version 2.9.0+, remove it and then continue with the instructions below.
+> Before version 2.9.0, this SDK required you to add an intent filter to the Activity on which you're going to receive the authentication result, and to use the `singleTask` **launchMode** in that activity. To migrate your app to version 2.9.0+, remove both and continue with the instructions below.
 
 Open your app's `build.gradle` file (typically at `android/app/build.gradle`) and add the following manifest placeholders:
 
