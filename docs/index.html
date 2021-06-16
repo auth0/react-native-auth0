@@ -579,6 +579,14 @@ const auth0 = new Auth0({
   .then(credentials => console.log(credentials))
   .catch(error => console.log(error));
 </code></pre>
+          <blockquote>
+            <p>
+              Web Authentication flows require a Browser application installed
+              on the device. When no Browser is available, an error of type
+              <code>a0.browser_not_available</code> will be raised via the
+              provided callback.
+            </p>
+          </blockquote>
           <h5>Disable Single Sign On (iOS 13+ only)</h5>
           <p>
             Use the <code>ephemeralSession</code> parameter to disable SSO on
@@ -596,6 +604,14 @@ const auth0 = new Auth0({
             class="prettyprint source lang-js"
           ><code>auth0.webAuth.clearSession().catch(error => console.log(error));
 </code></pre>
+          <p>
+            If you're using the <code>ephemeralSession</code> parameter, you do
+            not need to call <code>clearSession()</code> to perform logout on
+            iOS, as there will be no cookies to remove. Just deleting the
+            credentials will suffice. You will still need to call
+            <code>clearSession()</code> on Android, though, as
+            <code>ephemeralSession</code> is iOS-only.
+          </p>
           <h3>Authentication API</h3>
           <h3>Important: Database Connection Authentication</h3>
           <p>
@@ -722,6 +738,93 @@ const auth0 = new Auth0({
             <a href="http://auth0.github.io/react-native-auth0/index.html"
               >documentation</a
             >
+          </p>
+          <h3>Organizations</h3>
+          <p>
+            <a href="https://auth0.com/docs/organizations">Organizations</a> is
+            a set of features that provide better support for developers who
+            build and maintain SaaS and Business-to-Business (B2B) applications.
+          </p>
+          <p>Using Organizations, you can:</p>
+          <ul>
+            <li>
+              Represent teams, business customers, partner companies, or any
+              logical grouping of users that should have different ways of
+              accessing your applications, as organizations.
+            </li>
+            <li>
+              Manage their membership in a variety of ways, including user
+              invitation.
+            </li>
+            <li>
+              Configure branded, federated login flows for each organization.
+            </li>
+            <li>
+              Implement role-based access control, such that users can have
+              different roles when authenticating in the context of different
+              organizations.
+            </li>
+            <li>
+              Build administration capabilities into your products, using
+              Organizations APIs, so that those businesses can manage their own
+              organizations.
+            </li>
+          </ul>
+          <p>
+            Note that Organizations is currently only available to customers on
+            our Enterprise and Startup subscription plans.
+          </p>
+          <h4>Log in to an organization</h4>
+          <pre class="prettyprint source lang-js"><code>auth0.webAuth
+  .authorize({organization: 'organization-id'})
+  .then(credentials => console.log(credentials))
+  .catch(error => console.log(error));
+</code></pre>
+          <h4>Accept user invitations</h4>
+          <p>
+            Users can be invited to your organization via a link. Tapping on the
+            invitation link should open your app. Since invitations links are
+            <code>https</code> only, is recommended that your Android app
+            supports
+            <a href="https://developer.android.com/training/app-links"
+              >Android App Links</a
+            >. In the case of iOS, your app must support
+            <a
+              href="https://developer.apple.com/documentation/xcode/allowing_apps_and_websites_to_link_to_your_content/supporting_universal_links_in_your_app"
+              >Universal Links</a
+            >.
+          </p>
+          <p>
+            In
+            <a
+              href="https://auth0.com/docs/applications/enable-android-app-links-support"
+              >Enable Android App Links Support</a
+            >
+            and
+            <a
+              href="https://auth0.com/docs/enable-universal-links-support-in-apple-xcode"
+              >Enable Universal Links Support</a
+            >, you will find how to make the Auth0 server publish the Digital
+            Asset Links file required by your applications.
+          </p>
+          <p>
+            When your app gets opened by an invitation link, grab the invitation
+            URL and pass it as a parameter to the webauth call. Use the
+            <a href="https://reactnative.dev/docs/linking">Linking Module</a>
+            method called <code>getInitialUrl()</code> to obtain the URL that
+            launched your application.
+          </p>
+          <pre class="prettyprint source lang-js"><code>auth0.webAuth
+  .authorize({
+    invitationUrl:
+      'https://myapp.com/login?invitation=inv123&organization=org123',
+  })
+  .then(credentials => console.log(credentials))
+  .catch(error => console.log(error));
+</code></pre>
+          <p>
+            If the URL doesn't contain the expected values, an error will be
+            raised through the provided callback.
           </p>
           <h3>Bot Protection</h3>
           <p>
@@ -882,8 +985,8 @@ auth0.auth
     <br class="clear" />
 
     <footer>
-      Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on
-      Tue Jan 05 2021 17:43:27 GMT-0300 (Argentina Standard Time) using the
+      Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on
+      Wed May 05 2021 13:08:51 GMT-0300 (Argentina Standard Time) using the
       Minami theme.
     </footer>
 

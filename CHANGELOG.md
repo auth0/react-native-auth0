@@ -1,5 +1,37 @@
 # Change Log
 
+## [v2.8.3](https://github.com/auth0/react-native-auth0/tree/v2.8.3) (2021-05-05)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.8.2...v2.8.3)
+
+**Changed**
+
+- Add React 17 to the package.json semver range [\#373](https://github.com/auth0/react-native-auth0/pull/373) ([Widcket](https://github.com/Widcket))
+
+## [v2.8.2](https://github.com/auth0/react-native-auth0/tree/v2.8.2) (2021-04-29)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.8.1...v2.8.2)
+
+**Fixed**
+
+- Fix for Xcode 12.5 [SDK-2545][\#369](https://github.com/auth0/react-native-auth0/pull/369) ([Widcket](https://github.com/Widcket))
+
+## [v2.8.1](https://github.com/auth0/react-native-auth0/tree/v2.8.1) (2021-04-19)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.8.0...v2.8.1)
+
+**Fixed**
+
+- Capture and surface error when browser app is not available [SDK-2224][\#363](https://github.com/auth0/react-native-auth0/pull/363) ([lbalmaceda](https://github.com/lbalmaceda))
+
+## [v2.8.0](https://github.com/auth0/react-native-auth0/tree/v2.8.0) (2021-03-26)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.7.0...v2.8.0)
+
+**Added**
+
+- Add support for Organizations [SDK-2398][\#361](https://github.com/auth0/react-native-auth0/pull/361) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [v2.7.0](https://github.com/auth0/react-native-auth0/tree/v2.7.0) (2021-01-05)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.6.0...v2.7.0)

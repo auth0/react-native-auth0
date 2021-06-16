@@ -48,6 +48,78 @@ describe('WebAuth', () => {
     });
   });
 
+  describe('organizations during log in', () => {
+    it('should build the authorize URL with a organization', async () => {
+      const newTransactionMock = jest
+        .spyOn(webauth.agent, 'newTransaction')
+        .mockImplementation(() =>
+          Promise.resolve({state: 'state', verifier: 'verifier'}),
+        );
+      const showMock = jest
+        .spyOn(webauth.agent, 'show')
+        .mockImplementation(authorizeUrl => ({
+          then: () => Promise.resolve(authorizeUrl),
+        }));
+      const parameters = {organization: 'test-org'};
+      let url = await webauth.authorize(parameters, {});
+
+      const parsedUrl = new URL(url);
+      const urlQuery = parsedUrl.searchParams;
+      expect(urlQuery.get('organization')).toEqual('test-org');
+      newTransactionMock.mockRestore();
+      showMock.mockRestore();
+    });
+
+    it('should build the authorize URL parsing organization from invitation URL', async () => {
+      const newTransactionMock = jest
+        .spyOn(webauth.agent, 'newTransaction')
+        .mockImplementation(() =>
+          Promise.resolve({state: 'state', verifier: 'verifier'}),
+        );
+      const showMock = jest
+        .spyOn(webauth.agent, 'show')
+        .mockImplementation(authorizeUrl => ({
+          then: () => Promise.resolve(authorizeUrl),
+        }));
+      const parameters = {
+        invitationUrl:
+          'https://myapp.com/?invitation=inv123&organization=org123',
+      };
+      let url = await webauth.authorize(parameters, {});
+
+      const parsedUrl = new URL(url);
+      const urlQuery = parsedUrl.searchParams;
+      expect(urlQuery.get('organization')).toEqual('org123');
+      expect(urlQuery.get('invitation')).toEqual('inv123');
+      newTransactionMock.mockRestore();
+      showMock.mockRestore();
+    });
+
+    it('should throw an error when the values are not present in the invitation URL', async () => {
+      const newTransactionMock = jest
+        .spyOn(webauth.agent, 'newTransaction')
+        .mockImplementation(() =>
+          Promise.resolve({state: 'state', verifier: 'verifier'}),
+        );
+      const showMock = jest
+        .spyOn(webauth.agent, 'show')
+        .mockImplementation(authorizeUrl => ({
+          then: () => Promise.resolve(authorizeUrl),
+        }));
+
+      expect.assertions(2);
+      const parameters = {
+        invitationUrl: 'https://myapp.com/?invitation=inv123',
+      };
+      await expect(webauth.authorize(parameters, {})).rejects.toMatchSnapshot();
+      parameters.invitationUrl = 'https://myapp.com/?organization=org123';
+      await expect(webauth.authorize(parameters, {})).rejects.toMatchSnapshot();
+
+      newTransactionMock.mockRestore();
+      showMock.mockRestore();
+    });
+  });
+
   describe('custom scheme', () => {
     it('should build the callback URL with a custom scheme when logging in', async () => {
       const newTransactionMock = jest

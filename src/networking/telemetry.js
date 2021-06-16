@@ -1,1 +1,1 @@
-module.exports = {name: 'react-native-auth0', version: '2.7.0'};
+module.exports = {name: 'react-native-auth0', version: '2.8.3'};

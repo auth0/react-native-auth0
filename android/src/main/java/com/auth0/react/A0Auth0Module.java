@@ -2,6 +2,7 @@ package com.auth0.react;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.ActivityNotFoundException;
 import android.net.Uri;
 import androidx.annotation.NonNull;
 import android.util.Base64;
@@ -56,12 +57,19 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
         final Uri parsedUrl = Uri.parse(url);
         this.callback = callback;
 
-        if (activity != null) AuthenticationActivity.authenticateUsingBrowser(activity, parsedUrl);
-        else {
-            final Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(parsedUrl);
-            getReactApplicationContext().startActivity(intent);
+        try {
+            if (activity != null) AuthenticationActivity.authenticateUsingBrowser(activity, parsedUrl);
+            else {
+                final Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setData(parsedUrl);
+                getReactApplicationContext().startActivity(intent);
+            }
+        } catch (ActivityNotFoundException e){
+            final WritableMap error = Arguments.createMap();
+            error.putString("error", "a0.browser_not_available");
+            error.putString("error_description", "No Browser application is installed.");
+            callback.invoke(error);
         }
     }
 

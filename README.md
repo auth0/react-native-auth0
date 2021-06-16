@@ -231,6 +231,8 @@ auth0.webAuth
   .catch(error => console.log(error));
 ```
 
+> Web Authentication flows require a Browser application installed on the device. When no Browser is available, an error of type `a0.browser_not_available` will be raised via the provided callback.
+
 ##### Disable Single Sign On (iOS 13+ only)
 
 Use the `ephemeralSession` parameter to disable SSO on iOS 13+. This way iOS will not display the consent popup that otherwise shows up when SSO is enabled. It has no effect on older versions of iOS or Android.
@@ -247,6 +249,8 @@ auth0.webAuth
 ```js
 auth0.webAuth.clearSession().catch(error => console.log(error));
 ```
+
+If you're using the `ephemeralSession` parameter, you do not need to call `clearSession()` to perform logout on iOS, as there will be no cookies to remove. Just deleting the credentials will suffice. You will still need to call `clearSession()` on Android, though, as `ephemeralSession` is iOS-only.
 
 ### Authentication API
 
@@ -377,6 +381,49 @@ auth0
 
 For more info please check our generated [documentation](https://auth0.github.io/react-native-auth0/index.html)
 
+### Organizations
+
+[Organizations](https://auth0.com/docs/organizations) is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.
+
+Using Organizations, you can:
+
+- Represent teams, business customers, partner companies, or any logical grouping of users that should have different ways of accessing your applications, as organizations.
+- Manage their membership in a variety of ways, including user invitation.
+- Configure branded, federated login flows for each organization.
+- Implement role-based access control, such that users can have different roles when authenticating in the context of different organizations.
+- Build administration capabilities into your products, using Organizations APIs, so that those businesses can manage their own organizations.
+
+Note that Organizations is currently only available to customers on our Enterprise and Startup subscription plans.
+
+#### Log in to an organization
+
+```js
+auth0.webAuth
+  .authorize({organization: 'organization-id'})
+  .then(credentials => console.log(credentials))
+  .catch(error => console.log(error));
+```
+
+#### Accept user invitations
+
+Users can be invited to your organization via a link. Tapping on the invitation link should open your app. Since invitations links are `https` only, is recommended that your Android app supports [Android App Links](https://developer.android.com/training/app-links). In the case of iOS, your app must support [Universal Links](https://developer.apple.com/documentation/xcode/allowing_apps_and_websites_to_link_to_your_content/supporting_universal_links_in_your_app).
+
+In [Enable Android App Links Support](https://auth0.com/docs/applications/enable-android-app-links-support) and [Enable Universal Links Support](https://auth0.com/docs/enable-universal-links-support-in-apple-xcode), you will find how to make the Auth0 server publish the Digital Asset Links file required by your applications.
+
+When your app gets opened by an invitation link, grab the invitation URL and pass it as a parameter to the webauth call. Use the [Linking Module](https://reactnative.dev/docs/linking) method called `getInitialUrl()` to obtain the URL that launched your application.
+
+```js
+auth0.webAuth
+  .authorize({
+    invitationUrl:
+      'https://myapp.com/login?invitation=inv123&organization=org123',
+  })
+  .then(credentials => console.log(credentials))
+  .catch(error => console.log(error));
+```
+
+If the URL doesn't contain the expected values, an error will be raised through the provided callback.
+
 ### Bot Protection
 
 If you are using the [Bot Protection](https://auth0.com/docs/anomaly-detection/bot-protection) feature and performing database login/signup via the Authentication API, you need to handle the `requires_verification` error. It indicates that the request was flagged as suspicious and an additional verification step is necessary to log the user in. That verification step is web-based, so you need to use Universal Login to complete it.
@@ -473,5 +520,3 @@ This project is licensed under the MIT license. See the [LICENSE](LICENSE) file 
 [license-url]: #license
 [downloads-image]: https://img.shields.io/npm/dm/react-native-auth0.svg?style=flat-square
 [downloads-url]: https://npmjs.org/package/react-native-auth0
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0?ref=badge_large)
