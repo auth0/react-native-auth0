@@ -58,8 +58,9 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
         this.callback = callback;
 
         try {
-            if (activity != null) AuthenticationActivity.authenticateUsingBrowser(activity, parsedUrl);
-            else {
+            if (activity != null) {
+                AuthenticationActivity.authenticateUsingBrowser(activity, parsedUrl);
+            } else {
                 final WritableMap error = Arguments.createMap();
                 error.putString("error", "a0.activity_not_available");
                 error.putString("error_description", "Android Activity is null.");
@@ -132,20 +133,23 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
         Callback cb = A0Auth0Module.this.callback;
 
-        if (cb != null) {
-            boolean hasResult = resultCode == RESULT_OK && 
+        if (cb == null) {
+            return;
+        }
+
+        boolean hasResult = resultCode == RESULT_OK &&
                 requestCode == AuthenticationActivity.AUTHENTICATION_REQUEST &&
                 data.getData() != null;
-            if (hasResult) cb.invoke(null, data.getData().toString());
-            else {
-                final WritableMap error = Arguments.createMap();
-                error.putString("error", "a0.session.user_cancelled");
-                error.putString("error_description", "User cancelled the Auth");
-                cb.invoke(error);
-            }
-
-            A0Auth0Module.this.callback = null;
+        if (hasResult) {
+            cb.invoke(null, data.getData().toString());
+        } else {
+            final WritableMap error = Arguments.createMap();
+            error.putString("error", "a0.session.user_cancelled");
+            error.putString("error_description", "User cancelled the Auth");
+            cb.invoke(error);
         }
+
+        A0Auth0Module.this.callback = null;
     }
 
     @Override
