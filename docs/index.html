@@ -189,7 +189,7 @@
           <p>
             <a href="https://circleci.com/gh/auth0/react-native-auth0"
               ><img
-                src="http://img.shields.io/circleci/project/github/auth0/react-native-auth0.svg?branch=master&amp;style=flat-square"
+                src="https://img.shields.io/circleci/project/github/auth0/react-native-auth0.svg?branch=master&amp;style=flat-square"
                 alt="Build Status"
             /></a>
             <a href="https://npmjs.org/package/react-native-auth0"
@@ -204,12 +204,12 @@
             /></a>
             <a href="#license"
               ><img
-                src="http://img.shields.io/npm/l/react-native-auth0.svg?style=flat-square"
+                src="https://img.shields.io/npm/l/react-native-auth0.svg?style=flat-square"
                 alt="License"
             /></a>
             <a href="https://npmjs.org/package/react-native-auth0"
               ><img
-                src="http://img.shields.io/npm/dm/react-native-auth0.svg?style=flat-square"
+                src="https://img.shields.io/npm/dm/react-native-auth0.svg?style=flat-square"
                 alt="Downloads"
             /></a>
             <a
@@ -218,6 +218,18 @@
                 src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=shield"
                 alt="FOSSA Status"
             /></a>
+          </p>
+          <h2>Important Notices</h2>
+          <p>
+            Version <strong>2.9.0</strong> introduced a
+            <strong>breaking change</strong> to the Android configuration.
+            Previously it was required to add an intent filter in the definition
+            of the Activity that receives the authentication result, and to use
+            the <code>singleTask</code> <strong>launchMode</strong> in that
+            activity. Now both the intent filter and the launch mode must be
+            removed and instead you need to add a couple of manifest
+            placeholders. Check out the <a href="#android">Android</a> section
+            for more details.
           </p>
           <h2>Table of Contents</h2>
           <ul>
@@ -326,51 +338,40 @@
             platform has its own set of instructions.
           </p>
           <h4>Android</h4>
+          <blockquote>
+            <p>
+              Before version 2.9.0, this SDK required you to add an intent
+              filter to the Activity on which you're going to receive the
+              authentication result, and to use the <code>singleTask</code>
+              <strong>launchMode</strong> in that activity. To migrate your app
+              to version 2.9.0+, remove both and continue with the instructions
+              below.
+            </p>
+          </blockquote>
           <p>
-            Open the <code>AndroidManifest.xml</code> file of your application
-            typically at
-            <code>android/app/src/main/AndroidManifest.xml</code> and
-            <strong>make sure</strong> the Activity on which you're going to
-            receive the authentication result has a
-            <strong>launchMode</strong> of <code>singleTask</code>. Additionally
-            inside this Activity definition include the following intent filter.
+            Open your app's <code>build.gradle</code> file (typically at
+            <code>android/app/build.gradle</code>) and add the following
+            manifest placeholders:
           </p>
-          <pre class="prettyprint source lang-xml"><code>&lt;intent-filter>
-    &lt;action android:name=&quot;android.intent.action.VIEW&quot; />
-    &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; />
-    &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; />
-    &lt;data
-        android:host=&quot;YOUR_AUTH0_DOMAIN&quot;
-        android:pathPrefix=&quot;/android/${applicationId}/callback&quot;
-        android:scheme=&quot;${applicationId}&quot; />
-&lt;/intent-filter>
+          <pre class="prettyprint source lang-groovy"><code>android {
+    defaultConfig {
+        // Add the next line
+        manifestPlaceholders = [auth0Domain: &quot;YOUR_AUTH0_DOMAIN&quot;, auth0Scheme: &quot;${applicationId}&quot;]
+    }
+    ...
+}
 </code></pre>
           <p>
-            The <code>android:host</code> value must be replaced with your Auth0
+            The <code>auth0Domain</code> value must be replaced with your Auth0
             domain value. So if you have <code>samples.auth0.com</code> as your
-            Auth0 domain you would have the following
-            <strong>MainActivity</strong> configuration:
+            Auth0 domain you would have a configuration like the following:
           </p>
-          <pre class="prettyprint source lang-xml"><code>&lt;activity
-android:name=&quot;.MainActivity&quot;
-android:label=&quot;@string/app_name&quot;
-android:launchMode=&quot;singleTask&quot;
-android:configChanges=&quot;keyboard|keyboardHidden|orientation|screenSize&quot;
-android:windowSoftInputMode=&quot;adjustResize&quot;>
-&lt;intent-filter>
-    &lt;action android:name=&quot;android.intent.action.MAIN&quot; />
-    &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; />
-&lt;/intent-filter>
-&lt;intent-filter>
-    &lt;action android:name=&quot;android.intent.action.VIEW&quot; />
-    &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; />
-    &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; />
-    &lt;data
-        android:host=&quot;samples.auth0.com&quot;
-        android:pathPrefix=&quot;/android/${applicationId}/callback&quot;
-        android:scheme=&quot;${applicationId}&quot; />
-&lt;/intent-filter>
-&lt;/activity>
+          <pre class="prettyprint source lang-groovy"><code>android {
+    defaultConfig {
+        manifestPlaceholders = [auth0Domain: &quot;samples.auth0.com&quot;, auth0Scheme: &quot;${applicationId}&quot;]
+    }
+    ...
+}
 </code></pre>
           <p>
             The <code>applicationId</code> value will be auto-replaced on
@@ -381,7 +382,7 @@ android:windowSoftInputMode=&quot;adjustResize&quot;>
           </p>
           <p>
             If you use a value other than <code>applicationId</code> in
-            <code>android:scheme</code> you will also need to pass it as the
+            <code>auth0Scheme</code> you will also need to pass it as the
             <code>customScheme</code> option parameter of the
             <code>authorize</code> and <code>clearSession</code> methods.
           </p>
@@ -735,7 +736,7 @@ const auth0 = new Auth0({
 </code></pre>
           <p>
             For more info please check our generated
-            <a href="http://auth0.github.io/react-native-auth0/index.html"
+            <a href="https://auth0.github.io/react-native-auth0/index.html"
               >documentation</a
             >
           </p>
@@ -970,14 +971,6 @@ auth0.auth
             <a href="LICENSE">LICENSE</a> file for more info.
           </p>
           <!-- Variables -->
-          <p>
-            <a
-              href="https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0?ref=badge_large"
-              ><img
-                src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=large"
-                alt="FOSSA Status"
-            /></a>
-          </p>
         </article>
       </section>
     </div>
@@ -986,7 +979,7 @@ auth0.auth
 
     <footer>
       Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on
-      Wed May 05 2021 13:08:51 GMT-0300 (Argentina Standard Time) using the
+      Tue Jun 22 2021 14:24:13 GMT-0300 (Argentina Standard Time) using the
       Minami theme.
     </footer>
 
