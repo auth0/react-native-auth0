@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.9.0](https://github.com/auth0/react-native-auth0/tree/v2.9.0) (2021-06-22)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.8.3...v2.9.0)
+
+**Breaking changes**
+
+- Fixed authentication restart when the app is minimized [SDK-2199][\#350](https://github.com/auth0/react-native-auth0/pull/350) ([Widcket](https://github.com/Widcket))
+
 ## [v2.8.3](https://github.com/auth0/react-native-auth0/tree/v2.8.3) (2021-05-05)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.8.2...v2.8.3)
