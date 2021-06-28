@@ -71,6 +71,7 @@ You need make your Android and iOS applications aware that an authentication res
 #### Android
 
 > Before version 2.9.0, this SDK required you to add an intent filter to the Activity on which you're going to receive the authentication result, and to use the `singleTask` **launchMode** in that activity. To migrate your app to version 2.9.0+, remove both and continue with the instructions below.
+> You can also check out a sample migration diff [here](https://github.com/auth0-samples/auth0-react-native-sample/commit/69f79c83ceed40f44b239bbd16e79ecaa70ef70a).
 
 Open your app's `build.gradle` file (typically at `android/app/build.gradle`) and add the following manifest placeholders:
 
@@ -102,6 +103,22 @@ If you use a value other than `applicationId` in `auth0Scheme` you will also nee
 Take note of this value as you'll be requiring it to define the callback URLs below.
 
 > For more info please read the [React Native docs](https://facebook.github.io/react-native/docs/linking.html).
+
+##### Skipping the Web Authentication setup
+
+If you don't plan to use Web Authentication, you will notice that the compiler will still prompt you to provide the `manifestPlaceholders` values, since the `RedirectActivity` included in this library will require them, and the Gradle tasks won't be able to run without them.
+
+Re-declare the activity manually with `tools:node="remove"` in your app's Android Manifest in order to make the manifest merger remove it from the final manifest file. Additionally, one more unused activity can be removed from the final APK by using the same process. A complete snippet to achieve this is:
+
+```xml
+<activity
+    android:name="com.auth0.react.AuthenticationActivity"
+    tools:node="remove"/>
+<!-- Optional: Remove RedirectActivity -->
+<activity
+    android:name="com.auth0.react.RedirectActivity"
+    tools:node="remove"/>
+```
 
 #### iOS
 
