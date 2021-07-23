@@ -98,7 +98,7 @@ android {
 
 The `applicationId` value will be auto-replaced on runtime with the package name or id of your application (e.g. `com.example.app`). You can change this value from the `build.gradle` file. You can also check it at the top of your `AndroidManifest.xml` file.
 
-> Note that if you're using [flavors](https://developer.android.com/studio/build/build-variants#product-flavors) with different application IDs, you'll need to set up the manifest placeholders for each flavor.
+> Note that if your Android application is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
 
 If you use a value other than `applicationId` in `auth0Scheme` you will also need to pass it as the `customScheme` option parameter of the `authorize` and `clearSession` methods.
 
