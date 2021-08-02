@@ -375,7 +375,7 @@ exports[`auth refresh token should send correct payload 1`] = `
 Array [
   "https://samples.auth0.com/oauth/token",
   Object {
-    "body": "{\\"refresh_token\\":\\"a refresh token of a user\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"refresh_token\\"}",
+    "body": "{\\"refresh_token\\":\\"a refresh token of a user\\",\\"scope\\":\\"openid\\",\\"customParam\\":\\"a custom value which should not be filtered out\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"refresh_token\\"}",
     "headers": Object {
       "Accept": "application/json",
       "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
