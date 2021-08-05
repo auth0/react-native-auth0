@@ -209,6 +209,7 @@ export default class Auth {
           refreshToken: {required: true, toName: 'refresh_token'},
           scope: {required: false},
         },
+        whitelist: false,
       },
       parameters,
     );

@@ -424,6 +424,7 @@ describe('auth', () => {
     const parameters = {
       refreshToken: 'a refresh token of a user',
       scope: 'openid',
+      customParam: 'a custom value which should not be filtered out',
     };
     it('should send correct payload', async () => {
       fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
