@@ -11,7 +11,7 @@ React Native toolkit for Auth0 API, compliant with [RFC 8252](https://tools.ietf
 
 ## Important Notices
 
-Version **2.9.0** introduced a **breaking change** to the Android configuration. Previously it was required to add an intent filter in the definition of the Activity that receives the authentication result, and to use the `singleTask` **launchMode** in that activity. Now both the intent filter and the launch mode must be removed and instead you need to add a couple of manifest placeholders. Check out the [Android](#android) section for more details.
+Version **2.9.0** introduced a **breaking change** to the Android configuration. Previously it was required to add an intent filter in the definition of the Activity that receives the authentication result, and to use the `singleTask` **launchMode** in that activity. Now both the intent filter and the launch mode **must be removed** and instead you need to add a couple of manifest placeholders. Check out the [Android](#android) section for more details.
 
 ## Table of Contents
 
@@ -70,7 +70,7 @@ You need make your Android and iOS applications aware that an authentication res
 
 #### Android
 
-> Before version 2.9.0, this SDK required you to add an intent filter to the Activity on which you're going to receive the authentication result, and to use the `singleTask` **launchMode** in that activity. To migrate your app to version 2.9.0+, remove both and continue with the instructions below.
+> Before version 2.9.0, this SDK required you to add an intent filter to the Activity on which you're going to receive the authentication result, and to use the `singleTask` **launchMode** in that activity. To migrate your app to version 2.9.0+, **remove both** and continue with the instructions below.
 > You can also check out a sample migration diff [here](https://github.com/auth0-samples/auth0-react-native-sample/commit/69f79c83ceed40f44b239bbd16e79ecaa70ef70a).
 
 Open your app's `build.gradle` file (typically at `android/app/build.gradle`) and add the following manifest placeholders:
@@ -96,7 +96,7 @@ android {
 }
 ```
 
-The `applicationId` value will be auto-replaced on runtime with the package name or id of your application (e.g. `com.example.app`). You can change this value from the `build.gradle` file. You can also check it at the top of your `AndroidManifest.xml` file.
+The `applicationId` value will be auto-replaced at runtime with the package name or ID of your application (e.g. `com.example.app`). You can change this value from the `build.gradle` file. You can also check it at the top of your `AndroidManifest.xml` file.
 
 > Note that if your Android application is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
 
