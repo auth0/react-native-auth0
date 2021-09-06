@@ -25,6 +25,7 @@ export default class A0Auth0 {
 
   reset() {
     this.url = null;
+    this.ephemeralSession = false;
     this.error = null;
     this.hidden = true;
     this.parameters = null;
