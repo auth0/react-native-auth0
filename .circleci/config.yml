@@ -1,24 +1,27 @@
-version: 2
+version: 2.1
+orbs:
+  ship: auth0/ship@0.2.0
 jobs:
   build:
-    docker:
-      - image: circleci/node:lts
+    executor: ship/node
     steps:
       - checkout
-
-      - restore_cache:
-          key: yarn-v2-{{ checksum "yarn.lock" }}
-      - restore_cache:
-          key: node-v2-{{ checksum "package.json" }}
-      - run: yarn install
-      - save_cache:
-          key: yarn-v2-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
-      - save_cache:
-          key: node-v2-{{ checksum "package.json" }}
-          paths:
-            - node_modules
-
+      - ship/node-install-packages:
+          pkg-manager: yarn
       - run: yarn run test:ci
       - run: bash <(curl -s https://codecov.io/bash) -Z -C $CIRCLE_SHA1 -f coverage/coverage-final.json
+workflows:
+  build-and-test:
+    jobs:
+      - build
+      - ship/node-publish:
+          pkg-manager: yarn
+          requires:
+            - build
+          context:
+            - publish-npm
+            - publish-gh
+          filters:
+            branches:
+              only:
+                - master
