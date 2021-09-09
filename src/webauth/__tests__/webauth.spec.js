@@ -145,8 +145,8 @@ describe('WebAuth', () => {
     });
 
     it('should build the callback URL with a custom scheme when logging out', async () => {
-      const options = {customScheme: 'custom-scheme'};
-      await webauth.clearSession(options);
+      const parameters = {customScheme: 'custom-scheme'};
+      await webauth.clearSession(parameters);
 
       const parsedUrl = new URL(A0Auth0.url);
       const urlQuery = parsedUrl.searchParams;

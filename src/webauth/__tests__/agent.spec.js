@@ -9,7 +9,11 @@ describe('Agent', () => {
   describe('show', () => {
     beforeEach(() => {
       NativeModules.A0Auth0 = A0Auth0;
+      Linking.removeAllListeners();
       A0Auth0.reset();
+      A0Auth0.onUrl = () => {
+        Linking.emitter.emit('url', {url: 'https://auth0.com'});
+      };
     });
 
     it('should fail if native module is not linked', async () => {
@@ -19,12 +23,6 @@ describe('Agent', () => {
     });
 
     describe('complete web flow', () => {
-      beforeEach(() => {
-        A0Auth0.onUrl = () => {
-          Linking.emitter.emit('url', {url: 'https://auth0.com'});
-        };
-      });
-
       it('should resolve promise with url result', async () => {
         expect.assertions(1);
         await expect(
@@ -40,10 +38,11 @@ describe('Agent', () => {
       });
 
       it('should not pass ephemeral session parameter', async () => {
+        Platform.OS = 'android';
         expect.assertions(1);
         const url = 'https://auth0.com';
         await agent.show(url);
-        expect(A0Auth0.ephemeralSession).toBeUndefined();
+        expect(A0Auth0.ephemeralSession).toEqual(false);
       });
 
       it('should not use ephemeral session by default', async () => {
@@ -71,10 +70,13 @@ describe('Agent', () => {
         expect(Linking.emitter.listenerCount('url')).toEqual(1);
       });
 
+      it('should not register url listeners', () => {
+        const url = 'https://auth0.com/authorize';
+        agent.show(url, false, true);
+        expect(Linking.emitter.listenerCount('url')).toEqual(0);
+      });
+
       it('should remove url listeners when done', async () => {
-        A0Auth0.onUrl = () => {
-          Linking.emitter.emit('url', {url: 'https://auth0.com'});
-        };
         expect.assertions(1);
         const url = 'https://auth0.com/authorize';
         await agent.show(url);
@@ -92,7 +94,7 @@ describe('Agent', () => {
       it('should remove url listeners on first load', async () => {
         expect.assertions(1);
         const url = 'https://auth0.com/authorize';
-        await agent.show(url, false, true);
+        await agent.show(url, false, false, true);
         expect(Linking.emitter.listenerCount('url')).toEqual(0);
       });
     });

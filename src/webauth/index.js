@@ -42,7 +42,8 @@ export default class WebAuth {
   /**
    * Starts the AuthN/AuthZ transaction against the AS in the in-app browser.
    *
-   * In iOS it will use `SFSafariViewController` and in Android Chrome Custom Tabs.
+   * In iOS <11 it will use `SFSafariViewController`, in iOS 11 `SFAuthenticationSession`  and in iOS >11 `ASWebAuthenticationSession`.
+   * In Android it will use Chrome Custom Tabs.
    *
    * To learn more about how to customize the authorize call, check the Universal Login Page
    * article at https://auth0.com/docs/hosted-pages/login
@@ -58,8 +59,9 @@ export default class WebAuth {
    * @param {String}  [parameters.invitationUrl] the invitation URL to join an organization. Takes precedence over the "organization" parameter.
    * @param {Object}  options Other configuration options.
    * @param {Number}  [options.leeway] The amount of leeway, in seconds, to accommodate potential clock skew when validating an ID token's claims. Defaults to 60 seconds if not specified.
-   * @param {Boolean} [options.ephemeralSession] Disable Single-Sign-On (SSO). It only affects iOS with versions 13 and above.
+   * @param {Boolean} [options.ephemeralSession] Disable Single-Sign-On (SSO). It only affects iOS with versions 13 and above. Defaults to `false`.
    * @param {String}  [options.customScheme] Custom scheme to build the callback URL with.
+   * @param {String}  [options.skipLegacyListener] Whether to register the event listener necessary for the SDK to work on iOS <11 or not. Defaults to `false`.
    * @returns {Promise}
    * @see https://auth0.com/docs/api/authentication#authorize-client
    *
@@ -96,7 +98,11 @@ export default class WebAuth {
       };
       const authorizeUrl = this.client.authorizeUrl(query);
       return agent
-        .show(authorizeUrl, options.ephemeralSession)
+        .show(
+          authorizeUrl,
+          options.ephemeralSession,
+          options.skipLegacyListener,
+        )
         .then(redirectUrl => {
           if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
             throw new AuthError({
@@ -142,22 +148,25 @@ export default class WebAuth {
   /**
    *  Removes Auth0 session and optionally remove the Identity Provider session.
    *
-   *  In iOS it will use `SFSafariViewController` and in Android Chrome Custom Tabs.
+   * In iOS <11 it will use `SFSafariViewController`, in iOS 11 `SFAuthenticationSession`  and in iOS >11 `ASWebAuthenticationSession`.
+   * In Android it will use Chrome Custom Tabs.
    *
    * @param {Object} parameters Parameters to send
    * @param {Bool} [parameters.federated] Optionally remove the IdP session.
    * @param {String} [parameters.customScheme] Custom scheme to build the callback URL with.
+   * @param {Object} options Other configuration options.
+   * @param {String} [options.skipLegacyListener] Whether to register the event listener necessary for the SDK to work on iOS <11 or not. Defaults to `false`.
    * @returns {Promise}
    * @see https://auth0.com/docs/logout
    *
    * @memberof WebAuth
    */
-  clearSession(options = {}) {
+  clearSession(parameters = {}, options = {}) {
     const {client, agent, domain, clientId} = this;
-    options.clientId = clientId;
-    options.returnTo = callbackUri(domain, options.customScheme);
-    options.federated = options.federated || false;
-    const logoutUrl = client.logoutUrl(options);
-    return agent.show(logoutUrl, false, true);
+    parameters.clientId = clientId;
+    parameters.returnTo = callbackUri(domain, parameters.customScheme);
+    parameters.federated = parameters.federated || false;
+    const logoutUrl = client.logoutUrl(parameters);
+    return agent.show(logoutUrl, false, options.skipLegacyListener, true);
   }
 }
