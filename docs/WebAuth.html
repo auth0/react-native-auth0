@@ -250,8 +250,10 @@
                 browser.
               </p>
               <p>
-                In iOS it will use <code>SFSafariViewController</code> and in
-                Android Chrome Custom Tabs.
+                In iOS &lt;11 it will use <code>SFSafariViewController</code>,
+                in iOS 11 <code>SFAuthenticationSession</code> and in iOS &gt;11
+                <code>ASWebAuthenticationSession</code>. In Android it will use
+                Chrome Custom Tabs.
               </p>
               <p>
                 To learn more about how to customize the authorize call, check
@@ -266,7 +268,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_webauth_index.js.html">src/webauth/index.js</a
-                    >, <a href="src_webauth_index.js.html#line68">line 68</a>
+                    >, <a href="src_webauth_index.js.html#line70">line 70</a>
                   </li>
                 </ul>
               </dd>
@@ -517,7 +519,8 @@
                           <td class="description last">
                             <p>
                               Disable Single-Sign-On (SSO). It only affects iOS
-                              with versions 13 and above.
+                              with versions 13 and above. Defaults to
+                              <code>false</code>.
                             </p>
                           </td>
                         </tr>
@@ -533,6 +536,24 @@
 
                           <td class="description last">
                             <p>Custom scheme to build the callback URL with.</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>skipLegacyListener</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>
+                              Whether to register the event listener necessary
+                              for the SDK to work on iOS &lt;11 or not. Defaults
+                              to <code>false</code>.
+                            </p>
                           </td>
                         </tr>
                       </tbody>
@@ -560,7 +581,7 @@
             <h4 class="name" id=".clearSession">
               <span class="type-signature">(static) </span>clearSession<span
                 class="signature"
-                >(parameters)</span
+                >(parameters, options)</span
               ><span class="type-signature"> &rarr; {Promise}</span>
             </h4>
 
@@ -570,8 +591,10 @@
                 Provider session.
               </p>
               <p>
-                In iOS it will use <code>SFSafariViewController</code> and in
-                Android Chrome Custom Tabs.
+                In iOS &lt;11 it will use <code>SFSafariViewController</code>,
+                in iOS 11 <code>SFAuthenticationSession</code> and in iOS &gt;11
+                <code>ASWebAuthenticationSession</code>. In Android it will use
+                Chrome Custom Tabs.
               </p>
             </div>
 
@@ -581,7 +604,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_webauth_index.js.html">src/webauth/index.js</a
-                    >, <a href="src_webauth_index.js.html#line155">line 155</a>
+                    >, <a href="src_webauth_index.js.html#line164">line 164</a>
                   </li>
                 </ul>
               </dd>
@@ -667,6 +690,52 @@
                     </table>
                   </td>
                 </tr>
+
+                <tr>
+                  <td class="name"><code>options</code></td>
+
+                  <td class="type">
+                    <span class="param-type"><code>Object</code></span>
+                  </td>
+
+                  <td class="description last">
+                    <p>Other configuration options.</p>
+
+                    <table class="params">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+
+                          <th>Type</th>
+
+                          <th>Attributes</th>
+
+                          <th class="last">Description</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td class="name"><code>skipLegacyListener</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>
+                              Whether to register the event listener necessary
+                              for the SDK to work on iOS &lt;11 or not. Defaults
+                              to <code>false</code>.
+                            </p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
               </tbody>
             </table>
 
@@ -691,7 +760,7 @@
 
     <footer>
       Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on
-      Tue Jun 22 2021 14:24:13 GMT-0300 (Argentina Standard Time) using the
+      Thu Sep 09 2021 17:56:21 GMT-0300 (Argentina Standard Time) using the
       Minami theme.
     </footer>
 

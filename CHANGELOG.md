@@ -1,5 +1,22 @@
 # Change Log
 
+## [v2.10.0](https://github.com/auth0/react-native-auth0/tree/v2.10.0) (2021-09-09)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.9.0...v2.10.0)
+
+**Added**
+
+- Add skipLegacyListener [SDK-2760][\#404](https://github.com/auth0/react-native-auth0/pull/404) ([Widcket](https://github.com/Widcket))
+
+**Changed**
+
+- Bump path-parse from 1.0.6 to 1.0.7 [\#397](https://github.com/auth0/react-native-auth0/pull/397) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Disable whitelist on auth refreshToken call (#385) [\#395](https://github.com/auth0/react-native-auth0/pull/395) ([cpave3](https://github.com/cpave3))
+
+**Security**
+
+- Bump react-native from 0.62.2 to 0.62.3 [\#393](https://github.com/auth0/react-native-auth0/pull/393) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v2.9.0](https://github.com/auth0/react-native-auth0/tree/v2.9.0) (2021-06-22)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.8.3...v2.9.0)
