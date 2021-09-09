@@ -1,14 +1,13 @@
 {
   "name": "react-native-auth0",
   "title": "React Native Auth0",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "description": "React Native toolkit for Auth0 API",
   "main": "index.js",
   "scripts": {
     "test": "jest",
     "test:ci": "jest --coverage",
-    "jsdocs": "jsdoc --configure .jsdoc.json --verbose",
-    "release": "scripts/release.sh"
+    "jsdocs": "jsdoc --configure .jsdoc.json --verbose"
   },
   "repository": {
     "type": "git",
