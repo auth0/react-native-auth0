@@ -1,15 +1,16 @@
 import defaults from './telemetry';
 import url from 'url';
 import base64 from 'base-64';
+import {fetchWithTimeout} from '../utils/fetchWithTimeout';
 
 export default class Client {
   constructor(options) {
-    const { baseUrl, telemetry = {}, token } = options;
+    const {baseUrl, telemetry = {}, token, timeout = 10000} = options;
     if (!baseUrl) {
       throw new Error('Missing Auth0 domain');
     }
-    const { name = defaults.name, version = defaults.version } = telemetry;
-    this.telemetry = { name, version };
+    const {name = defaults.name, version = defaults.version} = telemetry;
+    this.telemetry = {name, version};
     if (name !== defaults.name) {
       this.telemetry.env = {};
       this.telemetry.env[defaults.name] = defaults.version;
@@ -23,6 +24,8 @@ export default class Client {
     if (token) {
       this.bearer = `Bearer ${token}`;
     }
+
+    this.timeout = timeout;
   }
 
   post(path, body) {
@@ -59,13 +62,15 @@ export default class Client {
         'Auth0-Client': this._encodedTelemetry(),
       },
     };
+
     if (this.bearer) {
       options.headers.Authorization = this.bearer;
     }
     if (body) {
       options.body = JSON.stringify(body);
     }
-    return fetch(url, options).then(response => {
+
+    return fetchWithTimeout(url, options, this.timeout).then(response => {
       const payload = {
         status: response.status,
         ok: response.ok,
@@ -74,16 +79,16 @@ export default class Client {
       return response
         .json()
         .then(json => {
-          return { ...payload, json };
+          return {...payload, json};
         })
         .catch(() => {
           return response
             .text()
             .then(text => {
-              return { ...payload, text };
+              return {...payload, text};
             })
             .catch(() => {
-              return { ...payload, text: response.statusText };
+              return {...payload, text: response.statusText};
             });
         });
     });

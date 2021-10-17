@@ -1,6 +1,7 @@
 import Client from '../';
 import defaults from '../telemetry';
 import fetchMock from 'fetch-mock';
+import {TimeoutError} from '../../utils/fetchWithTimeout';
 
 describe('client', () => {
   const domain = 'samples.auth0.com';
@@ -8,37 +9,37 @@ describe('client', () => {
 
   describe('constructor', () => {
     it('should accept only baseUrl', () => {
-      const client = new Client({ baseUrl });
+      const client = new Client({baseUrl});
       expect(client.baseUrl).toEqual(baseUrl);
       expect(client.telemetry).toMatchObject(defaults);
     });
 
     it('should accept only domain', () => {
-      const client = new Client({ baseUrl: domain });
+      const client = new Client({baseUrl: domain});
       expect(client.baseUrl).toEqual(baseUrl);
       expect(client.telemetry).toMatchObject(defaults);
     });
 
     it('should accept only http baseUrl', () => {
-      const client = new Client({ baseUrl: 'http://insecure.com' });
+      const client = new Client({baseUrl: 'http://insecure.com'});
       expect(client.baseUrl).toEqual('http://insecure.com');
       expect(client.telemetry).toMatchObject(defaults);
     });
 
     it('should allow to customize telemetry', () => {
-      const custom = { name: 'react-native-lock', version: '1.0.0-rc.1' };
-      const client = new Client({ baseUrl, telemetry: custom });
+      const custom = {name: 'react-native-lock', version: '1.0.0-rc.1'};
+      const client = new Client({baseUrl, telemetry: custom});
       expect(client.telemetry).toMatchObject({
         ...custom,
         env: {
-          'react-native-auth0': defaults.version
-        }
+          'react-native-auth0': defaults.version,
+        },
       });
     });
 
     it('should allow to specify a bearer token', () => {
       const token = 'a.bearer.token';
-      const client = new Client({ baseUrl, token });
+      const client = new Client({baseUrl, token});
       expect(client.bearer).toEqual('Bearer a.bearer.token');
     });
 
@@ -50,8 +51,8 @@ describe('client', () => {
   describe('requests', () => {
     const client = new Client({
       baseUrl,
-      telemetry: { name: 'react-native-auth0', version: '1.0.0' },
-      token: 'a.bearer.token'
+      telemetry: {name: 'react-native-auth0', version: '1.0.0'},
+      token: 'a.bearer.token',
     });
 
     beforeEach(fetchMock.restore);
@@ -59,15 +60,15 @@ describe('client', () => {
     describe('POST json', () => {
       const body = {
         string: 'value',
-        number: 10
+        number: 10,
       };
       const response = {
         body: {
-          key: 'value'
+          key: 'value',
         },
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       };
 
       it('should build proper request with body', async () => {
@@ -91,14 +92,14 @@ describe('client', () => {
       });
 
       it('should handle no response', async () => {
-        fetchMock.postOnce('https://samples.auth0.com/method', { status: 201 });
+        fetchMock.postOnce('https://samples.auth0.com/method', {status: 201});
         expect.assertions(1);
         await expect(client.post('/method', body)).resolves.toMatchSnapshot();
       });
 
       it('should handle request error', async () => {
         fetchMock.postOnce('https://samples.auth0.com/method', {
-          throws: new Error('pawned!')
+          throws: new Error('pawned!'),
         });
         expect.assertions(1);
         await expect(client.post('/method', body)).rejects.toMatchSnapshot();
@@ -108,15 +109,15 @@ describe('client', () => {
     describe('PATCH json', () => {
       const body = {
         string: 'value',
-        number: 10
+        number: 10,
       };
       const response = {
         body: {
-          key: 'value'
+          key: 'value',
         },
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       };
 
       it('should build proper request with body', async () => {
@@ -141,7 +142,7 @@ describe('client', () => {
 
       it('should handle no response', async () => {
         fetchMock.patchOnce('https://samples.auth0.com/method', {
-          status: 201
+          status: 201,
         });
         expect.assertions(1);
         await expect(client.patch('/method', body)).resolves.toMatchSnapshot();
@@ -149,7 +150,7 @@ describe('client', () => {
 
       it('should handle request error', async () => {
         fetchMock.patchOnce('https://samples.auth0.com/method', {
-          throws: new Error('pawned!')
+          throws: new Error('pawned!'),
         });
         expect.assertions(1);
         await expect(client.patch('/method', body)).rejects.toMatchSnapshot();
@@ -159,21 +160,21 @@ describe('client', () => {
     describe('GET json', () => {
       const query = {
         string: 'value',
-        number: 10
+        number: 10,
       };
       const response = {
         body: {
-          key: 'value'
+          key: 'value',
         },
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       };
 
       it('should build proper request with query', async () => {
         fetchMock.getOnce(
           'https://samples.auth0.com/method?string=value&number=10',
-          response
+          response,
         );
         expect.assertions(1);
         await client.get('/method', query);
@@ -190,7 +191,7 @@ describe('client', () => {
       it('should return json on success', async () => {
         fetchMock.getOnce(
           'https://samples.auth0.com/method?string=value&number=10',
-          response
+          response,
         );
         expect.assertions(1);
         await expect(client.get('/method', query)).resolves.toMatchSnapshot();
@@ -199,7 +200,7 @@ describe('client', () => {
       it('should handle no response', async () => {
         fetchMock.getOnce(
           'https://samples.auth0.com/method?string=value&number=10',
-          { status: 201 }
+          {status: 201},
         );
         expect.assertions(1);
         await expect(client.get('/method', query)).resolves.toMatchSnapshot();
@@ -208,7 +209,7 @@ describe('client', () => {
       it('should handle request error', async () => {
         fetchMock.getOnce(
           'https://samples.auth0.com/method?string=value&number=10',
-          { throws: new Error('pawned!') }
+          {throws: new Error('pawned!')},
         );
         expect.assertions(1);
         await expect(client.get('/method', query)).rejects.toMatchSnapshot();
@@ -219,8 +220,8 @@ describe('client', () => {
   describe('url', () => {
     const client = new Client({
       baseUrl,
-      telemetry: { name: 'react-native-auth0', version: '1.0.0' },
-      token: 'a.bearer.token'
+      telemetry: {name: 'react-native-auth0', version: '1.0.0'},
+      token: 'a.bearer.token',
     });
 
     it('should build url with no query', () => {
@@ -233,8 +234,53 @@ describe('client', () => {
 
     it('should build url with query', () => {
       expect(
-        client.url('/authorize', { client_id: 'A_CLIENT_ID' }, true)
+        client.url('/authorize', {client_id: 'A_CLIENT_ID'}, true),
       ).toMatchSnapshot();
+    });
+  });
+
+  describe('timeout', () => {
+    const client = new Client({
+      baseUrl,
+      telemetry: {name: 'react-native-auth0', version: '1.0.0'},
+      token: 'a.bearer.token',
+      timeout: 10,
+    });
+
+    const response = {
+      body: {
+        key: 'value',
+      },
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+
+    let responseTimerId = null;
+
+    beforeEach(() => {
+      fetchMock.restore();
+
+      fetchMock.mock('https://samples.auth0.com/method', () => {
+        return new Promise(resolve => {
+          responseTimerId = setTimeout(() => {
+            resolve(response);
+          }, 10000);
+        });
+      });
+    });
+
+    afterEach(() => {
+      if (responseTimerId) {
+        clearTimeout(responseTimerId);
+      }
+    });
+
+    it('aborts the request and throws TimeoutError if the request takes longer than specified timeout', async () => {
+      await expect(client.get('/method')).rejects.toThrow(TimeoutError);
+
+      const [_, fetchOptions] = fetchMock.lastCall();
+      expect(fetchOptions.signal.aborted).toBeTruthy();
     });
   });
 });
