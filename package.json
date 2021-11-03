@@ -29,8 +29,8 @@
     "react-native": ">=0.62.2 <1.0.x"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.18",
     "babel-jest": "^24.9.0",
+    "expo-module-scripts": "^2.0.0",
     "faker": "^4.1.0",
     "fetch-mock": "^7.3.9",
     "husky": "^4.2.5",
@@ -46,6 +46,7 @@
     "semver": "^6.3.0"
   },
   "dependencies": {
+    "@expo/config-plugins": "^4.0.6",
     "base-64": "^0.1.0",
     "crypto-js": "^3.3.0",
     "jsbn": "^1.1.0",
@@ -54,7 +55,10 @@
   },
   "jest": {
     "coverageDirectory": "./coverage/",
-    "collectCoverage": false
+    "collectCoverage": false,
+    "modulePathIgnorePatterns": [
+      "fixtures"
+    ]
   },
   "husky": {
     "hooks": {
