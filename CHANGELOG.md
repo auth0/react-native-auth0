@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.11.0](https://github.com/auth0/react-native-auth0/tree/v2.11.0) (2021-11-30)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.10.0...v2.11.0)
+
+**Changed**
+
+- Add support for Gradle 7 [SDK-2964][\#429](https://github.com/auth0/react-native-auth0/pull/429) ([Widcket](https://github.com/Widcket))
+
 ## [v2.10.0](https://github.com/auth0/react-native-auth0/tree/v2.10.0) (2021-09-09)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.9.0...v2.10.0)
