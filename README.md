@@ -42,6 +42,7 @@ This SDK attempts to follow [semver](https://semver.org/) in a best-effort basis
 
 | React Native SDK | Auth0 SDK |
 | :--------------: | :-------: |
+|     v0.65.0      |  v2.11.0  |
 |     v0.62.2      |  v2.5.0   |
 |     v0.60.5      |  v2.0.0   |
 | v0.59.0 or lower |  v1.6.0   |
