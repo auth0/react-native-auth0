@@ -31,6 +31,7 @@ Version **2.9.0** introduced a **breaking change** to the Android configuration.
 - The [React Native Sample](https://github.com/auth0-samples/auth0-react-native-sample/tree/master/00-Login) has complete, running iOS and Android applications you can try.
 - The [Usage](#usage) section below covers specific use cases outside of basic authentication.
 - The [API documentation](https://auth0.github.io/react-native-auth0/) is generated from the code and explains all methods that are able to be used.
+- The [FAQ](FAQ.md) answers some common questions about react-native-auth0.
 
 ## Requirements
 
@@ -227,24 +228,17 @@ auth0.webAuth
 
 > Web Authentication flows require a Browser application installed on the device. When no Browser is available, an error of type `a0.browser_not_available` will be raised via the provided callback.
 
-##### Disable Single Sign On (iOS 13+ only)
+##### Default alert box on iOS
 
-Use the `ephemeralSession` parameter to disable SSO on iOS 13+. This way iOS will not display the consent popup that otherwise shows up when SSO is enabled. It has no effect on older versions of iOS or Android.
+![sso-alert](./sso-alert.png)
 
-```js
-auth0.webAuth
-  .authorize({scope: 'openid email profile'}, {ephemeralSession: true})
-  .then(credentials => console.log(credentials))
-  .catch(error => console.log(error));
-```
+Check the [FAQ](FAQ.md) for more information about the alert box that pops up by default when using Web Authentication on iOS.
 
 #### Logout
 
 ```js
 auth0.webAuth.clearSession().catch(error => console.log(error));
 ```
-
-If you're using the `ephemeralSession` parameter, you do not need to call `clearSession()` to perform logout on iOS, as there will be no cookies to remove. Just deleting the credentials will suffice. You will still need to call `clearSession()` on Android, though, as `ephemeralSession` is iOS-only.
 
 ### Authentication API
 
