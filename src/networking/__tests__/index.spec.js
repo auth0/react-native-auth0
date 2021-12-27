@@ -244,7 +244,7 @@ describe('client', () => {
       baseUrl,
       telemetry: {name: 'react-native-auth0', version: '1.0.0'},
       token: 'a.bearer.token',
-      timeout: 10,
+      timeout: 2,
     });
 
     const response = {
@@ -265,7 +265,7 @@ describe('client', () => {
         return new Promise(resolve => {
           responseTimerId = setTimeout(() => {
             resolve(response);
-          }, 10000);
+          }, 2000);
         });
       });
     });
