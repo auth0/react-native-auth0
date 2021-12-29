@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`client constructor should fail with no domain 1`] = `"Cannot read property 'baseUrl' of undefined"`;
+exports[`client constructor should fail with no domain 1`] = `"Cannot read properties of undefined (reading 'baseUrl')"`;
 
 exports[`client requests GET json should build proper request with no query 1`] = `
 Array [

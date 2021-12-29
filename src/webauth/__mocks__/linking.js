@@ -1,6 +1,10 @@
 import EventEmitter from 'events';
 
-class CustomEmitter extends EventEmitter {}
+class CustomEmitter extends EventEmitter {
+  remove() {
+    this.removeAllListeners();
+  }
+}
 
 export default class Linking {
   constructor() {
@@ -8,7 +12,7 @@ export default class Linking {
   }
 
   addEventListener(event, fn) {
-    this.emitter.addListener(event, fn);
+    return this.emitter.addListener(event, fn);
   }
 
   removeEventListener(event, fn) {

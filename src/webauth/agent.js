@@ -1,29 +1,38 @@
-import { NativeModules, Linking } from 'react-native';
+import {NativeModules, Linking} from 'react-native';
 
 export default class Agent {
   show(url, closeOnLoad = false) {
     if (!NativeModules.A0Auth0) {
       return Promise.reject(
         new Error(
-          'Missing NativeModule. React Native versions 0.60 and up perform auto-linking. Please see https://github.com/react-native-community/cli/blob/master/docs/autolinking.md.'
-        )
+          'Missing NativeModule. React Native versions 0.60 and up perform auto-linking. Please see https://github.com/react-native-community/cli/blob/master/docs/autolinking.md.',
+        ),
       );
     }
 
     return new Promise((resolve, reject) => {
+      let eventURL;
       const urlHandler = event => {
         NativeModules.A0Auth0.hide();
-        Linking.removeEventListener('url', urlHandler);
+        if (!skipLegacyListener) {
+          eventURL.remove();
+        }
         resolve(event.url);
       };
-      Linking.addEventListener('url', urlHandler);
-      NativeModules.A0Auth0.showUrl(url, closeOnLoad, (error, redirectURL) => {
-        Linking.removeEventListener('url', urlHandler);
+      const params =
+        Platform.OS === 'ios' ? [ephemeralSession, closeOnLoad] : [closeOnLoad];
+      if (!skipLegacyListener) {
+        eventURL = Linking.addEventListener('url', urlHandler);
+      }
+      NativeModules.A0Auth0.showUrl(url, ...params, (error, redirectURL) => {
+        if (!skipLegacyListener) {
+          eventURL.remove();
+        }
         if (error) {
           reject(error);
-        } else if(redirectURL) {
+        } else if (redirectURL) {
           resolve(redirectURL);
-        } else if(closeOnLoad) {
+        } else if (closeOnLoad) {
           resolve();
         }
       });
@@ -34,8 +43,8 @@ export default class Agent {
     if (!NativeModules.A0Auth0) {
       return Promise.reject(
         new Error(
-          'Missing NativeModule. React Native versions 0.60 and up perform auto-linking. Please see https://github.com/react-native-community/cli/blob/master/docs/autolinking.md.'
-        )
+          'Missing NativeModule. React Native versions 0.60 and up perform auto-linking. Please see https://github.com/react-native-community/cli/blob/master/docs/autolinking.md.',
+        ),
       );
     }
 
