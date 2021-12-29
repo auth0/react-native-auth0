@@ -18,4 +18,8 @@ export default class Linking {
   removeEventListener(event, fn) {
     this.emitter.removeListener(event, fn);
   }
+
+  removeAllListeners() {
+    this.emitter.removeAllListeners();
+  }
 }

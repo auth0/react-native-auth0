@@ -1,14 +1,13 @@
 {
   "name": "react-native-auth0",
   "title": "React Native Auth0",
-  "version": "2.0.0",
+  "version": "2.11.0",
   "description": "React Native toolkit for Auth0 API",
   "main": "index.js",
   "scripts": {
     "test": "jest",
     "test:ci": "jest --coverage",
-    "jsdocs": "jsdoc --configure .jsdoc.json --verbose",
-    "release": "scripts/release.sh"
+    "jsdocs": "jsdoc --configure .jsdoc.json --verbose"
   },
   "repository": {
     "type": "git",
@@ -26,28 +25,31 @@
   "licenseFilename": "LICENSE",
   "readmeFilename": "README.md",
   "peerDependencies": {
-    "react": "^16.8.6",
-    "react-native": ">=0.60.5 <1.0.x"
+    "react": "^16.11.0 || ^17",
+    "react-native": ">=0.65.0 <1.0.x"
   },
   "devDependencies": {
     "@types/jest": "^24.0.18",
     "babel-jest": "^24.9.0",
     "faker": "^4.1.0",
     "fetch-mock": "^7.3.9",
-    "husky": "^3.0.5",
+    "husky": "^4.2.5",
     "jest": "^24.9.0",
-    "jsdoc": "^3.6.3",
-    "jsdoc-to-markdown": "^5.0.1",
-    "metro-react-native-babel-preset": "^0.56.0",
+    "jsdoc": "^3.6.4",
+    "jsdoc-to-markdown": "^6.0.1",
+    "metro-react-native-babel-preset": "^0.58.0",
     "minami": "^1.2.3",
     "prettier": "^1.18.2",
     "pretty-quick": "^1.11.1",
     "react": "^16.8.6",
-    "react-native": "^0.60.5",
+    "react-native": "^0.65.0",
     "semver": "^6.3.0"
   },
   "dependencies": {
     "base-64": "^0.1.0",
+    "crypto-js": "^3.3.0",
+    "jsbn": "^1.1.0",
+    "jwt-decode": "^2.2.0",
     "url": "^0.11.0"
   },
   "jest": {

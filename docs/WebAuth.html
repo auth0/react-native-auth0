@@ -58,7 +58,43 @@
       <li class="nav-item">
         <span class="nav-item-type type-function">F</span
         ><span class="nav-item-name"
+          ><a href="Auth.html#.exchangeNativeSocial"
+            >exchangeNativeSocial</a
+          ></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.loginWithEmail">loginWithEmail</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.loginWithSMS">loginWithSMS</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
           ><a href="Auth.html#.logoutUrl">logoutUrl</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.passwordlessWithEmail"
+            >passwordlessWithEmail</a
+          ></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.passwordlessWithSMS"
+            >passwordlessWithSMS</a
+          ></span
         >
       </li>
       <li class="nav-item">
@@ -178,7 +214,7 @@
                     <li>
                       <a href="src_webauth_index.js.html"
                         >src/webauth/index.js</a
-                      >, <a href="src_webauth_index.js.html#line16">line 16</a>
+                      >, <a href="src_webauth_index.js.html#line23">line 23</a>
                     </li>
                   </ul>
                 </dd>
@@ -204,7 +240,7 @@
             <h4 class="name" id=".authorize">
               <span class="type-signature">(static) </span>authorize<span
                 class="signature"
-                >(parameters)</span
+                >(parameters, options)</span
               ><span class="type-signature"> &rarr; {Promise}</span>
             </h4>
 
@@ -214,8 +250,10 @@
                 browser.
               </p>
               <p>
-                In iOS it will use <code>SFSafariViewController</code> and in
-                Android Chrome Custom Tabs.
+                In iOS &lt;11 it will use <code>SFSafariViewController</code>,
+                in iOS 11 <code>SFAuthenticationSession</code> and in iOS &gt;11
+                <code>ASWebAuthenticationSession</code>. In Android it will use
+                Chrome Custom Tabs.
               </p>
               <p>
                 To learn more about how to customize the authorize call, check
@@ -230,7 +268,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_webauth_index.js.html">src/webauth/index.js</a
-                    >, <a href="src_webauth_index.js.html#line54">line 54</a>
+                    >, <a href="src_webauth_index.js.html#line70">line 70</a>
                   </li>
                 </ul>
               </dd>
@@ -270,7 +308,7 @@
                   </td>
 
                   <td class="description last">
-                    <p>parameters to send</p>
+                    <p>Parameters to send on the AuthN/AuthZ request.</p>
 
                     <table class="params">
                       <thead>
@@ -297,7 +335,7 @@
 
                           <td class="description last">
                             <p>
-                              random string to prevent CSRF attacks and used to
+                              Random string to prevent CSRF attacks and used to
                               discard unexepcted results. By default its a
                               cryptographically secure random.
                             </p>
@@ -315,7 +353,7 @@
 
                           <td class="description last">
                             <p>
-                              random string to prevent replay attacks of
+                              Random string to prevent replay attacks of
                               id_tokens.
                             </p>
                           </td>
@@ -332,7 +370,7 @@
 
                           <td class="description last">
                             <p>
-                              identifier of Resource Server (RS) to be included
+                              Identifier of Resource Server (RS) to be included
                               as audience (aud claim) of the issued access token
                             </p>
                           </td>
@@ -349,7 +387,7 @@
 
                           <td class="description last">
                             <p>
-                              scopes requested for the issued tokens. e.g.
+                              Scopes requested for the issued tokens. e.g.
                               <code>openid profile</code>
                             </p>
                           </td>
@@ -370,6 +408,151 @@
                               &quot;google-oauth2&quot; or &quot;facebook&quot;.
                               When not set, it will display Auth0's Universal
                               Login Page.
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>max_age</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>Number</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>
+                              The allowable elapsed time in seconds since the
+                              last time the user was authenticated (optional).
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>organization</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>the ID of the organization to join</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>invitationUrl</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>
+                              the invitation URL to join an organization. Takes
+                              precedence over the &quot;organization&quot;
+                              parameter.
+                            </p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="name"><code>options</code></td>
+
+                  <td class="type">
+                    <span class="param-type"><code>Object</code></span>
+                  </td>
+
+                  <td class="description last">
+                    <p>Other configuration options.</p>
+
+                    <table class="params">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+
+                          <th>Type</th>
+
+                          <th>Attributes</th>
+
+                          <th class="last">Description</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td class="name"><code>leeway</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>Number</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>
+                              The amount of leeway, in seconds, to accommodate
+                              potential clock skew when validating an ID token's
+                              claims. Defaults to 60 seconds if not specified.
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>ephemeralSession</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>Boolean</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>
+                              Disable Single-Sign-On (SSO). It only affects iOS
+                              with versions 13 and above. Defaults to
+                              <code>false</code>.
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>customScheme</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>Custom scheme to build the callback URL with.</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>skipLegacyListener</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>
+                              Whether to register the event listener necessary
+                              for the SDK to work on iOS &lt;11 or not. Defaults
+                              to <code>false</code>.
                             </p>
                           </td>
                         </tr>
@@ -398,7 +581,7 @@
             <h4 class="name" id=".clearSession">
               <span class="type-signature">(static) </span>clearSession<span
                 class="signature"
-                >(parameters)</span
+                >(parameters, options)</span
               ><span class="type-signature"> &rarr; {Promise}</span>
             </h4>
 
@@ -408,8 +591,10 @@
                 Provider session.
               </p>
               <p>
-                In iOS it will use <code>SFSafariViewController</code> and in
-                Android Chrome Custom Tabs.
+                In iOS &lt;11 it will use <code>SFSafariViewController</code>,
+                in iOS 11 <code>SFAuthenticationSession</code> and in iOS &gt;11
+                <code>ASWebAuthenticationSession</code>. In Android it will use
+                Chrome Custom Tabs.
               </p>
             </div>
 
@@ -419,7 +604,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_webauth_index.js.html">src/webauth/index.js</a
-                    >, <a href="src_webauth_index.js.html#line109">line 109</a>
+                    >, <a href="src_webauth_index.js.html#line164">line 164</a>
                   </li>
                 </ul>
               </dd>
@@ -458,7 +643,7 @@
                   </td>
 
                   <td class="description last">
-                    <p>parameters to send</p>
+                    <p>Parameters to send</p>
 
                     <table class="params">
                       <thead>
@@ -485,6 +670,66 @@
 
                           <td class="description last">
                             <p>Optionally remove the IdP session.</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>customScheme</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>Custom scheme to build the callback URL with.</p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="name"><code>options</code></td>
+
+                  <td class="type">
+                    <span class="param-type"><code>Object</code></span>
+                  </td>
+
+                  <td class="description last">
+                    <p>Other configuration options.</p>
+
+                    <table class="params">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+
+                          <th>Type</th>
+
+                          <th>Attributes</th>
+
+                          <th class="last">Description</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td class="name"><code>skipLegacyListener</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>
+                              Whether to register the event listener necessary
+                              for the SDK to work on iOS &lt;11 or not. Defaults
+                              to <code>false</code>.
+                            </p>
                           </td>
                         </tr>
                       </tbody>
@@ -514,8 +759,8 @@
     <br class="clear" />
 
     <footer>
-      Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on
-      Mon Sep 30 2019 17:51:28 GMT-0300 (Argentina Standard Time) using the
+      Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on
+      Tue Nov 30 2021 12:41:50 GMT-0300 (Argentina Standard Time) using the
       Minami theme.
     </footer>
 

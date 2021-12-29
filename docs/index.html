@@ -58,7 +58,43 @@
       <li class="nav-item">
         <span class="nav-item-type type-function">F</span
         ><span class="nav-item-name"
+          ><a href="Auth.html#.exchangeNativeSocial"
+            >exchangeNativeSocial</a
+          ></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.loginWithEmail">loginWithEmail</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.loginWithSMS">loginWithSMS</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
           ><a href="Auth.html#.logoutUrl">logoutUrl</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.passwordlessWithEmail"
+            >passwordlessWithEmail</a
+          ></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.passwordlessWithSMS"
+            >passwordlessWithSMS</a
+          ></span
         >
       </li>
       <li class="nav-item">
@@ -147,9 +183,13 @@
         <article>
           <h1>react-native-auth0</h1>
           <p>
+            React Native toolkit for Auth0 API, compliant with
+            <a href="https://tools.ietf.org/html/rfc8252">RFC 8252</a>
+          </p>
+          <p>
             <a href="https://circleci.com/gh/auth0/react-native-auth0"
               ><img
-                src="http://img.shields.io/circleci/project/github/auth0/react-native-auth0.svg?branch=master&amp;style=flat-square"
+                src="https://img.shields.io/circleci/project/github/auth0/react-native-auth0.svg?branch=master&amp;style=flat-square"
                 alt="Build Status"
             /></a>
             <a href="https://npmjs.org/package/react-native-auth0"
@@ -164,19 +204,77 @@
             /></a>
             <a href="#license"
               ><img
-                src="http://img.shields.io/npm/l/react-native-auth0.svg?style=flat-square"
+                src="https://img.shields.io/npm/l/react-native-auth0.svg?style=flat-square"
                 alt="License"
             /></a>
             <a href="https://npmjs.org/package/react-native-auth0"
               ><img
-                src="http://img.shields.io/npm/dm/react-native-auth0.svg?style=flat-square"
+                src="https://img.shields.io/npm/dm/react-native-auth0.svg?style=flat-square"
                 alt="Downloads"
             /></a>
+            <a
+              href="https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0?ref=badge_shield"
+              ><img
+                src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=shield"
+                alt="FOSSA Status"
+            /></a>
           </p>
+          <h2>Important Notices</h2>
           <p>
-            React Native toolkit for Auth0 API, compliant with
-            <a href="https://tools.ietf.org/html/rfc8252">RFC 8252</a>
+            Version <strong>2.9.0</strong> introduced a
+            <strong>breaking change</strong> to the Android configuration.
+            Previously it was required to add an intent filter in the definition
+            of the Activity that receives the authentication result, and to use
+            the <code>singleTask</code> <strong>launchMode</strong> in that
+            activity. Now both the intent filter and the launch mode
+            <strong>must be removed</strong> and instead you need to add a
+            couple of manifest placeholders. Check out the
+            <a href="#android">Android</a> section for more details.
           </p>
+          <h2>Table of Contents</h2>
+          <ul>
+            <li><a href="#documentation">Documentation</a></li>
+            <li><a href="#requirements">Requirements</a></li>
+            <li><a href="#getting-started">Getting Started</a></li>
+            <li><a href="#usage">Usage</a></li>
+            <li><a href="#support--feedback">Support + Feedback</a></li>
+            <li>
+              <a href="#vulnerability-reporting">Vulnerability Reporting</a>
+            </li>
+            <li><a href="#thank-you">Thank You</a></li>
+            <li><a href="#what-is-auth0">What is Auth0</a></li>
+            <li><a href="#license">License</a></li>
+          </ul>
+          <h2>Documentation</h2>
+          <ul>
+            <li>
+              The
+              <a href="https://auth0.com/docs/quickstart/native/react-native"
+                >React Native Quickstart</a
+              >
+              shows how to get an iOS or Android app running from scratch.
+            </li>
+            <li>
+              The
+              <a
+                href="https://github.com/auth0-samples/auth0-react-native-sample/tree/master/00-Login"
+                >React Native Sample</a
+              >
+              has complete, running iOS and Android applications you can try.
+            </li>
+            <li>
+              The <a href="#usage">Usage</a> section below covers specific use
+              cases outside of basic authentication.
+            </li>
+            <li>
+              The
+              <a href="https://auth0.github.io/react-native-auth0/"
+                >API documentation</a
+              >
+              is generated from the code and explains all methods that are able
+              to be used.
+            </li>
+          </ul>
           <h2>Requirements</h2>
           <p>
             This SDK targets apps that are using React Native SDK version
@@ -201,6 +299,14 @@
             </thead>
             <tbody>
               <tr>
+                <td style="text-align:center">v0.65.0</td>
+                <td style="text-align:center">v2.11.0</td>
+              </tr>
+              <tr>
+                <td style="text-align:center">v0.62.2</td>
+                <td style="text-align:center">v2.5.0</td>
+              </tr>
+              <tr>
                 <td style="text-align:center">v0.60.5</td>
                 <td style="text-align:center">v2.0.0</td>
               </tr>
@@ -216,15 +322,15 @@
               >branch v1</a
             >.
           </p>
-          <h2>Getting started</h2>
+          <h2>Getting Started</h2>
           <p>First install the native library module:</p>
-          <p>Using <a href="https://www.npmjs.com">npm</a></p>
+          <h3>With <a href="https://www.npmjs.com">npm</a></h3>
           <p><code>$ npm install react-native-auth0 --save</code></p>
-          <p>or <a href="https://yarnpkg.com/en/">yarn</a></p>
+          <h3>With <a href="https://yarnpkg.com/en/">Yarn</a></h3>
           <p><code>$ yarn add react-native-auth0</code></p>
           <p>
             Then, you need to run the following command to install the ios app
-            pods with Cocoapods. That will auto-link the iOS library.
+            pods with Cocoapods. That will auto-link the iOS library:
           </p>
           <p><code>$ cd ios &amp;&amp; pod install</code></p>
           <h3>Configuration</h3>
@@ -236,83 +342,119 @@
             platform has its own set of instructions.
           </p>
           <h4>Android</h4>
+          <blockquote>
+            <p>
+              Before version 2.9.0, this SDK required you to add an intent
+              filter to the Activity on which you're going to receive the
+              authentication result, and to use the <code>singleTask</code>
+              <strong>launchMode</strong> in that activity. To migrate your app
+              to version 2.9.0+, <strong>remove both</strong> and continue with
+              the instructions below. You can also check out a sample migration
+              diff
+              <a
+                href="https://github.com/auth0-samples/auth0-react-native-sample/commit/69f79c83ceed40f44b239bbd16e79ecaa70ef70a"
+                >here</a
+              >.
+            </p>
+          </blockquote>
           <p>
-            Open the <code>AndroidManifest.xml</code> file of your application
-            typically at
-            <code>android/app/src/main/AndroidManifest.xml</code> and
-            <strong>make sure</strong> the Activity on which you're going to
-            receive the authentication result has a
-            <strong>launchMode</strong> of <code>singleTask</code>. Additionally
-            inside this Activity definition include the following intent filter.
+            Open your app's <code>build.gradle</code> file (typically at
+            <code>android/app/build.gradle</code>) and add the following
+            manifest placeholders:
           </p>
-          <pre class="prettyprint source lang-xml"><code>&lt;intent-filter>
-    &lt;action android:name=&quot;android.intent.action.VIEW&quot; />
-    &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; />
-    &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; />
-    &lt;data
-        android:host=&quot;YOUR_AUTH0_DOMAIN&quot;
-        android:pathPrefix=&quot;/android/${applicationId}/callback&quot;
-        android:scheme=&quot;${applicationId}&quot; />
-&lt;/intent-filter>
+          <pre class="prettyprint source lang-groovy"><code>android {
+    defaultConfig {
+        // Add the next line
+        manifestPlaceholders = [auth0Domain: &quot;YOUR_AUTH0_DOMAIN&quot;, auth0Scheme: &quot;${applicationId}&quot;]
+    }
+    ...
+}
 </code></pre>
           <p>
-            The <code>android:host</code> value must be replaced with your Auth0
+            The <code>auth0Domain</code> value must be replaced with your Auth0
             domain value. So if you have <code>samples.auth0.com</code> as your
-            Auth0 domain you would have the following
-            <strong>MainActivity</strong> configuration:
+            Auth0 domain you would have a configuration like the following:
           </p>
-          <pre class="prettyprint source lang-xml"><code>&lt;activity
-android:name=&quot;.MainActivity&quot;
-android:label=&quot;@string/app_name&quot;
-android:launchMode=&quot;singleTask&quot;
-android:configChanges=&quot;keyboard|keyboardHidden|orientation|screenSize&quot;
-android:windowSoftInputMode=&quot;adjustResize&quot;>
-&lt;intent-filter>
-    &lt;action android:name=&quot;android.intent.action.MAIN&quot; />
-    &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; />
-&lt;/intent-filter>
-&lt;intent-filter>
-    &lt;action android:name=&quot;android.intent.action.VIEW&quot; />
-    &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; />
-    &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; />
-    &lt;data
-        android:host=&quot;samples.auth0.com&quot;
-        android:pathPrefix=&quot;/android/${applicationId}/callback&quot;
-        android:scheme=&quot;${applicationId}&quot; />
-&lt;/intent-filter>
-&lt;/activity>
+          <pre class="prettyprint source lang-groovy"><code>android {
+    defaultConfig {
+        manifestPlaceholders = [auth0Domain: &quot;samples.auth0.com&quot;, auth0Scheme: &quot;${applicationId}&quot;]
+    }
+    ...
+}
 </code></pre>
           <p>
-            The <code>applicationId</code> value will be auto-replaced on
-            runtime with the package name or id of your application (e.g.
+            The <code>applicationId</code> value will be auto-replaced at
+            runtime with the package name or ID of your application (e.g.
             <code>com.example.app</code>). You can change this value from the
             <code>build.gradle</code> file. You can also check it at the top of
-            your <code>AndroidManifest.xml</code> file. Take note of this value
-            as you'll be requiring it to define the callback URLs below.
+            your <code>AndroidManifest.xml</code> file.
           </p>
           <blockquote>
             <p>
-              For more info please read
+              Note that if your Android application is using
               <a
-                href="https://facebook.github.io/react-native/docs/linking.html"
-                >react native docs</a
-              >
+                href="https://developer.android.com/studio/build/build-variants#product-flavors"
+                >product flavors</a
+              >, you might need to specify different manifest placeholders for
+              each flavor.
             </p>
           </blockquote>
+          <p>
+            If you use a value other than <code>applicationId</code> in
+            <code>auth0Scheme</code> you will also need to pass it as the
+            <code>customScheme</code> option parameter of the
+            <code>authorize</code> and <code>clearSession</code> methods.
+          </p>
+          <p>
+            Take note of this value as you'll be requiring it to define the
+            callback URLs below.
+          </p>
+          <blockquote>
+            <p>
+              For more info please read the
+              <a
+                href="https://facebook.github.io/react-native/docs/linking.html"
+                >React Native docs</a
+              >.
+            </p>
+          </blockquote>
+          <h5>Skipping the Web Authentication setup</h5>
+          <p>
+            If you don't plan to use Web Authentication, you will notice that
+            the compiler will still prompt you to provide the
+            <code>manifestPlaceholders</code> values, since the
+            <code>RedirectActivity</code> included in this library will require
+            them, and the Gradle tasks won't be able to run without them.
+          </p>
+          <p>
+            Re-declare the activity manually with
+            <code>tools:node=&quot;remove&quot;</code> in your app's Android
+            Manifest in order to make the manifest merger remove it from the
+            final manifest file. Additionally, one more unused activity can be
+            removed from the final APK by using the same process. A complete
+            snippet to achieve this is:
+          </p>
+          <pre class="prettyprint source lang-xml"><code>&lt;activity
+    android:name=&quot;com.auth0.react.AuthenticationActivity&quot;
+    tools:node=&quot;remove&quot;/>
+&lt;!-- Optional: Remove RedirectActivity -->
+&lt;activity
+    android:name=&quot;com.auth0.react.RedirectActivity&quot;
+    tools:node=&quot;remove&quot;/>
+</code></pre>
           <h4>iOS</h4>
           <p>
             Inside the <code>ios</code> folder find the file
-            <code>AppDelegate.[swift|m]</code> add the following to it
+            <code>AppDelegate.[swift|m]</code> add the following to it:
           </p>
           <pre
             class="prettyprint source lang-objc"
           ><code>#import &lt;React/RCTLinkingManager.h>
 
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
-  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url
+            options:(NSDictionary&lt;UIApplicationOpenURLOptionsKey, id> *)options
 {
-  return [RCTLinkingManager application:application openURL:url
-                      sourceApplication:sourceApplication annotation:annotation];
+  return [RCTLinkingManager application:app openURL:url options:options];
 }
 </code></pre>
           <p>
@@ -328,7 +470,7 @@ android:windowSoftInputMode=&quot;adjustResize&quot;>
           <p>
             and then below it register a URL type entry using the value of
             <code>CFBundleIdentifier</code> as the value for
-            <code>CFBundleURLSchemes</code>
+            <code>CFBundleURLSchemes</code>:
           </p>
           <pre
             class="prettyprint source lang-xml"
@@ -376,13 +518,21 @@ android:windowSoftInputMode=&quot;adjustResize&quot;>
               were applied to each of the targets your app has.
             </li>
           </ul>
+          <p>
+            If you use a value other than
+            <code>$(PRODUCT_BUNDLE_IDENTIFIER)</code> in the
+            <code>CFBundleURLSchemes</code> field of the
+            <code>Info.plist</code> you will also need to pass it as the
+            <code>customScheme</code> option parameter of the
+            <code>authorize</code> and <code>clearSession</code> methods.
+          </p>
           <blockquote>
             <p>
-              For more info please read
+              For more info please read the
               <a
                 href="https://facebook.github.io/react-native/docs/linking.html"
-                >react native docs</a
-              >
+                >React Native docs</a
+              >.
             </p>
           </blockquote>
           <h3>Callback URL(s)</h3>
@@ -395,19 +545,16 @@ android:windowSoftInputMode=&quot;adjustResize&quot;>
             security. This will enable Auth0 to recognize these URLs as valid.
             If omitted, authentication will not be successful.
           </p>
-          <blockquote>
-            <p>
-              Callback URLs must have a valid scheme value as defined by the
-              <a href="https://tools.ietf.org/html/rfc3986#page-17"
-                >specification</a
-              >. Note however that platforms like Android don't follow this RFC
-              and define the scheme and host values as case-sensitive. Since
-              this SDK makes use of the Android's Package Name and its analogous
-              iOS's Product Bundle Identifier to generate the redirect URL, it's
-              advised to use lower case values for such. A &quot;Redirect URI is
-              not valid&quot; error will raise if this format is not respected.
-            </p>
-          </blockquote>
+          <p>
+            On the Android platform this URL is case-sensitive. Because of that,
+            this SDK will auto convert the Bundle Identifier (iOS) and
+            Application ID (Android) values to lowercase in order to build the
+            Callback URL with them. If any of these values contains uppercase
+            characters a warning message will be printed in the console. Make
+            sure to check that the right Callback URL is whitelisted in the
+            Auth0 dashboard or the browser will not route succesfully back to
+            your application.
+          </p>
           <p>
             Go to the
             <a href="https://manage.auth0.com/#/applications">Auth0 Dashboard</a
@@ -422,22 +569,22 @@ android:windowSoftInputMode=&quot;adjustResize&quot;>
           <h4>Android</h4>
           <pre
             class="prettyprint source lang-text"
-          ><code>{YOUR_APP_PACKAGE_NAME}://{YOUR_AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
+          ><code>{YOUR_APP_PACKAGE_NAME_OR_CUSTOM_SCHEME}://{YOUR_AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
 </code></pre>
           <blockquote>
             <p>
-              Make sure to replace {YOUR_APP_PACKAGE_NAME} and
+              Make sure to replace {YOUR_APP_PACKAGE_NAME_OR_CUSTOM_SCHEME} and
               {YOUR_AUTH0_DOMAIN} with the actual values for your application.
             </p>
           </blockquote>
           <h4>iOS</h4>
           <pre
             class="prettyprint source lang-text"
-          ><code>{YOUR_BUNDLE_IDENTIFIER}://{YOUR_AUTH0_DOMAIN}/ios/{YOUR_BUNDLE_IDENTIFIER}/callback
+          ><code>{YOUR_BUNDLE_IDENTIFIER_OR_CUSTOM_SCHEME}://{YOUR_AUTH0_DOMAIN}/ios/{YOUR_BUNDLE_IDENTIFIER}/callback
 </code></pre>
           <blockquote>
             <p>
-              Make sure to replace {YOUR_BUNDLE_IDENTIFIER} and
+              Make sure to replace {YOUR_BUNDLE_IDENTIFIER_OR_CUSTOM_SCHEME} and
               {YOUR_AUTH0_DOMAIN} with the actual values for your application.
             </p>
           </blockquote>
@@ -470,22 +617,50 @@ const auth0 = new Auth0({
             </p>
           </blockquote>
           <h3>Web Authentication</h3>
-          <h4>Log in</h4>
+          <h4>Login</h4>
           <pre class="prettyprint source lang-js"><code>auth0.webAuth
   .authorize({scope: 'openid email profile'})
   .then(credentials => console.log(credentials))
   .catch(error => console.log(error));
 </code></pre>
-          <h4>Log out</h4>
+          <blockquote>
+            <p>
+              Web Authentication flows require a Browser application installed
+              on the device. When no Browser is available, an error of type
+              <code>a0.browser_not_available</code> will be raised via the
+              provided callback.
+            </p>
+          </blockquote>
+          <h5>Disable Single Sign On (iOS 13+ only)</h5>
+          <p>
+            Use the <code>ephemeralSession</code> parameter to disable SSO on
+            iOS 13+. This way iOS will not display the consent popup that
+            otherwise shows up when SSO is enabled. It has no effect on older
+            versions of iOS or Android.
+          </p>
+          <pre class="prettyprint source lang-js"><code>auth0.webAuth
+  .authorize({scope: 'openid email profile'}, {ephemeralSession: true})
+  .then(credentials => console.log(credentials))
+  .catch(error => console.log(error));
+</code></pre>
+          <h4>Logout</h4>
           <pre
             class="prettyprint source lang-js"
           ><code>auth0.webAuth.clearSession().catch(error => console.log(error));
 </code></pre>
+          <p>
+            If you're using the <code>ephemeralSession</code> parameter, you do
+            not need to call <code>clearSession()</code> to perform logout on
+            iOS, as there will be no cookies to remove. Just deleting the
+            credentials will suffice. You will still need to call
+            <code>clearSession()</code> on Android, though, as
+            <code>ephemeralSession</code> is iOS-only.
+          </p>
           <h3>Authentication API</h3>
           <h3>Important: Database Connection Authentication</h3>
           <p>
             Since June 2017 new Clients no longer have the
-            <strong>Password Grant Type*</strong> enabled by default. If you are
+            <strong>Password Grant Type</strong> enabled by default. If you are
             accessing a Database Connection using
             <code>passwordRealm</code> then you will need to enable the Password
             Grant Type, please follow
@@ -522,6 +697,60 @@ const auth0 = new Auth0({
   .then(console.log)
   .catch(console.error);
 </code></pre>
+          <h4>Login with Passwordless</h4>
+          <p>
+            Passwordless is a two-step authentication flow that makes use of
+            this type of connection. The <strong>Passwordless OTP</strong> grant
+            is required to be enabled in your Auth0 application beforehand.
+            Check
+            <a
+              href="https://auth0.com/docs/dashboard/guides/applications/update-grant-types"
+              >our guide</a
+            >
+            to learn how to enable it.
+          </p>
+          <p>
+            To start the flow, you request a code to be sent to the user's email
+            or phone number. For email scenarios only, a link can be sent in
+            place of the code.
+          </p>
+          <pre class="prettyprint source lang-js"><code>auth0.auth
+  .passwordlessWithEmail({
+    email: 'info@auth0.com',
+    send: 'link',
+  })
+  .then(console.log)
+  .catch(console.error);
+</code></pre>
+          <p>or</p>
+          <pre class="prettyprint source lang-js"><code>auth0.auth
+  .passwordlessWithSMS({
+    phoneNumber: '+5491159991000',
+  })
+  .then(console.log)
+  .catch(console.error);
+</code></pre>
+          <p>
+            Then, in order to complete the authentication, you must send back
+            that received code value along with the email or phone number used:
+          </p>
+          <pre class="prettyprint source lang-js"><code>auth0.auth
+  .loginWithEmail({
+    email: 'info@auth0.com',
+    code: '123456',
+  })
+  .then(console.log)
+  .catch(console.error);
+</code></pre>
+          <p>or</p>
+          <pre class="prettyprint source lang-js"><code>auth0.auth
+  .loginWithSMS({
+    phoneNumber: 'info@auth0.com',
+    code: '123456',
+  })
+  .then(console.log)
+  .catch(console.error);
+</code></pre>
           <h4>Create user in database connection</h4>
           <pre class="prettyprint source lang-js"><code>auth0.auth
   .createUser({
@@ -550,75 +779,235 @@ const auth0 = new Auth0({
 </code></pre>
           <p>
             For more info please check our generated
-            <a href="http://auth0.github.io/react-native-auth0/index.html"
+            <a href="https://auth0.github.io/react-native-auth0/index.html"
               >documentation</a
             >
           </p>
-          <h2>What is Auth0?</h2>
-          <p>Auth0 helps you to:</p>
+          <h3>Organizations</h3>
+          <p>
+            <a href="https://auth0.com/docs/organizations">Organizations</a> is
+            a set of features that provide better support for developers who
+            build and maintain SaaS and Business-to-Business (B2B) applications.
+          </p>
+          <p>Using Organizations, you can:</p>
           <ul>
             <li>
-              Add authentication with
-              <a href="https://docs.auth0.com/identityproviders"
-                >multiple authentication sources</a
-              >, either social like
-              <strong
-                >Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter,
-                Box, Salesforce, amont others</strong
-              >, or enterprise identity systems like
-              <strong
-                >Windows Azure AD, Google Apps, Active Directory, ADFS or any
-                SAML Identity Provider</strong
-              >.
+              Represent teams, business customers, partner companies, or any
+              logical grouping of users that should have different ways of
+              accessing your applications, as organizations.
             </li>
             <li>
-              Add authentication through more traditional
-              <strong
-                ><a href="https://docs.auth0.com/mysql-connection-tutorial"
-                  >username/password databases</a
-                ></strong
-              >.
+              Manage their membership in a variety of ways, including user
+              invitation.
             </li>
             <li>
-              Add support for
-              <strong
-                ><a href="https://docs.auth0.com/link-accounts"
-                  >linking different user accounts</a
-                ></strong
-              >
-              with the same user.
+              Configure branded, federated login flows for each organization.
             </li>
             <li>
-              Support for generating signed
-              <a href="https://docs.auth0.com/jwt">Json Web Tokens</a> to call
-              your APIs and <strong>flow the user identity</strong> securely.
+              Implement role-based access control, such that users can have
+              different roles when authenticating in the context of different
+              organizations.
             </li>
-            <li>Analytics of how, when and where users are logging in.</li>
             <li>
-              Pull data from other sources and add it to the user profile,
-              through
-              <a href="https://docs.auth0.com/rules">JavaScript rules</a>.
+              Build administration capabilities into your products, using
+              Organizations APIs, so that those businesses can manage their own
+              organizations.
             </li>
           </ul>
-          <h2>Create a free Auth0 Account</h2>
-          <ol>
-            <li>
-              Go to <a href="https://auth0.com">Auth0</a> and click Sign Up.
-            </li>
-            <li>Use Google, GitHub or Microsoft Account to login.</li>
-          </ol>
-          <h2>Issue Reporting</h2>
           <p>
-            If you have found a bug or if you have a feature request, please
-            report them at this repository issues section. Please do not report
-            security vulnerabilities on the public GitHub issue tracker. The
-            <a href="https://auth0.com/whitehat"
+            Note that Organizations is currently only available to customers on
+            our Enterprise and Startup subscription plans.
+          </p>
+          <h4>Log in to an organization</h4>
+          <pre class="prettyprint source lang-js"><code>auth0.webAuth
+  .authorize({organization: 'organization-id'})
+  .then(credentials => console.log(credentials))
+  .catch(error => console.log(error));
+</code></pre>
+          <h4>Accept user invitations</h4>
+          <p>
+            Users can be invited to your organization via a link. Tapping on the
+            invitation link should open your app. Since invitations links are
+            <code>https</code> only, is recommended that your Android app
+            supports
+            <a href="https://developer.android.com/training/app-links"
+              >Android App Links</a
+            >. In the case of iOS, your app must support
+            <a
+              href="https://developer.apple.com/documentation/xcode/allowing_apps_and_websites_to_link_to_your_content/supporting_universal_links_in_your_app"
+              >Universal Links</a
+            >.
+          </p>
+          <p>
+            In
+            <a
+              href="https://auth0.com/docs/applications/enable-android-app-links-support"
+              >Enable Android App Links Support</a
+            >
+            and
+            <a
+              href="https://auth0.com/docs/enable-universal-links-support-in-apple-xcode"
+              >Enable Universal Links Support</a
+            >, you will find how to make the Auth0 server publish the Digital
+            Asset Links file required by your applications.
+          </p>
+          <p>
+            When your app gets opened by an invitation link, grab the invitation
+            URL and pass it as a parameter to the webauth call. Use the
+            <a href="https://reactnative.dev/docs/linking">Linking Module</a>
+            method called <code>getInitialUrl()</code> to obtain the URL that
+            launched your application.
+          </p>
+          <pre class="prettyprint source lang-js"><code>auth0.webAuth
+  .authorize({
+    invitationUrl:
+      'https://myapp.com/login?invitation=inv123&organization=org123',
+  })
+  .then(credentials => console.log(credentials))
+  .catch(error => console.log(error));
+</code></pre>
+          <p>
+            If the URL doesn't contain the expected values, an error will be
+            raised through the provided callback.
+          </p>
+          <h3>Bot Protection</h3>
+          <p>
+            If you are using the
+            <a href="https://auth0.com/docs/anomaly-detection/bot-protection"
+              >Bot Protection</a
+            >
+            feature and performing database login/signup via the Authentication
+            API, you need to handle the
+            <code>requires_verification</code> error. It indicates that the
+            request was flagged as suspicious and an additional verification
+            step is necessary to log the user in. That verification step is
+            web-based, so you need to use Universal Login to complete it.
+          </p>
+          <pre
+            class="prettyprint source lang-js"
+          ><code>const email = 'support@auth0.com';
+const realm = 'Username-Password-Authentication';
+const scope = 'openid profile';
+
+auth0.auth
+  .passwordRealm({
+    username: email,
+    password: 'secret-password',
+    realm: realm,
+    scope: scope,
+  })
+  .then(credentials => {
+    // Logged in!
+  })
+  .catch(error => {
+    if (error.name === 'requires_verification') {
+      auth0.webAuth
+        .authorize({
+          connection: realm,
+          scope: scope,
+          login_hint: email, // So the user doesn't have to type it again
+        })
+        .then(credentials => {
+          // Logged in!
+        })
+        .catch(console.error);
+    } else {
+      console.error(error);
+    }
+  });
+</code></pre>
+          <p>
+            In the case of signup, you can add
+            <a
+              href="https://auth0.com/docs/universal-login/new-experience#signup"
+              >an additional parameter</a
+            >
+            to make the user land directly on the signup page:
+          </p>
+          <pre
+            class="prettyprint source lang-js"
+          ><code>auth0.webAuth.authorize({
+  connection: realm,
+  scope: scope,
+  login_hint: email,
+  screen_hint: 'signup', // 👈🏻
+});
+</code></pre>
+          <p>
+            Check out how to set up Universal Login in the
+            <a href="#getting-started">Getting Started</a> section.
+          </p>
+          <h2>Contributing</h2>
+          <p>
+            We appreciate feedback and contribution to this repo! Before you get
+            started, please see the following:
+          </p>
+          <ul>
+            <li>
+              <a
+                href="https://github.com/auth0/.github/blob/master/CONTRIBUTING.md"
+                >Auth0's general contribution guidelines</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/auth0/open-source-template/blob/master/CODE-OF-CONDUCT.md"
+                >Auth0's code of conduct guidelines</a
+              >
+            </li>
+            <li><a href="DEVELOPMENT.md">This repo's development guide</a></li>
+          </ul>
+          <h2>Support + Feedback</h2>
+          <ul>
+            <li>
+              Use
+              <a href="https://github.com/auth0/react-native-auth0/issues"
+                >Issues</a
+              >
+              for code-level support
+            </li>
+            <li>
+              Use <a href="https://community.auth0.com/">Community</a> for
+              usage, questions, specific cases
+            </li>
+          </ul>
+          <h2>Vulnerability Reporting</h2>
+          <p>
+            Please do not report security vulnerabilities on the public GitHub
+            issue tracker. The
+            <a href="https://auth0.com/responsible-disclosure-policy/"
               >Responsible Disclosure Program</a
             >
             details the procedure for disclosing security issues.
           </p>
-          <h2>Author</h2>
-          <p><a href="auth0.com">Auth0</a></p>
+          <h2>What is Auth0?</h2>
+          <p>Auth0 helps you to easily:</p>
+          <ul>
+            <li>
+              implement authentication with multiple identity providers,
+              including social (e.g., Google, Facebook, Microsoft, LinkedIn,
+              GitHub, Twitter, etc), or enterprise (e.g., Windows Azure AD,
+              Google Apps, Active Directory, ADFS, SAML, etc.)
+            </li>
+            <li>
+              log in users with username/password databases, passwordless, or
+              multi-factor authentication
+            </li>
+            <li>link multiple user accounts together</li>
+            <li>
+              generate signed JSON Web Tokens to authorize your API calls and
+              flow the user identity securely
+            </li>
+            <li>
+              access demographics and analytics detailing how, when, and where
+              users are logging in
+            </li>
+            <li>
+              enrich user profiles from other data sources using customizable
+              JavaScript rules
+            </li>
+          </ul>
+          <p><a href="https://auth0.com/why-auth0">Why Auth0?</a></p>
           <h2>License</h2>
           <p>
             This project is licensed under the MIT license. See the
@@ -632,8 +1021,8 @@ const auth0 = new Auth0({
     <br class="clear" />
 
     <footer>
-      Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on
-      Mon Sep 30 2019 17:51:28 GMT-0300 (Argentina Standard Time) using the
+      Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on
+      Tue Nov 30 2021 12:41:50 GMT-0300 (Argentina Standard Time) using the
       Minami theme.
     </footer>
 

@@ -2,15 +2,14 @@ package com.auth0.react;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.ActivityNotFoundException;
 import android.net.Uri;
-import android.os.Handler;
 import androidx.annotation.NonNull;
-import androidx.browser.customtabs.CustomTabsIntent;
 import android.util.Base64;
 
+import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -23,10 +22,12 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
-public class A0Auth0Module extends ReactContextBaseJavaModule implements LifecycleEventListener {
+import static android.app.Activity.RESULT_OK;
+
+public class A0Auth0Module extends ReactContextBaseJavaModule implements ActivityEventListener {
+
     private static final String US_ASCII = "US-ASCII";
     private static final String SHA_256 = "SHA-256";
-    private static final int CANCEL_EVENT_DELAY = 100;
 
     private final ReactApplicationContext reactContext;
     private Callback callback;
@@ -34,7 +35,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
     public A0Auth0Module(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
-        this.reactContext.addLifecycleEventListener(this);
+        this.reactContext.addActivityEventListener(this);
     }
 
     @Override
@@ -44,6 +45,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
         return constants;
     }
 
+    @NonNull
     @Override
     public String getName() {
         return "A0Auth0";
@@ -52,17 +54,23 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
     @ReactMethod
     public void showUrl(String url, boolean closeOnLoad, Callback callback) {
         final Activity activity = getCurrentActivity();
-
+        final Uri parsedUrl = Uri.parse(url);
         this.callback = callback;
-        if (activity != null) {
-            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-            CustomTabsIntent customTabsIntent = builder.build();
-            customTabsIntent.launchUrl(activity, Uri.parse(url));
-        } else {
-            final Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(Uri.parse(url));
-            getReactApplicationContext().startActivity(intent);
+
+        try {
+            if (activity != null) {
+                AuthenticationActivity.authenticateUsingBrowser(activity, parsedUrl);
+            } else {
+                final WritableMap error = Arguments.createMap();
+                error.putString("error", "a0.activity_not_available");
+                error.putString("error_description", "Android Activity is null.");
+                callback.invoke(error);
+            }
+        } catch (ActivityNotFoundException e){
+            final WritableMap error = Arguments.createMap();
+            error.putString("error", "a0.browser_not_available");
+            error.putString("error_description", "No Browser application is installed.");
+            callback.invoke(error);
         }
     }
 
@@ -122,29 +130,31 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Lifecyc
     }
 
     @Override
-    public void onHostResume() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Callback cb = A0Auth0Module.this.callback;
-                if (cb != null) {
-                    final WritableMap error = Arguments.createMap();
-                    error.putString("error", "a0.session.user_cancelled");
-                    error.putString("error_description", "User cancelled the Auth");
-                    cb.invoke(error);
-                    A0Auth0Module.this.callback = null;
-                }
-            }
-        }, CANCEL_EVENT_DELAY);
+    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+        Callback cb = A0Auth0Module.this.callback;
+
+        if (cb == null) {
+            return;
+        }
+
+        boolean hasResult = resultCode == RESULT_OK &&
+                requestCode == AuthenticationActivity.AUTHENTICATION_REQUEST &&
+                data.getData() != null;
+        if (hasResult) {
+            cb.invoke(null, data.getData().toString());
+        } else {
+            final WritableMap error = Arguments.createMap();
+            error.putString("error", "a0.session.user_cancelled");
+            error.putString("error_description", "User cancelled the Auth");
+            cb.invoke(error);
+        }
+
+        A0Auth0Module.this.callback = null;
     }
 
     @Override
-    public void onHostPause() {
+    public void onNewIntent(Intent intent) {
         // NO OP
     }
 
-    @Override
-    public void onHostDestroy() {
-        // NO OP
-    }
 }

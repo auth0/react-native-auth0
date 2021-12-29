@@ -4,22 +4,21 @@ buildscript {
     }
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        // Matches recent template from React Native (0.60)
-        // https://github.com/facebook/react-native/blob/0.60-stable/template/android/build.gradle#L16
-        classpath("com.android.tools.build:gradle:${safeExtGet('gradlePluginVersion', '3.4.1')}")
+        // Matches recent template from React Native (0.67)
+        // https://github.com/facebook/react-native/blob/0.67-stable/template/android/build.gradle#L16
+        classpath("com.android.tools.build:gradle:${safeExtGet('gradlePluginVersion', '4.2.2')}")
     }
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
-// Matches values in recent template from React Native 0.59 / 0.60
-// https://github.com/facebook/react-native/blob/0.59-stable/template/android/build.gradle#L5-L9
-// https://github.com/facebook/react-native/blob/0.60-stable/template/android/build.gradle#L5-L9
+// Matches values in recent template from React Native 0.62
+// https://github.com/facebook/react-native/blob/0.62-stable/template/android/build.gradle#L5-L8
 def DEFAULT_COMPILE_SDK_VERSION = 28
 def DEFAULT_BUILD_TOOLS_VERSION = "28.0.3"
 def DEFAULT_MIN_SDK_VERSION = 16
@@ -38,14 +37,17 @@ android {
   lintOptions {
     abortOnError false
   }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
 }
 
 repositories {
     maven {
         // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-        // Matches recent template from React Native 0.59 / 0.60
-        // https://github.com/facebook/react-native/blob/0.59-stable/template/android/build.gradle#L30
-        // https://github.com/facebook/react-native/blob/0.60-stable/template/android/build.gradle#L28
+        // Matches recent template from React Native 0.62
+        // https://github.com/facebook/react-native/blob/0.62-stable/template/android/build.gradle#L27
         url "$projectDir/../node_modules/react-native/android"
     }
     mavenCentral()
@@ -53,7 +55,7 @@ repositories {
 
 dependencies {
     implementation "com.facebook.react:react-native:${safeExtGet('reactnativeVersion', '+')}"
-    implementation "androidx.browser:browser:1.0.0"
+    implementation "androidx.browser:browser:1.2.0"
 }
 
 def configureReactNativePom(def pom) {
@@ -94,20 +96,22 @@ afterEvaluate { project ->
     }
 
     task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
-        classifier = 'javadoc'
+        archiveClassifier = 'javadoc'
         from androidJavadoc.destinationDir
     }
 
     task androidSourcesJar(type: Jar) {
-        classifier = 'sources'
+        archiveClassifier = 'sources'
         from android.sourceSets.main.java.srcDirs
         include '**/*.java'
     }
 
     android.libraryVariants.all { variant ->
         def name = variant.name.capitalize()
-        task "jar${name}"(type: Jar, dependsOn: variant.javaCompile) {
-            from variant.javaCompile.destinationDir
+        def javaCompileTask = variant.javaCompileProvider.get()
+
+        task "jar${name}"(type: Jar, dependsOn: javaCompileTask) {
+            from javaCompileTask.destinationDir
         }
     }
 
@@ -116,13 +120,11 @@ afterEvaluate { project ->
         archives androidJavadocJar
     }
 
-    task installArchives(type: Upload) {
-        configuration = configurations.archives
-        repositories.mavenDeployer {
-            // Deploy to react-native-event-bridge/maven, ready to publish to npm
-            repository url: "file://${projectDir}/../android/maven"
-
-            configureReactNativePom pom
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                artifact androidSourcesJar
+            }
         }
     }
 }
