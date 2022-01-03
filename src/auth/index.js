@@ -351,6 +351,142 @@ export default class Auth {
   }
 
   /**
+   * Log in a user using the One Time Password code after they have received the 'mfa_required' error.
+   * The MFA token tells the server the username or email, password, and realm values sent on the first request.
+   *
+   * Requires your client to have the **MFA OTP** Grant Type enabled.
+   * See [Client Grant Types](https://auth0.com/docs/clients/client-grant-types) to learn how to enable it.
+   *
+   * @param {Object} parameters login with OTP parameters
+   * @param {String} parameters.mfaToken the token received in the previous login response
+   * @param {String} parameters.otp the one time password code provided by the resource owner, typically obtained from an MFA application such as Google Authenticator or Guardian.
+   * @returns {Promise}
+   *
+   * @memberof Auth
+   */
+  loginWithOTP(parameters = {}) {
+    const payload = apply(
+      {
+        parameters: {
+          mfaToken: {required: true, toName: 'mfa_token'},
+          otp: {required: true, toName: 'otp'},
+        },
+      },
+      parameters,
+    );
+    return this.client
+      .post('/oauth/token', {
+        ...payload,
+        client_id: this.clientId,
+        grant_type: 'http://auth0.com/oauth/grant-type/mfa-otp',
+      })
+      .then(responseHandler);
+  }
+
+  /**
+   * Log in a user using an Out Of Band authentication code after they have received the 'mfa_required' error.
+   * The MFA token tells the server the username or email, password, and realm values sent on the first request.
+   *
+   * Requires your client to have the **MFA OOB** Grant Type enabled. See [Client Grant Types](https://auth0.com/docs/clients/client-grant-types) to learn how to enable it.
+   *
+   * @param {Object} parameters login with Recovery Code parameters
+   * @param {String} parameters.mfaToken the token received in the previous login response
+   * @param {String} parameters.oobCode the out of band code received in the challenge response.
+   * @param {String} parameters.bindingCode [Optional] the code used to bind the side channel (used to deliver the challenge) with the main channel you are using to authenticate. This is usually an OTP-like code delivered as part of the challenge message.
+   *
+   * @returns {Promise}
+   *
+   * @memberof Auth
+   */
+
+  loginWithOOB(parameters = {}) {
+    const payload = apply(
+      {
+        parameters: {
+          mfaToken: {required: true, toName: 'mfa_token'},
+          oobCode: {required: true, toName: 'oob_code'},
+          bindingCode: {required: false, toName: 'binding_code'},
+        },
+      },
+      parameters,
+    );
+
+    return this.client
+      .post('/oauth/token', {
+        ...payload,
+        client_id: this.clientId,
+        grant_type: 'http://auth0.com/oauth/grant-type/mfa-oob',
+      })
+      .then(responseHandler);
+  }
+
+  /**
+   * Log in a user using a multi-factor authentication Recovery Code after they have received the 'mfa_required' error.
+   * The MFA token tells the server the username or email, password, and realm values sent on the first request.
+   *
+   * Requires your client to have the **MFA** Grant Type enabled. See [Client Grant Types](https://auth0.com/docs/clients/client-grant-types) to learn how to enable it.
+   *
+   * @param {Object} parameters login with Recovery Code parameters
+   * @param {String} parameters.mfaToken the token received in the previous login response
+   * @param {String} parameters.recoveryCode the recovery code provided by the end-user.
+   * @returns {Promise}
+   *
+   * @memberof Auth
+   */
+  loginWithRecoveryCode(parameters = {}) {
+    const payload = apply(
+      {
+        parameters: {
+          mfaToken: {required: true, toName: 'mfa_token'},
+          recoveryCode: {required: true, toName: 'recovery_code'},
+        },
+      },
+      parameters,
+    );
+
+    return this.client
+      .post('/oauth/token', {
+        ...payload,
+        client_id: this.clientId,
+        grant_type: 'http://auth0.com/oauth/grant-type/mfa-recovery-code',
+      })
+      .then(responseHandler);
+  }
+
+  /**
+   * Request a challenge for multi-factor authentication (MFA) based on the challenge types supported by the application and user.
+   * The challenge type is how the user will get the challenge and prove possession. Supported challenge types include: "otp" and "oob".
+   *
+   * @param {Object} parameters challenge request parameters
+   * @param {String} parameters.mfaToken the token received in the previous login response
+   * @param {String} parameters.challengeType A whitespace-separated list of the challenges types accepted by your application.
+   * Accepted challenge types are oob or otp. Excluding this parameter means that your client application
+   * accepts all supported challenge types.
+   * @param {String} parameters.authenticatorId The ID of the authenticator to challenge.
+   * @returns {Promise}
+   *
+   * @memberof Auth
+   */
+  multifactorChallenge(parameters = {}) {
+    const payload = apply(
+      {
+        parameters: {
+          mfaToken: {required: true, toName: 'mfa_token'},
+          challengeType: {required: false, toName: 'challenge_type'},
+          authenticatorId: {required: false, toName: 'authenticator_id'},
+        },
+      },
+      parameters,
+    );
+    return this.client
+      .post('/mfa/challenge', {
+        ...payload,
+        client_id: this.clientId,
+      })
+      .then(responseHandler);
+  }
+
+  /**
    * Revoke an issued refresh token
    *
    * @param {Object} parameters revoke token parameters
