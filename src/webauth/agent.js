@@ -17,10 +17,18 @@ export default class Agent {
 
     return new Promise((resolve, reject) => {
       let eventURL;
+      const removeListener = () => {
+        //This is done to handle backward compatibility with RN <= 0.64 which doesn't return EmitterSubscription on addEventListener
+        if (eventURL === undefined) {
+          Linking.removeEventListener('url', urlHandler);
+        } else {
+          eventURL.remove();
+        }
+      };
       const urlHandler = event => {
         NativeModules.A0Auth0.hide();
         if (!skipLegacyListener) {
-          eventURL.remove();
+          removeListener();
         }
         resolve(event.url);
       };
@@ -31,7 +39,7 @@ export default class Agent {
       }
       NativeModules.A0Auth0.showUrl(url, ...params, (error, redirectURL) => {
         if (!skipLegacyListener) {
-          eventURL.remove();
+          removeListener();
         }
         if (error) {
           reject(error);
