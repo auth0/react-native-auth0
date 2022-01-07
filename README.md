@@ -280,6 +280,22 @@ auth0.auth
   .catch(console.error);
 ```
 
+#### Login using MFA with One Time Password code
+
+This call requires the client to have the _MFA_ Client Grant Type enabled. Check [this article](https://auth0.com/docs/clients/client-grant-types) to learn how to enable it.
+
+When you sign in to a multifactor authentication enabled connection using the `passwordRealm` method, you receive an error stating that MFA is required for that user along with an `mfa_token` value. Use this value to call `loginWithOTP` and complete the MFA flow passing the One Time Password from the enrolled MFA code generator app.
+
+```js
+auth0.auth
+  .loginWithOTP({
+    mfaToken: error.json.mfa_token,
+    otp: '{user entered OTP}',
+  })
+  .then(console.log)
+  .catch(console.error);
+```
+
 #### Login with Passwordless
 
 Passwordless is a two-step authentication flow that makes use of this type of connection. The **Passwordless OTP** grant is required to be enabled in your Auth0 application beforehand. Check [our guide](https://auth0.com/docs/dashboard/guides/applications/update-grant-types) to learn how to enable it.
