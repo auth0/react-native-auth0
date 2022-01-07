@@ -72,6 +72,26 @@
       <li class="nav-item">
         <span class="nav-item-type type-function">F</span
         ><span class="nav-item-name"
+          ><a href="Auth.html#.loginWithOOB">loginWithOOB</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.loginWithOTP">loginWithOTP</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.loginWithRecoveryCode"
+            >loginWithRecoveryCode</a
+          ></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
           ><a href="Auth.html#.loginWithSMS">loginWithSMS</a></span
         >
       </li>
@@ -79,6 +99,14 @@
         <span class="nav-item-type type-function">F</span
         ><span class="nav-item-name"
           ><a href="Auth.html#.logoutUrl">logoutUrl</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.multifactorChallenge"
+            >multifactorChallenge</a
+          ></span
         >
       </li>
       <li class="nav-item">
@@ -273,6 +301,10 @@
               >
               is generated from the code and explains all methods that are able
               to be used.
+            </li>
+            <li>
+              The <a href="FAQ.md">FAQ</a> answers some common questions about
+              react-native-auth0.
             </li>
           </ul>
           <h2>Requirements</h2>
@@ -631,31 +663,18 @@ const auth0 = new Auth0({
               provided callback.
             </p>
           </blockquote>
-          <h5>Disable Single Sign On (iOS 13+ only)</h5>
+          <h5>Default alert box on iOS</h5>
+          <p><img src="./sso-alert.png" alt="sso-alert" /></p>
           <p>
-            Use the <code>ephemeralSession</code> parameter to disable SSO on
-            iOS 13+. This way iOS will not display the consent popup that
-            otherwise shows up when SSO is enabled. It has no effect on older
-            versions of iOS or Android.
+            Check the <a href="FAQ.md">FAQ</a> for more information about the
+            alert box that pops up by default when using Web Authentication on
+            iOS.
           </p>
-          <pre class="prettyprint source lang-js"><code>auth0.webAuth
-  .authorize({scope: 'openid email profile'}, {ephemeralSession: true})
-  .then(credentials => console.log(credentials))
-  .catch(error => console.log(error));
-</code></pre>
           <h4>Logout</h4>
           <pre
             class="prettyprint source lang-js"
           ><code>auth0.webAuth.clearSession().catch(error => console.log(error));
 </code></pre>
-          <p>
-            If you're using the <code>ephemeralSession</code> parameter, you do
-            not need to call <code>clearSession()</code> to perform logout on
-            iOS, as there will be no cookies to remove. Just deleting the
-            credentials will suffice. You will still need to call
-            <code>clearSession()</code> on Android, though, as
-            <code>ephemeralSession</code> is iOS-only.
-          </p>
           <h3>Authentication API</h3>
           <h3>Important: Database Connection Authentication</h3>
           <p>
@@ -694,6 +713,31 @@ const auth0 = new Auth0({
           <h4>Getting new access token with refresh token</h4>
           <pre class="prettyprint source lang-js"><code>auth0.auth
   .refreshToken({refreshToken: 'the user refresh_token'})
+  .then(console.log)
+  .catch(console.error);
+</code></pre>
+          <h4>Login using MFA with One Time Password code</h4>
+          <p>
+            This call requires the client to have the <em>MFA</em> Client Grant
+            Type enabled. Check
+            <a href="https://auth0.com/docs/clients/client-grant-types"
+              >this article</a
+            >
+            to learn how to enable it.
+          </p>
+          <p>
+            When you sign in to a multifactor authentication enabled connection
+            using the <code>passwordRealm</code> method, you receive an error
+            stating that MFA is required for that user along with an
+            <code>mfa_token</code> value. Use this value to call
+            <code>loginWithOTP</code> and complete the MFA flow passing the One
+            Time Password from the enrolled MFA code generator app.
+          </p>
+          <pre class="prettyprint source lang-js"><code>auth0.auth
+  .loginWithOTP({
+    mfaToken: error.json.mfa_token,
+    otp: '{user entered OTP}',
+  })
   .then(console.log)
   .catch(console.error);
 </code></pre>
@@ -1022,8 +1066,8 @@ auth0.auth
 
     <footer>
       Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on
-      Tue Nov 30 2021 12:41:50 GMT-0300 (Argentina Standard Time) using the
-      Minami theme.
+      Fri Jan 07 2022 16:42:51 GMT+0100 (Central European Standard Time) using
+      the Minami theme.
     </footer>
 
     <script>

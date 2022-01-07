@@ -16,16 +16,31 @@ export default class Agent {
     }
 
     return new Promise((resolve, reject) => {
+      let eventURL;
+      const removeListener = () => {
+        //This is done to handle backward compatibility with RN <= 0.64 which doesn't return EmitterSubscription on addEventListener
+        if (eventURL === undefined) {
+          Linking.removeEventListener('url', urlHandler);
+        } else {
+          eventURL.remove();
+        }
+      };
       const urlHandler = event => {
         NativeModules.A0Auth0.hide();
-        Linking.removeEventListener('url', urlHandler);
+        if (!skipLegacyListener) {
+          removeListener();
+        }
         resolve(event.url);
       };
       const params =
         Platform.OS === 'ios' ? [ephemeralSession, closeOnLoad] : [closeOnLoad];
-      if (!skipLegacyListener) Linking.addEventListener('url', urlHandler);
+      if (!skipLegacyListener) {
+        eventURL = Linking.addEventListener('url', urlHandler);
+      }
       NativeModules.A0Auth0.showUrl(url, ...params, (error, redirectURL) => {
-        if (!skipLegacyListener) Linking.removeEventListener('url', urlHandler);
+        if (!skipLegacyListener) {
+          removeListener();
+        }
         if (error) {
           reject(error);
         } else if (redirectURL) {

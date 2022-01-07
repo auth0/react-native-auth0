@@ -693,4 +693,263 @@ describe('auth', () => {
       await expect(auth.createUser(parameters)).rejects.toMatchSnapshot();
     });
   });
+
+  describe('OTP flow', () => {
+    const parameters = {
+      mfaToken: '1234',
+      otp: '1234',
+    };
+
+    const notAssociatedError = {
+      status: 401,
+      body: {
+        name: 'unsupported_challenge_type',
+        error: 'unsupported_challenge_type',
+        error_description:
+          'User is not enrolled. You can use /mfa/associate endpoint to enroll the first authenticator.',
+      },
+      headers: {'Content-Type': 'application/json'},
+    };
+
+    const invalidOtpError = {
+      status: 403,
+      body: {
+        name: 'invalid_grant',
+        error: 'invalid_grant',
+        error_description: 'Invalid otp_code.',
+      },
+      headers: {'Content-Type': 'application/json'},
+    };
+
+    const success = {
+      accessToken: '1234',
+      expiresIn: 86400,
+      idToken: 'id-123',
+      scope: 'openid profile email address phone',
+      tokenType: 'Bearer',
+    };
+
+    it('should require MFA Token and OTP', async () => {
+      expect.assertions(1);
+      expect(() => auth.loginWithOTP({})).toThrowErrorMatchingSnapshot();
+    });
+
+    it('should handle unexpected error', async () => {
+      fetchMock.postOnce(
+        'https://samples.auth0.com/oauth/token',
+        unexpectedError,
+      );
+      expect.assertions(1);
+      await expect(auth.loginWithOTP(parameters)).rejects.toMatchSnapshot();
+    });
+
+    it('when MFA is not associated', async () => {
+      fetchMock.postOnce(
+        'https://samples.auth0.com/oauth/token',
+        notAssociatedError,
+      );
+      expect.assertions(1);
+      await expect(auth.loginWithOTP(parameters)).rejects.toMatchSnapshot();
+    });
+
+    it('when OTP Code is invalid', async () => {
+      fetchMock.postOnce(
+        'https://samples.auth0.com/oauth/token',
+        invalidOtpError,
+      );
+      expect.assertions(1);
+      await expect(auth.loginWithOTP(parameters)).rejects.toMatchSnapshot();
+    });
+
+    it('when MFA succeeds', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', success);
+      expect.assertions(1);
+      await expect(auth.loginWithOTP(parameters)).resolves.toMatchSnapshot();
+    });
+  });
+
+  describe('OOB flow', () => {
+    const parameters = {
+      mfaToken: '1234',
+      oobCode: '123',
+    };
+
+    const malformedOOBError = {
+      status: 403,
+      body: {
+        name: 'invalid_grant',
+        error: 'invalid_grant',
+        error_description: 'Malformed oob_code',
+      },
+      headers: {'Content-Type': 'application/json'},
+    };
+
+    const success = {
+      accessToken: '1234',
+      expiresIn: 86400,
+      idToken: 'id-123',
+      scope: 'openid profile email address phone',
+      tokenType: 'Bearer',
+    };
+
+    it('should require MFA Token and OOB Code', async () => {
+      expect.assertions(1);
+      expect(() => auth.loginWithOOB({})).toThrowErrorMatchingSnapshot();
+    });
+
+    it('binding code should be optional', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', {});
+      expect.assertions(1);
+      await expect(auth.loginWithOOB(parameters)).resolves.toMatchSnapshot();
+    });
+
+    it('should handle unexpected error', async () => {
+      fetchMock.postOnce(
+        'https://samples.auth0.com/oauth/token',
+        unexpectedError,
+      );
+      expect.assertions(1);
+      await expect(auth.loginWithOOB(parameters)).rejects.toMatchSnapshot();
+    });
+
+    it('should handle malformed OOB code', async () => {
+      fetchMock.postOnce(
+        'https://samples.auth0.com/oauth/token',
+        malformedOOBError,
+      );
+      expect.assertions(1);
+      await expect(auth.loginWithOOB(parameters)).rejects.toMatchSnapshot();
+    });
+
+    it('should handle success without binding code', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', success);
+      expect.assertions(1);
+      await expect(auth.loginWithOOB(parameters)).resolves.toMatchSnapshot();
+    });
+
+    it('should handle success with binding code', async () => {
+      parameters.bindingCode = '1234';
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', success);
+      expect.assertions(1);
+      await expect(auth.loginWithOOB(parameters)).resolves.toMatchSnapshot();
+    });
+  });
+
+  describe('Recovery Code flow', () => {
+    const parameters = {
+      mfaToken: '123',
+      recoveryCode: '123',
+    };
+
+    const success = {
+      accessToken: '1234',
+      expiresIn: 86400,
+      idToken: 'id-123',
+      scope: 'openid profile email address phone',
+      tokenType: 'Bearer',
+    };
+
+    const unAuthorizedClientError = {
+      status: 403,
+      body: {
+        name: 'unsupported_challenge_type',
+        error: 'unsupported_challenge_type',
+        error_description: 'User does not have a recovery-code.',
+      },
+      headers: {'Content-Type': 'application/json'},
+    };
+
+    it('should require MFA Token and Recovery Code', async () => {
+      expect.assertions(1);
+      expect(() =>
+        auth.loginWithRecoveryCode({}),
+      ).toThrowErrorMatchingSnapshot();
+    });
+
+    it('when user does not have Recovery Code', async () => {
+      fetchMock.postOnce(
+        'https://samples.auth0.com/oauth/token',
+        unAuthorizedClientError,
+      );
+      expect.assertions(1);
+      await expect(
+        auth.loginWithRecoveryCode(parameters),
+      ).rejects.toMatchSnapshot();
+    });
+
+    it('should handle unexpected error', async () => {
+      fetchMock.postOnce(
+        'https://samples.auth0.com/oauth/token',
+        unexpectedError,
+      );
+      expect.assertions(1);
+      await expect(
+        auth.loginWithRecoveryCode(parameters),
+      ).rejects.toMatchSnapshot();
+    });
+
+    it('when Recovery code succeeds', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', success);
+      expect.assertions(1);
+      await expect(
+        auth.loginWithRecoveryCode(parameters),
+      ).resolves.toMatchSnapshot();
+    });
+  });
+
+  describe('Multifactor Challenge Flow', () => {
+    const parameters = {
+      mfaToken: '123',
+    };
+
+    const success = {
+      bindingMethod: 'prompt',
+      challengeType: 'oob',
+      oobCode: 'oob-code',
+    };
+
+    it('should require MFA Token', async () => {
+      expect.assertions(1);
+      expect(() =>
+        auth.multifactorChallenge({}),
+      ).toThrowErrorMatchingSnapshot();
+    });
+
+    it('should handle Challenge Type and Authenticator ID as optional', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/mfa/challenge', {});
+      expect.assertions(1);
+      await expect(
+        auth.multifactorChallenge(parameters),
+      ).resolves.toMatchSnapshot();
+    });
+
+    it('should handle unexpected error', async () => {
+      fetchMock.postOnce(
+        'https://samples.auth0.com/mfa/challenge',
+        unexpectedError,
+      );
+      expect.assertions(1);
+      await expect(
+        auth.multifactorChallenge(parameters),
+      ).rejects.toMatchSnapshot();
+    });
+
+    it('should handle success', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/mfa/challenge', success);
+      expect.assertions(1);
+      await expect(
+        auth.multifactorChallenge(parameters),
+      ).resolves.toMatchSnapshot();
+    });
+
+    it('should handle success with optional parameters Challenge Type and Authenticator Id', async () => {
+      parameters.mfaToken = '123';
+      parameters.challengeType = '123';
+      fetchMock.postOnce('https://samples.auth0.com/mfa/challenge', success);
+      expect.assertions(1);
+      await expect(
+        auth.multifactorChallenge(parameters),
+      ).resolves.toMatchSnapshot();
+    });
+  });
 });
