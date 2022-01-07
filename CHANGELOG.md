@@ -1,5 +1,17 @@
 # Change Log
 
+## [v2.12.0](https://github.com/auth0/react-native-auth0/tree/v2.12.0) (2022-01-07)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.11.0...v2.12.0)
+
+**Added**
+
+- Feature: Implemented MFA APIs [\#442](https://github.com/auth0/react-native-auth0/pull/442) ([poovamraj](https://github.com/poovamraj))
+
+**Fixed**
+
+- Fix: Warning on RN65 while linking from agent.js [\#441](https://github.com/auth0/react-native-auth0/pull/441) ([poovamraj](https://github.com/poovamraj))
+
 ## [v2.11.0](https://github.com/auth0/react-native-auth0/tree/v2.11.0) (2021-11-30)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.10.0...v2.11.0)

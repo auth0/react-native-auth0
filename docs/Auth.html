@@ -72,6 +72,26 @@
       <li class="nav-item">
         <span class="nav-item-type type-function">F</span
         ><span class="nav-item-name"
+          ><a href="Auth.html#.loginWithOOB">loginWithOOB</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.loginWithOTP">loginWithOTP</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.loginWithRecoveryCode"
+            >loginWithRecoveryCode</a
+          ></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
           ><a href="Auth.html#.loginWithSMS">loginWithSMS</a></span
         >
       </li>
@@ -79,6 +99,14 @@
         <span class="nav-item-type type-function">F</span
         ><span class="nav-item-name"
           ><a href="Auth.html#.logoutUrl">logoutUrl</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
+          ><a href="Auth.html#.multifactorChallenge"
+            >multifactorChallenge</a
+          ></span
         >
       </li>
       <li class="nav-item">
@@ -387,7 +415,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line479">line 479</a>
+                    <a href="src_auth_index.js.html#line615">line 615</a>
                   </li>
                 </ul>
               </dd>
@@ -978,6 +1006,388 @@
           </div>
 
           <div class="section-method">
+            <h4 class="name" id=".loginWithOOB">
+              <span class="type-signature">(static) </span>loginWithOOB<span
+                class="signature"
+                >(parameters)</span
+              ><span class="type-signature"> &rarr; {Promise}</span>
+            </h4>
+
+            <div class="description">
+              <p>
+                Log in a user using an Out Of Band authentication code after
+                they have received the 'mfa_required' error. The MFA token tells
+                the server the username or email, password, and realm values
+                sent on the first request.
+              </p>
+              <p>
+                Requires your client to have the <strong>MFA OOB</strong> Grant
+                Type enabled. See
+                <a href="https://auth0.com/docs/clients/client-grant-types"
+                  >Client Grant Types</a
+                >
+                to learn how to enable it.
+              </p>
+            </div>
+
+            <dl class="details">
+              <dt class="tag-source">Source:</dt>
+              <dd class="tag-source">
+                <ul class="dummy">
+                  <li>
+                    <a href="src_auth_index.js.html">src/auth/index.js</a>,
+                    <a href="src_auth_index.js.html#line402">line 402</a>
+                  </li>
+                </ul>
+              </dd>
+            </dl>
+
+            <h5>Parameters:</h5>
+
+            <table class="params">
+              <thead>
+                <tr>
+                  <th>Name</th>
+
+                  <th>Type</th>
+
+                  <th class="last">Description</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td class="name"><code>parameters</code></td>
+
+                  <td class="type">
+                    <span class="param-type"><code>Object</code></span>
+                  </td>
+
+                  <td class="description last">
+                    <p>login with Recovery Code parameters</p>
+
+                    <table class="params">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+
+                          <th>Type</th>
+
+                          <th class="last">Description</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td class="name"><code>mfaToken</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>
+                              the token received in the previous login response
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>oobCode</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>
+                              the out of band code received in the challenge
+                              response.
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>bindingCode</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>
+                              [Optional] the code used to bind the side channel
+                              (used to deliver the challenge) with the main
+                              channel you are using to authenticate. This is
+                              usually an OTP-like code delivered as part of the
+                              challenge message.
+                            </p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="section-returns">
+              <h5>Returns:</h5>
+
+              <dl class="param-type">
+                <dt>
+                  Type:
+                </dt>
+                <dd>
+                  <span class="param-type"><code>Promise</code></span>
+                </dd>
+              </dl>
+            </div>
+          </div>
+
+          <div class="section-method">
+            <h4 class="name" id=".loginWithOTP">
+              <span class="type-signature">(static) </span>loginWithOTP<span
+                class="signature"
+                >(parameters)</span
+              ><span class="type-signature"> &rarr; {Promise}</span>
+            </h4>
+
+            <div class="description">
+              <p>
+                Log in a user using the One Time Password code after they have
+                received the 'mfa_required' error. The MFA token tells the
+                server the username or email, password, and realm values sent on
+                the first request.
+              </p>
+              <p>
+                Requires your client to have the <strong>MFA OTP</strong> Grant
+                Type enabled. See
+                <a href="https://auth0.com/docs/clients/client-grant-types"
+                  >Client Grant Types</a
+                >
+                to learn how to enable it.
+              </p>
+            </div>
+
+            <dl class="details">
+              <dt class="tag-source">Source:</dt>
+              <dd class="tag-source">
+                <ul class="dummy">
+                  <li>
+                    <a href="src_auth_index.js.html">src/auth/index.js</a>,
+                    <a href="src_auth_index.js.html#line367">line 367</a>
+                  </li>
+                </ul>
+              </dd>
+            </dl>
+
+            <h5>Parameters:</h5>
+
+            <table class="params">
+              <thead>
+                <tr>
+                  <th>Name</th>
+
+                  <th>Type</th>
+
+                  <th class="last">Description</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td class="name"><code>parameters</code></td>
+
+                  <td class="type">
+                    <span class="param-type"><code>Object</code></span>
+                  </td>
+
+                  <td class="description last">
+                    <p>login with OTP parameters</p>
+
+                    <table class="params">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+
+                          <th>Type</th>
+
+                          <th class="last">Description</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td class="name"><code>mfaToken</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>
+                              the token received in the previous login response
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>otp</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>
+                              the one time password code provided by the
+                              resource owner, typically obtained from an MFA
+                              application such as Google Authenticator or
+                              Guardian.
+                            </p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="section-returns">
+              <h5>Returns:</h5>
+
+              <dl class="param-type">
+                <dt>
+                  Type:
+                </dt>
+                <dd>
+                  <span class="param-type"><code>Promise</code></span>
+                </dd>
+              </dl>
+            </div>
+          </div>
+
+          <div class="section-method">
+            <h4 class="name" id=".loginWithRecoveryCode">
+              <span class="type-signature">(static) </span
+              >loginWithRecoveryCode<span class="signature">(parameters)</span
+              ><span class="type-signature"> &rarr; {Promise}</span>
+            </h4>
+
+            <div class="description">
+              <p>
+                Log in a user using a multi-factor authentication Recovery Code
+                after they have received the 'mfa_required' error. The MFA token
+                tells the server the username or email, password, and realm
+                values sent on the first request.
+              </p>
+              <p>
+                Requires your client to have the <strong>MFA</strong> Grant Type
+                enabled. See
+                <a href="https://auth0.com/docs/clients/client-grant-types"
+                  >Client Grant Types</a
+                >
+                to learn how to enable it.
+              </p>
+            </div>
+
+            <dl class="details">
+              <dt class="tag-source">Source:</dt>
+              <dd class="tag-source">
+                <ul class="dummy">
+                  <li>
+                    <a href="src_auth_index.js.html">src/auth/index.js</a>,
+                    <a href="src_auth_index.js.html#line436">line 436</a>
+                  </li>
+                </ul>
+              </dd>
+            </dl>
+
+            <h5>Parameters:</h5>
+
+            <table class="params">
+              <thead>
+                <tr>
+                  <th>Name</th>
+
+                  <th>Type</th>
+
+                  <th class="last">Description</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td class="name"><code>parameters</code></td>
+
+                  <td class="type">
+                    <span class="param-type"><code>Object</code></span>
+                  </td>
+
+                  <td class="description last">
+                    <p>login with Recovery Code parameters</p>
+
+                    <table class="params">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+
+                          <th>Type</th>
+
+                          <th class="last">Description</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td class="name"><code>mfaToken</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>
+                              the token received in the previous login response
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>recoveryCode</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>the recovery code provided by the end-user.</p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="section-returns">
+              <h5>Returns:</h5>
+
+              <dl class="param-type">
+                <dt>
+                  Type:
+                </dt>
+                <dd>
+                  <span class="param-type"><code>Promise</code></span>
+                </dd>
+              </dl>
+            </div>
+          </div>
+
+          <div class="section-method">
             <h4 class="name" id=".loginWithSMS">
               <span class="type-signature">(static) </span>loginWithSMS<span
                 class="signature"
@@ -1254,6 +1664,135 @@
               <div class="param-desc">
                 <p>logout url with specified parameters</p>
               </div>
+            </div>
+          </div>
+
+          <div class="section-method">
+            <h4 class="name" id=".multifactorChallenge">
+              <span class="type-signature">(static) </span
+              >multifactorChallenge<span class="signature">(parameters)</span
+              ><span class="type-signature"> &rarr; {Promise}</span>
+            </h4>
+
+            <div class="description">
+              <p>
+                Request a challenge for multi-factor authentication (MFA) based
+                on the challenge types supported by the application and user.
+                The challenge type is how the user will get the challenge and
+                prove possession. Supported challenge types include:
+                &quot;otp&quot; and &quot;oob&quot;.
+              </p>
+            </div>
+
+            <dl class="details">
+              <dt class="tag-source">Source:</dt>
+              <dd class="tag-source">
+                <ul class="dummy">
+                  <li>
+                    <a href="src_auth_index.js.html">src/auth/index.js</a>,
+                    <a href="src_auth_index.js.html#line470">line 470</a>
+                  </li>
+                </ul>
+              </dd>
+            </dl>
+
+            <h5>Parameters:</h5>
+
+            <table class="params">
+              <thead>
+                <tr>
+                  <th>Name</th>
+
+                  <th>Type</th>
+
+                  <th class="last">Description</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td class="name"><code>parameters</code></td>
+
+                  <td class="type">
+                    <span class="param-type"><code>Object</code></span>
+                  </td>
+
+                  <td class="description last">
+                    <p>challenge request parameters</p>
+
+                    <table class="params">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+
+                          <th>Type</th>
+
+                          <th class="last">Description</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td class="name"><code>mfaToken</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>
+                              the token received in the previous login response
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>challengeType</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>
+                              A whitespace-separated list of the challenges
+                              types accepted by your application. Accepted
+                              challenge types are oob or otp. Excluding this
+                              parameter means that your client application
+                              accepts all supported challenge types.
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>authenticatorId</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>The ID of the authenticator to challenge.</p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="section-returns">
+              <h5>Returns:</h5>
+
+              <dl class="param-type">
+                <dt>
+                  Type:
+                </dt>
+                <dd>
+                  <span class="param-type"><code>Promise</code></span>
+                </dd>
+              </dl>
             </div>
           </div>
 
@@ -1791,7 +2330,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line443">line 443</a>
+                    <a href="src_auth_index.js.html#line579">line 579</a>
                   </li>
                 </ul>
               </dd>
@@ -1895,7 +2434,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line362">line 362</a>
+                    <a href="src_auth_index.js.html#line498">line 498</a>
                   </li>
                 </ul>
               </dd>
@@ -1987,7 +2526,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="src_auth_index.js.html">src/auth/index.js</a>,
-                    <a href="src_auth_index.js.html#line393">line 393</a>
+                    <a href="src_auth_index.js.html#line529">line 529</a>
                   </li>
                 </ul>
               </dd>
@@ -2068,8 +2607,8 @@
 
     <footer>
       Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on
-      Tue Nov 30 2021 12:41:50 GMT-0300 (Argentina Standard Time) using the
-      Minami theme.
+      Fri Jan 07 2022 16:42:51 GMT+0100 (Central European Standard Time) using
+      the Minami theme.
     </footer>
 
     <script>
