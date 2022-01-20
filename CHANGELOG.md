@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.13.0](https://github.com/auth0/react-native-auth0/tree/v2.13.0) (2022-01-20)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.12.0...v2.13.0)
+
+**Added**
+
+- #409 Implement timeout support to networking Client [\#423](https://github.com/auth0/react-native-auth0/pull/423) ([mnylen](https://github.com/mnylen))
+
 ## [v2.12.0](https://github.com/auth0/react-native-auth0/tree/v2.12.0) (2022-01-07)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.11.0...v2.12.0)
