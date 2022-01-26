@@ -7,9 +7,7 @@ To test the SDK manually, follow the below steps
 - Change the path of react-native-auth0 in package.json to the path of the SDK in your computer
 
 ```shell
-...
 "react-native-auth0": "../{PATH IN COMPUTER}/react-native-auth0"
-...
 ```
 
 - Few folders have to be deleted to ensure the correct version of the SDK is installed.
