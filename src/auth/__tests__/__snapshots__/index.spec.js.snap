@@ -1,5 +1,108 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`auth Multifactor Challenge Flow should handle success 1`] = `
+Object {
+  "bindingMethod": "prompt",
+  "challengeType": "oob",
+  "oobCode": "oob-code",
+}
+`;
+
+exports[`auth Multifactor Challenge Flow should handle success with optional parameters Challenge Type and Authenticator Id 1`] = `
+Object {
+  "bindingMethod": "prompt",
+  "challengeType": "oob",
+  "oobCode": "oob-code",
+}
+`;
+
+exports[`auth Multifactor Challenge Flow should handle Challenge Type and Authenticator ID as optional 1`] = `Object {}`;
+
+exports[`auth Multifactor Challenge Flow should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+
+exports[`auth Multifactor Challenge Flow should require MFA Token 1`] = `
+"Missing required parameters: [
+  \\"mfa_token\\"
+]"
+`;
+
+exports[`auth OOB flow binding code should be optional 1`] = `Object {}`;
+
+exports[`auth OOB flow should handle malformed OOB code 1`] = `[invalid_grant: Malformed oob_code]`;
+
+exports[`auth OOB flow should handle success with binding code 1`] = `
+Object {
+  "accessToken": "1234",
+  "expiresIn": 86400,
+  "idToken": "id-123",
+  "scope": "openid profile email address phone",
+  "tokenType": "Bearer",
+}
+`;
+
+exports[`auth OOB flow should handle success without binding code 1`] = `
+Object {
+  "accessToken": "1234",
+  "expiresIn": 86400,
+  "idToken": "id-123",
+  "scope": "openid profile email address phone",
+  "tokenType": "Bearer",
+}
+`;
+
+exports[`auth OOB flow should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+
+exports[`auth OOB flow should require MFA Token and OOB Code 1`] = `
+"Missing required parameters: [
+  \\"mfa_token\\",
+  \\"oob_code\\"
+]"
+`;
+
+exports[`auth OTP flow should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+
+exports[`auth OTP flow should require MFA Token and OTP 1`] = `
+"Missing required parameters: [
+  \\"mfa_token\\",
+  \\"otp\\"
+]"
+`;
+
+exports[`auth OTP flow when MFA is not associated 1`] = `[unsupported_challenge_type: User is not enrolled. You can use /mfa/associate endpoint to enroll the first authenticator.]`;
+
+exports[`auth OTP flow when MFA succeeds 1`] = `
+Object {
+  "accessToken": "1234",
+  "expiresIn": 86400,
+  "idToken": "id-123",
+  "scope": "openid profile email address phone",
+  "tokenType": "Bearer",
+}
+`;
+
+exports[`auth OTP flow when OTP Code is invalid 1`] = `[invalid_grant: Invalid otp_code.]`;
+
+exports[`auth Recovery Code flow should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
+
+exports[`auth Recovery Code flow should require MFA Token and Recovery Code 1`] = `
+"Missing required parameters: [
+  \\"mfa_token\\",
+  \\"recovery_code\\"
+]"
+`;
+
+exports[`auth Recovery Code flow when Recovery code succeeds 1`] = `
+Object {
+  "accessToken": "1234",
+  "expiresIn": 86400,
+  "idToken": "id-123",
+  "scope": "openid profile email address phone",
+  "tokenType": "Bearer",
+}
+`;
+
+exports[`auth Recovery Code flow when user does not have Recovery Code 1`] = `[unsupported_challenge_type: User does not have a recovery-code.]`;
+
 exports[`auth authorizeUrl should return default authorize url 1`] = `"https://samples.auth0.com/authorize?response_type=code&redirect_uri=https%3A%2F%2Fmysite.com%2Fcallback&state=a_random_state&client_id=A_CLIENT_ID_OF_YOUR_ACCOUNT&auth0Client=eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0%3D"`;
 
 exports[`auth authorizeUrl should return default authorize url with extra parameters 1`] = `"https://samples.auth0.com/authorize?response_type=code&redirect_uri=https%3A%2F%2Fmysite.com%2Fcallback&state=a_random_state&connection=facebook&client_id=A_CLIENT_ID_OF_YOUR_ACCOUNT&auth0Client=eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0%3D"`;
@@ -21,6 +124,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -60,6 +164,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -75,6 +180,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -104,6 +210,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -134,6 +241,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -149,6 +257,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -164,6 +273,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -199,6 +309,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -214,6 +325,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -229,6 +341,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -244,6 +357,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -259,6 +373,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -274,6 +389,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -289,6 +405,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -304,6 +421,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -319,6 +437,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -334,6 +453,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -349,6 +469,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -382,6 +503,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -403,6 +525,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -443,6 +566,7 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "GET",
+    "signal": AbortSignal {},
   },
 ]
 `;
