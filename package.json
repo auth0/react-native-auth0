@@ -46,7 +46,7 @@
     "semver": "^6.3.0"
   },
   "dependencies": {
-    "@expo/config-plugins": "^4.0.6",
+    "@expo/config-plugins": "^4.0.16",
     "base-64": "^0.1.0",
     "crypto-js": "^3.3.0",
     "jsbn": "^1.1.0",

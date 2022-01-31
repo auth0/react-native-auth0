@@ -176,7 +176,7 @@ If you use a value other than `$(PRODUCT_BUNDLE_IDENTIFIER)` in the `CFBundleURL
 
 Open your app's `app.json` and add the following (note the second parameter with the empty object ({}) in the array is the plugin config):
 
-```
+```json
   "expo": {
     plugins: [['react-native-auth0', {}]],
     ...
@@ -184,19 +184,9 @@ Open your app's `app.json` and add the following (note the second parameter with
 ```
 
 In order for android builds to work, you will need to specify an auth0 domain.
-There are two ways to do this with the config plugin:
-
-**With environment variable**:
-
-Set `EXPO_AUTH0_DOMAIN` or `EXPO_AUTH0_DOMAIN_ANDROID` in your eas.json (see: [Expo EAS Docs](https://docs.expo.dev/build-reference/variables/)) to set the values required in the build.gradle.
-
-This can be useful when you have multiple tenants that correspond with each EAS build target.
-
-**With app.json**
-
 Open your app's `app.json` and add the following under the "expo" key:
 
-```
+```json
   "expo": {
     "plugins": [['react-native-auth0', { "domain": 'samples.auth0.com' }]],
     ...
@@ -205,33 +195,23 @@ Open your app's `app.json` and add the following under the "expo" key:
 
 or:
 
-```
+```json
   "expo": {
     "plugins": [['react-native-auth0', { "android": { "domain": 'samples.auth0.com' }]],
     ...
   }
 ```
 
-**All possible environment values for the config plugin**:
-| Name | Description |
-| ----------- | ----------- |
-| EXPO_AUTH0_DOMAIN | Sets the top level domain that is used for Android setup only at this time |
-| EXPO_AUTH0_DOMAIN_ANDROID | Same as `EXPO_AUTH0_DOMAIN` |
-| EXPO_AUTH0_SCHEME | Sets the top level scheme that is used for both iOS and Android setup |
-| EXPO_AUTH0_SCHEME_IOS | Sets the iOS specific scheme that is used for setup. Takes precendence over `EXPO_AUTH0_SCHEME` |
-| EXPO_AUTH0_SCHEME_ANDROID | Sets the Android specific scheme that is used for setup. Takes precendence over `EXPO_AUTH0_SCHEME` |
-| EXPO_AUTH0_DISABLE_PLIST_MOD | Do not add an entry under `CFBundleURLTypes` in the iOS Info.plist |
-
 **All possible app.json values (under the `expo` key)**:
-
-| Name                | Description                                                                              |
+| Name | Description |
 | ------------------- | ---------------------------------------------------------------------------------------- |
-| domain              | Sets the top level domain that is used for Android setup only at this time               |
-| android.domain      | Same as `domain`                                                                         |
-| scheme              | Sets the top level scheme that is used for both iOS and Android setup                    |
-| ios.scheme          | Sets the iOS specific scheme that is used for setup. Takes precendence over `scheme`     |
-| android.scheme      | Sets the Android specific scheme that is used for setup. Takes precendence over `scheme` |
-| ios.disablePlistMod | Do not add an entry under `CFBundleURLTypes` in the iOS Info.plist                       |
+| domain | Sets the top level domain that is used for Android setup only at this time |
+| android.domain | Same as `domain` |
+| scheme | Sets the top level scheme that is used for both iOS and Android setup |
+| ios.scheme | Sets the iOS specific scheme that is used for setup. Takes precendence over `scheme` |
+| android.scheme | Sets the Android specific scheme that is used for setup. Takes precendence over `scheme` |
+
+If you need dynamic values, consider using a [`config.js`](https://docs.expo.dev/workflow/configuration/#dynamic-configuration-with-appconfigjs) file;
 
 ### Callback URL(s)
 

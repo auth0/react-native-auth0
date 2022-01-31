@@ -7,18 +7,22 @@ import {
 } from '@expo/config-plugins';
 import {mergeContents} from '@expo/config-plugins/build/utils/generateCode';
 
-const pkg = require('react-native-auth0/package.json');
+let pkg: {name: string; version?: string} = {
+  name: 'react-native-auth0',
+};
+try {
+  pkg = require('react-native-auth0/package.json');
+} catch {
+  // empty catch block
+}
 
 export const addAuth0GradleValues = (
   src: string,
   auth0Domain?: string,
-  auth0Scheme?: string,
+  auth0Scheme = 'applicationId',
 ): string => {
   if (!auth0Domain) {
     throw Error('No auth0 domain specified in expo config');
-  }
-  if (!auth0Scheme) {
-    throw Error('No auth0 scheme specified in expo config');
   }
   return mergeContents({
     tag: 'react-native-auth0-manifest-placeholder',
@@ -36,17 +40,8 @@ const withAndroidAuth0Gradle: ConfigPlugin<Auth0PluginConfig | void> = (
 ) => {
   return withAppBuildGradle(config, config => {
     if (config.modResults.language === 'groovy') {
-      const auth0Domain =
-        process.env.EXPO_AUTH0_DOMAIN_ANDROID ||
-        process.env.EXPO_AUTH0_DOMAIN ||
-        android?.domain ||
-        domain;
-      const auth0Scheme =
-        process.env.EXPO_AUTH0_SCHEME_ANDROID ||
-        process.env.EXPO_AUTH0_SCHEME ||
-        android?.scheme ||
-        scheme ||
-        '${applicationId}';
+      const auth0Domain = android?.domain || domain;
+      const auth0Scheme = android?.scheme || scheme || '${applicationId}';
 
       config.modResults.contents = addAuth0GradleValues(
         config.modResults.contents,
@@ -110,19 +105,21 @@ const withIOSAuth0InfoPList: ConfigPlugin<Auth0PluginConfig | void> = (
   {ios, scheme} = {},
 ) => {
   return withInfoPlist(config, config => {
-    if (!process.env.EXPO_AUTH0_DISABLE_PLIST_MOD && !ios?.disablePListMod) {
-      if (!config.modResults.CFBundleURLTypes) {
-        config.modResults.CFBundleURLTypes = [];
+    if (!config.modResults.CFBundleURLTypes) {
+      config.modResults.CFBundleURLTypes = [];
+    }
+    const auth0Scheme = ios?.scheme || scheme;
+    if (auth0Scheme) {
+      if (
+        config.modResults.CFBundleURLTypes.some(({CFBundleURLSchemes}) =>
+          CFBundleURLSchemes.includes(auth0Scheme),
+        )
+      ) {
+        return config;
       }
       config.modResults.CFBundleURLTypes.push({
         CFBundleURLName: 'auth0',
-        CFBundleURLSchemes: [
-          process.env.EXPO_AUTH0_SCHEME_IOS ||
-            process.env.EXPO_AUTH0_SCHEME ||
-            ios?.scheme ||
-            scheme ||
-            '$(PRODUCT_BUNDLE_IDENTIFIER)',
-        ],
+        CFBundleURLSchemes: [auth0Scheme],
       });
     }
     return config;
@@ -131,7 +128,6 @@ const withIOSAuth0InfoPList: ConfigPlugin<Auth0PluginConfig | void> = (
 
 type Auth0IOSConfig = {
   scheme?: string;
-  disablePListMod?: boolean;
 };
 
 type Auth0AndroidConfig = {
