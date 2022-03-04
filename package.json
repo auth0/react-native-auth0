@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "base-64": "^0.1.0",
-    "crypto-js": "^3.3.0",
+    "crypto-js": "^4.0.0",
     "jsbn": "^1.1.0",
     "jwt-decode": "^2.2.0",
     "url": "^0.11.0"
