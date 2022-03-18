@@ -105,6 +105,20 @@ describe('Agent', () => {
         A0Auth0.error = new Error('failed to load');
         await expect(agent.show('https://auth0.com')).rejects.toMatchSnapshot();
       });
+
+      it('should reject with error when both error and redirectURL are missing', async () => {
+        NativeModules.A0Auth0.showUrl = (...args) => {
+          const callback = args[args.length - 1];
+          callback(null, null);
+        };
+        expect.assertions(1);
+        try {
+          await agent.show('https://auth0.com');
+          fail('should have thrown error');
+        } catch (e) {
+          expect(e).toEqual(new Error('Unknown WebAuth error'));
+        }
+      });
     });
   });
 

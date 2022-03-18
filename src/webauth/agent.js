@@ -47,6 +47,8 @@ export default class Agent {
           resolve(redirectURL);
         } else if (closeOnLoad) {
           resolve();
+        } else {
+          reject(new Error('Unknown WebAuth error'));
         }
       });
     });
