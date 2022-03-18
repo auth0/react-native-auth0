@@ -114,7 +114,6 @@ describe('Agent', () => {
         expect.assertions(1);
         try {
           await agent.show('https://auth0.com');
-          fail('should have thrown error');
         } catch (e) {
           expect(e).toEqual(new Error('Unknown WebAuth error'));
         }
