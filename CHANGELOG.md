@@ -1,5 +1,18 @@
 # Change Log
 
+## [v2.13.1](https://github.com/auth0/react-native-auth0/tree/v2.13.1) (2022-04-01)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.13.0...v2.13.1)
+
+**Changed**
+
+- [Snyk] Security upgrade crypto-js from 3.3.0 to 4.0.0 [\#457](https://github.com/auth0/react-native-auth0/pull/457) ([snyk-bot](https://github.com/snyk-bot))
+
+**Fixed**
+
+- Fix iOS module import for Expo SDK 44 [\#455](https://github.com/auth0/react-native-auth0/pull/455) ([Bardiamist](https://github.com/Bardiamist))
+- Fix promise that never completes [SDK-3216][\#464](https://github.com/auth0/react-native-auth0/pull/464) ([Widcket](https://github.com/Widcket))
+
 ## [v2.13.0](https://github.com/auth0/react-native-auth0/tree/v2.13.0) (2022-01-27)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.12.0...v2.13.0)
