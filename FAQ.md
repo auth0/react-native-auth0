@@ -9,7 +9,7 @@
 
 ## 1. How can I have separate Auth0 domains for each environment on Android?
 
-This library internally declares a `RedirectActivity` along with an **intent-filter** in its Android Manifest file to handle the Web Auth callback URL. While this approach prevents the developer from adding an activity declaration to their application's Android Manifest file, it requires the use of [Manifest Placeholders](https://developer.android.com/studio/build/manage-manifests#inject_build_variables_into_the_manifest).
+This library internally declares a `RedirectActivity` along with an **intent-filter** in its Android Manifest file to handle the Web Auth callback and logout URLs. While this approach prevents the developer from adding an activity declaration to their application's Android Manifest file, it requires the use of [Manifest Placeholders](https://developer.android.com/studio/build/manage-manifests#inject_build_variables_into_the_manifest).
 
 Alternatively, you can re-declare the `RedirectActivity` in the `AndroidManifest.xml` file with your own **intent-filter** so it overrides the library's default one. If you do this then the `manifestPlaceholders` don't need to be set as long as the activity contains `tools:node="replace"` like in the snippet below.
 
