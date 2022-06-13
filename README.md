@@ -342,7 +342,7 @@ or
 ```js
 auth0.auth
   .loginWithSMS({
-    phoneNumber: 'info@auth0.com',
+    phoneNumber: '+5491159991000',
     code: '123456',
   })
   .then(console.log)
