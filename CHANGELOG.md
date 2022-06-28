@@ -1,5 +1,18 @@
 # Change Log
 
+## [v2.13.2](https://github.com/auth0/react-native-auth0/tree/v2.13.2) (2022-06-28)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.13.1...v2.13.2)
+
+**Fixed**
+
+- [SDK-3458] Support RN version 69 [\#488](https://github.com/auth0/react-native-auth0/pull/488) ([poovamraj](https://github.com/poovamraj))
+
+**Security**
+
+- Bump simple-plist from 1.1.0 to 1.3.1 [\#478](https://github.com/auth0/react-native-auth0/pull/478) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump async from 2.6.3 to 2.6.4 [\#472](https://github.com/auth0/react-native-auth0/pull/472) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v2.13.1](https://github.com/auth0/react-native-auth0/tree/v2.13.1) (2022-04-01)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.13.0...v2.13.1)
