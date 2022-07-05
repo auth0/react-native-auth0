@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => '12.4' }
   s.source       = { :git => 'https://github.com/auth0/react-native-auth0.git', :tag => "v#{s.version}" }
 
-  s.source_files = 'ios/**/*.{h,m,mm,swift}'
+  s.source_files = ['ios/A0Auth0.h', 'ios/A0Auth0.m']
   s.requires_arc = true
 
   s.dependency 'React-Core'
