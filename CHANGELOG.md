@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.13.3](https://github.com/auth0/react-native-auth0/tree/v2.13.3) (2022-07-06)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.13.2...v2.13.3)
+
+**Fixed**
+
+- Move `Podspec` to the root [\#490](https://github.com/auth0/react-native-auth0/pull/490) ([Widcket](https://github.com/Widcket))
+
 ## [v2.13.2](https://github.com/auth0/react-native-auth0/tree/v2.13.2) (2022-06-28)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.13.1...v2.13.2)
