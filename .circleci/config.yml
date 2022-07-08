@@ -1,6 +1,9 @@
 version: 2.1
+
 orbs:
   ship: auth0/ship@0.2.0
+  codecov: codecov/codecov@3
+
 jobs:
   build:
     executor: ship/node
@@ -9,7 +12,9 @@ jobs:
       - ship/node-install-packages:
           pkg-manager: yarn
       - run: yarn run test:ci
-      - run: bash <(curl -s https://codecov.io/bash) -Z -C $CIRCLE_SHA1 -f coverage/coverage-final.json
+      - codecov/upload:
+          file: coverage/coverage-final.json
+
 workflows:
   build-and-test:
     jobs:
