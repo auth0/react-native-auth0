@@ -269,11 +269,13 @@ auth0.webAuth
 
 > Web Authentication flows require a Browser application installed on the device. When no Browser is available, an error of type `a0.browser_not_available` will be raised via the provided callback.
 
-##### Default alert box on iOS
+##### SSO Alert Box (iOS)
 
-![sso-alert](./sso-alert.png)
+![ios-sso-alert](assets/ios-sso-alert.png)
 
-Check the [FAQ](FAQ.md) for more information about the alert box that pops up by default when using Web Authentication on iOS.
+Check the [FAQ](FAQ.md) for more information about the alert box that pops up **by default** when using Web Auth on iOS.
+
+> See also [this blog post](https://developer.okta.com/blog/2022/01/13/mobile-sso) for a detailed overview of Single Sign-On (SSO) on iOS.
 
 #### Logout
 
@@ -381,7 +383,7 @@ or
 ```js
 auth0.auth
   .loginWithSMS({
-    phoneNumber: 'info@auth0.com',
+    phoneNumber: '+5491159991000',
     code: '123456',
   })
   .then(console.log)

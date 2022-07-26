@@ -1,5 +1,39 @@
 # Change Log
 
+## [v2.13.3](https://github.com/auth0/react-native-auth0/tree/v2.13.3) (2022-07-06)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.13.2...v2.13.3)
+
+**Fixed**
+
+- Move `Podspec` to the root [\#490](https://github.com/auth0/react-native-auth0/pull/490) ([Widcket](https://github.com/Widcket))
+
+## [v2.13.2](https://github.com/auth0/react-native-auth0/tree/v2.13.2) (2022-06-28)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.13.1...v2.13.2)
+
+**Fixed**
+
+- [SDK-3458] Support RN version 69 [\#488](https://github.com/auth0/react-native-auth0/pull/488) ([poovamraj](https://github.com/poovamraj))
+
+**Security**
+
+- Bump simple-plist from 1.1.0 to 1.3.1 [\#478](https://github.com/auth0/react-native-auth0/pull/478) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump async from 2.6.3 to 2.6.4 [\#472](https://github.com/auth0/react-native-auth0/pull/472) ([dependabot[bot]](https://github.com/apps/dependabot))
+
+## [v2.13.1](https://github.com/auth0/react-native-auth0/tree/v2.13.1) (2022-04-01)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.13.0...v2.13.1)
+
+**Changed**
+
+- [Snyk] Security upgrade crypto-js from 3.3.0 to 4.0.0 [\#457](https://github.com/auth0/react-native-auth0/pull/457) ([snyk-bot](https://github.com/snyk-bot))
+
+**Fixed**
+
+- Fix iOS module import for Expo SDK 44 [\#455](https://github.com/auth0/react-native-auth0/pull/455) ([Bardiamist](https://github.com/Bardiamist))
+- Fix promise that never completes [SDK-3216][\#464](https://github.com/auth0/react-native-auth0/pull/464) ([Widcket](https://github.com/Widcket))
+
 ## [v2.13.0](https://github.com/auth0/react-native-auth0/tree/v2.13.0) (2022-01-27)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.12.0...v2.13.0)
