@@ -54,6 +54,7 @@
     "crypto-js": "^4.0.0",
     "jsbn": "^1.1.0",
     "jwt-decode": "^2.2.0",
+    "prop-types": "^15.8.1",
     "url": "^0.11.0"
   },
   "jest": {
