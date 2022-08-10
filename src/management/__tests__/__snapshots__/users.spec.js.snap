@@ -128,7 +128,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "GET",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -262,7 +283,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "PATCH",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
