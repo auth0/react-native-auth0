@@ -1,23 +1,67 @@
-import React, {useState} from 'react';
+import React, {useReducer, useState} from 'react';
+import {useCallback, useMemo} from 'react';
+import jwt_decode from 'jwt-decode';
 import PropTypes from 'prop-types';
 import Auth0Context from './auth0-context';
-import WebAuth from '../webauth';
-import {useCallback} from 'react';
+import Auth0 from '../../index';
+import reducer from './reducer';
+import {idTokenNonProfileClaims} from '../jwt/utils';
+
+const initialState = {
+  isLoading: true,
+  user: null,
+  error: null,
+};
+
+/**
+ * @ignore
+ */
+const getIdTokenProfileClaims = idToken => {
+  const payload = jwt_decode(idToken);
+
+  const profileClaims = Object.keys(payload).reduce((profile, claim) => {
+    if (!idTokenNonProfileClaims.includes(claim)) {
+      profile[claim] = payload[claim];
+    }
+
+    return profile;
+  }, {});
+
+  return profileClaims;
+};
 
 const Auth0Provider = ({domain, clientId, children}) => {
-  const [client] = useState(new WebAuth({domain, clientId}));
+  const [client] = useState(new Auth0({domain, clientId}));
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  const api = {
-    error: null,
-    user: null,
-    isLoading: true,
-    authorize: useCallback(() => console.log('Calling authorize')),
-    logout: useCallback(() => {
-      console.log('Logging out...');
+  const authorize = useCallback(
+    async (...options) => {
+      const credentials = await client.webAuth.authorize(...options);
+      const claims = getIdTokenProfileClaims(credentials.idToken);
+
+      dispatch({type: 'LOGIN_COMPLETE', user: claims});
+    },
+    [client],
+  );
+
+  const logout = useCallback(() => {
+    console.log('Logging out...');
+  }, [client]);
+
+  const contextValue = useMemo(
+    () => ({
+      ...state,
+      authorize,
+      logout,
     }),
-  };
+    [state, authorize, logout],
+  );
 
-  return <Auth0Context.Provider value={api}>{children}</Auth0Context.Provider>;
+  return (
+    <Auth0Context.Provider value={contextValue}>
+      {children}
+    </Auth0Context.Provider>
+  );
 };
 
 Auth0Provider.propTypes = {
