@@ -24,13 +24,16 @@ function makeJwt(claims) {
 }
 
 const mockIdToken = makeJwt();
+const mockClearSession = jest.fn().mockImplementation(() => Promise.resolve());
 
-const mockAuthorize = jest.fn().mockImplementation(() => ({
+const mockCredentials = {
   idToken: mockIdToken,
   accessToken: 'ACCESS TOKEN',
-}));
+};
 
-const mockClearSession = jest.fn().mockImplementation(() => Promise.resolve());
+const mockAuthorize = jest
+  .fn()
+  .mockImplementation(() => Promise.resolve(mockCredentials));
 
 const wrapper = ({children}) => (
   <Auth0Provider domain="DOMAIN" clientId="CLIENT ID">
@@ -95,10 +98,11 @@ describe('The useAuth0 hook', () => {
 
   it('can authorize', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const credentials = result.current.authorize();
 
-    result.current.authorize();
     await waitForNextUpdate();
     expect(result.current.user).not.toBeNull();
+    expect(credentials).resolves.toMatchObject(mockCredentials);
   });
 
   it('can authorize, passing through all parameters', async () => {

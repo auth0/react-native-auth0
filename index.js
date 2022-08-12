@@ -2,6 +2,8 @@ import Auth from './src/auth';
 import Users from './src/management/users';
 import WebAuth from './src/webauth';
 export {TimeoutError} from './src/utils/fetchWithTimeout';
+export {default as useAuth0} from './src/hooks/use-auth0';
+export {default as Auth0Provider} from './src/hooks/auth0-provider';
 
 /**
  * Auth0 for React Native client

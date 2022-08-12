@@ -38,8 +38,8 @@ const Auth0Provider = ({domain, clientId, children}) => {
     async (...options) => {
       const credentials = await client.webAuth.authorize(...options);
       const claims = getIdTokenProfileClaims(credentials.idToken);
-
       dispatch({type: 'LOGIN_COMPLETE', user: claims});
+      return credentials;
     },
     [client],
   );
