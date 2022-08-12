@@ -58,7 +58,7 @@ export default class CredentialsManager {
   }
 
   /**
-   * Gets the credential that has already been saved
+   * Gets the credentials that has already been saved
    *
    * @param {String} scope optional - the scope to request for the access token. If null is passed, the previous scope will be kept.
    * @param {String} minTtl optional - the minimum time in seconds that the access token should last before expiration.
