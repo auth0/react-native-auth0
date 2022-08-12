@@ -44,17 +44,21 @@ const Auth0Provider = ({domain, clientId, children}) => {
     [client],
   );
 
-  const logout = useCallback(() => {
-    console.log('Logging out...');
-  }, [client]);
+  const clearSession = useCallback(
+    async (...options) => {
+      await client.webAuth.clearSession(...options);
+      dispatch({type: 'LOGOUT_COMPLETE'});
+    },
+    [client],
+  );
 
   const contextValue = useMemo(
     () => ({
       ...state,
       authorize,
-      logout,
+      clearSession,
     }),
-    [state, authorize, logout],
+    [state, authorize, clearSession],
   );
 
   return (
