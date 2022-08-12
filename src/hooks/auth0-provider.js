@@ -3,7 +3,7 @@ import {useCallback, useMemo} from 'react';
 import jwt_decode from 'jwt-decode';
 import PropTypes from 'prop-types';
 import Auth0Context from './auth0-context';
-import Auth0 from '../../index';
+import Auth0 from '../auth0';
 import reducer from './reducer';
 import {idTokenNonProfileClaims} from '../jwt/utils';
 

@@ -41,7 +41,7 @@ const wrapper = ({children}) => (
   </Auth0Provider>
 );
 
-jest.mock('../../../index', () => {
+jest.mock('../../auth0', () => {
   return jest.fn().mockImplementation(() => ({
     webAuth: {
       authorize: mockAuthorize,
