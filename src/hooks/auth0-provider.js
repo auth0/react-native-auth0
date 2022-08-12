@@ -36,18 +36,28 @@ const Auth0Provider = ({domain, clientId, children}) => {
 
   const authorize = useCallback(
     async (...options) => {
-      const credentials = await client.webAuth.authorize(...options);
-      const claims = getIdTokenProfileClaims(credentials.idToken);
-      dispatch({type: 'LOGIN_COMPLETE', user: claims});
-      return credentials;
+      try {
+        const credentials = await client.webAuth.authorize(...options);
+        const claims = getIdTokenProfileClaims(credentials.idToken);
+        dispatch({type: 'LOGIN_COMPLETE', user: claims});
+        return credentials;
+      } catch (error) {
+        dispatch({type: 'ERROR', error});
+        return;
+      }
     },
     [client],
   );
 
   const clearSession = useCallback(
     async (...options) => {
-      await client.webAuth.clearSession(...options);
-      dispatch({type: 'LOGOUT_COMPLETE'});
+      try {
+        await client.webAuth.clearSession(...options);
+        dispatch({type: 'LOGOUT_COMPLETE'});
+      } catch (error) {
+        dispatch({type: 'ERROR', error});
+        return;
+      }
     },
     [client],
   );

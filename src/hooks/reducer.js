@@ -1,10 +1,13 @@
 const reducer = (state, action) => {
   switch (action.type) {
     case 'LOGIN_COMPLETE':
-      return {...state, user: action.user};
+      return {...state, error: null, user: action.user};
 
     case 'LOGOUT_COMPLETE':
-      return {...state, user: null};
+      return {...state, error: null, user: null};
+
+    case 'ERROR':
+      return {...state, error: action.error};
   }
 };
 

@@ -138,4 +138,56 @@ describe('The useAuth0 hook', () => {
     await waitForNextUpdate();
     expect(mockClearSession).toHaveBeenCalledWith({parameter: 1}, {option: 1});
   });
+
+  it('sets the error property when an error is raised in authorize', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const errorToThrow = new Error('Authorize error');
+
+    mockAuthorize.mockRejectedValue(errorToThrow);
+
+    result.current.authorize();
+    await waitForNextUpdate();
+    expect(result.current.error).toBe(errorToThrow);
+  });
+
+  it('clears the error on successful login', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const errorToThrow = new Error('Authorize error');
+
+    mockAuthorize.mockRejectedValueOnce(errorToThrow);
+    mockAuthorize.mockResolvedValue(mockCredentials);
+
+    result.current.authorize();
+    await waitForNextUpdate();
+    expect(result.current.error).toBe(errorToThrow);
+    result.current.authorize();
+    await waitForNextUpdate();
+    expect(result.current.error).toBeNull();
+  });
+
+  it('sets the error property when an error is raised in clearSession', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const errorToThrow = new Error('Authorize error');
+
+    mockClearSession.mockRejectedValue(errorToThrow);
+
+    result.current.clearSession();
+    await waitForNextUpdate();
+    expect(result.current.error).toBe(errorToThrow);
+  });
+
+  it('clears the error on successful logout', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const errorToThrow = new Error('Authorize error');
+
+    mockClearSession.mockRejectedValueOnce(errorToThrow);
+    mockClearSession.mockResolvedValue();
+
+    result.current.clearSession();
+    await waitForNextUpdate();
+    expect(result.current.error).toBe(errorToThrow);
+    result.current.clearSession();
+    await waitForNextUpdate();
+    expect(result.current.error).toBeNull();
+  });
 });
