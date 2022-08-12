@@ -86,7 +86,7 @@ export default class CredentialsManager {
   }
 
   /**
-   * Gets the credential that has already been saved
+   * Gets the credentials that has already been saved
    *
    * @param {String} title optional - the text to use as title in the authentication screen. Passing null will result in using the OS's default value.
    * @param {String} description optional - the text to use as description in the authentication screen. On some Android versions it might not be shown. Passing null will result in using the OS's default value.
