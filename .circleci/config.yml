@@ -6,7 +6,9 @@ orbs:
 
 jobs:
   build:
-    executor: ship/node
+    executor:
+      name: ship/node
+      tag: 16.10.0
     steps:
       - checkout
       - ship/node-install-packages:
