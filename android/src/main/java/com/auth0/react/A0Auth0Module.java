@@ -114,8 +114,9 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void clearCredentials() {
+    public void clearCredentials(Promise promise) {
         this.secureCredentialsManager.clearCredentials();
+        promise.resolve(true);
     }
 
     @ReactMethod
