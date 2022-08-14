@@ -52,6 +52,26 @@ RCT_EXPORT_METHOD(initializeCredentialManager:(NSString *)clientId domain:(NSStr
     [self tryAndInitializeCredentialManager:clientId domain:domain];
 }
 
+RCT_EXPORT_METHOD(saveCredentials:(NSDictionary *)credentials resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.credentialsManagerBridge saveCredentialsWithCredentialsMap:credentials resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(getCredentials:(NSString *)scope minTTL:(NSInteger)minTTL parameters:(NSDictionary *)parameters resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.credentialsManagerBridge getCredentialsWithScope:scope minTTL:minTTL parameters:parameters resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(hasValidCredentials:(NSInteger)minTTL resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.credentialsManagerBridge hasValidCredentialsWithMinTTL:minTTL resolve:resolve];
+}
+
+RCT_EXPORT_METHOD(clearCredentials:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.credentialsManagerBridge clearCredentialsWithResolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(enableLocalAuthentication:(NSString *)title cancelTitle:(NSString *)cancelTitle fallbackTitle:(NSString *)fallbackTitle) {
+    [self.credentialsManagerBridge enableLocalAuthenticationWithTitle:title cancelTitle:title fallbackTitle:title];
+}
+
 RCT_EXPORT_METHOD(showUrl:(NSString *)urlString
                   usingEphemeralSession:(BOOL)ephemeralSession
                   closeOnLoad:(BOOL)closeOnLoad

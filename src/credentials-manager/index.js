@@ -1,4 +1,4 @@
-import {NativeModules} from 'react-native';
+import {Platform, NativeModules} from 'react-native';
 import CredentialsManagerError from './credentialsManagerError';
 
 export default class CredentialsManager {
@@ -88,19 +88,31 @@ export default class CredentialsManager {
   /**
    * Gets the credential that has already been saved
    *
-   * @param {String} title optional - the text to use as title in the authentication screen. Passing null will result in using the OS's default value.
-   * @param {String} description optional - the text to use as description in the authentication screen. On some Android versions it might not be shown. Passing null will result in using the OS's default value.
+   * @param {String} title optional - the text to use as title in the authentication screen. Passing null will result in using the OS's default value in Android and "Please authenticate to continue" in iOS.
+   * @param {String} description Android Only - optional - the text to use as description in the authentication screen. On some Android versions it might not be shown. Passing null will result in using the OS's default value.
+   * @param {String} cancelTitle iOS Only - optional - the cancel message to display on the local authentication prompt.
+   * @param {String} fallbackTitle iOS Only - optional - the fallback message to display on the local authentication prompt after a failed match.
    * @returns {Promise}
    *
    * @memberof CredentialsManager
    */
-  async requireLocalAuthentication(title, description) {
+  async requireLocalAuthentication(
+    title,
+    description,
+    cancelTitle,
+    fallbackTitle,
+  ) {
     try {
       await this.ensureCredentialManagerIsInitialized();
-      const cred = await this.Auth0Module.enableLocalAuthentication(
-        title,
-        description,
-      );
+      if (Platform.OS === 'ios') {
+        await this.Auth0Module.enableLocalAuthentication(
+          title,
+          cancelTitle,
+          fallbackTitle,
+        );
+      } else {
+        await this.Auth0Module.enableLocalAuthentication(title, description);
+      }
     } catch (e) {
       const json = {
         error: 'a0.credential_manager.invalid',
