@@ -98,9 +98,9 @@ extension Credentials {
             CredentialsManagerBridge.accessTokenKey: self.accessToken,
             CredentialsManagerBridge.tokenTypeKey: self.tokenType,
             CredentialsManagerBridge.idTokenKey: self.idToken,
-            CredentialsManagerBridge.refreshTokenKey: self.refreshToken!,
+            CredentialsManagerBridge.refreshTokenKey: self.refreshToken,
             CredentialsManagerBridge.expiresInKey: self.expiresIn,
-            CredentialsManagerBridge.scopeKey: self.scope!
+            CredentialsManagerBridge.scopeKey: self.scope
         ])
     }
 }
