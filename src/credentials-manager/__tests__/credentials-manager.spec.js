@@ -5,6 +5,13 @@ describe('credentials manager tests', () => {
   const auth = new Auth({baseUrl: 'https://auth0.com', clientId: 'abc123'});
   const credentialsManager = new CredentialsManager(auth);
 
+  credentialsManager.Auth0Module.hasValidCredentialManagerInstance = () =>
+    Promise.resolve(true);
+  credentialsManager.Auth0Module.saveCredentials = () => {};
+  credentialsManager.Auth0Module.getCredentials = () => {};
+  credentialsManager.Auth0Module.hasValidCredentials = () => {};
+  credentialsManager.Auth0Module.clearCredentials = () => {};
+
   const validToken = {
     idToken: '1234',
     accessToken: '1234',
@@ -51,6 +58,97 @@ describe('credentials manager tests', () => {
       await expect(
         credentialsManager.saveCredentials(testToken),
       ).rejects.toThrow();
+    });
+
+    it('proper error is thrown for exception', async () => {
+      const newNativeModule = jest
+        .spyOn(
+          credentialsManager.Auth0Module,
+          'hasValidCredentialManagerInstance',
+        )
+        .mockImplementation(() => {
+          throw Error('123123');
+        });
+      await expect(
+        credentialsManager.saveCredentials(validToken),
+      ).rejects.toThrow();
+      newNativeModule.mockRestore();
+    });
+
+    it('succeeds for proper token', async () => {
+      const newNativeModule = jest
+        .spyOn(credentialsManager.Auth0Module, 'saveCredentials')
+        .mockImplementation(() => Promise.resolve(true));
+      await expect(
+        credentialsManager.saveCredentials(validToken),
+      ).resolves.toEqual(true);
+      newNativeModule.mockRestore();
+    });
+  });
+
+  describe('test getting credentials', () => {
+    it('proper error is thrown for exception', async () => {
+      const newNativeModule = jest
+        .spyOn(credentialsManager.Auth0Module, 'getCredentials')
+        .mockImplementation(() => {
+          throw Error('123123');
+        });
+      await expect(credentialsManager.getCredentials()).rejects.toThrow();
+      newNativeModule.mockRestore();
+    });
+
+    it('succeedsfully returns credentials', async () => {
+      const newNativeModule = jest
+        .spyOn(credentialsManager.Auth0Module, 'getCredentials')
+        .mockImplementation(() => Promise.resolve(validToken));
+      await expect(credentialsManager.getCredentials()).resolves.toEqual(
+        validToken,
+      );
+      newNativeModule.mockRestore();
+    });
+  });
+
+  describe('test hasValidCredentials', () => {
+    it('returns false', async () => {
+      const newNativeModule = jest
+        .spyOn(credentialsManager.Auth0Module, 'hasValidCredentials')
+        .mockImplementation(() => Promise.resolve(true));
+      await expect(credentialsManager.hasValidCredentials()).resolves.toEqual(
+        true,
+      );
+      newNativeModule.mockRestore();
+    });
+
+    it('returns true', async () => {
+      const newNativeModule = jest
+        .spyOn(credentialsManager.Auth0Module, 'hasValidCredentials')
+        .mockImplementation(() => Promise.resolve(true));
+      await expect(credentialsManager.hasValidCredentials()).resolves.toEqual(
+        true,
+      );
+      newNativeModule.mockRestore();
+    });
+  });
+
+  describe('test clearing credentials', () => {
+    it('returns false', async () => {
+      const newNativeModule = jest
+        .spyOn(credentialsManager.Auth0Module, 'clearCredentials')
+        .mockImplementation(() => Promise.resolve(true));
+      await expect(credentialsManager.clearCredentials()).resolves.toEqual(
+        true,
+      );
+      newNativeModule.mockRestore();
+    });
+
+    it('returns true', async () => {
+      const newNativeModule = jest
+        .spyOn(credentialsManager.Auth0Module, 'clearCredentials')
+        .mockImplementation(() => Promise.resolve(true));
+      await expect(credentialsManager.clearCredentials()).resolves.toEqual(
+        true,
+      );
+      newNativeModule.mockRestore();
     });
   });
 });
