@@ -1,5 +1,6 @@
 import CredentialsManager from '../index';
 import Auth from '../../auth';
+import {Platform} from 'react-native';
 
 describe('credentials manager tests', () => {
   const auth = new Auth({baseUrl: 'https://auth0.com', clientId: 'abc123'});
@@ -11,6 +12,7 @@ describe('credentials manager tests', () => {
   credentialsManager.Auth0Module.getCredentials = () => {};
   credentialsManager.Auth0Module.hasValidCredentials = () => {};
   credentialsManager.Auth0Module.clearCredentials = () => {};
+  credentialsManager.Auth0Module.enableLocalAuthentication = () => {};
 
   const validToken = {
     idToken: '1234',
@@ -148,6 +150,26 @@ describe('credentials manager tests', () => {
       await expect(credentialsManager.clearCredentials()).resolves.toEqual(
         true,
       );
+      newNativeModule.mockRestore();
+    });
+  });
+
+  describe('test enabling local authentication', () => {
+    it('enable local authentication for iOS', async () => {
+      Platform.OS = 'ios';
+      const newNativeModule = jest
+        .spyOn(credentialsManager.Auth0Module, 'enableLocalAuthentication')
+        .mockImplementation(() => {});
+      await expect(credentialsManager.requireLocalAuthentication()).resolves;
+      newNativeModule.mockRestore();
+    });
+
+    it('enable local authentication for Android', async () => {
+      Platform.OS = 'android';
+      const newNativeModule = jest
+        .spyOn(credentialsManager.Auth0Module, 'enableLocalAuthentication')
+        .mockImplementation(() => {});
+      await expect(credentialsManager.requireLocalAuthentication()).resolves;
       newNativeModule.mockRestore();
     });
   });
