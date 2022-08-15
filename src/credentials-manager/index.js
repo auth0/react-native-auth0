@@ -16,8 +16,7 @@ export default class CredentialsManager {
    * @param {String} credentials.idToken required - JWT token that has user claims
    * @param {String} credentials.accessToken required - token used for API calls
    * @param {String} credentials.tokenType required - type of the token, ex - Bearer
-   * @param {Number} credentials.expiresIn optional - `expiresAt` should not be empty if this is. Used to denote when the token will expire from the issued time
-   * @param {String} credentials.expiresAt optional - `expiresIn` should not be empty if this is. Used to denote when the token will expire. Has precendence over `expiresIn`.
+   * @param {Number} credentials.expiresIn required - Used to denote when the token will expire from the issued time
    * @param {String} credentials.refreshToken optional - used to refresh access token
    * @param {String} credentials.scope optional - represents the scope of the current token
    * @returns {Promise}
@@ -25,7 +24,7 @@ export default class CredentialsManager {
    * @memberof CredentialsManager
    */
   async saveCredentials(credentials = {}) {
-    const validateKeys = ['idToken', 'accessToken', 'tokenType'];
+    const validateKeys = ['idToken', 'accessToken', 'tokenType', 'expiresIn'];
     validateKeys.forEach(key => {
       if (!credentials[key]) {
         const json = {
@@ -36,16 +35,6 @@ export default class CredentialsManager {
         throw new CredentialsManagerError({json, status: 0});
       }
     });
-    if (
-      (!credentials.expiresIn || !credentials.expiresIn > 0) &&
-      !credentials.expiresAt
-    ) {
-      const json = {
-        error: 'a0.credential_manager.invalid_input',
-        error_description: `expiresIn or expiresAt should be set`,
-      };
-      throw new CredentialsManagerError({json, status: 0});
-    }
     try {
       await this.ensureCredentialManagerIsInitialized();
       await this.Auth0Module.saveCredentials(credentials);
