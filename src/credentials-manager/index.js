@@ -36,7 +36,7 @@ export default class CredentialsManager {
       }
     });
     try {
-      await this.ensureCredentialManagerIsInitialized();
+      await this._ensureCredentialManagerIsInitialized();
       return await this.Auth0Module.saveCredentials(credentials);
     } catch (e) {
       const json = {
@@ -48,7 +48,7 @@ export default class CredentialsManager {
   }
 
   /**
-   * Gets the credential that has already been saved
+   * Gets the credentials that has already been saved
    *
    * @param {String} scope optional - the scope to request for the access token. If null is passed, the previous scope will be kept.
    * @param {String} minTtl optional - the minimum time in seconds that the access token should last before expiration.
@@ -59,7 +59,7 @@ export default class CredentialsManager {
    */
   async getCredentials(scope, minTtl = 0, parameters = {}) {
     try {
-      await this.ensureCredentialManagerIsInitialized();
+      await this._ensureCredentialManagerIsInitialized();
       const credentials = await this.Auth0Module.getCredentials(
         scope,
         minTtl,
@@ -76,7 +76,7 @@ export default class CredentialsManager {
   }
 
   /**
-   * Gets the credential that has already been saved
+   * Enables Local Authentication (PIN, Biometric, Swipe etc) to get the credentials
    *
    * @param {String} title optional - the text to use as title in the authentication screen. Passing null will result in using the OS's default value in Android and "Please authenticate to continue" in iOS.
    * @param {String} description Android Only - optional - the text to use as description in the authentication screen. On some Android versions it might not be shown. Passing null will result in using the OS's default value.
@@ -93,7 +93,7 @@ export default class CredentialsManager {
     fallbackTitle,
   ) {
     try {
-      await this.ensureCredentialManagerIsInitialized();
+      await this._ensureCredentialManagerIsInitialized();
       if (Platform.OS === 'ios') {
         await this.Auth0Module.enableLocalAuthentication(
           title,
@@ -120,7 +120,7 @@ export default class CredentialsManager {
    * @memberof CredentialsManager
    */
   async hasValidCredentials(minTtl = 0) {
-    await this.ensureCredentialManagerIsInitialized();
+    await this._ensureCredentialManagerIsInitialized();
     return await this.Auth0Module.hasValidCredentials(minTtl);
   }
 
@@ -130,12 +130,12 @@ export default class CredentialsManager {
    * @memberof CredentialsManager
    */
   async clearCredentials() {
-    await this.ensureCredentialManagerIsInitialized();
+    await this._ensureCredentialManagerIsInitialized();
     return await this.Auth0Module.clearCredentials();
   }
 
   //private
-  async ensureCredentialManagerIsInitialized() {
+  async _ensureCredentialManagerIsInitialized() {
     const hasValid = await this.Auth0Module.hasValidCredentialManagerInstance();
     if (!hasValid) {
       await this.Auth0Module.initializeCredentialManager(
