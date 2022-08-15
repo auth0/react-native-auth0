@@ -37,7 +37,7 @@ export default class CredentialsManager {
     });
     try {
       await this.ensureCredentialManagerIsInitialized();
-      await this.Auth0Module.saveCredentials(credentials);
+      return await this.Auth0Module.saveCredentials(credentials);
     } catch (e) {
       const json = {
         error: 'a0.credential_manager.invalid',
