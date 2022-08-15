@@ -2,7 +2,8 @@ import {Platform, NativeModules} from 'react-native';
 import CredentialsManagerError from './credentialsManagerError';
 
 export default class CredentialsManager {
-  constructor(clientId, domain) {
+  constructor(auth) {
+    const {clientId, domain} = auth;
     this.domain = domain;
     this.clientId = clientId;
     this.Auth0Module = NativeModules.A0Auth0;
