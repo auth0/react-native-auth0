@@ -141,7 +141,7 @@ export default class CredentialsManager {
    */
   async clearCredentials() {
     await this.ensureCredentialManagerIsInitialized();
-    await this.Auth0Module.clearCredentials();
+    return await this.Auth0Module.clearCredentials();
   }
 
   //private
