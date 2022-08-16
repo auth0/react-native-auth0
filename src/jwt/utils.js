@@ -1,4 +1,4 @@
-export const idTokenNonProfileClaims = [
+export const idTokenNonProfileClaims = new Set([
   'iss',
   'aud',
   'exp',
@@ -29,4 +29,4 @@ export const idTokenNonProfileClaims = [
   'sid',
   'vot',
   'vtm',
-];
+]);

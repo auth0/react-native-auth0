@@ -20,8 +20,8 @@ const getIdTokenProfileClaims = idToken => {
   const payload = jwt_decode(idToken);
 
   const profileClaims = Object.keys(payload).reduce((profile, claim) => {
-    if (!idTokenNonProfileClaims.includes(claim)) {
-      profile[claim] = payload[claim];
+    if (!idTokenNonProfileClaims.has(claim)) {
+      payload[claim];
     }
 
     return profile;
