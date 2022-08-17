@@ -3,13 +3,12 @@ import CredentialsManagerError from './credentialsManagerError';
 
 export default class CredentialsManager {
   /**
-   * Construct an instance of CredentialsManager which can be used to
-   * store, retrieve and manage credentials.
+   * Construct an instance of CredentialsManager
    *
-   * @param {*} auth - required - instance of Auth0 Auth API
+   * @param {String} domain - required - the domain of the credentials to be managed
+   * @param {String} clientId - required - clientId of the credentials to be managed
    */
-  constructor(auth) {
-    const {clientId, domain} = auth;
+  constructor(domain, clientId) {
     this.domain = domain;
     this.clientId = clientId;
     this.Auth0Module = NativeModules.A0Auth0;

@@ -23,7 +23,7 @@ export default class Auth0 {
     const {domain, clientId, ...extras} = options;
     this.auth = new Auth({baseUrl: domain, clientId, ...extras});
     this.webAuth = new WebAuth(this.auth);
-    this.credentialsManager = new CredentialsManager(this.auth);
+    this.credentialsManager = new CredentialsManager(domain, clientId);
     this.options = options;
   }
 

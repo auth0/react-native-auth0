@@ -3,8 +3,10 @@ import Auth from '../../auth';
 import {Platform} from 'react-native';
 
 describe('credentials manager tests', () => {
-  const auth = new Auth({baseUrl: 'https://auth0.com', clientId: 'abc123'});
-  const credentialsManager = new CredentialsManager(auth);
+  const credentialsManager = new CredentialsManager(
+    'https://auth0.com',
+    'abc123',
+  );
 
   credentialsManager.Auth0Module.hasValidCredentialManagerInstance = () =>
     Promise.resolve(true);
