@@ -48,8 +48,9 @@ const Auth0Provider = ({domain, clientId, children}) => {
       try {
         const credentials = await client.webAuth.authorize(...options);
         const claims = getIdTokenProfileClaims(credentials.idToken);
+
+        await client.credentialsManager.saveCredentials(credentials);
         dispatch({type: 'LOGIN_COMPLETE', user: claims});
-        return credentials;
       } catch (error) {
         dispatch({type: 'ERROR', error});
         return;

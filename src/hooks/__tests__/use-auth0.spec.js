@@ -45,6 +45,7 @@ const mockAuth0 = {
     getCredentials: jest.fn().mockResolvedValue(mockCredentials),
     requireLocalAuthentication: jest.fn().mockResolvedValue(),
     clearCredentials: jest.fn().mockResolvedValue(),
+    saveCredentials: jest.fn().mockResolvedValue(),
   },
 };
 
@@ -95,11 +96,12 @@ describe('The useAuth0 hook', () => {
 
   it('can authorize', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
-    const credentials = result.current.authorize();
+    result.current.authorize();
 
     await waitForNextUpdate();
     expect(result.current.user).not.toBeNull();
-    expect(credentials).resolves.toMatchObject(mockCredentials);
+    expect(mockAuth0.webAuth.authorize).toBeCalled();
+    expect(mockAuth0.credentialsManager.saveCredentials).toBeCalled();
   });
 
   it('can authorize, passing through all parameters', async () => {
@@ -117,6 +119,19 @@ describe('The useAuth0 hook', () => {
       scope: 'custom-scope',
       audience: 'http://my-api',
       customParam: '1234',
+    });
+  });
+
+  it('sets the user prop after authorizing', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorize();
+    await waitForNextUpdate();
+
+    expect(result.current.user).toMatchObject({
+      name: 'Test User',
+      family_name: 'User',
+      picture: 'https://images/pic.png',
     });
   });
 
