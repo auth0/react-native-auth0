@@ -63,6 +63,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
     async (...options) => {
       try {
         await client.webAuth.clearSession(...options);
+        await client.credentialsManager.clearCredentials();
         dispatch({type: 'LOGOUT_COMPLETE'});
       } catch (error) {
         dispatch({type: 'ERROR', error});
