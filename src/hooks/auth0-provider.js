@@ -20,7 +20,7 @@ const getIdTokenProfileClaims = idToken => {
 
   const profileClaims = Object.keys(payload).reduce((profile, claim) => {
     if (!idTokenNonProfileClaims.has(claim)) {
-      payload[claim];
+      profile[claim] = payload[claim];
     }
 
     return profile;
