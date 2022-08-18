@@ -1,4 +1,5 @@
 import Auth from './src/auth';
+import CredentialsManager from './src/credentials-manager';
 import Users from './src/management/users';
 import WebAuth from './src/webauth';
 export {TimeoutError} from './src/utils/fetchWithTimeout';
@@ -22,6 +23,7 @@ export default class Auth0 {
     const {domain, clientId, ...extras} = options;
     this.auth = new Auth({baseUrl: domain, clientId, ...extras});
     this.webAuth = new WebAuth(this.auth);
+    this.credentialsManager = new CredentialsManager(domain, clientId);
     this.options = options;
   }
 
