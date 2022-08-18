@@ -5,9 +5,6 @@ import WebAuth from './webauth';
 
 /**
  * Auth0 for React Native client
- *
- * @export
- * @class Auth0
  */
 class Auth0 {
   /**

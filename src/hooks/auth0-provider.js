@@ -8,7 +8,6 @@ import reducer from './reducer';
 import {idTokenNonProfileClaims} from '../jwt/utils';
 
 const initialState = {
-  isLoading: true,
   user: null,
   error: null,
 };

@@ -57,11 +57,6 @@ describe('The useAuth0 hook', () => {
     jest.clearAllMocks();
   });
 
-  it('defines isLoading', () => {
-    const {result} = renderHook(() => useAuth0());
-    expect(result.current.isLoading).toEqual(true);
-  });
-
   it('defines error', () => {
     const {result} = renderHook(() => useAuth0());
     expect(result.current.error).toBeNull();
