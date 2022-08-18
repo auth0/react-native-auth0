@@ -24,16 +24,15 @@ function makeJwt(claims) {
 }
 
 const mockIdToken = makeJwt();
-const mockClearSession = jest.fn().mockImplementation(() => Promise.resolve());
 
 const mockCredentials = {
   idToken: mockIdToken,
   accessToken: 'ACCESS TOKEN',
 };
 
-const mockAuthorize = jest
-  .fn()
-  .mockImplementation(() => Promise.resolve(mockCredentials));
+const mockClearSession = jest.fn().mockResolvedValue();
+const mockGetCredentials = jest.fn().mockResolvedValue(mockCredentials);
+const mockAuthorize = jest.fn().mockResolvedValue(mockCredentials);
 
 const wrapper = ({children}) => (
   <Auth0Provider domain="DOMAIN" clientId="CLIENT ID">
@@ -46,6 +45,9 @@ jest.mock('../../auth0', () => {
     webAuth: {
       authorize: mockAuthorize,
       clearSession: mockClearSession,
+    },
+    credentialsManager: {
+      getCredentials: mockGetCredentials,
     },
   }));
 });
@@ -189,5 +191,36 @@ describe('The useAuth0 hook', () => {
     result.current.clearSession();
     await waitForNextUpdate();
     expect(result.current.error).toBeNull();
+  });
+
+  it('can get credentials', async () => {
+    const {result} = renderHook(() => useAuth0(), {wrapper});
+
+    expect(result.current.getCredentials()).resolves.toMatchObject(
+      mockCredentials,
+    );
+  });
+
+  it('can get credentials with options', async () => {
+    const {result} = renderHook(() => useAuth0(), {wrapper});
+
+    expect(
+      result.current.getCredentials('read:books', 60, {hello: 'world'}),
+    ).resolves.toMatchObject(mockCredentials);
+
+    expect(mockGetCredentials).toHaveBeenCalledWith('read:books', 60, {
+      hello: 'world',
+    });
+  });
+
+  it('dispatches an error when getCredentials fails', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    const thrownError = new Error('Get credentials failed');
+    mockGetCredentials.mockRejectedValue(thrownError);
+
+    result.current.getCredentials();
+    await waitForNextUpdate();
+    expect(result.current.error).toEqual(thrownError);
   });
 });

@@ -62,13 +62,26 @@ const Auth0Provider = ({domain, clientId, children}) => {
     [client],
   );
 
+  const getCredentials = useCallback(
+    async (...options) => {
+      try {
+        return await client.credentialsManager.getCredentials(...options);
+      } catch (error) {
+        dispatch({type: 'ERROR', error});
+        return;
+      }
+    },
+    [client],
+  );
+
   const contextValue = useMemo(
     () => ({
       ...state,
       authorize,
       clearSession,
+      getCredentials,
     }),
-    [state, authorize, clearSession],
+    [state, authorize, clearSession, getCredentials],
   );
 
   return (

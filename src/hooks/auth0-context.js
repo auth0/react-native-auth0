@@ -10,6 +10,7 @@ const initialContext = {
   isLoading: true,
   authorize: stub,
   clearSession: stub,
+  getCredentials: stub,
 };
 
 const Auth0Context = createContext(initialContext);
