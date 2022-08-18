@@ -33,6 +33,7 @@ const mockCredentials = {
 const mockClearSession = jest.fn().mockResolvedValue();
 const mockGetCredentials = jest.fn().mockResolvedValue(mockCredentials);
 const mockAuthorize = jest.fn().mockResolvedValue(mockCredentials);
+const mockRequireLocalAuthentication = jest.fn().mockResolvedValue();
 
 const wrapper = ({children}) => (
   <Auth0Provider domain="DOMAIN" clientId="CLIENT ID">
@@ -48,6 +49,7 @@ jest.mock('../../auth0', () => {
     },
     credentialsManager: {
       getCredentials: mockGetCredentials,
+      requireLocalAuthentication: mockRequireLocalAuthentication,
     },
   }));
 });
@@ -215,11 +217,45 @@ describe('The useAuth0 hook', () => {
 
   it('dispatches an error when getCredentials fails', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
-
     const thrownError = new Error('Get credentials failed');
-    mockGetCredentials.mockRejectedValue(thrownError);
 
+    mockGetCredentials.mockRejectedValue(thrownError);
     result.current.getCredentials();
+    await waitForNextUpdate();
+    expect(result.current.error).toEqual(thrownError);
+  });
+
+  it('can require local authentication', async () => {
+    const {result} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.requireLocalAuthentication();
+    expect(mockRequireLocalAuthentication).toHaveBeenCalled();
+  });
+
+  it('can require local authentication with options', async () => {
+    const {result} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.requireLocalAuthentication(
+      'title',
+      'description',
+      'cancel',
+      'fallback',
+    );
+
+    expect(mockRequireLocalAuthentication).toHaveBeenCalledWith(
+      'title',
+      'description',
+      'cancel',
+      'fallback',
+    );
+  });
+
+  it('dispatches an error when requireLocalAuthentication fails', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const thrownError = new Error('requireLocalAuthentication failed');
+
+    mockRequireLocalAuthentication.mockRejectedValue(thrownError);
+    result.current.requireLocalAuthentication();
     await waitForNextUpdate();
     expect(result.current.error).toEqual(thrownError);
   });

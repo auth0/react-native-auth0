@@ -74,14 +74,30 @@ const Auth0Provider = ({domain, clientId, children}) => {
     [client],
   );
 
+  const requireLocalAuthentication = useCallback(async (...options) => {
+    try {
+      await client.credentialsManager.requireLocalAuthentication(...options);
+    } catch (error) {
+      dispatch({type: 'ERROR', error});
+      return;
+    }
+  });
+
   const contextValue = useMemo(
     () => ({
       ...state,
       authorize,
       clearSession,
       getCredentials,
+      requireLocalAuthentication,
     }),
-    [state, authorize, clearSession, getCredentials],
+    [
+      state,
+      authorize,
+      clearSession,
+      getCredentials,
+      requireLocalAuthentication,
+    ],
   );
 
   return (

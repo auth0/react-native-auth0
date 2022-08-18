@@ -11,6 +11,7 @@ const initialContext = {
   authorize: stub,
   clearSession: stub,
   getCredentials: stub,
+  requireLocalAuthentication: stub,
 };
 
 const Auth0Context = createContext(initialContext);
