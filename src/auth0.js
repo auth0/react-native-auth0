@@ -9,14 +9,12 @@ import WebAuth from './webauth';
  * @export
  * @class Auth0
  */
-export default class Auth0 {
+class Auth0 {
   /**
    * Creates an instance of Auth0.
    * @param {Object} options your Auth0 application information
    * @param {String} options.domain your Auth0 domain
-   * @param {String} options.clientId your Auth0 application client identifier
-   *
-   * @memberof Auth0
+   * @param {String} options.clientId your Auth0 application client identifier=
    */
   constructor(options = {}) {
     const {domain, clientId, ...extras} = options;
@@ -36,3 +34,5 @@ export default class Auth0 {
     return new Users({baseUrl: domain, clientId, ...extras, token});
   }
 }
+
+export default Auth0;

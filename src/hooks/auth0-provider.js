@@ -30,6 +30,16 @@ const getIdTokenProfileClaims = idToken => {
   return profileClaims;
 };
 
+/**
+ * Provides the Auth0Context to its child components.
+ * @param {String} domain Your Auth0 domain
+ * @param {String} clientId Your Auth0 client ID
+ *
+ * @example
+ * <Auth0Provider domain="YOUR AUTH0 DOMAIN" clientId="YOUR CLIENT ID">
+ *   <App />
+ * </Auth0Provider>
+ */
 const Auth0Provider = ({domain, clientId, children}) => {
   const [client] = useState(() => new Auth0({domain, clientId}));
   const [state, dispatch] = useReducer(reducer, initialState);
