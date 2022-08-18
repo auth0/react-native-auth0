@@ -53,7 +53,7 @@ RCT_EXPORT_METHOD(initializeCredentialManager:(NSString *)clientId domain:(NSStr
 }
 
 RCT_EXPORT_METHOD(saveCredentials:(NSDictionary *)credentials resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    [self.credentialsManagerBridge saveCredentialsWithCredentialsMap:credentials resolve:resolve reject:reject];
+    [self.credentialsManagerBridge saveCredentialsWithCredentialsDict:credentials resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(getCredentials:(NSString *)scope minTTL:(NSInteger)minTTL parameters:(NSDictionary *)parameters resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
