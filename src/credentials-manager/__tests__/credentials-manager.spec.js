@@ -1,5 +1,4 @@
 import CredentialsManager from '../index';
-import Auth from '../../auth';
 import {Platform} from 'react-native';
 
 describe('credentials manager tests', () => {
