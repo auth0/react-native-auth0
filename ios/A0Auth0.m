@@ -8,6 +8,7 @@
 
 #import <React/RCTUtils.h>
 
+#import "A0Auth0-Swift.h"
 #define ERROR_CANCELLED @{@"error": @"a0.session.user_cancelled",@"error_description": @"User cancelled the Auth"}
 #define ERROR_FAILED_TO_LOAD @{@"error": @"a0.session.failed_load",@"error_description": @"Failed to load url"}
 
@@ -22,6 +23,7 @@
 @interface A0Auth0 () <SFSafariViewControllerDelegate>
 @property (weak, nonatomic) SFSafariViewController *last;
 @property (strong, nonatomic) NSObject *authenticationSession;
+@property (strong, nonatomic) CredentialsManagerBridge *credentialsManagerBridge;
 @property (copy, nonatomic) RCTResponseSenderBlock sessionCallback;
 @property (assign, nonatomic) BOOL closeOnLoad;
 @end
@@ -37,6 +39,37 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(hide) {
     [self terminateWithError:nil dismissing:YES animated:YES];
+}
+
+RCT_EXPORT_METHOD(hasValidCredentialManagerInstance:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    BOOL valid = [self checkHasValidCredentialManagerInstance];
+    resolve(@(valid));
+}
+
+
+RCT_EXPORT_METHOD(initializeCredentialManager:(NSString *)clientId domain:(NSString *)domain) {
+    [self tryAndInitializeCredentialManager:clientId domain:domain];
+}
+
+RCT_EXPORT_METHOD(saveCredentials:(NSDictionary *)credentials resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.credentialsManagerBridge saveCredentialsWithCredentialsDict:credentials resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(getCredentials:(NSString *)scope minTTL:(NSInteger)minTTL parameters:(NSDictionary *)parameters resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.credentialsManagerBridge getCredentialsWithScope:scope minTTL:minTTL parameters:parameters resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(hasValidCredentials:(NSInteger)minTTL resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.credentialsManagerBridge hasValidCredentialsWithMinTTL:minTTL resolve:resolve];
+}
+
+RCT_EXPORT_METHOD(clearCredentials:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.credentialsManagerBridge clearCredentialsWithResolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(enableLocalAuthentication:(NSString *)title cancelTitle:(NSString *)cancelTitle fallbackTitle:(NSString *)fallbackTitle) {
+    [self.credentialsManagerBridge enableLocalAuthenticationWithTitle:title cancelTitle:title fallbackTitle:title];
 }
 
 RCT_EXPORT_METHOD(showUrl:(NSString *)urlString
@@ -69,6 +102,16 @@ RCT_EXPORT_METHOD(oauthParameters:(RCTResponseSenderBlock)callback) {
 #pragma mark - Internal methods
 
 UIBackgroundTaskIdentifier taskId;
+
+- (BOOL)checkHasValidCredentialManagerInstance {
+    BOOL valid = self.credentialsManagerBridge != nil;
+    return valid;
+}
+
+- (void)tryAndInitializeCredentialManager:(NSString *)clientId domain:(NSString *)domain {
+    CredentialsManagerBridge *bridge = [[CredentialsManagerBridge alloc] initWithClientId: clientId domain: domain];
+    self.credentialsManagerBridge = bridge;
+}
 
 - (void)presentSafariWithURL:(NSURL *)url {
     UIWindow *window = [[UIApplication sharedApplication] keyWindow];
