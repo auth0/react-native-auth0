@@ -64,5 +64,4 @@ coverage/
 # Temp files
 out/
 
-# Allow expo plugin build
-!plugin/build
+plugin/build 
