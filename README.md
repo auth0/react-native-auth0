@@ -68,7 +68,7 @@ Then, you need to run the following command to install the ios app pods with Coc
 
 ### Configuration
 
-You need make your Android and iOS applications aware that an authentication result will be received from the browser. This SDK makes use of the Android's Package Name and its analogous iOS's Product Bundle Identifier to generate the redirect URL. Each platform has its own set of instructions. Expo custom dev clients + EAS build projects can make use of the config plugin provided.
+You need make your Android and iOS applications aware that an authentication result will be received from the browser. This SDK makes use of the Android's Package Name and its analogous iOS's Product Bundle Identifier to generate the redirect URL. Each platform has its own set of instructions.
 
 #### Android
 
@@ -173,47 +173,6 @@ If your application is generated using the React Native CLI, the default value o
 If you use a value other than `$(PRODUCT_BUNDLE_IDENTIFIER)` in the `CFBundleURLSchemes` field of the `Info.plist` you will also need to pass it as the `customScheme` option parameter of the `authorize` and `clearSession` methods.
 
 > For more info please read the [React Native docs](https://facebook.github.io/react-native/docs/linking.html).
-
-#### Expo (EAS / SDK 41+)
-
-Open your app's `app.json` and add the following (note the second parameter with the empty object ({}) in the array is the plugin config):
-
-```json
-  "expo": {
-    plugins: [['react-native-auth0', {}]],
-    ...
-  }
-```
-
-In order for android builds to work, you will need to specify an auth0 domain.
-Open your app's `app.json` and add the following under the "expo" key:
-
-```json
-  "expo": {
-    "plugins": [['react-native-auth0', { "domain": 'samples.auth0.com' }]],
-    ...
-  }
-```
-
-or:
-
-```json
-  "expo": {
-    "plugins": [['react-native-auth0', { "android": { "domain": 'samples.auth0.com' }]],
-    ...
-  }
-```
-
-**All possible app.json values (under the `expo` key)**:
-| Name | Description |
-| ------------------- | ---------------------------------------------------------------------------------------- |
-| domain | Sets the top level domain that is used for Android setup only at this time |
-| android.domain | Same as `domain` |
-| scheme | Sets the top level scheme that is used for both iOS and Android setup |
-| ios.scheme | Sets the iOS specific scheme that is used for setup. Takes precendence over `scheme` |
-| android.scheme | Sets the Android specific scheme that is used for setup. Takes precendence over `scheme` |
-
-If you need dynamic values, consider using a [`config.js`](https://docs.expo.dev/workflow/configuration/#dynamic-configuration-with-appconfigjs) file;
 
 ### Callback URL(s)
 
