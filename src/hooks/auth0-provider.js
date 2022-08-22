@@ -1,4 +1,4 @@
-import React, {useReducer, useState} from 'react';
+import React, {useEffect, useReducer, useState, useRef} from 'react';
 import {useCallback, useMemo} from 'react';
 import jwt_decode from 'jwt-decode';
 import PropTypes from 'prop-types';
@@ -42,15 +42,35 @@ const getIdTokenProfileClaims = idToken => {
 const Auth0Provider = ({domain, clientId, children}) => {
   const [client] = useState(() => new Auth0({domain, clientId}));
   const [state, dispatch] = useReducer(reducer, initialState);
+  const hasInitialized = useRef(false);
+
+  useEffect(() => {
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
+
+    (async () => {
+      let user = null;
+
+      if (await client.credentialsManager.hasValidCredentials()) {
+        const credentials = await client.credentialsManager.getCredentials();
+
+        if (credentials) {
+          user = getIdTokenProfileClaims(credentials.idToken);
+        }
+      }
+
+      dispatch({type: 'INITIALIZED', user});
+    })();
+  }, [client]);
 
   const authorize = useCallback(
     async (...options) => {
       try {
         const credentials = await client.webAuth.authorize(...options);
-        const claims = getIdTokenProfileClaims(credentials.idToken);
+        const user = getIdTokenProfileClaims(credentials.idToken);
 
         await client.credentialsManager.saveCredentials(credentials);
-        dispatch({type: 'LOGIN_COMPLETE', user: claims});
+        dispatch({type: 'LOGIN_COMPLETE', user});
       } catch (error) {
         dispatch({type: 'ERROR', error});
         return;
