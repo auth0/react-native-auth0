@@ -18,12 +18,9 @@ try {
 
 export const addAuth0GradleValues = (
   src: string,
-  auth0Domain?: string,
+  auth0Domain: string,
   auth0Scheme = 'applicationId',
 ): string => {
-  if (!auth0Domain) {
-    throw Error('No auth0 domain specified in expo config');
-  }
   return mergeContents({
     tag: 'react-native-auth0-manifest-placeholder',
     src,
@@ -34,15 +31,17 @@ export const addAuth0GradleValues = (
   }).contents;
 };
 
-const withAndroidAuth0Gradle: ConfigPlugin<Auth0PluginConfig | void> = (
+const withAndroidAuth0Gradle: ConfigPlugin<Auth0PluginConfig> = (
   config,
-  {android, scheme, domain} = {},
+  props,
 ) => {
   return withAppBuildGradle(config, config => {
     if (config.modResults.language === 'groovy') {
-      const auth0Domain = android?.domain || domain;
-      const auth0Scheme = android?.scheme || scheme || '${applicationId}';
-
+      if (!props?.domain) {
+        throw Error('No auth0 domain specified in expo config');
+      }
+      const auth0Domain = props.domain;
+      const auth0Scheme = props.scheme || '${applicationId}';
       config.modResults.contents = addAuth0GradleValues(
         config.modResults.contents,
         auth0Domain,
@@ -92,7 +91,7 @@ export const addAuth0AppDelegateCode = (src: string): string => {
   return tempSrc;
 };
 
-const withIOSAuth0AppDelegate: ConfigPlugin<Auth0PluginConfig | void> = config => {
+const withIOSAuth0AppDelegate: ConfigPlugin<Auth0PluginConfig> = config => {
   return withAppDelegate(config, config => {
     const src = config.modResults.contents;
     config.modResults.contents = addAuth0AppDelegateCode(src);
@@ -100,15 +99,20 @@ const withIOSAuth0AppDelegate: ConfigPlugin<Auth0PluginConfig | void> = config =
   });
 };
 
-const withIOSAuth0InfoPList: ConfigPlugin<Auth0PluginConfig | void> = (
+const withIOSAuth0InfoPList: ConfigPlugin<Auth0PluginConfig> = (
   config,
-  {ios, scheme} = {},
+  props,
 ) => {
   return withInfoPlist(config, config => {
     if (!config.modResults.CFBundleURLTypes) {
       config.modResults.CFBundleURLTypes = [];
     }
-    const auth0Scheme = ios?.scheme || scheme;
+    if (!props.scheme || !config.ios?.bundleIdentifier) {
+      throw new Error(
+        'No auth0 scheme specified or bundle identifier found in expo config',
+      );
+    }
+    let auth0Scheme = props.scheme || config.ios?.bundleIdentifier;
     if (auth0Scheme) {
       if (
         config.modResults.CFBundleURLTypes.some(({CFBundleURLSchemes}) =>
@@ -126,23 +130,16 @@ const withIOSAuth0InfoPList: ConfigPlugin<Auth0PluginConfig | void> = (
   });
 };
 
-type Auth0IOSConfig = {
-  scheme?: string;
-};
-
-type Auth0AndroidConfig = {
-  scheme?: string;
-  domain?: string;
-};
-
 type Auth0PluginConfig = {
-  ios?: Auth0IOSConfig;
-  android?: Auth0AndroidConfig;
   scheme?: string;
   domain?: string;
 };
 
-const withAuth0: ConfigPlugin<Auth0PluginConfig | void> = (config, props) => {
+const withAuth0: ConfigPlugin<Auth0PluginConfig> = (config, props) => {
+  if (!props?.domain) {
+    throw Error('No auth0 domain specified in expo config');
+  }
+
   config = withAndroidAuth0Gradle(config, props);
   config = withIOSAuth0AppDelegate(config, props);
   config = withIOSAuth0InfoPList(config, props);
