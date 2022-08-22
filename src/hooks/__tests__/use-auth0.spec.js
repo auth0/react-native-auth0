@@ -60,8 +60,6 @@ describe('The useAuth0 hook', () => {
     mockAuth0.credentialsManager.hasValidCredentials.mockResolvedValue(false);
   });
 
-  afterEach(() => {});
-
   it('defines error', () => {
     const {result} = renderHook(() => useAuth0());
     expect(result.current.error).toBeNull();
