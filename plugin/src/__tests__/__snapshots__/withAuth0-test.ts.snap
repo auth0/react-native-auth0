@@ -1,5 +1,121 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`addAndroidAuth0Gradle should throw if domain is not present 1`] = `"No auth0 domain specified in expo config"`;
+
+exports[`addAndroidAuth0Gradle should throw if file is kt 1`] = `"Cannot add auth0 build.gradle modifications because the build.gradle is not groovy"`;
+
+exports[`addAndroidAuth0Gradle with scheme should have that value 1`] = `
+Object {
+  "modRequest": Object {
+    "introspect": true,
+    "modName": "",
+    "platform": "android",
+    "platformProjectRoot": "",
+    "projectRoot": "",
+  },
+  "modResults": Object {
+    "contents": "
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+// @generated begin react-native-auth0-manifest-placeholder - expo prebuild (DO NOT MODIFY) sync-6fc6dc876a4823cbd573f5dbea799ebeb0107f3d
+manifestPlaceholders = [auth0Domain: \\"sample.auth0.com\\", auth0Scheme: \\"com.sample.application\\"]
+// @generated end react-native-auth0-manifest-placeholder
+        applicationId 'com.example.app'
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 82
+        versionName \\"1.0.0\\"
+    }
+
+    splits {
+        abi {
+            reset()
+            enable enableSeparateBuildPerCPUArchitecture
+            universalApk false  // If true, also generate a universal APK
+            include \\"armeabi-v7a\\", \\"x86\\", \\"arm64-v8a\\", \\"x86_64\\"
+        }
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+",
+    "language": "groovy",
+    "path": "",
+  },
+  "name": " ",
+  "slug": " ",
+}
+`;
+
+exports[`addAndroidAuth0Gradle without scheme should have "applicationId" 1`] = `
+Object {
+  "modRequest": Object {
+    "introspect": true,
+    "modName": "",
+    "platform": "android",
+    "platformProjectRoot": "",
+    "projectRoot": "",
+  },
+  "modResults": Object {
+    "contents": "
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+// @generated begin react-native-auth0-manifest-placeholder - expo prebuild (DO NOT MODIFY) sync-f99f15a6bc48df1d5fd452795d31c3cf65f7a2f7
+manifestPlaceholders = [auth0Domain: \\"sample.auth0.com\\", auth0Scheme: \\"\${applicationId}\\"]
+// @generated end react-native-auth0-manifest-placeholder
+        applicationId 'com.example.app'
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 82
+        versionName \\"1.0.0\\"
+    }
+
+    splits {
+        abi {
+            reset()
+            enable enableSeparateBuildPerCPUArchitecture
+            universalApk false  // If true, also generate a universal APK
+            include \\"armeabi-v7a\\", \\"x86\\", \\"arm64-v8a\\", \\"x86_64\\"
+        }
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+",
+    "language": "groovy",
+    "path": "",
+  },
+  "name": " ",
+  "slug": " ",
+}
+`;
+
 exports[`addAuth0AppDelegateCode does not modify the AppDelegate 1`] = `
 "
 // This AppDelegate template is used in Expo SDK 43 and newer
