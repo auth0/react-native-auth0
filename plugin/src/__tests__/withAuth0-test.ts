@@ -2,6 +2,7 @@ import {
   addAuth0GradleValues,
   addAuth0AppDelegateCode,
   addAndroidAuth0Gradle,
+  addIOSAuth0ConfigInInfoPList,
 } from '../withAuth0';
 import appDelegateFixtureWithLinking from './fixtures/appdelegate-withlinking';
 import appDelegateFixtureWithoutLinking from './fixtures/appdelegate-withoutlinking';
@@ -126,6 +127,124 @@ describe(addAndroidAuth0Gradle, () => {
         {domain: 'sample.auth0.com', scheme: 'com.sample.application'},
         config,
       );
+    }
+    expect(check()).toMatchSnapshot();
+  });
+});
+
+describe(addIOSAuth0ConfigInInfoPList, () => {
+  it(`should throw if scheme and bundle identifier is not defined`, () => {
+    const config = {
+      name: ' ',
+      slug: ' ',
+      modRequest: {
+        projectRoot: '',
+        platformProjectRoot: '',
+        modName: '',
+        platform: 'ios' as keyof ModConfig,
+        introspect: true,
+      },
+      modResults: {path: '', contents: ''},
+    };
+    function check() {
+      addIOSAuth0ConfigInInfoPList({}, config);
+    }
+    expect(check).toThrowErrorMatchingSnapshot();
+  });
+
+  it(`should have the scheme provided `, () => {
+    const config = {
+      name: ' ',
+      slug: ' ',
+      modRequest: {
+        projectRoot: '',
+        platformProjectRoot: '',
+        modName: '',
+        platform: 'ios' as keyof ModConfig,
+        introspect: true,
+      },
+      modResults: {path: '', contents: ''},
+    };
+    function check() {
+      return addIOSAuth0ConfigInInfoPList({scheme: 'com.sample.auth0'}, config);
+    }
+    expect(check()).toMatchSnapshot();
+  });
+
+  it(`should have the bundle identifier if scheme is not provided `, () => {
+    const config = {
+      name: ' ',
+      slug: ' ',
+      modRequest: {
+        projectRoot: '',
+        platformProjectRoot: '',
+        modName: '',
+        platform: 'ios' as keyof ModConfig,
+        introspect: true,
+      },
+      ios: {
+        bundleIdentifier: 'com.sample.auth0',
+      },
+      modResults: {path: '', contents: ''},
+    };
+    function check() {
+      return addIOSAuth0ConfigInInfoPList({}, config);
+    }
+    expect(check()).toMatchSnapshot();
+  });
+
+  it(`should ignore if scheme is already present`, () => {
+    const config = {
+      name: ' ',
+      slug: ' ',
+      modRequest: {
+        projectRoot: '',
+        platformProjectRoot: '',
+        modName: '',
+        platform: 'ios' as keyof ModConfig,
+        introspect: true,
+      },
+      modResults: {
+        path: '',
+        contents: '',
+        CFBundleURLTypes: [
+          {
+            CFBundleURLName: 'auth0',
+            CFBundleURLSchemes: ['com.sample.auth0'],
+          },
+        ],
+      },
+    };
+    function check() {
+      return addIOSAuth0ConfigInInfoPList({scheme: 'com.sample.auth0'}, config);
+    }
+    expect(check()).toMatchSnapshot();
+  });
+
+  it(`should not ignore if another scheme is already present`, () => {
+    const config = {
+      name: ' ',
+      slug: ' ',
+      modRequest: {
+        projectRoot: '',
+        platformProjectRoot: '',
+        modName: '',
+        platform: 'ios' as keyof ModConfig,
+        introspect: true,
+      },
+      modResults: {
+        path: '',
+        contents: '',
+        CFBundleURLTypes: [
+          {
+            CFBundleURLName: 'auth0',
+            CFBundleURLSchemes: ['com.differentsample.auth0'],
+          },
+        ],
+      },
+    };
+    function check() {
+      return addIOSAuth0ConfigInInfoPList({scheme: 'com.sample.auth0'}, config);
     }
     expect(check()).toMatchSnapshot();
   });

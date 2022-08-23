@@ -376,3 +376,118 @@ manifestPlaceholders = [auth0Domain: \\"com.example.app\\", auth0Scheme: \\"appl
     }
 "
 `;
+
+exports[`addIOSAuth0ConfigInInfoPList should have the bundle identifier if scheme is not provided  1`] = `
+Object {
+  "ios": Object {
+    "bundleIdentifier": "com.sample.auth0",
+  },
+  "modRequest": Object {
+    "introspect": true,
+    "modName": "",
+    "platform": "ios",
+    "platformProjectRoot": "",
+    "projectRoot": "",
+  },
+  "modResults": Object {
+    "CFBundleURLTypes": Array [
+      Object {
+        "CFBundleURLName": "auth0",
+        "CFBundleURLSchemes": Array [
+          "com.sample.auth0",
+        ],
+      },
+    ],
+    "contents": "",
+    "path": "",
+  },
+  "name": " ",
+  "slug": " ",
+}
+`;
+
+exports[`addIOSAuth0ConfigInInfoPList should have the scheme provided  1`] = `
+Object {
+  "modRequest": Object {
+    "introspect": true,
+    "modName": "",
+    "platform": "ios",
+    "platformProjectRoot": "",
+    "projectRoot": "",
+  },
+  "modResults": Object {
+    "CFBundleURLTypes": Array [
+      Object {
+        "CFBundleURLName": "auth0",
+        "CFBundleURLSchemes": Array [
+          "com.sample.auth0",
+        ],
+      },
+    ],
+    "contents": "",
+    "path": "",
+  },
+  "name": " ",
+  "slug": " ",
+}
+`;
+
+exports[`addIOSAuth0ConfigInInfoPList should ignore if scheme is already present 1`] = `
+Object {
+  "modRequest": Object {
+    "introspect": true,
+    "modName": "",
+    "platform": "ios",
+    "platformProjectRoot": "",
+    "projectRoot": "",
+  },
+  "modResults": Object {
+    "CFBundleURLTypes": Array [
+      Object {
+        "CFBundleURLName": "auth0",
+        "CFBundleURLSchemes": Array [
+          "com.sample.auth0",
+        ],
+      },
+    ],
+    "contents": "",
+    "path": "",
+  },
+  "name": " ",
+  "slug": " ",
+}
+`;
+
+exports[`addIOSAuth0ConfigInInfoPList should not ignore if another scheme is already present 1`] = `
+Object {
+  "modRequest": Object {
+    "introspect": true,
+    "modName": "",
+    "platform": "ios",
+    "platformProjectRoot": "",
+    "projectRoot": "",
+  },
+  "modResults": Object {
+    "CFBundleURLTypes": Array [
+      Object {
+        "CFBundleURLName": "auth0",
+        "CFBundleURLSchemes": Array [
+          "com.differentsample.auth0",
+        ],
+      },
+      Object {
+        "CFBundleURLName": "auth0",
+        "CFBundleURLSchemes": Array [
+          "com.sample.auth0",
+        ],
+      },
+    ],
+    "contents": "",
+    "path": "",
+  },
+  "name": " ",
+  "slug": " ",
+}
+`;
+
+exports[`addIOSAuth0ConfigInInfoPList should throw if scheme and bundle identifier is not defined 1`] = `"No auth0 scheme specified or bundle identifier found in expo config"`;

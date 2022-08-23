@@ -2,6 +2,7 @@ import {
   ConfigPlugin,
   createRunOncePlugin,
   ExportedConfigWithProps,
+  InfoPlist,
   withAppBuildGradle,
   withAppDelegate,
   withInfoPlist,
@@ -108,35 +109,43 @@ const withIOSAuth0AppDelegate: ConfigPlugin<Auth0PluginConfig> = config => {
   });
 };
 
-export const withIOSAuth0InfoPList: ConfigPlugin<Auth0PluginConfig> = (
+const withIOSAuth0InfoPList: ConfigPlugin<Auth0PluginConfig> = (
   config,
   props,
 ) => {
   return withInfoPlist(config, config => {
-    if (!config.modResults.CFBundleURLTypes) {
-      config.modResults.CFBundleURLTypes = [];
-    }
-    if (!props.scheme || !config.ios?.bundleIdentifier) {
+    return addIOSAuth0ConfigInInfoPList(props, config);
+  });
+};
+
+export const addIOSAuth0ConfigInInfoPList = (
+  props: Auth0PluginConfig,
+  config: ExportedConfigWithProps<InfoPlist>,
+) => {
+  if (!config.modResults.CFBundleURLTypes) {
+    config.modResults.CFBundleURLTypes = [];
+  }
+  let auth0Scheme =
+    (props.scheme || config.ios?.bundleIdentifier) ??
+    (() => {
       throw new Error(
         'No auth0 scheme specified or bundle identifier found in expo config',
       );
+    })();
+  if (auth0Scheme) {
+    if (
+      config.modResults.CFBundleURLTypes.some(({CFBundleURLSchemes}) =>
+        CFBundleURLSchemes.includes(auth0Scheme),
+      )
+    ) {
+      return config;
     }
-    let auth0Scheme = props.scheme || config.ios?.bundleIdentifier;
-    if (auth0Scheme) {
-      if (
-        config.modResults.CFBundleURLTypes.some(({CFBundleURLSchemes}) =>
-          CFBundleURLSchemes.includes(auth0Scheme),
-        )
-      ) {
-        return config;
-      }
-      config.modResults.CFBundleURLTypes.push({
-        CFBundleURLName: 'auth0',
-        CFBundleURLSchemes: [auth0Scheme],
-      });
-    }
-    return config;
-  });
+    config.modResults.CFBundleURLTypes.push({
+      CFBundleURLName: 'auth0',
+      CFBundleURLSchemes: [auth0Scheme],
+    });
+  }
+  return config;
 };
 
 type Auth0PluginConfig = {
