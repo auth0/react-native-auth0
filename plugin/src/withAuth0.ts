@@ -99,7 +99,7 @@ const withIOSAuth0AppDelegate: ConfigPlugin<Auth0PluginConfig> = config => {
   });
 };
 
-const withIOSAuth0InfoPList: ConfigPlugin<Auth0PluginConfig> = (
+export const withIOSAuth0InfoPList: ConfigPlugin<Auth0PluginConfig> = (
   config,
   props,
 ) => {

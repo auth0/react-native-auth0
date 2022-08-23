@@ -1,7 +1,12 @@
-import {addAuth0GradleValues, addAuth0AppDelegateCode} from '../withAuth0';
+import {
+  addAuth0GradleValues,
+  addAuth0AppDelegateCode,
+  withIOSAuth0InfoPList,
+} from '../withAuth0';
 import appDelegateFixtureWithLinking from './fixtures/appdelegate-withlinking';
 import appDelegateFixtureWithoutLinking from './fixtures/appdelegate-withoutlinking';
 import buildGradleFixture from './fixtures/buildgradle';
+import {error} from 'console';
 
 describe(addAuth0GradleValues, () => {
   it(`modifies the build.gradle`, () => {
@@ -11,6 +16,12 @@ describe(addAuth0GradleValues, () => {
         'com.example.app',
         'com.example.app',
       ),
+    ).toMatchSnapshot();
+  });
+
+  it(`modifies the build.gradle without custom scheme`, () => {
+    expect(
+      addAuth0GradleValues(buildGradleFixture, 'com.example.app'),
     ).toMatchSnapshot();
   });
 });
