@@ -82,7 +82,26 @@ describe(addAndroidAuth0Gradle, () => {
     expect(domainCheck).toThrowErrorMatchingSnapshot();
   });
 
-  it(`without scheme should have "applicationId"`, () => {
+  it(`should throw if scheme is not present`, () => {
+    const config = {
+      name: ' ',
+      slug: ' ',
+      modRequest: {
+        projectRoot: '',
+        platformProjectRoot: '',
+        modName: '',
+        platform: 'android' as keyof ModConfig,
+        introspect: true,
+      },
+      modResults: {path: '', language: 'groovy' as const, contents: ''},
+    };
+    function domainCheck() {
+      addAndroidAuth0Gradle({domain: 'sample.auth0.com'}, config);
+    }
+    expect(domainCheck).toThrowErrorMatchingSnapshot();
+  });
+
+  it(`without scheme should have package name`, () => {
     const config = {
       name: ' ',
       slug: ' ',
@@ -97,6 +116,9 @@ describe(addAndroidAuth0Gradle, () => {
         path: '',
         language: 'groovy' as const,
         contents: buildGradleFixture,
+      },
+      android: {
+        package: 'com.auth0.sample',
       },
     };
     function check() {
@@ -162,6 +184,9 @@ describe(addIOSAuth0ConfigInInfoPList, () => {
         modName: '',
         platform: 'ios' as keyof ModConfig,
         introspect: true,
+      },
+      ios: {
+        bundleIdentifier: 'different.bundle.id',
       },
       modResults: {path: '', contents: ''},
     };

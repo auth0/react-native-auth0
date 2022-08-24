@@ -4,6 +4,8 @@ exports[`addAndroidAuth0Gradle should throw if domain is not present 1`] = `"No 
 
 exports[`addAndroidAuth0Gradle should throw if file is kt 1`] = `"Cannot add auth0 build.gradle modifications because the build.gradle is not groovy"`;
 
+exports[`addAndroidAuth0Gradle should throw if scheme is not present 1`] = `"No auth0 scheme specified or package found in expo config"`;
+
 exports[`addAndroidAuth0Gradle with scheme should have that value 1`] = `
 Object {
   "modRequest": Object {
@@ -60,8 +62,11 @@ manifestPlaceholders = [auth0Domain: \\"sample.auth0.com\\", auth0Scheme: \\"com
 }
 `;
 
-exports[`addAndroidAuth0Gradle without scheme should have "applicationId" 1`] = `
+exports[`addAndroidAuth0Gradle without scheme should have package name 1`] = `
 Object {
+  "android": Object {
+    "package": "com.auth0.sample",
+  },
   "modRequest": Object {
     "introspect": true,
     "modName": "",
@@ -80,8 +85,8 @@ android {
     }
 
     defaultConfig {
-// @generated begin react-native-auth0-manifest-placeholder - expo prebuild (DO NOT MODIFY) sync-f99f15a6bc48df1d5fd452795d31c3cf65f7a2f7
-manifestPlaceholders = [auth0Domain: \\"sample.auth0.com\\", auth0Scheme: \\"\${applicationId}\\"]
+// @generated begin react-native-auth0-manifest-placeholder - expo prebuild (DO NOT MODIFY) sync-5c2b93e2cd1c118d64d307ce22e7a639e8ac8e15
+manifestPlaceholders = [auth0Domain: \\"sample.auth0.com\\", auth0Scheme: \\"com.auth0.sample\\"]
 // @generated end react-native-auth0-manifest-placeholder
         applicationId 'com.example.app'
         minSdkVersion rootProject.ext.minSdkVersion
@@ -408,6 +413,9 @@ Object {
 
 exports[`addIOSAuth0ConfigInInfoPList should have the scheme provided  1`] = `
 Object {
+  "ios": Object {
+    "bundleIdentifier": "different.bundle.id",
+  },
   "modRequest": Object {
     "introspect": true,
     "modName": "",
