@@ -42,12 +42,8 @@ const getIdTokenProfileClaims = idToken => {
 const Auth0Provider = ({domain, clientId, children}) => {
   const [client] = useState(() => new Auth0({domain, clientId}));
   const [state, dispatch] = useReducer(reducer, initialState);
-  const hasInitialized = useRef(false);
 
   useEffect(() => {
-    if (hasInitialized.current) return;
-    hasInitialized.current = true;
-
     (async () => {
       let user = null;
 
