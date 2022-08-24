@@ -8,11 +8,10 @@
     "test": "jest",
     "test:ci": "jest --coverage",
     "jsdocs": "jsdoc --configure .jsdoc.json --verbose",
-    "config-plugin-build": "expo-module build",
-    "config-plugin-clean": "expo-module clean",
-    "config-plugin-test": "expo-module test",
-    "config-plugin-prepare": "expo-module prepare",
-    "config-plugin-prepublishOnly": "expo-module prepublishOnly",
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
   "repository": {
