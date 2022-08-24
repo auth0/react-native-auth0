@@ -146,7 +146,7 @@ describe(addAndroidAuth0Gradle, () => {
     };
     function check() {
       return addAndroidAuth0Gradle(
-        {domain: 'sample.auth0.com', scheme: 'com.sample.application'},
+        {domain: 'sample.auth0.com', customScheme: 'com.sample.application'},
         config,
       );
     }
@@ -191,7 +191,10 @@ describe(addIOSAuth0ConfigInInfoPList, () => {
       modResults: {path: '', contents: ''},
     };
     function check() {
-      return addIOSAuth0ConfigInInfoPList({scheme: 'com.sample.auth0'}, config);
+      return addIOSAuth0ConfigInInfoPList(
+        {customScheme: 'com.sample.auth0'},
+        config,
+      );
     }
     expect(check()).toMatchSnapshot();
   });
@@ -241,7 +244,10 @@ describe(addIOSAuth0ConfigInInfoPList, () => {
       },
     };
     function check() {
-      return addIOSAuth0ConfigInInfoPList({scheme: 'com.sample.auth0'}, config);
+      return addIOSAuth0ConfigInInfoPList(
+        {customScheme: 'com.sample.auth0'},
+        config,
+      );
     }
     expect(check()).toMatchSnapshot();
   });
@@ -269,7 +275,10 @@ describe(addIOSAuth0ConfigInInfoPList, () => {
       },
     };
     function check() {
-      return addIOSAuth0ConfigInInfoPList({scheme: 'com.sample.auth0'}, config);
+      return addIOSAuth0ConfigInInfoPList(
+        {customScheme: 'com.sample.auth0'},
+        config,
+      );
     }
     expect(check()).toMatchSnapshot();
   });

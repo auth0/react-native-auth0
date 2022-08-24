@@ -53,7 +53,7 @@ export const addAndroidAuth0Gradle = (
     }
     const auth0Domain = props.domain;
     let auth0Scheme =
-      props.scheme ??
+      props.customScheme ??
       config.android?.package ??
       (() => {
         throw new Error(
@@ -133,7 +133,7 @@ export const addIOSAuth0ConfigInInfoPList = (
     config.modResults.CFBundleURLTypes = [];
   }
   let auth0Scheme =
-    props.scheme ??
+    props.customScheme ??
     config.ios?.bundleIdentifier ??
     (() => {
       throw new Error(
@@ -157,7 +157,7 @@ export const addIOSAuth0ConfigInInfoPList = (
 };
 
 type Auth0PluginConfig = {
-  scheme?: string;
+  customScheme?: string;
   domain?: string;
 };
 
