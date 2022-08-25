@@ -24,16 +24,11 @@ function makeJwt(claims) {
 }
 
 const mockIdToken = makeJwt();
-const mockClearSession = jest.fn().mockImplementation(() => Promise.resolve());
 
 const mockCredentials = {
   idToken: mockIdToken,
   accessToken: 'ACCESS TOKEN',
 };
-
-const mockAuthorize = jest
-  .fn()
-  .mockImplementation(() => Promise.resolve(mockCredentials));
 
 const wrapper = ({children}) => (
   <Auth0Provider domain="DOMAIN" clientId="CLIENT ID">
@@ -41,23 +36,28 @@ const wrapper = ({children}) => (
   </Auth0Provider>
 );
 
+const mockAuth0 = {
+  webAuth: {
+    authorize: jest.fn().mockResolvedValue(mockCredentials),
+    clearSession: jest.fn().mockResolvedValue(),
+  },
+  credentialsManager: {
+    getCredentials: jest.fn().mockResolvedValue(mockCredentials),
+    requireLocalAuthentication: jest.fn().mockResolvedValue(),
+    clearCredentials: jest.fn().mockResolvedValue(),
+    saveCredentials: jest.fn().mockResolvedValue(),
+    hasValidCredentials: jest.fn(),
+  },
+};
+
 jest.mock('../../auth0', () => {
-  return jest.fn().mockImplementation(() => ({
-    webAuth: {
-      authorize: mockAuthorize,
-      clearSession: mockClearSession,
-    },
-  }));
+  return jest.fn().mockImplementation(() => mockAuth0);
 });
 
 describe('The useAuth0 hook', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  it('defines isLoading', () => {
-    const {result} = renderHook(() => useAuth0());
-    expect(result.current.isLoading).toEqual(true);
+    mockAuth0.credentialsManager.hasValidCredentials.mockResolvedValue(false);
   });
 
   it('defines error', () => {
@@ -80,6 +80,24 @@ describe('The useAuth0 hook', () => {
     expect(result.current.clearSession).toBeDefined();
   });
 
+  it('does not initialize the user on start up without valid credentials', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    await waitForNextUpdate();
+    expect(mockAuth0.credentialsManager.getCredentials).not.toBeCalled();
+    expect(mockAuth0.credentialsManager.hasValidCredentials).toBeCalledTimes(1);
+    expect(result.current.user).toBeNull();
+  });
+
+  it('initializes the user on start up with valid credentials', async () => {
+    mockAuth0.credentialsManager.hasValidCredentials.mockResolvedValue(true);
+
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    await waitForNextUpdate();
+    expect(result.current.user).not.toBeNull();
+  });
+
   it('throws an error when login is called without a wrapper', () => {
     const {result} = renderHook(() => useAuth0());
 
@@ -98,11 +116,12 @@ describe('The useAuth0 hook', () => {
 
   it('can authorize', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
-    const credentials = result.current.authorize();
+    result.current.authorize();
 
     await waitForNextUpdate();
     expect(result.current.user).not.toBeNull();
-    expect(credentials).resolves.toMatchObject(mockCredentials);
+    expect(mockAuth0.webAuth.authorize).toBeCalled();
+    expect(mockAuth0.credentialsManager.saveCredentials).toBeCalled();
   });
 
   it('can authorize, passing through all parameters', async () => {
@@ -116,10 +135,23 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuthorize).toHaveBeenCalledWith({
+    expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith({
       scope: 'custom-scope',
       audience: 'http://my-api',
       customParam: '1234',
+    });
+  });
+
+  it('sets the user prop after authorizing', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorize();
+    await waitForNextUpdate();
+
+    expect(result.current.user).toMatchObject({
+      name: 'Test User',
+      family_name: 'User',
+      picture: 'https://images/pic.png',
     });
   });
 
@@ -129,6 +161,8 @@ describe('The useAuth0 hook', () => {
     result.current.clearSession();
     await waitForNextUpdate();
     expect(result.current.user).toBeNull();
+    expect(mockAuth0.webAuth.clearSession).toHaveBeenCalled();
+    expect(mockAuth0.credentialsManager.clearCredentials).toHaveBeenCalled();
   });
 
   it('can clear the session and pass parameters', async () => {
@@ -136,14 +170,18 @@ describe('The useAuth0 hook', () => {
 
     result.current.clearSession({parameter: 1}, {option: 1});
     await waitForNextUpdate();
-    expect(mockClearSession).toHaveBeenCalledWith({parameter: 1}, {option: 1});
+
+    expect(mockAuth0.webAuth.clearSession).toHaveBeenCalledWith(
+      {parameter: 1},
+      {option: 1},
+    );
   });
 
   it('sets the error property when an error is raised in authorize', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
     const errorToThrow = new Error('Authorize error');
 
-    mockAuthorize.mockRejectedValue(errorToThrow);
+    mockAuth0.webAuth.authorize.mockRejectedValue(errorToThrow);
 
     result.current.authorize();
     await waitForNextUpdate();
@@ -154,8 +192,8 @@ describe('The useAuth0 hook', () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
     const errorToThrow = new Error('Authorize error');
 
-    mockAuthorize.mockRejectedValueOnce(errorToThrow);
-    mockAuthorize.mockResolvedValue(mockCredentials);
+    mockAuth0.webAuth.authorize.mockRejectedValueOnce(errorToThrow);
+    mockAuth0.webAuth.authorize.mockResolvedValue(mockCredentials);
 
     result.current.authorize();
     await waitForNextUpdate();
@@ -169,7 +207,7 @@ describe('The useAuth0 hook', () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
     const errorToThrow = new Error('Authorize error');
 
-    mockClearSession.mockRejectedValue(errorToThrow);
+    mockAuth0.webAuth.clearSession.mockRejectedValue(errorToThrow);
 
     result.current.clearSession();
     await waitForNextUpdate();
@@ -180,8 +218,8 @@ describe('The useAuth0 hook', () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
     const errorToThrow = new Error('Authorize error');
 
-    mockClearSession.mockRejectedValueOnce(errorToThrow);
-    mockClearSession.mockResolvedValue();
+    mockAuth0.webAuth.clearSession.mockRejectedValueOnce(errorToThrow);
+    mockAuth0.webAuth.clearSession.mockResolvedValue();
 
     result.current.clearSession();
     await waitForNextUpdate();
@@ -189,5 +227,86 @@ describe('The useAuth0 hook', () => {
     result.current.clearSession();
     await waitForNextUpdate();
     expect(result.current.error).toBeNull();
+  });
+
+  it('can get credentials', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    await waitForNextUpdate();
+
+    expect(result.current.getCredentials()).resolves.toMatchObject(
+      mockCredentials,
+    );
+  });
+
+  it('can get credentials with options', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    await waitForNextUpdate();
+
+    expect(
+      result.current.getCredentials('read:books', 60, {hello: 'world'}),
+    ).resolves.toMatchObject(mockCredentials);
+
+    expect(mockAuth0.credentialsManager.getCredentials).toHaveBeenCalledWith(
+      'read:books',
+      60,
+      {
+        hello: 'world',
+      },
+    );
+  });
+
+  it('dispatches an error when getCredentials fails', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const thrownError = new Error('Get credentials failed');
+
+    mockAuth0.credentialsManager.getCredentials.mockRejectedValue(thrownError);
+
+    result.current.getCredentials();
+    await waitForNextUpdate();
+    expect(result.current.error).toEqual(thrownError);
+  });
+
+  it('can require local authentication', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    await waitForNextUpdate();
+
+    result.current.requireLocalAuthentication();
+
+    expect(
+      mockAuth0.credentialsManager.requireLocalAuthentication,
+    ).toHaveBeenCalled();
+  });
+
+  it('can require local authentication with options', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    await waitForNextUpdate();
+
+    result.current.requireLocalAuthentication(
+      'title',
+      'description',
+      'cancel',
+      'fallback',
+    );
+
+    expect(
+      mockAuth0.credentialsManager.requireLocalAuthentication,
+    ).toHaveBeenCalledWith('title', 'description', 'cancel', 'fallback');
+  });
+
+  it('dispatches an error when requireLocalAuthentication fails', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const thrownError = new Error('requireLocalAuthentication failed');
+
+    mockAuth0.credentialsManager.requireLocalAuthentication.mockRejectedValue(
+      thrownError,
+    );
+
+    result.current.requireLocalAuthentication();
+    await waitForNextUpdate();
+    expect(result.current.error).toEqual(thrownError);
   });
 });

@@ -7,9 +7,10 @@ const stub = () => {
 const initialContext = {
   error: null,
   user: null,
-  isLoading: true,
   authorize: stub,
   clearSession: stub,
+  getCredentials: stub,
+  requireLocalAuthentication: stub,
 };
 
 const Auth0Context = createContext(initialContext);
