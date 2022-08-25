@@ -275,6 +275,7 @@ const Component = () => {
 
 <details>
   <summary>Using the `Auth0` class</summary>
+  
   ```js
   auth0.webAuth
     .authorize({scope: 'openid email profile'})
@@ -311,9 +312,11 @@ const Component = () => {
 
 <details>
   <summary>Using the `Auth0` class</summary>
-  ```js
-  auth0.webAuth.clearSession().catch(error => console.log(error));
-  ```
+
+```js
+auth0.webAuth.clearSession().catch(error => console.log(error));
+```
+
 </details>
 
 ### Authentication API
