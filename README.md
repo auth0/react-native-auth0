@@ -283,13 +283,13 @@ const credentials = await auth0.credentialsManager.getCredentials();
 
 You can enable an additional level of user authentication before retrieving credentials using the local authentication supported by the device, for example PIN or fingerprint on Android, and Face ID or Touch ID on iOS.
 
-> :warning: You need a real device to test Local Authentication for iOS. Local Authentication is not available in simulators.
-
 ```js
 await auth0.credentialsManager.requireLocalAuthentication();
 ```
 
 Check the [API documentation](https://auth0.github.io/react-native-auth0/CredentialsManager#requireLocalAuthentication) to learn more about the available LocalAuthentication properties.
+
+> :warning: You need a real device to test Local Authentication for iOS. Local Authentication is not available in simulators.
 
 #### Credentials Manager errors
 
