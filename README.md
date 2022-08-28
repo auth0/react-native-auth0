@@ -242,6 +242,67 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 auth0.webAuth.clearSession().catch(error => console.log(error));
 ```
 
+### Credentials Manager
+
+- [Check for stored credentials](#check-for-stored-credentials)
+- [Retrieve stored credentials](#retrieve-stored-credentials)
+- [Local authentication](#local-authentication)
+- [Credentials Manager errors](#credentials-manager-errors)
+
+The Credentials Manager allows you to securely store and retrieve the user's credentials. The credentials will be stored encrypted in Shared Preferences on Android, and in the Keychain on iOS.
+
+The `Auth0` class exposes the `credentialsManager` property for you to interact with using the API below.
+
+> 💡 If you're using Web Auth (`authorize`) through Hooks, you do not need to manually store the credentials after login and delete them after logout; the SDK does this automatically.
+
+#### Check for stored credentials
+
+When the users open your app, check for valid credentials. If they exist, you can retrieve them and redirect the users to the app's main flow without any additional login steps.
+
+```js
+const isLoggedIn = await auth0.credentialsManager.hasValidCredentials();
+
+if (isLoggedIn) {
+  // Retrieve credentials and redirect to the main flow
+} else {
+  // Redirect to the login page
+}
+```
+
+#### Retrieve stored credentials
+
+The credentials will be automatically renewed using the [refresh token](https://auth0.com/docs/secure/tokens/refresh-tokens), if the access token has expired. **This method is thread safe**.
+
+```js
+const credentials = await auth0.credentialsManager.getCredentials();
+```
+
+> 💡 You do not need to call credentialsManager.saveCredentials() afterward. The Credentials Manager automatically persists the renewed credentials.
+
+#### Local authentication
+
+You can enable an additional level of user authentication before retrieving credentials using the local authentication supported by the device, for example PIN or fingerprint on Android, and Face ID or Touch ID on iOS.
+
+```js
+await auth0.credentialsManager.requireLocalAuthentication();
+```
+
+Check the [API documentation](https://auth0.github.io/react-native-auth0/CredentialsManager#requireLocalAuthentication) to learn more about the available LocalAuthentication properties.
+
+> :warning: You need a real device to test Local Authentication for iOS. Local Authentication is not available in simulators.
+
+#### Credentials Manager errors
+
+The Credentials Manager will only throw `CredentialsManagerError` exceptions. You can find more information in the details property of the exception.
+
+```js
+try {
+  const credentials = await auth0.credentialsManager.getCredentials();
+} catch (error) {
+  console.log(error);
+}
+```
+
 ### Authentication API
 
 ### Important: Database Connection Authentication
