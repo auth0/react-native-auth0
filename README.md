@@ -200,7 +200,6 @@ To use the SDK with Expo, we need to configure the app at build time. We need to
 | API          | Description                                                                                                                                                                                                                                                           |
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | domain       | Mandatory: Provide the Auth0 domain that can be found at the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                          |
-| --           | --                                                                                                                                                                                                                                                                    |
 | customScheme | Optional: Custom scheme to build the callback URL with. If not provided, uses Application ID for Android and Bundle Identifier for iOS. The value provided here should be passed to the `customScheme` option parameter of the `authorize` and `clearSession` methods |
 
 Now you can run the application using `expo run:android` or `expo run:ios`.
