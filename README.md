@@ -202,29 +202,87 @@ If in addition you plan to use the log out method, you must also add these URLs 
 
 ## Usage
 
-Create a new instance of the client using the Auth0 domain and client ID values from your Application's [dashboard page](https://manage.auth0.com/).
+> This SDK is OIDC compliant. To ensure OIDC compliant responses from the Auth0 servers enable the **OIDC Conformant** switch in your Auth0 dashboard under `Application / Settings / Advanced OAuth`. For more information please check [this documentation](https://auth0.com/docs/api-auth/intro#how-to-use-the-new-flows).
+
+### Web Authentication
+
+The SDK exports a React hook as the primary interface for performing [web authentication](#web-authentication) through the browser using Auth0 [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login).
+
+Use the methods from the `useAuth0` hook to implement login, logout, and to retrieve details about the authenticated user.
+
+See the [API Documentation](https://auth0.github.io/react-native-auth0/global.html#useAuth0) for full details on the `useAuth0` hook.
+
+First, import the `Auth0Provider` component and wrap it around your application. Provide the `domain` and `clientId` values as given to you when setting up your Auth0 app in the dashboard:
+
+```js
+import {Auth0Provider} from 'react-native-auth0';
+
+const App = () => {
+  return (
+    <Auth0Provider domain="YOUR_AUTH0_DOMAIN" clientId="YOUR_AUTH0_CLIENT_ID">
+      {/* YOUR APP */}
+    </Auth0Provider>
+  );
+};
+
+export default App;
+```
+
+<details>
+  <summary>Using the `Auth0` class</summary>
+
+If you're not using React Hooks, you can simply instantiate the `Auth0` class:
 
 ```js
 import Auth0 from 'react-native-auth0';
 
 const auth0 = new Auth0({
-  domain: '{YOUR_AUTH0_DOMAIN}',
-  clientId: '{YOUR_CLIENT_ID}',
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
 });
 ```
 
-> This SDK is OIDC compliant. To ensure OIDC compliant responses from the Auth0 servers enable the **OIDC Conformant** switch in your Auth0 dashboard under `Application / Settings / Advanced OAuth`. For more information please check [this documentation](https://auth0.com/docs/api-auth/intro#how-to-use-the-new-flows).
+</details>
 
-### Web Authentication
+Then import the hook into a component where you want to get access to the properties and methods for integrating with Auth0:
+
+```js
+import {useAuth0} from 'react-native-auth0';
+```
 
 #### Login
 
+Use the `authorize` method to redirect the user to the Auth0 [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) page for authentication. The `user` property is populated with details about the authenticated user.
+
+If `user` is `null`, no user is currently authenticated.
+
 ```js
-auth0.webAuth
-  .authorize({scope: 'openid email profile'})
-  .then(credentials => console.log(credentials))
-  .catch(error => console.log(error));
+const Component = () => {
+  const {authorize, user} = useAuth0();
+
+  const login = async () => {
+    await authorize();
+  };
+
+  return (
+    <View>
+      {!user && <Button onPress={login} title="Log in" />}
+      {user && <Text>Logged in as {user.name}</Text>}
+    </View>
+  );
+};
 ```
+
+<details>
+  <summary>Using the `Auth0` class</summary>
+  
+  ```js
+  auth0.webAuth
+    .authorize({scope: 'openid email profile'})
+    .then(credentials => console.log(credentials))
+    .catch(error => console.log(error));
+  ```
+</details>
 
 > Web Authentication flows require a Browser application installed on the device. When no Browser is available, an error of type `a0.browser_not_available` will be raised via the provided callback.
 
@@ -238,9 +296,27 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 #### Logout
 
+Log the user out by using the `clearSession` method from the `useAuth0` hook.
+
+```js
+const Component = () => {
+  const {clearSession, user} = useAuth0();
+
+  const logout = async () => {
+    await clearSession();
+  };
+
+  return <View>{user && <Button onPress={logout} title="Log out" />}</View>;
+};
+```
+
+<details>
+  <summary>Using the `Auth0` class</summary>
+
 ```js
 auth0.webAuth.clearSession().catch(error => console.log(error));
 ```
+</details>
 
 ### Credentials Manager
 
@@ -304,6 +380,19 @@ try {
 ```
 
 ### Authentication API
+
+Unlike web authentication, we do not provide a hook for integrating with the Authentication API.
+
+Instantiate the `Auth0` class to get access to the methods that call Auth0's Authentication API endpoints:
+
+```js
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+});
+```
 
 ### Important: Database Connection Authentication
 
