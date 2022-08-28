@@ -180,9 +180,8 @@ If you use a value other than `$(PRODUCT_BUNDLE_IDENTIFIER)` in the `CFBundleURL
 
 To use the SDK with Expo, we need to configure the app at build time. We need to provide the `domain` and optionally the `customScheme` value through the [Config Plugin](https://docs.expo.dev/guides/config-plugins/) by adding the following snippet to _app.json_ or _app.config.js_
 
-```
+```json
 {
-  {
   "expo": {
     ...
     "plugins": [
@@ -201,9 +200,10 @@ To use the SDK with Expo, we need to configure the app at build time. We need to
 | API          | Description                                                                                                                                                                                                                                                           |
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | domain       | Mandatory: Provide the Auth0 domain that can be found at the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                          |
+| --           | --                                                                                                                                                                                                                                                                    |
 | customScheme | Optional: Custom scheme to build the callback URL with. If not provided, uses Application ID for Android and Bundle Identifier for iOS. The value provided here should be passed to the `customScheme` option parameter of the `authorize` and `clearSession` methods |
 
-To run the application use `expo run:android` or `expo run:ios`.
+Now you can run the application using `expo run:android` or `expo run:ios`.
 
 ### Callback URL(s)
 
