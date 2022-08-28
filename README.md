@@ -275,14 +275,13 @@ const Component = () => {
 
 <details>
   <summary>Using the `Auth0` class</summary>
-
-```js
-auth0.webAuth
-  .authorize()
-  .then(credentials => console.log(credentials))
-  .catch(error => console.log(error));
-```
-
+  
+  ```js
+  auth0.webAuth
+    .authorize({scope: 'openid email profile'})
+    .then(credentials => console.log(credentials))
+    .catch(error => console.log(error));
+  ```
 </details>
 
 > Web Authentication flows require a Browser application installed on the device. When no Browser is available, an error of type `a0.browser_not_available` will be raised via the provided callback.
