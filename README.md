@@ -68,7 +68,7 @@ Then, you need to run the following command to install the ios app pods with Coc
 
 ### Configuration
 
-You need make your Android and iOS applications aware that an authentication result will be received from the browser. This SDK makes use of the Android's Package Name and its analogous iOS's Product Bundle Identifier to generate the redirect URL. Each platform has its own set of instructions.
+You need make your Android, iOS or Expo applications aware that an authentication result will be received from the browser. This SDK makes use of the Android's Package Name and its analogous iOS's Product Bundle Identifier to generate the redirect URL. Each platform has its own set of instructions.
 
 #### Android
 
@@ -173,6 +173,37 @@ If your application is generated using the React Native CLI, the default value o
 If you use a value other than `$(PRODUCT_BUNDLE_IDENTIFIER)` in the `CFBundleURLSchemes` field of the `Info.plist` you will also need to pass it as the `customScheme` option parameter of the `authorize` and `clearSession` methods.
 
 > For more info please read the [React Native docs](https://facebook.github.io/react-native/docs/linking.html).
+
+#### Expo
+
+> :warning: This SDK is not compatible with "Expo Go" app because of custom native code. It is compatible with Custom Dev Client and EAS builds
+
+To use the SDK with Expo, we need to configure the app at build time. We need to provide the `domain` and optionally the `customScheme` value through the [Config Plugin](https://docs.expo.dev/guides/config-plugins/) by adding the following snippet to _app.json_ or _app.config.js_
+
+```
+{
+  {
+  "expo": {
+    ...
+    "plugins": [
+      [
+        "react-native-auth0",
+        {
+          "domain": string,
+          "customScheme": string (optional),
+        }
+      ]
+    ]
+  }
+}
+```
+
+| API          | Description                                                                                                                                                                                                                                                           |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| domain       | Mandatory: Provide the Auth0 domain that can be found at the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                          |
+| customScheme | Optional: Custom scheme to build the callback URL with. If not provided, uses Application ID for Android and Bundle Identifier for iOS. The value provided here should be passed to the `customScheme` option parameter of the `authorize` and `clearSession` methods |
+
+To run the application use `expo run:android` or `expo run:ios`.
 
 ### Callback URL(s)
 
