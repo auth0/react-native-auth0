@@ -253,7 +253,7 @@ The Credentials Manager allows you to securely store and retrieve the user's cre
 
 The `Auth0` class exposes the `credentialsManager` property for you to interact with using the API below.
 
-> 💡 If you're using Web Auth, you do not need to manually store the credentials after login and delete them after logout; the SDK does this automatically.
+> 💡 If you're using Web Auth (`authorize`) through Hooks, you do not need to manually store the credentials after login and delete them after logout; the SDK does this automatically.
 
 #### Check for stored credentials
 
@@ -282,6 +282,8 @@ const credentials = await auth0.credentialsManager.getCredentials();
 #### Local authentication
 
 You can enable an additional level of user authentication before retrieving credentials using the local authentication supported by the device, for example PIN or fingerprint on Android, and Face ID or Touch ID on iOS.
+
+> :warning: You need a real device to test Local Authentication for iOS. Local Authentication is not available in simulators.
 
 ```js
 await auth0.credentialsManager.requireLocalAuthentication();
