@@ -1,4 +1,4 @@
-import React, {useReducer, useState} from 'react';
+import React, {useEffect, useReducer, useState, useRef} from 'react';
 import {useCallback, useMemo} from 'react';
 import jwt_decode from 'jwt-decode';
 import PropTypes from 'prop-types';
@@ -8,7 +8,6 @@ import reducer from './reducer';
 import {idTokenNonProfileClaims} from '../jwt/utils';
 
 const initialState = {
-  isLoading: true,
   user: null,
   error: null,
 };
@@ -21,7 +20,7 @@ const getIdTokenProfileClaims = idToken => {
 
   const profileClaims = Object.keys(payload).reduce((profile, claim) => {
     if (!idTokenNonProfileClaims.has(claim)) {
-      payload[claim];
+      profile[claim] = payload[claim];
     }
 
     return profile;
@@ -30,17 +29,44 @@ const getIdTokenProfileClaims = idToken => {
   return profileClaims;
 };
 
+/**
+ * Provides the Auth0Context to its child components.
+ * @param {String} domain Your Auth0 domain
+ * @param {String} clientId Your Auth0 client ID
+ *
+ * @example
+ * <Auth0Provider domain="YOUR AUTH0 DOMAIN" clientId="YOUR CLIENT ID">
+ *   <App />
+ * </Auth0Provider>
+ */
 const Auth0Provider = ({domain, clientId, children}) => {
   const [client] = useState(() => new Auth0({domain, clientId}));
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    (async () => {
+      let user = null;
+
+      if (await client.credentialsManager.hasValidCredentials()) {
+        const credentials = await client.credentialsManager.getCredentials();
+
+        if (credentials) {
+          user = getIdTokenProfileClaims(credentials.idToken);
+        }
+      }
+
+      dispatch({type: 'INITIALIZED', user});
+    })();
+  }, [client]);
 
   const authorize = useCallback(
     async (...options) => {
       try {
         const credentials = await client.webAuth.authorize(...options);
-        const claims = getIdTokenProfileClaims(credentials.idToken);
-        dispatch({type: 'LOGIN_COMPLETE', user: claims});
-        return credentials;
+        const user = getIdTokenProfileClaims(credentials.idToken);
+
+        await client.credentialsManager.saveCredentials(credentials);
+        dispatch({type: 'LOGIN_COMPLETE', user});
       } catch (error) {
         dispatch({type: 'ERROR', error});
         return;
@@ -53,6 +79,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
     async (...options) => {
       try {
         await client.webAuth.clearSession(...options);
+        await client.credentialsManager.clearCredentials();
         dispatch({type: 'LOGOUT_COMPLETE'});
       } catch (error) {
         dispatch({type: 'ERROR', error});
@@ -62,13 +89,42 @@ const Auth0Provider = ({domain, clientId, children}) => {
     [client],
   );
 
+  const getCredentials = useCallback(
+    async (...options) => {
+      try {
+        return await client.credentialsManager.getCredentials(...options);
+      } catch (error) {
+        dispatch({type: 'ERROR', error});
+        return;
+      }
+    },
+    [client],
+  );
+
+  const requireLocalAuthentication = useCallback(async (...options) => {
+    try {
+      await client.credentialsManager.requireLocalAuthentication(...options);
+    } catch (error) {
+      dispatch({type: 'ERROR', error});
+      return;
+    }
+  });
+
   const contextValue = useMemo(
     () => ({
       ...state,
       authorize,
       clearSession,
+      getCredentials,
+      requireLocalAuthentication,
     }),
-    [state, authorize, clearSession],
+    [
+      state,
+      authorize,
+      clearSession,
+      getCredentials,
+      requireLocalAuthentication,
+    ],
   );
 
   return (

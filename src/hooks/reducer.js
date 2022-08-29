@@ -1,3 +1,6 @@
+/**
+ * @ignore
+ */
 const reducer = (state, action) => {
   switch (action.type) {
     case 'LOGIN_COMPLETE':
@@ -8,6 +11,9 @@ const reducer = (state, action) => {
 
     case 'ERROR':
       return {...state, error: action.error};
+
+    case 'INITIALIZED':
+      return {...state, user: action.user};
   }
 };
 

@@ -1,7 +1,7 @@
 import {Platform, NativeModules} from 'react-native';
 import CredentialsManagerError from './credentialsManagerError';
 
-export default class CredentialsManager {
+class CredentialsManager {
   /**
    * Construct an instance of CredentialsManager
    *
@@ -25,8 +25,6 @@ export default class CredentialsManager {
    * @param {String} credentials.refreshToken optional - used to refresh access token
    * @param {String} credentials.scope optional - represents the scope of the current token
    * @returns {Promise}
-   *
-   * @memberof CredentialsManager
    */
   async saveCredentials(credentials = {}) {
     const validateKeys = ['idToken', 'accessToken', 'tokenType', 'expiresIn'];
@@ -59,8 +57,6 @@ export default class CredentialsManager {
    * @param {String} minTtl optional - the minimum time in seconds that the access token should last before expiration.
    * @param {Object} parameters optional - additional parameters to send in the request to refresh expired credentials.
    * @returns {Promise}
-   *
-   * @memberof CredentialsManager
    */
   async getCredentials(scope, minTtl = 0, parameters = {}) {
     try {
@@ -88,8 +84,6 @@ export default class CredentialsManager {
    * @param {String} cancelTitle iOS Only - optional - the cancel message to display on the local authentication prompt.
    * @param {String} fallbackTitle iOS Only - optional - the fallback message to display on the local authentication prompt after a failed match.
    * @returns {Promise}
-   *
-   * @memberof CredentialsManager
    */
   async requireLocalAuthentication(
     title,
@@ -121,8 +115,6 @@ export default class CredentialsManager {
    * Returns whether this manager contains a valid non-expired pair of credentials.
    *
    * @param {Number} minTtl optional - the minimum time in seconds that the access token should last before expiration
-   *
-   * @memberof CredentialsManager
    */
   async hasValidCredentials(minTtl = 0) {
     await this._ensureCredentialManagerIsInitialized();
@@ -131,8 +123,6 @@ export default class CredentialsManager {
 
   /**
    * Delete the stored credentials
-   *
-   * @memberof CredentialsManager
    */
   async clearCredentials() {
     await this._ensureCredentialManagerIsInitialized();
@@ -150,3 +140,5 @@ export default class CredentialsManager {
     }
   }
 }
+
+export default CredentialsManager;
