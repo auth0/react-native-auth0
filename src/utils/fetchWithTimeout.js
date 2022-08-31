@@ -29,6 +29,9 @@ function fetchWithTimeout(url, options, timeoutMs) {
     fetch(url, {
       ...options,
       signal: abortController.signal,
+      headers: {
+        'Accept-Language': agentLanguage()
+      }
     }),
     timeoutPromise,
   ])
