@@ -30,7 +30,7 @@ const callbackUri = (domain, customScheme) => {
  * @class WebAuth
  * @see https://auth0.com/docs/api-auth/grant/authorization-code-pkce
  */
-export default class WebAuth {
+class WebAuth {
   constructor(auth) {
     this.client = auth;
     const {baseUrl, clientId, domain} = auth;
@@ -170,3 +170,5 @@ export default class WebAuth {
     return agent.show(logoutUrl, false, options.skipLegacyListener, true);
   }
 }
+
+export default WebAuth;
