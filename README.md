@@ -178,7 +178,7 @@ If you use a value other than `$(PRODUCT_BUNDLE_IDENTIFIER)` in the `CFBundleURL
 
 > :warning: This SDK is not compatible with "Expo Go" app because of custom native code. It is compatible with Custom Dev Client and EAS builds
 
-To use the SDK with Expo, we need to configure the app at build time. We need to provide the `domain` and optionally the `customScheme` value through the [Config Plugin](https://docs.expo.dev/guides/config-plugins/) by adding the following snippet to _app.json_ or _app.config.js_
+To use the SDK with Expo, configure the app at build time by providing the `domain` and (optionally) the `customScheme` values through the [Config Plugin](https://docs.expo.dev/guides/config-plugins/). To do this, add the following snippet to _app.json_ or _app.config.js_:
 
 ```json
 {
