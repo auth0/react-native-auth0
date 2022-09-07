@@ -63,3 +63,5 @@ coverage/
 
 # Temp files
 out/
+
+plugin/build 

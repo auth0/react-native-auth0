@@ -7,7 +7,12 @@
   "scripts": {
     "test": "jest",
     "test:ci": "jest --coverage",
-    "jsdocs": "jsdoc --configure .jsdoc.json --verbose"
+    "jsdocs": "jsdoc --configure .jsdoc.json --verbose",
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
   },
   "repository": {
     "type": "git",
@@ -29,6 +34,7 @@
     "react-native": ">=0.65.0 <1.0.x"
   },
   "devDependencies": {
+    "expo-module-scripts": "^2.0.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^12.1.5",
     "@testing-library/react-hooks": "^8.0.1",
@@ -51,6 +57,7 @@
     "semver": "^6.3.0"
   },
   "dependencies": {
+    "@expo/config-plugins": "^4.1.5",
     "base-64": "^0.1.0",
     "crypto-js": "^4.0.0",
     "jsbn": "^1.1.0",
@@ -60,7 +67,10 @@
   },
   "jest": {
     "coverageDirectory": "./coverage/",
-    "collectCoverage": false
+    "collectCoverage": false,
+    "modulePathIgnorePatterns": [
+      "fixtures"
+    ]
   },
   "husky": {
     "hooks": {

@@ -346,6 +346,7 @@ const Component = () => {
 ```js
 auth0.webAuth.clearSession().catch(error => console.log(error));
 ```
+
 </details>
 
 ### Credentials Manager
