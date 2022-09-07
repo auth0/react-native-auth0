@@ -188,8 +188,8 @@ To use the SDK with Expo, configure the app at build time by providing the `doma
       [
         "react-native-auth0",
         {
-          "domain": string,
-          "customScheme": string (optional),
+          "domain": "YOUR_AUTH0_DOMAIN",
+          "customScheme": "YOUR_CUSTOM_SCHEME",
         }
       ]
     ]
