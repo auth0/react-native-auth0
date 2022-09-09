@@ -32,4 +32,18 @@ workflows:
             branches:
               only:
                 - master
+  build-and-test-vnext:
+    jobs:
+      - build
+      - ship/node-publish:
+          pkg-manager: yarn
+          publish-command: yarn publish --tag next
+          requires:
+            - build
+          context:
+            - publish-npm
+            - publish-gh
+          filters:
+            branches:
+              only:
                 - vnext
