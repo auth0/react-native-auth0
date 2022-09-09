@@ -1,5 +1,19 @@
 # Change Log
 
+## [v2.14.0-fa.0](https://github.com/auth0/react-native-auth0/tree/v2.14.0-fa.0) (2022-09-09)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.13.3...v2.14.0-fa.0)
+
+**Added**
+
+- Add Expo config plugin (SDK 41+) [\#424](https://github.com/auth0/react-native-auth0/pull/424) ([sdacunha](https://github.com/sdacunha))
+- [SDK-3591] New Hook API supporting login and logout [\#500](https://github.com/auth0/react-native-auth0/pull/500) ([stevehobbsdev](https://github.com/stevehobbsdev))
+- [SDK-3537] Credential manager for React Native [\#501](https://github.com/auth0/react-native-auth0/pull/501) ([poovamraj](https://github.com/poovamraj))
+
+**Changed**
+
+- Update peer dependency for React [\#509](https://github.com/auth0/react-native-auth0/pull/509) ([poovamraj](https://github.com/poovamraj))
+
 ## [v2.13.3](https://github.com/auth0/react-native-auth0/tree/v2.13.3) (2022-07-06)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.13.2...v2.13.3)
