@@ -37,7 +37,7 @@ workflows:
       - build
       - ship/node-publish:
           pkg-manager: yarn
-          publish-command: yarn publish --tag next
+          publish-command: npm publish --tag next
           requires:
             - build
           context:
