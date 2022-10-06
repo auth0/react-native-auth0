@@ -62,7 +62,17 @@ const Auth0Provider = ({domain, clientId, children}) => {
   const authorize = useCallback(
     async (...options) => {
       try {
-        const credentials = await client.webAuth.authorize(...options);
+        const opts = options.length ? options[0] : {};
+        const specifiedScopes =
+          opts?.scope?.split(' ').map(s => s.trim()) || [];
+        const scopeSet = new Set([
+          ...specifiedScopes,
+          ...['openid', 'profile', 'email'],
+        ]);
+
+        opts.scope = Array.from(scopeSet).join(' ');
+
+        const credentials = await client.webAuth.authorize(opts);
         const user = getIdTokenProfileClaims(credentials.idToken);
 
         await client.credentialsManager.saveCredentials(credentials);
