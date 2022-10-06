@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  ship: auth0/ship@0.2.0
+  ship: auth0/ship@0.7.1
   codecov: codecov/codecov@3
 
 jobs:
@@ -37,7 +37,7 @@ workflows:
       - build
       - ship/node-publish:
           pkg-manager: yarn
-          publish-command: npm publish --tag next
+          publish-command: npm publish --tag next --dry-run
           requires:
             - build
           context:
