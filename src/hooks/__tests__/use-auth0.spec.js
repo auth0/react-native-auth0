@@ -154,6 +154,30 @@ describe('The useAuth0 hook', () => {
     });
   });
 
+  it('adds the default scopes when some are specified with custom scope', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorize({scope: 'custom-scope openid'});
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith({
+      scope: 'custom-scope openid profile email',
+    });
+  });
+
+  it('adds the default scopes when some are specified without custom scope', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorize({scope: 'profile'});
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith({
+      scope: 'profile openid email',
+    });
+  });
+
   it('does not duplicate default scopes', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
