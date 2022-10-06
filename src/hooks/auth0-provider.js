@@ -63,12 +63,15 @@ const Auth0Provider = ({domain, clientId, children}) => {
     async (...options) => {
       try {
         const opts = options.length ? options[0] : {};
-        const scopeSet = new Set(
-          opts?.scope?.split(' ').map(s => s.trim()) || [],
-        );
+        const specifiedScopes =
+          opts?.scope?.split(' ').map(s => s.trim()) || [];
+        const scopeSet = new Set([
+          ...specifiedScopes,
+          ...['openid', 'profile', 'email'],
+        ]);
 
-        ['openid', 'profile', 'email'].forEach(scopeSet.add.bind(scopeSet));
         opts.scope = Array.from(scopeSet).join(' ');
+
         const credentials = await client.webAuth.authorize(opts);
         const user = getIdTokenProfileClaims(credentials.idToken);
 
