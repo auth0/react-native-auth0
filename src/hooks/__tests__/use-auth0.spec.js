@@ -136,7 +136,37 @@ describe('The useAuth0 hook', () => {
     await waitForNextUpdate();
 
     expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith({
-      scope: 'custom-scope',
+      scope: 'custom-scope openid profile email',
+      audience: 'http://my-api',
+      customParam: '1234',
+    });
+  });
+
+  it('adds the default scopes when none are specified', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorize();
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith({
+      scope: 'openid profile email',
+    });
+  });
+
+  it('does not duplicate default scopes', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorize({
+      scope: 'openid profile',
+      audience: 'http://my-api',
+      customParam: '1234',
+    });
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith({
+      scope: 'openid profile email',
       audience: 'http://my-api',
       customParam: '1234',
     });
