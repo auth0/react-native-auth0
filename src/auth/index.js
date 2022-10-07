@@ -568,9 +568,14 @@ class Auth {
    *
    * @param {Object} parameters create user parameters
    * @param {String} parameters.email user's email
-   * @param {String} [parameters.username] user's username
    * @param {String} parameters.password user's password
    * @param {String} parameters.connection name of the database connection where to create the user
+   * @param {String} [parameters.username] user's username
+   * @param {String} [parameters.give_name] The user's given name(s)
+   * @param {String} [parameters.family_name] The user's family name(s)
+   * @param {String} [parameters.name] The user's full name
+   * @param {String} [parameters.nickname] The user's nickname
+   * @param {String} [parameters.picture] A URI pointing to the user's picture
    * @param {String} [parameters.metadata] additional user information that will be stored in `user_metadata`
    * @returns {Promise}
    */
@@ -582,6 +587,11 @@ class Auth {
           password: {required: true},
           connection: {required: true},
           username: {required: false},
+          given_name: {required: false},
+          family_name: {required: false},
+          name: {required: false},
+          nickname: {required: false},
+          picture: {required: false},
           metadata: {required: false, toName: 'user_metadata'},
         },
       },
