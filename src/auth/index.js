@@ -14,11 +14,9 @@ function responseHandler(response, exceptions = {}) {
 /**
  * Auth0 Auth API
  *
- * @export Auth
  * @see https://auth0.com/docs/api/authentication
- * @class Auth
  */
-export default class Auth {
+class Auth {
   constructor(options = {}) {
     this.client = new Client(options);
     const {clientId} = options;
@@ -38,8 +36,6 @@ export default class Auth {
    * @param {String} parameters.state random string to prevent CSRF attacks.
    * @returns {String} authorize url with specified parameters to redirect to for AuthZ/AuthN.
    * @see https://auth0.com/docs/api/authentication#authorize-client
-   *
-   * @memberof Auth
    */
   authorizeUrl(parameters = {}) {
     const query = apply(
@@ -69,8 +65,6 @@ export default class Auth {
    * @param {String} [parameters.returnTo] url where the user is redirected to after logout. It must be declared in you Auth0 Dashboard
    * @returns {String} logout url with specified parameters
    * @see https://auth0.com/docs/api/authentication#logout
-   *
-   * @memberof Auth
    */
   logoutUrl(parameters = {}) {
     const query = apply(
@@ -95,8 +89,6 @@ export default class Auth {
    * @param {String} parameters.verifier value used to generate the code challenge sent to `/authorize`.
    * @returns {Promise}
    * @see https://auth0.com/docs/api-auth/grant/authorization-code-pkce
-   *
-   * @memberof Auth
    */
   exchange(parameters = {}) {
     const payload = apply(
@@ -130,8 +122,6 @@ export default class Auth {
    * @returns {Promise}
    *
    * @see https://auth0.com/docs/api/authentication#token-exchange-for-native-social
-   *
-   * @memberof Auth
    */
   exchangeNativeSocial(parameters = {}) {
     const payload = apply(
@@ -166,8 +156,6 @@ export default class Auth {
    * @param {String} [parameters.scope] scopes requested for the issued tokens. e.g. `openid profile`
    * @returns {Promise}
    * @see https://auth0.com/docs/api-auth/grant/password#realm-support
-   *
-   * @memberof Auth
    */
   passwordRealm(parameters = {}) {
     const payload = apply(
@@ -199,8 +187,6 @@ export default class Auth {
    * @param {String} [parameters.scope] scopes requested for the issued tokens. e.g. `openid profile`
    * @returns {Promise}
    * @see https://auth0.com/docs/tokens/refresh-token/current#use-a-refresh-token
-   *
-   * @memberof Auth
    */
   refreshToken(parameters = {}) {
     const payload = apply(
@@ -230,8 +216,6 @@ export default class Auth {
    * @param {String} parameters.send the passwordless strategy, either 'link' or 'code'
    * @param {String} parameters.authParams optional parameters, used when strategy is 'linḱ'
    * @returns {Promise}
-   *
-   * @memberof Auth
    */
   passwordlessWithEmail(parameters = {}) {
     const payload = apply(
@@ -259,8 +243,6 @@ export default class Auth {
    * @param {Object} parameters passwordless parameters
    * @param {String} parameters.phoneNumber the phone number to send the link/code to
    * @returns {Promise}
-   *
-   * @memberof Auth
    */
   passwordlessWithSMS(parameters = {}) {
     const payload = apply(
@@ -291,8 +273,6 @@ export default class Auth {
    * @param {String} parameters.audience optional API audience to request
    * @param {String} parameters.scope optional scopes to request
    * @returns {Promise}
-   *
-   * @memberof Auth
    */
   loginWithEmail(parameters = {}) {
     const payload = apply(
@@ -325,8 +305,6 @@ export default class Auth {
    * @param {String} parameters.audience optional API audience to request
    * @param {String} parameters.scope optional scopes to request
    * @returns {Promise}
-   *
-   * @memberof Auth
    */
   loginWithSMS(parameters = {}) {
     const payload = apply(
@@ -361,8 +339,6 @@ export default class Auth {
    * @param {String} parameters.mfaToken the token received in the previous login response
    * @param {String} parameters.otp the one time password code provided by the resource owner, typically obtained from an MFA application such as Google Authenticator or Guardian.
    * @returns {Promise}
-   *
-   * @memberof Auth
    */
   loginWithOTP(parameters = {}) {
     const payload = apply(
@@ -395,8 +371,6 @@ export default class Auth {
    * @param {String} parameters.bindingCode [Optional] the code used to bind the side channel (used to deliver the challenge) with the main channel you are using to authenticate. This is usually an OTP-like code delivered as part of the challenge message.
    *
    * @returns {Promise}
-   *
-   * @memberof Auth
    */
 
   loginWithOOB(parameters = {}) {
@@ -430,8 +404,6 @@ export default class Auth {
    * @param {String} parameters.mfaToken the token received in the previous login response
    * @param {String} parameters.recoveryCode the recovery code provided by the end-user.
    * @returns {Promise}
-   *
-   * @memberof Auth
    */
   loginWithRecoveryCode(parameters = {}) {
     const payload = apply(
@@ -464,8 +436,6 @@ export default class Auth {
    * accepts all supported challenge types.
    * @param {String} parameters.authenticatorId The ID of the authenticator to challenge.
    * @returns {Promise}
-   *
-   * @memberof Auth
    */
   multifactorChallenge(parameters = {}) {
     const payload = apply(
@@ -492,8 +462,6 @@ export default class Auth {
    * @param {Object} parameters revoke token parameters
    * @param {String} parameters.refreshToken user's issued refresh token
    * @returns {Promise}
-   *
-   * @memberof Auth
    */
   revoke(parameters = {}) {
     const payload = apply(
@@ -523,8 +491,6 @@ export default class Auth {
    * @param {Object} parameters user info parameters
    * @param {String} parameters.token user's access token
    * @returns {Promise}
-   *
-   * @memberof Auth
    */
   userInfo(parameters = {}) {
     const payload = apply(
@@ -573,8 +539,6 @@ export default class Auth {
    * @param {String} parameters.email user's email
    * @param {String} parameters.connection name of the connection of the user
    * @returns {Promise}
-   *
-   * @memberof Auth
    */
   resetPassword(parameters = {}) {
     const payload = apply(
@@ -614,8 +578,6 @@ export default class Auth {
    * @param {String} [parameters.picture] A URI pointing to the user's picture
    * @param {String} [parameters.metadata] additional user information that will be stored in `user_metadata`
    * @returns {Promise}
-   *
-   * @memberof Auth
    */
   createUser(parameters = {}) {
     const payload = apply(
@@ -649,3 +611,5 @@ export default class Auth {
       });
   }
 }
+
+export default Auth;

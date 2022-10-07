@@ -3,6 +3,8 @@ import defaults from '../telemetry';
 import fetchMock from 'fetch-mock';
 import {TimeoutError} from '../../utils/fetchWithTimeout';
 
+jest.useFakeTimers();
+
 describe('client', () => {
   const domain = 'samples.auth0.com';
   const baseUrl = `https://${domain}`;
@@ -259,6 +261,7 @@ describe('client', () => {
     let responseTimerId = null;
 
     beforeEach(() => {
+      jest.useFakeTimers();
       fetchMock.restore();
 
       fetchMock.mock('https://samples.auth0.com/method', () => {
@@ -266,11 +269,13 @@ describe('client', () => {
           responseTimerId = setTimeout(() => {
             resolve(response);
           }, 2000);
+          jest.runAllTimers();
         });
       });
     });
 
     afterEach(() => {
+      jest.useRealTimers();
       if (responseTimerId) {
         clearTimeout(responseTimerId);
       }

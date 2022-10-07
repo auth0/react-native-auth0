@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`auth Multifactor Challenge Flow should handle Challenge Type and Authenticator ID as optional 1`] = `Object {}`;
+
 exports[`auth Multifactor Challenge Flow should handle success 1`] = `
 Object {
   "bindingMethod": "prompt",
@@ -15,8 +17,6 @@ Object {
   "oobCode": "oob-code",
 }
 `;
-
-exports[`auth Multifactor Challenge Flow should handle Challenge Type and Authenticator ID as optional 1`] = `Object {}`;
 
 exports[`auth Multifactor Challenge Flow should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
 
@@ -124,7 +124,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -164,7 +185,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -180,7 +222,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -210,7 +273,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -241,7 +325,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -257,7 +362,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -273,7 +399,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -309,7 +456,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -325,7 +493,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -341,7 +530,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -357,7 +567,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -373,7 +604,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -389,7 +641,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -405,7 +678,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -421,7 +715,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -437,7 +752,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -453,7 +789,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -469,7 +826,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -503,7 +881,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -525,7 +924,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "POST",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;
@@ -566,7 +986,28 @@ Array [
       "Content-Type": "application/json",
     },
     "method": "GET",
-    "signal": AbortSignal {},
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
   },
 ]
 `;

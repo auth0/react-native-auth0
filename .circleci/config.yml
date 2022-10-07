@@ -1,12 +1,14 @@
 version: 2.1
 
 orbs:
-  ship: auth0/ship@0.2.0
+  ship: auth0/ship@0.7.1
   codecov: codecov/codecov@3
 
 jobs:
   build:
-    executor: ship/node
+    executor:
+      name: ship/node
+      tag: 16.10.0
     steps:
       - checkout
       - ship/node-install-packages:

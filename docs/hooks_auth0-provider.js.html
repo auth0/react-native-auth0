@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Users - Documentation</title>
+    <title>hooks/auth0-provider.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -255,278 +255,156 @@
     </nav>
 
     <div id="main">
-      <h1 class="page-title">Users</h1>
+      <h1 class="page-title">hooks/auth0-provider.js</h1>
 
       <section>
-        <header>
-          <h2>
-            Users
-          </h2>
-        </header>
-
         <article>
-          <div class="container-overview">
-            <div class="section-method">
-              <h4 class="name" id="Users">
-                <span class="type-signature"></span>new Users<span
-                  class="signature"
-                  >()</span
-                ><span class="type-signature"></span>
-              </h4>
+          <pre
+            class="prettyprint source linenums"
+          ><code>import React, {useEffect, useReducer, useState, useRef} from 'react';
+import {useCallback, useMemo} from 'react';
+import jwt_decode from 'jwt-decode';
+import PropTypes from 'prop-types';
+import Auth0Context from './auth0-context';
+import Auth0 from '../auth0';
+import reducer from './reducer';
+import {idTokenNonProfileClaims} from '../jwt/utils';
 
-              <div class="description">
-                <p>Auth0 Management API User endpoints</p>
-              </div>
+const initialState = {
+  user: null,
+  error: null,
+};
 
-              <dl class="details">
-                <dt class="tag-source">Source:</dt>
-                <dd class="tag-source">
-                  <ul class="dummy">
-                    <li>
-                      <a href="management_users.js.html">management/users.js</a
-                      >, <a href="management_users.js.html#line26">line 26</a>
-                    </li>
-                  </ul>
-                </dd>
+/**
+ * @ignore
+ */
+const getIdTokenProfileClaims = idToken => {
+  const payload = jwt_decode(idToken);
 
-                <dt class="tag-see">See:</dt>
-                <dd class="tag-see">
-                  <ul>
-                    <li>
-                      <a
-                        href="https://auth0.com/docs/api/management/v2#!/Users/"
-                        >https://auth0.com/docs/api/management/v2#!/Users/</a
-                      >
-                    </li>
-                  </ul>
-                </dd>
-              </dl>
-            </div>
-          </div>
+  const profileClaims = Object.keys(payload).reduce((profile, claim) => {
+    if (!idTokenNonProfileClaims.has(claim)) {
+      profile[claim] = payload[claim];
+    }
 
-          <h3 class="subsection-title">Methods</h3>
+    return profile;
+  }, {});
 
-          <div class="section-method">
-            <h4 class="name" id=".getUser">
-              <span class="type-signature">(static) </span>getUser<span
-                class="signature"
-                >(parameters)</span
-              ><span class="type-signature"> &rarr; {Promise}</span>
-            </h4>
+  return profileClaims;
+};
 
-            <div class="description">
-              <p>Returns the user by identifier</p>
-            </div>
+/**
+ * Provides the Auth0Context to its child components.
+ * @param {String} domain Your Auth0 domain
+ * @param {String} clientId Your Auth0 client ID
+ *
+ * @example
+ * &lt;Auth0Provider domain="YOUR AUTH0 DOMAIN" clientId="YOUR CLIENT ID">
+ *   &lt;App />
+ * &lt;/Auth0Provider>
+ */
+const Auth0Provider = ({domain, clientId, children}) => {
+  const [client] = useState(() => new Auth0({domain, clientId}));
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-            <dl class="details">
-              <dt class="tag-source">Source:</dt>
-              <dd class="tag-source">
-                <ul class="dummy">
-                  <li>
-                    <a href="management_users.js.html">management/users.js</a>,
-                    <a href="management_users.js.html#line51">line 51</a>
-                  </li>
-                </ul>
-              </dd>
+  useEffect(() => {
+    (async () => {
+      let user = null;
 
-              <dt class="tag-see">See:</dt>
-              <dd class="tag-see">
-                <ul>
-                  <li>
-                    <a
-                      href="https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id"
-                      >https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id</a
-                    >
-                  </li>
-                </ul>
-              </dd>
-            </dl>
+      if (await client.credentialsManager.hasValidCredentials()) {
+        const credentials = await client.credentialsManager.getCredentials();
 
-            <h5>Parameters:</h5>
+        if (credentials) {
+          user = getIdTokenProfileClaims(credentials.idToken);
+        }
+      }
 
-            <table class="params">
-              <thead>
-                <tr>
-                  <th>Name</th>
+      dispatch({type: 'INITIALIZED', user});
+    })();
+  }, [client]);
 
-                  <th>Type</th>
+  const authorize = useCallback(
+    async (...options) => {
+      try {
+        const credentials = await client.webAuth.authorize(...options);
+        const user = getIdTokenProfileClaims(credentials.idToken);
 
-                  <th class="last">Description</th>
-                </tr>
-              </thead>
+        await client.credentialsManager.saveCredentials(credentials);
+        dispatch({type: 'LOGIN_COMPLETE', user});
+      } catch (error) {
+        dispatch({type: 'ERROR', error});
+        return;
+      }
+    },
+    [client],
+  );
 
-              <tbody>
-                <tr>
-                  <td class="name"><code>parameters</code></td>
+  const clearSession = useCallback(
+    async (...options) => {
+      try {
+        await client.webAuth.clearSession(...options);
+        await client.credentialsManager.clearCredentials();
+        dispatch({type: 'LOGOUT_COMPLETE'});
+      } catch (error) {
+        dispatch({type: 'ERROR', error});
+        return;
+      }
+    },
+    [client],
+  );
 
-                  <td class="type">
-                    <span class="param-type"><code>Object</code></span>
-                  </td>
+  const getCredentials = useCallback(
+    async (...options) => {
+      try {
+        return await client.credentialsManager.getCredentials(...options);
+      } catch (error) {
+        dispatch({type: 'ERROR', error});
+        return;
+      }
+    },
+    [client],
+  );
 
-                  <td class="description last">
-                    <p>get user by identifier parameters</p>
+  const requireLocalAuthentication = useCallback(async (...options) => {
+    try {
+      await client.credentialsManager.requireLocalAuthentication(...options);
+    } catch (error) {
+      dispatch({type: 'ERROR', error});
+      return;
+    }
+  });
 
-                    <table class="params">
-                      <thead>
-                        <tr>
-                          <th>Name</th>
+  const contextValue = useMemo(
+    () => ({
+      ...state,
+      authorize,
+      clearSession,
+      getCredentials,
+      requireLocalAuthentication,
+    }),
+    [
+      state,
+      authorize,
+      clearSession,
+      getCredentials,
+      requireLocalAuthentication,
+    ],
+  );
 
-                          <th>Type</th>
+  return (
+    &lt;Auth0Context.Provider value={contextValue}>
+      {children}
+    &lt;/Auth0Context.Provider>
+  );
+};
 
-                          <th class="last">Description</th>
-                        </tr>
-                      </thead>
+Auth0Provider.propTypes = {
+  domain: PropTypes.string.isRequired,
+  clientId: PropTypes.string.isRequired,
+  children: PropTypes.element.isRequired,
+};
 
-                      <tbody>
-                        <tr>
-                          <td class="name"><code>id</code></td>
-
-                          <td class="type">
-                            <span class="param-type"><code>String</code></span>
-                          </td>
-
-                          <td class="description last">
-                            <p>identifier of the user to obtain</p>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div class="section-returns">
-              <h5>Returns:</h5>
-
-              <dl class="param-type">
-                <dt>
-                  Type:
-                </dt>
-                <dd>
-                  <span class="param-type"><code>Promise</code></span>
-                </dd>
-              </dl>
-            </div>
-          </div>
-
-          <div class="section-method">
-            <h4 class="name" id=".patchUser">
-              <span class="type-signature">(static) </span>patchUser<span
-                class="signature"
-                >(parameters)</span
-              ><span class="type-signature"> &rarr; {Promise}</span>
-            </h4>
-
-            <div class="description">
-              <p>Patch a user's <code>user_metadata</code></p>
-            </div>
-
-            <dl class="details">
-              <dt class="tag-source">Source:</dt>
-              <dd class="tag-source">
-                <ul class="dummy">
-                  <li>
-                    <a href="management_users.js.html">management/users.js</a>,
-                    <a href="management_users.js.html#line82">line 82</a>
-                  </li>
-                </ul>
-              </dd>
-
-              <dt class="tag-see">See:</dt>
-              <dd class="tag-see">
-                <ul>
-                  <li>
-                    <a
-                      href="https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id"
-                      >https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id</a
-                    >
-                  </li>
-                </ul>
-              </dd>
-            </dl>
-
-            <h5>Parameters:</h5>
-
-            <table class="params">
-              <thead>
-                <tr>
-                  <th>Name</th>
-
-                  <th>Type</th>
-
-                  <th class="last">Description</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr>
-                  <td class="name"><code>parameters</code></td>
-
-                  <td class="type">
-                    <span class="param-type"><code>Object</code></span>
-                  </td>
-
-                  <td class="description last">
-                    <p>patch user metadata parameters</p>
-
-                    <table class="params">
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-
-                          <th>Type</th>
-
-                          <th class="last">Description</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        <tr>
-                          <td class="name"><code>id</code></td>
-
-                          <td class="type">
-                            <span class="param-type"><code>String</code></span>
-                          </td>
-
-                          <td class="description last">
-                            <p>identifier of the user to patch</p>
-                          </td>
-                        </tr>
-
-                        <tr>
-                          <td class="name"><code>metadata</code></td>
-
-                          <td class="type">
-                            <span class="param-type"><code>Object</code></span>
-                          </td>
-
-                          <td class="description last">
-                            <p>
-                              object with attributes to store in user_metadata.
-                            </p>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div class="section-returns">
-              <h5>Returns:</h5>
-
-              <dl class="param-type">
-                <dt>
-                  Type:
-                </dt>
-                <dd>
-                  <span class="param-type"><code>Promise</code></span>
-                </dd>
-              </dl>
-            </div>
-          </div>
+export default Auth0Provider;
+</code></pre>
         </article>
       </section>
     </div>

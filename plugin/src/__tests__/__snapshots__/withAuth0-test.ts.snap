@@ -1,0 +1,501 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`addAndroidAuth0Gradle should throw if domain is not present 1`] = `"No auth0 domain specified in expo config"`;
+
+exports[`addAndroidAuth0Gradle should throw if file is kt 1`] = `"Cannot add auth0 build.gradle modifications because the build.gradle is not groovy"`;
+
+exports[`addAndroidAuth0Gradle should throw if scheme is not present 1`] = `"No auth0 scheme specified or package found in expo config"`;
+
+exports[`addAndroidAuth0Gradle with scheme should have that value 1`] = `
+Object {
+  "modRequest": Object {
+    "introspect": true,
+    "modName": "",
+    "platform": "android",
+    "platformProjectRoot": "",
+    "projectRoot": "",
+  },
+  "modResults": Object {
+    "contents": "
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+// @generated begin react-native-auth0-manifest-placeholder - expo prebuild (DO NOT MODIFY) sync-6fc6dc876a4823cbd573f5dbea799ebeb0107f3d
+manifestPlaceholders = [auth0Domain: \\"sample.auth0.com\\", auth0Scheme: \\"com.sample.application\\"]
+// @generated end react-native-auth0-manifest-placeholder
+        applicationId 'com.example.app'
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 82
+        versionName \\"1.0.0\\"
+    }
+
+    splits {
+        abi {
+            reset()
+            enable enableSeparateBuildPerCPUArchitecture
+            universalApk false  // If true, also generate a universal APK
+            include \\"armeabi-v7a\\", \\"x86\\", \\"arm64-v8a\\", \\"x86_64\\"
+        }
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+",
+    "language": "groovy",
+    "path": "",
+  },
+  "name": " ",
+  "slug": " ",
+}
+`;
+
+exports[`addAndroidAuth0Gradle without scheme should have package name 1`] = `
+Object {
+  "android": Object {
+    "package": "com.auth0.sample",
+  },
+  "modRequest": Object {
+    "introspect": true,
+    "modName": "",
+    "platform": "android",
+    "platformProjectRoot": "",
+    "projectRoot": "",
+  },
+  "modResults": Object {
+    "contents": "
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+// @generated begin react-native-auth0-manifest-placeholder - expo prebuild (DO NOT MODIFY) sync-5c2b93e2cd1c118d64d307ce22e7a639e8ac8e15
+manifestPlaceholders = [auth0Domain: \\"sample.auth0.com\\", auth0Scheme: \\"com.auth0.sample\\"]
+// @generated end react-native-auth0-manifest-placeholder
+        applicationId 'com.example.app'
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 82
+        versionName \\"1.0.0\\"
+    }
+
+    splits {
+        abi {
+            reset()
+            enable enableSeparateBuildPerCPUArchitecture
+            universalApk false  // If true, also generate a universal APK
+            include \\"armeabi-v7a\\", \\"x86\\", \\"arm64-v8a\\", \\"x86_64\\"
+        }
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+",
+    "language": "groovy",
+    "path": "",
+  },
+  "name": " ",
+  "slug": " ",
+}
+`;
+
+exports[`addAuth0AppDelegateCode does not modify the AppDelegate 1`] = `
+"
+// This AppDelegate template is used in Expo SDK 43 and newer
+// It is (nearly) identical to the pure template used when
+// creating a bare React Native app (without Expo)
+
+#import \\"AppDelegate.h\\"
+
+#import <React/RCTBridge.h>
+#import <React/RCTBundleURLProvider.h>
+#import <React/RCTRootView.h>
+#import <React/RCTLinkingManager.h>
+#import <React/RCTConvert.h>
+
+#if defined(FB_SONARKIT_ENABLED) && __has_include(<FlipperKit/FlipperClient.h>)
+#import <FlipperKit/FlipperClient.h>
+#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
+#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
+#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
+#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
+#import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
+
+static void InitializeFlipper(UIApplication *application) {
+  FlipperClient *client = [FlipperClient sharedClient];
+  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:application withDescriptorMapper:layoutDescriptorMapper]];
+  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
+  [client addPlugin:[FlipperKitReactPlugin new]];
+  [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
+  [client start];
+}
+#endif
+
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+#if defined(FB_SONARKIT_ENABLED) && __has_include(<FlipperKit/FlipperClient.h>)
+  InitializeFlipper(application);
+#endif
+  
+  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@\\"main\\" initialProperties:nil];
+  id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@\\"RCTRootViewBackgroundColor\\"];
+  if (rootViewBackgroundColor != nil) {
+    rootView.backgroundColor = [RCTConvert UIColor:rootViewBackgroundColor];
+  } else {
+    rootView.backgroundColor = [UIColor whiteColor];
+  }
+
+  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+  UIViewController *rootViewController = [UIViewController new];
+  rootViewController.view = rootView;
+  self.window.rootViewController = rootViewController;
+  [self.window makeKeyAndVisible];
+
+  [super application:application didFinishLaunchingWithOptions:launchOptions];
+
+  return YES;
+ }
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+{
+  // If you'd like to export some custom RCTBridgeModules, add them here!
+  return @[];
+}
+
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
+ #ifdef DEBUG
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@\\"index\\" fallbackResource:nil];
+ #else
+  return [[NSBundle mainBundle] URLForResource:@\\"main\\" withExtension:@\\"jsbundle\\"];
+ #endif
+}
+
+// Linking API
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+  return [RCTLinkingManager application:application openURL:url options:options];
+}
+
+// Universal Links
+- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
+  return [RCTLinkingManager application:application
+                   continueUserActivity:userActivity
+                     restorationHandler:restorationHandler];
+}
+
+@end
+"
+`;
+
+exports[`addAuth0AppDelegateCode modifies the AppDelegate 1`] = `
+"
+// This AppDelegate template is used in Expo SDK 43 and newer
+// It is (nearly) identical to the pure template used when
+// creating a bare React Native app (without Expo)
+
+#import \\"AppDelegate.h\\"
+
+#import <React/RCTBridge.h>
+// @generated begin react-native-auth0-import - expo prebuild (DO NOT MODIFY) sync-60472b7c5bde1787041c5dcbb357e68108fe1334
+#import <React/RCTLinkingManager.h>
+// @generated end react-native-auth0-import
+#import <React/RCTBundleURLProvider.h>
+#import <React/RCTRootView.h>
+#import <React/RCTConvert.h>
+
+#if defined(FB_SONARKIT_ENABLED) && __has_include(<FlipperKit/FlipperClient.h>)
+#import <FlipperKit/FlipperClient.h>
+#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
+#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
+#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
+#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
+#import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
+
+static void InitializeFlipper(UIApplication *application) {
+  FlipperClient *client = [FlipperClient sharedClient];
+  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:application withDescriptorMapper:layoutDescriptorMapper]];
+  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
+  [client addPlugin:[FlipperKitReactPlugin new]];
+  [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
+  [client start];
+}
+#endif
+
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+#if defined(FB_SONARKIT_ENABLED) && __has_include(<FlipperKit/FlipperClient.h>)
+  InitializeFlipper(application);
+#endif
+  
+  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@\\"main\\" initialProperties:nil];
+  id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@\\"RCTRootViewBackgroundColor\\"];
+  if (rootViewBackgroundColor != nil) {
+    rootView.backgroundColor = [RCTConvert UIColor:rootViewBackgroundColor];
+  } else {
+    rootView.backgroundColor = [UIColor whiteColor];
+  }
+
+  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+  UIViewController *rootViewController = [UIViewController new];
+  rootViewController.view = rootView;
+  self.window.rootViewController = rootViewController;
+  [self.window makeKeyAndVisible];
+
+  [super application:application didFinishLaunchingWithOptions:launchOptions];
+
+  return YES;
+ }
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+{
+  // If you'd like to export some custom RCTBridgeModules, add them here!
+  return @[];
+}
+
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
+ #ifdef DEBUG
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@\\"index\\" fallbackResource:nil];
+ #else
+  return [[NSBundle mainBundle] URLForResource:@\\"main\\" withExtension:@\\"jsbundle\\"];
+ #endif
+}
+
+// @generated begin react-native-auth0-linking - expo prebuild (DO NOT MODIFY) sync-4120cf784d32ef9e73c7c71def92162e38e5087f
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
+{
+  return [RCTLinkingManager application:app openURL:url options:options];
+}
+// @generated end react-native-auth0-linking
+@end
+"
+`;
+
+exports[`addAuth0GradleValues modifies the build.gradle 1`] = `
+"
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+// @generated begin react-native-auth0-manifest-placeholder - expo prebuild (DO NOT MODIFY) sync-70e918fd29d121d0ab3fb51d8fcb77d93ab324b8
+manifestPlaceholders = [auth0Domain: \\"com.example.app\\", auth0Scheme: \\"com.example.app\\"]
+// @generated end react-native-auth0-manifest-placeholder
+        applicationId 'com.example.app'
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 82
+        versionName \\"1.0.0\\"
+    }
+
+    splits {
+        abi {
+            reset()
+            enable enableSeparateBuildPerCPUArchitecture
+            universalApk false  // If true, also generate a universal APK
+            include \\"armeabi-v7a\\", \\"x86\\", \\"arm64-v8a\\", \\"x86_64\\"
+        }
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+"
+`;
+
+exports[`addAuth0GradleValues modifies the build.gradle without custom scheme 1`] = `
+"
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+// @generated begin react-native-auth0-manifest-placeholder - expo prebuild (DO NOT MODIFY) sync-e11efc182f225d5484dbfdeb127d999243f86f06
+manifestPlaceholders = [auth0Domain: \\"com.example.app\\", auth0Scheme: \\"applicationId\\"]
+// @generated end react-native-auth0-manifest-placeholder
+        applicationId 'com.example.app'
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 82
+        versionName \\"1.0.0\\"
+    }
+
+    splits {
+        abi {
+            reset()
+            enable enableSeparateBuildPerCPUArchitecture
+            universalApk false  // If true, also generate a universal APK
+            include \\"armeabi-v7a\\", \\"x86\\", \\"arm64-v8a\\", \\"x86_64\\"
+        }
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+"
+`;
+
+exports[`addIOSAuth0ConfigInInfoPList should have the bundle identifier if scheme is not provided  1`] = `
+Object {
+  "ios": Object {
+    "bundleIdentifier": "com.sample.auth0",
+  },
+  "modRequest": Object {
+    "introspect": true,
+    "modName": "",
+    "platform": "ios",
+    "platformProjectRoot": "",
+    "projectRoot": "",
+  },
+  "modResults": Object {
+    "CFBundleURLTypes": Array [
+      Object {
+        "CFBundleURLName": "auth0",
+        "CFBundleURLSchemes": Array [
+          "com.sample.auth0",
+        ],
+      },
+    ],
+    "contents": "",
+    "path": "",
+  },
+  "name": " ",
+  "slug": " ",
+}
+`;
+
+exports[`addIOSAuth0ConfigInInfoPList should have the scheme provided  1`] = `
+Object {
+  "ios": Object {
+    "bundleIdentifier": "different.bundle.id",
+  },
+  "modRequest": Object {
+    "introspect": true,
+    "modName": "",
+    "platform": "ios",
+    "platformProjectRoot": "",
+    "projectRoot": "",
+  },
+  "modResults": Object {
+    "CFBundleURLTypes": Array [
+      Object {
+        "CFBundleURLName": "auth0",
+        "CFBundleURLSchemes": Array [
+          "com.sample.auth0",
+        ],
+      },
+    ],
+    "contents": "",
+    "path": "",
+  },
+  "name": " ",
+  "slug": " ",
+}
+`;
+
+exports[`addIOSAuth0ConfigInInfoPList should ignore if scheme is already present 1`] = `
+Object {
+  "modRequest": Object {
+    "introspect": true,
+    "modName": "",
+    "platform": "ios",
+    "platformProjectRoot": "",
+    "projectRoot": "",
+  },
+  "modResults": Object {
+    "CFBundleURLTypes": Array [
+      Object {
+        "CFBundleURLName": "auth0",
+        "CFBundleURLSchemes": Array [
+          "com.sample.auth0",
+        ],
+      },
+    ],
+    "contents": "",
+    "path": "",
+  },
+  "name": " ",
+  "slug": " ",
+}
+`;
+
+exports[`addIOSAuth0ConfigInInfoPList should not ignore if another scheme is already present 1`] = `
+Object {
+  "modRequest": Object {
+    "introspect": true,
+    "modName": "",
+    "platform": "ios",
+    "platformProjectRoot": "",
+    "projectRoot": "",
+  },
+  "modResults": Object {
+    "CFBundleURLTypes": Array [
+      Object {
+        "CFBundleURLName": "auth0",
+        "CFBundleURLSchemes": Array [
+          "com.differentsample.auth0",
+        ],
+      },
+      Object {
+        "CFBundleURLName": "auth0",
+        "CFBundleURLSchemes": Array [
+          "com.sample.auth0",
+        ],
+      },
+    ],
+    "contents": "",
+    "path": "",
+  },
+  "name": " ",
+  "slug": " ",
+}
+`;
+
+exports[`addIOSAuth0ConfigInInfoPList should throw if scheme and bundle identifier is not defined 1`] = `"No auth0 scheme specified or bundle identifier found in expo config"`;
