@@ -8,6 +8,10 @@
 
 - Add remaining fields for signing up a user [\#498](https://github.com/auth0/react-native-auth0/pull/498) ([travisobregon](https://github.com/travisobregon))
 
+**Changed**
+
+- Default scopes for authorize call (hooks only) [\#522](https://github.com/auth0/react-native-auth0/pull/522) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
 ## [v2.14.0-fa.0](https://github.com/auth0/react-native-auth0/tree/v2.14.0-fa.0) (2022-09-09)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.13.3...v2.14.0-fa.0)
