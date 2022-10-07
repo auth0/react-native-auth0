@@ -1,5 +1,25 @@
 # Change Log
 
+## [v2.14.0](https://github.com/auth0/react-native-auth0/tree/v2.14.0) (2022-10-07)
+
+#### 📣 Major improvements now generally available
+
+This release brings the much requested features to the React Native Auth0 SDK:
+
+- Support for Expo [\#424](https://github.com/auth0/react-native-auth0/pull/424) ([sdacunha](https://github.com/sdacunha))
+- Built-in Secure Credentials Manager [\#501](https://github.com/auth0/react-native-auth0/pull/501) ([poovamraj](https://github.com/poovamraj))
+- Support for React Hooks [\#500](https://github.com/auth0/react-native-auth0/pull/500) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.13.3...v2.14.0)
+
+**Added**
+
+- Add remaining fields for signing up a user [\#498](https://github.com/auth0/react-native-auth0/pull/498) ([travisobregon](https://github.com/travisobregon))
+
+**Changed**
+
+- Default scopes for authorize call (hooks only) [\#522](https://github.com/auth0/react-native-auth0/pull/522) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
 ## [v2.14.0-fa.0](https://github.com/auth0/react-native-auth0/tree/v2.14.0-fa.0) (2022-09-09)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.13.3...v2.14.0-fa.0)
