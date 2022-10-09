@@ -90,6 +90,7 @@ class CredentialsManager {
     description,
     cancelTitle,
     fallbackTitle,
+    policy = 1,
   ) {
     try {
       await this._ensureCredentialManagerIsInitialized();
@@ -98,9 +99,10 @@ class CredentialsManager {
           title,
           cancelTitle,
           fallbackTitle,
+          policy
         );
       } else {
-        await this.Auth0Module.enableLocalAuthentication(title, description);
+        await this.Auth0Module.enableLocalAuthentication(title, description, undefined, policy);
       }
     } catch (e) {
       const json = {
