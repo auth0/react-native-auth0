@@ -131,6 +131,8 @@ describe('The useAuth0 hook', () => {
       scope: 'custom-scope',
       audience: 'http://my-api',
       customParam: '1234',
+    }, {
+      ephemeralSession: true
     });
 
     await waitForNextUpdate();
@@ -139,6 +141,8 @@ describe('The useAuth0 hook', () => {
       scope: 'custom-scope openid profile email',
       audience: 'http://my-api',
       customParam: '1234',
+    }, {
+      ephemeralSession: true
     });
   });
 

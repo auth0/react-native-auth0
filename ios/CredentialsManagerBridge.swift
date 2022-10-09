@@ -82,9 +82,42 @@ public class CredentialsManagerBridge: NSObject {
         resolve(credentialsManager.clear())
     }
     
-    @objc public func enableLocalAuthentication(title: String?, cancelTitle: String?, fallbackTitle: String?) {
+    @objc public func enableLocalAuthentication(title: String?, cancelTitle: String?, fallbackTitle: String?, evaluationPolicy: NSNumber?) {
         let titleValue = title ?? "Please authenticate to continue"
-        self.credentialsManager.enableBiometrics(withTitle: titleValue, cancelTitle: cancelTitle, fallbackTitle: fallbackTitle)
+        let policyValue = self.convertPolicyInt(policyInt: evaluationPolicy);
+        self.credentialsManager.enableBiometrics(withTitle: titleValue, cancelTitle: cancelTitle, fallbackTitle: fallbackTitle, evaluationPolicy: policyValue as LAPolicy)
+    }
+
+    func convertPolicyInt(policyInt: NSNumber?) -> LAPolicy {
+        if(policyInt == nil || policyInt == 1) {
+            return LAPolicy.deviceOwnerAuthenticationWithBiometrics;
+        }
+        
+        if(policyInt == 2) {
+            return LAPolicy.deviceOwnerAuthentication;
+        }
+        
+        #if os(macOS)
+            if(policyInt == 3) {
+                if #available(macOS 10.15, macCatalyst 13.0, *) {
+                    return LAPolicy.deviceOwnerAuthenticationWithWatch;
+                }
+            }
+            
+            if(policyInt == 4) {
+                return LAPolicy.deviceOwnerAuthenticationWithBiometricsOrWatch;
+            }
+        #endif
+        
+        #if os(watchOS)
+        if(policyInt == 5) {
+            if #available(watchOS 9.0, *) {
+                return LAPolicy.deviceOwnerAuthenticationWithWristDetection;
+            }
+        }
+        #endif
+        
+        return LAPolicy.deviceOwnerAuthenticationWithBiometrics;
     }
 }
 
