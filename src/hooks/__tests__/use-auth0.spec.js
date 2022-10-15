@@ -5,7 +5,7 @@ import * as React from 'react';
 import {renderHook} from '@testing-library/react-hooks';
 import Auth0Provider from '../auth0-provider';
 import useAuth0 from '../use-auth0';
-import { LAPolicy } from '../../..';
+import LAPolicy from '../../credentials-manager/la-policies';
 
 function makeJwt(claims) {
   const header = {alg: 'RS256', typ: 'JWT'};
