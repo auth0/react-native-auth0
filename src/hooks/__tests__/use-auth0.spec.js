@@ -5,6 +5,7 @@ import * as React from 'react';
 import {renderHook} from '@testing-library/react-hooks';
 import Auth0Provider from '../auth0-provider';
 import useAuth0 from '../use-auth0';
+import { LAPolicy } from '../../..';
 
 function makeJwt(claims) {
   const header = {alg: 'RS256', typ: 'JWT'};
@@ -155,7 +156,7 @@ describe('The useAuth0 hook', () => {
 
     expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith({
       scope: 'openid profile email',
-    });
+    }, undefined);
   });
 
   it('adds the default scopes when some are specified with custom scope', async () => {
@@ -167,7 +168,7 @@ describe('The useAuth0 hook', () => {
 
     expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith({
       scope: 'custom-scope openid profile email',
-    });
+    }, undefined);
   });
 
   it('does not duplicate default scopes', async () => {
@@ -185,7 +186,7 @@ describe('The useAuth0 hook', () => {
       scope: 'openid profile email',
       audience: 'http://my-api',
       customParam: '1234',
-    });
+    }, undefined);
   });
 
   it('sets the user prop after authorizing', async () => {
@@ -336,11 +337,12 @@ describe('The useAuth0 hook', () => {
       'description',
       'cancel',
       'fallback',
+      LAPolicy.deviceOwnerAuthentication
     );
 
     expect(
       mockAuth0.credentialsManager.requireLocalAuthentication,
-    ).toHaveBeenCalledWith('title', 'description', 'cancel', 'fallback');
+    ).toHaveBeenCalledWith('title', 'description', 'cancel', 'fallback', LAPolicy.deviceOwnerAuthentication);
   });
 
   it('dispatches an error when requireLocalAuthentication fails', async () => {
