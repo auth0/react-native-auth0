@@ -167,6 +167,7 @@ class Auth {
           audience: {required: false},
           scope: {required: false},
         },
+        whitelist: false,
       },
       parameters,
     );
