@@ -418,6 +418,13 @@ describe('auth', () => {
       expect.assertions(1);
       await expect(auth.passwordRealm(parameters)).rejects.toMatchSnapshot();
     });
+
+    it('should send extra parameters', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
+      expect.assertions(1);
+      await auth.passwordRealm({...parameters, foo: 'bar'});
+      expect(fetchMock.lastCall()).toMatchSnapshot();
+    });
   });
 
   describe('refresh token', () => {
