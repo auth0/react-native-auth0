@@ -29,6 +29,14 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.auth0.android.provider.RedirectActivity"
+            tools:node="remove"/>
+            
+        <activity
+            android:name="com.auth0.android.provider.AuthenticationActivity"
+            tools:node="remove"/>
+
     </application>
 
     <queries>
