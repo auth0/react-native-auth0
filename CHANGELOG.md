@@ -1,5 +1,15 @@
 # Change Log
 
+## [v2.14.1](https://github.com/auth0/react-native-auth0/tree/v2.14.1) (2022-10-19)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.14.0...v2.14.1)
+
+**Fixed**
+
+- Avoid config changes to handle authentication [\#534](https://github.com/auth0/react-native-auth0/pull/534) ([poovamraj](https://github.com/poovamraj))
+- [SDK-3718] Allow passing extra parameters when logging in with passwordRealm [\#532](https://github.com/auth0/react-native-auth0/pull/532) ([ewanharris](https://github.com/ewanharris))
+- Removed Activity from Android library to avoid prompt [\#533](https://github.com/auth0/react-native-auth0/pull/533) ([poovamraj](https://github.com/poovamraj))
+
 ## [v2.14.0](https://github.com/auth0/react-native-auth0/tree/v2.14.0) (2022-10-07)
 
 #### 📣 Major improvements now generally available
