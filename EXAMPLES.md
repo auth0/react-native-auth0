@@ -50,7 +50,7 @@ auth0.auth
   .catch(console.error);
 ```
 
-This endpoint requires an Access Token that was granted the `/userinfo` audience. Check that the authentication request that returned the Access Token included an audience value of `https://{YOUR_AUTH0_DOMAIN}.auth0.com/userinfo`.
+This endpoint requires an access token that was granted the `/userinfo` audience. Check that the authentication request that returned the access token included an audience value of `https://{YOUR_AUTH0_DOMAIN}.auth0.com/userinfo`.
 
 ### Getting new access token with refresh token
 
