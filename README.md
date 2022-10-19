@@ -7,7 +7,7 @@
 [![Downloads][downloads-image]][downloads-url]
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0?ref=badge_shield)
 
-📚 [Documentation](#documentation) • 🚀 [Getting Started](#getting-started) • ⏭️ [Next Steps](#next-steps) • 💬 [Feedback](#feedback)
+📚 [Documentation](#documentation) • 🚀 [Getting Started](#getting-started) • ⏭️ [Next Steps](#next-steps)• ❓ [FAQs](/FAQ.md) • 💬 [Feedback](#feedback)
 
 ## Documentation
 
@@ -409,7 +409,7 @@ try {
 We appreciate feedback and contribution to this repo! Before you get started, please see the following:
 
 - [Auth0's general contribution guidelines](https://github.com/auth0/open-source-template/blob/master/GENERAL-CONTRIBUTING.md)
-- [Auth0's code of conduct guidelines](https://github.com/auth0/nextjs-auth0/blob/main/CODE-OF-CONDUCT.md)
+- [Auth0's code of conduct guidelines](https://github.com/auth0/react-native-auth0/blob/main/CODE-OF-CONDUCT.md)
 - [This repo's development guide](DEVELOPMENT.md)
 
 ### Raise an issue
