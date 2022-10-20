@@ -8,6 +8,8 @@ import Auth0Context from './auth0-context';
  * @property {Function} authorize Authorize the user using Auth0 Universal Login. See {@link WebAuth#authorize}
  * @property {Function} clearSession Clears the user's session and logs them out. See {@link WebAuth#clearSession}
  * @property {Function} getCredentials Gets the user's credentials from the native credential store. See {@link CredentialsManager#getCredentials}
+ * @property {Function} clearCredentials Clears the user's credentials from the native credential store. See {@link CredentialsManager#clearCredentials}
+
  * @property {Function} requireLocalAuthentication Enables Local Authentication (PIN, Biometric, Swipe etc) to get the credentials. See {@link CredentialsManager#requireLocalAuthentication}
  */
 
@@ -23,6 +25,7 @@ import Auth0Context from './auth0-context';
  *   authorize,
  *   clearSession,
  *   getCredentials,
+ *   clearCredentials,
  *   requireLocalAuthentication
  * } = useAuth0();
  */

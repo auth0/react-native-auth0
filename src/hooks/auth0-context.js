@@ -10,6 +10,7 @@ const initialContext = {
   authorize: stub,
   clearSession: stub,
   getCredentials: stub,
+  clearCredentials: stub,
   requireLocalAuthentication: stub,
 };
 
