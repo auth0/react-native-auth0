@@ -7,7 +7,7 @@
 [![Downloads][downloads-image]][downloads-url]
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0?ref=badge_shield)
 
-📚 [Documentation](#documentation) • 🚀 [Getting Started](#getting-started) • ⏭️ [Next Steps](#next-steps)• ❓ [FAQs](/FAQ.md) • 💬 [Feedback](#feedback)
+:books: [Documentation](#documentation) • :rocket: [Getting Started](#getting-started) • :fast_forward: [Next Steps](#next-steps) • :question: [FAQs](/FAQ.md) • :speech_balloon: [Feedback](#feedback)
 
 ## Documentation
 
