@@ -1,3 +1,5 @@
+# Examples using react-native-auth0
+
 - [Authentication API](#authentication-api)
   - [Login with Password Realm Grant](#login-with-password-realm-grant)
   - [Get user information using user's access_token](#get-user-information-using-users-access_token)
