@@ -7,7 +7,7 @@
 [![Downloads][downloads-image]][downloads-url]
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0?ref=badge_shield)
 
-:books: [Documentation](#documentation) • :rocket: [Getting Started](#getting-started) • :fast_forward: [Next Steps](#next-steps) • :question: [FAQs](/FAQ.md) • :speech_balloon: [Feedback](#feedback)
+:books: [Documentation](#documentation) • :rocket: [Getting Started](#getting-started) • :fast_forward: [Next Steps](#next-steps) • :question: [FAQs](https://github.com/auth0/react-native-auth0/blob/master/FAQ.md) • :speech_balloon: [Feedback](#feedback)
 
 ## Documentation
 
@@ -15,8 +15,8 @@
 - [Expo Quickstart](https://auth0.com/docs/quickstart/native/react-native-expo/interactive)
 - [Sample App](https://github.com/auth0-samples/auth0-react-native-sample/tree/master/00-Login-Hooks)
 - [Expo Sample App](https://github.com/auth0-samples/auth0-react-native-sample/tree/master/00-Login-Expo)
-- [FAQs](FAQ.md)
-- [Examples](EXAMPLES.md)
+- [FAQs](https://github.com/auth0/react-native-auth0/blob/master/FAQ.md)
+- [Examples](https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES.md)
 - [Docs Site](https://auth0.github.io/react-native-auth0/)
 
 ## Important Notices
@@ -424,14 +424,14 @@ Please do not report security vulnerabilities on the public Github issue tracker
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: light)" srcset="https://cdn.auth0.com/website/sdks/logos/auth0_light_mode.png"   width="150">
+    <source media="(prefers-color-scheme: light)" srcset="https://cdn.auth0.com/website/sdks/logos/auth0_light_mode"   width="150">
     <source media="(prefers-color-scheme: dark)" srcset="https://cdn.auth0.com/website/sdks/logos/auth0_dark_mode.png" width="150">
     <img alt="Auth0 Logo" src="https://cdn.auth0.com/website/sdks/logos/auth0_light_mode.png" width="150">
   </picture>
 </p>
 <p align="center">Auth0 is an easy to implement, adaptable authentication and authorization platform. To learn more checkout <a href="https://auth0.com/why-auth0">Why Auth0?</a></p>
 <p align="center">
-This project is licensed under the MIT license. See the <a href="./LICENSE"> LICENSE</a> file for more info.</p>
+This project is licensed under the MIT license. See the <a href="https://github.com/auth0/react-native-auth0/blob/master/LICENSE.md"> LICENSE</a> file for more info.</p>
 
 <!-- Variables -->
 
