@@ -132,7 +132,7 @@ describe('The useAuth0 hook', () => {
     await waitForNextUpdate();
 
     expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith(
-      {},
+      {scope: 'openid profile email'},
       {ephemeralSession: true},
     );
   });
