@@ -124,6 +124,19 @@ describe('The useAuth0 hook', () => {
     expect(mockAuth0.credentialsManager.saveCredentials).toBeCalled();
   });
 
+  it('can authorize with ephemeralSession', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorize({}, {ephemeralSession: true});
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith(
+      {},
+      {ephemeralSession: true},
+    );
+  });
+
   it('can authorize, passing through all parameters', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
