@@ -482,6 +482,43 @@ Array [
 ]
 `;
 
+exports[`auth password realm should send extra parameters 1`] = `
+Array [
+  "https://samples.auth0.com/oauth/token",
+  Object {
+    "body": "{\\"username\\":\\"info@auth0.com\\",\\"password\\":\\"secret pass\\",\\"realm\\":\\"Username-Password-Authentication\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"foo\\":\\"bar\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/password-realm\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+    "signal": AbortSignal {
+      Symbol(kEvents): Map {
+        "abort" => Object {
+          "next": Listener {
+            "callback": [Function],
+            "capture": false,
+            "isNodeStyleListener": false,
+            "listener": [Function],
+            "next": undefined,
+            "once": false,
+            "passive": false,
+            "previous": [Circular],
+            "removed": false,
+            "weak": false,
+          },
+          "size": 1,
+        },
+      },
+      Symbol(events.maxEventTargetListeners): 10,
+      Symbol(events.maxEventTargetListenersWarned): false,
+      Symbol(kAborted): false,
+    },
+  },
+]
+`;
+
 exports[`auth passwordless flow with SMS connection should begin with code 1`] = `
 Array [
   "https://samples.auth0.com/passwordless/start",
