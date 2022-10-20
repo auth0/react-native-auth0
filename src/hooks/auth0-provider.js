@@ -115,7 +115,9 @@ const Auth0Provider = ({domain, clientId, children}) => {
   const clearCredentials = useCallback(
     async (...options) => {
       try {
-        return await client.credentialsManager.clearCredentials(...options);
+        await client.credentialsManager.clearCredentials(...options);
+        dispatch({type: 'LOGOUT_COMPLETE'});
+        return;
       } catch (error) {
         dispatch({type: 'ERROR', error});
         return;
