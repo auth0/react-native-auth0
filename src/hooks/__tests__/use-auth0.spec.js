@@ -232,6 +232,15 @@ describe('The useAuth0 hook', () => {
     expect(mockAuth0.credentialsManager.clearCredentials).toHaveBeenCalled();
   });
 
+  it('can clear the credentials', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.clearCredentials();
+    await waitForNextUpdate();
+    expect(result.current.user).toBeNull();
+    expect(mockAuth0.credentialsManager.clearCredentials).toHaveBeenCalled();
+  });
+
   it('can clear the session and pass parameters', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
