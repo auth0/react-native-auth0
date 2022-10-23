@@ -14,7 +14,7 @@ function toCamelCase(object, options = {}) {
     return object;
   }
 
-  const { attributes = [], whitelist = false, rootOnly = false } = options;
+  const {attributes = [], whitelist = false, rootOnly = false} = options;
 
   return Object.keys(object).reduce(function(p, key) {
     const inList = attributes.indexOf(key) !== -1;
@@ -27,4 +27,4 @@ function toCamelCase(object, options = {}) {
   }, {});
 }
 
-module.exports = { snakeToCamel, toCamelCase };
+export default {snakeToCamel, toCamelCase};

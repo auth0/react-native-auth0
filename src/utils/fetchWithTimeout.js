@@ -45,7 +45,7 @@ function fetchWithTimeout(url, options, timeoutMs) {
     });
 }
 
-module.exports = {
+export default {
   fetchWithTimeout,
   TimeoutError,
 };
