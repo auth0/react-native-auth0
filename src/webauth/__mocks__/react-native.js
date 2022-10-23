@@ -7,4 +7,4 @@ mock.Linking = new Linking();
 mock.NativeModules = {A0Auth0: new A0Auth0()};
 mock.Platform = {OS: 'test-os'};
 
-export default mock;
+module.exports = mock;

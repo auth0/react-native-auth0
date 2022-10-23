@@ -1,11 +1,11 @@
-function snakeToCamel(str) {
+export function snakeToCamel(str) {
   var parts = str.split('_');
   return parts.reduce(function(p, c) {
     return p + c.charAt(0).toUpperCase() + c.slice(1);
   }, parts.shift());
 }
 
-function toCamelCase(object, options = {}) {
+export function toCamelCase(object, options = {}) {
   if (
     typeof object !== 'object' ||
     toString.call(object) === '[object Array]' ||
@@ -26,5 +26,3 @@ function toCamelCase(object, options = {}) {
     return p;
   }, {});
 }
-
-export default {snakeToCamel, toCamelCase};
