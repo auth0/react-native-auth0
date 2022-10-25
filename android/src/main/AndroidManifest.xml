@@ -8,6 +8,7 @@
     <application>
         <activity
             android:name="com.auth0.react.AuthenticationActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden"
             android:exported="false"
             android:launchMode="singleTask"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
@@ -28,6 +29,14 @@
                     android:scheme="${auth0Scheme}" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.auth0.android.provider.RedirectActivity"
+            tools:node="remove"/>
+            
+        <activity
+            android:name="com.auth0.android.provider.AuthenticationActivity"
+            tools:node="remove"/>
 
     </application>
 
