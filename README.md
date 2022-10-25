@@ -1,4 +1,4 @@
-# react-native-auth0
+![react-native-auth0](https://cdn.auth0.com/website/sdks/banners/react-native-auth0-banner.png)
 
 [![Build Status][circleci-image]][circleci-url]
 [![NPM version][npm-image]][npm-url]
