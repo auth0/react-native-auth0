@@ -89,7 +89,16 @@ const Auth0Provider = ({domain, clientId, children}) => {
   const clearSession = useCallback(
     async (...options) => {
       try {
-        await client.webAuth.clearSession(...options);
+        const {federated} = options.length ? options[0] : {};
+        const {credentialsManagerOnly} = options.length > 1 ? options[1] : {};
+        if (credentialsManagerOnly && federated) {
+          throw new Error(
+            'It is invalid to set both the `federated` and `credentialsManagerOnly` options to `true`',
+          );
+        }
+        if (!credentialsManagerOnly) {
+          await client.webAuth.clearSession(...options);
+        }
         await client.credentialsManager.clearCredentials();
         dispatch({type: 'LOGOUT_COMPLETE'});
       } catch (error) {

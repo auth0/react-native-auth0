@@ -6,7 +6,7 @@ import Auth0Context from './auth0-context';
  * @property {Object} user The user profile as decoded from the ID token after authentication
  * @property {Object} error An object representing the last exception
  * @property {Function} authorize Authorize the user using Auth0 Universal Login. See {@link WebAuth#authorize}
- * @property {Function} clearSession Clears the user's session and logs them out. See {@link WebAuth#clearSession}
+ * @property {Function} clearSession Clears the user's session and logs them out. See {@link WebAuth#clearSession}. `options.credentialsManagerOnly` can be set to true to clear the credentials in the Credential Manager without clearing the web session.
  * @property {Function} getCredentials Gets the user's credentials from the native credential store. See {@link CredentialsManager#getCredentials}
  * @property {Function} requireLocalAuthentication Enables Local Authentication (PIN, Biometric, Swipe etc) to get the credentials. See {@link CredentialsManager#requireLocalAuthentication}
  */
