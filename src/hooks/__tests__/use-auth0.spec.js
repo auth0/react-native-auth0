@@ -135,11 +135,40 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith({
-      scope: 'custom-scope openid profile email',
-      audience: 'http://my-api',
-      customParam: '1234',
-    });
+    expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith(
+      {
+        scope: 'custom-scope openid profile email',
+        audience: 'http://my-api',
+        customParam: '1234',
+      },
+      {},
+    );
+  });
+
+  it('can authorize, passing through all options', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorize(
+      {},
+      {
+        ephemeralSession: true,
+        customScheme: 'demo',
+        leeway: 100,
+        skipLegacyListener: false,
+      },
+    );
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith(
+      {scope: 'openid profile email'},
+      {
+        ephemeralSession: true,
+        customScheme: 'demo',
+        leeway: 100,
+        skipLegacyListener: false,
+      },
+    );
   });
 
   it('adds the default scopes when none are specified', async () => {
@@ -149,9 +178,12 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith({
-      scope: 'openid profile email',
-    });
+    expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith(
+      {
+        scope: 'openid profile email',
+      },
+      {},
+    );
   });
 
   it('adds the default scopes when some are specified with custom scope', async () => {
@@ -161,9 +193,12 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith({
-      scope: 'custom-scope openid profile email',
-    });
+    expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith(
+      {
+        scope: 'custom-scope openid profile email',
+      },
+      {},
+    );
   });
 
   it('does not duplicate default scopes', async () => {
@@ -177,11 +212,14 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith({
-      scope: 'openid profile email',
-      audience: 'http://my-api',
-      customParam: '1234',
-    });
+    expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith(
+      {
+        scope: 'openid profile email',
+        audience: 'http://my-api',
+        customParam: '1234',
+      },
+      {},
+    );
   });
 
   it('sets the user prop after authorizing', async () => {

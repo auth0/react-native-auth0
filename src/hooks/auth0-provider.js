@@ -63,6 +63,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
     async (...options) => {
       try {
         const opts = options.length ? options[0] : {};
+        const params = options.length > 1 ? options[1] : {};
         const specifiedScopes =
           opts?.scope?.split(' ').map(s => s.trim()) || [];
         const scopeSet = new Set([
@@ -72,7 +73,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
 
         opts.scope = Array.from(scopeSet).join(' ');
 
-        const credentials = await client.webAuth.authorize(opts);
+        const credentials = await client.webAuth.authorize(opts, params);
         const user = getIdTokenProfileClaims(credentials.idToken);
 
         await client.credentialsManager.saveCredentials(credentials);
