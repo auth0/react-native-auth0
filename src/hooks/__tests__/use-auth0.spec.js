@@ -258,56 +258,45 @@ describe('The useAuth0 hook', () => {
     );
   });
 
-  it('clearSession will not be called when we set credentialsManagerOnly to true', async () => {
+  it('can clear the credentials', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
-
-    result.current.clearSession({}, {credentialsManagerOnly: true});
-    await waitForNextUpdate();
-
-    expect(mockAuth0.webAuth.clearSession).not.toHaveBeenCalled();
-    expect(mockAuth0.credentialsManager.clearCredentials).toHaveBeenCalled();
-  });
-
-  it('clearSession will be called when we set credentialsManagerOnly to false', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
-
-    result.current.clearSession({}, {credentialsManagerOnly: false});
-    await waitForNextUpdate();
-
-    expect(mockAuth0.webAuth.clearSession).toHaveBeenCalled();
-    expect(mockAuth0.credentialsManager.clearCredentials).toHaveBeenCalled();
-  });
-
-  it('clearSession will be called when we dont set credentialsManagerOnly', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
-
-    result.current.clearSession();
-    await waitForNextUpdate();
-
-    expect(mockAuth0.webAuth.clearSession).toHaveBeenCalled();
-    expect(mockAuth0.credentialsManager.clearCredentials).toHaveBeenCalled();
-  });
-
-  it('sets the error property when we set both credentialsManagerOnly and federated to true', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
-
-    const errorToThrow = new Error(
-      'It is invalid to set both the `federated` and `credentialsManagerOnly` options to `true`',
-    );
 
     act(() => {
-      result.current.clearSession(
-        {federated: true},
-        {credentialsManagerOnly: true},
-      );
+      result.current.clearCredentials();
     });
     await waitForNextUpdate();
 
-    expect(result.current.error).toEqual(errorToThrow);
-    expect(mockAuth0.webAuth.clearSession).not.toHaveBeenCalled();
-    expect(
-      mockAuth0.credentialsManager.clearCredentials,
-    ).not.toHaveBeenCalled();
+    expect(mockAuth0.credentialsManager.clearCredentials).toHaveBeenCalled();
+  });
+
+  it('sets the error property when an error is raised in clearing credentials', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const errorToThrow = new Error('Error clearing credentials');
+
+    mockAuth0.credentialsManager.clearCredentials.mockRejectedValue(
+      errorToThrow,
+    );
+
+    result.current.clearCredentials();
+    await waitForNextUpdate();
+    expect(result.current.error).toBe(errorToThrow);
+  });
+
+  it('clears the error on successful logout when clearing credentials', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const errorToThrow = new Error('Error clearing credentials');
+
+    mockAuth0.credentialsManager.clearCredentials.mockRejectedValueOnce(
+      errorToThrow,
+    );
+    mockAuth0.credentialsManager.clearCredentials.mockResolvedValue();
+
+    result.current.clearCredentials();
+    await waitForNextUpdate();
+    expect(result.current.error).toBe(errorToThrow);
+    result.current.clearCredentials();
+    await waitForNextUpdate();
+    expect(result.current.error).toBeNull();
   });
 
   it('sets the error property when an error is raised in authorize', async () => {
@@ -353,6 +342,7 @@ describe('The useAuth0 hook', () => {
 
     mockAuth0.webAuth.clearSession.mockRejectedValueOnce(errorToThrow);
     mockAuth0.webAuth.clearSession.mockResolvedValue();
+    mockAuth0.credentialsManager.clearCredentials.mockResolvedValue();
 
     result.current.clearSession();
     await waitForNextUpdate();

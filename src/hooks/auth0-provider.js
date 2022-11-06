@@ -89,16 +89,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
   const clearSession = useCallback(
     async (...options) => {
       try {
-        const {federated} = options.length ? options[0] : {};
-        const {credentialsManagerOnly} = options.length > 1 ? options[1] : {};
-        if (credentialsManagerOnly && federated) {
-          throw new Error(
-            'It is invalid to set both the `federated` and `credentialsManagerOnly` options to `true`',
-          );
-        }
-        if (!credentialsManagerOnly) {
-          await client.webAuth.clearSession(...options);
-        }
+        await client.webAuth.clearSession(...options);
         await client.credentialsManager.clearCredentials();
         dispatch({type: 'LOGOUT_COMPLETE'});
       } catch (error) {
@@ -121,6 +112,16 @@ const Auth0Provider = ({domain, clientId, children}) => {
     [client],
   );
 
+  const clearCredentials = useCallback(async () => {
+    try {
+      await client.credentialsManager.clearCredentials();
+      dispatch({type: 'LOGOUT_COMPLETE'});
+    } catch (error) {
+      dispatch({type: 'ERROR', error});
+      return;
+    }
+  }, [client]);
+
   const requireLocalAuthentication = useCallback(async (...options) => {
     try {
       await client.credentialsManager.requireLocalAuthentication(...options);
@@ -136,6 +137,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
       authorize,
       clearSession,
       getCredentials,
+      clearCredentials,
       requireLocalAuthentication,
     }),
     [
@@ -143,6 +145,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
       authorize,
       clearSession,
       getCredentials,
+      clearCredentials,
       requireLocalAuthentication,
     ],
   );
