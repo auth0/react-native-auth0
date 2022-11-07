@@ -257,10 +257,11 @@
     <div id="main">
       <section class="readme">
         <article>
-          <h1>react-native-auth0</h1>
           <p>
-            React Native toolkit for Auth0 API, compliant with
-            <a href="https://tools.ietf.org/html/rfc8252">RFC 8252</a>
+            <img
+              src="https://cdn.auth0.com/website/sdks/banners/react-native-auth0-banner.png"
+              alt="react-native-auth0"
+            />
           </p>
           <p>
             <a href="https://circleci.com/gh/auth0/react-native-auth0"
@@ -295,6 +296,60 @@
                 alt="FOSSA Status"
             /></a>
           </p>
+          <p>
+            📚 <a href="#documentation">Documentation</a> • 🚀
+            <a href="#getting-started">Getting Started</a> • ⏭️
+            <a href="#next-steps">Next Steps</a> • ❓
+            <a
+              href="https://github.com/auth0/react-native-auth0/blob/master/FAQ.md"
+              >FAQs</a
+            >
+            • ❓ <a href="#feedback">Feedback</a>
+          </p>
+          <h2>Documentation</h2>
+          <ul>
+            <li>
+              <a
+                href="https://auth0.com/docs/quickstart/native/react-native/interactive"
+                >Quickstart</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://auth0.com/docs/quickstart/native/react-native-expo/interactive"
+                >Expo Quickstart</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/auth0-samples/auth0-react-native-sample/tree/master/00-Login-Hooks"
+                >Sample App</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/auth0-samples/auth0-react-native-sample/tree/master/00-Login-Expo"
+                >Expo Sample App</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/auth0/react-native-auth0/blob/master/FAQ.md"
+                >FAQs</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES.md"
+                >Examples</a
+              >
+            </li>
+            <li>
+              <a href="https://auth0.github.io/react-native-auth0/"
+                >Docs Site</a
+              >
+            </li>
+          </ul>
           <h2>Important Notices</h2>
           <p>
             Version <strong>2.9.0</strong> introduced a
@@ -307,55 +362,8 @@
             couple of manifest placeholders. Check out the
             <a href="#android">Android</a> section for more details.
           </p>
-          <h2>Table of Contents</h2>
-          <ul>
-            <li><a href="#documentation">Documentation</a></li>
-            <li><a href="#requirements">Requirements</a></li>
-            <li><a href="#getting-started">Getting Started</a></li>
-            <li><a href="#usage">Usage</a></li>
-            <li><a href="#support--feedback">Support + Feedback</a></li>
-            <li>
-              <a href="#vulnerability-reporting">Vulnerability Reporting</a>
-            </li>
-            <li><a href="#thank-you">Thank You</a></li>
-            <li><a href="#what-is-auth0">What is Auth0</a></li>
-            <li><a href="#license">License</a></li>
-          </ul>
-          <h2>Documentation</h2>
-          <ul>
-            <li>
-              The
-              <a href="https://auth0.com/docs/quickstart/native/react-native"
-                >React Native Quickstart</a
-              >
-              shows how to get an iOS or Android app running from scratch.
-            </li>
-            <li>
-              The
-              <a
-                href="https://github.com/auth0-samples/auth0-react-native-sample/tree/master/00-Login"
-                >React Native Sample</a
-              >
-              has complete, running iOS and Android applications you can try.
-            </li>
-            <li>
-              The <a href="#usage">Usage</a> section below covers specific use
-              cases outside of basic authentication.
-            </li>
-            <li>
-              The
-              <a href="https://auth0.github.io/react-native-auth0/"
-                >API documentation</a
-              >
-              is generated from the code and explains all methods that are able
-              to be used.
-            </li>
-            <li>
-              The <a href="FAQ.md">FAQ</a> answers some common questions about
-              react-native-auth0.
-            </li>
-          </ul>
-          <h2>Requirements</h2>
+          <h2>Getting Started</h2>
+          <h3>Requirements</h3>
           <p>
             This SDK targets apps that are using React Native SDK version
             <code>0.60.5</code> and up. If you're using an older React Native
@@ -402,7 +410,7 @@
               >branch v1</a
             >.
           </p>
-          <h2>Getting Started</h2>
+          <h3>Installation</h3>
           <p>First install the native library module:</p>
           <h3>With <a href="https://www.npmjs.com">npm</a></h3>
           <p><code>$ npm install react-native-auth0 --save</code></p>
@@ -413,7 +421,7 @@
             pods with Cocoapods. That will auto-link the iOS library:
           </p>
           <p><code>$ cd ios &amp;&amp; pod install</code></p>
-          <h3>Configuration</h3>
+          <h3>Configure the SDK</h3>
           <p>
             You need make your Android, iOS or Expo applications aware that an
             authentication result will be received from the browser. This SDK
@@ -733,7 +741,7 @@
               {YOUR_AUTH0_DOMAIN} with the actual values for your application.
             </p>
           </blockquote>
-          <h2>Usage</h2>
+          <h2>Next Steps</h2>
           <blockquote>
             <p>
               This SDK is OIDC compliant. To ensure OIDC compliant responses
@@ -1010,330 +1018,8 @@ if (isLoggedIn) {
   console.log(error);
 }
 </code></pre>
-          <h3>Authentication API</h3>
-          <p>
-            Unlike web authentication, we do not provide a hook for integrating
-            with the Authentication API.
-          </p>
-          <p>
-            Instantiate the <code>Auth0</code> class to get access to the
-            methods that call Auth0's Authentication API endpoints:
-          </p>
-          <pre
-            class="prettyprint source lang-js"
-          ><code>import Auth0 from 'react-native-auth0';
-
-const auth0 = new Auth0({
-  domain: 'YOUR_AUTH0_DOMAIN',
-  clientId: 'YOUR_AUTH0_CLIENT_ID',
-});
-</code></pre>
-          <h3>Important: Database Connection Authentication</h3>
-          <p>
-            Since June 2017 new Clients no longer have the
-            <strong>Password Grant Type</strong> enabled by default. If you are
-            accessing a Database Connection using
-            <code>passwordRealm</code> then you will need to enable the Password
-            Grant Type, please follow
-            <a
-              href="https://auth0.com/docs/clients/client-grant-types#how-to-edit-the-client-grant_types-property"
-              >this guide</a
-            >.
-          </p>
-          <h4>Login with Password Realm Grant</h4>
-          <pre class="prettyprint source lang-js"><code>auth0.auth
-  .passwordRealm({
-    username: 'info@auth0.com',
-    password: 'password',
-    realm: 'myconnection',
-  })
-  .then(console.log)
-  .catch(console.error);
-</code></pre>
-          <h4>Get user information using user's access_token</h4>
-          <pre class="prettyprint source lang-js"><code>auth0.auth
-  .userInfo({token: 'the user access_token'})
-  .then(console.log)
-  .catch(console.error);
-</code></pre>
-          <p>
-            This endpoint requires an Access Token that was granted the
-            <code>/userinfo</code> audience. Check that the authentication
-            request that returned the Access Token included an audience value of
-            <code>https://{YOUR_AUTH0_DOMAIN}.auth0.com/userinfo</code>.
-          </p>
-          <h4>Getting new access token with refresh token</h4>
-          <pre class="prettyprint source lang-js"><code>auth0.auth
-  .refreshToken({refreshToken: 'the user refresh_token'})
-  .then(console.log)
-  .catch(console.error);
-</code></pre>
-          <h4>Login using MFA with One Time Password code</h4>
-          <p>
-            This call requires the client to have the <em>MFA</em> Client Grant
-            Type enabled. Check
-            <a href="https://auth0.com/docs/clients/client-grant-types"
-              >this article</a
-            >
-            to learn how to enable it.
-          </p>
-          <p>
-            When you sign in to a multifactor authentication enabled connection
-            using the <code>passwordRealm</code> method, you receive an error
-            stating that MFA is required for that user along with an
-            <code>mfa_token</code> value. Use this value to call
-            <code>loginWithOTP</code> and complete the MFA flow passing the One
-            Time Password from the enrolled MFA code generator app.
-          </p>
-          <pre class="prettyprint source lang-js"><code>auth0.auth
-  .loginWithOTP({
-    mfaToken: error.json.mfa_token,
-    otp: '{user entered OTP}',
-  })
-  .then(console.log)
-  .catch(console.error);
-</code></pre>
-          <h4>Login with Passwordless</h4>
-          <p>
-            Passwordless is a two-step authentication flow that makes use of
-            this type of connection. The <strong>Passwordless OTP</strong> grant
-            is required to be enabled in your Auth0 application beforehand.
-            Check
-            <a
-              href="https://auth0.com/docs/dashboard/guides/applications/update-grant-types"
-              >our guide</a
-            >
-            to learn how to enable it.
-          </p>
-          <p>
-            To start the flow, you request a code to be sent to the user's email
-            or phone number. For email scenarios only, a link can be sent in
-            place of the code.
-          </p>
-          <pre class="prettyprint source lang-js"><code>auth0.auth
-  .passwordlessWithEmail({
-    email: 'info@auth0.com',
-    send: 'link',
-  })
-  .then(console.log)
-  .catch(console.error);
-</code></pre>
-          <p>or</p>
-          <pre class="prettyprint source lang-js"><code>auth0.auth
-  .passwordlessWithSMS({
-    phoneNumber: '+5491159991000',
-  })
-  .then(console.log)
-  .catch(console.error);
-</code></pre>
-          <p>
-            Then, in order to complete the authentication, you must send back
-            that received code value along with the email or phone number used:
-          </p>
-          <pre class="prettyprint source lang-js"><code>auth0.auth
-  .loginWithEmail({
-    email: 'info@auth0.com',
-    code: '123456',
-  })
-  .then(console.log)
-  .catch(console.error);
-</code></pre>
-          <p>or</p>
-          <pre class="prettyprint source lang-js"><code>auth0.auth
-  .loginWithSMS({
-    phoneNumber: '+5491159991000',
-    code: '123456',
-  })
-  .then(console.log)
-  .catch(console.error);
-</code></pre>
-          <h4>Create user in database connection</h4>
-          <pre class="prettyprint source lang-js"><code>auth0.auth
-  .createUser({
-    email: 'info@auth0.com',
-    username: 'username',
-    password: 'password',
-    connection: 'myconnection',
-  })
-  .then(console.log)
-  .catch(console.error);
-</code></pre>
-          <h3>Management API (Users)</h3>
-          <h4>Patch user with user_metadata</h4>
-          <pre class="prettyprint source lang-js"><code>auth0
-  .users('the user access_token')
-  .patchUser({id: 'user_id', metadata: {first_name: 'John', last_name: 'Doe'}})
-  .then(console.log)
-  .catch(console.error);
-</code></pre>
-          <h3>Get full user profile</h3>
-          <pre class="prettyprint source lang-js"><code>auth0
-  .users('the user access_token')
-  .getUser({id: 'user_id'})
-  .then(console.log)
-  .catch(console.error);
-</code></pre>
-          <p>
-            For more info please check our generated
-            <a href="https://auth0.github.io/react-native-auth0/index.html"
-              >documentation</a
-            >
-          </p>
-          <h3>Organizations</h3>
-          <p>
-            <a href="https://auth0.com/docs/organizations">Organizations</a> is
-            a set of features that provide better support for developers who
-            build and maintain SaaS and Business-to-Business (B2B) applications.
-          </p>
-          <p>Using Organizations, you can:</p>
-          <ul>
-            <li>
-              Represent teams, business customers, partner companies, or any
-              logical grouping of users that should have different ways of
-              accessing your applications, as organizations.
-            </li>
-            <li>
-              Manage their membership in a variety of ways, including user
-              invitation.
-            </li>
-            <li>
-              Configure branded, federated login flows for each organization.
-            </li>
-            <li>
-              Implement role-based access control, such that users can have
-              different roles when authenticating in the context of different
-              organizations.
-            </li>
-            <li>
-              Build administration capabilities into your products, using
-              Organizations APIs, so that those businesses can manage their own
-              organizations.
-            </li>
-          </ul>
-          <p>
-            Note that Organizations is currently only available to customers on
-            our Enterprise and Startup subscription plans.
-          </p>
-          <h4>Log in to an organization</h4>
-          <pre class="prettyprint source lang-js"><code>auth0.webAuth
-  .authorize({organization: 'organization-id'})
-  .then(credentials => console.log(credentials))
-  .catch(error => console.log(error));
-</code></pre>
-          <h4>Accept user invitations</h4>
-          <p>
-            Users can be invited to your organization via a link. Tapping on the
-            invitation link should open your app. Since invitations links are
-            <code>https</code> only, is recommended that your Android app
-            supports
-            <a href="https://developer.android.com/training/app-links"
-              >Android App Links</a
-            >. In the case of iOS, your app must support
-            <a
-              href="https://developer.apple.com/documentation/xcode/allowing_apps_and_websites_to_link_to_your_content/supporting_universal_links_in_your_app"
-              >Universal Links</a
-            >.
-          </p>
-          <p>
-            In
-            <a
-              href="https://auth0.com/docs/applications/enable-android-app-links-support"
-              >Enable Android App Links Support</a
-            >
-            and
-            <a
-              href="https://auth0.com/docs/enable-universal-links-support-in-apple-xcode"
-              >Enable Universal Links Support</a
-            >, you will find how to make the Auth0 server publish the Digital
-            Asset Links file required by your applications.
-          </p>
-          <p>
-            When your app gets opened by an invitation link, grab the invitation
-            URL and pass it as a parameter to the webauth call. Use the
-            <a href="https://reactnative.dev/docs/linking">Linking Module</a>
-            method called <code>getInitialUrl()</code> to obtain the URL that
-            launched your application.
-          </p>
-          <pre class="prettyprint source lang-js"><code>auth0.webAuth
-  .authorize({
-    invitationUrl:
-      'https://myapp.com/login?invitation=inv123&organization=org123',
-  })
-  .then(credentials => console.log(credentials))
-  .catch(error => console.log(error));
-</code></pre>
-          <p>
-            If the URL doesn't contain the expected values, an error will be
-            raised through the provided callback.
-          </p>
-          <h3>Bot Protection</h3>
-          <p>
-            If you are using the
-            <a href="https://auth0.com/docs/anomaly-detection/bot-protection"
-              >Bot Protection</a
-            >
-            feature and performing database login/signup via the Authentication
-            API, you need to handle the
-            <code>requires_verification</code> error. It indicates that the
-            request was flagged as suspicious and an additional verification
-            step is necessary to log the user in. That verification step is
-            web-based, so you need to use Universal Login to complete it.
-          </p>
-          <pre
-            class="prettyprint source lang-js"
-          ><code>const email = 'support@auth0.com';
-const realm = 'Username-Password-Authentication';
-const scope = 'openid profile';
-
-auth0.auth
-  .passwordRealm({
-    username: email,
-    password: 'secret-password',
-    realm: realm,
-    scope: scope,
-  })
-  .then(credentials => {
-    // Logged in!
-  })
-  .catch(error => {
-    if (error.name === 'requires_verification') {
-      auth0.webAuth
-        .authorize({
-          connection: realm,
-          scope: scope,
-          login_hint: email, // So the user doesn't have to type it again
-        })
-        .then(credentials => {
-          // Logged in!
-        })
-        .catch(console.error);
-    } else {
-      console.error(error);
-    }
-  });
-</code></pre>
-          <p>
-            In the case of signup, you can add
-            <a
-              href="https://auth0.com/docs/universal-login/new-experience#signup"
-              >an additional parameter</a
-            >
-            to make the user land directly on the signup page:
-          </p>
-          <pre
-            class="prettyprint source lang-js"
-          ><code>auth0.webAuth.authorize({
-  connection: realm,
-  scope: scope,
-  login_hint: email,
-  screen_hint: 'signup', // 👈🏻
-});
-</code></pre>
-          <p>
-            Check out how to set up Universal Login in the
-            <a href="#getting-started">Getting Started</a> section.
-          </p>
-          <h2>Contributing</h2>
+          <h2>Feedback</h2>
+          <h3>Contributing</h3>
           <p>
             We appreciate feedback and contribution to this repo! Before you get
             started, please see the following:
@@ -1341,7 +1027,7 @@ auth0.auth
           <ul>
             <li>
               <a
-                href="https://github.com/auth0/.github/blob/master/CONTRIBUTING.md"
+                href="https://github.com/auth0/open-source-template/blob/master/GENERAL-CONTRIBUTING.md"
                 >Auth0's general contribution guidelines</a
               >
             </li>
@@ -1353,61 +1039,55 @@ auth0.auth
             </li>
             <li><a href="DEVELOPMENT.md">This repo's development guide</a></li>
           </ul>
-          <h2>Support + Feedback</h2>
-          <ul>
-            <li>
-              Use
-              <a href="https://github.com/auth0/react-native-auth0/issues"
-                >Issues</a
-              >
-              for code-level support
-            </li>
-            <li>
-              Use <a href="https://community.auth0.com/">Community</a> for
-              usage, questions, specific cases
-            </li>
-          </ul>
-          <h2>Vulnerability Reporting</h2>
+          <h3>Raise an issue</h3>
           <p>
-            Please do not report security vulnerabilities on the public GitHub
+            To provide feedback or report a bug,
+            <a href="https://github.com/auth0/react-native-auth0/issues"
+              >please raise an issue on our issue tracker</a
+            >.
+          </p>
+          <h3>Vulnerability Reporting</h3>
+          <p>
+            Please do not report security vulnerabilities on the public Github
             issue tracker. The
-            <a href="https://auth0.com/responsible-disclosure-policy/"
+            <a href="https://auth0.com/whitehat"
               >Responsible Disclosure Program</a
             >
             details the procedure for disclosing security issues.
           </p>
-          <h2>What is Auth0?</h2>
-          <p>Auth0 helps you to easily:</p>
-          <ul>
-            <li>
-              implement authentication with multiple identity providers,
-              including social (e.g., Google, Facebook, Microsoft, LinkedIn,
-              GitHub, Twitter, etc), or enterprise (e.g., Windows Azure AD,
-              Google Apps, Active Directory, ADFS, SAML, etc.)
-            </li>
-            <li>
-              log in users with username/password databases, passwordless, or
-              multi-factor authentication
-            </li>
-            <li>link multiple user accounts together</li>
-            <li>
-              generate signed JSON Web Tokens to authorize your API calls and
-              flow the user identity securely
-            </li>
-            <li>
-              access demographics and analytics detailing how, when, and where
-              users are logging in
-            </li>
-            <li>
-              enrich user profiles from other data sources using customizable
-              JavaScript rules
-            </li>
-          </ul>
-          <p><a href="https://auth0.com/why-auth0">Why Auth0?</a></p>
-          <h2>License</h2>
-          <p>
+          <hr />
+          <p align="center">
+            <picture>
+              <source
+                media="(prefers-color-scheme: light)"
+                srcset="https://cdn.auth0.com/website/sdks/logos/auth0_light_mode"
+                width="150"
+              />
+              <source
+                media="(prefers-color-scheme: dark)"
+                srcset="https://cdn.auth0.com/website/sdks/logos/auth0_dark_mode.png"
+                width="150"
+              />
+              <img
+                alt="Auth0 Logo"
+                src="https://cdn.auth0.com/website/sdks/logos/auth0_light_mode.png"
+                width="150"
+              />
+            </picture>
+          </p>
+          <p align="center">
+            Auth0 is an easy to implement, adaptable authentication and
+            authorization platform. To learn more checkout
+            <a href="https://auth0.com/why-auth0">Why Auth0?</a>
+          </p>
+          <p align="center">
             This project is licensed under the MIT license. See the
-            <a href="LICENSE">LICENSE</a> file for more info.
+            <a
+              href="https://github.com/auth0/react-native-auth0/blob/master/LICENSE"
+            >
+              LICENSE</a
+            >
+            file for more info.
           </p>
           <!-- Variables -->
         </article>
@@ -1418,8 +1098,8 @@ auth0.auth
 
     <footer>
       Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.11</a> on
-      Wed Oct 19 2022 11:20:50 GMT+0200 (Central European Summer Time) using the
-      Minami theme.
+      Mon Nov 07 2022 10:47:52 GMT+0100 (Central European Standard Time) using
+      the Minami theme.
     </footer>
 
     <script>
