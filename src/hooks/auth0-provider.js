@@ -112,6 +112,16 @@ const Auth0Provider = ({domain, clientId, children}) => {
     [client],
   );
 
+  const clearCredentials = useCallback(async () => {
+    try {
+      await client.credentialsManager.clearCredentials();
+      dispatch({type: 'LOGOUT_COMPLETE'});
+    } catch (error) {
+      dispatch({type: 'ERROR', error});
+      return;
+    }
+  }, [client]);
+
   const requireLocalAuthentication = useCallback(async (...options) => {
     try {
       await client.credentialsManager.requireLocalAuthentication(...options);
@@ -127,6 +137,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
       authorize,
       clearSession,
       getCredentials,
+      clearCredentials,
       requireLocalAuthentication,
     }),
     [
@@ -134,6 +145,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
       authorize,
       clearSession,
       getCredentials,
+      clearCredentials,
       requireLocalAuthentication,
     ],
   );
