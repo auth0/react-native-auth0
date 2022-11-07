@@ -1,5 +1,17 @@
 # Change Log
 
+## [v2.15.0](https://github.com/auth0/react-native-auth0/tree/v2.15.0) (2022-11-07)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.14.1...v2.15.0)
+
+**Added**
+
+- [SDK-3738] Option to clear session only in Credentials Manager [\#543](https://github.com/auth0/react-native-auth0/pull/543) ([poovamraj](https://github.com/poovamraj))
+
+**Fixed**
+
+- [SDK-3736] Fix: Options Parameter not being passed in Hooks `authorize` method [\#542](https://github.com/auth0/react-native-auth0/pull/542) ([poovamraj](https://github.com/poovamraj))
+
 ## [v2.14.1](https://github.com/auth0/react-native-auth0/tree/v2.14.1) (2022-10-19)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.14.0...v2.14.1)
