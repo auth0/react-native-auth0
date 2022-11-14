@@ -134,6 +134,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
   const contextValue = useMemo(
     () => ({
       ...state,
+      client,
       authorize,
       clearSession,
       getCredentials,
@@ -142,6 +143,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
     }),
     [
       state,
+      client,
       authorize,
       clearSession,
       getCredentials,

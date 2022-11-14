@@ -99,6 +99,15 @@ describe('The useAuth0 hook', () => {
     expect(result.current.user).not.toBeNull();
   });
 
+  it('initializes the client on start up with valid credentials', async () => {
+    mockAuth0.credentialsManager.hasValidCredentials.mockResolvedValue(true);
+
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    await waitForNextUpdate();
+    expect(result.current.client).toBe(mockAuth0);
+  });
+
   it('throws an error when login is called without a wrapper', () => {
     const {result} = renderHook(() => useAuth0());
 
