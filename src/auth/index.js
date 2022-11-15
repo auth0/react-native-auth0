@@ -74,7 +74,6 @@ class Auth {
           clientId: {required: false, toName: 'client_id'},
           returnTo: {required: false},
         },
-        whitelist: false,
       },
       parameters,
     );
