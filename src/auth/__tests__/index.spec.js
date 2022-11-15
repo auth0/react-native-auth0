@@ -293,6 +293,23 @@ describe('auth', () => {
         expect(fetchMock.lastCall()).toMatchSnapshot();
       });
 
+      it('should begin with custom parameters', async () => {
+        fetchMock.postOnce(
+          'https://samples.auth0.com/passwordless/start',
+          emptySuccess,
+        );
+        expect.assertions(1);
+        await auth.passwordlessWithEmail({
+          email: 'info@auth0.com',
+          send: 'code',
+          authParams: {
+            scope: 'openid profile',
+          },
+          custom: 'should not be filtered',
+        });
+        expect(fetchMock.lastCall()).toMatchSnapshot();
+      });
+
       it('should continue', async () => {
         fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
         expect.assertions(1);
@@ -311,6 +328,19 @@ describe('auth', () => {
           code: '123456',
           audience: 'http://myapi.com',
           scope: 'openid',
+        });
+        expect(fetchMock.lastCall()).toMatchSnapshot();
+      });
+
+      it('should continue with custom parameters', async () => {
+        fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
+        expect.assertions(1);
+        await auth.loginWithEmail({
+          email: 'info@auth0.com',
+          code: '123456',
+          audience: 'http://myapi.com',
+          scope: 'openid',
+          custom: 'should not be filtered',
         });
         expect(fetchMock.lastCall()).toMatchSnapshot();
       });
@@ -359,6 +389,23 @@ describe('auth', () => {
         expect(fetchMock.lastCall()).toMatchSnapshot();
       });
 
+      it('should begin with custom parameters', async () => {
+        fetchMock.postOnce(
+          'https://samples.auth0.com/passwordless/start',
+          emptySuccess,
+        );
+        expect.assertions(1);
+        await auth.passwordlessWithSMS({
+          phoneNumber: '+5491159991000',
+          send: 'code',
+          authParams: {
+            scope: 'openid profile',
+          },
+          custom: 'should not be filtered',
+        });
+        expect(fetchMock.lastCall()).toMatchSnapshot();
+      });
+
       it('should continue', async () => {
         fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
         expect.assertions(1);
@@ -377,6 +424,19 @@ describe('auth', () => {
           code: '123456',
           audience: 'http://myapi.com',
           scope: 'openid',
+        });
+        expect(fetchMock.lastCall()).toMatchSnapshot();
+      });
+
+      it('should continue with custom parameters', async () => {
+        fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
+        expect.assertions(1);
+        await auth.loginWithSMS({
+          phoneNumber: '+5491159991000',
+          code: '123456',
+          audience: 'http://myapi.com',
+          scope: 'openid',
+          custom: 'should not be filtered',
         });
         expect(fetchMock.lastCall()).toMatchSnapshot();
       });
