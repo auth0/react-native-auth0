@@ -833,6 +833,16 @@ describe('auth', () => {
       expect.assertions(1);
       await expect(auth.loginWithOTP(parameters)).resolves.toMatchSnapshot();
     });
+
+    it('should handle custom parameters', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', success);
+      expect.assertions(1);
+      await auth.loginWithOTP({
+        ...parameters,
+        custom: 'should not be filtered',
+      });
+      expect(fetchMock.lastCall()).toMatchSnapshot();
+    });
   });
 
   describe('OOB flow', () => {
@@ -900,6 +910,16 @@ describe('auth', () => {
       expect.assertions(1);
       await expect(auth.loginWithOOB(parameters)).resolves.toMatchSnapshot();
     });
+
+    it('should handle custom parameter', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', success);
+      expect.assertions(1);
+      await auth.loginWithOOB({
+        ...parameters,
+        custom: 'should not be filtered',
+      });
+      expect(fetchMock.lastCall()).toMatchSnapshot();
+    });
   });
 
   describe('Recovery Code flow', () => {
@@ -961,6 +981,16 @@ describe('auth', () => {
       await expect(
         auth.loginWithRecoveryCode(parameters),
       ).resolves.toMatchSnapshot();
+    });
+
+    it('should handle custom parameter', async () => {
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', success);
+      expect.assertions(1);
+      await auth.loginWithRecoveryCode({
+        ...parameters,
+        custom: 'should not be filtered',
+      });
+      expect(fetchMock.lastCall()).toMatchSnapshot();
     });
   });
 
