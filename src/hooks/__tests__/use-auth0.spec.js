@@ -432,4 +432,26 @@ describe('The useAuth0 hook', () => {
     await waitForNextUpdate();
     expect(result.current.error).toEqual(thrownError);
   });
+
+  it('can save new credentials', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.saveCredentials({parameter: 1});
+    await waitForNextUpdate();
+
+    expect(mockAuth0.credentialsManager.saveCredentials).toHaveBeenCalledWith({
+      parameter: 1,
+    });
+  });
+
+  it('dispatches an error when saveCredentials fails', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const thrownError = new Error('Error saving credentials');
+
+    mockAuth0.credentialsManager.saveCredentials.mockRejectedValue(thrownError);
+
+    result.current.saveCredentials();
+    await waitForNextUpdate();
+    expect(result.current.error).toEqual(thrownError);
+  });
 });

@@ -112,6 +112,18 @@ const Auth0Provider = ({domain, clientId, children}) => {
     [client],
   );
 
+  const saveCredentials = useCallback(
+    async credentials => {
+      try {
+        await client.credentialsManager.saveCredentials(credentials);
+      } catch (error) {
+        dispatch({type: 'ERROR', error});
+        return;
+      }
+    },
+    [client],
+  );
+
   const clearCredentials = useCallback(async () => {
     try {
       await client.credentialsManager.clearCredentials();
@@ -137,6 +149,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
       authorize,
       clearSession,
       getCredentials,
+      saveCredentials,
       clearCredentials,
       requireLocalAuthentication,
     }),
@@ -145,6 +158,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
       authorize,
       clearSession,
       getCredentials,
+      saveCredentials,
       clearCredentials,
       requireLocalAuthentication,
     ],
