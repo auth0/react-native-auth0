@@ -191,16 +191,28 @@ UIBackgroundTaskIdentifier taskId;
 - (void)terminateWithError:(id)error dismissing:(BOOL)dismissing animated:(BOOL)animated {
     RCTResponseSenderBlock callback = self.sessionCallback ? self.sessionCallback : ^void(NSArray *_unused) {};
     if (dismissing) {
-        [self.last.presentingViewController dismissViewControllerAnimated:animated
-                                                               completion:^{
-                                                                   if (error) {
-                                                                       callback(@[error, [NSNull null]]);
-                                                                   }
-                                                               }];
+        if (self.last.presentingViewController) {
+            [self.last.presentingViewController dismissViewControllerAnimated:animated
+                                                                   completion:^{
+                if (error) {
+                    callback(@[error, [NSNull null]]);
+                }
+            }];
+        } else {
+            if ([self.authenticationSession isKindOfClass:ASWebAuthenticationSession.class]) {
+                [(ASWebAuthenticationSession *)self.authenticationSession cancel];
+            } else if ([self.authenticationSession isKindOfClass:SFAuthenticationSession.class]) {
+                [(SFAuthenticationSession *)self.authenticationSession cancel];
+            }
+            if (error) {
+                callback(@[error, [NSNull null]]);
+            }
+        }
     } else if (error) {
         callback(@[error, [NSNull null]]);
     }
     self.sessionCallback = nil;
+    self.authenticationSession = nil;
     self.last = nil;
     self.closeOnLoad = NO;
 }
