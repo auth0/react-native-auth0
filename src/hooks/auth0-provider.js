@@ -112,6 +112,46 @@ const Auth0Provider = ({domain, clientId, children}) => {
     [client],
   );
 
+  const sendSMSCode = useCallback(
+    async (...options) => {
+      try {
+        const params = options.length ? options[0] : {};
+        await client.auth.passwordlessWithSMS(params);
+      } catch (error) {
+        dispatch({ type: "ERROR", error });
+        return;
+      }
+    },
+    [client]
+  );
+
+  const authorizeWithSMS = useCallback(
+    async (...options) => {
+      try {
+        const params = options.length ? options[0] : {};
+        const specifiedScopes =
+          params?.scope?.split(' ').map(s => s.trim()) || [];
+        const scopeSet = new Set([
+          ...specifiedScopes,
+          ...['openid', 'profile', 'email'],
+        ]);
+
+        params.scope = Array.from(scopeSet).join(' ');
+
+        const credentials = await client.auth.loginWithSMS(params);
+        const user = getIdTokenProfileClaims(credentials.idToken);
+
+        await client.credentialsManager.saveCredentials(credentials);
+        dispatch({type: 'LOGIN_COMPLETE', user});
+      } catch (error) {
+        console.log(error);
+        dispatch({type: 'ERROR', error});
+        return;
+      }
+    },
+    [client],
+  );
+
   const clearCredentials = useCallback(async () => {
     try {
       await client.credentialsManager.clearCredentials();
@@ -135,6 +175,8 @@ const Auth0Provider = ({domain, clientId, children}) => {
     () => ({
       ...state,
       authorize,
+      sendSMSCode,
+      authorizeWithSMS,
       clearSession,
       getCredentials,
       clearCredentials,
@@ -143,6 +185,8 @@ const Auth0Provider = ({domain, clientId, children}) => {
     [
       state,
       authorize,
+      sendSMSCode,
+      authorizeWithSMS,
       clearSession,
       getCredentials,
       clearCredentials,

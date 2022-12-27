@@ -42,6 +42,10 @@ const mockAuth0 = {
     authorize: jest.fn().mockResolvedValue(mockCredentials),
     clearSession: jest.fn().mockResolvedValue(),
   },
+  auth: {
+    passwordlessWithSMS: jest.fn().mockResolvedValue(),
+    loginWithSMS: jest.fn().mockResolvedValue(mockCredentials),
+  },
   credentialsManager: {
     getCredentials: jest.fn().mockResolvedValue(mockCredentials),
     requireLocalAuthentication: jest.fn().mockResolvedValue(),
@@ -227,6 +231,98 @@ describe('The useAuth0 hook', () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
     result.current.authorize();
+    await waitForNextUpdate();
+
+    expect(result.current.user).toMatchObject({
+      name: 'Test User',
+      family_name: 'User',
+      picture: 'https://images/pic.png',
+    });
+  });
+
+  it('sends SMS code', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.sendSMSCode();
+    await waitForNextUpdate();
+
+    expect(mockAuth0.auth.passwordlessWithSMS).toHaveBeenCalled();
+  })
+
+  it('can authorize with SMS, passing through all parameters', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithSMS({
+      phoneNumber: "+11234567890",
+      code: "123456",
+      scope: 'custom-scope',
+      audience: 'http://my-api',
+      customParam: '1234',
+    });
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.auth.loginWithSMS).toHaveBeenCalledWith(
+      {
+        phoneNumber: "+11234567890",
+        code: "123456",
+        scope: 'custom-scope openid profile email',
+        audience: 'http://my-api',
+        customParam: '1234',
+      },
+    );
+  });
+
+  it('adds the default scopes when none are specified for SMS login', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithSMS();
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.auth.loginWithSMS).toHaveBeenCalledWith(
+      {
+        scope: 'openid profile email',
+      },
+    );
+  });
+
+  it('adds the default scopes when some are specified with custom scope for SMS login', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithSMS({scope: 'custom-scope openid'});
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.auth.loginWithSMS).toHaveBeenCalledWith({
+      scope: 'custom-scope openid profile email',
+    });
+  });
+
+  it('does not duplicate default scopes for SMS login', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithSMS({
+      scope: 'openid profile',
+      audience: 'http://my-api',
+      customParam: '1234',
+    });
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.auth.loginWithSMS).toHaveBeenCalledWith(
+      {
+        scope: 'openid profile email',
+        audience: 'http://my-api',
+        customParam: '1234',
+      },
+    );
+  });
+
+  it('sets the user prop after authorizing with SMS', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithSMS();
     await waitForNextUpdate();
 
     expect(result.current.user).toMatchObject({

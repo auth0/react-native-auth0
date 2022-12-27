@@ -8,6 +8,8 @@ const initialContext = {
   error: null,
   user: null,
   authorize: stub,
+  sendSMSCode: stub,
+  authorizeWithSMS: stub,
   clearSession: stub,
   getCredentials: stub,
   clearCredentials: stub,

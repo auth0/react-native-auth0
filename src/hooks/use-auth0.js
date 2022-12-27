@@ -6,6 +6,8 @@ import Auth0Context from './auth0-context';
  * @property {Object} user The user profile as decoded from the ID token after authentication
  * @property {Object} error An object representing the last exception
  * @property {Function} authorize Authorize the user using Auth0 Universal Login. See {@link WebAuth#authorize}
+ * @property {Function} sendSMSCode Start the passwordless SMS login flow. See {@link Auth#passwordlessWithSMS}
+ * @property {Function} authorizeWithSMS Authorize the user using a SMS code. See {@link Auth#loginWithSMS}
  * @property {Function} clearSession Clears the user's web session, credentials and logs them out. See {@link WebAuth#clearSession}.
  * @property {Function} getCredentials Gets the user's credentials from the native credential store. See {@link CredentialsManager#getCredentials}
  * @property {Function} clearCredentials Clears the user's credentials without clearing their web session and logs them out.
@@ -22,6 +24,8 @@ import Auth0Context from './auth0-context';
  *   user,
  *   // Methods
  *   authorize,
+ *   sendSMSCode,
+ *   authorizeWithSMS,
  *   clearSession,
  *   getCredentials,
  *   clearCredentials,
