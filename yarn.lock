@@ -1092,28 +1092,7 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@expo/config-plugins@^4.1.5":
-  version "4.1.5"
-  resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-4.1.5.tgz#9d357d2cda9c095e511b51583ede8a3b76174068"
-  integrity sha512-RVvU40RtZt12HavuDAe+LDIq9lHj7sheOfMEHdmpJ/uTA8pgvkbc56XF6JHQD+yRr6+uhhb+JnAasGq49dsQbw==
-  dependencies:
-    "@expo/config-types" "^45.0.0"
-    "@expo/json-file" "8.2.36"
-    "@expo/plist" "0.0.18"
-    "@expo/sdk-runtime-versions" "^1.0.0"
-    "@react-native/normalize-color" "^2.0.0"
-    chalk "^4.1.2"
-    debug "^4.3.1"
-    find-up "~5.0.0"
-    getenv "^1.0.0"
-    glob "7.1.6"
-    resolve-from "^5.0.0"
-    semver "^7.3.5"
-    slash "^3.0.0"
-    xcode "^3.0.1"
-    xml2js "0.4.23"
-
-"@expo/config-plugins@~5.0.3":
+"@expo/config-plugins@^5.0.4", "@expo/config-plugins@~5.0.3":
   version "5.0.4"
   resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-5.0.4.tgz#216fea6558fe66615af1370de55193f4181cb23e"
   integrity sha512-vzUcVpqOMs3h+hyRdhGwk+eGIOhXa5xYdd92yO17RMNHav3v/+ekMbs7XA2c3lepMO8Yd4/5hqmRw9ZTL6jGzg==
@@ -1133,11 +1112,6 @@
     slash "^3.0.0"
     xcode "^3.0.1"
     xml2js "0.4.23"
-
-"@expo/config-types@^45.0.0":
-  version "45.0.0"
-  resolved "https://registry.yarnpkg.com/@expo/config-types/-/config-types-45.0.0.tgz#963c2fdce8fbcbd003758b92ed8a25375f437ef6"
-  integrity sha512-/QGhhLWyaGautgEyU50UJr5YqKJix5t77ePTwreOVAhmZH+ff3nrrtYTTnccx+qF08ZNQmfAyYMCD3rQfzpiJA==
 
 "@expo/config-types@^47.0.0":
   version "47.0.0"
