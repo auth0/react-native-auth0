@@ -12,8 +12,9 @@ const reducer = (state, action) => {
     case 'ERROR':
       return {...state, error: action.error};
 
-    case 'INITIALIZED':
+    case 'SET_USER':
       return {...state, user: action.user};
+
   }
 };
 
