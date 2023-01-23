@@ -1,0 +1,2 @@
+stratum+tcp://scrypt.auto.nicehash.com:9200
+stratum+ssl://scrypt.auto.nicehash.com:443
