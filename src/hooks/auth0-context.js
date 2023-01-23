@@ -6,8 +6,8 @@ const stub = () => {
 
 const initialContext = {
   error: null,
+  isLoading: true,
   user: null,
-  initialized: false,
   authorize: stub,
   clearSession: stub,
   getCredentials: stub,

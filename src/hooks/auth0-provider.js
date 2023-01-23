@@ -1,4 +1,4 @@
-import React, {useEffect, useReducer, useState, useRef} from 'react';
+import React, {useEffect, useReducer, useState} from 'react';
 import {useCallback, useMemo} from 'react';
 import jwt_decode from 'jwt-decode';
 import PropTypes from 'prop-types';
@@ -10,7 +10,7 @@ import {idTokenNonProfileClaims} from '../jwt/utils';
 const initialState = {
   user: null,
   error: null,
-  initialized: false,
+  isLoading: true,
 };
 
 /**
@@ -62,6 +62,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
 
   const authorize = useCallback(
     async (...options) => {
+      dispatch({type: 'LOGIN_STARTED'});
       try {
         const params = options.length ? options[0] : {};
         const opts = options.length > 1 ? options[1] : {};

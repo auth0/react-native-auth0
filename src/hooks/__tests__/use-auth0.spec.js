@@ -81,26 +81,26 @@ describe('The useAuth0 hook', () => {
     expect(result.current.clearSession).toBeDefined();
   });
 
-  it('initialized is false until initialization finishes', async () => {
+  it('isLoading is true until initialization finishes', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
-    expect(result.current.initialized).toBe(false);
+    expect(result.current.isLoading).toBe(true);
 
     await waitForNextUpdate();
     expect(mockAuth0.credentialsManager.getCredentials).not.toBeCalled();
     expect(mockAuth0.credentialsManager.hasValidCredentials).toBeCalledTimes(1);
     expect(result.current.user).toBeNull();
-    expect(result.current.initialized).toBe(true);
+    expect(result.current.isLoading).toBe(false);
   });
 
-  it('initialize flag set on start up with valid credentials', async () => {
+  it('isLoading flag set on start up with valid credentials', async () => {
     mockAuth0.credentialsManager.hasValidCredentials.mockResolvedValue(true);
 
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
-    expect(result.current.initialized).toBe(false);
+    expect(result.current.isLoading).toBe(true);
 
     await waitForNextUpdate();
     expect(result.current.user).not.toBeNull();
-    expect(result.current.initialized).toBe(true);
+    expect(result.current.isLoading).toBe(false);
   });
 
   it('does not initialize the user on start up without valid credentials', async () => {

@@ -3,17 +3,20 @@
  */
 const reducer = (state, action) => {
   switch (action.type) {
+    case 'LOGIN_STARTED':
+      return {...state, isLoading: true};
+
     case 'LOGIN_COMPLETE':
-      return {...state, error: null, user: action.user};
+      return {...state, error: null, isLoading: false, user: action.user};
 
     case 'LOGOUT_COMPLETE':
       return {...state, error: null, user: null};
 
     case 'ERROR':
-      return {...state, error: action.error};
+      return {...state, error: action.error, isLoading: false};
 
     case 'INITIALIZED':
-      return {...state, initialized: true, user: action.user};
+      return {...state, isLoading: false, user: action.user};
   }
 };
 
