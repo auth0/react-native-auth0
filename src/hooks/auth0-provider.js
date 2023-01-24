@@ -10,7 +10,7 @@ import {idTokenNonProfileClaims} from '../jwt/utils';
 const initialState = {
   user: null,
   error: null,
-  initialized: false,
+  isInitializing: true,
 };
 
 /**

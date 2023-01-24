@@ -7,7 +7,7 @@ const stub = () => {
 const initialContext = {
   error: null,
   user: null,
-  isInitialized: false,
+  isInitializing: true,
   authorize: stub,
   clearSession: stub,
   getCredentials: stub,
