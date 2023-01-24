@@ -49,10 +49,13 @@ const Auth0Provider = ({domain, clientId, children}) => {
       let user = null;
 
       if (await client.credentialsManager.hasValidCredentials()) {
-        const credentials = await client.credentialsManager.getCredentials();
-
-        if (credentials) {
-          user = getIdTokenProfileClaims(credentials.idToken);
+        try {
+          const credentials = await client.credentialsManager.getCredentials();
+          if (credentials) {
+            user = getIdTokenProfileClaims(credentials.idToken);
+          }
+        } catch (error) {
+          dispatch({type: 'ERROR', error});
         }
       }
 
