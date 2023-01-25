@@ -82,17 +82,13 @@ public class CredentialsManagerBridge: NSObject {
         resolve(credentialsManager.clear())
     }
     
-    @objc public func enableLocalAuthentication(title: String?, cancelTitle: String?, fallbackTitle: String?, evaluationPolicy: NSNumber?) {
+    @objc public func enableLocalAuthentication(title: String?, cancelTitle: String?, fallbackTitle: String?, evaluationPolicy: Int?) {
         let titleValue = title ?? "Please authenticate to continue"
-        let policyValue = self.convertPolicyInt(policyInt: evaluationPolicy);
-        self.credentialsManager.enableBiometrics(withTitle: titleValue, cancelTitle: cancelTitle, fallbackTitle: fallbackTitle, evaluationPolicy: policyValue as LAPolicy)
+        let policyValue = self.convert(policyInt: evaluationPolicy);
+        self.credentialsManager.enableBiometrics(withTitle: titleValue, cancelTitle: cancelTitle, fallbackTitle: fallbackTitle, evaluationPolicy: policyValue)
     }
 
-    func convertPolicyInt(policyInt: NSNumber?) -> LAPolicy {
-        if(policyInt == nil || policyInt == 1) {
-            return LAPolicy.deviceOwnerAuthenticationWithBiometrics;
-        }
-        
+    func convert(policyInt: NSNumber?) -> LAPolicy {
         if(policyInt == 2) {
             return LAPolicy.deviceOwnerAuthentication;
         }

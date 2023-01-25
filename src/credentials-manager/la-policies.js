@@ -1,8 +1,6 @@
-export default {
-  deviceOwnerAuthenticationWithBiometrics: 1,
-  deviceOwnerAuthentication: 2,
-  deviceOwnerAuthenticationWithWatch: 3,
-  deviceOwnerAuthenticationWithBiometricsOrWatch: 4,
-  deviceOwnerAuthenticationWithWristDetection: 5,
-  deviceOwnerAuthenticationWithBiometrics: 6
+const SecurityLevel = {
+  deviceOwnerWithBiometrics: 1,
+  deviceOwner: 2,
 }
+
+export default SecurityLevel;
