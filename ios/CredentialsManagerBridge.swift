@@ -91,28 +91,7 @@ public class CredentialsManagerBridge: NSObject {
     func convert(policyInt: NSNumber?) -> LAPolicy {
         if(policyInt == 2) {
             return LAPolicy.deviceOwnerAuthentication;
-        }
-        
-        #if os(macOS)
-            if(policyInt == 3) {
-                if #available(macOS 10.15, macCatalyst 13.0, *) {
-                    return LAPolicy.deviceOwnerAuthenticationWithWatch;
-                }
-            }
-            
-            if(policyInt == 4) {
-                return LAPolicy.deviceOwnerAuthenticationWithBiometricsOrWatch;
-            }
-        #endif
-        
-        #if os(watchOS)
-        if(policyInt == 5) {
-            if #available(watchOS 9.0, *) {
-                return LAPolicy.deviceOwnerAuthenticationWithWristDetection;
-            }
-        }
-        #endif
-        
+        }    
         return LAPolicy.deviceOwnerAuthenticationWithBiometrics;
     }
 }
