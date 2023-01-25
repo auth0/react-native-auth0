@@ -90,7 +90,7 @@ public class CredentialsManagerBridge: NSObject {
     }
 
     func convert(policyInt: Int) -> LAPolicy {
-        if(policyInt == 2) {
+        if (policyInt == 2) {
             return LAPolicy.deviceOwnerAuthentication;
         }    
         return LAPolicy.deviceOwnerAuthenticationWithBiometrics;
