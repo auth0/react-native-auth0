@@ -226,6 +226,7 @@ class Auth {
           send: {required: false},
           authParams: {required: false},
         },
+        whitelist: false,
       },
       parameters,
     );
@@ -253,6 +254,7 @@ class Auth {
           send: {required: false},
           authParams: {required: false},
         },
+        whitelist: false,
       },
       parameters,
     );
@@ -284,6 +286,7 @@ class Auth {
           audience: {required: false},
           scope: {required: false},
         },
+        whitelist: false,
       },
       parameters,
     );
@@ -316,6 +319,7 @@ class Auth {
           audience: {required: false},
           scope: {required: false},
         },
+        whitelist: false,
       },
       parameters,
     );
@@ -348,6 +352,7 @@ class Auth {
           mfaToken: {required: true, toName: 'mfa_token'},
           otp: {required: true, toName: 'otp'},
         },
+        whitelist: false,
       },
       parameters,
     );
@@ -382,6 +387,7 @@ class Auth {
           oobCode: {required: true, toName: 'oob_code'},
           bindingCode: {required: false, toName: 'binding_code'},
         },
+        whitelist: false,
       },
       parameters,
     );
@@ -413,6 +419,7 @@ class Auth {
           mfaToken: {required: true, toName: 'mfa_token'},
           recoveryCode: {required: true, toName: 'recovery_code'},
         },
+        whitelist: false,
       },
       parameters,
     );

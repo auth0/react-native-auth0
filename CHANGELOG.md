@@ -1,5 +1,30 @@
 # Change Log
 
+## [v2.16.0](https://github.com/auth0/react-native-auth0/tree/v2.16.0) (2022-11-16)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.15.0...v2.16.0)
+
+**Added**
+
+- Enable custom params for login methods [\#557](https://github.com/auth0/react-native-auth0/pull/557) ([poovamraj](https://github.com/poovamraj))
+- Add support for static linking on iOS [\#555](https://github.com/auth0/react-native-auth0/pull/555) ([Widcket](https://github.com/Widcket))
+
+**Fixed**
+
+- Return a unix timestamp for expiresIn [\#551](https://github.com/auth0/react-native-auth0/pull/551) ([cranberyxl](https://github.com/cranberyxl))
+
+## [v2.15.0](https://github.com/auth0/react-native-auth0/tree/v2.15.0) (2022-11-07)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.14.1...v2.15.0)
+
+**Added**
+
+- [SDK-3738] Option to clear session only in Credentials Manager [\#543](https://github.com/auth0/react-native-auth0/pull/543) ([poovamraj](https://github.com/poovamraj))
+
+**Fixed**
+
+- [SDK-3736] Fix: Options Parameter not being passed in Hooks `authorize` method [\#542](https://github.com/auth0/react-native-auth0/pull/542) ([poovamraj](https://github.com/poovamraj))
+
 ## [v2.14.1](https://github.com/auth0/react-native-auth0/tree/v2.14.1) (2022-10-19)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.14.0...v2.14.1)

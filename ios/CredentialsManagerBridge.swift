@@ -104,7 +104,7 @@ extension Credentials {
             CredentialsManagerBridge.tokenTypeKey: self.tokenType,
             CredentialsManagerBridge.idTokenKey: self.idToken,
             CredentialsManagerBridge.refreshTokenKey: self.refreshToken as Any,
-            CredentialsManagerBridge.expiresInKey: self.expiresIn,
+            CredentialsManagerBridge.expiresInKey: floor(self.expiresIn.timeIntervalSince1970),
             CredentialsManagerBridge.scopeKey: self.scope as Any
         ]
     }

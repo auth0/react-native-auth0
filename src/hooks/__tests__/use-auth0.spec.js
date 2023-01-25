@@ -6,6 +6,7 @@ import {renderHook} from '@testing-library/react-hooks';
 import Auth0Provider from '../auth0-provider';
 import useAuth0 from '../use-auth0';
 import SecurityLevel from '../../credentials-manager/la-policies';
+import {act} from 'react-dom/test-utils';
 
 function makeJwt(claims) {
   const header = {alg: 'RS256', typ: 'JWT'};
@@ -260,6 +261,47 @@ describe('The useAuth0 hook', () => {
     );
   });
 
+  it('can clear the credentials', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    act(() => {
+      result.current.clearCredentials();
+    });
+    await waitForNextUpdate();
+
+    expect(mockAuth0.credentialsManager.clearCredentials).toHaveBeenCalled();
+  });
+
+  it('sets the error property when an error is raised in clearing credentials', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const errorToThrow = new Error('Error clearing credentials');
+
+    mockAuth0.credentialsManager.clearCredentials.mockRejectedValue(
+      errorToThrow,
+    );
+
+    result.current.clearCredentials();
+    await waitForNextUpdate();
+    expect(result.current.error).toBe(errorToThrow);
+  });
+
+  it('clears the error on successful logout when clearing credentials', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const errorToThrow = new Error('Error clearing credentials');
+
+    mockAuth0.credentialsManager.clearCredentials.mockRejectedValueOnce(
+      errorToThrow,
+    );
+    mockAuth0.credentialsManager.clearCredentials.mockResolvedValue();
+
+    result.current.clearCredentials();
+    await waitForNextUpdate();
+    expect(result.current.error).toBe(errorToThrow);
+    result.current.clearCredentials();
+    await waitForNextUpdate();
+    expect(result.current.error).toBeNull();
+  });
+
   it('sets the error property when an error is raised in authorize', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
     const errorToThrow = new Error('Authorize error');
@@ -303,6 +345,7 @@ describe('The useAuth0 hook', () => {
 
     mockAuth0.webAuth.clearSession.mockRejectedValueOnce(errorToThrow);
     mockAuth0.webAuth.clearSession.mockResolvedValue();
+    mockAuth0.credentialsManager.clearCredentials.mockResolvedValue();
 
     result.current.clearSession();
     await waitForNextUpdate();

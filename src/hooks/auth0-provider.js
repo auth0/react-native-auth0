@@ -62,18 +62,18 @@ const Auth0Provider = ({domain, clientId, children}) => {
   const authorize = useCallback(
     async (...options) => {
       try {
-        const opts = options.length ? options[0] : {};
-        const params = options.length > 1 ? options[1] : {};
+        const params = options.length ? options[0] : {};
+        const opts = options.length > 1 ? options[1] : {};
         const specifiedScopes =
-          opts?.scope?.split(' ').map(s => s.trim()) || [];
+          params?.scope?.split(' ').map(s => s.trim()) || [];
         const scopeSet = new Set([
           ...specifiedScopes,
           ...['openid', 'profile', 'email'],
         ]);
 
-        opts.scope = Array.from(scopeSet).join(' ');
+        params.scope = Array.from(scopeSet).join(' ');
 
-        const credentials = await client.webAuth.authorize(opts, params);
+        const credentials = await client.webAuth.authorize(params, opts);
         const user = getIdTokenProfileClaims(credentials.idToken);
 
         await client.credentialsManager.saveCredentials(credentials);
@@ -112,6 +112,16 @@ const Auth0Provider = ({domain, clientId, children}) => {
     [client],
   );
 
+  const clearCredentials = useCallback(async () => {
+    try {
+      await client.credentialsManager.clearCredentials();
+      dispatch({type: 'LOGOUT_COMPLETE'});
+    } catch (error) {
+      dispatch({type: 'ERROR', error});
+      return;
+    }
+  }, [client]);
+
   const requireLocalAuthentication = useCallback(async (...options) => {
     try {
       await client.credentialsManager.requireLocalAuthentication(...options);
@@ -127,6 +137,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
       authorize,
       clearSession,
       getCredentials,
+      clearCredentials,
       requireLocalAuthentication,
     }),
     [
@@ -134,6 +145,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
       authorize,
       clearSession,
       getCredentials,
+      clearCredentials,
       requireLocalAuthentication,
     ],
   );
