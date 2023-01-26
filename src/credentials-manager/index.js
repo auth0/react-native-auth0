@@ -1,6 +1,6 @@
 import {Platform, NativeModules} from 'react-native';
 import CredentialsManagerError from './credentialsManagerError';
-import SecurityLevel from './la-policies';
+import LAPolicy from './la-policies';
 
 class CredentialsManager {
   /**
@@ -92,7 +92,7 @@ class CredentialsManager {
     description,
     cancelTitle,
     fallbackTitle,
-    securityLevel = SecurityLevel.deviceOwner,
+    securityLevel = LAPolicy.deviceOwner,
   ) {
     try {
       await this._ensureCredentialManagerIsInitialized();
