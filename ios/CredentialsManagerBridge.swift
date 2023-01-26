@@ -93,7 +93,7 @@ public class CredentialsManagerBridge: NSObject {
         if (policyInt == 2) {
             return LAPolicy.deviceOwnerAuthentication
         }    
-        return LAPolicy.deviceOwnerAuthenticationWithBiometrics;
+        return LAPolicy.deviceOwnerAuthenticationWithBiometrics
     }
 }
 
