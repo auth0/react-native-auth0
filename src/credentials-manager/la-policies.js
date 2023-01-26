@@ -1,6 +1,6 @@
 const LAPolicy = {
-  deviceOwnerWithBiometrics: 0,
-  deviceOwner: 1,
+  deviceOwnerWithBiometrics: 1,
+  deviceOwner: 2,
 }
 
 export default LAPolicy;
