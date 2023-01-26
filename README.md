@@ -276,22 +276,22 @@ import {useAuth0} from 'react-native-auth0';
 
 Use the `authorize` method to redirect the user to the Auth0 [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) page for authentication. 
 
-- The `isInitializing` property is set to true once the authentication state of the user is known to the SDK.
+- The `isLoading` property is set to true once the authentication state of the user is known to the SDK.
 - The `user` property is populated with details about the authenticated user. If `user` is `null`, no user is currently authenticated. 
 - The `error` property is populated if any error occurs.
 
 ```js
 const Component = () => {
-  const {authorize, user, isInitializing, error} = useAuth0();
+  const {authorize, user, isLoading, error} = useAuth0();
 
   const login = async () => {
     await authorize();
   };
 
-  if(isInitializing) {
+  if(isLoading) {
     return (
       <View>
-        <Text>SDK is Initializing</Text>
+        <Text>SDK is Loading</Text>
       </View>
     )
   }
