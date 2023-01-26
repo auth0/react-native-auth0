@@ -5,7 +5,7 @@ import * as React from 'react';
 import {renderHook} from '@testing-library/react-hooks';
 import Auth0Provider from '../auth0-provider';
 import useAuth0 from '../use-auth0';
-import SecurityLevel from '../../credentials-manager/la-policies';
+import LAPolicy from '../../credentials-manager/la-policies';
 import {act} from 'react-dom/test-utils';
 
 function makeJwt(claims) {
@@ -416,12 +416,12 @@ describe('The useAuth0 hook', () => {
       'description',
       'cancel',
       'fallback',
-      SecurityLevel.deviceOwner
+      LAPolicy.deviceOwner
     );
 
     expect(
       mockAuth0.credentialsManager.requireLocalAuthentication,
-    ).toHaveBeenCalledWith('title', 'description', 'cancel', 'fallback', SecurityLevel.deviceOwner);
+    ).toHaveBeenCalledWith('title', 'description', 'cancel', 'fallback', LAPolicy.deviceOwner);
   });
 
   it('dispatches an error when requireLocalAuthentication fails', async () => {
