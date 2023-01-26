@@ -84,7 +84,7 @@ class CredentialsManager {
    * @param {String} description Android Only - optional - the text to use as description in the authentication screen. On some Android versions it might not be shown. Passing null will result in using the OS's default value.
    * @param {String} cancelTitle iOS Only - optional - the cancel message to display on the local authentication prompt.
    * @param {String} fallbackTitle iOS Only - optional - the fallback message to display on the local authentication prompt after a failed match.
-   * @param {String} securityLevel iOS Only - optional - the evaluation policy to use when accessing the credentials
+   * @param {String} laPolicy iOS Only - optional - the evaluation policy to use when accessing the credentials. Defaults to LAPolicy.deviceOwnerWithBiometrics.
    * @returns {Promise}
    */
   async requireLocalAuthentication(
@@ -92,7 +92,7 @@ class CredentialsManager {
     description,
     cancelTitle,
     fallbackTitle,
-    securityLevel = LAPolicy.deviceOwner,
+    laPolicy = LAPolicy.deviceOwnerWithBiometrics,
   ) {
     try {
       await this._ensureCredentialManagerIsInitialized();
@@ -101,7 +101,7 @@ class CredentialsManager {
           title,
           cancelTitle,
           fallbackTitle,
-          securityLevel
+          laPolicy
         );
       } else {
         await this.Auth0Module.enableLocalAuthentication(title, description);
