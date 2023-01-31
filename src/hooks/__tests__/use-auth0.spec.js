@@ -5,7 +5,7 @@ import * as React from 'react';
 import {renderHook} from '@testing-library/react-hooks';
 import Auth0Provider from '../auth0-provider';
 import useAuth0 from '../use-auth0';
-import LocalAuthenticationStrategy from '../../credentials-manager/la-policies';
+import LocalAuthenticationStrategy from '../../credentials-manager/localAuthenticationStrategy';
 import {act} from 'react-dom/test-utils';
 
 function makeJwt(claims) {
@@ -180,8 +180,9 @@ describe('The useAuth0 hook', () => {
         scope: 'custom-scope openid profile email',
         audience: 'http://my-api',
         customParam: '1234',
+      }, {
+        ephemeralSession: true
       },
-      {},
     );
   });
 
