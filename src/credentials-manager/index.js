@@ -101,7 +101,7 @@ class CredentialsManager {
           title,
           cancelTitle,
           fallbackTitle,
-          localAuthenticationStrategy
+          strategy
         );
       } else {
         await this.Auth0Module.enableLocalAuthentication(title, description);
