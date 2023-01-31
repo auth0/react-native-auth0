@@ -5,6 +5,7 @@ import * as React from 'react';
 import {renderHook} from '@testing-library/react-hooks';
 import Auth0Provider from '../auth0-provider';
 import useAuth0 from '../use-auth0';
+import LocalAuthenticationStrategy from '../../credentials-manager/localAuthenticationStrategy';
 import {act} from 'react-dom/test-utils';
 
 function makeJwt(claims) {
@@ -168,6 +169,8 @@ describe('The useAuth0 hook', () => {
       scope: 'custom-scope',
       audience: 'http://my-api',
       customParam: '1234',
+    }, {
+      ephemeralSession: true
     });
 
     await waitForNextUpdate();
@@ -177,8 +180,9 @@ describe('The useAuth0 hook', () => {
         scope: 'custom-scope openid profile email',
         audience: 'http://my-api',
         customParam: '1234',
+      }, {
+        ephemeralSession: true
       },
-      {},
     );
   });
 
@@ -449,11 +453,12 @@ describe('The useAuth0 hook', () => {
       'description',
       'cancel',
       'fallback',
+      LocalAuthenticationStrategy.deviceOwner
     );
 
     expect(
       mockAuth0.credentialsManager.requireLocalAuthentication,
-    ).toHaveBeenCalledWith('title', 'description', 'cancel', 'fallback');
+    ).toHaveBeenCalledWith('title', 'description', 'cancel', 'fallback', LocalAuthenticationStrategy.deviceOwner);
   });
 
   it('dispatches an error when requireLocalAuthentication fails', async () => {
