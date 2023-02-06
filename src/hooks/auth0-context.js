@@ -7,6 +7,7 @@ const stub = () => {
 const initialContext = {
   error: null,
   user: null,
+  isLoading: true,
   authorize: stub,
   sendSMSCode: stub,
   authorizeWithSMS: stub,

@@ -5,6 +5,7 @@ import Auth0Context from './auth0-context';
  * @typedef {Object} Auth0ContextInterface
  * @property {Object} user The user profile as decoded from the ID token after authentication
  * @property {Object} error An object representing the last exception
+ * @property {boolean} isLoading A flag that is true until the state knows that a user is either logged in or not
  * @property {Function} authorize Authorize the user using Auth0 Universal Login. See {@link WebAuth#authorize}
  * @property {Function} sendSMSCode Start the passwordless SMS login flow. See {@link Auth#passwordlessWithSMS}
  * @property {Function} authorizeWithSMS Authorize the user using a SMS code. See {@link Auth#loginWithSMS}
@@ -22,6 +23,7 @@ import Auth0Context from './auth0-context';
  *   // State
  *   error,
  *   user,
+ *   isLoading,
  *   // Methods
  *   authorize,
  *   sendSMSCode,

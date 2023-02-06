@@ -68,8 +68,8 @@ RCT_EXPORT_METHOD(clearCredentials:(RCTPromiseResolveBlock)resolve rejecter:(RCT
     [self.credentialsManagerBridge clearCredentialsWithResolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(enableLocalAuthentication:(NSString *)title cancelTitle:(NSString *)cancelTitle fallbackTitle:(NSString *)fallbackTitle) {
-    [self.credentialsManagerBridge enableLocalAuthenticationWithTitle:title cancelTitle:title fallbackTitle:title];
+RCT_EXPORT_METHOD(enableLocalAuthentication:(NSString *)title cancelTitle:(NSString *)cancelTitle fallbackTitle:(NSString *)fallbackTitle evaluationPolicy:(NSInteger)evaluationPolicy) {
+    [self.credentialsManagerBridge enableLocalAuthenticationWithTitle:title cancelTitle:cancelTitle fallbackTitle:fallbackTitle evaluationPolicy: evaluationPolicy];
 }
 
 RCT_EXPORT_METHOD(showUrl:(NSString *)urlString
