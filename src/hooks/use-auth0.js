@@ -9,6 +9,8 @@ import Auth0Context from './auth0-context';
  * @property {Function} authorize Authorize the user using Auth0 Universal Login. See {@link WebAuth#authorize}
  * @property {Function} sendSMSCode Start the passwordless SMS login flow. See {@link Auth#passwordlessWithSMS}
  * @property {Function} authorizeWithSMS Authorize the user using a SMS code. See {@link Auth#loginWithSMS}
+ * @property {Function} sendEmailCode Start the passwordless email login flow. See {@link Auth#passwordlessWithEmail}
+ * @property {Function} authorizeWithEmail Authorize the user using an email code. See {@link Auth#loginWithEmail}
  * @property {Function} clearSession Clears the user's web session, credentials and logs them out. See {@link WebAuth#clearSession}.
  * @property {Function} getCredentials Gets the user's credentials from the native credential store. See {@link CredentialsManager#getCredentials}
  * @property {Function} clearCredentials Clears the user's credentials without clearing their web session and logs them out.

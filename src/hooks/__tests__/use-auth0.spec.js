@@ -46,6 +46,8 @@ const mockAuth0 = {
   auth: {
     passwordlessWithSMS: jest.fn().mockResolvedValue(),
     loginWithSMS: jest.fn().mockResolvedValue(mockCredentials),
+    passwordlessWithEmail: jest.fn().mockResolvedValue(),
+    loginWithEmail: jest.fn().mockResolvedValue(mockCredentials),
   },
   credentialsManager: {
     getCredentials: jest.fn().mockResolvedValue(mockCredentials),
@@ -363,6 +365,98 @@ describe('The useAuth0 hook', () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
     result.current.authorizeWithSMS();
+    await waitForNextUpdate();
+
+    expect(result.current.user).toMatchObject({
+      name: 'Test User',
+      family_name: 'User',
+      picture: 'https://images/pic.png',
+    });
+  });
+
+  it('sends email code', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.sendEmailCode();
+    await waitForNextUpdate();
+
+    expect(mockAuth0.auth.passwordlessWithEmail).toHaveBeenCalled();
+  })
+
+  it('can authorize with email, passing through all parameters', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithEmail({
+      email: "foo@gmail.com",
+      code: "123456",
+      scope: 'custom-scope',
+      audience: 'http://my-api',
+      customParam: '1234',
+    });
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.auth.loginWithEmail).toHaveBeenCalledWith(
+      {
+        email: "foo@gmail.com",
+        code: "123456",
+        scope: 'custom-scope openid profile email',
+        audience: 'http://my-api',
+        customParam: '1234',
+      },
+    );
+  });
+
+  it('adds the default scopes when none are specified for email login', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithEmail();
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.auth.loginWithEmail).toHaveBeenCalledWith(
+      {
+        scope: 'openid profile email',
+      },
+    );
+  });
+
+  it('adds the default scopes when some are specified with custom scope for email login', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithEmail({scope: 'custom-scope openid'});
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.auth.loginWithEmail).toHaveBeenCalledWith({
+      scope: 'custom-scope openid profile email',
+    });
+  });
+
+  it('does not duplicate default scopes for email login', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithEmail({
+      scope: 'openid profile',
+      audience: 'http://my-api',
+      customParam: '1234',
+    });
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.auth.loginWithEmail).toHaveBeenCalledWith(
+      {
+        scope: 'openid profile email',
+        audience: 'http://my-api',
+        customParam: '1234',
+      },
+    );
+  });
+
+  it('sets the user prop after authorizing with email', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithEmail();
     await waitForNextUpdate();
 
     expect(result.current.user).toMatchObject({

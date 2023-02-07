@@ -31,6 +31,18 @@ const getIdTokenProfileClaims = idToken => {
 };
 
 /**
+ * @ignore
+ */
+const finalizeScopeParam = inputScopes => {
+  const specifiedScopes = inputScopes?.split(' ').map(s => s.trim()) || [];
+  const scopeSet = new Set([
+    ...specifiedScopes,
+    ...['openid', 'profile', 'email'],
+  ]);
+  return Array.from(scopeSet).join(' ');
+};
+
+/**
  * Provides the Auth0Context to its child components.
  * @param {String} domain Your Auth0 domain
  * @param {String} clientId Your Auth0 client ID
@@ -68,14 +80,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
       try {
         const params = options.length ? options[0] : {};
         const opts = options.length > 1 ? options[1] : {};
-        const specifiedScopes =
-          params?.scope?.split(' ').map(s => s.trim()) || [];
-        const scopeSet = new Set([
-          ...specifiedScopes,
-          ...['openid', 'profile', 'email'],
-        ]);
-
-        params.scope = Array.from(scopeSet).join(' ');
+        params.scope = finalizeScopeParam(params?.scope);
 
         const credentials = await client.webAuth.authorize(params, opts);
         const user = getIdTokenProfileClaims(credentials.idToken);
@@ -122,27 +127,53 @@ const Auth0Provider = ({domain, clientId, children}) => {
         const params = options.length ? options[0] : {};
         await client.auth.passwordlessWithSMS(params);
       } catch (error) {
-        dispatch({ type: "ERROR", error });
+        dispatch({type: 'ERROR', error});
         return;
       }
     },
-    [client]
+    [client],
   );
 
   const authorizeWithSMS = useCallback(
     async (...options) => {
       try {
         const params = options.length ? options[0] : {};
-        const specifiedScopes =
-          params?.scope?.split(' ').map(s => s.trim()) || [];
-        const scopeSet = new Set([
-          ...specifiedScopes,
-          ...['openid', 'profile', 'email'],
-        ]);
-
-        params.scope = Array.from(scopeSet).join(' ');
+        params.scope = finalizeScopeParam(params?.scope);
 
         const credentials = await client.auth.loginWithSMS(params);
+        const user = getIdTokenProfileClaims(credentials.idToken);
+
+        await client.credentialsManager.saveCredentials(credentials);
+        dispatch({type: 'LOGIN_COMPLETE', user});
+      } catch (error) {
+        console.log(error);
+        dispatch({type: 'ERROR', error});
+        return;
+      }
+    },
+    [client],
+  );
+
+  const sendEmailCode = useCallback(
+    async (...options) => {
+      try {
+        const params = options.length ? options[0] : {};
+        await client.auth.passwordlessWithEmail(params);
+      } catch (error) {
+        dispatch({type: 'ERROR', error});
+        return;
+      }
+    },
+    [client],
+  );
+
+  const authorizeWithEmail = useCallback(
+    async (...options) => {
+      try {
+        const params = options.length ? options[0] : {};
+        params.scope = finalizeScopeParam(params?.scope);
+
+        const credentials = await client.auth.loginWithEmail(params);
         const user = getIdTokenProfileClaims(credentials.idToken);
 
         await client.credentialsManager.saveCredentials(credentials);
@@ -181,6 +212,8 @@ const Auth0Provider = ({domain, clientId, children}) => {
       authorize,
       sendSMSCode,
       authorizeWithSMS,
+      sendEmailCode,
+      authorizeWithEmail,
       clearSession,
       getCredentials,
       clearCredentials,
@@ -191,6 +224,8 @@ const Auth0Provider = ({domain, clientId, children}) => {
       authorize,
       sendSMSCode,
       authorizeWithSMS,
+      sendEmailCode,
+      authorizeWithEmail,
       clearSession,
       getCredentials,
       clearCredentials,

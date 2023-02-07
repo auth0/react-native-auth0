@@ -11,6 +11,8 @@ const initialContext = {
   authorize: stub,
   sendSMSCode: stub,
   authorizeWithSMS: stub,
+  sendEmailCode: stub,
+  authorizeWithEmail: stub,
   clearSession: stub,
   getCredentials: stub,
   clearCredentials: stub,
