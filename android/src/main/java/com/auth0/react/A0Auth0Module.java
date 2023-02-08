@@ -105,12 +105,14 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
             promise.reject(ERROR_CODE, "No current activity present");
             return;
         }
-        try {
-            this.secureCredentialsManager.requireAuthentication(activity, LOCAL_AUTH_REQUEST_CODE, title, description);
-            promise.resolve(true);
-        } catch (CredentialsManagerException e){
-            promise.reject(ERROR_CODE, e.getMessage());
-        }
+        activity.runOnUiThread(() -> {
+            try {
+                A0Auth0Module.this.secureCredentialsManager.requireAuthentication(activity, LOCAL_AUTH_REQUEST_CODE, title, description);
+                promise.resolve(true);
+            } catch (CredentialsManagerException e){
+                promise.reject(ERROR_CODE, e.getMessage());
+            }
+        });
     }
 
     @ReactMethod
