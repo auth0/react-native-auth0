@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.17.1](https://github.com/auth0/react-native-auth0/tree/v2.17.1) (2023-02-09)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.17.0...v2.17.1)
+
+**Fixed**
+
+- Run requireAuth on UI thread [\#591](https://github.com/auth0/react-native-auth0/pull/591) ([poovamraj](https://github.com/poovamraj))
+
 ## [v2.17.0](https://github.com/auth0/react-native-auth0/tree/v2.17.0) (2023-02-01)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.16.0...v2.17.0)
