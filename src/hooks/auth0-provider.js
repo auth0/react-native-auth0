@@ -187,6 +187,76 @@ const Auth0Provider = ({domain, clientId, children}) => {
     [client],
   );
 
+  const sendMultifactorChallenge = useCallback(
+    async (...options) => {
+      try {
+        const params = options.length ? options[0] : {};
+        await client.auth.multifactorChallenge(params);
+      } catch (error) {
+        dispatch({type: 'ERROR', error});
+        return;
+      }
+    },
+    [client],
+  );
+
+  const authorizeWithOOB = useCallback(
+    async (...options) => {
+      try {
+        const params = options.length ? options[0] : {};
+
+        const credentials = await client.auth.loginWithOOB(params);
+        const user = getIdTokenProfileClaims(credentials.idToken);
+
+        await client.credentialsManager.saveCredentials(credentials);
+        dispatch({type: 'LOGIN_COMPLETE', user});
+      } catch (error) {
+        console.log(error);
+        dispatch({type: 'ERROR', error});
+        return;
+      }
+    },
+    [client],
+  );
+
+  const authorizeWithOTP = useCallback(
+    async (...options) => {
+      try {
+        const params = options.length ? options[0] : {};
+
+        const credentials = await client.auth.loginWithOTP(params);
+        const user = getIdTokenProfileClaims(credentials.idToken);
+
+        await client.credentialsManager.saveCredentials(credentials);
+        dispatch({type: 'LOGIN_COMPLETE', user});
+      } catch (error) {
+        console.log(error);
+        dispatch({type: 'ERROR', error});
+        return;
+      }
+    },
+    [client],
+  );
+
+  const authorizeWithRecoveryCode = useCallback(
+    async (...options) => {
+      try {
+        const params = options.length ? options[0] : {};
+
+        const credentials = await client.auth.loginWithRecoveryCode(params);
+        const user = getIdTokenProfileClaims(credentials.idToken);
+
+        await client.credentialsManager.saveCredentials(credentials);
+        dispatch({type: 'LOGIN_COMPLETE', user});
+      } catch (error) {
+        console.log(error);
+        dispatch({type: 'ERROR', error});
+        return;
+      }
+    },
+    [client],
+  );
+
   const clearCredentials = useCallback(async () => {
     try {
       await client.credentialsManager.clearCredentials();
@@ -214,6 +284,10 @@ const Auth0Provider = ({domain, clientId, children}) => {
       authorizeWithSMS,
       sendEmailCode,
       authorizeWithEmail,
+      sendMultifactorChallenge,
+      authorizeWithOOB,
+      authorizeWithOTP,
+      authorizeWithRecoveryCode,
       clearSession,
       getCredentials,
       clearCredentials,
@@ -226,6 +300,10 @@ const Auth0Provider = ({domain, clientId, children}) => {
       authorizeWithSMS,
       sendEmailCode,
       authorizeWithEmail,
+      sendMultifactorChallenge,
+      authorizeWithOOB,
+      authorizeWithOTP,
+      authorizeWithRecoveryCode,
       clearSession,
       getCredentials,
       clearCredentials,

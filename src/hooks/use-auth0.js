@@ -11,7 +11,11 @@ import Auth0Context from './auth0-context';
  * @property {Function} authorizeWithSMS Authorize the user using a SMS code. See {@link Auth#loginWithSMS}
  * @property {Function} sendEmailCode Start the passwordless email login flow. See {@link Auth#passwordlessWithEmail}
  * @property {Function} authorizeWithEmail Authorize the user using an email code. See {@link Auth#loginWithEmail}
- * @property {Function} clearSession Clears the user's web session, credentials and logs them out. See {@link WebAuth#clearSession}.
+ * @property {Function} sendMultifactorChallenge Send a challenge for multi-factor authentication. See {@link Auth#multifactorChallenge}
+ * @property {Function} authorizeWithOOB Authorize the user using an Out Of Band authentication code. See {@link Auth#loginWithOOB}
+ * @property {Function} authorizeWithOTP Autohrize the user using a One Time Password code. See {@link Auth#loginWithOTP}.
+ * @property {Function} authorizeWithRecoveryCode Authorize the user using a multi-factor authentication Recovery Code. See {@link Auth#loginWithRecoveryCode}
+ * @property {Function} clearSession Clears the user's web session, credentials and logs them out. See {@link WebAuth#clearSession}
  * @property {Function} getCredentials Gets the user's credentials from the native credential store. See {@link CredentialsManager#getCredentials}
  * @property {Function} clearCredentials Clears the user's credentials without clearing their web session and logs them out.
  * @property {Function} requireLocalAuthentication Enables Local Authentication (PIN, Biometric, Swipe etc) to get the credentials. See {@link CredentialsManager#requireLocalAuthentication}
@@ -30,6 +34,12 @@ import Auth0Context from './auth0-context';
  *   authorize,
  *   sendSMSCode,
  *   authorizeWithSMS,
+ *   sendEmailCode,
+ *   authorizeWithEmail,
+ *   sendMultifactorChallenge,
+ *   authorizeWithOOB,
+ *   authorizeWithOTP,
+ *   authorizeWithRecoveryCode,
  *   clearSession,
  *   getCredentials,
  *   clearCredentials,

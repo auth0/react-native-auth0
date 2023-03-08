@@ -7,6 +7,7 @@ import Auth0Provider from '../auth0-provider';
 import useAuth0 from '../use-auth0';
 import LocalAuthenticationStrategy from '../../credentials-manager/localAuthenticationStrategy';
 import {act} from 'react-dom/test-utils';
+import Auth0Error from '../../auth/auth0Error';
 
 function makeJwt(claims) {
   const header = {alg: 'RS256', typ: 'JWT'};
@@ -32,6 +33,8 @@ const mockCredentials = {
   accessToken: 'ACCESS TOKEN',
 };
 
+const mockAuthError = new Auth0Error({json: {error: 'mock error'}});
+
 const wrapper = ({children}) => (
   <Auth0Provider domain="DOMAIN" clientId="CLIENT ID">
     {children}
@@ -48,6 +51,10 @@ const mockAuth0 = {
     loginWithSMS: jest.fn().mockResolvedValue(mockCredentials),
     passwordlessWithEmail: jest.fn().mockResolvedValue(),
     loginWithEmail: jest.fn().mockResolvedValue(mockCredentials),
+    multifactorChallenge: jest.fn().mockResolvedValue(),
+    loginWithOOB: jest.fn().mockResolvedValue(mockCredentials),
+    loginWithOTP: jest.fn().mockResolvedValue(mockCredentials),
+    loginWithRecoveryCode: jest.fn().mockResolvedValue(mockCredentials),
   },
   credentialsManager: {
     getCredentials: jest.fn().mockResolvedValue(mockCredentials),
@@ -134,7 +141,9 @@ describe('The useAuth0 hook', () => {
 
   it('initializes the user on start up with valid credentials', async () => {
     mockAuth0.credentialsManager.hasValidCredentials.mockResolvedValue(true);
-    mockAuth0.credentialsManager.getCredentials.mockResolvedValue(mockCredentials);
+    mockAuth0.credentialsManager.getCredentials.mockResolvedValue(
+      mockCredentials,
+    );
 
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
@@ -171,13 +180,16 @@ describe('The useAuth0 hook', () => {
   it('can authorize, passing through all parameters', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
-    result.current.authorize({
-      scope: 'custom-scope',
-      audience: 'http://my-api',
-      customParam: '1234',
-    }, {
-      ephemeralSession: true
-    });
+    result.current.authorize(
+      {
+        scope: 'custom-scope',
+        audience: 'http://my-api',
+        customParam: '1234',
+      },
+      {
+        ephemeralSession: true,
+      },
+    );
 
     await waitForNextUpdate();
 
@@ -186,8 +198,9 @@ describe('The useAuth0 hook', () => {
         scope: 'custom-scope openid profile email',
         audience: 'http://my-api',
         customParam: '1234',
-      }, {
-        ephemeralSession: true
+      },
+      {
+        ephemeralSession: true,
       },
     );
   });
@@ -282,6 +295,17 @@ describe('The useAuth0 hook', () => {
     });
   });
 
+  it('does not set user prop when authorization fails', async () => {
+    mockAuth0.webAuth.authorize.mockRejectedValue(mockAuthError);
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorize();
+    await waitForNextUpdate();
+
+    expect(result.current.user).toBeNull();
+    expect(result.current.error).toBe(mockAuthError);
+  });
+
   it('sends SMS code', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
@@ -289,30 +313,26 @@ describe('The useAuth0 hook', () => {
     await waitForNextUpdate();
 
     expect(mockAuth0.auth.passwordlessWithSMS).toHaveBeenCalled();
-  })
+  });
 
   it('can authorize with SMS, passing through all parameters', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
     result.current.authorizeWithSMS({
-      phoneNumber: "+11234567890",
-      code: "123456",
+      phoneNumber: '+11234567890',
+      code: '123456',
       scope: 'custom-scope',
       audience: 'http://my-api',
-      customParam: '1234',
     });
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithSMS).toHaveBeenCalledWith(
-      {
-        phoneNumber: "+11234567890",
-        code: "123456",
-        scope: 'custom-scope openid profile email',
-        audience: 'http://my-api',
-        customParam: '1234',
-      },
-    );
+    expect(mockAuth0.auth.loginWithSMS).toHaveBeenCalledWith({
+      phoneNumber: '+11234567890',
+      code: '123456',
+      scope: 'custom-scope openid profile email',
+      audience: 'http://my-api',
+    });
   });
 
   it('adds the default scopes when none are specified for SMS login', async () => {
@@ -322,11 +342,9 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithSMS).toHaveBeenCalledWith(
-      {
-        scope: 'openid profile email',
-      },
-    );
+    expect(mockAuth0.auth.loginWithSMS).toHaveBeenCalledWith({
+      scope: 'openid profile email',
+    });
   });
 
   it('adds the default scopes when some are specified with custom scope for SMS login', async () => {
@@ -347,18 +365,14 @@ describe('The useAuth0 hook', () => {
     result.current.authorizeWithSMS({
       scope: 'openid profile',
       audience: 'http://my-api',
-      customParam: '1234',
     });
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithSMS).toHaveBeenCalledWith(
-      {
-        scope: 'openid profile email',
-        audience: 'http://my-api',
-        customParam: '1234',
-      },
-    );
+    expect(mockAuth0.auth.loginWithSMS).toHaveBeenCalledWith({
+      scope: 'openid profile email',
+      audience: 'http://my-api',
+    });
   });
 
   it('sets the user prop after authorizing with SMS', async () => {
@@ -374,6 +388,17 @@ describe('The useAuth0 hook', () => {
     });
   });
 
+  it('does not set user prop when SMS authorization fails', async () => {
+    mockAuth0.auth.loginWithSMS.mockRejectedValue(mockAuthError);
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithSMS();
+    await waitForNextUpdate();
+
+    expect(result.current.user).toBeNull();
+    expect(result.current.error).toBe(mockAuthError);
+  });
+
   it('sends email code', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
@@ -381,30 +406,26 @@ describe('The useAuth0 hook', () => {
     await waitForNextUpdate();
 
     expect(mockAuth0.auth.passwordlessWithEmail).toHaveBeenCalled();
-  })
+  });
 
   it('can authorize with email, passing through all parameters', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
     result.current.authorizeWithEmail({
-      email: "foo@gmail.com",
-      code: "123456",
+      email: 'foo@gmail.com',
+      code: '123456',
       scope: 'custom-scope',
       audience: 'http://my-api',
-      customParam: '1234',
     });
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithEmail).toHaveBeenCalledWith(
-      {
-        email: "foo@gmail.com",
-        code: "123456",
-        scope: 'custom-scope openid profile email',
-        audience: 'http://my-api',
-        customParam: '1234',
-      },
-    );
+    expect(mockAuth0.auth.loginWithEmail).toHaveBeenCalledWith({
+      email: 'foo@gmail.com',
+      code: '123456',
+      scope: 'custom-scope openid profile email',
+      audience: 'http://my-api',
+    });
   });
 
   it('adds the default scopes when none are specified for email login', async () => {
@@ -414,11 +435,9 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithEmail).toHaveBeenCalledWith(
-      {
-        scope: 'openid profile email',
-      },
-    );
+    expect(mockAuth0.auth.loginWithEmail).toHaveBeenCalledWith({
+      scope: 'openid profile email',
+    });
   });
 
   it('adds the default scopes when some are specified with custom scope for email login', async () => {
@@ -439,18 +458,14 @@ describe('The useAuth0 hook', () => {
     result.current.authorizeWithEmail({
       scope: 'openid profile',
       audience: 'http://my-api',
-      customParam: '1234',
     });
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithEmail).toHaveBeenCalledWith(
-      {
-        scope: 'openid profile email',
-        audience: 'http://my-api',
-        customParam: '1234',
-      },
-    );
+    expect(mockAuth0.auth.loginWithEmail).toHaveBeenCalledWith({
+      scope: 'openid profile email',
+      audience: 'http://my-api',
+    });
   });
 
   it('sets the user prop after authorizing with email', async () => {
@@ -464,6 +479,148 @@ describe('The useAuth0 hook', () => {
       family_name: 'User',
       picture: 'https://images/pic.png',
     });
+  });
+
+  it('does not set user prop when email authorization fails', async () => {
+    mockAuth0.auth.loginWithEmail.mockRejectedValue(mockAuthError);
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithEmail();
+    await waitForNextUpdate();
+
+    expect(result.current.user).toBeNull();
+    expect(result.current.error).toBe(mockAuthError);
+  });
+
+  it('sends multifactor challenge code', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.sendMultifactorChallenge();
+    await waitForNextUpdate();
+
+    expect(mockAuth0.auth.multifactorChallenge).toHaveBeenCalled();
+  });
+
+  it('can authorize with OOB, passing through all parameters', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithOOB({
+      mfaToken: 'mfa_token',
+      oobCode: 'oob_code',
+      bindingCode: 'binding_code',
+    });
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.auth.loginWithOOB).toHaveBeenCalledWith({
+      mfaToken: 'mfa_token',
+      oobCode: 'oob_code',
+      bindingCode: 'binding_code',
+    });
+  });
+
+  it('sets the user prop after authorizing with OOB', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithOOB();
+    await waitForNextUpdate();
+
+    expect(result.current.user).toMatchObject({
+      name: 'Test User',
+      family_name: 'User',
+      picture: 'https://images/pic.png',
+    });
+  });
+
+  it('does not set user prop when OOB authorization fails', async () => {
+    mockAuth0.auth.loginWithOOB.mockRejectedValue(mockAuthError);
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithOOB();
+    await waitForNextUpdate();
+
+    expect(result.current.user).toBeNull();
+    expect(result.current.error).toBe(mockAuthError);
+  });
+
+  it('can authorize with OTP, passing through all parameters', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithOTP({
+      mfaToken: 'mfa_token',
+      otp: 'otp',
+    });
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.auth.loginWithOTP).toHaveBeenCalledWith({
+      mfaToken: 'mfa_token',
+      otp: 'otp',
+    });
+  });
+
+  it('sets the user prop after authorizing with OTP', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithOTP();
+    await waitForNextUpdate();
+
+    expect(result.current.user).toMatchObject({
+      name: 'Test User',
+      family_name: 'User',
+      picture: 'https://images/pic.png',
+    });
+  });
+
+  it('does not set user prop when OTP authorization fails', async () => {
+    mockAuth0.auth.loginWithOTP.mockRejectedValue(mockAuthError);
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithOTP();
+    await waitForNextUpdate();
+
+    expect(result.current.user).toBeNull();
+    expect(result.current.error).toBe(mockAuthError);
+  });
+
+  it('can authorize with recover code, passing through all parameters', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithRecoveryCode({
+      mfaToken: 'mfa_token',
+      recoveryCode: 'recovery_code',
+    });
+
+    await waitForNextUpdate();
+
+    expect(mockAuth0.auth.loginWithRecoveryCode).toHaveBeenCalledWith({
+      mfaToken: 'mfa_token',
+      recoveryCode: 'recovery_code',
+    });
+  });
+
+  it('sets the user prop after authorizing with recovery code', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithRecoveryCode();
+    await waitForNextUpdate();
+
+    expect(result.current.user).toMatchObject({
+      name: 'Test User',
+      family_name: 'User',
+      picture: 'https://images/pic.png',
+    });
+  });
+
+  it('does not set user prop when recovery code authorization fails', async () => {
+    mockAuth0.auth.loginWithRecoveryCode.mockRejectedValue(mockAuthError);
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    result.current.authorizeWithRecoveryCode();
+    await waitForNextUpdate();
+
+    expect(result.current.user).toBeNull();
+    expect(result.current.error).toBe(mockAuthError);
   });
 
   it('can clear the session', async () => {
@@ -643,12 +800,18 @@ describe('The useAuth0 hook', () => {
       'description',
       'cancel',
       'fallback',
-      LocalAuthenticationStrategy.deviceOwner
+      LocalAuthenticationStrategy.deviceOwner,
     );
 
     expect(
       mockAuth0.credentialsManager.requireLocalAuthentication,
-    ).toHaveBeenCalledWith('title', 'description', 'cancel', 'fallback', LocalAuthenticationStrategy.deviceOwner);
+    ).toHaveBeenCalledWith(
+      'title',
+      'description',
+      'cancel',
+      'fallback',
+      LocalAuthenticationStrategy.deviceOwner,
+    );
   });
 
   it('dispatches an error when requireLocalAuthentication fails', async () => {
