@@ -449,7 +449,7 @@ describe('The useAuth0 hook', () => {
     }); 
 
     mockAuth0.credentialsManager.getCredentials.mockResolvedValue(updatedMockCredentialsWithIdToken)
-    result.current.getCredentials('openid profile email')
+    result.current.getCredentials()
     await waitForNextUpdate();
     expect(result.current.user).toMatchObject({
       name: 'Different User',
@@ -479,6 +479,27 @@ describe('The useAuth0 hook', () => {
       family_name: 'User',
       picture: 'https://images/pic.png',
     }); 
+  });
+
+  it('can get credentials and not update user when same as before', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    act(() => {
+      result.current.authorize();
+    })
+
+    await waitForNextUpdate();
+    let userReference = result.current.user
+    expect(result.current.user).toMatchObject({
+      name: 'Test User',
+      family_name: 'User',
+      picture: 'https://images/pic.png',
+    }); 
+
+    mockAuth0.credentialsManager.getCredentials.mockResolvedValue(mockCredentials)
+    await act(async () => {
+      await result.current.getCredentials();
+    })
+    expect(result.current.user).toBe(userReference); 
   });
 
   it('dispatches an error when getCredentials fails', async () => {
