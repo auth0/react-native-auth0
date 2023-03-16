@@ -10,12 +10,13 @@ const reducer = (state, action) => {
       return {...state, error: null, user: null};
 
     case 'ERROR':
-      return {...state, error: action.error};
+      return {...state, isLoading: false, error: action.error};
 
     case 'INITIALIZED':
+      return {...state, isLoading: false, user: action.user};
+
     case 'SET_USER':
       return {...state, user: action.user};
-
   }
 };
 

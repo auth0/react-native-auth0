@@ -1,5 +1,32 @@
 # Change Log
 
+## [v2.17.1](https://github.com/auth0/react-native-auth0/tree/v2.17.1) (2023-02-09)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.17.0...v2.17.1)
+
+**Fixed**
+
+- Run requireAuth on UI thread [\#591](https://github.com/auth0/react-native-auth0/pull/591) ([poovamraj](https://github.com/poovamraj))
+
+## [v2.17.0](https://github.com/auth0/react-native-auth0/tree/v2.17.0) (2023-02-01)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.16.0...v2.17.0)
+
+**Added**
+
+- Allow additional options for authorize and support custom LAPolicy [\#526](https://github.com/auth0/react-native-auth0/pull/526) ([chrismcleod](https://github.com/chrismcleod))
+- Initialized flag on useAuth0 hook [\#561](https://github.com/auth0/react-native-auth0/pull/561) ([cranberyxl](https://github.com/cranberyxl))
+
+**Fixed**
+
+- Fixing `.hide()` on iOS [\#570](https://github.com/auth0/react-native-auth0/pull/570) ([stigi](https://github.com/stigi))
+
+**Security**
+
+- chore: Bump `yarn.lock` dependencies [\#580](https://github.com/auth0/react-native-auth0/pull/580) ([evansims](https://github.com/evansims))
+- chore(deps): bump decode-uri-component from 0.2.0 to 0.2.2 [\#567](https://github.com/auth0/react-native-auth0/pull/567) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Security: Bump Dependencies [\#565](https://github.com/auth0/react-native-auth0/pull/565) ([evansims](https://github.com/evansims))
+
 ## [v2.16.0](https://github.com/auth0/react-native-auth0/tree/v2.16.0) (2022-11-16)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.15.0...v2.16.0)

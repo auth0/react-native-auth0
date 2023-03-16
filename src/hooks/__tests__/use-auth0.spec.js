@@ -5,6 +5,7 @@ import * as React from 'react';
 import {renderHook} from '@testing-library/react-hooks';
 import Auth0Provider from '../auth0-provider';
 import useAuth0 from '../use-auth0';
+import LocalAuthenticationStrategy from '../../credentials-manager/localAuthenticationStrategy';
 import {act} from 'react-dom/test-utils';
 
 function makeJwt(claims) {
@@ -90,6 +91,41 @@ describe('The useAuth0 hook', () => {
     expect(result.current.clearSession).toBeDefined();
   });
 
+  it('isLoading is true until initialization finishes', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    expect(result.current.isLoading).toBe(true);
+
+    await waitForNextUpdate();
+    expect(mockAuth0.credentialsManager.getCredentials).not.toBeCalled();
+    expect(mockAuth0.credentialsManager.hasValidCredentials).toBeCalledTimes(1);
+    expect(result.current.user).toBeNull();
+    expect(result.current.isLoading).toBe(false);
+  });
+
+  it('isLoading flag set on start up with valid credentials', async () => {
+    mockAuth0.credentialsManager.hasValidCredentials.mockResolvedValue(true);
+
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    expect(result.current.isLoading).toBe(true);
+
+    await waitForNextUpdate();
+    expect(result.current.user).not.toBeNull();
+    expect(result.current.isLoading).toBe(false);
+  });
+
+  it('isLoading flag set on when error is thrown while initializing', async () => {
+    const errorToThrow = new Error('Error getting credentials');
+    mockAuth0.credentialsManager.hasValidCredentials.mockResolvedValue(true);
+    mockAuth0.credentialsManager.getCredentials.mockRejectedValue(errorToThrow);
+
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    expect(result.current.isLoading).toBe(true);
+
+    await waitForNextUpdate();
+    expect(result.current.error).toBe(errorToThrow);
+    expect(result.current.isLoading).toBe(false);
+  });
+
   it('does not initialize the user on start up without valid credentials', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
@@ -101,6 +137,7 @@ describe('The useAuth0 hook', () => {
 
   it('initializes the user on start up with valid credentials', async () => {
     mockAuth0.credentialsManager.hasValidCredentials.mockResolvedValue(true);
+    mockAuth0.credentialsManager.getCredentials.mockResolvedValue(mockCredentials);
 
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
@@ -141,6 +178,8 @@ describe('The useAuth0 hook', () => {
       scope: 'custom-scope',
       audience: 'http://my-api',
       customParam: '1234',
+    }, {
+      ephemeralSession: true
     });
 
     await waitForNextUpdate();
@@ -150,8 +189,9 @@ describe('The useAuth0 hook', () => {
         scope: 'custom-scope openid profile email',
         audience: 'http://my-api',
         customParam: '1234',
+      }, {
+        ephemeralSession: true
       },
-      {},
     );
   });
 
@@ -474,11 +514,12 @@ describe('The useAuth0 hook', () => {
       'description',
       'cancel',
       'fallback',
+      LocalAuthenticationStrategy.deviceOwner
     );
 
     expect(
       mockAuth0.credentialsManager.requireLocalAuthentication,
-    ).toHaveBeenCalledWith('title', 'description', 'cancel', 'fallback');
+    ).toHaveBeenCalledWith('title', 'description', 'cancel', 'fallback', LocalAuthenticationStrategy.deviceOwner);
   });
 
   it('dispatches an error when requireLocalAuthentication fails', async () => {
