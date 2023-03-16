@@ -55,7 +55,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
         }
       }
 
-      dispatch({type: 'SET_USER', user});
+      dispatch({type: 'INITIALIZED', user});
     })();
   }, [client]);
 
