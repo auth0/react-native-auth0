@@ -336,8 +336,7 @@ const Component = () => {
   const {clearSession, user} = useAuth0();
 
   const logout = async () => {
-    await clearSession();
-    //await clearSession({customScheme: 'CUSTOM_SCHEME'); //When using Expo or custom scheme
+    await clearSession(); // clearSession({customScheme: 'CUSTOM_SCHEME') when using Expo or a custom scheme
   };
 
   return <View>{user && <Button onPress={logout} title="Log out" />}</View>;
