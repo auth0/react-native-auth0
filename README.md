@@ -285,8 +285,7 @@ const Component = () => {
   const {authorize, user, isLoading, error} = useAuth0();
 
   const login = async () => {
-    await authorize();
-    //await authorize({}, {customScheme: 'CUSTOM_SCHEME'); //When using Expo or custom scheme
+    await clearSession(); // clearSession({customScheme: 'CUSTOM_SCHEME') when using Expo or a custom scheme
   };
 
   if(isLoading) {
