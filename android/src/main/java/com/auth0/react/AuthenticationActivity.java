@@ -1,6 +1,10 @@
 package com.auth0.react;
 
+import static com.auth0.react.A0Auth0Module.NO_BROWSER_FOUND_RESULT_CODE;
+import static com.auth0.react.A0Auth0Module.UNKNOWN_ERROR_RESULT_CODE;
+
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -65,11 +69,20 @@ public class AuthenticationActivity extends Activity {
     }
 
     private void launchAuthenticationIntent() {
-        Bundle extras = getIntent().getExtras();
-        Uri authorizeUri = extras.getParcelable(EXTRA_AUTHORIZE_URI);
-        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        CustomTabsIntent customTabsIntent = builder.build();
-        customTabsIntent.launchUrl(this, authorizeUri);
+        try {
+            Bundle extras = getIntent().getExtras();
+            Uri authorizeUri = extras.getParcelable(EXTRA_AUTHORIZE_URI);
+            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+            CustomTabsIntent customTabsIntent = builder.build();
+            customTabsIntent.launchUrl(this, authorizeUri);
+        } catch (Exception e) {
+            if(e instanceof ActivityNotFoundException) {
+                setResult(NO_BROWSER_FOUND_RESULT_CODE);
+            } else {
+                setResult(UNKNOWN_ERROR_RESULT_CODE);
+            }
+            finish();
+        }
     }
 
 }
