@@ -38,6 +38,8 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     private static final String SHA_256 = "SHA-256";
     private static final String ERROR_CODE = "a0.invalid_state.credential_manager_exception";
     private static final int LOCAL_AUTH_REQUEST_CODE = 150;
+    public static final int NO_BROWSER_FOUND_RESULT_CODE = 1404;
+    public static final int UNKNOWN_ERROR_RESULT_CODE = 1405;
 
     private final ReactApplicationContext reactContext;
     private Callback callback;
@@ -223,6 +225,22 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
 
         if(requestCode == LOCAL_AUTH_REQUEST_CODE) {
             secureCredentialsManager.checkAuthenticationResult(requestCode, resultCode);
+            return;
+        }
+
+        if (resultCode == NO_BROWSER_FOUND_RESULT_CODE) {
+            final WritableMap error = Arguments.createMap();
+            error.putString("name", "a0.browser_not_available");
+            error.putString("message", "No Browser application is installed.");
+            callback.invoke(error);
+            return;
+        }
+
+        if (resultCode == UNKNOWN_ERROR_RESULT_CODE) {
+            final WritableMap error = Arguments.createMap();
+            error.putString("name", "a0.response.invalid");
+            error.putString("message", "unknown error");
+            callback.invoke(error);
             return;
         }
 
