@@ -146,7 +146,6 @@ const Auth0Provider = ({domain, clientId, children}) => {
         await client.credentialsManager.saveCredentials(credentials);
         dispatch({type: 'LOGIN_COMPLETE', user});
       } catch (error) {
-        console.log(error);
         dispatch({type: 'ERROR', error});
         return;
       }
@@ -179,7 +178,6 @@ const Auth0Provider = ({domain, clientId, children}) => {
         await client.credentialsManager.saveCredentials(credentials);
         dispatch({type: 'LOGIN_COMPLETE', user});
       } catch (error) {
-        console.log(error);
         dispatch({type: 'ERROR', error});
         return;
       }
@@ -211,7 +209,6 @@ const Auth0Provider = ({domain, clientId, children}) => {
         await client.credentialsManager.saveCredentials(credentials);
         dispatch({type: 'LOGIN_COMPLETE', user});
       } catch (error) {
-        console.log(error);
         dispatch({type: 'ERROR', error});
         return;
       }
@@ -230,7 +227,6 @@ const Auth0Provider = ({domain, clientId, children}) => {
         await client.credentialsManager.saveCredentials(credentials);
         dispatch({type: 'LOGIN_COMPLETE', user});
       } catch (error) {
-        console.log(error);
         dispatch({type: 'ERROR', error});
         return;
       }
@@ -249,7 +245,6 @@ const Auth0Provider = ({domain, clientId, children}) => {
         await client.credentialsManager.saveCredentials(credentials);
         dispatch({type: 'LOGIN_COMPLETE', user});
       } catch (error) {
-        console.log(error);
         dispatch({type: 'ERROR', error});
         return;
       }
