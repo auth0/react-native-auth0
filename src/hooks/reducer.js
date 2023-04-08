@@ -1,3 +1,5 @@
+import { deepEqual } from "../utils/deepEqual";
+
 /**
  * @ignore
  */
@@ -14,6 +16,12 @@ const reducer = (state, action) => {
 
     case 'INITIALIZED':
       return {...state, isLoading: false, user: action.user};
+
+    case 'SET_USER':
+      if(deepEqual(state.user, action.user)) {
+        return state;
+      }
+      return {...state, user: action.user};
   }
 };
 

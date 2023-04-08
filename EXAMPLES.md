@@ -4,6 +4,7 @@
   - [Login with Password Realm Grant](#login-with-password-realm-grant)
   - [Get user information using user's access_token](#get-user-information-using-users-access_token)
   - [Getting new access token with refresh token](#getting-new-access-token-with-refresh-token)
+  - [Using custom scheme for web authentication redirection](#using-custom-scheme-for-web-authentication-redirection)
   - [Login using MFA with One Time Password code](#login-using-mfa-with-one-time-password-code)
   - [Login with Passwordless](#login-with-passwordless)
   - [Create user in database connection](#create-user-in-database-connection)
@@ -59,6 +60,16 @@ This endpoint requires an access token that was granted the `/userinfo` audience
 ```js
 auth0.auth
   .refreshToken({refreshToken: 'the user refresh_token'})
+  .then(console.log)
+  .catch(console.error);
+```
+
+### Using custom scheme for web authentication redirection
+
+Custom Schemes can be used for redirecting to the React Native application after web authentication. Using this is <strong>mandatory</strong> for Expo applications.
+
+```js
+authorize({}, {customScheme: 'auth0'})
   .then(console.log)
   .catch(console.error);
 ```

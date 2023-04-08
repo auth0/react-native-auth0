@@ -112,7 +112,12 @@ const Auth0Provider = ({domain, clientId, children}) => {
   const getCredentials = useCallback(
     async (...options) => {
       try {
-        return await client.credentialsManager.getCredentials(...options);
+        const credentials = await client.credentialsManager.getCredentials(...options);
+        if(credentials.idToken) {
+          const user = getIdTokenProfileClaims(credentials.idToken);
+          dispatch({type: 'SET_USER', user});
+        }
+        return credentials;
       } catch (error) {
         dispatch({type: 'ERROR', error});
         return;

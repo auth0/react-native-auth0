@@ -170,7 +170,7 @@ If you use a value other than `$(PRODUCT_BUNDLE_IDENTIFIER)` in the `CFBundleURL
 
 > :warning: This SDK is not compatible with "Expo Go" app because of custom native code. It is compatible with Custom Dev Client and EAS builds
 
-To use the SDK with Expo, configure the app at build time by providing the `domain` and (optionally) the `customScheme` values through the [Config Plugin](https://docs.expo.dev/guides/config-plugins/). To do this, add the following snippet to _app.json_ or _app.config.js_:
+To use the SDK with Expo, configure the app at build time by providing the `domain` and the `customScheme` values through the [Config Plugin](https://docs.expo.dev/guides/config-plugins/). To do this, add the following snippet to _app.json_ or _app.config.js_:
 
 ```json
 {
@@ -181,7 +181,7 @@ To use the SDK with Expo, configure the app at build time by providing the `doma
         "react-native-auth0",
         {
           "domain": "YOUR_AUTH0_DOMAIN",
-          "customScheme": "YOUR_CUSTOM_SCHEME",
+          "customScheme": "YOUR_CUSTOM_SCHEME"
         }
       ]
     ]
@@ -192,7 +192,7 @@ To use the SDK with Expo, configure the app at build time by providing the `doma
 | API          | Description                                                                                                                                                                                                                                                           |
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | domain       | Mandatory: Provide the Auth0 domain that can be found at the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                          |
-| customScheme | Optional: Custom scheme to build the callback URL with. If not provided, uses Application ID for Android and Bundle Identifier for iOS. The value provided here should be passed to the `customScheme` option parameter of the `authorize` and `clearSession` methods |
+| customScheme | Mandatory: Custom scheme to build the callback URL with. The value provided here should be passed to the `customScheme` option parameter of the `authorize` and `clearSession` methods. The custom scheme should be a unique, all lowercase value with no special characters (For example: auth0.YOUR_APP_PACKAGE_NAME_OR_BUNDLE_IDENTIFIER). |
 
 Now you can run the application using `expo run:android` or `expo run:ios`.
 
@@ -209,18 +209,18 @@ If in addition you plan to use the log out method, you must also add these URLs 
 #### Android
 
 ```text
-{YOUR_APP_PACKAGE_NAME_OR_CUSTOM_SCHEME}://{YOUR_AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
+{APP_PACKAGE_NAME_OR_CUSTOM_SCHEME}://{AUTH0_DOMAIN}/android/{APP_PACKAGE_NAME}/callback
 ```
 
-> Make sure to replace {YOUR_APP_PACKAGE_NAME_OR_CUSTOM_SCHEME} and {YOUR_AUTH0_DOMAIN} with the actual values for your application.
+> Make sure to replace {APP_PACKAGE_NAME_OR_CUSTOM_SCHEME} and {AUTH0_DOMAIN} with the actual values for your application. The {APP_PACKAGE_NAME_OR_CUSTOM_SCHEME} value provided should be all lower case.
 
 #### iOS
 
 ```text
-{YOUR_BUNDLE_IDENTIFIER_OR_CUSTOM_SCHEME}://{YOUR_AUTH0_DOMAIN}/ios/{YOUR_BUNDLE_IDENTIFIER}/callback
+{BUNDLE_IDENTIFIER_OR_CUSTOM_SCHEME}://{AUTH0_DOMAIN}/ios/{BUNDLE_IDENTIFIER}/callback
 ```
 
-> Make sure to replace {YOUR_BUNDLE_IDENTIFIER_OR_CUSTOM_SCHEME} and {YOUR_AUTH0_DOMAIN} with the actual values for your application.
+> Make sure to replace {BUNDLE_IDENTIFIER_OR_CUSTOM_SCHEME} and {AUTH0_DOMAIN} with the actual values for your application. The {BUNDLE_IDENTIFIER_OR_CUSTOM_SCHEME} value provided should be all lower case.
 
 ## Next Steps
 
@@ -285,7 +285,7 @@ const Component = () => {
   const {authorize, user, isLoading, error} = useAuth0();
 
   const login = async () => {
-    await authorize();
+    await clearSession(); // clearSession({customScheme: 'CUSTOM_SCHEME') when using Expo or a custom scheme
   };
 
   if(isLoading) {
@@ -336,7 +336,7 @@ const Component = () => {
   const {clearSession, user} = useAuth0();
 
   const logout = async () => {
-    await clearSession();
+    await clearSession(); // clearSession({customScheme: 'CUSTOM_SCHEME') when using Expo or a custom scheme
   };
 
   return <View>{user && <Button onPress={logout} title="Log out" />}</View>;

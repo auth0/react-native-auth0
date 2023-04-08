@@ -1,4 +1,4 @@
-import {Platform, NativeModules} from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 import CredentialsManagerError from './credentialsManagerError';
 import LocalAuthenticationStrategy from './localAuthenticationStrategy';
 
@@ -84,7 +84,7 @@ class CredentialsManager {
    * @param {String} description Android Only - optional - the text to use as description in the authentication screen. On some Android versions it might not be shown. Passing null will result in using the OS's default value.
    * @param {String} cancelTitle iOS Only - optional - the cancel message to display on the local authentication prompt.
    * @param {String} fallbackTitle iOS Only - optional - the fallback message to display on the local authentication prompt after a failed match.
-   * @param {String} strategy iOS Only - optional - the evaluation policy to use when accessing the credentials. Defaults to LocalAuthenticationStrategy.deviceOwnerWithBiometrics.
+   * @param {Number} strategy iOS Only - optional - the evaluation policy to use when accessing the credentials. Defaults to LocalAuthenticationStrategy.deviceOwnerWithBiometrics.
    * @returns {Promise}
    */
   async requireLocalAuthentication(
