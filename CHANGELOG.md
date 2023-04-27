@@ -1,5 +1,18 @@
 # Change Log
 
+## [v2.17.2](https://github.com/auth0/react-native-auth0/tree/v2.17.2) (2023-04-27)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.17.1...v2.17.2)
+
+**Added**
+
+- getCredentials hook now updates user state [\#584](https://github.com/auth0/react-native-auth0/pull/584) ([KMathisGit](https://github.com/KMathisGit))
+
+**Fixed**
+
+- Added tokenType to credentials returned in Android [\#621](https://github.com/auth0/react-native-auth0/pull/621) ([poovamraj](https://github.com/poovamraj))
+- [ESD-27178] Fix browser not found issue not being surfaced [\#611](https://github.com/auth0/react-native-auth0/pull/611) ([poovamraj](https://github.com/poovamraj))
+
 ## [v2.17.1](https://github.com/auth0/react-native-auth0/tree/v2.17.1) (2023-02-09)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.17.0...v2.17.1)
