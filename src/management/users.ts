@@ -1,6 +1,6 @@
 import Client from '../networking';
-import { apply } from '../utils/whitelist';
-import { toCamelCase } from '../utils/camel';
+import {apply} from '../utils/whitelist';
+import {toCamelCase} from '../utils/camel';
 import Auth0Error from './error';
 
 function responseHandler(response, exceptions = {}) {
@@ -20,7 +20,7 @@ const attributes = [
   'email',
   'email_verified',
   'given_name',
-  'family_name'
+  'family_name',
 ];
 
 /**
@@ -52,10 +52,10 @@ export default class Users {
     const payload = apply(
       {
         parameters: {
-          id: { required: true }
-        }
+          id: {required: true},
+        },
       },
-      parameters
+      parameters,
     );
     return this.client
       .get(`/api/v2/users/${encodeURIComponent(payload.id)}`)
@@ -63,8 +63,8 @@ export default class Users {
         responseHandler(response, {
           attributes,
           whitelist: true,
-          rootOnly: true
-        })
+          rootOnly: true,
+        }),
       );
   }
 
@@ -83,22 +83,22 @@ export default class Users {
     const payload = apply(
       {
         parameters: {
-          id: { required: true },
-          metadata: { required: true }
-        }
+          id: {required: true},
+          metadata: {required: true},
+        },
       },
-      parameters
+      parameters,
     );
     return this.client
       .patch(`/api/v2/users/${encodeURIComponent(payload.id)}`, {
-        user_metadata: payload.metadata
+        user_metadata: payload.metadata,
       })
       .then(response =>
         responseHandler(response, {
           attributes,
           whitelist: true,
-          rootOnly: true
-        })
+          rootOnly: true,
+        }),
       );
   }
 }

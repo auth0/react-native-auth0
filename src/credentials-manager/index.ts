@@ -1,4 +1,4 @@
-import { NativeModules, Platform } from 'react-native';
+import {NativeModules, Platform} from 'react-native';
 import CredentialsManagerError from './credentialsManagerError';
 import LocalAuthenticationStrategy from './localAuthenticationStrategy';
 
@@ -101,7 +101,7 @@ class CredentialsManager {
           title,
           cancelTitle,
           fallbackTitle,
-          strategy
+          strategy,
         );
       } else {
         await this.Auth0Module.enableLocalAuthentication(title, description);

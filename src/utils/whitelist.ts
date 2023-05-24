@@ -4,7 +4,7 @@ export default class ParameterError extends BaseError {
   constructor(expected, actual, missing) {
     super(
       'Missing required parameters',
-      `Missing required parameters: ${JSON.stringify(missing, null, 2)}`
+      `Missing required parameters: ${JSON.stringify(missing, null, 2)}`,
     );
     this.expected = expected;
     this.actual = actual;
@@ -13,7 +13,7 @@ export default class ParameterError extends BaseError {
 }
 
 export function apply(rules, values) {
-  const { whitelist = true, parameters, aliases = {} } = rules;
+  const {whitelist = true, parameters, aliases = {}} = rules;
   let mapped = {};
   let requiredKeys = Object.keys(parameters)
     .filter(key => parameters[key].required)

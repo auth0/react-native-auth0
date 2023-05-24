@@ -74,9 +74,7 @@ const getJwk = (domain, kid) => {
     .then(jwk => {
       const keys = jwk.keys;
       const key = keys
-        .filter(
-          k => k.use === 'sig' && k.kty === 'RSA' && k.kid && (k.n && k.e),
-        )
+        .filter(k => k.use === 'sig' && k.kty === 'RSA' && k.kid && k.n && k.e)
         .find(k => k.kid === kid);
       if (!key) {
         throw new Error('Key not present');
