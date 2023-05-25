@@ -1,18 +1,18 @@
-import { telemetry as defaults } from './telemetry';
+import {defaults} from './telemetry';
 import url from 'url';
 import base64 from 'base-64';
 import {fetchWithTimeout} from '../utils/fetchWithTimeout';
 
 type RequestOptions = {
-  method: any,
-  body?: any,
+  method: any;
+  body?: any;
   headers: {
-    Accept: string,
-    'Content-Type': string,
-    'Auth0-Client': string,
-    Authorization?: string
-  }
-}
+    Accept: string;
+    'Content-Type': string;
+    'Auth0-Client': string;
+    Authorization?: string;
+  };
+};
 
 export default class Client {
   private telemetry: any;
@@ -21,7 +21,12 @@ export default class Client {
   private bearer: string;
   private timeout: number;
 
-  constructor(options: { baseUrl: string, telemetry?: any, token?: string, timeout?: number }) {
+  constructor(options: {
+    baseUrl: string;
+    telemetry?: any;
+    token?: string;
+    timeout?: number;
+  }) {
     const {baseUrl, telemetry = {}, token, timeout = 10000} = options;
     if (!baseUrl) {
       throw new Error('Missing Auth0 domain');
@@ -87,28 +92,30 @@ export default class Client {
       options.body = JSON.stringify(body);
     }
 
-    return fetchWithTimeout(url, options, this.timeout).then((response: any) => {
-      const payload = {
-        status: response.status,
-        ok: response.ok,
-        headers: response.headers,
-      };
-      return response
-        .json()
-        .then(json => {
-          return {...payload, json};
-        })
-        .catch(() => {
-          return response
-            .text()
-            .then(text => {
-              return {...payload, text};
-            })
-            .catch(() => {
-              return {...payload, text: response.statusText};
-            });
-        });
-    });
+    return fetchWithTimeout(url, options, this.timeout).then(
+      (response: any) => {
+        const payload = {
+          status: response.status,
+          ok: response.ok,
+          headers: response.headers,
+        };
+        return response
+          .json()
+          .then(json => {
+            return {...payload, json};
+          })
+          .catch(() => {
+            return response
+              .text()
+              .then(text => {
+                return {...payload, text};
+              })
+              .catch(() => {
+                return {...payload, text: response.statusText};
+              });
+          });
+      },
+    );
   }
 
   _encodedTelemetry() {

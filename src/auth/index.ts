@@ -18,16 +18,20 @@ function responseHandler(response, exceptions = {}) {
  */
 class Auth {
   private client;
-  private domain;
   private clientId;
 
-  constructor(options: { baseUrl: string; clientId: string; telemetry?: any; token?: string; timeout?: number; }) {
+  constructor(options: {
+    baseUrl: string;
+    clientId: string;
+    telemetry?: any;
+    token?: string;
+    timeout?: number;
+  }) {
     this.client = new Client(options);
     const {clientId} = options;
     if (!clientId) {
       throw new Error('Missing clientId in parameters');
     }
-    this.domain = this.client.domain;
     this.clientId = clientId;
   }
 

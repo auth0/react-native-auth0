@@ -46,7 +46,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
 
   useEffect(() => {
     (async () => {
-      let user = null;
+      let user: any = null;
 
       if (await client.credentialsManager.hasValidCredentials()) {
         try {

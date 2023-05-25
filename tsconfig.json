@@ -18,6 +18,8 @@
     "babel.config.js",
     "metro.config.js",
     "jest.config.js",
-    "./dist"
+    "./dist",
+    "**/__mocks__/**",
+    "**/__tests__/**"
   ]
 }
