@@ -46,7 +46,7 @@ export default class Agent {
         } else if (redirectURL) {
           resolve(redirectURL);
         } else if (closeOnLoad) {
-          resolve();
+          Promise.resolve();
         } else {
           reject(new Error('Unknown WebAuth error'));
         }

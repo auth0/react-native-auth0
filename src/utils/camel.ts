@@ -5,7 +5,7 @@ export function snakeToCamel(str) {
   }, parts.shift());
 }
 
-export function toCamelCase(object, options = {}) {
+export function toCamelCase(object, options: any = {}) {
   if (
     typeof object !== 'object' ||
     toString.call(object) === '[object Array]' ||

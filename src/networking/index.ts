@@ -3,8 +3,25 @@ import url from 'url';
 import base64 from 'base-64';
 import {fetchWithTimeout} from '../utils/fetchWithTimeout';
 
+type RequestOptions = {
+  method: any,
+  body?: any,
+  headers: {
+    Accept: string,
+    'Content-Type': string,
+    'Auth0-Client': string,
+    Authorization?: string
+  }
+}
+
 export default class Client {
-  constructor(options) {
+  private telemetry: any;
+  private baseUrl: string;
+  private domain: string;
+  private bearer: string;
+  private timeout: number;
+
+  constructor(options: { baseUrl: string, telemetry: any, token: string, timeout: number }) {
     const {baseUrl, telemetry = {}, token, timeout = 10000} = options;
     if (!baseUrl) {
       throw new Error('Missing Auth0 domain');
@@ -40,7 +57,7 @@ export default class Client {
     return this.request('GET', this.url(path, query));
   }
 
-  url(path, query, includeTelemetry = false) {
+  url(path: string, query?: any, includeTelemetry: boolean = false) {
     let endpoint = url.resolve(this.baseUrl, path);
     if ((query && query.length !== 0) || includeTelemetry) {
       const parsed = url.parse(endpoint);
@@ -53,8 +70,8 @@ export default class Client {
     return endpoint;
   }
 
-  request(method, url, body) {
-    const options = {
+  request(method, url, body?: object) {
+    const options: RequestOptions = {
       method: method,
       headers: {
         Accept: 'application/json',

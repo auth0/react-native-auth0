@@ -1,6 +1,10 @@
 import BaseError from './baseError';
 
 export default class ParameterError extends BaseError {
+  public expected: string;
+  public actual: string;
+  public missing: string;
+
   constructor(expected, actual, missing) {
     super(
       'Missing required parameters',

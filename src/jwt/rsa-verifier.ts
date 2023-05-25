@@ -26,8 +26,8 @@ function RSAVerifier(modulus, exp) {
     throw new Error('Invalid key data');
   }
 }
+function getAlgorithmFromDigest(hDigestInfo): {alg: string, hash: string} {
 
-function getAlgorithmFromDigest(hDigestInfo) {
   for (let algName in digestInfoHead) {
     const head = digestInfoHead[algName];
     const len = head.length;
@@ -39,7 +39,7 @@ function getAlgorithmFromDigest(hDigestInfo) {
       };
     }
   }
-  return [];
+  return null;
 }
 
 RSAVerifier.prototype.verify = function(msg, encodedSignature) {
@@ -55,7 +55,7 @@ RSAVerifier.prototype.verify = function(msg, encodedSignature) {
   const digest = decryptedSignature.toString(16).replace(/^1f+00/, '');
 
   const digestInfo = getAlgorithmFromDigest(digest);
-  if (digestInfo.length === 0) {
+  if (digestInfo === null) {
     //Hashing algorithm is not found
     return false;
   }
