@@ -31,7 +31,9 @@ const attributes = [
  * @class Users
  */
 export default class Users {
-  constructor(options = {}) {
+  private client;
+
+  constructor(options: { baseUrl: string, telemetry?: any, token?: string, timeout?: number }) {
     this.client = new Client(options);
     if (!options.token) {
       throw new Error('Missing token in parameters');
@@ -49,7 +51,7 @@ export default class Users {
    * @memberof Users
    */
   getUser(parameters = {}) {
-    const payload = apply(
+    const payload: any = apply(
       {
         parameters: {
           id: {required: true},
@@ -80,7 +82,7 @@ export default class Users {
    * @memberof Users
    */
   patchUser(parameters = {}) {
-    const payload = apply(
+    const payload: any = apply(
       {
         parameters: {
           id: {required: true},

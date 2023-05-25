@@ -21,7 +21,7 @@ export default class Client {
   private bearer: string;
   private timeout: number;
 
-  constructor(options: { baseUrl: string, telemetry: any, token: string, timeout: number }) {
+  constructor(options: { baseUrl: string, telemetry?: any, token?: string, timeout?: number }) {
     const {baseUrl, telemetry = {}, token, timeout = 10000} = options;
     if (!baseUrl) {
       throw new Error('Missing Auth0 domain');
@@ -53,14 +53,14 @@ export default class Client {
     return this.request('PATCH', this.url(path), body);
   }
 
-  get(path, query) {
+  get(path, query?: any) {
     return this.request('GET', this.url(path, query));
   }
 
   url(path: string, query?: any, includeTelemetry: boolean = false) {
     let endpoint = url.resolve(this.baseUrl, path);
     if ((query && query.length !== 0) || includeTelemetry) {
-      const parsed = url.parse(endpoint);
+      const parsed: any = url.parse(endpoint);
       parsed.query = query || {};
       if (includeTelemetry) {
         parsed.query.auth0Client = this._encodedTelemetry();
@@ -87,7 +87,7 @@ export default class Client {
       options.body = JSON.stringify(body);
     }
 
-    return fetchWithTimeout(url, options, this.timeout).then(response => {
+    return fetchWithTimeout(url, options, this.timeout).then((response: any) => {
       const payload = {
         status: response.status,
         ok: response.ok,

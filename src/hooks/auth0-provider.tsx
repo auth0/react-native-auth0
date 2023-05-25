@@ -140,7 +140,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
       dispatch({type: 'ERROR', error});
       return;
     }
-  });
+  }, []);
 
   const contextValue = useMemo(
     () => ({

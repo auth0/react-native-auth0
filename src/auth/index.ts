@@ -17,7 +17,11 @@ function responseHandler(response, exceptions = {}) {
  * @see https://auth0.com/docs/api/authentication
  */
 class Auth {
-  constructor(options = {}) {
+  private client;
+  private domain;
+  private clientId;
+
+  constructor(options: { baseUrl: string; clientId: string; telemetry?: any; token?: string; timeout?: number; }) {
     this.client = new Client(options);
     const {clientId} = options;
     if (!clientId) {
@@ -501,7 +505,7 @@ class Auth {
    * @returns {Promise}
    */
   userInfo(parameters = {}) {
-    const payload = apply(
+    const payload: any = apply(
       {
         parameters: {
           token: {required: true},

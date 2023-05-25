@@ -3,6 +3,10 @@ import CredentialsManagerError from './credentialsManagerError';
 import LocalAuthenticationStrategy from './localAuthenticationStrategy';
 
 class CredentialsManager {
+  private domain;
+  private clientId;
+  private Auth0Module;
+
   /**
    * Construct an instance of CredentialsManager
    *

@@ -31,6 +31,11 @@ const callbackUri = (domain, customScheme) => {
  * @see https://auth0.com/docs/api-auth/grant/authorization-code-pkce
  */
 class WebAuth {
+  private client;
+  private domain;
+  private clientId;
+  private agent;
+  
   constructor(auth) {
     this.client = auth;
     const {baseUrl, clientId, domain} = auth;
@@ -67,11 +72,12 @@ class WebAuth {
    *
    * @memberof WebAuth
    */
-  authorize(parameters = {}, options = {}) {
+  authorize(parameters: {state?: string, nonce?: string, audience?: string, scope?: string, connection?: string, max_age?: number, organization?: string, invitationUrl?: string} = {}, options: {leeway?: number, ephemeralSession?: boolean, customScheme?: string, skipLegacyListener?: boolean} = {}) {
     const {clientId, domain, client, agent} = this;
     return agent.newTransaction().then(({state, verifier, ...defaults}) => {
       const redirectUri = callbackUri(domain, options.customScheme);
       const expectedState = parameters.state || state;
+      const queryParameters: any = parameters;
       if (parameters.invitationUrl) {
         const urlQuery = url.parse(parameters.invitationUrl, true).query;
         const {invitation, organization} = urlQuery;
@@ -84,8 +90,8 @@ class WebAuth {
             status: 0,
           });
         }
-        parameters.invitation = invitation;
-        parameters.organization = organization;
+        queryParameters.invitation = invitation;
+        queryParameters.organization = organization;
       }
 
       let query = {
@@ -94,7 +100,7 @@ class WebAuth {
         responseType: 'code',
         redirectUri,
         state: expectedState,
-        ...parameters,
+        ...queryParameters,
       };
       const authorizeUrl = this.client.authorizeUrl(query);
       return agent
@@ -161,12 +167,13 @@ class WebAuth {
    *
    * @memberof WebAuth
    */
-  clearSession(parameters = {}, options = {}) {
+  clearSession(parameters: {federated?: boolean, customScheme?: string} = {}, options: {skipLegacyListener?: boolean} = {}) {
     const {client, agent, domain, clientId} = this;
-    parameters.clientId = clientId;
-    parameters.returnTo = callbackUri(domain, parameters.customScheme);
-    parameters.federated = parameters.federated || false;
-    const logoutUrl = client.logoutUrl(parameters);
+    const logoutParameters: any = parameters;
+    logoutParameters.clientId = clientId;
+    logoutParameters.returnTo = callbackUri(domain, parameters.customScheme);
+    logoutParameters.federated = parameters.federated || false;
+    const logoutUrl = client.logoutUrl(logoutParameters);
     return agent.show(logoutUrl, false, options.skipLegacyListener, true);
   }
 }

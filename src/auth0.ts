@@ -7,13 +7,18 @@ import WebAuth from './webauth';
  * Auth0 for React Native client
  */
 class Auth0 {
+  public auth;
+  public webAuth;
+  public credentialsManager;
+  private options;
+
   /**
    * Creates an instance of Auth0.
    * @param {Object} options your Auth0 application information
    * @param {String} options.domain your Auth0 domain
    * @param {String} options.clientId your Auth0 application client identifier=
    */
-  constructor(options = {}) {
+  constructor(options: { domain: string; clientId: string; telemetry?: any; token?: string; timeout?: number; }) {
     const {domain, clientId, ...extras} = options;
     this.auth = new Auth({baseUrl: domain, clientId, ...extras});
     this.webAuth = new WebAuth(this.auth);
