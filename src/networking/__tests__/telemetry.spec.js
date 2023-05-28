@@ -1,4 +1,4 @@
-import defaults from '../telemetry';
+import {defaults} from '../telemetry';
 
 describe('basic telemetry', () => {
   it('should have name', () => {

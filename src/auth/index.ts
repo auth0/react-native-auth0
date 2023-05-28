@@ -19,6 +19,7 @@ function responseHandler(response, exceptions = {}) {
 class Auth {
   private client;
   private clientId;
+  private domain;
 
   constructor(options: {
     baseUrl: string;
@@ -28,6 +29,7 @@ class Auth {
     timeout?: number;
   }) {
     this.client = new Client(options);
+    this.domain = this.client.domain;
     const {clientId} = options;
     if (!clientId) {
       throw new Error('Missing clientId in parameters');
