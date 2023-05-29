@@ -1,11 +1,12 @@
 import React, {useEffect, useReducer, useState, useRef} from 'react';
 import {useCallback, useMemo} from 'react';
-import jwt_decode from 'jwt-decode';
+import jwtDecode, {JwtPayload} from 'jwt-decode';
 import PropTypes from 'prop-types';
 import Auth0Context from './auth0-context';
 import Auth0 from '../auth0';
 import reducer from './reducer';
 import {idTokenNonProfileClaims} from '../jwt/utils';
+import {Credentials} from '../credentials-manager';
 
 const initialState = {
   user: null,
@@ -16,10 +17,10 @@ const initialState = {
 /**
  * @ignore
  */
-const getIdTokenProfileClaims = idToken => {
-  const payload = jwt_decode(idToken);
+const getIdTokenProfileClaims = (idToken: string) => {
+  const payload: {[key: string]: any} = jwtDecode<JwtPayload>(idToken);
 
-  const profileClaims = Object.keys(payload).reduce((profile, claim) => {
+  const profileClaims = Object.keys(payload).reduce((profile: any, claim) => {
     if (!idTokenNonProfileClaims.has(claim)) {
       profile[claim] = payload[claim];
     }
@@ -40,7 +41,15 @@ const getIdTokenProfileClaims = idToken => {
  *   <App />
  * </Auth0Provider>
  */
-const Auth0Provider = ({domain, clientId, children}) => {
+const Auth0Provider = ({
+  domain,
+  clientId,
+  children,
+}: {
+  domain: string;
+  clientId: string;
+  children: any;
+}) => {
   const [client] = useState(() => new Auth0({domain, clientId}));
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -64,12 +73,12 @@ const Auth0Provider = ({domain, clientId, children}) => {
   }, [client]);
 
   const authorize = useCallback(
-    async (...options) => {
+    async (...options: any[]) => {
       try {
         const params = options.length ? options[0] : {};
         const opts = options.length > 1 ? options[1] : {};
         const specifiedScopes =
-          params?.scope?.split(' ').map(s => s.trim()) || [];
+          params?.scope?.split(' ').map((s: string) => s.trim()) || [];
         const scopeSet = new Set([
           ...specifiedScopes,
           ...['openid', 'profile', 'email'],
@@ -77,7 +86,10 @@ const Auth0Provider = ({domain, clientId, children}) => {
 
         params.scope = Array.from(scopeSet).join(' ');
 
-        const credentials = await client.webAuth.authorize(params, opts);
+        const credentials: Credentials = await client.webAuth.authorize(
+          params,
+          opts,
+        );
         const user = getIdTokenProfileClaims(credentials.idToken);
 
         await client.credentialsManager.saveCredentials(credentials);
@@ -91,7 +103,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
   );
 
   const clearSession = useCallback(
-    async (...options) => {
+    async (...options: any[]) => {
       try {
         await client.webAuth.clearSession(...options);
         await client.credentialsManager.clearCredentials();
@@ -105,7 +117,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
   );
 
   const getCredentials = useCallback(
-    async (...options) => {
+    async (...options: any) => {
       try {
         const credentials = await client.credentialsManager.getCredentials(
           ...options,
@@ -133,7 +145,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
     }
   }, [client]);
 
-  const requireLocalAuthentication = useCallback(async (...options) => {
+  const requireLocalAuthentication = useCallback(async (...options: any) => {
     try {
       await client.credentialsManager.requireLocalAuthentication(...options);
     } catch (error) {

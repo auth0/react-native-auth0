@@ -3,7 +3,7 @@ import {deepEqual} from '../utils/deepEqual';
 /**
  * @ignore
  */
-const reducer = (state, action) => {
+const reducer = (state: any, action: any) => {
   switch (action.type) {
     case 'LOGIN_COMPLETE':
       return {...state, error: null, user: action.user};

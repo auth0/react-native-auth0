@@ -11,7 +11,15 @@
     "target": "ESNext",
     "declaration": true,
     "declarationDir": "./dist/typings",
-    "outDir": "dist"
+    "outDir": "dist",
+    "noImplicitAny": true,
+    "downlevelIteration": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "strictBindCallApply": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true
   },
   "exclude": [
     "node_modules",

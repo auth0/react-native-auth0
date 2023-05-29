@@ -18,7 +18,13 @@ class Auth0 {
    * @param {String} options.domain your Auth0 domain
    * @param {String} options.clientId your Auth0 application client identifier=
    */
-  constructor(options: { domain: string; clientId: string; telemetry?: any; token?: string; timeout?: number; }) {
+  constructor(options: {
+    domain: string;
+    clientId: string;
+    telemetry?: any;
+    token?: string;
+    timeout?: number;
+  }) {
     const {domain, clientId, ...extras} = options;
     this.auth = new Auth({baseUrl: domain, clientId, ...extras});
     this.webAuth = new WebAuth(this.auth);
@@ -31,9 +37,9 @@ class Auth0 {
    * @param  {String} token for Management API
    * @return {Users}
    */
-  users(token) {
+  users(token: string) {
     const {domain, clientId, ...extras} = this.options;
-    return new Users({baseUrl: domain, clientId, ...extras, token});
+    return new Users({baseUrl: domain, ...extras, token});
   }
 }
 

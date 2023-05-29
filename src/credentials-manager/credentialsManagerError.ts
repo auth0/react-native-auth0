@@ -1,12 +1,12 @@
-import { handleInvalidToken } from '../auth/authError';
+import {handleInvalidToken} from '../auth/authError';
 import BaseError from '../utils/baseError';
 
 export default class CredentialsManagerError extends BaseError {
   public json;
   public status;
   public invalid_parameter;
-  
-  constructor(response) {
+
+  constructor(response: {status: number; json: any; text?: string}) {
     const {status, json = {}, text} = response;
     const {error, error_description: description, invalid_parameter} = json;
     super(

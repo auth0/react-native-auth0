@@ -1,12 +1,17 @@
-import {NativeModules, Linking, Platform} from 'react-native';
+import {
+  NativeModules,
+  Linking,
+  Platform,
+  EmitterSubscription,
+} from 'react-native';
 
 export default class Agent {
   show(
-    url,
+    url: string,
     ephemeralSession = false,
     skipLegacyListener = false,
     closeOnLoad = false,
-  ) {
+  ): Promise<string | undefined> {
     if (!NativeModules.A0Auth0) {
       return Promise.reject(
         new Error(
@@ -16,16 +21,15 @@ export default class Agent {
     }
 
     return new Promise((resolve, reject) => {
-      let eventURL;
+      let eventURL: EmitterSubscription;
       const removeListener = () => {
         //This is done to handle backward compatibility with RN <= 0.64 which doesn't return EmitterSubscription on addEventListener
-        if (eventURL === undefined) {
-          Linking.removeEventListener('url', urlHandler);
-        } else {
-          eventURL.remove();
-        }
+        //TODO we are removing this logic as
+        // 1. We will remove this file during native code migration
+        // 2. skipLegacyListener will be removed which will cause eventURL to never be null
+        eventURL.remove();
       };
-      const urlHandler = event => {
+      const urlHandler = (event: any) => {
         NativeModules.A0Auth0.hide();
         if (!skipLegacyListener) {
           removeListener();
@@ -37,20 +41,24 @@ export default class Agent {
       if (!skipLegacyListener) {
         eventURL = Linking.addEventListener('url', urlHandler);
       }
-      NativeModules.A0Auth0.showUrl(url, ...params, (error, redirectURL) => {
-        if (!skipLegacyListener) {
-          removeListener();
-        }
-        if (error) {
-          reject(error);
-        } else if (redirectURL) {
-          resolve(redirectURL);
-        } else if (closeOnLoad) {
-          resolve(undefined);
-        } else {
-          reject(new Error('Unknown WebAuth error'));
-        }
-      });
+      NativeModules.A0Auth0.showUrl(
+        url,
+        ...params,
+        (error: any, redirectURL: string) => {
+          if (!skipLegacyListener) {
+            removeListener();
+          }
+          if (error) {
+            reject(error);
+          } else if (redirectURL) {
+            resolve(redirectURL);
+          } else if (closeOnLoad) {
+            resolve(undefined);
+          } else {
+            reject(new Error('Unknown WebAuth error'));
+          }
+        },
+      );
     });
   }
 
@@ -64,7 +72,7 @@ export default class Agent {
     }
 
     return new Promise((resolve, reject) => {
-      NativeModules.A0Auth0.oauthParameters(parameters => {
+      NativeModules.A0Auth0.oauthParameters((parameters: any) => {
         resolve(parameters);
       });
     });

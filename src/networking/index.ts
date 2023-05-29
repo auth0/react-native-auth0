@@ -15,10 +15,10 @@ type RequestOptions = {
 };
 
 export default class Client {
-  private telemetry: any;
-  private baseUrl: string;
-  private domain: string;
-  private bearer: string;
+  public telemetry: any;
+  public baseUrl: string;
+  public domain: string;
+  private bearer?: string;
   private timeout: number;
 
   constructor(options: {
@@ -50,15 +50,15 @@ export default class Client {
     this.timeout = timeout;
   }
 
-  post(path, body) {
+  post(path: string, body: any) {
     return this.request('POST', this.url(path), body);
   }
 
-  patch(path, body) {
+  patch(path: string, body: any) {
     return this.request('PATCH', this.url(path), body);
   }
 
-  get(path, query?: any) {
+  get(path: string, query?: any) {
     return this.request('GET', this.url(path, query));
   }
 
@@ -75,7 +75,7 @@ export default class Client {
     return endpoint;
   }
 
-  request(method, url, body?: object) {
+  request(method: string, url: string, body?: object) {
     const options: RequestOptions = {
       method: method,
       headers: {
@@ -101,13 +101,13 @@ export default class Client {
         };
         return response
           .json()
-          .then(json => {
+          .then((json: any) => {
             return {...payload, json};
           })
           .catch(() => {
             return response
               .text()
-              .then(text => {
+              .then((text: any) => {
                 return {...payload, text};
               })
               .catch(() => {

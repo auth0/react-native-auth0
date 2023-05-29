@@ -3,7 +3,7 @@ import {apply} from '../utils/whitelist';
 import {toCamelCase} from '../utils/camel';
 import Auth0Error from './error';
 
-function responseHandler(response, exceptions = {}) {
+function responseHandler(response: any, exceptions = {}) {
   if (response.ok && response.json) {
     return toCamelCase(response.json, exceptions);
   }
@@ -33,7 +33,12 @@ const attributes = [
 export default class Users {
   private client;
 
-  constructor(options: { baseUrl: string, telemetry?: any, token?: string, timeout?: number }) {
+  constructor(options: {
+    baseUrl: string;
+    telemetry?: any;
+    token?: string;
+    timeout?: number;
+  }) {
     this.client = new Client(options);
     if (!options.token) {
       throw new Error('Missing token in parameters');

@@ -4,8 +4,8 @@ export default class Auth0Error extends BaseError {
   public json;
   public status;
   public code;
-  
-  constructor(response) {
+
+  constructor(response: {status: string; json: any; text?: string}) {
     const {status, json = {}, text} = response;
     const {name, description, code} = json;
     super(

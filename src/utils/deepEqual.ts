@@ -1,10 +1,11 @@
-export function deepEqual(x, y) {
+export function deepEqual(x: any, y: any) {
   if (x === y) {
     return true;
   } else if (
     typeof x == 'object' &&
     x != null &&
-    typeof y == 'object' && y != null
+    typeof y == 'object' &&
+    y != null
   ) {
     if (Object.keys(x).length != Object.keys(y).length) return false;
 

@@ -4,10 +4,12 @@ import {NativeModules, Platform} from 'react-native';
 import url from 'url';
 import AuthError from '../auth/authError';
 import verifyToken from '../jwt';
+import {Credentials} from '../credentials-manager';
+import Auth from '../auth';
 
 const {A0Auth0} = NativeModules;
 
-const callbackUri = (domain, customScheme) => {
+const callbackUri = (domain: string, customScheme?: string) => {
   const bundleIdentifier = A0Auth0.bundleIdentifier;
   const lowerCasedIdentifier = bundleIdentifier.toLowerCase();
   if (!customScheme && bundleIdentifier !== lowerCasedIdentifier) {
@@ -35,10 +37,10 @@ class WebAuth {
   private domain;
   private clientId;
   private agent;
-  
-  constructor(auth) {
+
+  constructor(auth: Auth) {
     this.client = auth;
-    const {baseUrl, clientId, domain} = auth;
+    const {clientId, domain} = auth;
     this.domain = domain;
     this.clientId = clientId;
     this.agent = new Agent();
@@ -72,83 +74,102 @@ class WebAuth {
    *
    * @memberof WebAuth
    */
-  authorize(parameters: {state?: string, nonce?: string, audience?: string, scope?: string, connection?: string, max_age?: number, organization?: string, invitationUrl?: string} = {}, options: {leeway?: number, ephemeralSession?: boolean, customScheme?: string, skipLegacyListener?: boolean} = {}) {
+  authorize(
+    parameters: {
+      state?: string;
+      nonce?: string;
+      audience?: string;
+      scope?: string;
+      connection?: string;
+      max_age?: number;
+      organization?: string;
+      invitationUrl?: string;
+    } = {},
+    options: {
+      leeway?: number;
+      ephemeralSession?: boolean;
+      customScheme?: string;
+      skipLegacyListener?: boolean;
+    } = {},
+  ): Promise<Credentials> {
     const {clientId, domain, client, agent} = this;
-    return agent.newTransaction().then(({state, verifier, ...defaults}) => {
-      const redirectUri = callbackUri(domain, options.customScheme);
-      const expectedState = parameters.state || state;
-      const queryParameters: any = parameters;
-      if (parameters.invitationUrl) {
-        const urlQuery = url.parse(parameters.invitationUrl, true).query;
-        const {invitation, organization} = urlQuery;
-        if (!invitation || !organization) {
-          throw new AuthError({
-            json: {
-              error: 'a0.invalid_invitation_url',
-              error_description: `The invitation URL provided doesn't contain the 'organization' or 'invitation' values.`,
-            },
-            status: 0,
-          });
+    return agent
+      .newTransaction()
+      .then(({state, verifier, ...defaults}: any) => {
+        const redirectUri = callbackUri(domain, options.customScheme);
+        const expectedState = parameters.state || state;
+        const queryParameters: any = parameters;
+        if (parameters.invitationUrl) {
+          const urlQuery = url.parse(parameters.invitationUrl, true).query;
+          const {invitation, organization} = urlQuery;
+          if (!invitation || !organization) {
+            throw new AuthError({
+              json: {
+                error: 'a0.invalid_invitation_url',
+                error_description: `The invitation URL provided doesn't contain the 'organization' or 'invitation' values.`,
+              },
+              status: 0,
+            });
+          }
+          queryParameters.invitation = invitation;
+          queryParameters.organization = organization;
         }
-        queryParameters.invitation = invitation;
-        queryParameters.organization = organization;
-      }
 
-      let query = {
-        ...defaults,
-        clientId,
-        responseType: 'code',
-        redirectUri,
-        state: expectedState,
-        ...queryParameters,
-      };
-      const authorizeUrl = this.client.authorizeUrl(query);
-      return agent
-        .show(
-          authorizeUrl,
-          options.ephemeralSession,
-          options.skipLegacyListener,
-        )
-        .then(redirectUrl => {
-          if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
-            throw new AuthError({
-              json: {
-                error: 'a0.redirect_uri.not_expected',
-                error_description: `Expected ${redirectUri} but got ${redirectUrl}`,
-              },
-              status: 0,
-            });
-          }
-          const query = url.parse(redirectUrl, true).query;
-          const {code, state: resultState, error} = query;
-          if (error) {
-            throw new AuthError({json: query, status: 0});
-          }
-          if (resultState !== expectedState) {
-            throw new AuthError({
-              json: {
-                error: 'a0.state.invalid',
-                error_description: `Invalid state received in redirect url`,
-              },
-              status: 0,
-            });
-          }
+        let query = {
+          ...defaults,
+          clientId,
+          responseType: 'code',
+          redirectUri,
+          state: expectedState,
+          ...queryParameters,
+        };
+        const authorizeUrl = this.client.authorizeUrl(query);
+        return agent
+          .show(
+            authorizeUrl,
+            options.ephemeralSession,
+            options.skipLegacyListener,
+          )
+          .then(redirectUrl => {
+            if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
+              throw new AuthError({
+                json: {
+                  error: 'a0.redirect_uri.not_expected',
+                  error_description: `Expected ${redirectUri} but got ${redirectUrl}`,
+                },
+                status: 0,
+              });
+            }
+            const query = url.parse(redirectUrl, true).query;
+            const {code, state: resultState, error} = query;
+            if (error) {
+              throw new AuthError({json: query, status: 0});
+            }
+            if (resultState !== expectedState) {
+              throw new AuthError({
+                json: {
+                  error: 'a0.state.invalid',
+                  error_description: `Invalid state received in redirect url`,
+                },
+                status: 0,
+              });
+            }
 
-          return client
-            .exchange({code, verifier, redirectUri})
-            .then(credentials => {
-              return verifyToken(credentials.idToken, {
-                domain,
-                clientId,
-                nonce: parameters.nonce,
-                maxAge: parameters.max_age,
-                scope: parameters.scope,
-                leeway: options.leeway,
-                orgId: parameters.organization,
-              }).then(() => Promise.resolve(credentials));
-            });
-        });
-    });
+            return client
+              .exchange({code, verifier, redirectUri})
+              .then((credentials: Credentials) => {
+                return verifyToken(credentials.idToken, {
+                  domain,
+                  clientId,
+                  nonce: parameters.nonce,
+                  maxAge: parameters.max_age,
+                  scope: parameters.scope,
+                  leeway: options.leeway,
+                  orgId: parameters.organization,
+                }).then(() => Promise.resolve(credentials));
+              });
+          });
+      });
   }
 
   /**
@@ -167,7 +188,10 @@ class WebAuth {
    *
    * @memberof WebAuth
    */
-  clearSession(parameters: {federated?: boolean, customScheme?: string} = {}, options: {skipLegacyListener?: boolean} = {}) {
+  clearSession(
+    parameters: {federated?: boolean; customScheme?: string} = {},
+    options: {skipLegacyListener?: boolean} = {},
+  ) {
     const {client, agent, domain, clientId} = this;
     const logoutParameters: any = parameters;
     logoutParameters.clientId = clientId;

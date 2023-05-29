@@ -4,7 +4,7 @@ import {toCamelCase} from '../utils/camel';
 import AuthError from './authError';
 import Auth0Error from './auth0Error';
 
-function responseHandler(response, exceptions = {}) {
+function responseHandler(response: any, exceptions = {}) {
   if (response.ok && response.json) {
     return toCamelCase(response.json, exceptions);
   }
@@ -18,8 +18,8 @@ function responseHandler(response, exceptions = {}) {
  */
 class Auth {
   private client;
-  private clientId;
-  private domain;
+  public clientId;
+  public domain;
 
   constructor(options: {
     baseUrl: string;

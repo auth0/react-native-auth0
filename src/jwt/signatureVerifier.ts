@@ -13,8 +13,8 @@ const ALLOWED_ALGORITHMS = ['RS256', 'HS256'];
  * @param {String} [options.domain] the Auth0 domain of the token's issuer
  * @returns {Promise} A promise that resolves to the decoded payload of the ID token, or rejects if the verification fails.
  */
-export const verifySignature = (idToken, options) => {
-  let header, payload;
+export const verifySignature = (idToken: string, options: any) => {
+  let header, payload: any;
 
   try {
     header = jwtDecoder(idToken, {header: true});
@@ -62,20 +62,22 @@ export const verifySignature = (idToken, options) => {
   });
 };
 
-const rsaVerifierForKey = jwk => {
+const rsaVerifierForKey = (jwk: any) => {
   const modulus = base64.decodeToHEX(jwk.n);
   const exponent = base64.decodeToHEX(jwk.e);
   return new RSAVerifier(modulus, exponent);
 };
 
-const getJwk = (domain, kid) => {
+const getJwk = (domain: string, kid: string) => {
   return getJwksUri(domain)
     .then(uri => fetchJson(uri))
     .then(jwk => {
       const keys = jwk.keys;
       const key = keys
-        .filter(k => k.use === 'sig' && k.kty === 'RSA' && k.kid && k.n && k.e)
-        .find(k => k.kid === kid);
+        .filter(
+          (k: any) => k.use === 'sig' && k.kty === 'RSA' && k.kid && k.n && k.e,
+        )
+        .find((k: any) => k.kid === kid);
       if (!key) {
         throw new Error('Key not present');
       }
@@ -91,17 +93,17 @@ const getJwk = (domain, kid) => {
     });
 };
 
-const getJwksUri = domain => {
+const getJwksUri = (domain: string) => {
   return fetch(`https://${domain}/.well-known/openid-configuration`)
     .then(resp => resp.json())
     .then(openIdConfig => openIdConfig.jwks_uri);
 };
 
-const fetchJson = uri => {
+const fetchJson = (uri: string) => {
   return fetch(uri).then(resp => resp.json());
 };
 
-const idTokenError = err => {
+const idTokenError = (err: {error: string; desc: string}) => {
   return new AuthError({
     json: {
       error: `a0.idtoken.${err.error}`,
