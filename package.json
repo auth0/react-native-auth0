@@ -3,7 +3,7 @@
   "title": "React Native Auth0",
   "version": "2.17.2",
   "description": "React Native toolkit for Auth0 API",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest",
     "test:ci": "jest --coverage",
