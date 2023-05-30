@@ -35,8 +35,8 @@ export interface Auth0ContextInterface<TUser extends User = User>
 }
 
 export interface AuthState<TUser extends User = User> {
-  error?: Error;
-  user?: TUser;
+  error: Error | null;
+  user: TUser | null;
   isLoading: boolean;
 }
 
@@ -45,6 +45,8 @@ const stub = () => {
 };
 
 const initialContext = {
+  error: null,
+  user: null,
   isLoading: true,
   authorize: stub,
   clearSession: stub,
