@@ -50,7 +50,7 @@ export default class Client {
     this.timeout = timeout;
   }
 
-  post(path: string, body: any) {
+  post(path: string, body: unknown) {
     return this.request('POST', this.url(path), body);
   }
 
