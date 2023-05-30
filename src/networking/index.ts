@@ -54,11 +54,11 @@ export default class Client {
     return this.request('POST', this.url(path), body);
   }
 
-  patch(path: string, body: any) {
+  patch(path: string, body: unknown) {
     return this.request('PATCH', this.url(path), body);
   }
 
-  get(path: string, query?: any) {
+  get(path: string, query?: unknown) {
     return this.request('GET', this.url(path, query));
   }
 
@@ -75,7 +75,7 @@ export default class Client {
     return endpoint;
   }
 
-  request(method: string, url: string, body?: object) {
+  request(method: string, url: string, body?: unknown) {
     const options: RequestOptions = {
       method: method,
       headers: {
