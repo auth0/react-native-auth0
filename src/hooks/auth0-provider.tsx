@@ -1,4 +1,4 @@
-import React, {useEffect, useReducer, useState, useRef} from 'react';
+import React, {useEffect, useReducer, useState, PropsWithChildren} from 'react';
 import {useCallback, useMemo} from 'react';
 import jwtDecode, {JwtPayload} from 'jwt-decode';
 import PropTypes from 'prop-types';
@@ -45,11 +45,7 @@ const Auth0Provider = ({
   domain,
   clientId,
   children,
-}: {
-  domain: string;
-  clientId: string;
-  children: any;
-}) => {
+}: PropsWithChildren<{domain: string; clientId: string}>) => {
   const [client] = useState(() => new Auth0({domain, clientId}));
   const [state, dispatch] = useReducer(reducer, initialState);
 
