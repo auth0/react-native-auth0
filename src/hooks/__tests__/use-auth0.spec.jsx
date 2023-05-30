@@ -73,12 +73,12 @@ describe('The useAuth0 hook', () => {
 
   it('defines error', () => {
     const {result} = renderHook(() => useAuth0());
-    expect(result.current.error).toBeNull();
+    expect(result.current.error).toBeUndefined();
   });
 
   it('defines user', () => {
     const {result} = renderHook(() => useAuth0());
-    expect(result.current.user).toBeNull();
+    expect(result.current.user).toBeUndefined();
   });
 
   it('defines authorize', () => {

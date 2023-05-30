@@ -1,6 +1,7 @@
 import {NativeModules, Platform} from 'react-native';
 import CredentialsManagerError from './credentialsManagerError';
 import LocalAuthenticationStrategy from './localAuthenticationStrategy';
+import {Credentials} from '../types';
 
 class CredentialsManager {
   private domain;
@@ -148,15 +149,5 @@ class CredentialsManager {
     }
   }
 }
-
-export type Credentials = {
-  idToken: string;
-  accessToken: string;
-  tokenType: string;
-  expiresIn: number;
-  refreshToken?: string;
-  scope?: string;
-  [key: string]: any;
-};
 
 export default CredentialsManager;

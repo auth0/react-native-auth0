@@ -1,6 +1,6 @@
-const LocalAuthenticationStrategy = {
-  deviceOwnerWithBiometrics: 1,
-  deviceOwner: 2,
-};
+enum LocalAuthenticationStrategy {
+  deviceOwnerWithBiometrics = 1,
+  deviceOwner,
+}
 
 export default LocalAuthenticationStrategy;

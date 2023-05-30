@@ -4,7 +4,13 @@ import {NativeModules, Platform} from 'react-native';
 import url from 'url';
 import AuthError from '../auth/authError';
 import verifyToken from '../jwt';
-import {Credentials} from '../credentials-manager';
+import {
+  ClearSessionOptions,
+  ClearSessionParameters,
+  Credentials,
+  WebAuthorizeOptions,
+  WebAuthorizeParameters,
+} from '../types';
 import Auth from '../auth';
 
 const {A0Auth0} = NativeModules;
@@ -75,22 +81,8 @@ class WebAuth {
    * @memberof WebAuth
    */
   authorize(
-    parameters: {
-      state?: string;
-      nonce?: string;
-      audience?: string;
-      scope?: string;
-      connection?: string;
-      max_age?: number;
-      organization?: string;
-      invitationUrl?: string;
-    } = {},
-    options: {
-      leeway?: number;
-      ephemeralSession?: boolean;
-      customScheme?: string;
-      skipLegacyListener?: boolean;
-    } = {},
+    parameters: WebAuthorizeParameters = {},
+    options: WebAuthorizeOptions = {},
   ): Promise<Credentials> {
     const {clientId, domain, client, agent} = this;
     return agent
@@ -189,8 +181,8 @@ class WebAuth {
    * @memberof WebAuth
    */
   clearSession(
-    parameters: {federated?: boolean; customScheme?: string} = {},
-    options: {skipLegacyListener?: boolean} = {},
+    parameters: ClearSessionParameters = {},
+    options: ClearSessionOptions = {},
   ) {
     const {client, agent, domain, clientId} = this;
     const logoutParameters: any = parameters;
