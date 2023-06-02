@@ -3,6 +3,13 @@ import BaseError from '../utils/baseError';
 import {
   ClearSessionOptions,
   ClearSessionParameters,
+  LoginWithEmailOptions,
+  LoginWithOobOptions,
+  LoginWithOtpOptions,
+  LoginWithRecoveryCodeOptions,
+  LoginWithSmsOptions,
+  MultiFactorChallengeOptions,
+  PasswordlessWithEmailOptions,
   User,
   WebAuthorizeOptions,
   WebAuthorizeParameters,
@@ -14,6 +21,18 @@ export interface Auth0ContextInterface<TUser extends User = User>
   authorize: (
     parameters: WebAuthorizeParameters,
     options: WebAuthorizeOptions,
+  ) => Promise<void>;
+  sendSMSCode: (parameters: PasswordlessWithEmailOptions) => Promise<void>;
+  authorizeWithSMS: (parameters: LoginWithSmsOptions) => Promise<void>;
+  sendEmailCode: (parameters: PasswordlessWithEmailOptions) => Promise<void>;
+  authorizeWithEmail: (parameters: LoginWithEmailOptions) => Promise<void>;
+  sendMultifactorChallenge: (
+    parameters: MultiFactorChallengeOptions,
+  ) => Promise<void>;
+  authorizeWithOOB: (parameters: LoginWithOobOptions) => Promise<void>;
+  authorizeWithOTP: (parameters: LoginWithOtpOptions) => Promise<void>;
+  authorizeWithRecoveryCode: (
+    parameters: LoginWithRecoveryCodeOptions,
   ) => Promise<void>;
   clearSession: (
     parameters: ClearSessionParameters,
@@ -49,6 +68,14 @@ const initialContext = {
   user: null,
   isLoading: true,
   authorize: stub,
+  sendSMSCode: stub,
+  authorizeWithSMS: stub,
+  sendEmailCode: stub,
+  authorizeWithEmail: stub,
+  sendMultifactorChallenge: stub,
+  authorizeWithOOB: stub,
+  authorizeWithOTP: stub,
+  authorizeWithRecoveryCode: stub,
   clearSession: stub,
   getCredentials: stub,
   clearCredentials: stub,
