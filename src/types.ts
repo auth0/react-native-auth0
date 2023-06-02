@@ -122,7 +122,7 @@ export interface PasswordlessWithEmailOptions {
   [key: string]: any;
 }
 
-export interface PasswordlessWithSmsOptions {
+export interface PasswordlessWithSMSOptions {
   phoneNumber: string;
   send?: string;
   authParams?: string;
@@ -137,7 +137,7 @@ export interface LoginWithEmailOptions {
   [key: string]: any;
 }
 
-export interface LoginWithSmsOptions {
+export interface LoginWithSMSOptions {
   phoneNumber: string;
   code: string;
   audience?: string;
@@ -145,7 +145,7 @@ export interface LoginWithSmsOptions {
   [key: string]: any;
 }
 
-export interface LoginWithOtpOptions {
+export interface LoginWithOTPOptions {
   mfaToken: string;
   otp: string;
   audience?: string;
@@ -153,7 +153,7 @@ export interface LoginWithOtpOptions {
   [key: string]: any;
 }
 
-export interface LoginWithOobOptions {
+export interface LoginWithOOBOptions {
   mfaToken: string;
   oobCode: string;
   bindingCode?: string;
@@ -166,7 +166,7 @@ export interface LoginWithRecoveryCodeOptions {
   [key: string]: any;
 }
 
-export interface MultiFactorChallengeOptions {
+export interface MultifactorChallengeOptions {
   mfaToken: string;
   challengeType?: string;
   authenticatorId?: string;

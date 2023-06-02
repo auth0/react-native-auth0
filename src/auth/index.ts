@@ -10,15 +10,15 @@ import {
   ExchangeNativeSocialOptions,
   ExchangeOptions,
   LoginWithEmailOptions,
-  LoginWithOobOptions,
-  LoginWithOtpOptions,
+  LoginWithOOBOptions,
+  LoginWithOTPOptions,
   LoginWithRecoveryCodeOptions,
-  LoginWithSmsOptions,
+  LoginWithSMSOptions,
   LogoutUrlOptions,
-  MultiFactorChallengeOptions,
+  MultifactorChallengeOptions,
   PasswordRealmOptions,
   PasswordlessWithEmailOptions,
-  PasswordlessWithSmsOptions,
+  PasswordlessWithSMSOptions,
   RefreshTokenOptions,
   ResetPasswordOptions,
   RevokeOptions,
@@ -249,7 +249,7 @@ class Auth {
    * @param {String} parameters.phoneNumber the phone number to send the link/code to
    * @returns {Promise}
    */
-  passwordlessWithSMS(parameters: PasswordlessWithEmailOptions) {
+  passwordlessWithSMS(parameters: PasswordlessWithSMSOptions) {
     const payload = apply(
       {
         parameters: {
@@ -313,7 +313,7 @@ class Auth {
    * @param {String} parameters.scope optional scopes to request
    * @returns {Promise}
    */
-  loginWithSMS(parameters: LoginWithSmsOptions) {
+  loginWithSMS(parameters: LoginWithSMSOptions) {
     const payload = apply(
       {
         parameters: {
@@ -348,7 +348,7 @@ class Auth {
    * @param {String} parameters.otp the one time password code provided by the resource owner, typically obtained from an MFA application such as Google Authenticator or Guardian.
    * @returns {Promise}
    */
-  loginWithOTP(parameters: LoginWithOtpOptions) {
+  loginWithOTP(parameters: LoginWithOTPOptions) {
     const payload = apply(
       {
         parameters: {
@@ -382,7 +382,7 @@ class Auth {
    * @returns {Promise}
    */
 
-  loginWithOOB(parameters: LoginWithOobOptions) {
+  loginWithOOB(parameters: LoginWithOOBOptions) {
     const payload = apply(
       {
         parameters: {
@@ -448,7 +448,7 @@ class Auth {
    * @param {String} parameters.authenticatorId The ID of the authenticator to challenge.
    * @returns {Promise}
    */
-  multifactorChallenge(parameters: MultiFactorChallengeOptions) {
+  multifactorChallenge(parameters: MultifactorChallengeOptions) {
     const payload = apply(
       {
         parameters: {
