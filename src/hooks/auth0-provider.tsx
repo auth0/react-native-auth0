@@ -83,7 +83,7 @@ const Auth0Provider = ({
     ) => {
       try {
         const specifiedScopes =
-          parameters?.scope?.split(' ').map((s: string) => s.trim()) || [];
+          parameters.scope?.split(' ').map((s: string) => s.trim()) || [];
         const scopeSet = new Set([
           ...specifiedScopes,
           ...['openid', 'profile', 'email'],
