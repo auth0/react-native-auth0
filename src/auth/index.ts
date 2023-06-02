@@ -243,7 +243,7 @@ class Auth {
   }
 
   /**
-   * Starts the Passworldess flow with an SMS connection
+   * Starts the Passwordless flow with an SMS connection
    *
    * @param {Object} parameters passwordless parameters
    * @param {String} parameters.phoneNumber the phone number to send the link/code to

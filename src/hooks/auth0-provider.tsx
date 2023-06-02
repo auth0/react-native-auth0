@@ -101,7 +101,7 @@ const Auth0Provider = ({
       options: WebAuthorizeOptions = {},
     ) => {
       try {
-        parameters.scope = finalizeScopeParam(parameters.scope);
+        parameters.scope = finalizeScopeParam(parameters?.scope);
         const credentials: Credentials = await client.webAuth.authorize(
           parameters,
           options,
@@ -171,8 +171,10 @@ const Auth0Provider = ({
   const authorizeWithSMS = useCallback(
     async (parameters: LoginWithSmsOptions) => {
       try {
-        parameters.scope = finalizeScopeParam(parameters.scope);
-
+        let scope = finalizeScopeParam(parameters?.scope);
+        if (scope) {
+          parameters = {...parameters, scope};
+        }
         const credentials = await client.auth.loginWithSMS(parameters);
         const user = getIdTokenProfileClaims(credentials.idToken);
 
@@ -201,7 +203,10 @@ const Auth0Provider = ({
   const authorizeWithEmail = useCallback(
     async (parameters: LoginWithEmailOptions) => {
       try {
-        parameters.scope = finalizeScopeParam(parameters?.scope);
+        let scope = finalizeScopeParam(parameters?.scope);
+        if (scope) {
+          parameters = {...parameters, scope};
+        }
 
         const credentials = await client.auth.loginWithEmail(parameters);
         const user = getIdTokenProfileClaims(credentials.idToken);
@@ -231,7 +236,6 @@ const Auth0Provider = ({
   const authorizeWithOOB = useCallback(
     async (parameters: LoginWithOobOptions) => {
       try {
-        parameters.scope = finalizeScopeParam(parameters?.scope);
         const credentials = await client.auth.loginWithOOB(parameters);
         const user = getIdTokenProfileClaims(credentials.idToken);
 
@@ -248,7 +252,6 @@ const Auth0Provider = ({
   const authorizeWithOTP = useCallback(
     async (parameters: LoginWithOtpOptions) => {
       try {
-        parameters.scope = finalizeScopeParam(parameters?.scope);
         const credentials = await client.auth.loginWithOTP(parameters);
         const user = getIdTokenProfileClaims(credentials.idToken);
 
@@ -265,8 +268,6 @@ const Auth0Provider = ({
   const authorizeWithRecoveryCode = useCallback(
     async (parameters: LoginWithRecoveryCodeOptions) => {
       try {
-        parameters.scope = finalizeScopeParam(parameters?.scope);
-
         const credentials = await client.auth.loginWithRecoveryCode(parameters);
         const user = getIdTokenProfileClaims(credentials.idToken);
 
