@@ -1,9 +1,10 @@
 import Client from '../networking';
-import { apply } from '../utils/whitelist';
-import { toCamelCase } from '../utils/camel';
+import {toCamelCase} from '../utils/camel';
 import Auth0Error from './error';
+import {Telemetry} from '../networking/telemetry';
+import {GetUserOptions, PatchUserOptions} from '../types';
 
-function responseHandler(response, exceptions = {}) {
+function responseHandler(response: any, exceptions = {}) {
   if (response.ok && response.json) {
     return toCamelCase(response.json, exceptions);
   }
@@ -20,7 +21,7 @@ const attributes = [
   'email',
   'email_verified',
   'given_name',
-  'family_name'
+  'family_name',
 ];
 
 /**
@@ -31,7 +32,14 @@ const attributes = [
  * @class Users
  */
 export default class Users {
-  constructor(options = {}) {
+  private client;
+
+  constructor(options: {
+    baseUrl: string;
+    telemetry?: Telemetry;
+    token?: string;
+    timeout?: number;
+  }) {
     this.client = new Client(options);
     if (!options.token) {
       throw new Error('Missing token in parameters');
@@ -48,23 +56,15 @@ export default class Users {
    *
    * @memberof Users
    */
-  getUser(parameters = {}) {
-    const payload = apply(
-      {
-        parameters: {
-          id: { required: true }
-        }
-      },
-      parameters
-    );
+  getUser(parameters: GetUserOptions) {
     return this.client
-      .get(`/api/v2/users/${encodeURIComponent(payload.id)}`)
+      .get(`/api/v2/users/${encodeURIComponent(parameters.id)}`)
       .then(response =>
         responseHandler(response, {
           attributes,
           whitelist: true,
-          rootOnly: true
-        })
+          rootOnly: true,
+        }),
       );
   }
 
@@ -79,26 +79,17 @@ export default class Users {
    *
    * @memberof Users
    */
-  patchUser(parameters = {}) {
-    const payload = apply(
-      {
-        parameters: {
-          id: { required: true },
-          metadata: { required: true }
-        }
-      },
-      parameters
-    );
+  patchUser(parameters: PatchUserOptions) {
     return this.client
-      .patch(`/api/v2/users/${encodeURIComponent(payload.id)}`, {
-        user_metadata: payload.metadata
+      .patch(`/api/v2/users/${encodeURIComponent(parameters.id)}`, {
+        user_metadata: parameters.metadata,
       })
       .then(response =>
         responseHandler(response, {
           attributes,
           whitelist: true,
-          rootOnly: true
-        })
+          rootOnly: true,
+        }),
       );
   }
 }

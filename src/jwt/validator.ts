@@ -1,6 +1,17 @@
 import AuthError from '../auth/authError';
 import {verifySignature} from './signatureVerifier';
 
+type TokenVerificationOptions = {
+  domain: string;
+  clientId: string;
+  nonce?: string;
+  maxAge?: number;
+  scope?: string;
+  leeway?: number;
+  orgId?: string;
+  _clock?: Date;
+};
+
 // default clock skew, in seconds
 const DEFAULT_LEEWAY = 60;
 
@@ -11,7 +22,10 @@ const DEFAULT_LEEWAY = 60;
  * @param {Object}options the options required to run this verification
  * @returns {Promise} A promise that resolves if the verification is successful, or will reject the promise if validation fails
  */
-export const verifyToken = (idToken, options) => {
+export const verifyToken = (
+  idToken: string,
+  options: TokenVerificationOptions,
+) => {
   if (typeof idToken !== 'string') {
     return Promise.resolve();
   }
@@ -21,7 +35,7 @@ export const verifyToken = (idToken, options) => {
     .then(() => Promise.resolve());
 };
 
-const validateClaims = (payload, opts) => {
+const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
   // Issuer
   if (typeof payload.iss !== 'string') {
     return Promise.reject(
@@ -208,7 +222,7 @@ const validateClaims = (payload, opts) => {
   return Promise.resolve();
 };
 
-const getEpochTimeInSeconds = date => {
+const getEpochTimeInSeconds = (date: Date) => {
   return Math.round(date.getTime() / 1000);
 };
 

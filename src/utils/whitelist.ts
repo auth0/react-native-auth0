@@ -1,10 +1,14 @@
 import BaseError from './baseError';
 
 export default class ParameterError extends BaseError {
-  constructor(expected, actual, missing) {
+  public expected: any[];
+  public actual: string;
+  public missing: any[];
+
+  constructor(expected: any[], actual: string, missing: any[]) {
     super(
       'Missing required parameters',
-      `Missing required parameters: ${JSON.stringify(missing, null, 2)}`
+      `Missing required parameters: ${JSON.stringify(missing, null, 2)}`,
     );
     this.expected = expected;
     this.actual = actual;
@@ -12,15 +16,15 @@ export default class ParameterError extends BaseError {
   }
 }
 
-export function apply(rules, values) {
-  const { whitelist = true, parameters, aliases = {} } = rules;
-  let mapped = {};
+export function apply(rules: any, values: any) {
+  const {whitelist = true, parameters, aliases = {}} = rules;
+  let mapped: {[key: string]: string} = {};
   let requiredKeys = Object.keys(parameters)
     .filter(key => parameters[key].required)
     .map(key => parameters[key].toName || key);
   for (let key of Object.keys(values)) {
     let value = values[key];
-    let parameterKey = aliases[key] || key;
+    let parameterKey: string = aliases[key] || key;
     let parameter = parameters[parameterKey];
     if (parameter && value) {
       mapped[parameter.toName || parameterKey] = value;

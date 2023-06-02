@@ -1,11 +1,32 @@
-import defaults from './telemetry';
+import {Telemetry, defaults} from './telemetry';
 import url from 'url';
 import base64 from 'base-64';
-import {fetchWithTimeout} from '../utils/fetchWithTimeout';
+import {RequestOptions, fetchWithTimeout} from '../utils/fetchWithTimeout';
 
 export default class Client {
-  constructor(options) {
-    const {baseUrl, telemetry = {}, token, timeout = 10000} = options;
+  public telemetry: Telemetry;
+  public baseUrl: string;
+  public domain: string;
+  private bearer?: string;
+  private timeout: number;
+
+  constructor(options: {
+    baseUrl: string;
+    telemetry?: Telemetry;
+    token?: string;
+    timeout?: number;
+  }) {
+    const {
+      baseUrl,
+      telemetry = {},
+      token,
+      timeout = 10000,
+    }: {
+      baseUrl: string;
+      telemetry?: Telemetry;
+      token?: string;
+      timeout?: number;
+    } = options;
     if (!baseUrl) {
       throw new Error('Missing Auth0 domain');
     }
@@ -28,22 +49,22 @@ export default class Client {
     this.timeout = timeout;
   }
 
-  post(path, body) {
+  post(path: string, body: unknown) {
     return this.request('POST', this.url(path), body);
   }
 
-  patch(path, body) {
+  patch(path: string, body: unknown) {
     return this.request('PATCH', this.url(path), body);
   }
 
-  get(path, query) {
+  get(path: string, query?: unknown) {
     return this.request('GET', this.url(path, query));
   }
 
-  url(path, query, includeTelemetry = false) {
+  url(path: string, query?: any, includeTelemetry: boolean = false) {
     let endpoint = url.resolve(this.baseUrl, path);
     if ((query && query.length !== 0) || includeTelemetry) {
-      const parsed = url.parse(endpoint);
+      const parsed: any = url.parse(endpoint);
       parsed.query = query || {};
       if (includeTelemetry) {
         parsed.query.auth0Client = this._encodedTelemetry();
@@ -53,8 +74,8 @@ export default class Client {
     return endpoint;
   }
 
-  request(method, url, body) {
-    const options = {
+  request(method: 'GET' | 'POST' | 'PATCH', url: string, body?: unknown) {
+    const options: RequestOptions = {
       method: method,
       headers: {
         Accept: 'application/json',
@@ -70,28 +91,30 @@ export default class Client {
       options.body = JSON.stringify(body);
     }
 
-    return fetchWithTimeout(url, options, this.timeout).then(response => {
-      const payload = {
-        status: response.status,
-        ok: response.ok,
-        headers: response.headers,
-      };
-      return response
-        .json()
-        .then(json => {
-          return {...payload, json};
-        })
-        .catch(() => {
-          return response
-            .text()
-            .then(text => {
-              return {...payload, text};
-            })
-            .catch(() => {
-              return {...payload, text: response.statusText};
-            });
-        });
-    });
+    return fetchWithTimeout(url, options, this.timeout).then(
+      (response: any) => {
+        const payload = {
+          status: response.status,
+          ok: response.ok,
+          headers: response.headers,
+        };
+        return response
+          .json()
+          .then((json: any) => {
+            return {...payload, json};
+          })
+          .catch(() => {
+            return response
+              .text()
+              .then((text: any) => {
+                return {...payload, text};
+              })
+              .catch(() => {
+                return {...payload, text: response.statusText};
+              });
+          });
+      },
+    );
   }
 
   _encodedTelemetry() {

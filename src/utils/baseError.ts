@@ -1,5 +1,5 @@
 export default class BaseError extends Error {
-  constructor(name, message) {
+  constructor(name: string, message: string) {
     super();
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);

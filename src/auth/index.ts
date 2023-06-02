@@ -3,8 +3,29 @@ import {apply} from '../utils/whitelist';
 import {toCamelCase} from '../utils/camel';
 import AuthError from './authError';
 import Auth0Error from './auth0Error';
+import {Telemetry} from '../networking/telemetry';
+import {
+  AuthorizeUrlOptions,
+  CreateUserOptions,
+  ExchangeNativeSocialOptions,
+  ExchangeOptions,
+  LoginWithEmailOptions,
+  LoginWithOobOptions,
+  LoginWithOtpOptions,
+  LoginWithRecoveryCodeOptions,
+  LoginWithSmsOptions,
+  LogoutUrlOptions,
+  MultiFactorChallengeOptions,
+  PasswordRealmOptions,
+  PasswordlessWithEmailOptions,
+  PasswordlessWithSmsOptions,
+  RefreshTokenOptions,
+  ResetPasswordOptions,
+  RevokeOptions,
+  UserInfoOptions,
+} from '../types';
 
-function responseHandler(response, exceptions = {}) {
+function responseHandler(response: any, exceptions = {}) {
   if (response.ok && response.json) {
     return toCamelCase(response.json, exceptions);
   }
@@ -17,13 +38,23 @@ function responseHandler(response, exceptions = {}) {
  * @see https://auth0.com/docs/api/authentication
  */
 class Auth {
-  constructor(options = {}) {
+  private client;
+  public clientId;
+  public domain;
+
+  constructor(options: {
+    baseUrl: string;
+    clientId: string;
+    telemetry?: Telemetry;
+    token?: string;
+    timeout?: number;
+  }) {
     this.client = new Client(options);
+    this.domain = this.client.domain;
     const {clientId} = options;
     if (!clientId) {
       throw new Error('Missing clientId in parameters');
     }
-    this.domain = this.client.domain;
     this.clientId = clientId;
   }
 
@@ -37,7 +68,7 @@ class Auth {
    * @returns {String} authorize url with specified parameters to redirect to for AuthZ/AuthN.
    * @see https://auth0.com/docs/api/authentication#authorize-client
    */
-  authorizeUrl(parameters = {}) {
+  authorizeUrl(parameters: AuthorizeUrlOptions) {
     const query = apply(
       {
         parameters: {
@@ -49,11 +80,7 @@ class Auth {
       },
       parameters,
     );
-    return this.client.url(
-      '/authorize',
-      {...query, client_id: this.clientId},
-      true,
-    );
+    return this.client.url('/authorize', query, true);
   }
 
   /**
@@ -66,7 +93,7 @@ class Auth {
    * @returns {String} logout url with specified parameters
    * @see https://auth0.com/docs/api/authentication#logout
    */
-  logoutUrl(parameters = {}) {
+  logoutUrl(parameters: LogoutUrlOptions) {
     const query = apply(
       {
         parameters: {
@@ -90,7 +117,7 @@ class Auth {
    * @returns {Promise}
    * @see https://auth0.com/docs/api-auth/grant/authorization-code-pkce
    */
-  exchange(parameters = {}) {
+  exchange(parameters: ExchangeOptions) {
     const payload = apply(
       {
         parameters: {
@@ -123,7 +150,7 @@ class Auth {
    *
    * @see https://auth0.com/docs/api/authentication#token-exchange-for-native-social
    */
-  exchangeNativeSocial(parameters = {}) {
+  exchangeNativeSocial(parameters: ExchangeNativeSocialOptions) {
     const payload = apply(
       {
         parameters: {
@@ -157,23 +184,10 @@ class Auth {
    * @returns {Promise}
    * @see https://auth0.com/docs/api-auth/grant/password#realm-support
    */
-  passwordRealm(parameters = {}) {
-    const payload = apply(
-      {
-        parameters: {
-          username: {required: true},
-          password: {required: true},
-          realm: {required: true},
-          audience: {required: false},
-          scope: {required: false},
-        },
-        whitelist: false,
-      },
-      parameters,
-    );
+  passwordRealm(parameters: PasswordRealmOptions) {
     return this.client
       .post('/oauth/token', {
-        ...payload,
+        ...parameters,
         client_id: this.clientId,
         grant_type: 'http://auth0.com/oauth/grant-type/password-realm',
       })
@@ -189,7 +203,7 @@ class Auth {
    * @returns {Promise}
    * @see https://auth0.com/docs/tokens/refresh-token/current#use-a-refresh-token
    */
-  refreshToken(parameters = {}) {
+  refreshToken(parameters: RefreshTokenOptions) {
     const payload = apply(
       {
         parameters: {
@@ -218,21 +232,10 @@ class Auth {
    * @param {String} parameters.authParams optional parameters, used when strategy is 'linḱ'
    * @returns {Promise}
    */
-  passwordlessWithEmail(parameters = {}) {
-    const payload = apply(
-      {
-        parameters: {
-          email: {required: true},
-          send: {required: false},
-          authParams: {required: false},
-        },
-        whitelist: false,
-      },
-      parameters,
-    );
+  passwordlessWithEmail(parameters: PasswordlessWithEmailOptions) {
     return this.client
       .post('/passwordless/start', {
-        ...payload,
+        ...parameters,
         connection: 'email',
         client_id: this.clientId,
       })
@@ -246,7 +249,7 @@ class Auth {
    * @param {String} parameters.phoneNumber the phone number to send the link/code to
    * @returns {Promise}
    */
-  passwordlessWithSMS(parameters = {}) {
+  passwordlessWithSMS(parameters: PasswordlessWithEmailOptions) {
     const payload = apply(
       {
         parameters: {
@@ -277,7 +280,7 @@ class Auth {
    * @param {String} parameters.scope optional scopes to request
    * @returns {Promise}
    */
-  loginWithEmail(parameters = {}) {
+  loginWithEmail(parameters: LoginWithEmailOptions) {
     const payload = apply(
       {
         parameters: {
@@ -310,7 +313,7 @@ class Auth {
    * @param {String} parameters.scope optional scopes to request
    * @returns {Promise}
    */
-  loginWithSMS(parameters = {}) {
+  loginWithSMS(parameters: LoginWithSmsOptions) {
     const payload = apply(
       {
         parameters: {
@@ -345,7 +348,7 @@ class Auth {
    * @param {String} parameters.otp the one time password code provided by the resource owner, typically obtained from an MFA application such as Google Authenticator or Guardian.
    * @returns {Promise}
    */
-  loginWithOTP(parameters = {}) {
+  loginWithOTP(parameters: LoginWithOtpOptions) {
     const payload = apply(
       {
         parameters: {
@@ -379,7 +382,7 @@ class Auth {
    * @returns {Promise}
    */
 
-  loginWithOOB(parameters = {}) {
+  loginWithOOB(parameters: LoginWithOobOptions) {
     const payload = apply(
       {
         parameters: {
@@ -412,7 +415,7 @@ class Auth {
    * @param {String} parameters.recoveryCode the recovery code provided by the end-user.
    * @returns {Promise}
    */
-  loginWithRecoveryCode(parameters = {}) {
+  loginWithRecoveryCode(parameters: LoginWithRecoveryCodeOptions) {
     const payload = apply(
       {
         parameters: {
@@ -445,7 +448,7 @@ class Auth {
    * @param {String} parameters.authenticatorId The ID of the authenticator to challenge.
    * @returns {Promise}
    */
-  multifactorChallenge(parameters = {}) {
+  multifactorChallenge(parameters: MultiFactorChallengeOptions) {
     const payload = apply(
       {
         parameters: {
@@ -471,7 +474,7 @@ class Auth {
    * @param {String} parameters.refreshToken user's issued refresh token
    * @returns {Promise}
    */
-  revoke(parameters = {}) {
+  revoke(parameters: RevokeOptions) {
     const payload = apply(
       {
         parameters: {
@@ -500,17 +503,9 @@ class Auth {
    * @param {String} parameters.token user's access token
    * @returns {Promise}
    */
-  userInfo(parameters = {}) {
-    const payload = apply(
-      {
-        parameters: {
-          token: {required: true},
-        },
-      },
-      parameters,
-    );
+  userInfo(parameters: UserInfoOptions) {
     const {baseUrl, telemetry} = this.client;
-    const client = new Client({baseUrl, telemetry, token: payload.token});
+    const client = new Client({baseUrl, telemetry, token: parameters.token});
     const claims = [
       'sub',
       'name',
@@ -548,19 +543,10 @@ class Auth {
    * @param {String} parameters.connection name of the connection of the user
    * @returns {Promise}
    */
-  resetPassword(parameters = {}) {
-    const payload = apply(
-      {
-        parameters: {
-          email: {required: true},
-          connection: {required: true},
-        },
-      },
-      parameters,
-    );
+  resetPassword(parameters: ResetPasswordOptions) {
     return this.client
       .post('/dbconnections/change_password', {
-        ...payload,
+        ...parameters,
         client_id: this.clientId,
       })
       .then(response => {
@@ -587,7 +573,7 @@ class Auth {
    * @param {String} [parameters.metadata] additional user information that will be stored in `user_metadata`
    * @returns {Promise}
    */
-  createUser(parameters = {}) {
+  createUser(parameters: CreateUserOptions) {
     const payload = apply(
       {
         parameters: {

@@ -1,15 +1,20 @@
-import { NativeModules, Platform } from 'react-native';
+import {NativeModules, Platform} from 'react-native';
 import CredentialsManagerError from './credentialsManagerError';
 import LocalAuthenticationStrategy from './localAuthenticationStrategy';
+import {Credentials} from '../types';
 
 class CredentialsManager {
+  private domain;
+  private clientId;
+  private Auth0Module;
+
   /**
    * Construct an instance of CredentialsManager
    *
    * @param {String} domain - required - the domain of the credentials to be managed
    * @param {String} clientId - required - clientId of the credentials to be managed
    */
-  constructor(domain, clientId) {
+  constructor(domain: string, clientId: string) {
     this.domain = domain;
     this.clientId = clientId;
     this.Auth0Module = NativeModules.A0Auth0;
@@ -27,7 +32,7 @@ class CredentialsManager {
    * @param {String} credentials.scope optional - represents the scope of the current token
    * @returns {Promise}
    */
-  async saveCredentials(credentials = {}) {
+  async saveCredentials(credentials: Credentials) {
     const validateKeys = ['idToken', 'accessToken', 'tokenType', 'expiresIn'];
     validateKeys.forEach(key => {
       if (!credentials[key]) {
@@ -59,7 +64,7 @@ class CredentialsManager {
    * @param {Object} parameters optional - additional parameters to send in the request to refresh expired credentials.
    * @returns {Promise}
    */
-  async getCredentials(scope, minTtl = 0, parameters = {}) {
+  async getCredentials(scope?: string, minTtl = 0, parameters = {}) {
     try {
       await this._ensureCredentialManagerIsInitialized();
       const credentials = await this.Auth0Module.getCredentials(
@@ -88,10 +93,10 @@ class CredentialsManager {
    * @returns {Promise}
    */
   async requireLocalAuthentication(
-    title,
-    description,
-    cancelTitle,
-    fallbackTitle,
+    title?: string,
+    description?: string,
+    cancelTitle?: string,
+    fallbackTitle?: string,
     strategy = LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
   ) {
     try {
@@ -101,7 +106,7 @@ class CredentialsManager {
           title,
           cancelTitle,
           fallbackTitle,
-          strategy
+          strategy,
         );
       } else {
         await this.Auth0Module.enableLocalAuthentication(title, description);

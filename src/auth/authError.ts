@@ -1,7 +1,10 @@
 import BaseError from '../utils/baseError';
 
 export default class AuthError extends BaseError {
-  constructor(response) {
+  public json;
+  public status;
+
+  constructor(response: {status: number; json: any; text?: string}) {
     const {status, json = {}, text} = response;
     const {error, error_description: description} = json;
     super(
@@ -13,7 +16,7 @@ export default class AuthError extends BaseError {
   }
 }
 
-const handleInvalidToken = response =>
+export const handleInvalidToken = (response: any) =>
   response?.headers?.get('www-authenticate')?.match(/error="invalid_token"/g)
     ? 'invalid_token'
     : null;
