@@ -62,7 +62,7 @@ export const verifySignature = (idToken: string, options: any) => {
   });
 };
 
-const rsaVerifierForKey = (jwk: any) => {
+const rsaVerifierForKey = (jwk: { n: string, e: string }) => {
   const modulus = base64.decodeToHEX(jwk.n);
   const exponent = base64.decodeToHEX(jwk.e);
   return new RSAVerifier(modulus, exponent);
