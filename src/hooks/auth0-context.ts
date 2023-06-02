@@ -23,7 +23,7 @@ export interface Auth0ContextInterface<TUser extends User = User>
     scope?: string,
     minTtl?: number,
     parameters?: object,
-  ) => Promise<void>;
+  ) => Promise<Credential>;
   clearCredentials: () => Promise<void>;
   requireLocalAuthentication: (
     title?: string,

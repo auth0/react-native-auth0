@@ -28,7 +28,7 @@ const initialState = {
 const getIdTokenProfileClaims = (idToken: string): User => {
   const payload: {[key: string]: any} = jwtDecode<JwtPayload>(idToken);
 
-  const profileClaims = Object.keys(payload).reduce((profile: any, claim) => {
+  const profileClaims = Object.keys(payload).reduce((profile: User, claim) => {
     if (!idTokenNonProfileClaims.has(claim)) {
       profile[claim] = payload[claim];
     }
@@ -125,7 +125,7 @@ const Auth0Provider = ({
   );
 
   const getCredentials = useCallback(
-    async (scope?: string, minTtl = 0, parameters = {}) => {
+    async (scope?: string, minTtl: number = 0, parameters: object = {}) => {
       try {
         const credentials = await client.credentialsManager.getCredentials(
           scope,

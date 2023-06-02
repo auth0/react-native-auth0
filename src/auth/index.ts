@@ -1,4 +1,4 @@
-import Client from '../networking';
+import Client, {Auth0Response} from '../networking';
 import {apply} from '../utils/whitelist';
 import {toCamelCase} from '../utils/camel';
 import AuthError from './authError';
@@ -25,7 +25,7 @@ import {
   UserInfoOptions,
 } from '../types';
 
-function responseHandler(response: any, exceptions = {}) {
+function responseHandler(response: Auth0Response, exceptions = {}) {
   if (response.ok && response.json) {
     return toCamelCase(response.json, exceptions);
   }

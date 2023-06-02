@@ -7,7 +7,7 @@ export class TimeoutError extends BaseError {
 }
 
 function makeTimeout(timeoutMs: number) {
-  let timerId = null;
+  let timerId: NodeJS.Timeout | null = null;
 
   const promise = new Promise((_, reject) => {
     timerId = setTimeout(() => {
@@ -25,7 +25,7 @@ export function fetchWithTimeout(
   url: string,
   options: RequestOptions,
   timeoutMs: number,
-) {
+): Promise<Response> {
   const {
     promise: timeoutPromise,
     timerId,
@@ -49,7 +49,7 @@ export function fetchWithTimeout(
     .then(response => {
       clearTimeout(timerId);
       return response;
-    });
+    }) as Promise<Response>;
 }
 
 export type RequestOptions = {

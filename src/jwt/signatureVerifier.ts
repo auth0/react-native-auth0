@@ -1,6 +1,7 @@
 import AuthError from '../auth/authError';
 import RSAVerifier from './rsa-verifier';
 import * as base64 from './base64';
+import {JwtHeader, JwtPayload} from 'jwt-decode';
 const jwtDecoder = require('jwt-decode');
 
 const ALLOWED_ALGORITHMS = ['RS256', 'HS256'];
@@ -13,8 +14,9 @@ const ALLOWED_ALGORITHMS = ['RS256', 'HS256'];
  * @param {String} [options.domain] the Auth0 domain of the token's issuer
  * @returns {Promise} A promise that resolves to the decoded payload of the ID token, or rejects if the verification fails.
  */
-export const verifySignature = (idToken: string, options: any) => {
-  let header, payload: any;
+export const verifySignature = (idToken: string, options: {domain: string}) => {
+  let header: JwtHeader & {kid: string};
+  let payload: JwtPayload;
 
   try {
     header = jwtDecoder(idToken, {header: true});
@@ -30,7 +32,7 @@ export const verifySignature = (idToken: string, options: any) => {
 
   const alg = header.alg;
 
-  if (!ALLOWED_ALGORITHMS.includes(alg)) {
+  if (!alg || !ALLOWED_ALGORITHMS.includes(alg)) {
     return Promise.reject(
       idTokenError({
         error: 'invalid_algorithm',
@@ -62,7 +64,7 @@ export const verifySignature = (idToken: string, options: any) => {
   });
 };
 
-const rsaVerifierForKey = (jwk: { n: string, e: string }) => {
+const rsaVerifierForKey = (jwk: {n: string; e: string}) => {
   const modulus = base64.decodeToHEX(jwk.n);
   const exponent = base64.decodeToHEX(jwk.e);
   return new RSAVerifier(modulus, exponent);

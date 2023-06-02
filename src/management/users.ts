@@ -1,10 +1,10 @@
-import Client from '../networking';
+import Client, {Auth0Response} from '../networking';
 import {toCamelCase} from '../utils/camel';
 import Auth0Error from './error';
 import {Telemetry} from '../networking/telemetry';
 import {GetUserOptions, PatchUserOptions} from '../types';
 
-function responseHandler(response: any, exceptions = {}) {
+function responseHandler(response: Auth0Response, exceptions = {}) {
   if (response.ok && response.json) {
     return toCamelCase(response.json, exceptions);
   }

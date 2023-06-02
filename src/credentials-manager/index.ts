@@ -64,7 +64,11 @@ class CredentialsManager {
    * @param {Object} parameters optional - additional parameters to send in the request to refresh expired credentials.
    * @returns {Promise}
    */
-  async getCredentials(scope?: string, minTtl = 0, parameters = {}) {
+  async getCredentials(
+    scope?: string,
+    minTtl: number = 0,
+    parameters: object = {},
+  ) {
     try {
       await this._ensureCredentialManagerIsInitialized();
       const credentials = await this.Auth0Module.getCredentials(

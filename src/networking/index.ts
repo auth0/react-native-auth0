@@ -74,7 +74,11 @@ export default class Client {
     return endpoint;
   }
 
-  request(method: 'GET' | 'POST' | 'PATCH', url: string, body?: unknown) {
+  request(
+    method: 'GET' | 'POST' | 'PATCH',
+    url: string,
+    body?: unknown,
+  ): Promise<Auth0Response> {
     const options: RequestOptions = {
       method: method,
       headers: {
@@ -92,7 +96,7 @@ export default class Client {
     }
 
     return fetchWithTimeout(url, options, this.timeout).then(
-      (response: any) => {
+      (response: Response) => {
         const payload = {
           status: response.status,
           ok: response.ok,
@@ -100,13 +104,13 @@ export default class Client {
         };
         return response
           .json()
-          .then((json: any) => {
+          .then((json: object) => {
             return {...payload, json};
           })
           .catch(() => {
             return response
               .text()
-              .then((text: any) => {
+              .then((text: string) => {
                 return {...payload, text};
               })
               .catch(() => {
@@ -121,3 +125,11 @@ export default class Client {
     return base64.encode(JSON.stringify(this.telemetry));
   }
 }
+
+export type Auth0Response = {
+  json?: object;
+  text?: string;
+  status: number;
+  ok: boolean;
+  headers: Headers;
+};

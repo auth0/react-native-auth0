@@ -149,7 +149,6 @@ export interface LoginWithOTPOptions {
   mfaToken: string;
   otp: string;
   audience?: string;
-  scope?: string;
   [key: string]: any;
 }
 
