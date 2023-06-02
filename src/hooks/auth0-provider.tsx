@@ -10,6 +10,7 @@ import {
   ClearSessionOptions,
   ClearSessionParameters,
   Credentials,
+  User,
   WebAuthorizeOptions,
   WebAuthorizeParameters,
 } from '../types';
@@ -24,7 +25,7 @@ const initialState = {
 /**
  * @ignore
  */
-const getIdTokenProfileClaims = (idToken: string) => {
+const getIdTokenProfileClaims = (idToken: string): User => {
   const payload: {[key: string]: any} = jwtDecode<JwtPayload>(idToken);
 
   const profileClaims = Object.keys(payload).reduce((profile: any, claim) => {
@@ -58,7 +59,7 @@ const Auth0Provider = ({
 
   useEffect(() => {
     (async () => {
-      let user: any = null;
+      let user: User | null = null;
 
       if (await client.credentialsManager.hasValidCredentials()) {
         try {

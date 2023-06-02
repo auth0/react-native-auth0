@@ -21,7 +21,11 @@ function makeTimeout(timeoutMs: number) {
   };
 }
 
-export function fetchWithTimeout(url: string, options: any, timeoutMs: number) {
+export function fetchWithTimeout(
+  url: string,
+  options: RequestOptions,
+  timeoutMs: number,
+) {
   const {
     promise: timeoutPromise,
     timerId,
@@ -47,3 +51,14 @@ export function fetchWithTimeout(url: string, options: any, timeoutMs: number) {
       return response;
     });
 }
+
+export type RequestOptions = {
+  method: 'GET' | 'POST' | 'PATCH';
+  body?: any;
+  headers: {
+    Accept: string;
+    'Content-Type': string;
+    'Auth0-Client': string;
+    Authorization?: string;
+  };
+};

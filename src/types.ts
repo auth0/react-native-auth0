@@ -58,3 +58,146 @@ export interface ClearSessionParameters {
 export interface ClearSessionOptions {
   skipLegacyListener?: boolean;
 }
+
+export interface GetUserOptions {
+  id: string;
+  [key: string]: any;
+}
+
+export interface PatchUserOptions {
+  id: string;
+  metadata: object;
+  [key: string]: any;
+}
+
+export interface AuthorizeUrlOptions {
+  responseType: string;
+  redirectUri: object;
+  state: object;
+  [key: string]: any;
+}
+
+export interface LogoutUrlOptions {
+  federated?: boolean;
+  clientId?: string;
+  returnTo?: string;
+  [key: string]: any;
+}
+
+export interface ExchangeOptions {
+  code: string;
+  verifier: string;
+  redirectUri: string;
+  [key: string]: any;
+}
+
+export interface ExchangeNativeSocialOptions {
+  subjectToken: string;
+  subjectTokenType: string;
+  userProfile?: object;
+  audience?: string;
+  scope?: string;
+  [key: string]: any;
+}
+
+export interface PasswordRealmOptions {
+  username: string;
+  password: string;
+  realm: string;
+  audience?: string;
+  scope?: string;
+  [key: string]: any;
+}
+
+export interface RefreshTokenOptions {
+  refreshToken: string;
+  scope?: string;
+  [key: string]: any;
+}
+
+export interface PasswordlessWithEmailOptions {
+  email: string;
+  send?: string;
+  authParams?: string;
+  [key: string]: any;
+}
+
+export interface PasswordlessWithSmsOptions {
+  phoneNumber: string;
+  send?: string;
+  authParams?: string;
+  [key: string]: any;
+}
+
+export interface LoginWithEmailOptions {
+  email: string;
+  code: string;
+  audience?: string;
+  scope?: string;
+  [key: string]: any;
+}
+
+export interface LoginWithSmsOptions {
+  phoneNumber: string;
+  code: string;
+  audience?: string;
+  scope?: string;
+  [key: string]: any;
+}
+
+export interface LoginWithOtpOptions {
+  mfaToken: string;
+  otp: string;
+  audience?: string;
+  scope?: string;
+  [key: string]: any;
+}
+
+export interface LoginWithOobOptions {
+  mfaToken: string;
+  oobCode: string;
+  bindingCode?: string;
+  [key: string]: any;
+}
+
+export interface LoginWithRecoveryCodeOptions {
+  mfaToken: string;
+  recoveryCode: string;
+  [key: string]: any;
+}
+
+export interface MultiFactorChallengeOptions {
+  mfaToken: string;
+  challengeType?: string;
+  authenticatorId?: string;
+  [key: string]: any;
+}
+
+export interface RevokeOptions {
+  refreshToken: string;
+  [key: string]: any;
+}
+
+export interface UserInfoOptions {
+  token: string;
+}
+
+export interface ResetPasswordOptions {
+  email: string;
+  connection: string;
+  [key: string]: any;
+}
+
+export interface CreateUserOptions {
+  email: string;
+  password: string;
+  connection: string;
+  username?: string;
+  given_name?: string;
+  family_name?: string;
+  name?: string;
+  nickname?: string;
+  picture?: string;
+  metadata?: string;
+  [key: string]: any;
+}

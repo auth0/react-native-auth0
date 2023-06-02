@@ -214,9 +214,9 @@ Object {
 
 exports[`auth Recovery Code flow when user does not have Recovery Code 1`] = `[unsupported_challenge_type: User does not have a recovery-code.]`;
 
-exports[`auth authorizeUrl should return default authorize url 1`] = `"https://samples.auth0.com/authorize?response_type=code&redirect_uri=https%3A%2F%2Fmysite.com%2Fcallback&state=a_random_state&client_id=A_CLIENT_ID_OF_YOUR_ACCOUNT&auth0Client=eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0%3D"`;
+exports[`auth authorizeUrl should return default authorize url 1`] = `"https://samples.auth0.com/authorize?response_type=code&redirect_uri=https%3A%2F%2Fmysite.com%2Fcallback&state=a_random_state&auth0Client=eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0%3D"`;
 
-exports[`auth authorizeUrl should return default authorize url with extra parameters 1`] = `"https://samples.auth0.com/authorize?response_type=code&redirect_uri=https%3A%2F%2Fmysite.com%2Fcallback&state=a_random_state&connection=facebook&client_id=A_CLIENT_ID_OF_YOUR_ACCOUNT&auth0Client=eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0%3D"`;
+exports[`auth authorizeUrl should return default authorize url with extra parameters 1`] = `"https://samples.auth0.com/authorize?response_type=code&redirect_uri=https%3A%2F%2Fmysite.com%2Fcallback&state=a_random_state&connection=facebook&auth0Client=eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0%3D"`;
 
 exports[`auth change password should handle oauth error 1`] = `[invalid_request: Invalid grant]`;
 

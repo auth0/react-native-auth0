@@ -6,7 +6,7 @@ type Action =
   | {type: 'LOGIN_COMPLETE'; user: User}
   | {type: 'LOGOUT_COMPLETE'}
   | {type: 'ERROR'; error: Error}
-  | {type: 'INITIALIZED'; user: User}
+  | {type: 'INITIALIZED'; user: User | null}
   | {type: 'SET_USER'; user: User};
 
 /**

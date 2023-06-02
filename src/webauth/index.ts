@@ -134,6 +134,7 @@ class WebAuth {
             }
             const query = url.parse(redirectUrl, true).query;
             const {code, state: resultState, error} = query;
+            const resultCode = code as string;
             if (error) {
               throw new AuthError({json: query, status: 0});
             }
@@ -148,7 +149,7 @@ class WebAuth {
             }
 
             return client
-              .exchange({code, verifier, redirectUri})
+              .exchange({code: resultCode, verifier, redirectUri})
               .then((credentials: Credentials) => {
                 return verifyToken(credentials.idToken, {
                   domain,

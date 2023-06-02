@@ -1,6 +1,7 @@
 import Auth from './auth';
 import CredentialsManager from './credentials-manager';
 import Users from './management/users';
+import {Telemetry} from './networking/telemetry';
 import WebAuth from './webauth';
 
 /**
@@ -21,7 +22,7 @@ class Auth0 {
   constructor(options: {
     domain: string;
     clientId: string;
-    telemetry?: any;
+    telemetry?: Telemetry;
     token?: string;
     timeout?: number;
   }) {

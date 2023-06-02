@@ -1,21 +1,10 @@
-import {defaults} from './telemetry';
+import {Telemetry, defaults} from './telemetry';
 import url from 'url';
 import base64 from 'base-64';
-import {fetchWithTimeout} from '../utils/fetchWithTimeout';
-
-type RequestOptions = {
-  method: any;
-  body?: any;
-  headers: {
-    Accept: string;
-    'Content-Type': string;
-    'Auth0-Client': string;
-    Authorization?: string;
-  };
-};
+import {RequestOptions, fetchWithTimeout} from '../utils/fetchWithTimeout';
 
 export default class Client {
-  public telemetry: any;
+  public telemetry: Telemetry;
   public baseUrl: string;
   public domain: string;
   private bearer?: string;
@@ -23,11 +12,21 @@ export default class Client {
 
   constructor(options: {
     baseUrl: string;
-    telemetry?: any;
+    telemetry?: Telemetry;
     token?: string;
     timeout?: number;
   }) {
-    const {baseUrl, telemetry = {}, token, timeout = 10000} = options;
+    const {
+      baseUrl,
+      telemetry = {},
+      token,
+      timeout = 10000,
+    }: {
+      baseUrl: string;
+      telemetry?: Telemetry;
+      token?: string;
+      timeout?: number;
+    } = options;
     if (!baseUrl) {
       throw new Error('Missing Auth0 domain');
     }
@@ -75,7 +74,7 @@ export default class Client {
     return endpoint;
   }
 
-  request(method: string, url: string, body?: unknown) {
+  request(method: 'GET' | 'POST' | 'PATCH', url: string, body?: unknown) {
     const options: RequestOptions = {
       method: method,
       headers: {

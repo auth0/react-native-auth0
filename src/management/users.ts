@@ -1,7 +1,8 @@
 import Client from '../networking';
-import {apply} from '../utils/whitelist';
 import {toCamelCase} from '../utils/camel';
 import Auth0Error from './error';
+import {Telemetry} from '../networking/telemetry';
+import {GetUserOptions, PatchUserOptions} from '../types';
 
 function responseHandler(response: any, exceptions = {}) {
   if (response.ok && response.json) {
@@ -35,7 +36,7 @@ export default class Users {
 
   constructor(options: {
     baseUrl: string;
-    telemetry?: any;
+    telemetry?: Telemetry;
     token?: string;
     timeout?: number;
   }) {
@@ -55,17 +56,9 @@ export default class Users {
    *
    * @memberof Users
    */
-  getUser(parameters = {}) {
-    const payload: any = apply(
-      {
-        parameters: {
-          id: {required: true},
-        },
-      },
-      parameters,
-    );
+  getUser(parameters: GetUserOptions) {
     return this.client
-      .get(`/api/v2/users/${encodeURIComponent(payload.id)}`)
+      .get(`/api/v2/users/${encodeURIComponent(parameters.id)}`)
       .then(response =>
         responseHandler(response, {
           attributes,
@@ -86,19 +79,10 @@ export default class Users {
    *
    * @memberof Users
    */
-  patchUser(parameters = {}) {
-    const payload: any = apply(
-      {
-        parameters: {
-          id: {required: true},
-          metadata: {required: true},
-        },
-      },
-      parameters,
-    );
+  patchUser(parameters: PatchUserOptions) {
     return this.client
-      .patch(`/api/v2/users/${encodeURIComponent(payload.id)}`, {
-        user_metadata: payload.metadata,
+      .patch(`/api/v2/users/${encodeURIComponent(parameters.id)}`, {
+        user_metadata: parameters.metadata,
       })
       .then(response =>
         responseHandler(response, {
