@@ -8,9 +8,9 @@ import WebAuth from './webauth';
  * Auth0 for React Native client
  */
 class Auth0 {
-  public auth;
-  public webAuth;
-  public credentialsManager;
+  public auth: Auth;
+  public webAuth: WebAuth;
+  public credentialsManager: CredentialsManager;
   private options;
 
   /**
