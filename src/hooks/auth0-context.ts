@@ -35,6 +35,7 @@ export interface Auth0ContextInterface<TUser extends User = User>
   authorizeWithRecoveryCode: (
     parameters: LoginWithRecoveryCodeOptions,
   ) => Promise<void>;
+  hasValidCredentials: (minTtl: number) => Promise<boolean>;
   clearSession: (
     parameters: ClearSessionParameters,
     options: ClearSessionOptions,
@@ -77,6 +78,7 @@ const initialContext = {
   authorizeWithOOB: stub,
   authorizeWithOTP: stub,
   authorizeWithRecoveryCode: stub,
+  hasValidCredentials: stub,
   clearSession: stub,
   getCredentials: stub,
   clearCredentials: stub,

@@ -287,6 +287,13 @@ const Auth0Provider = ({
     [client],
   );
 
+  const hasValidCredentials = useCallback(
+    async (minTtl: number = 0) => {
+      return await client.credentialsManager.hasValidCredentials(minTtl);
+    },
+    [client],
+  );
+
   const clearCredentials = useCallback(async () => {
     try {
       await client.credentialsManager.clearCredentials();
@@ -333,6 +340,7 @@ const Auth0Provider = ({
       authorizeWithOOB,
       authorizeWithOTP,
       authorizeWithRecoveryCode,
+      hasValidCredentials,
       clearSession,
       getCredentials,
       clearCredentials,
@@ -349,6 +357,7 @@ const Auth0Provider = ({
       authorizeWithOOB,
       authorizeWithOTP,
       authorizeWithRecoveryCode,
+      hasValidCredentials,
       clearSession,
       getCredentials,
       clearCredentials,

@@ -57,13 +57,14 @@ const mockAuth0 = {
   },
   auth: {
     passwordlessWithSMS: jest.fn().mockResolvedValue(),
-    loginWithSMS: jest.fn().mockResolvedValue(mockCredentials),
+    authorizeWithSMS: jest.fn().mockResolvedValue(mockCredentials),
     passwordlessWithEmail: jest.fn().mockResolvedValue(),
-    loginWithEmail: jest.fn().mockResolvedValue(mockCredentials),
+    authorizeWithEmail: jest.fn().mockResolvedValue(mockCredentials),
     multifactorChallenge: jest.fn().mockResolvedValue(),
-    loginWithOOB: jest.fn().mockResolvedValue(mockCredentials),
-    loginWithOTP: jest.fn().mockResolvedValue(mockCredentials),
-    loginWithRecoveryCode: jest.fn().mockResolvedValue(mockCredentials),
+    authorizeWithOOB: jest.fn().mockResolvedValue(mockCredentials),
+    authorizeWithOTP: jest.fn().mockResolvedValue(mockCredentials),
+    authorizeWithRecoveryCode: jest.fn().mockResolvedValue(mockCredentials),
+    hasValidCredentials: jest.fn().mockResolvedValue(),
   },
   credentialsManager: {
     getCredentials: jest.fn().mockResolvedValue(mockCredentials),
@@ -336,7 +337,7 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithSMS).toHaveBeenCalledWith({
+    expect(mockAuth0.auth.authorizeWithSMS).toHaveBeenCalledWith({
       phoneNumber: '+11234567890',
       code: '123456',
       scope: 'custom-scope openid profile email',
@@ -351,7 +352,7 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithSMS).toHaveBeenCalledWith({
+    expect(mockAuth0.auth.authorizeWithSMS).toHaveBeenCalledWith({
       scope: 'openid profile email',
     });
   });
@@ -363,7 +364,7 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithSMS).toHaveBeenCalledWith({
+    expect(mockAuth0.auth.authorizeWithSMS).toHaveBeenCalledWith({
       scope: 'custom-scope openid profile email',
     });
   });
@@ -378,7 +379,7 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithSMS).toHaveBeenCalledWith({
+    expect(mockAuth0.auth.authorizeWithSMS).toHaveBeenCalledWith({
       scope: 'openid profile email',
       audience: 'http://my-api',
     });
@@ -398,7 +399,7 @@ describe('The useAuth0 hook', () => {
   });
 
   it('does not set user prop when SMS authorization fails', async () => {
-    mockAuth0.auth.loginWithSMS.mockRejectedValue(mockAuthError);
+    mockAuth0.auth.authorizeWithSMS.mockRejectedValue(mockAuthError);
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
     result.current.authorizeWithSMS();
@@ -429,7 +430,7 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithEmail).toHaveBeenCalledWith({
+    expect(mockAuth0.auth.authorizeWithEmail).toHaveBeenCalledWith({
       email: 'foo@gmail.com',
       code: '123456',
       scope: 'custom-scope openid profile email',
@@ -444,7 +445,7 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithEmail).toHaveBeenCalledWith({
+    expect(mockAuth0.auth.authorizeWithEmail).toHaveBeenCalledWith({
       scope: 'openid profile email',
     });
   });
@@ -456,7 +457,7 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithEmail).toHaveBeenCalledWith({
+    expect(mockAuth0.auth.authorizeWithEmail).toHaveBeenCalledWith({
       scope: 'custom-scope openid profile email',
     });
   });
@@ -471,7 +472,7 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithEmail).toHaveBeenCalledWith({
+    expect(mockAuth0.auth.authorizeWithEmail).toHaveBeenCalledWith({
       scope: 'openid profile email',
       audience: 'http://my-api',
     });
@@ -491,7 +492,7 @@ describe('The useAuth0 hook', () => {
   });
 
   it('does not set user prop when email authorization fails', async () => {
-    mockAuth0.auth.loginWithEmail.mockRejectedValue(mockAuthError);
+    mockAuth0.auth.authorizeWithEmail.mockRejectedValue(mockAuthError);
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
     result.current.authorizeWithEmail();
@@ -521,7 +522,7 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithOOB).toHaveBeenCalledWith({
+    expect(mockAuth0.auth.authorizeWithOOB).toHaveBeenCalledWith({
       mfaToken: 'mfa_token',
       oobCode: 'oob_code',
       bindingCode: 'binding_code',
@@ -542,7 +543,7 @@ describe('The useAuth0 hook', () => {
   });
 
   it('does not set user prop when OOB authorization fails', async () => {
-    mockAuth0.auth.loginWithOOB.mockRejectedValue(mockAuthError);
+    mockAuth0.auth.authorizeWithOOB.mockRejectedValue(mockAuthError);
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
     result.current.authorizeWithOOB();
@@ -562,7 +563,7 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithOTP).toHaveBeenCalledWith({
+    expect(mockAuth0.auth.authorizeWithOTP).toHaveBeenCalledWith({
       mfaToken: 'mfa_token',
       otp: 'otp',
     });
@@ -582,7 +583,7 @@ describe('The useAuth0 hook', () => {
   });
 
   it('does not set user prop when OTP authorization fails', async () => {
-    mockAuth0.auth.loginWithOTP.mockRejectedValue(mockAuthError);
+    mockAuth0.auth.authorizeWithOTP.mockRejectedValue(mockAuthError);
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
     result.current.authorizeWithOTP();
@@ -602,7 +603,7 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
 
-    expect(mockAuth0.auth.loginWithRecoveryCode).toHaveBeenCalledWith({
+    expect(mockAuth0.auth.authorizeWithRecoveryCode).toHaveBeenCalledWith({
       mfaToken: 'mfa_token',
       recoveryCode: 'recovery_code',
     });
@@ -622,7 +623,7 @@ describe('The useAuth0 hook', () => {
   });
 
   it('does not set user prop when recovery code authorization fails', async () => {
-    mockAuth0.auth.loginWithRecoveryCode.mockRejectedValue(mockAuthError);
+    mockAuth0.auth.authorizeWithRecoveryCode.mockRejectedValue(mockAuthError);
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
     result.current.authorizeWithRecoveryCode();
@@ -915,5 +916,17 @@ describe('The useAuth0 hook', () => {
     result.current.requireLocalAuthentication();
     await waitForNextUpdate();
     expect(result.current.error).toEqual(thrownError);
+  });
+
+  it('calls hasValidCredentials with correct parameters', async () => {
+    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+
+    await waitForNextUpdate();
+
+    result.current.hasValidCredentials(100);
+
+    expect(
+      mockAuth0.credentialsManager.hasValidCredentials,
+    ).toHaveBeenCalledWith(100);
   });
 });
