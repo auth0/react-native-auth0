@@ -143,7 +143,7 @@ class CredentialsManager {
   }
 
   //private
-  async _ensureCredentialManagerIsInitialized() {
+  private async _ensureCredentialManagerIsInitialized() {
     const hasValid = await this.Auth0Module.hasValidCredentialManagerInstance();
     if (!hasValid) {
       await this.Auth0Module.initializeCredentialManager(
