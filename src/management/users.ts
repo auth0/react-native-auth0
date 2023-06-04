@@ -4,7 +4,7 @@ import Auth0Error from './error';
 import {Telemetry} from '../networking/telemetry';
 import {GetUserOptions, PatchUserOptions} from '../types';
 
-function responseHandler(response: Auth0Response, exceptions = {}) {
+function responseHandler(response: Auth0Response<unknown>, exceptions = {}) {
   if (response.ok && response.json) {
     return toCamelCase(response.json, exceptions);
   }

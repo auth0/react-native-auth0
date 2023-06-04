@@ -1,13 +1,22 @@
+import {Auth0Response} from '../networking';
 import BaseError from '../utils/baseError';
 
-export default class Auth0Error extends BaseError {
+export default class Auth0Error<Auth0ErrorDetails> extends BaseError {
   public json;
   public status;
   public code;
 
-  constructor(response: {status: number; json?: any; text?: string}) {
+  constructor(response: Auth0Response<Auth0ErrorDetails>) {
     const {status, json = {}, text} = response;
-    const {name, description, code} = json;
+    const {
+      name,
+      description,
+      code,
+    }: {name?: string; description?: string; code?: string} = json ?? {
+      name: undefined,
+      description: undefined,
+      code: undefined,
+    };
     super(
       name || 'a0.response.invalid',
       description || text || 'unknown error',
@@ -16,4 +25,10 @@ export default class Auth0Error extends BaseError {
     this.status = status;
     this.code = code;
   }
+}
+
+export interface Auth0ErrorDetails {
+  name?: string;
+  description?: string;
+  code?: string;
 }

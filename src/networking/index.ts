@@ -74,11 +74,11 @@ export default class Client {
     return endpoint;
   }
 
-  request(
+  request<TData>(
     method: 'GET' | 'POST' | 'PATCH',
     url: string,
     body?: unknown,
-  ): Promise<Auth0Response> {
+  ): Promise<Auth0Response<TData>> {
     const options: RequestOptions = {
       method: method,
       headers: {
@@ -104,7 +104,7 @@ export default class Client {
         };
         return response
           .json()
-          .then((json: object) => {
+          .then((json: TData) => {
             return {...payload, json};
           })
           .catch(() => {
@@ -126,10 +126,10 @@ export default class Client {
   }
 }
 
-export type Auth0Response = {
-  json?: object;
+export type Auth0Response<TData> = {
+  json?: TData;
   text?: string;
   status: number;
-  ok: boolean;
-  headers: Headers;
+  ok?: boolean;
+  headers?: Headers;
 };
