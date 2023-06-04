@@ -10,24 +10,24 @@ export type Credentials = {
 
 export interface User {
   name?: string;
-  given_name?: string;
-  family_name?: string;
-  middle_name?: string;
+  givenName?: string;
+  familyName?: string;
+  middleName?: string;
   nickname?: string;
-  preferred_username?: string;
+  preferredUsername?: string;
   profile?: string;
   picture?: string;
   website?: string;
   email?: string;
-  email_verified?: boolean;
+  emailVerified?: boolean;
   gender?: string;
   birthdate?: string;
   zoneinfo?: string;
   locale?: string;
-  phone_number?: string;
-  phone_number_verified?: boolean;
+  phoneNumber?: string;
+  phoneNumberVerified?: boolean;
   address?: string;
-  updated_at?: string;
+  updatedAt?: string;
   sub?: string;
   [key: string]: any;
 }

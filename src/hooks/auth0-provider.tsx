@@ -15,6 +15,7 @@ import {
   WebAuthorizeParameters,
 } from '../types';
 import LocalAuthenticationStrategy from '../credentials-manager/localAuthenticationStrategy';
+import {toCamelCase} from '../utils/camel';
 
 const initialState = {
   user: null,
@@ -33,7 +34,7 @@ const getIdTokenProfileClaims = (idToken: string): User => {
       profile[claim] = payload[claim];
     }
 
-    return profile;
+    return toCamelCase(profile);
   }, {});
 
   return profileClaims;
