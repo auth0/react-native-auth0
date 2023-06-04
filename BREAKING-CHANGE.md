@@ -1,0 +1,2 @@
+- Revoke Token and Change Password now return void instead of empty object
+-
