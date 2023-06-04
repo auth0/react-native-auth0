@@ -392,7 +392,7 @@ describe('The useAuth0 hook', () => {
 
     expect(result.current.user).toMatchObject({
       name: 'Test User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
     });
   });
@@ -485,7 +485,7 @@ describe('The useAuth0 hook', () => {
 
     expect(result.current.user).toMatchObject({
       name: 'Test User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
     });
   });
@@ -536,7 +536,7 @@ describe('The useAuth0 hook', () => {
 
     expect(result.current.user).toMatchObject({
       name: 'Test User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
     });
   });
@@ -576,7 +576,7 @@ describe('The useAuth0 hook', () => {
 
     expect(result.current.user).toMatchObject({
       name: 'Test User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
     });
   });
@@ -616,7 +616,7 @@ describe('The useAuth0 hook', () => {
 
     expect(result.current.user).toMatchObject({
       name: 'Test User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
     });
   });
