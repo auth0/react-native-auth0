@@ -1,11 +1,11 @@
 import BaseError from './baseError';
 
 export default class ParameterError extends BaseError {
-  public expected: any[];
+  public expected: unknown[];
   public actual: string;
-  public missing: any[];
+  public missing: unknown[];
 
-  constructor(expected: any[], actual: string, missing: any[]) {
+  constructor(expected: unknown[], actual: string, missing: unknown[]) {
     super(
       'Missing required parameters',
       `Missing required parameters: ${JSON.stringify(missing, null, 2)}`,

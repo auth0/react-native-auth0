@@ -299,7 +299,7 @@ describe('The useAuth0 hook', () => {
 
     expect(result.current.user).toMatchObject({
       name: 'Test User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
     });
   });
@@ -791,7 +791,7 @@ describe('The useAuth0 hook', () => {
 
     expect(result.current.user).toMatchObject({
       name: 'Test User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
     });
 
@@ -802,7 +802,7 @@ describe('The useAuth0 hook', () => {
     await waitForNextUpdate();
     expect(result.current.user).toMatchObject({
       name: 'Different User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
     });
   });
@@ -817,7 +817,7 @@ describe('The useAuth0 hook', () => {
 
     expect(result.current.user).toMatchObject({
       name: 'Test User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
     });
 
@@ -827,7 +827,7 @@ describe('The useAuth0 hook', () => {
     result.current.getCredentials();
     expect(result.current.user).toMatchObject({
       name: 'Test User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
     });
   });
@@ -842,7 +842,7 @@ describe('The useAuth0 hook', () => {
     let userReference = result.current.user;
     expect(result.current.user).toMatchObject({
       name: 'Test User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
     });
 

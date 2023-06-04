@@ -1,4 +1,4 @@
-import Client from '../networking';
+import Client, {Auth0Response} from '../networking';
 import {apply} from '../utils/whitelist';
 import {toCamelCase} from '../utils/camel';
 import AuthError from './authError';
@@ -7,25 +7,28 @@ import {Telemetry} from '../networking/telemetry';
 import {
   AuthorizeUrlOptions,
   CreateUserOptions,
+  Credentials,
   ExchangeNativeSocialOptions,
   ExchangeOptions,
   LoginWithEmailOptions,
-  LoginWithOobOptions,
-  LoginWithOtpOptions,
+  LoginWithOOBOptions,
+  LoginWithOTPOptions,
   LoginWithRecoveryCodeOptions,
-  LoginWithSmsOptions,
+  LoginWithSMSOptions,
   LogoutUrlOptions,
-  MultiFactorChallengeOptions,
+  MultifactorChallengeOptions,
+  MultifactorChallengeResponse,
   PasswordRealmOptions,
   PasswordlessWithEmailOptions,
-  PasswordlessWithSmsOptions,
+  PasswordlessWithSMSOptions,
   RefreshTokenOptions,
   ResetPasswordOptions,
   RevokeOptions,
+  User,
   UserInfoOptions,
 } from '../types';
 
-function responseHandler(response: any, exceptions = {}) {
+function responseHandler(response: Auth0Response<unknown>, exceptions = {}) {
   if (response.ok && response.json) {
     return toCamelCase(response.json, exceptions);
   }
@@ -68,7 +71,7 @@ class Auth {
    * @returns {String} authorize url with specified parameters to redirect to for AuthZ/AuthN.
    * @see https://auth0.com/docs/api/authentication#authorize-client
    */
-  authorizeUrl(parameters: AuthorizeUrlOptions) {
+  authorizeUrl(parameters: AuthorizeUrlOptions): string {
     const query = apply(
       {
         parameters: {
@@ -93,7 +96,7 @@ class Auth {
    * @returns {String} logout url with specified parameters
    * @see https://auth0.com/docs/api/authentication#logout
    */
-  logoutUrl(parameters: LogoutUrlOptions) {
+  logoutUrl(parameters: LogoutUrlOptions): string {
     const query = apply(
       {
         parameters: {
@@ -117,7 +120,7 @@ class Auth {
    * @returns {Promise}
    * @see https://auth0.com/docs/api-auth/grant/authorization-code-pkce
    */
-  exchange(parameters: ExchangeOptions) {
+  exchange(parameters: ExchangeOptions): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
@@ -150,7 +153,9 @@ class Auth {
    *
    * @see https://auth0.com/docs/api/authentication#token-exchange-for-native-social
    */
-  exchangeNativeSocial(parameters: ExchangeNativeSocialOptions) {
+  exchangeNativeSocial(
+    parameters: ExchangeNativeSocialOptions,
+  ): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
@@ -184,7 +189,7 @@ class Auth {
    * @returns {Promise}
    * @see https://auth0.com/docs/api-auth/grant/password#realm-support
    */
-  passwordRealm(parameters: PasswordRealmOptions) {
+  passwordRealm(parameters: PasswordRealmOptions): Promise<Credentials> {
     return this.client
       .post('/oauth/token', {
         ...parameters,
@@ -203,7 +208,7 @@ class Auth {
    * @returns {Promise}
    * @see https://auth0.com/docs/tokens/refresh-token/current#use-a-refresh-token
    */
-  refreshToken(parameters: RefreshTokenOptions) {
+  refreshToken(parameters: RefreshTokenOptions): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
@@ -232,7 +237,9 @@ class Auth {
    * @param {String} parameters.authParams optional parameters, used when strategy is 'linḱ'
    * @returns {Promise}
    */
-  passwordlessWithEmail(parameters: PasswordlessWithEmailOptions) {
+  passwordlessWithEmail(
+    parameters: PasswordlessWithEmailOptions,
+  ): Promise<void> {
     return this.client
       .post('/passwordless/start', {
         ...parameters,
@@ -249,7 +256,7 @@ class Auth {
    * @param {String} parameters.phoneNumber the phone number to send the link/code to
    * @returns {Promise}
    */
-  passwordlessWithSMS(parameters: PasswordlessWithEmailOptions) {
+  passwordlessWithSMS(parameters: PasswordlessWithSMSOptions): Promise<void> {
     const payload = apply(
       {
         parameters: {
@@ -280,7 +287,7 @@ class Auth {
    * @param {String} parameters.scope optional scopes to request
    * @returns {Promise}
    */
-  loginWithEmail(parameters: LoginWithEmailOptions) {
+  loginWithEmail(parameters: LoginWithEmailOptions): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
@@ -313,7 +320,7 @@ class Auth {
    * @param {String} parameters.scope optional scopes to request
    * @returns {Promise}
    */
-  loginWithSMS(parameters: LoginWithSmsOptions) {
+  loginWithSMS(parameters: LoginWithSMSOptions): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
@@ -348,7 +355,7 @@ class Auth {
    * @param {String} parameters.otp the one time password code provided by the resource owner, typically obtained from an MFA application such as Google Authenticator or Guardian.
    * @returns {Promise}
    */
-  loginWithOTP(parameters: LoginWithOtpOptions) {
+  loginWithOTP(parameters: LoginWithOTPOptions): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
@@ -382,7 +389,7 @@ class Auth {
    * @returns {Promise}
    */
 
-  loginWithOOB(parameters: LoginWithOobOptions) {
+  loginWithOOB(parameters: LoginWithOOBOptions): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
@@ -415,7 +422,9 @@ class Auth {
    * @param {String} parameters.recoveryCode the recovery code provided by the end-user.
    * @returns {Promise}
    */
-  loginWithRecoveryCode(parameters: LoginWithRecoveryCodeOptions) {
+  loginWithRecoveryCode(
+    parameters: LoginWithRecoveryCodeOptions,
+  ): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
@@ -448,7 +457,9 @@ class Auth {
    * @param {String} parameters.authenticatorId The ID of the authenticator to challenge.
    * @returns {Promise}
    */
-  multifactorChallenge(parameters: MultiFactorChallengeOptions) {
+  multifactorChallenge(
+    parameters: MultifactorChallengeOptions,
+  ): Promise<MultifactorChallengeResponse> {
     const payload = apply(
       {
         parameters: {
@@ -474,7 +485,7 @@ class Auth {
    * @param {String} parameters.refreshToken user's issued refresh token
    * @returns {Promise}
    */
-  revoke(parameters: RevokeOptions) {
+  revoke(parameters: RevokeOptions): Promise<void> {
     const payload = apply(
       {
         parameters: {
@@ -490,7 +501,7 @@ class Auth {
       })
       .then(response => {
         if (response.ok) {
-          return {};
+          return;
         }
         throw new AuthError(response);
       });
@@ -503,7 +514,7 @@ class Auth {
    * @param {String} parameters.token user's access token
    * @returns {Promise}
    */
-  userInfo(parameters: UserInfoOptions) {
+  userInfo(parameters: UserInfoOptions): User {
     const {baseUrl, telemetry} = this.client;
     const client = new Client({baseUrl, telemetry, token: parameters.token});
     const claims = [
@@ -543,7 +554,7 @@ class Auth {
    * @param {String} parameters.connection name of the connection of the user
    * @returns {Promise}
    */
-  resetPassword(parameters: ResetPasswordOptions) {
+  resetPassword(parameters: ResetPasswordOptions): Promise<void> {
     return this.client
       .post('/dbconnections/change_password', {
         ...parameters,
@@ -551,7 +562,7 @@ class Auth {
       })
       .then(response => {
         if (response.ok) {
-          return {};
+          return;
         }
         throw new AuthError(response);
       });
@@ -573,7 +584,7 @@ class Auth {
    * @param {String} [parameters.metadata] additional user information that will be stored in `user_metadata`
    * @returns {Promise}
    */
-  createUser(parameters: CreateUserOptions) {
+  createUser(parameters: CreateUserOptions): Promise<Partial<User>> {
     const payload = apply(
       {
         parameters: {

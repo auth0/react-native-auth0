@@ -8,26 +8,26 @@ export type Credentials = {
   [key: string]: any;
 };
 
-export class User {
+export interface User {
   name?: string;
-  given_name?: string;
-  family_name?: string;
-  middle_name?: string;
+  givenName?: string;
+  familyName?: string;
+  middleName?: string;
   nickname?: string;
-  preferred_username?: string;
+  preferredUsername?: string;
   profile?: string;
   picture?: string;
   website?: string;
   email?: string;
-  email_verified?: boolean;
+  emailVerified?: boolean;
   gender?: string;
   birthdate?: string;
   zoneinfo?: string;
   locale?: string;
-  phone_number?: string;
-  phone_number_verified?: boolean;
+  phoneNumber?: string;
+  phoneNumberVerified?: boolean;
   address?: string;
-  updated_at?: string;
+  updatedAt?: string;
   sub?: string;
   [key: string]: any;
 }
@@ -122,7 +122,7 @@ export interface PasswordlessWithEmailOptions {
   [key: string]: any;
 }
 
-export interface PasswordlessWithSmsOptions {
+export interface PasswordlessWithSMSOptions {
   phoneNumber: string;
   send?: string;
   authParams?: string;
@@ -137,7 +137,7 @@ export interface LoginWithEmailOptions {
   [key: string]: any;
 }
 
-export interface LoginWithSmsOptions {
+export interface LoginWithSMSOptions {
   phoneNumber: string;
   code: string;
   audience?: string;
@@ -145,14 +145,14 @@ export interface LoginWithSmsOptions {
   [key: string]: any;
 }
 
-export interface LoginWithOtpOptions {
+export interface LoginWithOTPOptions {
   mfaToken: string;
   otp: string;
   audience?: string;
   [key: string]: any;
 }
 
-export interface LoginWithOobOptions {
+export interface LoginWithOOBOptions {
   mfaToken: string;
   oobCode: string;
   bindingCode?: string;
@@ -165,7 +165,7 @@ export interface LoginWithRecoveryCodeOptions {
   [key: string]: any;
 }
 
-export interface MultiFactorChallengeOptions {
+export interface MultifactorChallengeOptions {
   mfaToken: string;
   challengeType?: string;
   authenticatorId?: string;
@@ -200,3 +200,17 @@ export interface CreateUserOptions {
   metadata?: string;
   [key: string]: any;
 }
+
+export type MultifactorChallengeResponse =
+  | {
+      challengeType: string;
+    }
+  | {
+      challengeType: string;
+      oobCode: string;
+    }
+  | {
+      challengeType: string;
+      oobCode: string;
+      bindingMethod: string;
+    };

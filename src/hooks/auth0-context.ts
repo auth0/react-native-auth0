@@ -1,18 +1,19 @@
 import {createContext} from 'react';
-import BaseError from '../utils/baseError';
 import {
   ClearSessionOptions,
   ClearSessionParameters,
   LoginWithEmailOptions,
-  LoginWithOobOptions,
-  LoginWithOtpOptions,
+  LoginWithOOBOptions,
+  LoginWithOTPOptions,
   LoginWithRecoveryCodeOptions,
-  LoginWithSmsOptions,
-  MultiFactorChallengeOptions,
+  LoginWithSMSOptions,
+  MultifactorChallengeOptions,
   PasswordlessWithEmailOptions,
+  Credentials,
   User,
   WebAuthorizeOptions,
   WebAuthorizeParameters,
+  PasswordlessWithSMSOptions,
 } from '../types';
 import LocalAuthenticationStrategy from '../credentials-manager/localAuthenticationStrategy';
 
@@ -22,15 +23,15 @@ export interface Auth0ContextInterface<TUser extends User = User>
     parameters: WebAuthorizeParameters,
     options: WebAuthorizeOptions,
   ) => Promise<void>;
-  sendSMSCode: (parameters: PasswordlessWithEmailOptions) => Promise<void>;
-  authorizeWithSMS: (parameters: LoginWithSmsOptions) => Promise<void>;
+  sendSMSCode: (parameters: PasswordlessWithSMSOptions) => Promise<void>;
+  authorizeWithSMS: (parameters: LoginWithSMSOptions) => Promise<void>;
   sendEmailCode: (parameters: PasswordlessWithEmailOptions) => Promise<void>;
   authorizeWithEmail: (parameters: LoginWithEmailOptions) => Promise<void>;
   sendMultifactorChallenge: (
-    parameters: MultiFactorChallengeOptions,
+    parameters: MultifactorChallengeOptions,
   ) => Promise<void>;
-  authorizeWithOOB: (parameters: LoginWithOobOptions) => Promise<void>;
-  authorizeWithOTP: (parameters: LoginWithOtpOptions) => Promise<void>;
+  authorizeWithOOB: (parameters: LoginWithOOBOptions) => Promise<void>;
+  authorizeWithOTP: (parameters: LoginWithOTPOptions) => Promise<void>;
   authorizeWithRecoveryCode: (
     parameters: LoginWithRecoveryCodeOptions,
   ) => Promise<void>;
@@ -42,7 +43,7 @@ export interface Auth0ContextInterface<TUser extends User = User>
     scope?: string,
     minTtl?: number,
     parameters?: object,
-  ) => Promise<void>;
+  ) => Promise<Credentials | undefined>;
   clearCredentials: () => Promise<void>;
   requireLocalAuthentication: (
     title?: string,

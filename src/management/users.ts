@@ -1,10 +1,10 @@
-import Client from '../networking';
+import Client, {Auth0Response} from '../networking';
 import {toCamelCase} from '../utils/camel';
 import Auth0Error from './error';
 import {Telemetry} from '../networking/telemetry';
 import {GetUserOptions, PatchUserOptions} from '../types';
 
-function responseHandler(response: any, exceptions = {}) {
+function responseHandler(response: Auth0Response<unknown>, exceptions = {}) {
   if (response.ok && response.json) {
     return toCamelCase(response.json, exceptions);
   }
@@ -56,7 +56,7 @@ export default class Users {
    *
    * @memberof Users
    */
-  getUser(parameters: GetUserOptions) {
+  getUser(parameters: GetUserOptions): Promise<Users> {
     return this.client
       .get(`/api/v2/users/${encodeURIComponent(parameters.id)}`)
       .then(response =>
@@ -79,7 +79,7 @@ export default class Users {
    *
    * @memberof Users
    */
-  patchUser(parameters: PatchUserOptions) {
+  patchUser(parameters: PatchUserOptions): Promise<Users> {
     return this.client
       .patch(`/api/v2/users/${encodeURIComponent(parameters.id)}`, {
         user_metadata: parameters.metadata,

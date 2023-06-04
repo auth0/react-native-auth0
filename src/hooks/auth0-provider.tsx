@@ -11,17 +11,19 @@ import {
   ClearSessionParameters,
   Credentials,
   LoginWithEmailOptions,
-  LoginWithOobOptions,
-  LoginWithOtpOptions,
+  LoginWithOOBOptions,
+  LoginWithOTPOptions,
   LoginWithRecoveryCodeOptions,
-  LoginWithSmsOptions,
-  MultiFactorChallengeOptions,
+  LoginWithSMSOptions,
+  MultifactorChallengeOptions,
   PasswordlessWithEmailOptions,
+  PasswordlessWithSMSOptions,
   User,
   WebAuthorizeOptions,
   WebAuthorizeParameters,
 } from '../types';
 import LocalAuthenticationStrategy from '../credentials-manager/localAuthenticationStrategy';
+import {toCamelCase} from '../utils/camel';
 
 const initialState = {
   user: null,
@@ -35,12 +37,12 @@ const initialState = {
 const getIdTokenProfileClaims = (idToken: string): User => {
   const payload: {[key: string]: any} = jwtDecode<JwtPayload>(idToken);
 
-  const profileClaims = Object.keys(payload).reduce((profile: any, claim) => {
+  const profileClaims = Object.keys(payload).reduce((profile: User, claim) => {
     if (!idTokenNonProfileClaims.has(claim)) {
       profile[claim] = payload[claim];
     }
 
-    return profile;
+    return toCamelCase(profile);
   }, {});
 
   return profileClaims;
@@ -136,7 +138,11 @@ const Auth0Provider = ({
   );
 
   const getCredentials = useCallback(
-    async (scope?: string, minTtl = 0, parameters = {}) => {
+    async (
+      scope?: string,
+      minTtl: number = 0,
+      parameters: object = {},
+    ): Promise<Credentials | undefined> => {
       try {
         const credentials = await client.credentialsManager.getCredentials(
           scope,
@@ -157,7 +163,7 @@ const Auth0Provider = ({
   );
 
   const sendSMSCode = useCallback(
-    async (parameters: PasswordlessWithEmailOptions) => {
+    async (parameters: PasswordlessWithSMSOptions) => {
       try {
         await client.auth.passwordlessWithSMS(parameters);
       } catch (error) {
@@ -169,7 +175,7 @@ const Auth0Provider = ({
   );
 
   const authorizeWithSMS = useCallback(
-    async (parameters: LoginWithSmsOptions) => {
+    async (parameters: LoginWithSMSOptions) => {
       try {
         let scope = finalizeScopeParam(parameters?.scope);
         if (scope) {
@@ -222,7 +228,7 @@ const Auth0Provider = ({
   );
 
   const sendMultifactorChallenge = useCallback(
-    async (parameters: MultiFactorChallengeOptions) => {
+    async (parameters: MultifactorChallengeOptions) => {
       try {
         await client.auth.multifactorChallenge(parameters);
       } catch (error) {
@@ -234,7 +240,7 @@ const Auth0Provider = ({
   );
 
   const authorizeWithOOB = useCallback(
-    async (parameters: LoginWithOobOptions) => {
+    async (parameters: LoginWithOOBOptions) => {
       try {
         const credentials = await client.auth.loginWithOOB(parameters);
         const user = getIdTokenProfileClaims(credentials.idToken);
@@ -250,7 +256,7 @@ const Auth0Provider = ({
   );
 
   const authorizeWithOTP = useCallback(
-    async (parameters: LoginWithOtpOptions) => {
+    async (parameters: LoginWithOTPOptions) => {
       try {
         const credentials = await client.auth.loginWithOTP(parameters);
         const user = getIdTokenProfileClaims(credentials.idToken);

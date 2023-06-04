@@ -39,7 +39,7 @@ class Auth0 {
    * @return {Users}
    */
   users(token: string) {
-    const {domain, clientId, ...extras} = this.options;
+    const {domain, ...extras} = this.options;
     return new Users({baseUrl: domain, ...extras, token});
   }
 }

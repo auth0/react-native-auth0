@@ -222,7 +222,7 @@ exports[`auth change password should handle oauth error 1`] = `[invalid_request:
 
 exports[`auth change password should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
 
-exports[`auth change password should return successful response 1`] = `Object {}`;
+exports[`auth change password should return successful response 1`] = `undefined`;
 
 exports[`auth change password should send correct payload 1`] = `
 Array [
@@ -1207,7 +1207,7 @@ exports[`auth revoke token should handle oauth error 1`] = `[invalid_request: In
 
 exports[`auth revoke token should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
 
-exports[`auth revoke token should return successful response 1`] = `Object {}`;
+exports[`auth revoke token should return successful response 1`] = `undefined`;
 
 exports[`auth revoke token should send correct payload 1`] = `
 Array [
