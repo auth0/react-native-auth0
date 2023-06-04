@@ -1,8 +1,8 @@
 import {createContext} from 'react';
-import BaseError from '../utils/baseError';
 import {
   ClearSessionOptions,
   ClearSessionParameters,
+  Credentials,
   User,
   WebAuthorizeOptions,
   WebAuthorizeParameters,
@@ -23,7 +23,7 @@ export interface Auth0ContextInterface<TUser extends User = User>
     scope?: string,
     minTtl?: number,
     parameters?: object,
-  ) => Promise<Credential>;
+  ) => Promise<Credentials | undefined>;
   clearCredentials: () => Promise<void>;
   requireLocalAuthentication: (
     title?: string,

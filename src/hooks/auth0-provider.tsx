@@ -125,7 +125,11 @@ const Auth0Provider = ({
   );
 
   const getCredentials = useCallback(
-    async (scope?: string, minTtl: number = 0, parameters: object = {}) => {
+    async (
+      scope?: string,
+      minTtl: number = 0,
+      parameters: object = {},
+    ): Promise<Credentials | undefined> => {
       try {
         const credentials = await client.credentialsManager.getCredentials(
           scope,

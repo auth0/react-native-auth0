@@ -32,7 +32,7 @@ class CredentialsManager {
    * @param {String} credentials.scope optional - represents the scope of the current token
    * @returns {Promise}
    */
-  async saveCredentials(credentials: Credentials) {
+  async saveCredentials(credentials: Credentials): Promise<void> {
     const validateKeys = ['idToken', 'accessToken', 'tokenType', 'expiresIn'];
     validateKeys.forEach(key => {
       if (!credentials[key]) {
@@ -68,7 +68,7 @@ class CredentialsManager {
     scope?: string,
     minTtl: number = 0,
     parameters: object = {},
-  ) {
+  ): Promise<Credentials> {
     try {
       await this._ensureCredentialManagerIsInitialized();
       const credentials = await this.Auth0Module.getCredentials(
@@ -102,7 +102,7 @@ class CredentialsManager {
     cancelTitle?: string,
     fallbackTitle?: string,
     strategy = LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
-  ) {
+  ): Promise<void> {
     try {
       await this._ensureCredentialManagerIsInitialized();
       if (Platform.OS === 'ios') {
@@ -129,7 +129,7 @@ class CredentialsManager {
    *
    * @param {Number} minTtl optional - the minimum time in seconds that the access token should last before expiration
    */
-  async hasValidCredentials(minTtl = 0) {
+  async hasValidCredentials(minTtl = 0): Promise<boolean> {
     await this._ensureCredentialManagerIsInitialized();
     return await this.Auth0Module.hasValidCredentials(minTtl);
   }
@@ -137,7 +137,7 @@ class CredentialsManager {
   /**
    * Delete the stored credentials
    */
-  async clearCredentials() {
+  async clearCredentials(): Promise<void> {
     await this._ensureCredentialManagerIsInitialized();
     return await this.Auth0Module.clearCredentials();
   }

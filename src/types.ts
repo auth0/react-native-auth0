@@ -8,7 +8,7 @@ export type Credentials = {
   [key: string]: any;
 };
 
-export class User {
+export interface User {
   name?: string;
   given_name?: string;
   family_name?: string;
@@ -200,3 +200,17 @@ export interface CreateUserOptions {
   metadata?: string;
   [key: string]: any;
 }
+
+export type MultifactorChallengeResponse =
+  | {
+      challengeType: string;
+    }
+  | {
+      challengeType: string;
+      oobCode: string;
+    }
+  | {
+      challengeType: string;
+      oobCode: string;
+      bindingMethod: string;
+    };
