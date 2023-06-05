@@ -35,14 +35,13 @@ export type RawUser = {
 };
 
 export type RawMultifactorChallengeOTPResponse = {challenge_type: string};
-export type RawMultifactorChallengeOOBResponse =
-  RawMultifactorChallengeOTPResponse & {
-    oob_code: string;
-  };
-export type RawMultifactorChallengeOOBWithBindingResponse =
-  RawMultifactorChallengeOOBResponse & {
-    binding_method: string;
-  };
+
+export type RawMultifactorChallengeOOBResponse = RawMultifactorChallengeOTPResponse & {
+  oob_code: string;
+};
+export type RawMultifactorChallengeOOBWithBindingResponse = RawMultifactorChallengeOOBResponse & {
+  binding_method: string;
+};
 
 export type RawMultifactorChallengeResponse =
   | RawMultifactorChallengeOTPResponse
