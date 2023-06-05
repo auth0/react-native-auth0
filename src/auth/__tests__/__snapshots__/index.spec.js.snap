@@ -34,35 +34,20 @@ Array [
   Object {
     "body": "{\\"mfa_token\\":\\"1234\\",\\"oob_code\\":\\"123\\",\\"binding_code\\":\\"1234\\",\\"custom\\":\\"should not be filtered\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/mfa-oob\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -104,35 +89,20 @@ Array [
   Object {
     "body": "{\\"mfa_token\\":\\"1234\\",\\"otp\\":\\"1234\\",\\"custom\\":\\"should not be filtered\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/mfa-otp\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -166,35 +136,20 @@ Array [
   Object {
     "body": "{\\"mfa_token\\":\\"123\\",\\"recovery_code\\":\\"123\\",\\"custom\\":\\"should not be filtered\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/mfa-recovery-code\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -236,35 +191,20 @@ Array [
   Object {
     "body": "{\\"email\\":\\"info@auth0.com\\",\\"connection\\":\\"Username-Password-Authentication\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -299,35 +239,20 @@ Array [
   Object {
     "body": "{\\"subject_token\\":\\"a subject token\\",\\"subject_token_type\\":\\"a subject token type\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"urn:ietf:params:oauth:grant-type:token-exchange\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -338,35 +263,20 @@ Array [
   Object {
     "body": "{\\"subject_token\\":\\"a subject token\\",\\"subject_token_type\\":\\"a subject token type\\",\\"user_profile\\":{\\"name\\":{\\"firstName\\":\\"John\\",\\"lastName\\":\\"Smith\\"}},\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"urn:ietf:params:oauth:grant-type:token-exchange\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -391,35 +301,20 @@ Array [
   Object {
     "body": "{\\"code\\":\\"a code\\",\\"code_verifier\\":\\"a verifier\\",\\"redirect_uri\\":\\"https://mysite.com/callback\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"authorization_code\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -445,35 +340,20 @@ Array [
   Object {
     "body": "{\\"email\\":\\"info@auth0.com\\",\\"password\\":\\"secret\\",\\"connection\\":\\"aconnection\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -484,35 +364,20 @@ Array [
   Object {
     "body": "{\\"email\\":\\"info@auth0.com\\",\\"password\\":\\"secret\\",\\"connection\\":\\"aconnection\\",\\"user_metadata\\":{\\"customerId\\":12345},\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -523,35 +388,20 @@ Array [
   Object {
     "body": "{\\"email\\":\\"info@auth0.com\\",\\"password\\":\\"secret\\",\\"connection\\":\\"aconnection\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -582,35 +432,20 @@ Array [
   Object {
     "body": "{\\"username\\":\\"info@auth0.com\\",\\"password\\":\\"secret pass\\",\\"realm\\":\\"Username-Password-Authentication\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/password-realm\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -621,35 +456,20 @@ Array [
   Object {
     "body": "{\\"username\\":\\"info@auth0.com\\",\\"password\\":\\"secret pass\\",\\"realm\\":\\"Username-Password-Authentication\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"foo\\":\\"bar\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/password-realm\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -660,35 +480,20 @@ Array [
   Object {
     "body": "{\\"phone_number\\":\\"+5491159991000\\",\\"send\\":\\"code\\",\\"connection\\":\\"sms\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -699,35 +504,20 @@ Array [
   Object {
     "body": "{\\"phone_number\\":\\"+5491159991000\\",\\"send\\":\\"code\\",\\"authParams\\":{\\"scope\\":\\"openid profile\\"},\\"custom\\":\\"should not be filtered\\",\\"connection\\":\\"sms\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -738,35 +528,20 @@ Array [
   Object {
     "body": "{\\"phone_number\\":\\"+5491159991000\\",\\"send\\":\\"link\\",\\"connection\\":\\"sms\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -777,35 +552,20 @@ Array [
   Object {
     "body": "{\\"phone_number\\":\\"+5491159991000\\",\\"send\\":\\"code\\",\\"authParams\\":{\\"scope\\":\\"openid profile\\"},\\"connection\\":\\"sms\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -816,35 +576,20 @@ Array [
   Object {
     "body": "{\\"username\\":\\"+5491159991000\\",\\"otp\\":\\"123456\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"sms\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -855,35 +600,20 @@ Array [
   Object {
     "body": "{\\"username\\":\\"+5491159991000\\",\\"otp\\":\\"123456\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"custom\\":\\"should not be filtered\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"sms\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -894,35 +624,20 @@ Array [
   Object {
     "body": "{\\"username\\":\\"+5491159991000\\",\\"otp\\":\\"123456\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"sms\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -933,35 +648,20 @@ Array [
   Object {
     "body": "{\\"email\\":\\"info@auth0.com\\",\\"send\\":\\"link\\",\\"connection\\":\\"email\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -972,35 +672,20 @@ Array [
   Object {
     "body": "{\\"email\\":\\"info@auth0.com\\",\\"send\\":\\"code\\",\\"authParams\\":{\\"scope\\":\\"openid profile\\"},\\"custom\\":\\"should not be filtered\\",\\"connection\\":\\"email\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -1011,35 +696,20 @@ Array [
   Object {
     "body": "{\\"email\\":\\"info@auth0.com\\",\\"send\\":\\"link\\",\\"connection\\":\\"email\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -1050,35 +720,20 @@ Array [
   Object {
     "body": "{\\"email\\":\\"info@auth0.com\\",\\"send\\":\\"code\\",\\"authParams\\":{\\"scope\\":\\"openid profile\\"},\\"connection\\":\\"email\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -1089,35 +744,20 @@ Array [
   Object {
     "body": "{\\"username\\":\\"info@auth0.com\\",\\"otp\\":\\"123456\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"email\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -1128,35 +768,20 @@ Array [
   Object {
     "body": "{\\"username\\":\\"info@auth0.com\\",\\"otp\\":\\"123456\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"custom\\":\\"should not be filtered\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"email\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -1167,35 +792,20 @@ Array [
   Object {
     "body": "{\\"username\\":\\"info@auth0.com\\",\\"otp\\":\\"123456\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"email\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -1224,35 +834,20 @@ Array [
   Object {
     "body": "{\\"refresh_token\\":\\"a refresh token of a user\\",\\"scope\\":\\"openid\\",\\"customParam\\":\\"a custom value which should not be filtered out\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"refresh_token\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -1269,35 +864,20 @@ Array [
   Object {
     "body": "{\\"token\\":\\"a refresh token of a user\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -1332,36 +912,23 @@ Array [
   "https://samples.auth0.com/userinfo",
   Object {
     "headers": Headers {
-      Symbol(headers list): HeadersList {
-        Symbol(headers map): Map {
-          "accept" => "application/json",
-          "content-type" => "application/json",
-          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-          "authorization" => "Bearer an access token of a user",
-        },
-        Symbol(headers map sorted): null,
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Authorization": Array [
+          "Bearer an access token of a user",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
       },
-      Symbol(guard): "none",
     },
     "method": "GET",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "flags": 0,
-            "listener": [Function],
-            "next": undefined,
-            "previous": [Circular],
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-      Symbol(kReason): undefined,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;

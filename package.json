@@ -55,6 +55,7 @@
     "jsdoc-to-markdown": "^6.0.1",
     "metro-react-native-babel-preset": "^0.58.0",
     "minami": "^1.2.3",
+    "node-fetch": "^2.6.7",
     "prettier": "^2.8.8",
     "pretty-quick": "^1.11.1",
     "react": "^18.2.0",
@@ -78,7 +79,8 @@
     "collectCoverage": false,
     "modulePathIgnorePatterns": [
       "fixtures"
-    ]
+    ],
+    "testEnvironment": "./jest.environment"
   },
   "husky": {
     "hooks": {
