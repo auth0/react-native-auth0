@@ -43,21 +43,9 @@ export type RawMultifactorChallengeOOBWithBindingResponse = RawMultifactorChalle
   binding_method: string;
 };
 
-export type RawMultifactorChallengeOOBResponse =
-  RawMultifactorChallengeOTPResponse & {
-    oob_code: string;
-  };
-export type RawMultifactorChallengeOOBWithBindingResponse =
-  RawMultifactorChallengeOOBResponse & {
-    binding_method: string;
-  };
-
-
 export type RawMultifactorChallengeResponse =
   | RawMultifactorChallengeOTPResponse
   | RawMultifactorChallengeOOBResponse
   | RawMultifactorChallengeOOBWithBindingResponse;
 
-
 export type CustomJwtPayload = JwtPayload & RawUser;
-
