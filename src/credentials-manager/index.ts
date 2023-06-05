@@ -3,10 +3,37 @@ import CredentialsManagerError from './credentialsManagerError';
 import LocalAuthenticationStrategy from './localAuthenticationStrategy';
 import {Credentials} from '../types';
 
+/**
+ * Type representing the Native Auth0 API's on iOS and Android
+ */
+type Auth0Module = {
+  saveCredentials: (credentials: Credentials) => Promise<void>;
+  getCredentials: (
+    scope?: string,
+    minTtl?: number,
+    parameters?: object,
+  ) => Promise<Credentials>;
+  enableLocalAuthentication:
+    | ((
+        title?: string,
+        cancelTitle?: string,
+        fallbackTitle?: string,
+        strategy?: LocalAuthenticationStrategy,
+      ) => Promise<void>)
+    | ((title?: string, description?: string) => Promise<void>);
+  hasValidCredentials: (minTtl?: number) => Promise<boolean>;
+  clearCredentials: () => Promise<void>;
+  hasValidCredentialManagerInstance: () => Promise<boolean>;
+  initializeCredentialManager: (
+    clientId: string,
+    domain: string,
+  ) => Promise<void>;
+};
+
 class CredentialsManager {
   private domain;
   private clientId;
-  private Auth0Module;
+  private Auth0Module: Auth0Module;
 
   /**
    * Construct an instance of CredentialsManager
@@ -34,7 +61,7 @@ class CredentialsManager {
    */
   async saveCredentials(credentials: Credentials): Promise<void> {
     const validateKeys = ['idToken', 'accessToken', 'tokenType', 'expiresIn'];
-    validateKeys.forEach(key => {
+    validateKeys.forEach((key) => {
       if (!credentials[key]) {
         const json = {
           error: 'a0.credential_manager.invalid_input',
@@ -71,12 +98,7 @@ class CredentialsManager {
   ): Promise<Credentials> {
     try {
       await this._ensureCredentialManagerIsInitialized();
-      const credentials = await this.Auth0Module.getCredentials(
-        scope,
-        minTtl,
-        parameters,
-      );
-      return credentials;
+      return this.Auth0Module.getCredentials(scope, minTtl, parameters);
     } catch (e) {
       const json = {
         error: 'a0.credential_manager.invalid',
@@ -139,7 +161,7 @@ class CredentialsManager {
    */
   async clearCredentials(): Promise<void> {
     await this._ensureCredentialManagerIsInitialized();
-    return await this.Auth0Module.clearCredentials();
+    return this.Auth0Module.clearCredentials();
   }
 
   //private
