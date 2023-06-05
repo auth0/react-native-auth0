@@ -27,7 +27,7 @@ const initialState = {
  * @ignore
  */
 const getIdTokenProfileClaims = (idToken: string): User => {
-  const payload: CustomJwtPayload = jwtDecode<JwtPayload>(idToken);
+const payload = jwtDecode<CustomJwtPayload>(idToken);
   return convertUser(payload);
 };
 
