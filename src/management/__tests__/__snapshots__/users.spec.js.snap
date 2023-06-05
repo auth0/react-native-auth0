@@ -121,11 +121,17 @@ exports[`users GET user should send correct payload 1`] = `
 Array [
   "https://samples.auth0.com/api/v2/users/auth0%7C53b995f8bce68d9fc900099c",
   Object {
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Authorization": "Bearer a.token.from.the.user",
-      "Content-Type": "application/json",
+    "headers": Headers {
+      Symbol(headers list): HeadersList {
+        Symbol(headers map): Map {
+          "accept" => "application/json",
+          "content-type" => "application/json",
+          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+          "authorization" => "Bearer a.token.from.the.user",
+        },
+        Symbol(headers map sorted): null,
+      },
+      Symbol(guard): "none",
     },
     "method": "GET",
     "signal": AbortSignal {
@@ -133,15 +139,10 @@ Array [
         "abort" => Object {
           "next": Listener {
             "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
+            "flags": 0,
             "listener": [Function],
             "next": undefined,
-            "once": false,
-            "passive": false,
             "previous": [Circular],
-            "removed": false,
-            "weak": false,
           },
           "size": 1,
         },
@@ -149,6 +150,7 @@ Array [
       Symbol(events.maxEventTargetListeners): 10,
       Symbol(events.maxEventTargetListenersWarned): false,
       Symbol(kAborted): false,
+      Symbol(kReason): undefined,
     },
   },
 ]
@@ -276,11 +278,17 @@ Array [
   "https://samples.auth0.com/api/v2/users/auth0%7C53b995f8bce68d9fc900099c",
   Object {
     "body": "{\\"user_metadata\\":{\\"first_name\\":\\"Mike\\",\\"lastName\\":\\"Doe\\"}}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Authorization": "Bearer a.token.from.the.user",
-      "Content-Type": "application/json",
+    "headers": Headers {
+      Symbol(headers list): HeadersList {
+        Symbol(headers map): Map {
+          "accept" => "application/json",
+          "content-type" => "application/json",
+          "auth0-client" => "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+          "authorization" => "Bearer a.token.from.the.user",
+        },
+        Symbol(headers map sorted): null,
+      },
+      Symbol(guard): "none",
     },
     "method": "PATCH",
     "signal": AbortSignal {
@@ -288,15 +296,10 @@ Array [
         "abort" => Object {
           "next": Listener {
             "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
+            "flags": 0,
             "listener": [Function],
             "next": undefined,
-            "once": false,
-            "passive": false,
             "previous": [Circular],
-            "removed": false,
-            "weak": false,
           },
           "size": 1,
         },
@@ -304,6 +307,7 @@ Array [
       Symbol(events.maxEventTargetListeners): 10,
       Symbol(events.maxEventTargetListenersWarned): false,
       Symbol(kAborted): false,
+      Symbol(kReason): undefined,
     },
   },
 ]
