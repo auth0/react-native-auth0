@@ -1,10 +1,11 @@
 import {CustomJwtPayload, RawUser} from '../internal-types';
+import {idTokenNonProfileClaims} from '../jwt/utils';
 import {User} from '../types';
 
 function snakeToCamel(str: string): string {
   var parts = str.split('_');
   return (
-    parts.reduce(function(p, c) {
+    parts.reduce(function (p, c) {
       return p + c.charAt(0).toUpperCase() + c.slice(1);
     }, parts.shift()) ?? ''
   );
@@ -41,11 +42,13 @@ export function convertUser(payload: CustomJwtPayload): User {
           ...profile,
           [snakeToCamel(claim)]: payload[claim],
         };
-      } else {
+      } else if (!idTokenNonProfileClaims.has(claim)) {
         return {
           ...profile,
           [claim]: payload[claim],
         };
+      } else {
+        return profile;
       }
     },
     {},
