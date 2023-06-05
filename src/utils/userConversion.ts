@@ -1,4 +1,5 @@
 import {RawUser} from '../internal-types';
+import {User} from '../types';
 
 function snakeToCamel(str: string): string {
   var parts = str.split('_');
@@ -9,7 +10,7 @@ function snakeToCamel(str: string): string {
   );
 }
 
-export function convertUser(payload: RawUser) {
+export function convertUser(payload: RawUser): User {
   const claimsToCamelize: Array<keyof RawUser> = [
     'name',
     'given_name',
