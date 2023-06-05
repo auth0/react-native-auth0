@@ -1,36 +1,31 @@
-export type Credentials = {
-  idToken: string;
-  accessToken: string;
-  tokenType: string;
-  expiresIn: number;
-  refreshToken?: string;
-  scope?: string;
-  [key: string]: any;
+import {
+  RawCredentials,
+  RawMultifactorChallengeOOBResponse,
+  RawMultifactorChallengeOOBWithBindingResponse,
+  RawMultifactorChallengeOTPResponse,
+  RawMultifactorChallengeResponse,
+  RawUser,
+} from './internal-types';
+
+export type CamelizeString<ObjectProperty extends string> =
+  ObjectProperty extends `${infer F}_${infer R}`
+    ? `${F}${Capitalize<CamelizeString<R>>}`
+    : ObjectProperty;
+
+export type Camelize<GenericObject> = {
+  [ObjectProperty in keyof GenericObject as CamelizeString<
+    ObjectProperty & string
+  >]: GenericObject[ObjectProperty] extends Array<infer ArrayItem>
+    ? ArrayItem extends Record<string, unknown>
+      ? Array<Camelize<ArrayItem>>
+      : GenericObject[ObjectProperty]
+    : GenericObject[ObjectProperty] extends Record<string, unknown>
+    ? Camelize<GenericObject[ObjectProperty]>
+    : GenericObject[ObjectProperty];
 };
 
-export interface User {
-  name?: string;
-  givenName?: string;
-  familyName?: string;
-  middleName?: string;
-  nickname?: string;
-  preferredUsername?: string;
-  profile?: string;
-  picture?: string;
-  website?: string;
-  email?: string;
-  emailVerified?: boolean;
-  gender?: string;
-  birthdate?: string;
-  zoneinfo?: string;
-  locale?: string;
-  phoneNumber?: string;
-  phoneNumberVerified?: boolean;
-  address?: string;
-  updatedAt?: string;
-  sub?: string;
-  [key: string]: any;
-}
+export type Credentials = Camelize<RawCredentials>;
+export type User = Camelize<RawUser>;
 
 export interface WebAuthorizeParameters {
   state?: string;
@@ -202,15 +197,6 @@ export interface CreateUserOptions {
 }
 
 export type MultifactorChallengeResponse =
-  | {
-      challengeType: string;
-    }
-  | {
-      challengeType: string;
-      oobCode: string;
-    }
-  | {
-      challengeType: string;
-      oobCode: string;
-      bindingMethod: string;
-    };
+  | Camelize<RawMultifactorChallengeOTPResponse>
+  | Camelize<RawMultifactorChallengeOOBResponse>
+  | Camelize<RawMultifactorChallengeOOBWithBindingResponse>;

@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import Auth0Context from './auth0-context';
 import Auth0 from '../auth0';
 import reducer from './reducer';
-import {idTokenNonProfileClaims} from '../jwt/utils';
 import {
   ClearSessionOptions,
   ClearSessionParameters,
@@ -15,7 +14,8 @@ import {
   WebAuthorizeParameters,
 } from '../types';
 import LocalAuthenticationStrategy from '../credentials-manager/localAuthenticationStrategy';
-import {toCamelCase} from '../utils/camel';
+import {CustomJwtPayload, RawUser} from '../internal-types';
+import {convertUser} from '../utils/userConversion';
 
 const initialState = {
   user: null,
@@ -27,17 +27,8 @@ const initialState = {
  * @ignore
  */
 const getIdTokenProfileClaims = (idToken: string): User => {
-  const payload: {[key: string]: any} = jwtDecode<JwtPayload>(idToken);
-
-  const profileClaims = Object.keys(payload).reduce((profile: User, claim) => {
-    if (!idTokenNonProfileClaims.has(claim)) {
-      profile[claim] = payload[claim];
-    }
-
-    return toCamelCase(profile);
-  }, {});
-
-  return profileClaims;
+  const payload: CustomJwtPayload = jwtDecode<JwtPayload>(idToken);
+  return convertUser(payload);
 };
 
 /**

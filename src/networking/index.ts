@@ -1,7 +1,7 @@
 import {Telemetry, defaults} from './telemetry';
 import url from 'url';
 import base64 from 'base-64';
-import {RequestOptions, fetchWithTimeout} from '../utils/fetchWithTimeout';
+import {fetchWithTimeout} from '../utils/fetchWithTimeout';
 
 export default class Client {
   public telemetry: Telemetry;
@@ -49,16 +49,16 @@ export default class Client {
     this.timeout = timeout;
   }
 
-  post(path: string, body: unknown) {
-    return this.request('POST', this.url(path), body);
+  post<TData = unknown, TBody = unknown>(path: string, body: TBody) {
+    return this.request<TData, TBody>('POST', this.url(path), body);
   }
 
-  patch(path: string, body: unknown) {
-    return this.request('PATCH', this.url(path), body);
+  patch<TData = unknown, TBody = unknown>(path: string, body: TBody) {
+    return this.request<TData, TBody>('PATCH', this.url(path), body);
   }
 
-  get(path: string, query?: unknown) {
-    return this.request('GET', this.url(path, query));
+  get<TData = unknown>(path: string, query?: unknown) {
+    return this.request<TData>('GET', this.url(path, query));
   }
 
   url(path: string, query?: any, includeTelemetry: boolean = false) {
@@ -74,22 +74,24 @@ export default class Client {
     return endpoint;
   }
 
-  request<TData>(
+  request<TData, TBody = unknown>(
     method: 'GET' | 'POST' | 'PATCH',
     url: string,
-    body?: unknown,
+    body?: TBody,
   ): Promise<Auth0Response<TData>> {
-    const options: RequestOptions = {
-      method: method,
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'Auth0-Client': this._encodedTelemetry(),
-      },
+    const headers = new Headers();
+
+    headers.set('Accept', 'application/json');
+    headers.set('Content-Type', 'application/json');
+    headers.set('Auth0-Client', this._encodedTelemetry());
+
+    const options: RequestInit = {
+      method,
+      headers,
     };
 
     if (this.bearer) {
-      options.headers.Authorization = this.bearer;
+      headers.set('Authorization', this.bearer);
     }
     if (body) {
       options.body = JSON.stringify(body);

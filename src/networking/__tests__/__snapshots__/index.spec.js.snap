@@ -6,35 +6,24 @@ exports[`client requests GET json should build proper request with no query 1`] 
 Array [
   "https://samples.auth0.com/method",
   Object {
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Authorization": "Bearer a.bearer.token",
-      "Content-Type": "application/json",
+    "headers": Headers {
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Authorization": Array [
+          "Bearer a.bearer.token",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
+      },
     },
     "method": "GET",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -43,35 +32,24 @@ exports[`client requests GET json should build proper request with query 1`] = `
 Array [
   "https://samples.auth0.com/method?string=value&number=10",
   Object {
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Authorization": "Bearer a.bearer.token",
-      "Content-Type": "application/json",
+    "headers": Headers {
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Authorization": Array [
+          "Bearer a.bearer.token",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
+      },
     },
     "method": "GET",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -114,35 +92,24 @@ Array [
   "https://samples.auth0.com/method",
   Object {
     "body": "{\\"string\\":\\"value\\",\\"number\\":10}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Authorization": "Bearer a.bearer.token",
-      "Content-Type": "application/json",
+    "headers": Headers {
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Authorization": Array [
+          "Bearer a.bearer.token",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
+      },
     },
     "method": "PATCH",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -151,35 +118,24 @@ exports[`client requests PATCH json should build proper request with no body 1`]
 Array [
   "https://samples.auth0.com/method",
   Object {
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Authorization": "Bearer a.bearer.token",
-      "Content-Type": "application/json",
+    "headers": Headers {
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Authorization": Array [
+          "Bearer a.bearer.token",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
+      },
     },
     "method": "PATCH",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -222,35 +178,24 @@ Array [
   "https://samples.auth0.com/method",
   Object {
     "body": "{\\"string\\":\\"value\\",\\"number\\":10}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Authorization": "Bearer a.bearer.token",
-      "Content-Type": "application/json",
+    "headers": Headers {
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Authorization": Array [
+          "Bearer a.bearer.token",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -259,35 +204,24 @@ exports[`client requests POST json should build proper request with no body 1`] 
 Array [
   "https://samples.auth0.com/method",
   Object {
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Authorization": "Bearer a.bearer.token",
-      "Content-Type": "application/json",
+    "headers": Headers {
+      Symbol(map): Object {
+        "Accept": Array [
+          "application/json",
+        ],
+        "Auth0-Client": Array [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Authorization": Array [
+          "Bearer a.bearer.token",
+        ],
+        "Content-Type": Array [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;

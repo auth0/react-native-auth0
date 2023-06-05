@@ -21,9 +21,12 @@ function makeTimeout(timeoutMs: number) {
   };
 }
 
+/**
+ * @private
+ */
 export function fetchWithTimeout(
   url: string,
-  options: RequestOptions,
+  options: RequestInit,
   timeoutMs: number,
 ): Promise<Response> {
   const {
@@ -39,26 +42,15 @@ export function fetchWithTimeout(
     }),
     timeoutPromise,
   ])
-    .catch(error => {
+    .catch((error) => {
       if (error instanceof TimeoutError) {
         abortController.abort();
       }
 
       throw error;
     })
-    .then(response => {
+    .then((response) => {
       clearTimeout(timerId);
       return response;
     }) as Promise<Response>;
 }
-
-export type RequestOptions = {
-  method: 'GET' | 'POST' | 'PATCH';
-  body?: any;
-  headers: {
-    Accept: string;
-    'Content-Type': string;
-    'Auth0-Client': string;
-    Authorization?: string;
-  };
-};
