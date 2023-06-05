@@ -1,12 +1,44 @@
-import Client from '../networking';
+import Client, {Auth0Response} from '../networking';
 import {apply} from '../utils/whitelist';
 import {toCamelCase} from '../utils/camel';
 import AuthError from './authError';
 import Auth0Error from './auth0Error';
+import {Telemetry} from '../networking/telemetry';
+import {
+  AuthorizeUrlOptions,
+  CreateUserOptions,
+  Credentials,
+  ExchangeNativeSocialOptions,
+  ExchangeOptions,
+  LoginWithEmailOptions,
+  LoginWithOOBOptions,
+  LoginWithOTPOptions,
+  LoginWithRecoveryCodeOptions,
+  LoginWithSMSOptions,
+  LogoutUrlOptions,
+  MultifactorChallengeOptions,
+  MultifactorChallengeResponse,
+  PasswordRealmOptions,
+  PasswordlessWithEmailOptions,
+  PasswordlessWithSMSOptions,
+  RefreshTokenOptions,
+  ResetPasswordOptions,
+  RevokeOptions,
+  User,
+  UserInfoOptions,
+} from '../types';
+import {
+  RawCredentials,
+  RawMultifactorChallengeResponse,
+  RawUser,
+} from '../internal-types';
 
-function responseHandler(response, exceptions = {}) {
+function responseHandler<TRawResult = unknown, TResult = unknown>(
+  response: Auth0Response<TRawResult>,
+  exceptions = {},
+) {
   if (response.ok && response.json) {
-    return toCamelCase(response.json, exceptions);
+    return toCamelCase(response.json, exceptions) as TResult;
   }
   throw new AuthError(response);
 }
@@ -17,13 +49,23 @@ function responseHandler(response, exceptions = {}) {
  * @see https://auth0.com/docs/api/authentication
  */
 class Auth {
-  constructor(options = {}) {
+  private client;
+  public clientId;
+  public domain;
+
+  constructor(options: {
+    baseUrl: string;
+    clientId: string;
+    telemetry?: Telemetry;
+    token?: string;
+    timeout?: number;
+  }) {
     this.client = new Client(options);
+    this.domain = this.client.domain;
     const {clientId} = options;
     if (!clientId) {
       throw new Error('Missing clientId in parameters');
     }
-    this.domain = this.client.domain;
     this.clientId = clientId;
   }
 
@@ -37,7 +79,7 @@ class Auth {
    * @returns {String} authorize url with specified parameters to redirect to for AuthZ/AuthN.
    * @see https://auth0.com/docs/api/authentication#authorize-client
    */
-  authorizeUrl(parameters = {}) {
+  authorizeUrl(parameters: AuthorizeUrlOptions): string {
     const query = apply(
       {
         parameters: {
@@ -49,11 +91,7 @@ class Auth {
       },
       parameters,
     );
-    return this.client.url(
-      '/authorize',
-      {...query, client_id: this.clientId},
-      true,
-    );
+    return this.client.url('/authorize', query, true);
   }
 
   /**
@@ -66,7 +104,7 @@ class Auth {
    * @returns {String} logout url with specified parameters
    * @see https://auth0.com/docs/api/authentication#logout
    */
-  logoutUrl(parameters = {}) {
+  logoutUrl(parameters: LogoutUrlOptions): string {
     const query = apply(
       {
         parameters: {
@@ -90,7 +128,7 @@ class Auth {
    * @returns {Promise}
    * @see https://auth0.com/docs/api-auth/grant/authorization-code-pkce
    */
-  exchange(parameters = {}) {
+  exchange(parameters: ExchangeOptions): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
@@ -102,12 +140,14 @@ class Auth {
       parameters,
     );
     return this.client
-      .post('/oauth/token', {
+      .post<RawCredentials>('/oauth/token', {
         ...payload,
         client_id: this.clientId,
         grant_type: 'authorization_code',
       })
-      .then(responseHandler);
+      .then((response) =>
+        responseHandler<RawCredentials, Credentials>(response),
+      );
   }
 
   /**
@@ -123,7 +163,9 @@ class Auth {
    *
    * @see https://auth0.com/docs/api/authentication#token-exchange-for-native-social
    */
-  exchangeNativeSocial(parameters = {}) {
+  exchangeNativeSocial(
+    parameters: ExchangeNativeSocialOptions,
+  ): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
@@ -137,12 +179,14 @@ class Auth {
       parameters,
     );
     return this.client
-      .post('/oauth/token', {
+      .post<RawCredentials>('/oauth/token', {
         ...payload,
         client_id: this.clientId,
         grant_type: 'urn:ietf:params:oauth:grant-type:token-exchange',
       })
-      .then(responseHandler);
+      .then((response) =>
+        responseHandler<RawCredentials, Credentials>(response),
+      );
   }
 
   /**
@@ -157,27 +201,16 @@ class Auth {
    * @returns {Promise}
    * @see https://auth0.com/docs/api-auth/grant/password#realm-support
    */
-  passwordRealm(parameters = {}) {
-    const payload = apply(
-      {
-        parameters: {
-          username: {required: true},
-          password: {required: true},
-          realm: {required: true},
-          audience: {required: false},
-          scope: {required: false},
-        },
-        whitelist: false,
-      },
-      parameters,
-    );
+  passwordRealm(parameters: PasswordRealmOptions): Promise<Credentials> {
     return this.client
-      .post('/oauth/token', {
-        ...payload,
+      .post<RawCredentials>('/oauth/token', {
+        ...parameters,
         client_id: this.clientId,
         grant_type: 'http://auth0.com/oauth/grant-type/password-realm',
       })
-      .then(responseHandler);
+      .then((response) =>
+        responseHandler<RawCredentials, Credentials>(response),
+      );
   }
 
   /**
@@ -189,7 +222,7 @@ class Auth {
    * @returns {Promise}
    * @see https://auth0.com/docs/tokens/refresh-token/current#use-a-refresh-token
    */
-  refreshToken(parameters = {}) {
+  refreshToken(parameters: RefreshTokenOptions): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
@@ -201,12 +234,14 @@ class Auth {
       parameters,
     );
     return this.client
-      .post('/oauth/token', {
+      .post<RawCredentials>('/oauth/token', {
         ...payload,
         client_id: this.clientId,
         grant_type: 'refresh_token',
       })
-      .then(responseHandler);
+      .then((response) =>
+        responseHandler<RawCredentials, Credentials>(response),
+      );
   }
 
   /**
@@ -218,25 +253,16 @@ class Auth {
    * @param {String} parameters.authParams optional parameters, used when strategy is 'linḱ'
    * @returns {Promise}
    */
-  passwordlessWithEmail(parameters = {}) {
-    const payload = apply(
-      {
-        parameters: {
-          email: {required: true},
-          send: {required: false},
-          authParams: {required: false},
-        },
-        whitelist: false,
-      },
-      parameters,
-    );
+  passwordlessWithEmail(
+    parameters: PasswordlessWithEmailOptions,
+  ): Promise<void> {
     return this.client
-      .post('/passwordless/start', {
-        ...payload,
+      .post<void>('/passwordless/start', {
+        ...parameters,
         connection: 'email',
         client_id: this.clientId,
       })
-      .then(responseHandler);
+      .then((response) => responseHandler<void, void>(response));
   }
 
   /**
@@ -246,7 +272,7 @@ class Auth {
    * @param {String} parameters.phoneNumber the phone number to send the link/code to
    * @returns {Promise}
    */
-  passwordlessWithSMS(parameters = {}) {
+  passwordlessWithSMS(parameters: PasswordlessWithSMSOptions): Promise<void> {
     const payload = apply(
       {
         parameters: {
@@ -259,12 +285,12 @@ class Auth {
       parameters,
     );
     return this.client
-      .post('/passwordless/start', {
+      .post<void>('/passwordless/start', {
         ...payload,
         connection: 'sms',
         client_id: this.clientId,
       })
-      .then(responseHandler);
+      .then((response) => responseHandler<void, void>(response));
   }
 
   /**
@@ -277,7 +303,7 @@ class Auth {
    * @param {String} parameters.scope optional scopes to request
    * @returns {Promise}
    */
-  loginWithEmail(parameters = {}) {
+  loginWithEmail(parameters: LoginWithEmailOptions): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
@@ -291,13 +317,15 @@ class Auth {
       parameters,
     );
     return this.client
-      .post('/oauth/token', {
+      .post<RawCredentials>('/oauth/token', {
         ...payload,
         client_id: this.clientId,
         realm: 'email',
         grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
       })
-      .then(responseHandler);
+      .then((response) =>
+        responseHandler<RawCredentials, Credentials>(response),
+      );
   }
 
   /**
@@ -310,7 +338,7 @@ class Auth {
    * @param {String} parameters.scope optional scopes to request
    * @returns {Promise}
    */
-  loginWithSMS(parameters = {}) {
+  loginWithSMS(parameters: LoginWithSMSOptions): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
@@ -324,13 +352,15 @@ class Auth {
       parameters,
     );
     return this.client
-      .post('/oauth/token', {
+      .post<RawCredentials>('/oauth/token', {
         ...payload,
         client_id: this.clientId,
         realm: 'sms',
         grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
       })
-      .then(responseHandler);
+      .then((response) =>
+        responseHandler<RawCredentials, Credentials>(response),
+      );
   }
 
   /**
@@ -345,7 +375,7 @@ class Auth {
    * @param {String} parameters.otp the one time password code provided by the resource owner, typically obtained from an MFA application such as Google Authenticator or Guardian.
    * @returns {Promise}
    */
-  loginWithOTP(parameters = {}) {
+  loginWithOTP(parameters: LoginWithOTPOptions): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
@@ -357,12 +387,14 @@ class Auth {
       parameters,
     );
     return this.client
-      .post('/oauth/token', {
+      .post<RawCredentials>('/oauth/token', {
         ...payload,
         client_id: this.clientId,
         grant_type: 'http://auth0.com/oauth/grant-type/mfa-otp',
       })
-      .then(responseHandler);
+      .then((response) =>
+        responseHandler<RawCredentials, Credentials>(response),
+      );
   }
 
   /**
@@ -379,7 +411,7 @@ class Auth {
    * @returns {Promise}
    */
 
-  loginWithOOB(parameters = {}) {
+  loginWithOOB(parameters: LoginWithOOBOptions): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
@@ -393,12 +425,14 @@ class Auth {
     );
 
     return this.client
-      .post('/oauth/token', {
+      .post<RawCredentials>('/oauth/token', {
         ...payload,
         client_id: this.clientId,
         grant_type: 'http://auth0.com/oauth/grant-type/mfa-oob',
       })
-      .then(responseHandler);
+      .then((response) =>
+        responseHandler<RawCredentials, Credentials>(response),
+      );
   }
 
   /**
@@ -412,7 +446,9 @@ class Auth {
    * @param {String} parameters.recoveryCode the recovery code provided by the end-user.
    * @returns {Promise}
    */
-  loginWithRecoveryCode(parameters = {}) {
+  loginWithRecoveryCode(
+    parameters: LoginWithRecoveryCodeOptions,
+  ): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
@@ -425,12 +461,14 @@ class Auth {
     );
 
     return this.client
-      .post('/oauth/token', {
+      .post<RawCredentials>('/oauth/token', {
         ...payload,
         client_id: this.clientId,
         grant_type: 'http://auth0.com/oauth/grant-type/mfa-recovery-code',
       })
-      .then(responseHandler);
+      .then((response) =>
+        responseHandler<RawCredentials, Credentials>(response),
+      );
   }
 
   /**
@@ -445,7 +483,9 @@ class Auth {
    * @param {String} parameters.authenticatorId The ID of the authenticator to challenge.
    * @returns {Promise}
    */
-  multifactorChallenge(parameters = {}) {
+  multifactorChallenge(
+    parameters: MultifactorChallengeOptions,
+  ): Promise<MultifactorChallengeResponse> {
     const payload = apply(
       {
         parameters: {
@@ -457,11 +497,16 @@ class Auth {
       parameters,
     );
     return this.client
-      .post('/mfa/challenge', {
+      .post<RawMultifactorChallengeResponse>('/mfa/challenge', {
         ...payload,
         client_id: this.clientId,
       })
-      .then(responseHandler);
+      .then((response) =>
+        responseHandler<
+          RawMultifactorChallengeResponse,
+          MultifactorChallengeResponse
+        >(response),
+      );
   }
 
   /**
@@ -471,7 +516,7 @@ class Auth {
    * @param {String} parameters.refreshToken user's issued refresh token
    * @returns {Promise}
    */
-  revoke(parameters = {}) {
+  revoke(parameters: RevokeOptions): Promise<void> {
     const payload = apply(
       {
         parameters: {
@@ -481,13 +526,13 @@ class Auth {
       parameters,
     );
     return this.client
-      .post('/oauth/revoke', {
+      .post<void>('/oauth/revoke', {
         ...payload,
         client_id: this.clientId,
       })
-      .then(response => {
+      .then((response) => {
         if (response.ok) {
-          return {};
+          return;
         }
         throw new AuthError(response);
       });
@@ -500,17 +545,9 @@ class Auth {
    * @param {String} parameters.token user's access token
    * @returns {Promise}
    */
-  userInfo(parameters = {}) {
-    const payload = apply(
-      {
-        parameters: {
-          token: {required: true},
-        },
-      },
-      parameters,
-    );
+  userInfo(parameters: UserInfoOptions): Promise<User> {
     const {baseUrl, telemetry} = this.client;
-    const client = new Client({baseUrl, telemetry, token: payload.token});
+    const client = new Client({baseUrl, telemetry, token: parameters.token});
     const claims = [
       'sub',
       'name',
@@ -533,11 +570,12 @@ class Auth {
       'address',
       'updated_at',
     ];
-    return client
-      .get('/userinfo')
-      .then(response =>
-        responseHandler(response, {attributes: claims, whitelist: true}),
-      );
+    return client.get<RawUser>('/userinfo').then((response) =>
+      responseHandler<RawUser, User>(response, {
+        attributes: claims,
+        whitelist: true,
+      }),
+    );
   }
 
   /**
@@ -548,24 +586,15 @@ class Auth {
    * @param {String} parameters.connection name of the connection of the user
    * @returns {Promise}
    */
-  resetPassword(parameters = {}) {
-    const payload = apply(
-      {
-        parameters: {
-          email: {required: true},
-          connection: {required: true},
-        },
-      },
-      parameters,
-    );
+  resetPassword(parameters: ResetPasswordOptions): Promise<void> {
     return this.client
-      .post('/dbconnections/change_password', {
-        ...payload,
+      .post<void>('/dbconnections/change_password', {
+        ...parameters,
         client_id: this.clientId,
       })
-      .then(response => {
+      .then((response) => {
         if (response.ok) {
-          return {};
+          return;
         }
         throw new AuthError(response);
       });
@@ -587,7 +616,7 @@ class Auth {
    * @param {String} [parameters.metadata] additional user information that will be stored in `user_metadata`
    * @returns {Promise}
    */
-  createUser(parameters = {}) {
+  createUser(parameters: CreateUserOptions): Promise<Partial<User>> {
     const payload = apply(
       {
         parameters: {
@@ -607,13 +636,13 @@ class Auth {
     );
 
     return this.client
-      .post('/dbconnections/signup', {
+      .post<Partial<RawUser>>('/dbconnections/signup', {
         ...payload,
         client_id: this.clientId,
       })
-      .then(response => {
+      .then((response) => {
         if (response.ok && response.json) {
-          return toCamelCase(response.json);
+          return toCamelCase<Partial<User>>(response.json);
         }
         throw new Auth0Error(response);
       });

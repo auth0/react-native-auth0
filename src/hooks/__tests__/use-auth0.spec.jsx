@@ -137,7 +137,9 @@ describe('The useAuth0 hook', () => {
 
   it('initializes the user on start up with valid credentials', async () => {
     mockAuth0.credentialsManager.hasValidCredentials.mockResolvedValue(true);
-    mockAuth0.credentialsManager.getCredentials.mockResolvedValue(mockCredentials);
+    mockAuth0.credentialsManager.getCredentials.mockResolvedValue(
+      mockCredentials,
+    );
 
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
@@ -174,13 +176,16 @@ describe('The useAuth0 hook', () => {
   it('can authorize, passing through all parameters', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
 
-    result.current.authorize({
-      scope: 'custom-scope',
-      audience: 'http://my-api',
-      customParam: '1234',
-    }, {
-      ephemeralSession: true
-    });
+    result.current.authorize(
+      {
+        scope: 'custom-scope',
+        audience: 'http://my-api',
+        customParam: '1234',
+      },
+      {
+        ephemeralSession: true,
+      },
+    );
 
     await waitForNextUpdate();
 
@@ -189,8 +194,9 @@ describe('The useAuth0 hook', () => {
         scope: 'custom-scope openid profile email',
         audience: 'http://my-api',
         customParam: '1234',
-      }, {
-        ephemeralSession: true
+      },
+      {
+        ephemeralSession: true,
       },
     );
   });
@@ -280,7 +286,7 @@ describe('The useAuth0 hook', () => {
 
     expect(result.current.user).toMatchObject({
       name: 'Test User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
     });
   });
@@ -406,10 +412,10 @@ describe('The useAuth0 hook', () => {
 
     await waitForNextUpdate();
     let credentials;
-    await act( async () => {
-      credentials = await result.current.getCredentials()
-    })
-    expect(credentials).toMatchObject(mockCredentials)
+    await act(async () => {
+      credentials = await result.current.getCredentials();
+    });
+    expect(credentials).toMatchObject(mockCredentials);
   });
 
   it('can get credentials with options', async () => {
@@ -418,12 +424,12 @@ describe('The useAuth0 hook', () => {
     await waitForNextUpdate();
 
     let credentials;
-    await act( async () => {
-      credentials = await result.current.getCredentials('read:books', 60, {hello: 'world'})
-    })
-    expect(
-      credentials
-    ).toMatchObject(mockCredentials);
+    await act(async () => {
+      credentials = await result.current.getCredentials('read:books', 60, {
+        hello: 'world',
+      });
+    });
+    expect(credentials).toMatchObject(mockCredentials);
 
     expect(mockAuth0.credentialsManager.getCredentials).toHaveBeenCalledWith(
       'read:books',
@@ -438,68 +444,74 @@ describe('The useAuth0 hook', () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
     act(() => {
       result.current.authorize();
-    })
+    });
 
     await waitForNextUpdate();
 
     expect(result.current.user).toMatchObject({
       name: 'Test User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
-    }); 
+    });
 
-    mockAuth0.credentialsManager.getCredentials.mockResolvedValue(updatedMockCredentialsWithIdToken)
-    result.current.getCredentials()
+    mockAuth0.credentialsManager.getCredentials.mockResolvedValue(
+      updatedMockCredentialsWithIdToken,
+    );
+    result.current.getCredentials();
     await waitForNextUpdate();
     expect(result.current.user).toMatchObject({
       name: 'Different User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
-    }); 
+    });
   });
 
   it('can get credentials and not update user when id token is not present', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
     act(() => {
       result.current.authorize();
-    })
+    });
 
     await waitForNextUpdate();
 
     expect(result.current.user).toMatchObject({
       name: 'Test User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
-    }); 
+    });
 
-    mockAuth0.credentialsManager.getCredentials.mockResolvedValue(updatedMockCredentialsWithoutIdToken)
+    mockAuth0.credentialsManager.getCredentials.mockResolvedValue(
+      updatedMockCredentialsWithoutIdToken,
+    );
     result.current.getCredentials();
     expect(result.current.user).toMatchObject({
       name: 'Test User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
-    }); 
+    });
   });
 
   it('can get credentials and not update user when same as before', async () => {
     const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
     act(() => {
       result.current.authorize();
-    })
+    });
 
     await waitForNextUpdate();
-    let userReference = result.current.user
+    let userReference = result.current.user;
     expect(result.current.user).toMatchObject({
       name: 'Test User',
-      family_name: 'User',
+      familyName: 'User',
       picture: 'https://images/pic.png',
-    }); 
+    });
 
-    mockAuth0.credentialsManager.getCredentials.mockResolvedValue(mockCredentials)
+    mockAuth0.credentialsManager.getCredentials.mockResolvedValue(
+      mockCredentials,
+    );
     await act(async () => {
       await result.current.getCredentials();
-    })
-    expect(result.current.user).toBe(userReference); 
+    });
+    expect(result.current.user).toBe(userReference);
   });
 
   it('dispatches an error when getCredentials fails', async () => {
@@ -508,7 +520,9 @@ describe('The useAuth0 hook', () => {
 
     mockAuth0.credentialsManager.getCredentials.mockRejectedValue(thrownError);
 
-    act(() => { result.current.getCredentials(); })
+    act(() => {
+      result.current.getCredentials();
+    });
     await waitForNextUpdate();
     expect(result.current.error).toEqual(thrownError);
   });
@@ -535,12 +549,18 @@ describe('The useAuth0 hook', () => {
       'description',
       'cancel',
       'fallback',
-      LocalAuthenticationStrategy.deviceOwner
+      LocalAuthenticationStrategy.deviceOwner,
     );
 
     expect(
       mockAuth0.credentialsManager.requireLocalAuthentication,
-    ).toHaveBeenCalledWith('title', 'description', 'cancel', 'fallback', LocalAuthenticationStrategy.deviceOwner);
+    ).toHaveBeenCalledWith(
+      'title',
+      'description',
+      'cancel',
+      'fallback',
+      LocalAuthenticationStrategy.deviceOwner,
+    );
   });
 
   it('dispatches an error when requireLocalAuthentication fails', async () => {

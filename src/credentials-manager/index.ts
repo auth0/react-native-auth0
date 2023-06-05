@@ -1,15 +1,47 @@
-import { NativeModules, Platform } from 'react-native';
+import {NativeModules, Platform} from 'react-native';
 import CredentialsManagerError from './credentialsManagerError';
 import LocalAuthenticationStrategy from './localAuthenticationStrategy';
+import {Credentials} from '../types';
+
+/**
+ * Type representing the Native Auth0 API's on iOS and Android
+ */
+type Auth0Module = {
+  saveCredentials: (credentials: Credentials) => Promise<void>;
+  getCredentials: (
+    scope?: string,
+    minTtl?: number,
+    parameters?: object,
+  ) => Promise<Credentials>;
+  enableLocalAuthentication:
+    | ((
+        title?: string,
+        cancelTitle?: string,
+        fallbackTitle?: string,
+        strategy?: LocalAuthenticationStrategy,
+      ) => Promise<void>)
+    | ((title?: string, description?: string) => Promise<void>);
+  hasValidCredentials: (minTtl?: number) => Promise<boolean>;
+  clearCredentials: () => Promise<void>;
+  hasValidCredentialManagerInstance: () => Promise<boolean>;
+  initializeCredentialManager: (
+    clientId: string,
+    domain: string,
+  ) => Promise<void>;
+};
 
 class CredentialsManager {
+  private domain;
+  private clientId;
+  private Auth0Module: Auth0Module;
+
   /**
    * Construct an instance of CredentialsManager
    *
    * @param {String} domain - required - the domain of the credentials to be managed
    * @param {String} clientId - required - clientId of the credentials to be managed
    */
-  constructor(domain, clientId) {
+  constructor(domain: string, clientId: string) {
     this.domain = domain;
     this.clientId = clientId;
     this.Auth0Module = NativeModules.A0Auth0;
@@ -27,9 +59,9 @@ class CredentialsManager {
    * @param {String} credentials.scope optional - represents the scope of the current token
    * @returns {Promise}
    */
-  async saveCredentials(credentials = {}) {
+  async saveCredentials(credentials: Credentials): Promise<void> {
     const validateKeys = ['idToken', 'accessToken', 'tokenType', 'expiresIn'];
-    validateKeys.forEach(key => {
+    validateKeys.forEach((key) => {
       if (!credentials[key]) {
         const json = {
           error: 'a0.credential_manager.invalid_input',
@@ -59,15 +91,14 @@ class CredentialsManager {
    * @param {Object} parameters optional - additional parameters to send in the request to refresh expired credentials.
    * @returns {Promise}
    */
-  async getCredentials(scope, minTtl = 0, parameters = {}) {
+  async getCredentials(
+    scope?: string,
+    minTtl: number = 0,
+    parameters: object = {},
+  ): Promise<Credentials> {
     try {
       await this._ensureCredentialManagerIsInitialized();
-      const credentials = await this.Auth0Module.getCredentials(
-        scope,
-        minTtl,
-        parameters,
-      );
-      return credentials;
+      return this.Auth0Module.getCredentials(scope, minTtl, parameters);
     } catch (e) {
       const json = {
         error: 'a0.credential_manager.invalid',
@@ -88,12 +119,12 @@ class CredentialsManager {
    * @returns {Promise}
    */
   async requireLocalAuthentication(
-    title,
-    description,
-    cancelTitle,
-    fallbackTitle,
+    title?: string,
+    description?: string,
+    cancelTitle?: string,
+    fallbackTitle?: string,
     strategy = LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
-  ) {
+  ): Promise<void> {
     try {
       await this._ensureCredentialManagerIsInitialized();
       if (Platform.OS === 'ios') {
@@ -101,7 +132,7 @@ class CredentialsManager {
           title,
           cancelTitle,
           fallbackTitle,
-          strategy
+          strategy,
         );
       } else {
         await this.Auth0Module.enableLocalAuthentication(title, description);
@@ -120,7 +151,7 @@ class CredentialsManager {
    *
    * @param {Number} minTtl optional - the minimum time in seconds that the access token should last before expiration
    */
-  async hasValidCredentials(minTtl = 0) {
+  async hasValidCredentials(minTtl = 0): Promise<boolean> {
     await this._ensureCredentialManagerIsInitialized();
     return await this.Auth0Module.hasValidCredentials(minTtl);
   }
@@ -128,13 +159,13 @@ class CredentialsManager {
   /**
    * Delete the stored credentials
    */
-  async clearCredentials() {
+  async clearCredentials(): Promise<void> {
     await this._ensureCredentialManagerIsInitialized();
-    return await this.Auth0Module.clearCredentials();
+    return this.Auth0Module.clearCredentials();
   }
 
   //private
-  async _ensureCredentialManagerIsInitialized() {
+  private async _ensureCredentialManagerIsInitialized() {
     const hasValid = await this.Auth0Module.hasValidCredentialManagerInstance();
     if (!hasValid) {
       await this.Auth0Module.initializeCredentialManager(

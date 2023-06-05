@@ -1,9 +1,33 @@
 {
-  "extends": "expo-module-scripts/tsconfig.plugin",
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "outDir": "./plugin/build",
-    "rootDir": "./plugin/src"
+    "allowJs": true,
+    "esModuleInterop": true,
+    "jsx": "react-native",
+    "lib": ["DOM", "ESNext"],
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "target": "ESNext",
+    "declaration": true,
+    "declarationDir": "./dist/typings",
+    "outDir": "dist",
+    "noImplicitAny": true,
+    "downlevelIteration": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "strictBindCallApply": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true
   },
-  "include": ["./plugin/src"],
-  "exclude": ["**/__tests__/**"]
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js",
+    "./dist",
+    "**/__mocks__/**",
+    "**/__tests__/**"
+  ]
 }

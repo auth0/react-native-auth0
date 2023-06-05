@@ -1,13 +1,13 @@
 import BaseError from './baseError';
 
 export class TimeoutError extends BaseError {
-  constructor(msg) {
+  constructor(msg: string) {
     super('TimeoutError', msg);
   }
 }
 
-function makeTimeout(timeoutMs) {
-  let timerId = null;
+function makeTimeout(timeoutMs: number) {
+  let timerId: NodeJS.Timeout | null = null;
 
   const promise = new Promise((_, reject) => {
     timerId = setTimeout(() => {
@@ -21,8 +21,18 @@ function makeTimeout(timeoutMs) {
   };
 }
 
-export function fetchWithTimeout(url, options, timeoutMs) {
-  const {promise: timeoutPromise, timerId} = makeTimeout(timeoutMs);
+/**
+ * @private
+ */
+export function fetchWithTimeout(
+  url: string,
+  options: RequestInit,
+  timeoutMs: number,
+): Promise<Response> {
+  const {
+    promise: timeoutPromise,
+    timerId,
+  }: {promise: Promise<unknown>; timerId: any} = makeTimeout(timeoutMs);
   const abortController = new AbortController();
 
   return Promise.race([
@@ -32,15 +42,15 @@ export function fetchWithTimeout(url, options, timeoutMs) {
     }),
     timeoutPromise,
   ])
-    .catch(error => {
+    .catch((error) => {
       if (error instanceof TimeoutError) {
         abortController.abort();
       }
 
       throw error;
     })
-    .then(response => {
+    .then((response) => {
       clearTimeout(timerId);
       return response;
-    });
+    }) as Promise<Response>;
 }

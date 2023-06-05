@@ -1,11 +1,16 @@
-import Client from '../networking';
-import { apply } from '../utils/whitelist';
-import { toCamelCase } from '../utils/camel';
+import Client, {Auth0Response} from '../networking';
+import {toCamelCase} from '../utils/camel';
 import Auth0Error from './error';
+import {Telemetry} from '../networking/telemetry';
+import {GetUserOptions, PatchUserOptions, User} from '../types';
+import {RawUser} from '../internal-types';
 
-function responseHandler(response, exceptions = {}) {
+function responseHandler<TRawResult = unknown, TResult = unknown>(
+  response: Auth0Response<TRawResult>,
+  exceptions = {},
+) {
   if (response.ok && response.json) {
-    return toCamelCase(response.json, exceptions);
+    return toCamelCase(response.json, exceptions) as TResult;
   }
   throw new Auth0Error(response);
 }
@@ -20,7 +25,7 @@ const attributes = [
   'email',
   'email_verified',
   'given_name',
-  'family_name'
+  'family_name',
 ];
 
 /**
@@ -31,7 +36,14 @@ const attributes = [
  * @class Users
  */
 export default class Users {
-  constructor(options = {}) {
+  private client;
+
+  constructor(options: {
+    baseUrl: string;
+    telemetry?: Telemetry;
+    token?: string;
+    timeout?: number;
+  }) {
     this.client = new Client(options);
     if (!options.token) {
       throw new Error('Missing token in parameters');
@@ -48,23 +60,15 @@ export default class Users {
    *
    * @memberof Users
    */
-  getUser(parameters = {}) {
-    const payload = apply(
-      {
-        parameters: {
-          id: { required: true }
-        }
-      },
-      parameters
-    );
+  getUser(parameters: GetUserOptions): Promise<User> {
     return this.client
-      .get(`/api/v2/users/${encodeURIComponent(payload.id)}`)
-      .then(response =>
-        responseHandler(response, {
+      .get<RawUser>(`/api/v2/users/${encodeURIComponent(parameters.id)}`)
+      .then((response) =>
+        responseHandler<RawUser, User>(response, {
           attributes,
           whitelist: true,
-          rootOnly: true
-        })
+          rootOnly: true,
+        }),
       );
   }
 
@@ -79,26 +83,17 @@ export default class Users {
    *
    * @memberof Users
    */
-  patchUser(parameters = {}) {
-    const payload = apply(
-      {
-        parameters: {
-          id: { required: true },
-          metadata: { required: true }
-        }
-      },
-      parameters
-    );
+  patchUser(parameters: PatchUserOptions): Promise<User> {
     return this.client
-      .patch(`/api/v2/users/${encodeURIComponent(payload.id)}`, {
-        user_metadata: payload.metadata
+      .patch<RawUser>(`/api/v2/users/${encodeURIComponent(parameters.id)}`, {
+        user_metadata: parameters.metadata,
       })
-      .then(response =>
-        responseHandler(response, {
+      .then((response) =>
+        responseHandler<RawUser, User>(response, {
           attributes,
           whitelist: true,
-          rootOnly: true
-        })
+          rootOnly: true,
+        }),
       );
   }
 }
