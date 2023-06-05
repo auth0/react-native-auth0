@@ -29,7 +29,6 @@ public class CredentialsParser {
         map.putString(ID_TOKEN_KEY, credentials.getIdToken());
         map.putString(SCOPE, credentials.getScope());
         map.putString(REFRESH_TOKEN_KEY, credentials.getRefreshToken());
-        map.putString(TYPE_KEY, credentials.getType());//@deprecate This should be removed in next major (Reference - https://github.com/auth0/react-native-auth0/issues/614)
         map.putString(TOKEN_TYPE_KEY, credentials.getType());
         return map;
     }
