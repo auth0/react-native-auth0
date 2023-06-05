@@ -1,3 +1,5 @@
+import {JwtPayload} from 'jwt-decode';
+
 export type RawCredentials = {
   id_token: string;
   access_token: string;
@@ -33,16 +35,16 @@ export type RawUser = {
 };
 
 export type RawMultifactorChallengeOTPResponse = {challenge_type: string};
-export type RawMultifactorChallengeOOBResponse =
-  RawMultifactorChallengeOTPResponse & {
-    oob_code: string;
-  };
-export type RawMultifactorChallengeOOBWithBindingResponse =
-  RawMultifactorChallengeOOBResponse & {
-    binding_method: string;
-  };
+export type RawMultifactorChallengeOOBResponse = RawMultifactorChallengeOTPResponse & {
+  oob_code: string;
+};
+export type RawMultifactorChallengeOOBWithBindingResponse = RawMultifactorChallengeOOBResponse & {
+  binding_method: string;
+};
 
 export type RawMultifactorChallengeResponse =
   | RawMultifactorChallengeOTPResponse
   | RawMultifactorChallengeOOBResponse
   | RawMultifactorChallengeOOBWithBindingResponse;
+
+export type CustomJwtPayload = JwtPayload & {[key: string]: any};

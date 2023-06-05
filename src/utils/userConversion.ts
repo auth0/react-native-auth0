@@ -1,4 +1,4 @@
-import {RawUser} from '../internal-types';
+import {CustomJwtPayload, RawUser} from '../internal-types';
 import {User} from '../types';
 
 function snakeToCamel(str: string): string {
@@ -10,7 +10,7 @@ function snakeToCamel(str: string): string {
   );
 }
 
-export function convertUser(payload: RawUser): User {
+export function convertUser(payload: CustomJwtPayload): User {
   const claimsToCamelize: Array<keyof RawUser> = [
     'name',
     'given_name',
