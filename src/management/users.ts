@@ -36,7 +36,7 @@ const attributes = [
  * @class Users
  */
 export default class Users {
-  private client;
+  private client: Client;
 
   constructor(options: {
     baseUrl: string;

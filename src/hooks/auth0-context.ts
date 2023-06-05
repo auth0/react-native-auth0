@@ -2,10 +2,18 @@ import {createContext} from 'react';
 import {
   ClearSessionOptions,
   ClearSessionParameters,
+  LoginWithEmailOptions,
+  LoginWithOOBOptions,
+  LoginWithOTPOptions,
+  LoginWithRecoveryCodeOptions,
+  LoginWithSMSOptions,
+  MultifactorChallengeOptions,
+  PasswordlessWithEmailOptions,
   Credentials,
   User,
   WebAuthorizeOptions,
   WebAuthorizeParameters,
+  PasswordlessWithSMSOptions,
 } from '../types';
 import LocalAuthenticationStrategy from '../credentials-manager/localAuthenticationStrategy';
 
@@ -15,6 +23,19 @@ export interface Auth0ContextInterface<TUser extends User = User>
     parameters: WebAuthorizeParameters,
     options: WebAuthorizeOptions,
   ) => Promise<void>;
+  sendSMSCode: (parameters: PasswordlessWithSMSOptions) => Promise<void>;
+  authorizeWithSMS: (parameters: LoginWithSMSOptions) => Promise<void>;
+  sendEmailCode: (parameters: PasswordlessWithEmailOptions) => Promise<void>;
+  authorizeWithEmail: (parameters: LoginWithEmailOptions) => Promise<void>;
+  sendMultifactorChallenge: (
+    parameters: MultifactorChallengeOptions,
+  ) => Promise<void>;
+  authorizeWithOOB: (parameters: LoginWithOOBOptions) => Promise<void>;
+  authorizeWithOTP: (parameters: LoginWithOTPOptions) => Promise<void>;
+  authorizeWithRecoveryCode: (
+    parameters: LoginWithRecoveryCodeOptions,
+  ) => Promise<void>;
+  hasValidCredentials: (minTtl: number) => Promise<boolean>;
   clearSession: (
     parameters: ClearSessionParameters,
     options: ClearSessionOptions,
@@ -49,6 +70,15 @@ const initialContext = {
   user: null,
   isLoading: true,
   authorize: stub,
+  sendSMSCode: stub,
+  authorizeWithSMS: stub,
+  sendEmailCode: stub,
+  authorizeWithEmail: stub,
+  sendMultifactorChallenge: stub,
+  authorizeWithOOB: stub,
+  authorizeWithOTP: stub,
+  authorizeWithRecoveryCode: stub,
+  hasValidCredentials: stub,
   clearSession: stub,
   getCredentials: stub,
   clearCredentials: stub,
