@@ -14,7 +14,7 @@ import {
   WebAuthorizeParameters,
 } from '../types';
 import LocalAuthenticationStrategy from '../credentials-manager/localAuthenticationStrategy';
-import {CustomJwtPayload, RawUser} from '../internal-types';
+import {CustomJwtPayload} from '../internal-types';
 import {convertUser} from '../utils/userConversion';
 
 const initialState = {
