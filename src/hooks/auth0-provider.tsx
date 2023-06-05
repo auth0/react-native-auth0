@@ -14,7 +14,7 @@ import {
   WebAuthorizeParameters,
 } from '../types';
 import LocalAuthenticationStrategy from '../credentials-manager/localAuthenticationStrategy';
-import {RawUser} from '../internal-types';
+import {CustomJwtPayload} from '../internal-types';
 import {convertUser} from '../utils/userConversion';
 
 const initialState = {
@@ -27,8 +27,7 @@ const initialState = {
  * @ignore
  */
 const getIdTokenProfileClaims = (idToken: string): User => {
-  type CustomJwtPayload = JwtPayload & {[key: string]: any};
-  const payload: CustomJwtPayload = jwtDecode<JwtPayload>(idToken);
+  const payload = jwtDecode<CustomJwtPayload>(idToken);
   return convertUser(payload);
 };
 
