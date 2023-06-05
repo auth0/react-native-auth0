@@ -54,14 +54,3 @@ export function fetchWithTimeout(
       return response;
     }) as Promise<Response>;
 }
-
-export type RequestOptions = {
-  method: 'GET' | 'POST' | 'PATCH';
-  body?: any;
-  headers: {
-    Accept: string;
-    'Content-Type': string;
-    'Auth0-Client': string;
-    Authorization?: string;
-  };
-};
