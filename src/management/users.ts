@@ -2,11 +2,15 @@ import Client, {Auth0Response} from '../networking';
 import {toCamelCase} from '../utils/camel';
 import Auth0Error from './error';
 import {Telemetry} from '../networking/telemetry';
-import {GetUserOptions, PatchUserOptions} from '../types';
+import {GetUserOptions, PatchUserOptions, User} from '../types';
+import {RawUser} from '../internal-types';
 
-function responseHandler(response: Auth0Response<unknown>, exceptions = {}) {
+function responseHandler<TRawResult = unknown, TResult = unknown>(
+  response: Auth0Response<TRawResult>,
+  exceptions = {},
+) {
   if (response.ok && response.json) {
-    return toCamelCase(response.json, exceptions);
+    return toCamelCase(response.json, exceptions) as TResult;
   }
   throw new Auth0Error(response);
 }
@@ -56,11 +60,11 @@ export default class Users {
    *
    * @memberof Users
    */
-  getUser(parameters: GetUserOptions): Promise<Users> {
+  getUser(parameters: GetUserOptions): Promise<User> {
     return this.client
-      .get(`/api/v2/users/${encodeURIComponent(parameters.id)}`)
-      .then(response =>
-        responseHandler(response, {
+      .get<RawUser>(`/api/v2/users/${encodeURIComponent(parameters.id)}`)
+      .then((response) =>
+        responseHandler<RawUser, User>(response, {
           attributes,
           whitelist: true,
           rootOnly: true,
@@ -79,13 +83,13 @@ export default class Users {
    *
    * @memberof Users
    */
-  patchUser(parameters: PatchUserOptions): Promise<Users> {
+  patchUser(parameters: PatchUserOptions): Promise<User> {
     return this.client
-      .patch(`/api/v2/users/${encodeURIComponent(parameters.id)}`, {
+      .patch<RawUser>(`/api/v2/users/${encodeURIComponent(parameters.id)}`, {
         user_metadata: parameters.metadata,
       })
-      .then(response =>
-        responseHandler(response, {
+      .then((response) =>
+        responseHandler<RawUser, User>(response, {
           attributes,
           whitelist: true,
           rootOnly: true,
