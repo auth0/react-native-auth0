@@ -1,0 +1,4 @@
+{
+  "entryPoints": ["index.js"],
+  "out": "out"
+}
