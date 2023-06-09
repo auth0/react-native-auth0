@@ -28,6 +28,7 @@
     "jest.config.js",
     "./dist",
     "**/__mocks__/**",
-    "**/__tests__/**"
+    "**/__tests__/**",
+    "./sample/**"
   ]
 }

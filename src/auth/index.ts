@@ -91,7 +91,7 @@ class Auth {
       },
       parameters,
     );
-    return this.client.url('/authorize', query, true);
+    return this.client.url('/authorize', {...query, client_id: this.clientId}, true);
   }
 
   /**

@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "react": "18.2.0",
-    "react-native": "0.71.10"
+    "react-dom": "18.2.0",
+    "react-native": "0.71.10",
+    "react-native-auth0": "file:../"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
