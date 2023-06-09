@@ -43,15 +43,46 @@ function responseHandler<TRawResult = unknown, TResult = unknown>(
   throw new AuthError(response);
 }
 
+export interface IAuthClient {
+  readonly domain: string;
+  readonly clientId: string;
+  authorizeUrl(parameters: AuthorizeUrlOptions): string;
+  logoutUrl(parameters: LogoutUrlOptions): string;
+  exchange(parameters: ExchangeOptions): Promise<Credentials>;
+  exchangeNativeSocial(
+    parameters: ExchangeNativeSocialOptions,
+  ): Promise<Credentials>;
+  passwordRealm(parameters: PasswordRealmOptions): Promise<Credentials>;
+  refreshToken(parameters: RefreshTokenOptions): Promise<Credentials>;
+  passwordlessWithEmail(
+    parameters: PasswordlessWithEmailOptions,
+  ): Promise<void>;
+  passwordlessWithSMS(parameters: PasswordlessWithSMSOptions): Promise<void>;
+  loginWithEmail(parameters: LoginWithEmailOptions): Promise<Credentials>;
+  loginWithSMS(parameters: LoginWithSMSOptions): Promise<Credentials>;
+  loginWithOTP(parameters: LoginWithOTPOptions): Promise<Credentials>;
+  loginWithOOB(parameters: LoginWithOOBOptions): Promise<Credentials>;
+  loginWithRecoveryCode(
+    parameters: LoginWithRecoveryCodeOptions,
+  ): Promise<Credentials>;
+  multifactorChallenge(
+    parameters: MultifactorChallengeOptions,
+  ): Promise<MultifactorChallengeResponse>;
+  revoke(parameters: RevokeOptions): Promise<void>;
+  userInfo(parameters: UserInfoOptions): Promise<User>;
+  resetPassword(parameters: ResetPasswordOptions): Promise<void>;
+  createUser(parameters: CreateUserOptions): Promise<Partial<User>>;
+}
+
 /**
  * Auth0 Auth API
  *
  * @see https://auth0.com/docs/api/authentication
  */
-class Auth {
-  private client;
-  public clientId;
-  public domain;
+export class Auth implements IAuthClient {
+  private client: Client;
+  public clientId: string;
+  public domain: string;
 
   constructor(options: {
     baseUrl: string;
@@ -62,10 +93,13 @@ class Auth {
   }) {
     this.client = new Client(options);
     this.domain = this.client.domain;
+
     const {clientId} = options;
+
     if (!clientId) {
       throw new Error('Missing clientId in parameters');
     }
+
     this.clientId = clientId;
   }
 
@@ -648,5 +682,3 @@ class Auth {
       });
   }
 }
-
-export default Auth;

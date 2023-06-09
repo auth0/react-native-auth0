@@ -1,31 +1,50 @@
-import Auth from './auth';
-import CredentialsManager from './credentials-manager';
-import Users from './management/users';
+import {Auth, IAuthClient} from './auth';
+import CredentialsManager, {ICredentialsManager} from './credentials-manager';
+import {IUserClient, Users} from './management/users';
 import {Telemetry} from './networking/telemetry';
-import WebAuth from './webauth';
+import {IWebAuth, WebAuth} from './webauth';
+
+/**
+ * Options to instantiate the Auth0 class.
+ */
+export type Auth0Options = {
+  /**
+   * The Auth0 domain
+   */
+  domain: string;
+  /**
+   * The Auth0 client ID
+   */
+  clientId: string;
+  /**
+   * @ignore
+   */
+  telemetry?: Telemetry;
+  /**
+   * Can be used to specify an existing access token for the management API.
+   */
+  token?: string;
+  /**
+   * Timeout for network calls.
+   *
+   * @defaultValue 10 seconds
+   */
+  timeout?: number;
+};
 
 /**
  * Auth0 for React Native client
  */
-class Auth0 {
-  public auth: Auth;
-  public webAuth: WebAuth;
-  public credentialsManager: CredentialsManager;
-  private options;
+export class Auth0 {
+  public auth: IAuthClient;
+  public webAuth: IWebAuth;
+  public credentialsManager: ICredentialsManager;
+  private options: Auth0Options;
 
   /**
    * Creates an instance of Auth0.
-   * @param {Object} options your Auth0 application information
-   * @param {String} options.domain your Auth0 domain
-   * @param {String} options.clientId your Auth0 application client identifier=
    */
-  constructor(options: {
-    domain: string;
-    clientId: string;
-    telemetry?: Telemetry;
-    token?: string;
-    timeout?: number;
-  }) {
+  constructor(options: Auth0Options) {
     const {domain, clientId, ...extras} = options;
     this.auth = new Auth({baseUrl: domain, clientId, ...extras});
     this.webAuth = new WebAuth(this.auth);
@@ -34,14 +53,12 @@ class Auth0 {
   }
 
   /**
-   * Creates a Users API client
-   * @param  {String} token for Management API
-   * @return {Users}
+   * Creates a Users client for the management API
+   *
+   * @returns Instance of Users
    */
-  users(token: string) {
+  users(token: string): IUserClient {
     const {domain, ...extras} = this.options;
     return new Users({baseUrl: domain, ...extras, token});
   }
 }
-
-export default Auth0;

@@ -23,7 +23,6 @@ import Auth0Context from './auth0-context';
 
 /**
  * Use the `useAuth0` in your function components to access authentication state and methods.
- * @returns {Auth0ContextInterface} The useAuth0 hook interface
  * @example
  * const {
  *   // State

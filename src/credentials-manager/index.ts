@@ -30,17 +30,32 @@ type Auth0Module = {
   ) => Promise<void>;
 };
 
-class CredentialsManager {
-  private domain;
-  private clientId;
+export interface ICredentialsManager {
+  saveCredentials(credentials: Credentials): Promise<void>;
+  getCredentials(
+    scope?: string,
+    minTtl?: number,
+    parameters?: Record<string, unknown>,
+  ): Promise<Credentials>;
+  requireLocalAuthentication(
+    title?: string,
+    description?: string,
+    cancelTitle?: string,
+    fallbackTitle?: string,
+    strategy?: LocalAuthenticationStrategy,
+  ): Promise<void>;
+  hasValidCredentials(minTtl?: number): Promise<boolean>;
+  clearCredentials(): Promise<void>;
+}
+
+class CredentialsManager implements ICredentialsManager {
+  private domain: string;
+  private clientId: string;
   private Auth0Module: Auth0Module;
 
   /**
    * Construct an instance of CredentialsManager
-   *
-   * @param {String} domain - required - the domain of the credentials to be managed
-   * @param {String} clientId - required - clientId of the credentials to be managed
-   */
+   **/
   constructor(domain: string, clientId: string) {
     this.domain = domain;
     this.clientId = clientId;
@@ -94,7 +109,7 @@ class CredentialsManager {
   async getCredentials(
     scope?: string,
     minTtl: number = 0,
-    parameters: object = {},
+    parameters: Record<string, unknown> = {},
   ): Promise<Credentials> {
     try {
       await this._ensureCredentialManagerIsInitialized();

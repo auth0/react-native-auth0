@@ -3,6 +3,13 @@ import url from 'url';
 import base64 from 'base-64';
 import {fetchWithTimeout} from '../utils/fetchWithTimeout';
 
+type NetworkClientOptions = {
+  baseUrl: string;
+  telemetry?: Telemetry;
+  token?: string;
+  timeout?: number;
+};
+
 export default class Client {
   public telemetry: Telemetry;
   public baseUrl: string;
@@ -10,12 +17,7 @@ export default class Client {
   private bearer?: string;
   private timeout: number;
 
-  constructor(options: {
-    baseUrl: string;
-    telemetry?: Telemetry;
-    token?: string;
-    timeout?: number;
-  }) {
+  constructor(options: NetworkClientOptions) {
     const {
       baseUrl,
       telemetry = {},

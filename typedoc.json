@@ -1,4 +1,5 @@
 {
-  "entryPoints": ["index.js"],
-  "out": "out"
+  "entryPoints": ["index.ts"],
+  "out": "out",
+  "jsDocCompatibility": true
 }

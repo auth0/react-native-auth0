@@ -1,4 +1,5 @@
 import {createContext} from 'react';
+
 import {
   ClearSessionOptions,
   ClearSessionParameters,
@@ -15,6 +16,7 @@ import {
   WebAuthorizeParameters,
   PasswordlessWithSMSOptions,
 } from '../types';
+
 import LocalAuthenticationStrategy from '../credentials-manager/localAuthenticationStrategy';
 
 export interface Auth0ContextInterface<TUser extends User = User>
@@ -43,7 +45,7 @@ export interface Auth0ContextInterface<TUser extends User = User>
   getCredentials: (
     scope?: string,
     minTtl?: number,
-    parameters?: object,
+    parameters?: Record<string, unknown>,
   ) => Promise<Credentials | undefined>;
   clearCredentials: () => Promise<void>;
   requireLocalAuthentication: (

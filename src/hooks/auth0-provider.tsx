@@ -1,9 +1,8 @@
 import React, {useEffect, useReducer, useState, PropsWithChildren} from 'react';
 import {useCallback, useMemo} from 'react';
-import jwtDecode, {JwtPayload} from 'jwt-decode';
-import PropTypes from 'prop-types';
+import jwtDecode from 'jwt-decode';
 import Auth0Context from './auth0-context';
-import Auth0 from '../auth0';
+import {Auth0} from '../auth0';
 import reducer from './reducer';
 import {
   ClearSessionOptions,
@@ -35,7 +34,7 @@ const initialState = {
  * @ignore
  */
 const getIdTokenProfileClaims = (idToken: string): User => {
-const payload = jwtDecode<CustomJwtPayload>(idToken);
+  const payload = jwtDecode<CustomJwtPayload>(idToken);
   return convertUser(payload);
 };
 
@@ -53,13 +52,12 @@ const finalizeScopeParam = (inputScopes?: string) => {
 
 /**
  * Provides the Auth0Context to its child components.
- * @param {String} domain Your Auth0 domain
- * @param {String} clientId Your Auth0 client ID
  *
- * @example
+ * ```html
  * <Auth0Provider domain="YOUR AUTH0 DOMAIN" clientId="YOUR CLIENT ID">
  *   <App />
  * </Auth0Provider>
+ * ```
  */
 const Auth0Provider = ({
   domain,
@@ -132,7 +130,7 @@ const Auth0Provider = ({
     async (
       scope?: string,
       minTtl: number = 0,
-      parameters: object = {},
+      parameters: Record<string, unknown> = {},
     ): Promise<Credentials | undefined> => {
       try {
         const credentials = await client.credentialsManager.getCredentials(
@@ -361,12 +359,6 @@ const Auth0Provider = ({
       {children}
     </Auth0Context.Provider>
   );
-};
-
-Auth0Provider.propTypes = {
-  domain: PropTypes.string.isRequired,
-  clientId: PropTypes.string.isRequired,
-  children: PropTypes.element.isRequired,
 };
 
 export default Auth0Provider;

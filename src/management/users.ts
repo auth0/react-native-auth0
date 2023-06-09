@@ -28,14 +28,15 @@ const attributes = [
   'family_name',
 ];
 
+export interface IUserClient {
+  getUser(parameters: GetUserOptions): Promise<User>;
+  patchUser(parameters: PatchUserOptions): Promise<User>;
+}
+
 /**
- * Auth0 Management API User endpoints
- *
- * @export
- * @see https://auth0.com/docs/api/management/v2#!/Users/
- * @class Users
+ * Auth0 Management API User endpoints.
  */
-export default class Users {
+export class Users implements IUserClient {
   private client: Client;
 
   constructor(options: {
@@ -45,6 +46,7 @@ export default class Users {
     timeout?: number;
   }) {
     this.client = new Client(options);
+
     if (!options.token) {
       throw new Error('Missing token in parameters');
     }

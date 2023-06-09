@@ -11,22 +11,37 @@ import {
   WebAuthorizeOptions,
   WebAuthorizeParameters,
 } from '../types';
-import Auth from '../auth';
+
+import {IAuthClient} from '../auth';
 
 const {A0Auth0} = NativeModules;
 
 const callbackUri = (domain: string, customScheme?: string) => {
   const bundleIdentifier = A0Auth0.bundleIdentifier;
   const lowerCasedIdentifier = bundleIdentifier.toLowerCase();
+
   if (!customScheme && bundleIdentifier !== lowerCasedIdentifier) {
     console.warn(
       'The Bundle Identifier or Application ID of your app contains uppercase characters and will be lowercased to build the Callback URL. Check the Auth0 dashboard to whitelist the right URL value.',
     );
   }
+
   return `${customScheme || lowerCasedIdentifier}://${domain}/${
     Platform.OS
   }/${bundleIdentifier}/callback`;
 };
+
+export interface IWebAuth {
+  authorize(
+    parameters: WebAuthorizeParameters,
+    options: WebAuthorizeOptions,
+  ): Promise<Credentials>;
+
+  clearSession(
+    parameters: ClearSessionParameters,
+    options: ClearSessionOptions,
+  ): Promise<string | undefined>;
+}
 
 /**
  * Helper to perform Auth against Auth0 hosted login page
@@ -38,13 +53,13 @@ const callbackUri = (domain: string, customScheme?: string) => {
  * @class WebAuth
  * @see https://auth0.com/docs/api-auth/grant/authorization-code-pkce
  */
-class WebAuth {
-  private client;
-  private domain;
-  private clientId;
-  private agent;
+export class WebAuth {
+  private client: IAuthClient;
+  private domain: string;
+  private clientId: string;
+  private agent: Agent;
 
-  constructor(auth: Auth) {
+  constructor(auth: IAuthClient) {
     this.client = auth;
     const {clientId, domain} = auth;
     this.domain = domain;
@@ -122,7 +137,7 @@ class WebAuth {
             options.ephemeralSession,
             options.skipLegacyListener,
           )
-          .then(redirectUrl => {
+          .then((redirectUrl) => {
             if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
               throw new AuthError({
                 json: {
@@ -194,5 +209,3 @@ class WebAuth {
     return agent.show(logoutUrl, false, options.skipLegacyListener, true);
   }
 }
-
-export default WebAuth;
