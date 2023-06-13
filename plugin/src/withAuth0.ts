@@ -38,31 +38,38 @@ const withAndroidAuth0Gradle: ConfigPlugin<Auth0PluginConfig> = (
   props,
 ) => {
   return withAppBuildGradle(config, (config) => {
-    if (config.modResults.language === 'groovy') {
-      if (!props?.domain) {
-        throw Error('No auth0 domain specified in expo config');
-      }
-      const auth0Domain = props.domain;
-      let auth0Scheme =
-        props.customScheme ??
-        config.android?.package ??
-        (() => {
-          throw new Error(
-            'No auth0 scheme specified or package found in expo config',
-          );
-        })();
-      config.modResults.contents = addAuth0GradleValues(
-        config.modResults.contents,
-        auth0Domain,
-        auth0Scheme,
-      );
-      return config;
-    } else {
-      throw new Error(
-        'Cannot add auth0 build.gradle modifications because the build.gradle is not groovy',
-      );
-    }
+    return addAndroidAuth0Gradle(props, config);
   });
+};
+
+export const addAndroidAuth0Gradle = (
+  props: Auth0PluginConfig,
+  config: ExportedConfigWithProps<any>, //Ignore any here as the required GradleProjectFile is not exported by Expo
+) => {
+  if (config.modResults.language === 'groovy') {
+    if (!props?.domain) {
+      throw Error('No auth0 domain specified in expo config');
+    }
+    const auth0Domain = props.domain;
+    let auth0Scheme =
+      props.customScheme ??
+      config.android?.package ??
+      (() => {
+        throw new Error(
+          'No auth0 scheme specified or package found in expo config',
+        );
+      })();
+    config.modResults.contents = addAuth0GradleValues(
+      config.modResults.contents,
+      auth0Domain,
+      auth0Scheme,
+    );
+    return config;
+  } else {
+    throw new Error(
+      'Cannot add auth0 build.gradle modifications because the build.gradle is not groovy',
+    );
+  }
 };
 
 export const addAuth0AppDelegateCode = (src: string): string => {
