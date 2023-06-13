@@ -16,14 +16,14 @@ const Home = () => {
 
   const onLogin = async () => {
     await authorize({ scope: 'openid profile email' }, {});
-    const { accessToken } = await getCredentials(undefined, 0, {}, true);
-    Alert.alert('AccessToken: ' + accessToken);
+    const credentials = await getCredentials(undefined, 0, {});
+    Alert.alert('AccessToken: ' + credentials?.accessToken);
   };
 
   const loggedIn = user !== undefined && user !== null;
 
   const onLogout = async () => {
-    await clearSession({ federated: true }, { localStorageOnly: false });
+    await clearSession({ federated: true }, {});
   };
 
   return (
