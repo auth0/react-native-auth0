@@ -1444,11 +1444,6 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.42.0.tgz#484a1d638de2911e6f5a30c12f49c7e4a3270fb6"
   integrity sha512-6SWlXpWU5AvId8Ac7zjzmIOqMOba/JWY8XZ4A7q7Gn1Vlfg/SFFIlrtHXt9nPn4op9ZPAkl91Jao+QQv3r/ukw==
 
-"@evilmartians/lefthook@^1.2.2":
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@evilmartians/lefthook/-/lefthook-1.4.2.tgz#66a95fbd4ce116d3abd00607f76e96a5222cc891"
-  integrity sha512-YTsQB9QzJcT5bHfzjQbLHFEtsHn0lxnd/yDpQnHwMUwTNfKGo9H+slCd24JN4snvifDVUyvQ5MX63FJWDHrIUw==
-
 "@expo/config-plugins@^4.1.5":
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-4.1.5.tgz#9d357d2cda9c095e511b51583ede8a3b76174068"
