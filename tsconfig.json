@@ -20,7 +20,9 @@
     "strictBindCallApply": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
-    "strictPropertyInitialization": true
+    "strictPropertyInitialization": true,
+    "declaration": true,
+    "declarationDir": "./lib/typescript/index.d.ts"
   },
   "exclude": [
     "node_modules",
