@@ -6,9 +6,8 @@ import {
   withAppBuildGradle,
   withAppDelegate,
   withInfoPlist,
-} from '@expo/config-plugins';
-import {GradleProjectFile} from '@expo/config-plugins/build/android/Paths';
-import {mergeContents} from '@expo/config-plugins/build/utils/generateCode';
+} from 'expo/config-plugins';
+import {mergeContents} from './generateCode';
 
 let pkg: {name: string; version?: string} = {
   name: 'react-native-auth0',
@@ -38,39 +37,32 @@ const withAndroidAuth0Gradle: ConfigPlugin<Auth0PluginConfig> = (
   config,
   props,
 ) => {
-  return withAppBuildGradle(config, config => {
-    return addAndroidAuth0Gradle(props, config);
-  });
-};
-
-export const addAndroidAuth0Gradle = (
-  props: Auth0PluginConfig,
-  config: ExportedConfigWithProps<GradleProjectFile>,
-) => {
-  if (config.modResults.language === 'groovy') {
-    if (!props?.domain) {
-      throw Error('No auth0 domain specified in expo config');
+  return withAppBuildGradle(config, (config) => {
+    if (config.modResults.language === 'groovy') {
+      if (!props?.domain) {
+        throw Error('No auth0 domain specified in expo config');
+      }
+      const auth0Domain = props.domain;
+      let auth0Scheme =
+        props.customScheme ??
+        config.android?.package ??
+        (() => {
+          throw new Error(
+            'No auth0 scheme specified or package found in expo config',
+          );
+        })();
+      config.modResults.contents = addAuth0GradleValues(
+        config.modResults.contents,
+        auth0Domain,
+        auth0Scheme,
+      );
+      return config;
+    } else {
+      throw new Error(
+        'Cannot add auth0 build.gradle modifications because the build.gradle is not groovy',
+      );
     }
-    const auth0Domain = props.domain;
-    let auth0Scheme =
-      props.customScheme ??
-      config.android?.package ??
-      (() => {
-        throw new Error(
-          'No auth0 scheme specified or package found in expo config',
-        );
-      })();
-    config.modResults.contents = addAuth0GradleValues(
-      config.modResults.contents,
-      auth0Domain,
-      auth0Scheme,
-    );
-    return config;
-  } else {
-    throw new Error(
-      'Cannot add auth0 build.gradle modifications because the build.gradle is not groovy',
-    );
-  }
+  });
 };
 
 export const addAuth0AppDelegateCode = (src: string): string => {
@@ -108,8 +100,8 @@ export const addAuth0AppDelegateCode = (src: string): string => {
   return tempSrc;
 };
 
-const withIOSAuth0AppDelegate: ConfigPlugin<Auth0PluginConfig> = config => {
-  return withAppDelegate(config, config => {
+const withIOSAuth0AppDelegate: ConfigPlugin<Auth0PluginConfig> = (config) => {
+  return withAppDelegate(config, (config) => {
     const src = config.modResults.contents;
     config.modResults.contents = addAuth0AppDelegateCode(src);
     return config;
@@ -120,7 +112,7 @@ const withIOSAuth0InfoPList: ConfigPlugin<Auth0PluginConfig> = (
   config,
   props,
 ) => {
-  return withInfoPlist(config, config => {
+  return withInfoPlist(config, (config) => {
     return addIOSAuth0ConfigInInfoPList(props, config);
   });
 };
