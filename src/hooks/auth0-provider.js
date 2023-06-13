@@ -82,6 +82,7 @@ const Auth0Provider = ({domain, clientId, children}) => {
 
         await client.credentialsManager.saveCredentials(credentials);
         dispatch({type: 'LOGIN_COMPLETE', user});
+        return credentials
       } catch (error) {
         dispatch({type: 'ERROR', error});
         return;
