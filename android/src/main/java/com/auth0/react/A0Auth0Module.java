@@ -164,61 +164,6 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
         }
     }
 
-    @ReactMethod
-    public void oauthParameters(Callback callback) {
-        final String verifier = this.generateRandomValue();
-        final WritableMap parameters = Arguments.createMap();
-        parameters.putString("verifier", verifier);
-        parameters.putString("code_challenge", this.generateCodeChallenge(verifier));
-        parameters.putString("code_challenge_method", "S256");
-        parameters.putString("state", this.generateRandomValue());
-        callback.invoke(parameters);
-    }
-
-    @ReactMethod
-    public void hide() {
-        // NO OP
-    }
-
-    private String getBase64String(byte[] source) {
-        return Base64.encodeToString(source, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
-    }
-
-    byte[] getASCIIBytes(String value) {
-        byte[] input;
-        try {
-            input = value.getBytes(US_ASCII);
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("Could not convert string to an ASCII byte array", e);
-        }
-        return input;
-    }
-
-    byte[] getSHA256(byte[] input) {
-        byte[] signature;
-        try {
-            MessageDigest md = MessageDigest.getInstance(SHA_256);
-            md.update(input, 0, input.length);
-            signature = md.digest();
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("Failed to get SHA-256 signature", e);
-        }
-        return signature;
-    }
-
-    String generateRandomValue() {
-        SecureRandom sr = new SecureRandom();
-        byte[] code = new byte[32];
-        sr.nextBytes(code);
-        return this.getBase64String(code);
-    }
-
-    String generateCodeChallenge(@NonNull String codeVerifier) {
-        byte[] input = getASCIIBytes(codeVerifier);
-        byte[] signature = getSHA256(input);
-        return getBase64String(signature);
-    }
-
     @Override
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
         Callback cb = A0Auth0Module.this.callback;
@@ -262,10 +207,4 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
 
         A0Auth0Module.this.callback = null;
     }
-
-    @Override
-    public void onNewIntent(Intent intent) {
-        // NO OP
-    }
-
 }
