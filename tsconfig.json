@@ -22,7 +22,7 @@
     "strictFunctionTypes": true,
     "strictPropertyInitialization": true,
     "declaration": true,
-    "declarationDir": "./lib/typescript/index.d.ts",
+    "declarationDir": "./lib/typescript/",
     "outDir": "./lib/typescript"
   },
   "exclude": [
