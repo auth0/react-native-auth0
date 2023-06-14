@@ -68,7 +68,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void getCredentials(String scope, double minTtl, ReadableMap parameters, Promise promise) {
+    public void getCredentials(String scope, double minTtl, ReadableMap parameters, boolean forceRefresh, Promise promise) {
         Map<String,String> cleanedParameters = new HashMap<>();
         for (Map.Entry<String, Object> entry : parameters.toHashMap().entrySet()) {
             if (entry.getValue() != null) {
@@ -76,7 +76,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
             }
         }
 
-        this.secureCredentialsManager.getCredentials(scope, (int) minTtl, cleanedParameters, new com.auth0.android.callback.Callback<Credentials, CredentialsManagerException>() {
+        this.secureCredentialsManager.getCredentials(scope, (int) minTtl, cleanedParameters, forceRefresh, new com.auth0.android.callback.Callback<Credentials, CredentialsManagerException>() {
             @Override
             public void onSuccess(Credentials credentials) {
                 ReadableMap map = CredentialsParser.toMap(credentials);
