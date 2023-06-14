@@ -9,9 +9,11 @@ import android.util.Base64;
 
 import com.auth0.android.Auth0;
 import com.auth0.android.authentication.AuthenticationAPIClient;
+import com.auth0.android.authentication.AuthenticationException;
 import com.auth0.android.authentication.storage.CredentialsManagerException;
 import com.auth0.android.authentication.storage.SecureCredentialsManager;
 import com.auth0.android.authentication.storage.SharedPreferencesStorage;
+import com.auth0.android.provider.WebAuthProvider;
 import com.auth0.android.result.Credentials;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
@@ -44,6 +46,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     private final ReactApplicationContext reactContext;
     private Callback callback;
 
+    private Auth0 auth0;
     private SecureCredentialsManager secureCredentialsManager;
     public A0Auth0Module(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -52,8 +55,8 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void initializeCredentialManager(String clientId, String domain) {
-        Auth0 auth0 = new Auth0(clientId, domain);
+    public void initializeAuth0(String clientId, String domain) {
+        this.auth0 = new Auth0(clientId, domain);
         AuthenticationAPIClient authenticationAPIClient = new AuthenticationAPIClient(auth0);
         this.secureCredentialsManager = new SecureCredentialsManager(
                 reactContext,
@@ -63,8 +66,8 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void hasValidCredentialManagerInstance(Promise promise) {
-        promise.resolve(this.secureCredentialsManager != null);
+    public void hasValidAuth0Instance(Promise promise) {
+        promise.resolve(this.auth0 != null && this.secureCredentialsManager != null);
     }
 
     @ReactMethod
@@ -139,6 +142,24 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     @Override
     public String getName() {
         return "A0Auth0";
+    }
+
+    @ReactMethod
+    public void webauth() {
+        WebAuthProvider.INSTANCE.login(this.auth0)
+                .start(reactContext, new com.auth0.android.callback.Callback<Credentials, AuthenticationException>() {
+                    @Override
+                    public void onSuccess(Credentials result) {
+                        ReadableMap map = CredentialsParser.toMap(result);
+                        System.out.println("Success here");
+                        callback.invoke(null, map);
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull AuthenticationException error) {
+                        System.out.println(error);
+                    }
+                });
     }
 
     @ReactMethod
