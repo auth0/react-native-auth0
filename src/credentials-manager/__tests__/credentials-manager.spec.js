@@ -119,7 +119,7 @@ describe('credentials manager tests', () => {
 
       expect(
         credentialsManager.Auth0Module.getCredentials
-      ).toHaveBeenCalledWith(null, 0, true, {});
+      ).toHaveBeenCalledWith(null, 0, {}, true);
 
       newNativeModule.mockRestore();
     });
