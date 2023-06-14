@@ -1,7 +1,7 @@
-import {NativeModules, Platform} from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 import CredentialsManagerError from './credentialsManagerError';
 import LocalAuthenticationStrategy from './localAuthenticationStrategy';
-import {Credentials} from '../types';
+import { Credentials } from '../types';
 
 /**
  * Type representing the Native Auth0 API's on iOS and Android
@@ -12,13 +12,14 @@ type Auth0Module = {
     scope?: string,
     minTtl?: number,
     parameters?: object,
+    forceRefresh?: boolean
   ) => Promise<Credentials>;
   enableLocalAuthentication:
     | ((
         title?: string,
         cancelTitle?: string,
         fallbackTitle?: string,
-        strategy?: LocalAuthenticationStrategy,
+        strategy?: LocalAuthenticationStrategy
       ) => Promise<void>)
     | ((title?: string, description?: string) => Promise<void>);
   hasValidCredentials: (minTtl?: number) => Promise<boolean>;
@@ -26,7 +27,7 @@ type Auth0Module = {
   hasValidCredentialManagerInstance: () => Promise<boolean>;
   initializeCredentialManager: (
     clientId: string,
-    domain: string,
+    domain: string
   ) => Promise<void>;
 };
 
@@ -68,7 +69,7 @@ class CredentialsManager {
           error_description: `${key} cannot be empty`,
           invalid_parameter: key,
         };
-        throw new CredentialsManagerError({json, status: 0});
+        throw new CredentialsManagerError({ json, status: 0 });
       }
     });
     try {
@@ -79,7 +80,7 @@ class CredentialsManager {
         error: 'a0.credential_manager.invalid',
         error_description: e.message,
       };
-      throw new CredentialsManagerError({json, status: 0});
+      throw new CredentialsManagerError({ json, status: 0 });
     }
   }
 
@@ -95,16 +96,22 @@ class CredentialsManager {
     scope?: string,
     minTtl: number = 0,
     parameters: object = {},
+    forceRefresh: boolean = false
   ): Promise<Credentials> {
     try {
       await this._ensureCredentialManagerIsInitialized();
-      return this.Auth0Module.getCredentials(scope, minTtl, parameters);
+      return this.Auth0Module.getCredentials(
+        scope,
+        minTtl,
+        parameters,
+        forceRefresh
+      );
     } catch (e) {
       const json = {
         error: 'a0.credential_manager.invalid',
         error_description: e.message,
       };
-      throw new CredentialsManagerError({json, status: 0});
+      throw new CredentialsManagerError({ json, status: 0 });
     }
   }
 
@@ -123,7 +130,7 @@ class CredentialsManager {
     description?: string,
     cancelTitle?: string,
     fallbackTitle?: string,
-    strategy = LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
+    strategy = LocalAuthenticationStrategy.deviceOwnerWithBiometrics
   ): Promise<void> {
     try {
       await this._ensureCredentialManagerIsInitialized();
@@ -132,7 +139,7 @@ class CredentialsManager {
           title,
           cancelTitle,
           fallbackTitle,
-          strategy,
+          strategy
         );
       } else {
         await this.Auth0Module.enableLocalAuthentication(title, description);
@@ -142,7 +149,7 @@ class CredentialsManager {
         error: 'a0.credential_manager.invalid',
         error_description: e.message,
       };
-      throw new CredentialsManagerError({json, status: 0});
+      throw new CredentialsManagerError({ json, status: 0 });
     }
   }
 
@@ -170,7 +177,7 @@ class CredentialsManager {
     if (!hasValid) {
       await this.Auth0Module.initializeCredentialManager(
         this.clientId,
-        this.domain,
+        this.domain
       );
     }
   }
