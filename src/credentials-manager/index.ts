@@ -3,7 +3,7 @@ import CredentialsManagerError from './credentialsManagerError';
 import LocalAuthenticationStrategy from './localAuthenticationStrategy';
 import { Credentials } from '../types';
 import { Auth0Module } from 'src/internal-types';
-import { _ensureNativeModuleIsInitialized } from 'src/utils/nativeHelper';
+import { _ensureNativeModuleIsInitialized } from '../utils/nativeHelper';
 
 class CredentialsManager {
   private domain;

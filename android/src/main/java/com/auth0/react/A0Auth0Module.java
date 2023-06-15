@@ -36,16 +36,11 @@ import static android.app.Activity.RESULT_OK;
 
 public class A0Auth0Module extends ReactContextBaseJavaModule implements ActivityEventListener {
 
-    private static final String US_ASCII = "US-ASCII";
-    private static final String SHA_256 = "SHA-256";
     private static final String ERROR_CODE = "a0.invalid_state.credential_manager_exception";
     private static final int LOCAL_AUTH_REQUEST_CODE = 150;
-    public static final int NO_BROWSER_FOUND_RESULT_CODE = 1404;
     public static final int UNKNOWN_ERROR_RESULT_CODE = 1405;
 
     private final ReactApplicationContext reactContext;
-    private Callback callback;
-
     private Auth0 auth0;
     private SecureCredentialsManager secureCredentialsManager;
     public A0Auth0Module(ReactApplicationContext reactContext) {
@@ -145,87 +140,64 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void webauth() {
-        WebAuthProvider.INSTANCE.login(this.auth0)
-                .start(reactContext, new com.auth0.android.callback.Callback<Credentials, AuthenticationException>() {
+    public void webAuth(Promise promise) {
+        WebAuthProvider.login(this.auth0)
+                .withScheme("com.auth0example")
+                .start(reactContext.getCurrentActivity(), new com.auth0.android.callback.Callback<Credentials, AuthenticationException>() {
                     @Override
                     public void onSuccess(Credentials result) {
                         ReadableMap map = CredentialsParser.toMap(result);
-                        System.out.println("Success here");
-                        callback.invoke(null, map);
+                        promise.resolve(map);
                     }
 
                     @Override
                     public void onFailure(@NonNull AuthenticationException error) {
-                        System.out.println(error);
+                        handleError(error, promise);
                     }
                 });
     }
 
     @ReactMethod
-    public void showUrl(String url, boolean closeOnLoad, Callback callback) {
-        final Activity activity = getCurrentActivity();
-        final Uri parsedUrl = Uri.parse(url);
-        this.callback = callback;
-
-        try {
-            if (activity != null) {
-                AuthenticationActivity.authenticateUsingBrowser(activity, parsedUrl);
-            } else {
-                final WritableMap error = Arguments.createMap();
-                error.putString("error", "a0.activity_not_available");
-                error.putString("error_description", "Android Activity is null.");
-                callback.invoke(error);
-            }
-        } catch (ActivityNotFoundException e){
-            final WritableMap error = Arguments.createMap();
-            error.putString("error", "a0.browser_not_available");
-            error.putString("error_description", "No Browser application is installed.");
-            callback.invoke(error);
+    public void webAuthLogout(String scheme, boolean federated, Promise promise) {
+        WebAuthProvider.LogoutBuilder builder = WebAuthProvider.logout(this.auth0)
+                .withScheme(scheme);
+        if(federated) {
+            builder.withFederated();
         }
+        builder.start(reactContext.getCurrentActivity(), new com.auth0.android.callback.Callback<Void, AuthenticationException>() {
+            @Override
+            public void onSuccess(Void credentials) {
+                promise.resolve(true);
+            }
+
+            @Override
+            public void onFailure(AuthenticationException e) {
+                handleError(e, promise);
+            }
+        });
+    }
+
+    private void handleError(AuthenticationException error, Promise promise) {
+        if(error.isBrowserAppNotAvailable()) {
+            promise.reject("a0.browser_not_available", "No Browser application is installed.");
+            return;
+        }
+        if(error.isCanceled()) {
+            promise.reject("a0.session.user_cancelled", "User cancelled the Auth");
+            return;
+        }
+        promise.reject("a0.response.invalid", error.getMessage());
     }
 
     @Override
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-        Callback cb = A0Auth0Module.this.callback;
-
         if(requestCode == LOCAL_AUTH_REQUEST_CODE) {
             secureCredentialsManager.checkAuthenticationResult(requestCode, resultCode);
-            return;
         }
+    }
 
-        if (resultCode == NO_BROWSER_FOUND_RESULT_CODE) {
-            final WritableMap error = Arguments.createMap();
-            error.putString("name", "a0.browser_not_available");
-            error.putString("message", "No Browser application is installed.");
-            callback.invoke(error);
-            return;
-        }
-
-        if (resultCode == UNKNOWN_ERROR_RESULT_CODE) {
-            final WritableMap error = Arguments.createMap();
-            error.putString("name", "a0.response.invalid");
-            error.putString("message", "unknown error");
-            callback.invoke(error);
-            return;
-        }
-
-        if (cb == null) {
-            return;
-        }
-
-        boolean hasResult = resultCode == RESULT_OK &&
-                requestCode == AuthenticationActivity.AUTHENTICATION_REQUEST &&
-                data.getData() != null;
-        if (hasResult) {
-            cb.invoke(null, data.getData().toString());
-        } else {
-            final WritableMap error = Arguments.createMap();
-            error.putString("error", "a0.session.user_cancelled");
-            error.putString("error_description", "User cancelled the Auth");
-            cb.invoke(error);
-        }
-
-        A0Auth0Module.this.callback = null;
+    @Override
+    public void onNewIntent(Intent intent) {
+        // NO OP
     }
 }

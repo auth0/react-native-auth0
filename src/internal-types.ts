@@ -58,6 +58,9 @@ export type CustomJwtPayload = JwtPayload & RawUser;
  * Type representing the Native Auth0 API's on iOS and Android
  */
 export type Auth0Module = {
+  bundleIdentifier: string;
+  webAuth: () => Promise<Credentials>;
+  webAuthLogout: (scheme: string, federated: boolean) => Promise<void>;
   saveCredentials: (credentials: Credentials) => Promise<void>;
   getCredentials: (
     scope?: string,
@@ -76,4 +79,14 @@ export type Auth0Module = {
   clearCredentials: () => Promise<void>;
   hasValidAuth0Instance: () => Promise<boolean>;
   initializeAuth0: (clientId: string, domain: string) => Promise<void>;
+};
+
+export type AgentParameters = {
+  clientId: string;
+  domain: string;
+};
+
+export type AgentLogoutOptions = {
+  customScheme?: string;
+  federated?: boolean;
 };
