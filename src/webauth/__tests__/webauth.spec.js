@@ -1,6 +1,6 @@
 jest.mock('react-native');
-import Auth from '../../auth';
-import WebAuth from '../index';
+import {Auth} from '../../auth';
+import {WebAuth} from '../index';
 import {NativeModules} from 'react-native';
 import {URL} from 'url';
 
@@ -57,7 +57,7 @@ describe('WebAuth', () => {
         );
       const showMock = jest
         .spyOn(webauth.agent, 'show')
-        .mockImplementation(authorizeUrl => ({
+        .mockImplementation((authorizeUrl) => ({
           then: () => Promise.resolve(authorizeUrl),
         }));
       const parameters = {organization: 'test-org'};
@@ -78,7 +78,7 @@ describe('WebAuth', () => {
         );
       const showMock = jest
         .spyOn(webauth.agent, 'show')
-        .mockImplementation(authorizeUrl => ({
+        .mockImplementation((authorizeUrl) => ({
           then: () => Promise.resolve(authorizeUrl),
         }));
       const parameters = {
@@ -103,7 +103,7 @@ describe('WebAuth', () => {
         );
       const showMock = jest
         .spyOn(webauth.agent, 'show')
-        .mockImplementation(authorizeUrl => ({
+        .mockImplementation((authorizeUrl) => ({
           then: () => Promise.resolve(authorizeUrl),
         }));
 
@@ -129,7 +129,7 @@ describe('WebAuth', () => {
         );
       const showMock = jest
         .spyOn(webauth.agent, 'show')
-        .mockImplementation(authorizeUrl => ({
+        .mockImplementation((authorizeUrl) => ({
           then: () => Promise.resolve(authorizeUrl),
         }));
       const options = {customScheme: 'custom-scheme'};

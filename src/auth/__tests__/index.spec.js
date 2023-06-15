@@ -1,4 +1,4 @@
-import Auth from '../';
+import {Auth} from '../';
 import fetchMock from 'fetch-mock';
 
 describe('auth', () => {

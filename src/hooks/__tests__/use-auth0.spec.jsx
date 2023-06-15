@@ -75,9 +75,9 @@ const mockAuth0 = {
   },
 };
 
-jest.mock('../../auth0', () => {
-  return jest.fn().mockImplementation(() => mockAuth0);
-});
+jest.mock('../../auth0', () => ({
+  Auth0: jest.fn().mockImplementation(() => mockAuth0),
+}));
 
 describe('The useAuth0 hook', () => {
   beforeEach(() => {
