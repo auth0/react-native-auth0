@@ -106,6 +106,20 @@ describe('credentials manager tests', () => {
       );
       newNativeModule.mockRestore();
     });
+
+    it('passes along the forceRefresh parameter', async () => {
+      const newNativeModule = jest
+        .spyOn(credentialsManager.Auth0Module, 'getCredentials')
+        .mockImplementation(() => Promise.resolve(validToken));
+
+      await credentialsManager.getCredentials(null, 0, {}, true);
+
+      expect(
+        credentialsManager.Auth0Module.getCredentials
+      ).toHaveBeenCalledWith(null, 0, {}, true);
+
+      newNativeModule.mockRestore();
+    });
   });
 
   describe('test hasValidCredentials', () => {

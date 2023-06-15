@@ -73,7 +73,8 @@ class CredentialsManager {
   async getCredentials(
     scope?: string,
     minTtl: number = 0,
-    parameters: object = {}
+    parameters: object = {},
+    forceRefresh: boolean = false
   ): Promise<Credentials> {
     try {
       await _ensureNativeModuleIsInitialized(
@@ -81,7 +82,12 @@ class CredentialsManager {
         this.clientId,
         this.domain
       );
-      return this.Auth0Module.getCredentials(scope, minTtl, parameters);
+      return this.Auth0Module.getCredentials(
+        scope,
+        minTtl,
+        parameters,
+        forceRefresh
+      );
     } catch (e) {
       const json = {
         error: 'a0.credential_manager.invalid',
@@ -157,6 +163,17 @@ class CredentialsManager {
       this.domain
     );
     return this.Auth0Module.clearCredentials();
+  }
+
+  //private
+  private async _ensureCredentialManagerIsInitialized() {
+    const hasValid = await this.Auth0Module.hasValidCredentialManagerInstance();
+    if (!hasValid) {
+      await this.Auth0Module.initializeCredentialManager(
+        this.clientId,
+        this.domain
+      );
+    }
   }
 }
 
