@@ -12,22 +12,6 @@ import {
   WebAuthorizeParameters,
 } from '../types';
 import Auth from '../auth';
-import { Auth0Module } from 'src/internal-types';
-
-const A0Auth0: Auth0Module = NativeModules.A0Auth0;
-
-const callbackUri = (domain: string, customScheme?: string) => {
-  const bundleIdentifier = A0Auth0.bundleIdentifier;
-  const lowerCasedIdentifier = bundleIdentifier.toLowerCase();
-  if (!customScheme && bundleIdentifier !== lowerCasedIdentifier) {
-    console.warn(
-      'The Bundle Identifier or Application ID of your app contains uppercase characters and will be lowercased to build the Callback URL. Check the Auth0 dashboard to whitelist the right URL value.'
-    );
-  }
-  return `${customScheme || lowerCasedIdentifier}://${domain}/${
-    Platform.OS
-  }/${bundleIdentifier}/callback`;
-};
 
 /**
  * Helper to perform Auth against Auth0 hosted login page

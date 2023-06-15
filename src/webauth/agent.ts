@@ -43,7 +43,7 @@ export default class Agent {
       options.organization,
       options.invitationUrl,
       options.leeway ?? 0,
-      options.ephemeralSession
+      options.ephemeralSession ?? false
     );
   }
 
