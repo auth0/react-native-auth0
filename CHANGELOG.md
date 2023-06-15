@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.17.4](https://github.com/auth0/react-native-auth0/tree/v2.17.4) (2023-06-15)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.17.3...v2.17.4)
+
+**Fixed**
+
+- Fix Auth0.Swift transitive dependencies [\#649](https://github.com/auth0/react-native-auth0/pull/649) ([poovamraj](https://github.com/poovamraj))
+
 ## [v2.17.3](https://github.com/auth0/react-native-auth0/tree/v2.17.3) (2023-06-15)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.17.2...v2.17.3)
