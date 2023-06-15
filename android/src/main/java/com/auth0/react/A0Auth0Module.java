@@ -140,10 +140,37 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void webAuth(Promise promise) {
-        WebAuthProvider.login(this.auth0)
-                .withScheme("com.auth0example")
-                .start(reactContext.getCurrentActivity(), new com.auth0.android.callback.Callback<Credentials, AuthenticationException>() {
+    public void webAuth(String scheme, String state, String nonce, String audience, String scope, String connection, int maxAge, String organization, String invitationUrl, int leeway, Promise promise) {
+        WebAuthProvider.Builder builder = WebAuthProvider.login(this.auth0)
+                .withScheme(scheme);
+        if(state != null) {
+            builder.withState(state);
+        }
+        if(nonce != null) {
+            builder.withNonce(nonce);
+        }
+        if(audience != null) {
+            builder.withAudience(audience);
+        }
+        if(scope != null) {
+            builder.withScope(scope);
+        }
+        if(connection != null) {
+            builder.withConnection(connection);
+        }
+        if(maxAge != 0) {
+            builder.withMaxAge(maxAge);
+        }
+        if(organization != null) {
+            builder.withOrganization(organization);
+        }
+        if(invitationUrl != null) {
+            builder.withInvitationUrl(invitationUrl);
+        }
+        if(leeway != 0) {
+            builder.withIdTokenVerificationLeeway(leeway);
+        }
+        builder.start(reactContext.getCurrentActivity(), new com.auth0.android.callback.Callback<Credentials, AuthenticationException>() {
                     @Override
                     public void onSuccess(Credentials result) {
                         ReadableMap map = CredentialsParser.toMap(result);

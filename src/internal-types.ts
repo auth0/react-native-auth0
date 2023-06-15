@@ -59,7 +59,18 @@ export type CustomJwtPayload = JwtPayload & RawUser;
  */
 export type Auth0Module = {
   bundleIdentifier: string;
-  webAuth: () => Promise<Credentials>;
+  webAuth: (
+    scheme: string,
+    state?: string,
+    nonce?: string,
+    audience?: string,
+    scope?: string,
+    connection?: string,
+    maxAge?: number,
+    organization?: string,
+    invitationUrl?: string,
+    leeway?: number
+  ) => Promise<Credentials>;
   webAuthLogout: (scheme: string, federated: boolean) => Promise<void>;
   saveCredentials: (credentials: Credentials) => Promise<void>;
   getCredentials: (
@@ -90,3 +101,17 @@ export type AgentLogoutOptions = {
   customScheme?: string;
   federated?: boolean;
 };
+
+export interface AgentLoginOptions {
+  state?: string;
+  nonce?: string;
+  audience?: string;
+  scope?: string;
+  connection?: string;
+  maxAge?: number;
+  organization?: string;
+  invitationUrl?: string;
+  customScheme?: string;
+  leeway?: number;
+  ephemeralSession?: boolean;
+}

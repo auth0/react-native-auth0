@@ -87,7 +87,7 @@ class WebAuth {
   ): Promise<Credentials> {
     const { clientId, domain, client, agent } = this;
     if (Platform.OS == 'android') {
-      return agent.login(clientId, domain);
+      return agent.login({ clientId, domain }, { ...options });
     } else {
       return agent
         .newTransaction()
@@ -159,7 +159,7 @@ class WebAuth {
                     domain,
                     clientId,
                     nonce: parameters.nonce,
-                    maxAge: parameters.max_age,
+                    maxAge: parameters.maxAge,
                     scope: parameters.scope,
                     leeway: options.leeway,
                     orgId: parameters.organization,
