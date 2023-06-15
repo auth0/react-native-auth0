@@ -51,7 +51,7 @@ export interface ClearSessionParameters {
 }
 
 export interface ClearSessionOptions {
-  skipLegacyListener?: boolean;
+  ephemeralSession?: boolean;
 }
 
 export interface GetUserOptions {

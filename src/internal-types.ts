@@ -69,9 +69,14 @@ export type Auth0Module = {
     maxAge?: number,
     organization?: string,
     invitationUrl?: string,
-    leeway?: number
+    leeway?: number,
+    ephemeralSession?: boolean
   ) => Promise<Credentials>;
-  webAuthLogout: (scheme: string, federated: boolean) => Promise<void>;
+  webAuthLogout: (
+    scheme: string,
+    federated: boolean,
+    ephemeralSession?: boolean
+  ) => Promise<void>;
   saveCredentials: (credentials: Credentials) => Promise<void>;
   getCredentials: (
     scope?: string,
@@ -101,6 +106,7 @@ export type AgentParameters = {
 export type AgentLogoutOptions = {
   customScheme?: string;
   federated?: boolean;
+  ephemeralSession?: boolean;
 };
 
 export interface AgentLoginOptions {

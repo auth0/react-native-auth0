@@ -140,7 +140,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void webAuth(String scheme, String state, String nonce, String audience, String scope, String connection, int maxAge, String organization, String invitationUrl, int leeway, Promise promise) {
+    public void webAuth(String scheme, String state, String nonce, String audience, String scope, String connection, int maxAge, String organization, String invitationUrl, int leeway, boolean ephemeralSession, Promise promise) {
         WebAuthProvider.Builder builder = WebAuthProvider.login(this.auth0)
                 .withScheme(scheme);
         if(state != null) {
@@ -185,7 +185,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void webAuthLogout(String scheme, boolean federated, Promise promise) {
+    public void webAuthLogout(String scheme, boolean federated, boolean ephemeralSession, Promise promise) {
         WebAuthProvider.LogoutBuilder builder = WebAuthProvider.logout(this.auth0)
                 .withScheme(scheme);
         if(federated) {

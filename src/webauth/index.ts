@@ -85,89 +85,8 @@ class WebAuth {
     parameters: WebAuthorizeParameters = {},
     options: WebAuthorizeOptions = {}
   ): Promise<Credentials> {
-    const { clientId, domain, client, agent } = this;
-    if (Platform.OS == 'android') {
-      return agent.login({ clientId, domain }, { ...options });
-    } else {
-      return agent
-        .newTransaction()
-        .then(({ state, verifier, ...defaults }: any) => {
-          const redirectUri = callbackUri(domain, options.customScheme);
-          const expectedState = parameters.state || state;
-          const queryParameters: any = parameters;
-          if (parameters.invitationUrl) {
-            const urlQuery = url.parse(parameters.invitationUrl, true).query;
-            const { invitation, organization } = urlQuery;
-            if (!invitation || !organization) {
-              throw new AuthError({
-                json: {
-                  error: 'a0.invalid_invitation_url',
-                  error_description: `The invitation URL provided doesn't contain the 'organization' or 'invitation' values.`,
-                },
-                status: 0,
-              });
-            }
-            queryParameters.invitation = invitation;
-            queryParameters.organization = organization;
-          }
-
-          let query = {
-            ...defaults,
-            clientId,
-            responseType: 'code',
-            redirectUri,
-            state: expectedState,
-            ...queryParameters,
-          };
-          const authorizeUrl = this.client.authorizeUrl(query);
-          return agent
-            .show(
-              authorizeUrl,
-              options.ephemeralSession,
-              options.skipLegacyListener
-            )
-            .then((redirectUrl) => {
-              if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
-                throw new AuthError({
-                  json: {
-                    error: 'a0.redirect_uri.not_expected',
-                    error_description: `Expected ${redirectUri} but got ${redirectUrl}`,
-                  },
-                  status: 0,
-                });
-              }
-              const query = url.parse(redirectUrl, true).query;
-              const { code, state: resultState, error } = query;
-              const resultCode = code as string;
-              if (error) {
-                throw new AuthError({ json: query, status: 0 });
-              }
-              if (resultState !== expectedState) {
-                throw new AuthError({
-                  json: {
-                    error: 'a0.state.invalid',
-                    error_description: `Invalid state received in redirect url`,
-                  },
-                  status: 0,
-                });
-              }
-
-              return client
-                .exchange({ code: resultCode, verifier, redirectUri })
-                .then((credentials: Credentials) => {
-                  return verifyToken(credentials.idToken, {
-                    domain,
-                    clientId,
-                    nonce: parameters.nonce,
-                    maxAge: parameters.maxAge,
-                    scope: parameters.scope,
-                    leeway: options.leeway,
-                    orgId: parameters.organization,
-                  }).then(() => Promise.resolve(credentials));
-                });
-            });
-        });
-    }
+    const { clientId, domain, agent } = this;
+    return agent.login({ clientId, domain }, { ...parameters, ...options });
   }
 
   /**
@@ -180,7 +99,7 @@ class WebAuth {
    * @param {Bool} [parameters.federated] Optionally remove the IdP session.
    * @param {String} [parameters.customScheme] Custom scheme to build the callback URL with.
    * @param {Object} options Other configuration options.
-   * @param {String} [options.skipLegacyListener] Whether to register the event listener necessary for the SDK to work on iOS <11 or not. Defaults to `false`.
+   * @param {String} [options.ephemeralSession] (Only for iOS) Disable Single-Sign-On (SSO). It only affects iOS with versions 13 and above. Defaults to `false`.
    * @returns {Promise}
    * @see https://auth0.com/docs/logout
    *
@@ -190,23 +109,15 @@ class WebAuth {
     parameters: ClearSessionParameters = {},
     options: ClearSessionOptions = {}
   ) {
-    const { client, agent, domain, clientId } = this;
-    if (Platform.OS == 'android') {
-      return agent.logout(
-        { clientId, domain },
-        {
-          customScheme: parameters.customScheme,
-          federated: parameters.federated,
-        }
-      );
-    } else {
-      const logoutParameters: any = parameters;
-      logoutParameters.clientId = clientId;
-      logoutParameters.returnTo = callbackUri(domain, parameters.customScheme);
-      logoutParameters.federated = parameters.federated || false;
-      const logoutUrl = client.logoutUrl(logoutParameters);
-      return agent.show(logoutUrl, false, options.skipLegacyListener, true);
-    }
+    const { agent, domain, clientId } = this;
+    return agent.logout(
+      { clientId, domain },
+      {
+        customScheme: parameters.customScheme,
+        federated: parameters.federated,
+        ephemeralSession: options.ephemeralSession,
+      }
+    );
   }
 }
 
