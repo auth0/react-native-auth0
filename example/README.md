@@ -9,7 +9,7 @@ To run the example application inside the repository, follow these steps:
 3. Run `yarn run bootstrap` to set up the project.
 4. Run `yarn run prepack` to build the project.
 5. To run the application:
-   For Android, run `yarn run android`.
-   For iOS, run `yarn run ios`.
+   For Android, run `yarn example android`.
+   For iOS, run `yarn example ios`.
 
 The application will be built and launched on the specified platform, allowing you to interact with it.
