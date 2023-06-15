@@ -164,17 +164,6 @@ class CredentialsManager {
     );
     return this.Auth0Module.clearCredentials();
   }
-
-  //private
-  private async _ensureCredentialManagerIsInitialized() {
-    const hasValid = await this.Auth0Module.hasValidCredentialManagerInstance();
-    if (!hasValid) {
-      await this.Auth0Module.initializeCredentialManager(
-        this.clientId,
-        this.domain
-      );
-    }
-  }
 }
 
 export default CredentialsManager;

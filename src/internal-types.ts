@@ -76,7 +76,8 @@ export type Auth0Module = {
   getCredentials: (
     scope?: string,
     minTtl?: number,
-    parameters?: object
+    parameters?: object,
+    forceRefresh?: boolean
   ) => Promise<Credentials>;
   enableLocalAuthentication:
     | ((
