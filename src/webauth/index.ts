@@ -1,5 +1,5 @@
 import Agent from './agent';
-import {NativeModules, Platform} from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
 import url from 'url';
 import AuthError from '../auth/authError';
@@ -12,15 +12,16 @@ import {
   WebAuthorizeParameters,
 } from '../types';
 import Auth from '../auth';
+import { Auth0Module } from 'src/internal-types';
 
-const {A0Auth0} = NativeModules;
+const A0Auth0: Auth0Module = NativeModules.A0Auth0;
 
 const callbackUri = (domain: string, customScheme?: string) => {
   const bundleIdentifier = A0Auth0.bundleIdentifier;
   const lowerCasedIdentifier = bundleIdentifier.toLowerCase();
   if (!customScheme && bundleIdentifier !== lowerCasedIdentifier) {
     console.warn(
-      'The Bundle Identifier or Application ID of your app contains uppercase characters and will be lowercased to build the Callback URL. Check the Auth0 dashboard to whitelist the right URL value.',
+      'The Bundle Identifier or Application ID of your app contains uppercase characters and will be lowercased to build the Callback URL. Check the Auth0 dashboard to whitelist the right URL value.'
     );
   }
   return `${customScheme || lowerCasedIdentifier}://${domain}/${
@@ -46,7 +47,7 @@ class WebAuth {
 
   constructor(auth: Auth) {
     this.client = auth;
-    const {clientId, domain} = auth;
+    const { clientId, domain } = auth;
     this.domain = domain;
     this.clientId = clientId;
     this.agent = new Agent();
@@ -82,87 +83,91 @@ class WebAuth {
    */
   authorize(
     parameters: WebAuthorizeParameters = {},
-    options: WebAuthorizeOptions = {},
+    options: WebAuthorizeOptions = {}
   ): Promise<Credentials> {
-    const {clientId, domain, client, agent} = this;
-    return agent
-      .newTransaction()
-      .then(({state, verifier, ...defaults}: any) => {
-        const redirectUri = callbackUri(domain, options.customScheme);
-        const expectedState = parameters.state || state;
-        const queryParameters: any = parameters;
-        if (parameters.invitationUrl) {
-          const urlQuery = url.parse(parameters.invitationUrl, true).query;
-          const {invitation, organization} = urlQuery;
-          if (!invitation || !organization) {
-            throw new AuthError({
-              json: {
-                error: 'a0.invalid_invitation_url',
-                error_description: `The invitation URL provided doesn't contain the 'organization' or 'invitation' values.`,
-              },
-              status: 0,
-            });
+    const { clientId, domain, client, agent } = this;
+    if (Platform.OS == 'android') {
+      return agent.login({ clientId, domain }, { ...options });
+    } else {
+      return agent
+        .newTransaction()
+        .then(({ state, verifier, ...defaults }: any) => {
+          const redirectUri = callbackUri(domain, options.customScheme);
+          const expectedState = parameters.state || state;
+          const queryParameters: any = parameters;
+          if (parameters.invitationUrl) {
+            const urlQuery = url.parse(parameters.invitationUrl, true).query;
+            const { invitation, organization } = urlQuery;
+            if (!invitation || !organization) {
+              throw new AuthError({
+                json: {
+                  error: 'a0.invalid_invitation_url',
+                  error_description: `The invitation URL provided doesn't contain the 'organization' or 'invitation' values.`,
+                },
+                status: 0,
+              });
+            }
+            queryParameters.invitation = invitation;
+            queryParameters.organization = organization;
           }
-          queryParameters.invitation = invitation;
-          queryParameters.organization = organization;
-        }
 
-        let query = {
-          ...defaults,
-          clientId,
-          responseType: 'code',
-          redirectUri,
-          state: expectedState,
-          ...queryParameters,
-        };
-        const authorizeUrl = this.client.authorizeUrl(query);
-        return agent
-          .show(
-            authorizeUrl,
-            options.ephemeralSession,
-            options.skipLegacyListener,
-          )
-          .then(redirectUrl => {
-            if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
-              throw new AuthError({
-                json: {
-                  error: 'a0.redirect_uri.not_expected',
-                  error_description: `Expected ${redirectUri} but got ${redirectUrl}`,
-                },
-                status: 0,
-              });
-            }
-            const query = url.parse(redirectUrl, true).query;
-            const {code, state: resultState, error} = query;
-            const resultCode = code as string;
-            if (error) {
-              throw new AuthError({json: query, status: 0});
-            }
-            if (resultState !== expectedState) {
-              throw new AuthError({
-                json: {
-                  error: 'a0.state.invalid',
-                  error_description: `Invalid state received in redirect url`,
-                },
-                status: 0,
-              });
-            }
+          let query = {
+            ...defaults,
+            clientId,
+            responseType: 'code',
+            redirectUri,
+            state: expectedState,
+            ...queryParameters,
+          };
+          const authorizeUrl = this.client.authorizeUrl(query);
+          return agent
+            .show(
+              authorizeUrl,
+              options.ephemeralSession,
+              options.skipLegacyListener
+            )
+            .then((redirectUrl) => {
+              if (!redirectUrl || !redirectUrl.startsWith(redirectUri)) {
+                throw new AuthError({
+                  json: {
+                    error: 'a0.redirect_uri.not_expected',
+                    error_description: `Expected ${redirectUri} but got ${redirectUrl}`,
+                  },
+                  status: 0,
+                });
+              }
+              const query = url.parse(redirectUrl, true).query;
+              const { code, state: resultState, error } = query;
+              const resultCode = code as string;
+              if (error) {
+                throw new AuthError({ json: query, status: 0 });
+              }
+              if (resultState !== expectedState) {
+                throw new AuthError({
+                  json: {
+                    error: 'a0.state.invalid',
+                    error_description: `Invalid state received in redirect url`,
+                  },
+                  status: 0,
+                });
+              }
 
-            return client
-              .exchange({code: resultCode, verifier, redirectUri})
-              .then((credentials: Credentials) => {
-                return verifyToken(credentials.idToken, {
-                  domain,
-                  clientId,
-                  nonce: parameters.nonce,
-                  maxAge: parameters.max_age,
-                  scope: parameters.scope,
-                  leeway: options.leeway,
-                  orgId: parameters.organization,
-                }).then(() => Promise.resolve(credentials));
-              });
-          });
-      });
+              return client
+                .exchange({ code: resultCode, verifier, redirectUri })
+                .then((credentials: Credentials) => {
+                  return verifyToken(credentials.idToken, {
+                    domain,
+                    clientId,
+                    nonce: parameters.nonce,
+                    maxAge: parameters.maxAge,
+                    scope: parameters.scope,
+                    leeway: options.leeway,
+                    orgId: parameters.organization,
+                  }).then(() => Promise.resolve(credentials));
+                });
+            });
+        });
+    }
   }
 
   /**
@@ -183,15 +188,25 @@ class WebAuth {
    */
   clearSession(
     parameters: ClearSessionParameters = {},
-    options: ClearSessionOptions = {},
+    options: ClearSessionOptions = {}
   ) {
-    const {client, agent, domain, clientId} = this;
-    const logoutParameters: any = parameters;
-    logoutParameters.clientId = clientId;
-    logoutParameters.returnTo = callbackUri(domain, parameters.customScheme);
-    logoutParameters.federated = parameters.federated || false;
-    const logoutUrl = client.logoutUrl(logoutParameters);
-    return agent.show(logoutUrl, false, options.skipLegacyListener, true);
+    const { client, agent, domain, clientId } = this;
+    if (Platform.OS == 'android') {
+      return agent.logout(
+        { clientId, domain },
+        {
+          customScheme: parameters.customScheme,
+          federated: parameters.federated,
+        }
+      );
+    } else {
+      const logoutParameters: any = parameters;
+      logoutParameters.clientId = clientId;
+      logoutParameters.returnTo = callbackUri(domain, parameters.customScheme);
+      logoutParameters.federated = parameters.federated || false;
+      const logoutUrl = client.logoutUrl(logoutParameters);
+      return agent.show(logoutUrl, false, options.skipLegacyListener, true);
+    }
   }
 }
 

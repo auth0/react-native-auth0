@@ -7,7 +7,7 @@ describe('credentials manager tests', () => {
     'abc123'
   );
 
-  credentialsManager.Auth0Module.hasValidCredentialManagerInstance = () =>
+  credentialsManager.Auth0Module.hasValidAuth0Instance = () =>
     Promise.resolve(true);
   credentialsManager.Auth0Module.saveCredentials = () => {};
   credentialsManager.Auth0Module.getCredentials = () => {};
@@ -65,10 +65,7 @@ describe('credentials manager tests', () => {
 
     it('proper error is thrown for exception', async () => {
       const newNativeModule = jest
-        .spyOn(
-          credentialsManager.Auth0Module,
-          'hasValidCredentialManagerInstance'
-        )
+        .spyOn(credentialsManager.Auth0Module, 'hasValidAuth0Instance')
         .mockImplementation(() => {
           throw Error('123123');
         });

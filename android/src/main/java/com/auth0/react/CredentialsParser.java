@@ -17,7 +17,6 @@ public class CredentialsParser {
     private static final String EXPIRES_AT_KEY = "expiresAt";
     private static final String SCOPE = "scope";
     private static final String REFRESH_TOKEN_KEY = "refreshToken";
-    private static final String TYPE_KEY = "type";
     private static final String TOKEN_TYPE_KEY = "tokenType";
     private static final String EXPIRES_IN_KEY = "expiresIn";
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
@@ -25,7 +24,7 @@ public class CredentialsParser {
     public static ReadableMap toMap(Credentials credentials) {
         WritableNativeMap map = new WritableNativeMap();
         map.putString(ACCESS_TOKEN_KEY, credentials.getAccessToken());
-        map.putDouble(EXPIRES_AT_KEY, credentials.getExpiresAt().getTime());
+        map.putDouble(EXPIRES_IN_KEY, credentials.getExpiresAt().getTime());
         map.putString(ID_TOKEN_KEY, credentials.getIdToken());
         map.putString(SCOPE, credentials.getScope());
         map.putString(REFRESH_TOKEN_KEY, credentials.getRefreshToken());

@@ -2,34 +2,8 @@ import { NativeModules, Platform } from 'react-native';
 import CredentialsManagerError from './credentialsManagerError';
 import LocalAuthenticationStrategy from './localAuthenticationStrategy';
 import { Credentials } from '../types';
-
-/**
- * Type representing the Native Auth0 API's on iOS and Android
- */
-type Auth0Module = {
-  saveCredentials: (credentials: Credentials) => Promise<void>;
-  getCredentials: (
-    scope?: string,
-    minTtl?: number,
-    parameters?: object,
-    forceRefresh?: boolean
-  ) => Promise<Credentials>;
-  enableLocalAuthentication:
-    | ((
-        title?: string,
-        cancelTitle?: string,
-        fallbackTitle?: string,
-        strategy?: LocalAuthenticationStrategy
-      ) => Promise<void>)
-    | ((title?: string, description?: string) => Promise<void>);
-  hasValidCredentials: (minTtl?: number) => Promise<boolean>;
-  clearCredentials: () => Promise<void>;
-  hasValidCredentialManagerInstance: () => Promise<boolean>;
-  initializeCredentialManager: (
-    clientId: string,
-    domain: string
-  ) => Promise<void>;
-};
+import { Auth0Module } from 'src/internal-types';
+import { _ensureNativeModuleIsInitialized } from '../utils/nativeHelper';
 
 class CredentialsManager {
   private domain;
@@ -73,7 +47,11 @@ class CredentialsManager {
       }
     });
     try {
-      await this._ensureCredentialManagerIsInitialized();
+      await _ensureNativeModuleIsInitialized(
+        this.Auth0Module,
+        this.clientId,
+        this.domain
+      );
       return await this.Auth0Module.saveCredentials(credentials);
     } catch (e) {
       const json = {
@@ -99,7 +77,11 @@ class CredentialsManager {
     forceRefresh: boolean = false
   ): Promise<Credentials> {
     try {
-      await this._ensureCredentialManagerIsInitialized();
+      await _ensureNativeModuleIsInitialized(
+        this.Auth0Module,
+        this.clientId,
+        this.domain
+      );
       return this.Auth0Module.getCredentials(
         scope,
         minTtl,
@@ -133,7 +115,11 @@ class CredentialsManager {
     strategy = LocalAuthenticationStrategy.deviceOwnerWithBiometrics
   ): Promise<void> {
     try {
-      await this._ensureCredentialManagerIsInitialized();
+      await _ensureNativeModuleIsInitialized(
+        this.Auth0Module,
+        this.clientId,
+        this.domain
+      );
       if (Platform.OS === 'ios') {
         await this.Auth0Module.enableLocalAuthentication(
           title,
@@ -159,7 +145,11 @@ class CredentialsManager {
    * @param {Number} minTtl optional - the minimum time in seconds that the access token should last before expiration
    */
   async hasValidCredentials(minTtl = 0): Promise<boolean> {
-    await this._ensureCredentialManagerIsInitialized();
+    await _ensureNativeModuleIsInitialized(
+      this.Auth0Module,
+      this.clientId,
+      this.domain
+    );
     return await this.Auth0Module.hasValidCredentials(minTtl);
   }
 
@@ -167,19 +157,12 @@ class CredentialsManager {
    * Delete the stored credentials
    */
   async clearCredentials(): Promise<void> {
-    await this._ensureCredentialManagerIsInitialized();
+    await _ensureNativeModuleIsInitialized(
+      this.Auth0Module,
+      this.clientId,
+      this.domain
+    );
     return this.Auth0Module.clearCredentials();
-  }
-
-  //private
-  private async _ensureCredentialManagerIsInitialized() {
-    const hasValid = await this.Auth0Module.hasValidCredentialManagerInstance();
-    if (!hasValid) {
-      await this.Auth0Module.initializeCredentialManager(
-        this.clientId,
-        this.domain
-      );
-    }
   }
 }
 
