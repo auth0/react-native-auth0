@@ -5,7 +5,6 @@ import url from 'url';
 import AuthError from '../auth/authError';
 import verifyToken from '../jwt';
 import {
-  ClearSessionOptions,
   ClearSessionParameters,
   Credentials,
   WebAuthorizeOptions,
@@ -59,7 +58,6 @@ class WebAuth {
    * @param {Number}  [options.leeway] The amount of leeway, in seconds, to accommodate potential clock skew when validating an ID token's claims. Defaults to 60 seconds if not specified.
    * @param {Boolean} [options.ephemeralSession] Disable Single-Sign-On (SSO). It only affects iOS with versions 13 and above. Defaults to `false`.
    * @param {String}  [options.customScheme] Custom scheme to build the callback URL with.
-   * @param {String}  [options.skipLegacyListener] Whether to register the event listener necessary for the SDK to work on iOS <11 or not. Defaults to `false`.
    * @returns {Promise}
    * @see https://auth0.com/docs/api/authentication#authorize-client
    *
@@ -83,23 +81,18 @@ class WebAuth {
    * @param {Bool} [parameters.federated] Optionally remove the IdP session.
    * @param {String} [parameters.customScheme] Custom scheme to build the callback URL with.
    * @param {Object} options Other configuration options.
-   * @param {String} [options.ephemeralSession] (Only for iOS) Disable Single-Sign-On (SSO). It only affects iOS with versions 13 and above. Defaults to `false`.
    * @returns {Promise}
    * @see https://auth0.com/docs/logout
    *
    * @memberof WebAuth
    */
-  clearSession(
-    parameters: ClearSessionParameters = {},
-    options: ClearSessionOptions = {}
-  ) {
+  clearSession(parameters: ClearSessionParameters = {}) {
     const { agent, domain, clientId } = this;
     return agent.logout(
       { clientId, domain },
       {
         customScheme: parameters.customScheme,
         federated: parameters.federated,
-        ephemeralSession: options.ephemeralSession,
       }
     );
   }

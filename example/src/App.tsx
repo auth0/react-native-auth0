@@ -23,7 +23,7 @@ const Home = () => {
   const loggedIn = user !== undefined && user !== null;
 
   const onLogout = async () => {
-    await clearSession({ federated: true }, {});
+    await clearSession({ federated: true });
   };
 
   return (

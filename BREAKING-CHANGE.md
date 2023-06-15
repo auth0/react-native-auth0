@@ -4,3 +4,6 @@
 - `getCredentials` in Android will return `expiresIn` instead of `expiresAt`
 - `max_age` parameter is changed to `maxAge` in `WebAuth.authorize()`
 - Web Auth will now have default scope of 'openid profile email'
+- Minimum supported version for iOS is bumped to 13
+- skipLegacyListener has been removed in `authorize` and `clearSession`
+- ClearSessionOptions has been removed in `clearSession`

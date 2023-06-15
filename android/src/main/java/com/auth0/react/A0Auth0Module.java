@@ -185,7 +185,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void webAuthLogout(String scheme, boolean federated, boolean ephemeralSession, Promise promise) {
+    public void webAuthLogout(String scheme, boolean federated, Promise promise) {
         WebAuthProvider.LogoutBuilder builder = WebAuthProvider.logout(this.auth0)
                 .withScheme(scheme);
         if(federated) {

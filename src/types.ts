@@ -42,16 +42,11 @@ export interface WebAuthorizeOptions {
   leeway?: number;
   ephemeralSession?: boolean;
   customScheme?: string;
-  skipLegacyListener?: boolean;
 }
 
 export interface ClearSessionParameters {
   federated?: boolean;
   customScheme?: string;
-}
-
-export interface ClearSessionOptions {
-  ephemeralSession?: boolean;
 }
 
 export interface GetUserOptions {

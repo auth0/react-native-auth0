@@ -52,7 +52,6 @@ export default class Agent {
     options: AgentLogoutOptions
   ): Promise<void> {
     let federated = options.federated ?? false;
-    let ephemeralSession = options.ephemeralSession ?? false;
     let scheme = this.getScheme(options.customScheme);
     if (!NativeModules.A0Auth0) {
       return Promise.reject(
@@ -67,7 +66,7 @@ export default class Agent {
       parameters.domain
     );
 
-    return A0Auth0.webAuthLogout(scheme, federated, ephemeralSession);
+    return A0Auth0.webAuthLogout(scheme, federated);
   }
 
   getScheme(customScheme?: string) {

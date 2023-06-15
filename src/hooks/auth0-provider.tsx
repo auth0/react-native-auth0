@@ -11,7 +11,6 @@ import Auth0Context from './auth0-context';
 import Auth0 from '../auth0';
 import reducer from './reducer';
 import {
-  ClearSessionOptions,
   ClearSessionParameters,
   Credentials,
   LoginWithEmailOptions,
@@ -117,12 +116,9 @@ const Auth0Provider = ({
   );
 
   const clearSession = useCallback(
-    async (
-      parameters: ClearSessionParameters = {},
-      options: ClearSessionOptions = {}
-    ) => {
+    async (parameters: ClearSessionParameters = {}) => {
       try {
-        await client.webAuth.clearSession(parameters, options);
+        await client.webAuth.clearSession(parameters);
         await client.credentialsManager.clearCredentials();
         dispatch({ type: 'LOGOUT_COMPLETE' });
       } catch (error) {

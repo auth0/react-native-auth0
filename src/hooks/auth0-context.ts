@@ -1,6 +1,5 @@
 import { createContext } from 'react';
 import {
-  ClearSessionOptions,
   ClearSessionParameters,
   LoginWithEmailOptions,
   LoginWithOOBOptions,
@@ -36,10 +35,7 @@ export interface Auth0ContextInterface<TUser extends User = User>
     parameters: LoginWithRecoveryCodeOptions
   ) => Promise<void>;
   hasValidCredentials: (minTtl: number) => Promise<boolean>;
-  clearSession: (
-    parameters: ClearSessionParameters,
-    options: ClearSessionOptions
-  ) => Promise<void>;
+  clearSession: (parameters: ClearSessionParameters) => Promise<void>;
   getCredentials: (
     scope?: string,
     minTtl?: number,

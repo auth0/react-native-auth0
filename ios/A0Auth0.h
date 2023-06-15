@@ -4,4 +4,4 @@
 
 @end
 
-@class CredentialsManagerBridge;
+@class NativeBridge;
