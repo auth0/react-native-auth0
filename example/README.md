@@ -7,7 +7,8 @@ To run the example application inside the repository, follow these steps:
 1. Open a terminal or command prompt.
 2. Navigate to the repository's root directory and install the dependencies by running `yarn`
 3. Run `yarn run bootstrap` to set up the project.
-4. To run the application:
+4. Run `yarn run prepack` to build the project.
+5. To run the application:
    For Android, run `yarn run android`.
    For iOS, run `yarn run ios`.
 
