@@ -23,13 +23,11 @@ import Auth from '../auth';
  * @see https://auth0.com/docs/api-auth/grant/authorization-code-pkce
  */
 class WebAuth {
-  private client;
   private domain;
   private clientId;
   private agent;
 
   constructor(auth: Auth) {
-    this.client = auth;
     const { clientId, domain } = auth;
     this.domain = domain;
     this.clientId = clientId;
