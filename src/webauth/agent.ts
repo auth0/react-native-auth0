@@ -51,8 +51,6 @@ export default class Agent {
     parameters: AgentParameters,
     options: AgentLogoutOptions
   ): Promise<void> {
-    let federated = options.federated ?? false;
-    let scheme = this.getScheme(options.customScheme);
     if (!NativeModules.A0Auth0) {
       return Promise.reject(
         new Error(
@@ -60,6 +58,8 @@ export default class Agent {
         )
       );
     }
+    let federated = options.federated ?? false;
+    let scheme = this.getScheme(options.customScheme);
     await _ensureNativeModuleIsInitialized(
       NativeModules.A0Auth0,
       parameters.clientId,

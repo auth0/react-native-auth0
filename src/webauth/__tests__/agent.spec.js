@@ -1,138 +1,152 @@
 jest.mock('react-native');
+import * as nativeUtils from '../../utils/nativeHelper';
 import Agent from '../agent';
-import {NativeModules, Linking, Platform} from 'react-native';
-const A0Auth0 = NativeModules.A0Auth0;
+import { NativeModules } from 'react-native';
 
 describe('Agent', () => {
   const agent = new Agent();
 
-  describe('show', () => {
-    beforeEach(() => {
-      NativeModules.A0Auth0 = A0Auth0;
-      Linking.removeAllListeners();
-      A0Auth0.reset();
-      A0Auth0.onUrl = () => {
-        Linking.emitter.emit('url', {url: 'https://auth0.com'});
-      };
-    });
-
+  describe('login', () => {
     it('should fail if native module is not linked', async () => {
-      NativeModules.A0Auth0 = undefined;
+      const replacedProperty = jest.replaceProperty(
+        NativeModules,
+        'A0Auth0',
+        undefined
+      );
       expect.assertions(1);
-      await expect(agent.show('https://auth0.com')).rejects.toMatchSnapshot();
+      await expect(agent.login()).rejects.toMatchSnapshot();
+      replacedProperty.restore();
     });
 
-    describe('complete web flow', () => {
-      it('should resolve promise with url result', async () => {
-        expect.assertions(1);
-        await expect(
-          agent.show('https://auth0.com'),
-        ).resolves.toMatchSnapshot();
-      });
-
-      it('should show initial url', async () => {
-        expect.assertions(1);
-        const url = 'https://auth0.com/authorize';
-        await agent.show(url);
-        expect(A0Auth0.url).toEqual(url);
-      });
-
-      it('should not pass ephemeral session parameter', async () => {
-        Platform.OS = 'android';
-        expect.assertions(1);
-        const url = 'https://auth0.com';
-        await agent.show(url);
-        expect(A0Auth0.ephemeralSession).toEqual(false);
-      });
-
-      it('should not use ephemeral session by default', async () => {
-        Platform.OS = 'ios';
-        expect.assertions(1);
-        const url = 'https://auth0.com';
-        await agent.show(url);
-        expect(A0Auth0.ephemeralSession).toEqual(false);
-      });
-
-      it('should set ephemeral session', async () => {
-        Platform.OS = 'ios';
-        expect.assertions(1);
-        const url = 'https://auth0.com';
-        await agent.show(url, true);
-        expect(A0Auth0.ephemeralSession).toEqual(true);
-      });
+    it('should ensure module is initialized', async () => {
+      let domain = 'test.com';
+      let clientId = 'client id value';
+      const mock = jest
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .mockImplementation(() => Promise.resolve(true));
+      jest
+        .spyOn(NativeModules.A0Auth0, 'webAuth')
+        .mockImplementation(() => Promise.resolve(true));
+      agent.login(
+        {
+          clientId: clientId,
+          domain: domain,
+        },
+        { customScheme: 'test' }
+      );
+      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
     });
 
-    describe('listeners', () => {
-      it('should register url listeners', () => {
-        A0Auth0.onUrl = () => {};
-        const url = 'https://auth0.com/authorize';
-        agent.show(url);
-        expect(Linking.emitter.listenerCount('url')).toEqual(1);
-      });
-
-      it('should not register url listeners', () => {
-        const url = 'https://auth0.com/authorize';
-        agent.show(url, false, true);
-        expect(Linking.emitter.listenerCount('url')).toEqual(0);
-      });
-
-      it('should remove url listeners when done', async () => {
-        expect.assertions(1);
-        const url = 'https://auth0.com/authorize';
-        await agent.show(url);
-        expect(Linking.emitter.listenerCount('url')).toEqual(0);
-      });
-
-      it('should remove url listeners when load fails', async () => {
-        expect.assertions(1);
-        A0Auth0.error = new Error('failed to load');
-        const url = 'https://auth0.com/authorize';
-        await agent.show(url).catch(err => Promise.resolve(err));
-        expect(Linking.emitter.listenerCount('url')).toEqual(0);
-      });
-
-      it('should remove url listeners on first load', async () => {
-        expect.assertions(1);
-        const url = 'https://auth0.com/authorize';
-        await agent.show(url, false, false, true);
-        expect(Linking.emitter.listenerCount('url')).toEqual(0);
-      });
-    });
-
-    describe('failed flow', () => {
-      it('should reject with error', async () => {
-        expect.assertions(1);
-        A0Auth0.error = new Error('failed to load');
-        await expect(agent.show('https://auth0.com')).rejects.toMatchSnapshot();
-      });
-
-      it('should reject with error when both error and redirectURL are missing', async () => {
-        NativeModules.A0Auth0.showUrl = (...args) => {
-          const callback = args[args.length - 1];
-          callback(null, null);
-        };
-        expect.assertions(1);
-        try {
-          await agent.show('https://auth0.com');
-        } catch (e) {
-          expect(e).toEqual(new Error('Unknown WebAuth error'));
+    it('should ensure login is called with proper parameters', async () => {
+      let domain = 'test.com';
+      let clientId = 'client id value';
+      const mock = jest
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .mockImplementation(() => Promise.resolve(true));
+      const mockLogin = jest
+        .spyOn(NativeModules.A0Auth0, 'webAuth')
+        .mockImplementation(() => Promise.resolve(true));
+      await agent.login(
+        {
+          clientId: clientId,
+          domain: domain,
+        },
+        {
+          customScheme: 'test',
+          state: 'state',
+          nonce: 'nonce',
+          audience: 'audience',
+          scope: 'scope',
+          connection: 'connection',
+          maxAge: 120,
+          organization: 'organization',
+          invitationUrl: 'invitationUrl',
+          leeway: 220,
+          ephemeralSession: true,
         }
-      });
+      );
+      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mockLogin).toBeCalledWith(
+        'test',
+        'state',
+        'nonce',
+        'audience',
+        'scope',
+        'connection',
+        120,
+        'organization',
+        'invitationUrl',
+        220,
+        true
+      );
     });
   });
 
-  describe('newTransaction', () => {
-    it('should call native integration', async () => {
-      const parameters = {state: 'state'};
-      A0Auth0.parameters = parameters;
+  describe('logout', () => {
+    it('should fail if native module is not linked', async () => {
+      const replacedProperty = jest.replaceProperty(
+        NativeModules,
+        'A0Auth0',
+        undefined
+      );
       expect.assertions(1);
-      await expect(agent.newTransaction()).resolves.toMatchSnapshot();
+      await expect(agent.logout()).rejects.toMatchSnapshot();
+      replacedProperty.restore();
     });
 
-    it('should fail if native module is not linked', async () => {
-      NativeModules.A0Auth0 = undefined;
-      expect.assertions(1);
-      await expect(agent.newTransaction()).rejects.toMatchSnapshot();
+    it('should ensure module is initialized', async () => {
+      let domain = 'test.com';
+      let clientId = 'client id value';
+      const mock = jest
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .mockImplementation(() => Promise.resolve(true));
+      agent.logout(
+        {
+          clientId: clientId,
+          domain: domain,
+        },
+        { customScheme: 'test' }
+      );
+      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+    });
+
+    it('should ensure logout is called with proper parameters', async () => {
+      let domain = 'test.com';
+      let clientId = 'client id value';
+      const mock = jest
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .mockImplementation(() => Promise.resolve(true));
+      const mockLogin = jest
+        .spyOn(NativeModules.A0Auth0, 'webAuthLogout')
+        .mockImplementation(() => Promise.resolve(true));
+      await agent.logout(
+        {
+          clientId: clientId,
+          domain: domain,
+        },
+        {
+          customScheme: 'test',
+          federated: true,
+        }
+      );
+      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mockLogin).toBeCalledWith('test', true);
+    });
+  });
+
+  describe('getScheme', () => {
+    it('should return custom scheme', async () => {
+      await expect(agent.getScheme('custom')).toEqual('custom');
+    });
+
+    it('should return bundle identifier', async () => {
+      NativeModules.A0Auth0.bundleIdentifier = 'com.test';
+      await expect(agent.getScheme()).toEqual('com.test');
+    });
+
+    it('should return bundle identifier lower cased', async () => {
+      NativeModules.A0Auth0.bundleIdentifier = 'com.Test';
+      await expect(agent.getScheme()).toEqual('com.test');
     });
   });
 });
