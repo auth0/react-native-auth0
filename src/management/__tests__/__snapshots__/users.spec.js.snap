@@ -5,8 +5,8 @@ exports[`users GET user should handle oauth error 1`] = `[Forbidden: User to be 
 exports[`users GET user should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
 
 exports[`users GET user should return successful response 1`] = `
-Object {
-  "appMetadata": Object {
+{
+  "appMetadata": {
     "name": "info@auth0.com",
     "nickname": "info",
     "picture": "https://secure.gravatar.com/avatar/cfacbe113a96fdfc85134534771d88b4?s=480&r=pg&d=https%3A%2F%2Fssl.gstatic.com%2Fs2%2Fprofiles%2Fimages%2Fsilhouette80.png",
@@ -16,23 +16,23 @@ Object {
   "created_at": "2014-07-06T18:33:49.005Z",
   "email": "info@auth0.com",
   "emailVerified": false,
-  "identities": Array [
-    Object {
+  "identities": [
+    {
       "connection": "Username-Password-Authentication",
       "isSocial": false,
       "provider": "auth0",
       "user_id": "53b995f8bce68d9fc900099c",
     },
-    Object {
+    {
       "connection": "wordpress",
       "isSocial": true,
-      "profileData": Object {
+      "profileData": {
         "display_name": "csauth0",
         "email": "cs.auth0@gmail.com",
         "email_verified": false,
         "language": "en",
-        "meta": Object {
-          "links": Object {
+        "meta": {
+          "links": {
             "flags": "https://public-api.wordpress.com/rest/v1/me/flags",
             "help": "https://public-api.wordpress.com/rest/v1/me/help",
             "self": "https://public-api.wordpress.com/rest/v1/me",
@@ -44,7 +44,7 @@ Object {
         "primary_blog": 76327566,
         "profile_URL": "http://en.gravatar.com/csauth0",
         "site_count": 1,
-        "token_scope": Array [
+        "token_scope": [
           "",
         ],
         "token_site_id": 76327566,
@@ -54,24 +54,24 @@ Object {
       "provider": "wordpress",
       "user_id": 72894558,
     },
-    Object {
+    {
       "connection": "facebook",
       "isSocial": true,
-      "profileData": Object {
-        "age_range": Object {
+      "profileData": {
+        "age_range": {
           "min": 21,
         },
-        "context": Object {
+        "context": {
           "id": "dXNlcl9jb250ZAA0ZD",
-          "mutual_likes": Object {
-            "data": Array [],
-            "summary": Object {
+          "mutual_likes": {
+            "data": [],
+            "summary": {
               "total_count": 0,
             },
           },
         },
-        "devices": Array [
-          Object {
+        "devices": [
+          {
             "os": "Android",
           },
         ],
@@ -99,16 +99,16 @@ Object {
   "last_ip": "181.47.186.202",
   "last_login": "2017-06-13T02:47:41.914Z",
   "logins_count": 1151,
-  "multifactor": Array [
+  "multifactor": [
     "google-authenticator",
   ],
   "name": "info@auth0.com",
   "nickname": "info",
-  "persistent": Object {},
+  "persistent": {},
   "picture": "https://s.gravatar.com/avatar/cfacbe113a96fdfc85134534771d88b4?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fp.png",
   "updated_at": "2017-06-13T02:47:41.914Z",
   "userId": "auth0|53b995f8bce68d9fc900099c",
-  "userMetadata": Object {
+  "userMetadata": {
     "first_name": "Info",
     "from": "react-native",
     "last_name": "Auth0",
@@ -118,21 +118,21 @@ Object {
 `;
 
 exports[`users GET user should send correct payload 1`] = `
-Array [
+[
   "https://samples.auth0.com/api/v2/users/auth0%7C53b995f8bce68d9fc900099c",
-  Object {
+  {
     "headers": Headers {
-      Symbol(map): Object {
-        "Accept": Array [
+      Symbol(map): {
+        "Accept": [
           "application/json",
         ],
-        "Auth0-Client": Array [
+        "Auth0-Client": [
           "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
         ],
-        "Authorization": Array [
+        "Authorization": [
           "Bearer a.token.from.the.user",
         ],
-        "Content-Type": Array [
+        "Content-Type": [
           "application/json",
         ],
       },
@@ -148,8 +148,8 @@ exports[`users PATCH user should handle oauth error 1`] = `[Forbidden: User to b
 exports[`users PATCH user should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
 
 exports[`users PATCH user should return successful response 1`] = `
-Object {
-  "appMetadata": Object {
+{
+  "appMetadata": {
     "name": "info@auth0.com",
     "nickname": "info",
     "picture": "https://secure.gravatar.com/avatar/cfacbe113a96fdfc85134534771d88b4?s=480&r=pg&d=https%3A%2F%2Fssl.gstatic.com%2Fs2%2Fprofiles%2Fimages%2Fsilhouette80.png",
@@ -159,23 +159,23 @@ Object {
   "created_at": "2014-07-06T18:33:49.005Z",
   "email": "info@auth0.com",
   "emailVerified": false,
-  "identities": Array [
-    Object {
+  "identities": [
+    {
       "connection": "Username-Password-Authentication",
       "isSocial": false,
       "provider": "auth0",
       "user_id": "53b995f8bce68d9fc900099c",
     },
-    Object {
+    {
       "connection": "wordpress",
       "isSocial": true,
-      "profileData": Object {
+      "profileData": {
         "display_name": "csauth0",
         "email": "cs.auth0@gmail.com",
         "email_verified": false,
         "language": "en",
-        "meta": Object {
-          "links": Object {
+        "meta": {
+          "links": {
             "flags": "https://public-api.wordpress.com/rest/v1/me/flags",
             "help": "https://public-api.wordpress.com/rest/v1/me/help",
             "self": "https://public-api.wordpress.com/rest/v1/me",
@@ -187,7 +187,7 @@ Object {
         "primary_blog": 76327566,
         "profile_URL": "http://en.gravatar.com/csauth0",
         "site_count": 1,
-        "token_scope": Array [
+        "token_scope": [
           "",
         ],
         "token_site_id": 76327566,
@@ -197,24 +197,24 @@ Object {
       "provider": "wordpress",
       "user_id": 72894558,
     },
-    Object {
+    {
       "connection": "facebook",
       "isSocial": true,
-      "profileData": Object {
-        "age_range": Object {
+      "profileData": {
+        "age_range": {
           "min": 21,
         },
-        "context": Object {
+        "context": {
           "id": "dXNlcl9jb250ZAA0ZD",
-          "mutual_likes": Object {
-            "data": Array [],
-            "summary": Object {
+          "mutual_likes": {
+            "data": [],
+            "summary": {
               "total_count": 0,
             },
           },
         },
-        "devices": Array [
-          Object {
+        "devices": [
+          {
             "os": "Android",
           },
         ],
@@ -242,16 +242,16 @@ Object {
   "last_ip": "181.47.186.202",
   "last_login": "2017-06-13T02:47:41.914Z",
   "logins_count": 1151,
-  "multifactor": Array [
+  "multifactor": [
     "google-authenticator",
   ],
   "name": "info@auth0.com",
   "nickname": "info",
-  "persistent": Object {},
+  "persistent": {},
   "picture": "https://s.gravatar.com/avatar/cfacbe113a96fdfc85134534771d88b4?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fp.png",
   "updated_at": "2017-06-13T02:47:41.914Z",
   "userId": "auth0|53b995f8bce68d9fc900099c",
-  "userMetadata": Object {
+  "userMetadata": {
     "first_name": "Info",
     "from": "react-native",
     "last_name": "Auth0",
@@ -261,22 +261,22 @@ Object {
 `;
 
 exports[`users PATCH user should send correct payload 1`] = `
-Array [
+[
   "https://samples.auth0.com/api/v2/users/auth0%7C53b995f8bce68d9fc900099c",
-  Object {
-    "body": "{\\"user_metadata\\":{\\"first_name\\":\\"Mike\\",\\"lastName\\":\\"Doe\\"}}",
+  {
+    "body": "{"user_metadata":{"first_name":"Mike","lastName":"Doe"}}",
     "headers": Headers {
-      Symbol(map): Object {
-        "Accept": Array [
+      Symbol(map): {
+        "Accept": [
           "application/json",
         ],
-        "Auth0-Client": Array [
+        "Auth0-Client": [
           "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
         ],
-        "Authorization": Array [
+        "Authorization": [
           "Bearer a.token.from.the.user",
         ],
-        "Content-Type": Array [
+        "Content-Type": [
           "application/json",
         ],
       },
