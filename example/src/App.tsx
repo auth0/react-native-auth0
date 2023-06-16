@@ -15,7 +15,10 @@ const Home = () => {
   const { authorize, clearSession, user, getCredentials, error } = useAuth0();
 
   const onLogin = async () => {
-    await authorize({ scope: 'openid profile email' }, {});
+    await authorize(
+      { scope: 'openid profile email', additionalParameters: { test: 'test' } },
+      {}
+    );
     const credentials = await getCredentials(undefined, 0, {});
     Alert.alert('AccessToken: ' + credentials?.accessToken);
   };

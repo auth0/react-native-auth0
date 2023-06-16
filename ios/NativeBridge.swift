@@ -39,7 +39,7 @@ public class NativeBridge: NSObject {
         super.init()
    }
     
-    @objc public func webAuth(scheme: String?, state: String?, nonce: String?, audience: String?, scope: String?, connection: String?, maxAge: Int, organization: String?, invitationUrl: String?, leeway: Int, ephemeralSession: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func webAuth(scheme: String?, state: String?, nonce: String?, audience: String?, scope: String?, connection: String?, maxAge: Int, organization: String?, invitationUrl: String?, leeway: Int, ephemeralSession: Bool, additionalParameters: [String: String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
         if let value = nonce {
             let _ = builder.nonce(value)
@@ -68,6 +68,7 @@ public class NativeBridge: NSObject {
         if(ephemeralSession) {
             let _ = builder.useEphemeralSession()
         }
+        builder.parameters(additionalParameters)
         builder.start { result in
             switch result {
             case .success(let credentials):

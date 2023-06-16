@@ -1,3 +1,4 @@
+import { string } from 'prop-types';
 import {
   RawCredentials,
   RawMultifactorChallengeOOBResponse,
@@ -36,6 +37,7 @@ export interface WebAuthorizeParameters {
   maxAge?: number;
   organization?: string;
   invitationUrl?: string;
+  additionalParameters?: { [key: string]: string };
 }
 
 export interface WebAuthorizeOptions {

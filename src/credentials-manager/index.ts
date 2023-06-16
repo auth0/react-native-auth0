@@ -68,6 +68,7 @@ class CredentialsManager {
    * @param {String} scope optional - the scope to request for the access token. If null is passed, the previous scope will be kept.
    * @param {String} minTtl optional - the minimum time in seconds that the access token should last before expiration.
    * @param {Object} parameters optional - additional parameters to send in the request to refresh expired credentials.
+   * @param {Object} forceRefresh optional - to force refresh the credentials. It will work only if refresh token already exists.
    * @returns {Promise}
    */
   async getCredentials(

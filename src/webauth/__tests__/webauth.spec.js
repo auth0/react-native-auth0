@@ -24,6 +24,7 @@ describe('WebAuth', () => {
         maxAge: 120,
         organization: 'org',
         invitationUrl: 'invitation url',
+        additionalParameters: { test: 'test' },
       };
       let options = {
         leeway: 220,

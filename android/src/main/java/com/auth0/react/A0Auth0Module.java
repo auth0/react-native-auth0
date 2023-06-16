@@ -140,7 +140,13 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void webAuth(String scheme, String state, String nonce, String audience, String scope, String connection, int maxAge, String organization, String invitationUrl, int leeway, boolean ephemeralSession, Promise promise) {
+    public void webAuth(String scheme, String state, String nonce, String audience, String scope, String connection, int maxAge, String organization, String invitationUrl, int leeway, boolean ephemeralSession, ReadableMap additionalParameters, Promise promise) {
+        Map<String,String> cleanedParameters = new HashMap<>();
+        for (Map.Entry<String, Object> entry : additionalParameters.toHashMap().entrySet()) {
+            if (entry.getValue() != null) {
+                cleanedParameters.put(entry.getKey(), entry.getValue().toString());
+            }
+        }
         WebAuthProvider.Builder builder = WebAuthProvider.login(this.auth0)
                 .withScheme(scheme);
         if(state != null) {
@@ -170,6 +176,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
         if(leeway != 0) {
             builder.withIdTokenVerificationLeeway(leeway);
         }
+        builder.withParameters(cleanedParameters);
         builder.start(reactContext.getCurrentActivity(), new com.auth0.android.callback.Callback<Credentials, AuthenticationException>() {
                     @Override
                     public void onSuccess(Credentials result) {

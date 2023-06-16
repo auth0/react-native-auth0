@@ -63,6 +63,7 @@ describe('Agent', () => {
           invitationUrl: 'invitationUrl',
           leeway: 220,
           ephemeralSession: true,
+          additionalParameters: { test: 'test' },
         }
       );
       expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
@@ -77,7 +78,8 @@ describe('Agent', () => {
         'organization',
         'invitationUrl',
         220,
-        true
+        true,
+        { test: 'test' }
       );
     });
   });
