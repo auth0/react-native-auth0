@@ -16,7 +16,7 @@ const Home = () => {
 
   const onLogin = async () => {
     await authorize(
-      { scope: 'openid profile email', additionalParameters: { test: 'test' } },
+      { scope: 'openid profile email' },
       {}
     );
     const credentials = await getCredentials(undefined, 0, {});
