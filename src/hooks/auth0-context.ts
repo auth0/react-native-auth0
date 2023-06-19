@@ -1,5 +1,4 @@
-import {createContext} from 'react';
-
+import { createContext } from 'react';
 import {
   ClearSessionOptions,
   ClearSessionParameters,
@@ -23,29 +22,30 @@ export interface Auth0ContextInterface<TUser extends User = User>
   extends AuthState<TUser> {
   authorize: (
     parameters: WebAuthorizeParameters,
-    options: WebAuthorizeOptions,
+    options: WebAuthorizeOptions
   ) => Promise<void>;
   sendSMSCode: (parameters: PasswordlessWithSMSOptions) => Promise<void>;
   authorizeWithSMS: (parameters: LoginWithSMSOptions) => Promise<void>;
   sendEmailCode: (parameters: PasswordlessWithEmailOptions) => Promise<void>;
   authorizeWithEmail: (parameters: LoginWithEmailOptions) => Promise<void>;
   sendMultifactorChallenge: (
-    parameters: MultifactorChallengeOptions,
+    parameters: MultifactorChallengeOptions
   ) => Promise<void>;
   authorizeWithOOB: (parameters: LoginWithOOBOptions) => Promise<void>;
   authorizeWithOTP: (parameters: LoginWithOTPOptions) => Promise<void>;
   authorizeWithRecoveryCode: (
-    parameters: LoginWithRecoveryCodeOptions,
+    parameters: LoginWithRecoveryCodeOptions
   ) => Promise<void>;
   hasValidCredentials: (minTtl: number) => Promise<boolean>;
   clearSession: (
     parameters: ClearSessionParameters,
-    options: ClearSessionOptions,
+    options: ClearSessionOptions
   ) => Promise<void>;
   getCredentials: (
     scope?: string,
     minTtl?: number,
     parameters?: Record<string, unknown>,
+    forceRefresh?: boolean
   ) => Promise<Credentials | undefined>;
   clearCredentials: () => Promise<void>;
   requireLocalAuthentication: (
@@ -53,7 +53,7 @@ export interface Auth0ContextInterface<TUser extends User = User>
     description?: string,
     cancelTitle?: string,
     fallbackTitle?: string,
-    strategy?: LocalAuthenticationStrategy,
+    strategy?: LocalAuthenticationStrategy
   ) => Promise<void>;
 }
 

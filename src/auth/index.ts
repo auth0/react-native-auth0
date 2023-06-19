@@ -1,9 +1,9 @@
-import Client, {Auth0Response} from '../networking';
-import {apply} from '../utils/whitelist';
-import {toCamelCase} from '../utils/camel';
+import Client, { Auth0Response } from '../networking';
+import { apply } from '../utils/whitelist';
+import { toCamelCase } from '../utils/camel';
 import AuthError from './authError';
 import Auth0Error from './auth0Error';
-import {Telemetry} from '../networking/telemetry';
+import { Telemetry } from '../networking/telemetry';
 import {
   AuthorizeUrlOptions,
   CreateUserOptions,
@@ -35,7 +35,7 @@ import {
 
 function responseHandler<TRawResult = unknown, TResult = unknown>(
   response: Auth0Response<TRawResult>,
-  exceptions = {},
+  exceptions = {}
 ) {
   if (response.ok && response.json) {
     return toCamelCase(response.json, exceptions) as TResult;
@@ -50,12 +50,12 @@ export interface IAuthClient {
   logoutUrl(parameters: LogoutUrlOptions): string;
   exchange(parameters: ExchangeOptions): Promise<Credentials>;
   exchangeNativeSocial(
-    parameters: ExchangeNativeSocialOptions,
+    parameters: ExchangeNativeSocialOptions
   ): Promise<Credentials>;
   passwordRealm(parameters: PasswordRealmOptions): Promise<Credentials>;
   refreshToken(parameters: RefreshTokenOptions): Promise<Credentials>;
   passwordlessWithEmail(
-    parameters: PasswordlessWithEmailOptions,
+    parameters: PasswordlessWithEmailOptions
   ): Promise<void>;
   passwordlessWithSMS(parameters: PasswordlessWithSMSOptions): Promise<void>;
   loginWithEmail(parameters: LoginWithEmailOptions): Promise<Credentials>;
@@ -63,10 +63,10 @@ export interface IAuthClient {
   loginWithOTP(parameters: LoginWithOTPOptions): Promise<Credentials>;
   loginWithOOB(parameters: LoginWithOOBOptions): Promise<Credentials>;
   loginWithRecoveryCode(
-    parameters: LoginWithRecoveryCodeOptions,
+    parameters: LoginWithRecoveryCodeOptions
   ): Promise<Credentials>;
   multifactorChallenge(
-    parameters: MultifactorChallengeOptions,
+    parameters: MultifactorChallengeOptions
   ): Promise<MultifactorChallengeResponse>;
   revoke(parameters: RevokeOptions): Promise<void>;
   userInfo(parameters: UserInfoOptions): Promise<User>;
@@ -93,9 +93,7 @@ export class Auth implements IAuthClient {
   }) {
     this.client = new Client(options);
     this.domain = this.client.domain;
-
-    const {clientId} = options;
-
+    const { clientId } = options;
     if (!clientId) {
       throw new Error('Missing clientId in parameters');
     }
@@ -117,15 +115,19 @@ export class Auth implements IAuthClient {
     const query = apply(
       {
         parameters: {
-          redirectUri: {required: true, toName: 'redirect_uri'},
-          responseType: {required: true, toName: 'response_type'},
-          state: {required: true},
+          redirectUri: { required: true, toName: 'redirect_uri' },
+          responseType: { required: true, toName: 'response_type' },
+          state: { required: true },
         },
         whitelist: false,
       },
-      parameters,
+      parameters
     );
-    return this.client.url('/authorize', query, true);
+    return this.client.url(
+      '/authorize',
+      { ...query, client_id: this.clientId },
+      true
+    );
   }
 
   /**
@@ -142,14 +144,14 @@ export class Auth implements IAuthClient {
     const query = apply(
       {
         parameters: {
-          federated: {required: false},
-          clientId: {required: false, toName: 'client_id'},
-          returnTo: {required: false},
+          federated: { required: false },
+          clientId: { required: false, toName: 'client_id' },
+          returnTo: { required: false },
         },
       },
-      parameters,
+      parameters
     );
-    return this.client.url('/v2/logout', {...query}, true);
+    return this.client.url('/v2/logout', { ...query }, true);
   }
 
   /**
@@ -166,12 +168,12 @@ export class Auth implements IAuthClient {
     const payload = apply(
       {
         parameters: {
-          code: {required: true},
-          verifier: {required: true, toName: 'code_verifier'},
-          redirectUri: {required: true, toName: 'redirect_uri'},
+          code: { required: true },
+          verifier: { required: true, toName: 'code_verifier' },
+          redirectUri: { required: true, toName: 'redirect_uri' },
         },
       },
-      parameters,
+      parameters
     );
     return this.client
       .post<RawCredentials>('/oauth/token', {
@@ -180,7 +182,7 @@ export class Auth implements IAuthClient {
         grant_type: 'authorization_code',
       })
       .then((response) =>
-        responseHandler<RawCredentials, Credentials>(response),
+        responseHandler<RawCredentials, Credentials>(response)
       );
   }
 
@@ -198,19 +200,19 @@ export class Auth implements IAuthClient {
    * @see https://auth0.com/docs/api/authentication#token-exchange-for-native-social
    */
   exchangeNativeSocial(
-    parameters: ExchangeNativeSocialOptions,
+    parameters: ExchangeNativeSocialOptions
   ): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
-          subjectToken: {required: true, toName: 'subject_token'},
-          subjectTokenType: {required: true, toName: 'subject_token_type'},
-          userProfile: {required: false, toName: 'user_profile'},
-          audience: {required: false},
-          scope: {required: false},
+          subjectToken: { required: true, toName: 'subject_token' },
+          subjectTokenType: { required: true, toName: 'subject_token_type' },
+          userProfile: { required: false, toName: 'user_profile' },
+          audience: { required: false },
+          scope: { required: false },
         },
       },
-      parameters,
+      parameters
     );
     return this.client
       .post<RawCredentials>('/oauth/token', {
@@ -219,7 +221,7 @@ export class Auth implements IAuthClient {
         grant_type: 'urn:ietf:params:oauth:grant-type:token-exchange',
       })
       .then((response) =>
-        responseHandler<RawCredentials, Credentials>(response),
+        responseHandler<RawCredentials, Credentials>(response)
       );
   }
 
@@ -243,7 +245,7 @@ export class Auth implements IAuthClient {
         grant_type: 'http://auth0.com/oauth/grant-type/password-realm',
       })
       .then((response) =>
-        responseHandler<RawCredentials, Credentials>(response),
+        responseHandler<RawCredentials, Credentials>(response)
       );
   }
 
@@ -260,12 +262,12 @@ export class Auth implements IAuthClient {
     const payload = apply(
       {
         parameters: {
-          refreshToken: {required: true, toName: 'refresh_token'},
-          scope: {required: false},
+          refreshToken: { required: true, toName: 'refresh_token' },
+          scope: { required: false },
         },
         whitelist: false,
       },
-      parameters,
+      parameters
     );
     return this.client
       .post<RawCredentials>('/oauth/token', {
@@ -274,7 +276,7 @@ export class Auth implements IAuthClient {
         grant_type: 'refresh_token',
       })
       .then((response) =>
-        responseHandler<RawCredentials, Credentials>(response),
+        responseHandler<RawCredentials, Credentials>(response)
       );
   }
 
@@ -288,7 +290,7 @@ export class Auth implements IAuthClient {
    * @returns {Promise}
    */
   passwordlessWithEmail(
-    parameters: PasswordlessWithEmailOptions,
+    parameters: PasswordlessWithEmailOptions
   ): Promise<void> {
     return this.client
       .post<void>('/passwordless/start', {
@@ -310,13 +312,13 @@ export class Auth implements IAuthClient {
     const payload = apply(
       {
         parameters: {
-          phoneNumber: {required: true, toName: 'phone_number'},
-          send: {required: false},
-          authParams: {required: false},
+          phoneNumber: { required: true, toName: 'phone_number' },
+          send: { required: false },
+          authParams: { required: false },
         },
         whitelist: false,
       },
-      parameters,
+      parameters
     );
     return this.client
       .post<void>('/passwordless/start', {
@@ -341,14 +343,14 @@ export class Auth implements IAuthClient {
     const payload = apply(
       {
         parameters: {
-          email: {required: true, toName: 'username'},
-          code: {required: true, toName: 'otp'},
-          audience: {required: false},
-          scope: {required: false},
+          email: { required: true, toName: 'username' },
+          code: { required: true, toName: 'otp' },
+          audience: { required: false },
+          scope: { required: false },
         },
         whitelist: false,
       },
-      parameters,
+      parameters
     );
     return this.client
       .post<RawCredentials>('/oauth/token', {
@@ -358,7 +360,7 @@ export class Auth implements IAuthClient {
         grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
       })
       .then((response) =>
-        responseHandler<RawCredentials, Credentials>(response),
+        responseHandler<RawCredentials, Credentials>(response)
       );
   }
 
@@ -376,14 +378,14 @@ export class Auth implements IAuthClient {
     const payload = apply(
       {
         parameters: {
-          phoneNumber: {required: true, toName: 'username'},
-          code: {required: true, toName: 'otp'},
-          audience: {required: false},
-          scope: {required: false},
+          phoneNumber: { required: true, toName: 'username' },
+          code: { required: true, toName: 'otp' },
+          audience: { required: false },
+          scope: { required: false },
         },
         whitelist: false,
       },
-      parameters,
+      parameters
     );
     return this.client
       .post<RawCredentials>('/oauth/token', {
@@ -393,7 +395,7 @@ export class Auth implements IAuthClient {
         grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
       })
       .then((response) =>
-        responseHandler<RawCredentials, Credentials>(response),
+        responseHandler<RawCredentials, Credentials>(response)
       );
   }
 
@@ -413,12 +415,12 @@ export class Auth implements IAuthClient {
     const payload = apply(
       {
         parameters: {
-          mfaToken: {required: true, toName: 'mfa_token'},
-          otp: {required: true, toName: 'otp'},
+          mfaToken: { required: true, toName: 'mfa_token' },
+          otp: { required: true, toName: 'otp' },
         },
         whitelist: false,
       },
-      parameters,
+      parameters
     );
     return this.client
       .post<RawCredentials>('/oauth/token', {
@@ -427,7 +429,7 @@ export class Auth implements IAuthClient {
         grant_type: 'http://auth0.com/oauth/grant-type/mfa-otp',
       })
       .then((response) =>
-        responseHandler<RawCredentials, Credentials>(response),
+        responseHandler<RawCredentials, Credentials>(response)
       );
   }
 
@@ -449,13 +451,13 @@ export class Auth implements IAuthClient {
     const payload = apply(
       {
         parameters: {
-          mfaToken: {required: true, toName: 'mfa_token'},
-          oobCode: {required: true, toName: 'oob_code'},
-          bindingCode: {required: false, toName: 'binding_code'},
+          mfaToken: { required: true, toName: 'mfa_token' },
+          oobCode: { required: true, toName: 'oob_code' },
+          bindingCode: { required: false, toName: 'binding_code' },
         },
         whitelist: false,
       },
-      parameters,
+      parameters
     );
 
     return this.client
@@ -465,7 +467,7 @@ export class Auth implements IAuthClient {
         grant_type: 'http://auth0.com/oauth/grant-type/mfa-oob',
       })
       .then((response) =>
-        responseHandler<RawCredentials, Credentials>(response),
+        responseHandler<RawCredentials, Credentials>(response)
       );
   }
 
@@ -481,17 +483,17 @@ export class Auth implements IAuthClient {
    * @returns {Promise}
    */
   loginWithRecoveryCode(
-    parameters: LoginWithRecoveryCodeOptions,
+    parameters: LoginWithRecoveryCodeOptions
   ): Promise<Credentials> {
     const payload = apply(
       {
         parameters: {
-          mfaToken: {required: true, toName: 'mfa_token'},
-          recoveryCode: {required: true, toName: 'recovery_code'},
+          mfaToken: { required: true, toName: 'mfa_token' },
+          recoveryCode: { required: true, toName: 'recovery_code' },
         },
         whitelist: false,
       },
-      parameters,
+      parameters
     );
 
     return this.client
@@ -501,7 +503,7 @@ export class Auth implements IAuthClient {
         grant_type: 'http://auth0.com/oauth/grant-type/mfa-recovery-code',
       })
       .then((response) =>
-        responseHandler<RawCredentials, Credentials>(response),
+        responseHandler<RawCredentials, Credentials>(response)
       );
   }
 
@@ -518,17 +520,17 @@ export class Auth implements IAuthClient {
    * @returns {Promise}
    */
   multifactorChallenge(
-    parameters: MultifactorChallengeOptions,
+    parameters: MultifactorChallengeOptions
   ): Promise<MultifactorChallengeResponse> {
     const payload = apply(
       {
         parameters: {
-          mfaToken: {required: true, toName: 'mfa_token'},
-          challengeType: {required: false, toName: 'challenge_type'},
-          authenticatorId: {required: false, toName: 'authenticator_id'},
+          mfaToken: { required: true, toName: 'mfa_token' },
+          challengeType: { required: false, toName: 'challenge_type' },
+          authenticatorId: { required: false, toName: 'authenticator_id' },
         },
       },
-      parameters,
+      parameters
     );
     return this.client
       .post<RawMultifactorChallengeResponse>('/mfa/challenge', {
@@ -539,7 +541,7 @@ export class Auth implements IAuthClient {
         responseHandler<
           RawMultifactorChallengeResponse,
           MultifactorChallengeResponse
-        >(response),
+        >(response)
       );
   }
 
@@ -554,10 +556,10 @@ export class Auth implements IAuthClient {
     const payload = apply(
       {
         parameters: {
-          refreshToken: {required: true, toName: 'token'},
+          refreshToken: { required: true, toName: 'token' },
         },
       },
-      parameters,
+      parameters
     );
     return this.client
       .post<void>('/oauth/revoke', {
@@ -580,8 +582,8 @@ export class Auth implements IAuthClient {
    * @returns {Promise}
    */
   userInfo(parameters: UserInfoOptions): Promise<User> {
-    const {baseUrl, telemetry} = this.client;
-    const client = new Client({baseUrl, telemetry, token: parameters.token});
+    const { baseUrl, telemetry } = this.client;
+    const client = new Client({ baseUrl, telemetry, token: parameters.token });
     const claims = [
       'sub',
       'name',
@@ -608,7 +610,7 @@ export class Auth implements IAuthClient {
       responseHandler<RawUser, User>(response, {
         attributes: claims,
         whitelist: true,
-      }),
+      })
     );
   }
 
@@ -654,19 +656,19 @@ export class Auth implements IAuthClient {
     const payload = apply(
       {
         parameters: {
-          email: {required: true},
-          password: {required: true},
-          connection: {required: true},
-          username: {required: false},
-          given_name: {required: false},
-          family_name: {required: false},
-          name: {required: false},
-          nickname: {required: false},
-          picture: {required: false},
-          metadata: {required: false, toName: 'user_metadata'},
+          email: { required: true },
+          password: { required: true },
+          connection: { required: true },
+          username: { required: false },
+          given_name: { required: false },
+          family_name: { required: false },
+          name: { required: false },
+          nickname: { required: false },
+          picture: { required: false },
+          metadata: { required: false, toName: 'user_metadata' },
         },
       },
-      parameters,
+      parameters
     );
 
     return this.client

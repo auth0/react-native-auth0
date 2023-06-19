@@ -1,8 +1,8 @@
-import {Auth, IAuthClient} from './auth';
-import CredentialsManager, {ICredentialsManager} from './credentials-manager';
-import {IUserClient, Users} from './management/users';
-import {Telemetry} from './networking/telemetry';
-import {IWebAuth, WebAuth} from './webauth';
+import { Auth, IAuthClient } from './auth';
+import CredentialsManager, { ICredentialsManager } from './credentials-manager';
+import { IUserClient, Users } from './management/users';
+import { Telemetry } from './networking/telemetry';
+import { IWebAuth, WebAuth } from './webauth';
 
 /**
  * Options to instantiate the Auth0 class.
@@ -45,8 +45,8 @@ export class Auth0 {
    * Creates an instance of Auth0.
    */
   constructor(options: Auth0Options) {
-    const {domain, clientId, ...extras} = options;
-    this.auth = new Auth({baseUrl: domain, clientId, ...extras});
+    const { domain, clientId, ...extras } = options;
+    this.auth = new Auth({ baseUrl: domain, clientId, ...extras });
     this.webAuth = new WebAuth(this.auth);
     this.credentialsManager = new CredentialsManager(domain, clientId);
     this.options = options;
@@ -58,7 +58,7 @@ export class Auth0 {
    * @returns Instance of Users
    */
   users(token: string): IUserClient {
-    const {domain, ...extras} = this.options;
-    return new Users({baseUrl: domain, ...extras, token});
+    const { domain, ...extras } = this.options;
+    return new Users({ baseUrl: domain, ...extras, token });
   }
 }

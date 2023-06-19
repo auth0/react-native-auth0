@@ -3,7 +3,6 @@ import {
   RawMultifactorChallengeOOBResponse,
   RawMultifactorChallengeOOBWithBindingResponse,
   RawMultifactorChallengeOTPResponse,
-  RawMultifactorChallengeResponse,
   RawUser,
 } from './internal-types';
 
@@ -33,7 +32,7 @@ export interface WebAuthorizeParameters {
   audience?: string;
   scope?: string;
   connection?: string;
-  max_age?: number;
+  maxAge?: number;
   organization?: string;
   invitationUrl?: string;
 }

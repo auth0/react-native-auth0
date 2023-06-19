@@ -1,4 +1,6 @@
-import {JwtPayload} from 'jwt-decode';
+import { JwtPayload } from 'jwt-decode';
+import LocalAuthenticationStrategy from './credentials-manager/localAuthenticationStrategy';
+import { Credentials } from './types';
 
 export type RawCredentials = {
   id_token: string;
@@ -34,14 +36,16 @@ export type RawUser = {
   [key: string]: any;
 };
 
-export type RawMultifactorChallengeOTPResponse = {challenge_type: string};
+export type RawMultifactorChallengeOTPResponse = { challenge_type: string };
 
-export type RawMultifactorChallengeOOBResponse = RawMultifactorChallengeOTPResponse & {
-  oob_code: string;
-};
-export type RawMultifactorChallengeOOBWithBindingResponse = RawMultifactorChallengeOOBResponse & {
-  binding_method: string;
-};
+export type RawMultifactorChallengeOOBResponse =
+  RawMultifactorChallengeOTPResponse & {
+    oob_code: string;
+  };
+export type RawMultifactorChallengeOOBWithBindingResponse =
+  RawMultifactorChallengeOOBResponse & {
+    binding_method: string;
+  };
 
 export type RawMultifactorChallengeResponse =
   | RawMultifactorChallengeOTPResponse
@@ -49,3 +53,66 @@ export type RawMultifactorChallengeResponse =
   | RawMultifactorChallengeOOBWithBindingResponse;
 
 export type CustomJwtPayload = JwtPayload & RawUser;
+
+/**
+ * Type representing the Native Auth0 API's on iOS and Android
+ */
+export type Auth0Module = {
+  bundleIdentifier: string;
+  webAuth: (
+    scheme: string,
+    state?: string,
+    nonce?: string,
+    audience?: string,
+    scope?: string,
+    connection?: string,
+    maxAge?: number,
+    organization?: string,
+    invitationUrl?: string,
+    leeway?: number
+  ) => Promise<Credentials>;
+  webAuthLogout: (scheme: string, federated: boolean) => Promise<void>;
+  saveCredentials: (credentials: Credentials) => Promise<void>;
+  getCredentials: (
+    scope?: string,
+    minTtl?: number,
+    parameters?: object,
+    forceRefresh?: boolean
+  ) => Promise<Credentials>;
+  enableLocalAuthentication:
+    | ((
+        title?: string,
+        cancelTitle?: string,
+        fallbackTitle?: string,
+        strategy?: LocalAuthenticationStrategy
+      ) => Promise<void>)
+    | ((title?: string, description?: string) => Promise<void>);
+  hasValidCredentials: (minTtl?: number) => Promise<boolean>;
+  clearCredentials: () => Promise<void>;
+  hasValidAuth0Instance: () => Promise<boolean>;
+  initializeAuth0: (clientId: string, domain: string) => Promise<void>;
+};
+
+export type AgentParameters = {
+  clientId: string;
+  domain: string;
+};
+
+export type AgentLogoutOptions = {
+  customScheme?: string;
+  federated?: boolean;
+};
+
+export interface AgentLoginOptions {
+  state?: string;
+  nonce?: string;
+  audience?: string;
+  scope?: string;
+  connection?: string;
+  maxAge?: number;
+  organization?: string;
+  invitationUrl?: string;
+  customScheme?: string;
+  leeway?: number;
+  ephemeralSession?: boolean;
+}

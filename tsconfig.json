@@ -1,6 +1,10 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "react-native-auth0": ["./index"]
+    },
+    "module": "esnext",
     "allowJs": true,
     "esModuleInterop": true,
     "jsx": "react-native",
@@ -9,9 +13,6 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "target": "ESNext",
-    "declaration": true,
-    "declarationDir": "./dist/typings",
-    "outDir": "dist",
     "noImplicitAny": true,
     "downlevelIteration": true,
     "noImplicitThis": true,
@@ -19,7 +20,10 @@
     "strictBindCallApply": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
-    "strictPropertyInitialization": true
+    "strictPropertyInitialization": true,
+    "declaration": true,
+    "declarationDir": "./lib/typescript/",
+    "outDir": "./lib/typescript"
   },
   "exclude": [
     "node_modules",
@@ -28,6 +32,7 @@
     "jest.config.js",
     "./dist",
     "**/__mocks__/**",
-    "**/__tests__/**"
+    "**/__tests__/**",
+    "./lib"
   ]
 }

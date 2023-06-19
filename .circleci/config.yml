@@ -8,7 +8,7 @@ jobs:
   build:
     executor:
       name: ship/node
-      tag: 16.10.0
+      tag: 18.16.0
     steps:
       - checkout
       - ship/node-install-packages:

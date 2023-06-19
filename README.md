@@ -189,9 +189,9 @@ To use the SDK with Expo, configure the app at build time by providing the `doma
 }
 ```
 
-| API          | Description                                                                                                                                                                                                                                                           |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| domain       | Mandatory: Provide the Auth0 domain that can be found at the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                          |
+| API          | Description                                                                                                                                                                                                                                                                                                                                   |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| domain       | Mandatory: Provide the Auth0 domain that can be found at the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                                                                                                  |
 | customScheme | Mandatory: Custom scheme to build the callback URL with. The value provided here should be passed to the `customScheme` option parameter of the `authorize` and `clearSession` methods. The custom scheme should be a unique, all lowercase value with no special characters (For example: auth0.YOUR_APP_PACKAGE_NAME_OR_BUNDLE_IDENTIFIER). |
 
 Now you can run the application using `expo run:android` or `expo run:ios`.
@@ -237,7 +237,7 @@ See the [API Documentation](https://auth0.github.io/react-native-auth0/global.ht
 First, import the `Auth0Provider` component and wrap it around your application. Provide the `domain` and `clientId` values as given to you when setting up your Auth0 app in the dashboard:
 
 ```js
-import {Auth0Provider} from 'react-native-auth0';
+import { Auth0Provider } from 'react-native-auth0';
 
 const App = () => {
   return (
@@ -269,31 +269,31 @@ const auth0 = new Auth0({
 Then import the hook into a component where you want to get access to the properties and methods for integrating with Auth0:
 
 ```js
-import {useAuth0} from 'react-native-auth0';
+import { useAuth0 } from 'react-native-auth0';
 ```
 
 #### Login
 
-Use the `authorize` method to redirect the user to the Auth0 [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) page for authentication. 
+Use the `authorize` method to redirect the user to the Auth0 [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) page for authentication.
 
 - The `isLoading` property is set to true once the authentication state of the user is known to the SDK.
-- The `user` property is populated with details about the authenticated user. If `user` is `null`, no user is currently authenticated. 
+- The `user` property is populated with details about the authenticated user. If `user` is `null`, no user is currently authenticated.
 - The `error` property is populated if any error occurs.
 
 ```js
 const Component = () => {
-  const {authorize, user, isLoading, error} = useAuth0();
+  const { authorize, user, isLoading, error } = useAuth0();
 
   const login = async () => {
-    await clearSession(); // clearSession({customScheme: 'CUSTOM_SCHEME') when using Expo or a custom scheme
+    await authorize({ scope: 'openid profile email' }); // authorize({scope: 'openid profile email'}, {customScheme: 'CUSTOM_SCHEME'}) when using Expo or a custom scheme
   };
 
-  if(isLoading) {
+  if (isLoading) {
     return (
       <View>
         <Text>SDK is Loading</Text>
       </View>
-    )
+    );
   }
 
   return (
@@ -333,10 +333,10 @@ Log the user out by using the `clearSession` method from the `useAuth0` hook.
 
 ```js
 const Component = () => {
-  const {clearSession, user} = useAuth0();
+  const { clearSession, user } = useAuth0();
 
   const logout = async () => {
-    await clearSession(); // clearSession({customScheme: 'CUSTOM_SCHEME') when using Expo or a custom scheme
+    await clearSession(); // clearSession({customScheme: 'CUSTOM_SCHEME'}) when using Expo or a custom scheme
   };
 
   return <View>{user && <Button onPress={logout} title="Log out" />}</View>;
@@ -347,7 +347,7 @@ const Component = () => {
   <summary>Using the `Auth0` class</summary>
 
 ```js
-auth0.webAuth.clearSession().catch(error => console.log(error));
+auth0.webAuth.clearSession().catch((error) => console.log(error));
 ```
 
 </details>

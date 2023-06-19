@@ -1,0 +1,11 @@
+export { TimeoutError } from './src/utils/fetchWithTimeout';
+export { default as useAuth0 } from './src/hooks/use-auth0';
+export { Auth0ContextInterface } from './src/hooks/auth0-context';
+export { default as Auth0Provider } from './src/hooks/auth0-provider';
+export { default as LocalAuthenticationStrategy } from './src/credentials-manager/localAuthenticationStrategy';
+export * from './src/types';
+export { RawUser, RawCredentials } from './src/internal-types';
+export { Auth0, Auth0Options } from './src/auth0';
+export { IUserClient } from './src/management/users';
+export { IWebAuth } from './src/webauth';
+export { ICredentialsManager } from './src/credentials-manager';

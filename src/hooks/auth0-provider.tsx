@@ -1,9 +1,16 @@
-import React, {useEffect, useReducer, useState, PropsWithChildren} from 'react';
-import {useCallback, useMemo} from 'react';
+import React, {
+  useEffect,
+  useReducer,
+  useState,
+  PropsWithChildren,
+} from 'react';
+
+import { useCallback, useMemo } from 'react';
 import jwtDecode from 'jwt-decode';
 import Auth0Context from './auth0-context';
-import {Auth0} from '../auth0';
+import { Auth0 } from '../auth0';
 import reducer from './reducer';
+
 import {
   ClearSessionOptions,
   ClearSessionParameters,
@@ -21,8 +28,8 @@ import {
   WebAuthorizeParameters,
 } from '../types';
 import LocalAuthenticationStrategy from '../credentials-manager/localAuthenticationStrategy';
-import {CustomJwtPayload} from '../internal-types';
-import {convertUser} from '../utils/userConversion';
+import { CustomJwtPayload } from '../internal-types';
+import { convertUser } from '../utils/userConversion';
 
 const initialState = {
   user: null,
@@ -63,8 +70,8 @@ const Auth0Provider = ({
   domain,
   clientId,
   children,
-}: PropsWithChildren<{domain: string; clientId: string}>) => {
-  const [client] = useState(() => new Auth0({domain, clientId}));
+}: PropsWithChildren<{ domain: string; clientId: string }>) => {
+  const [client] = useState(() => new Auth0({ domain, clientId }));
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
@@ -78,52 +85,52 @@ const Auth0Provider = ({
             user = getIdTokenProfileClaims(credentials.idToken);
           }
         } catch (error) {
-          dispatch({type: 'ERROR', error});
+          dispatch({ type: 'ERROR', error });
         }
       }
 
-      dispatch({type: 'INITIALIZED', user});
+      dispatch({ type: 'INITIALIZED', user });
     })();
   }, [client]);
 
   const authorize = useCallback(
     async (
       parameters: WebAuthorizeParameters = {},
-      options: WebAuthorizeOptions = {},
+      options: WebAuthorizeOptions = {}
     ) => {
       try {
         parameters.scope = finalizeScopeParam(parameters.scope);
         const credentials: Credentials = await client.webAuth.authorize(
           parameters,
-          options,
+          options
         );
         const user = getIdTokenProfileClaims(credentials.idToken);
 
         await client.credentialsManager.saveCredentials(credentials);
-        dispatch({type: 'LOGIN_COMPLETE', user});
+        dispatch({ type: 'LOGIN_COMPLETE', user });
       } catch (error) {
-        dispatch({type: 'ERROR', error});
+        dispatch({ type: 'ERROR', error });
         return;
       }
     },
-    [client],
+    [client]
   );
 
   const clearSession = useCallback(
     async (
       parameters: ClearSessionParameters = {},
-      options: ClearSessionOptions = {},
+      options: ClearSessionOptions = {}
     ) => {
       try {
         await client.webAuth.clearSession(parameters, options);
         await client.credentialsManager.clearCredentials();
-        dispatch({type: 'LOGOUT_COMPLETE'});
+        dispatch({ type: 'LOGOUT_COMPLETE' });
       } catch (error) {
-        dispatch({type: 'ERROR', error});
+        dispatch({ type: 'ERROR', error });
         return;
       }
     },
-    [client],
+    [client]
   );
 
   const getCredentials = useCallback(
@@ -131,24 +138,26 @@ const Auth0Provider = ({
       scope?: string,
       minTtl: number = 0,
       parameters: Record<string, unknown> = {},
+      forceRefresh: boolean = false
     ): Promise<Credentials | undefined> => {
       try {
         const credentials = await client.credentialsManager.getCredentials(
           scope,
           minTtl,
           parameters,
+          forceRefresh
         );
         if (credentials.idToken) {
           const user = getIdTokenProfileClaims(credentials.idToken);
-          dispatch({type: 'SET_USER', user});
+          dispatch({ type: 'SET_USER', user });
         }
         return credentials;
       } catch (error) {
-        dispatch({type: 'ERROR', error});
+        dispatch({ type: 'ERROR', error });
         return;
       }
     },
-    [client],
+    [client]
   );
 
   const sendSMSCode = useCallback(
@@ -156,11 +165,11 @@ const Auth0Provider = ({
       try {
         await client.auth.passwordlessWithSMS(parameters);
       } catch (error) {
-        dispatch({type: 'ERROR', error});
+        dispatch({ type: 'ERROR', error });
         return;
       }
     },
-    [client],
+    [client]
   );
 
   const authorizeWithSMS = useCallback(
@@ -168,19 +177,19 @@ const Auth0Provider = ({
       try {
         let scope = finalizeScopeParam(parameters?.scope);
         if (scope) {
-          parameters = {...parameters, scope};
+          parameters = { ...parameters, scope };
         }
         const credentials = await client.auth.loginWithSMS(parameters);
         const user = getIdTokenProfileClaims(credentials.idToken);
 
         await client.credentialsManager.saveCredentials(credentials);
-        dispatch({type: 'LOGIN_COMPLETE', user});
+        dispatch({ type: 'LOGIN_COMPLETE', user });
       } catch (error) {
-        dispatch({type: 'ERROR', error});
+        dispatch({ type: 'ERROR', error });
         return;
       }
     },
-    [client],
+    [client]
   );
 
   const sendEmailCode = useCallback(
@@ -188,11 +197,11 @@ const Auth0Provider = ({
       try {
         await client.auth.passwordlessWithEmail(parameters);
       } catch (error) {
-        dispatch({type: 'ERROR', error});
+        dispatch({ type: 'ERROR', error });
         return;
       }
     },
-    [client],
+    [client]
   );
 
   const authorizeWithEmail = useCallback(
@@ -200,20 +209,20 @@ const Auth0Provider = ({
       try {
         let scope = finalizeScopeParam(parameters?.scope);
         if (scope) {
-          parameters = {...parameters, scope};
+          parameters = { ...parameters, scope };
         }
 
         const credentials = await client.auth.loginWithEmail(parameters);
         const user = getIdTokenProfileClaims(credentials.idToken);
 
         await client.credentialsManager.saveCredentials(credentials);
-        dispatch({type: 'LOGIN_COMPLETE', user});
+        dispatch({ type: 'LOGIN_COMPLETE', user });
       } catch (error) {
-        dispatch({type: 'ERROR', error});
+        dispatch({ type: 'ERROR', error });
         return;
       }
     },
-    [client],
+    [client]
   );
 
   const sendMultifactorChallenge = useCallback(
@@ -221,11 +230,11 @@ const Auth0Provider = ({
       try {
         await client.auth.multifactorChallenge(parameters);
       } catch (error) {
-        dispatch({type: 'ERROR', error});
+        dispatch({ type: 'ERROR', error });
         return;
       }
     },
-    [client],
+    [client]
   );
 
   const authorizeWithOOB = useCallback(
@@ -235,13 +244,13 @@ const Auth0Provider = ({
         const user = getIdTokenProfileClaims(credentials.idToken);
 
         await client.credentialsManager.saveCredentials(credentials);
-        dispatch({type: 'LOGIN_COMPLETE', user});
+        dispatch({ type: 'LOGIN_COMPLETE', user });
       } catch (error) {
-        dispatch({type: 'ERROR', error});
+        dispatch({ type: 'ERROR', error });
         return;
       }
     },
-    [client],
+    [client]
   );
 
   const authorizeWithOTP = useCallback(
@@ -251,13 +260,13 @@ const Auth0Provider = ({
         const user = getIdTokenProfileClaims(credentials.idToken);
 
         await client.credentialsManager.saveCredentials(credentials);
-        dispatch({type: 'LOGIN_COMPLETE', user});
+        dispatch({ type: 'LOGIN_COMPLETE', user });
       } catch (error) {
-        dispatch({type: 'ERROR', error});
+        dispatch({ type: 'ERROR', error });
         return;
       }
     },
-    [client],
+    [client]
   );
 
   const authorizeWithRecoveryCode = useCallback(
@@ -267,28 +276,28 @@ const Auth0Provider = ({
         const user = getIdTokenProfileClaims(credentials.idToken);
 
         await client.credentialsManager.saveCredentials(credentials);
-        dispatch({type: 'LOGIN_COMPLETE', user});
+        dispatch({ type: 'LOGIN_COMPLETE', user });
       } catch (error) {
-        dispatch({type: 'ERROR', error});
+        dispatch({ type: 'ERROR', error });
         return;
       }
     },
-    [client],
+    [client]
   );
 
   const hasValidCredentials = useCallback(
     async (minTtl: number = 0) => {
       return await client.credentialsManager.hasValidCredentials(minTtl);
     },
-    [client],
+    [client]
   );
 
   const clearCredentials = useCallback(async () => {
     try {
       await client.credentialsManager.clearCredentials();
-      dispatch({type: 'LOGOUT_COMPLETE'});
+      dispatch({ type: 'LOGOUT_COMPLETE' });
     } catch (error) {
-      dispatch({type: 'ERROR', error});
+      dispatch({ type: 'ERROR', error });
       return;
     }
   }, [client]);
@@ -299,7 +308,7 @@ const Auth0Provider = ({
       description?: string,
       cancelTitle?: string,
       fallbackTitle?: string,
-      strategy = LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
+      strategy = LocalAuthenticationStrategy.deviceOwnerWithBiometrics
     ) => {
       try {
         await client.credentialsManager.requireLocalAuthentication(
@@ -307,14 +316,14 @@ const Auth0Provider = ({
           description,
           cancelTitle,
           fallbackTitle,
-          strategy,
+          strategy
         );
       } catch (error) {
-        dispatch({type: 'ERROR', error});
+        dispatch({ type: 'ERROR', error });
         return;
       }
     },
-    [],
+    [client.credentialsManager]
   );
 
   const contextValue = useMemo(
@@ -351,7 +360,7 @@ const Auth0Provider = ({
       getCredentials,
       clearCredentials,
       requireLocalAuthentication,
-    ],
+    ]
   );
 
   return (

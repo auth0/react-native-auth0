@@ -2,15 +2,15 @@
  * @jest-environment jsdom
  */
 import * as React from 'react';
-import {renderHook} from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react-hooks';
 import Auth0Provider from '../auth0-provider';
 import useAuth0 from '../use-auth0';
 import LocalAuthenticationStrategy from '../../credentials-manager/localAuthenticationStrategy';
-import {act} from 'react-dom/test-utils';
+import { act } from 'react-dom/test-utils';
 import Auth0Error from '../../auth/auth0Error';
 
 function makeJwt(claims) {
-  const header = {alg: 'RS256', typ: 'JWT'};
+  const header = { alg: 'RS256', typ: 'JWT' };
 
   const payload = {
     sub: '1',
@@ -19,7 +19,7 @@ function makeJwt(claims) {
     name: 'Test User',
     family_name: 'User',
     picture: 'https://images/pic.png',
-    ...(claims !== undefined ? {...claims} : null),
+    ...(claims !== undefined ? { ...claims } : null),
   };
 
   // prettier-ignore
@@ -33,10 +33,10 @@ const mockCredentials = {
   accessToken: 'ACCESS TOKEN',
 };
 
-const mockAuthError = new Auth0Error({json: {error: 'mock error'}});
+const mockAuthError = new Auth0Error({ json: { error: 'mock error' } });
 
 const updatedMockCredentialsWithIdToken = {
-  idToken: makeJwt({name: 'Different User'}),
+  idToken: makeJwt({ name: 'Different User' }),
   accessToken: 'ACCESS TOKEN',
 };
 
@@ -44,7 +44,7 @@ const updatedMockCredentialsWithoutIdToken = {
   accessToken: 'ACCESS TOKEN',
 };
 
-const wrapper = ({children}) => (
+const wrapper = ({ children }) => (
   <Auth0Provider domain="DOMAIN" clientId="CLIENT ID">
     {children}
   </Auth0Provider>
@@ -86,27 +86,29 @@ describe('The useAuth0 hook', () => {
   });
 
   it('defines error', () => {
-    const {result} = renderHook(() => useAuth0());
+    const { result } = renderHook(() => useAuth0());
     expect(result.current.error).toBeNull();
   });
 
   it('defines user', () => {
-    const {result} = renderHook(() => useAuth0());
+    const { result } = renderHook(() => useAuth0());
     expect(result.current.user).toBeNull();
   });
 
   it('defines authorize', () => {
-    const {result} = renderHook(() => useAuth0());
+    const { result } = renderHook(() => useAuth0());
     expect(result.current.authorize).toBeDefined();
   });
 
   it('defines clearSession', () => {
-    const {result} = renderHook(() => useAuth0());
+    const { result } = renderHook(() => useAuth0());
     expect(result.current.clearSession).toBeDefined();
   });
 
   it('isLoading is true until initialization finishes', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
     expect(result.current.isLoading).toBe(true);
 
     await waitForNextUpdate();
@@ -119,7 +121,9 @@ describe('The useAuth0 hook', () => {
   it('isLoading flag set on start up with valid credentials', async () => {
     mockAuth0.credentialsManager.hasValidCredentials.mockResolvedValue(true);
 
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
     expect(result.current.isLoading).toBe(true);
 
     await waitForNextUpdate();
@@ -132,7 +136,9 @@ describe('The useAuth0 hook', () => {
     mockAuth0.credentialsManager.hasValidCredentials.mockResolvedValue(true);
     mockAuth0.credentialsManager.getCredentials.mockRejectedValue(errorToThrow);
 
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
     expect(result.current.isLoading).toBe(true);
 
     await waitForNextUpdate();
@@ -141,7 +147,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('does not initialize the user on start up without valid credentials', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     await waitForNextUpdate();
     expect(mockAuth0.credentialsManager.getCredentials).not.toBeCalled();
@@ -152,33 +160,37 @@ describe('The useAuth0 hook', () => {
   it('initializes the user on start up with valid credentials', async () => {
     mockAuth0.credentialsManager.hasValidCredentials.mockResolvedValue(true);
     mockAuth0.credentialsManager.getCredentials.mockResolvedValue(
-      mockCredentials,
+      mockCredentials
     );
 
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     await waitForNextUpdate();
     expect(result.current.user).not.toBeNull();
   });
 
   it('throws an error when login is called without a wrapper', () => {
-    const {result} = renderHook(() => useAuth0());
+    const { result } = renderHook(() => useAuth0());
 
     expect(() => result.current.authorize()).toThrowError(
-      /no provider was set/i,
+      /no provider was set/i
     );
   });
 
   it('throws an error when logout is called without a wrapper', () => {
-    const {result} = renderHook(() => useAuth0());
+    const { result } = renderHook(() => useAuth0());
 
     expect(() => result.current.clearSession()).toThrowError(
-      /no provider was set/i,
+      /no provider was set/i
     );
   });
 
   it('can authorize', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
     result.current.authorize();
 
     await waitForNextUpdate();
@@ -188,7 +200,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('can authorize, passing through all parameters', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorize(
       {
@@ -198,7 +212,7 @@ describe('The useAuth0 hook', () => {
       },
       {
         ephemeralSession: true,
-      },
+      }
     );
 
     await waitForNextUpdate();
@@ -211,12 +225,14 @@ describe('The useAuth0 hook', () => {
       },
       {
         ephemeralSession: true,
-      },
+      }
     );
   });
 
   it('can authorize, passing through all options', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorize(
       {},
@@ -225,24 +241,26 @@ describe('The useAuth0 hook', () => {
         customScheme: 'demo',
         leeway: 100,
         skipLegacyListener: false,
-      },
+      }
     );
 
     await waitForNextUpdate();
 
     expect(mockAuth0.webAuth.authorize).toHaveBeenCalledWith(
-      {scope: 'openid profile email'},
+      { scope: 'openid profile email' },
       {
         ephemeralSession: true,
         customScheme: 'demo',
         leeway: 100,
         skipLegacyListener: false,
-      },
+      }
     );
   });
 
   it('adds the default scopes when none are specified', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorize();
 
@@ -252,14 +270,16 @@ describe('The useAuth0 hook', () => {
       {
         scope: 'openid profile email',
       },
-      {},
+      {}
     );
   });
 
   it('adds the default scopes when some are specified with custom scope', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
-    result.current.authorize({scope: 'custom-scope openid'});
+    result.current.authorize({ scope: 'custom-scope openid' });
 
     await waitForNextUpdate();
 
@@ -267,12 +287,14 @@ describe('The useAuth0 hook', () => {
       {
         scope: 'custom-scope openid profile email',
       },
-      {},
+      {}
     );
   });
 
   it('does not duplicate default scopes', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorize({
       scope: 'openid profile',
@@ -288,12 +310,14 @@ describe('The useAuth0 hook', () => {
         audience: 'http://my-api',
         customParam: '1234',
       },
-      {},
+      {}
     );
   });
 
   it('sets the user prop after authorizing', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorize();
     await waitForNextUpdate();
@@ -307,7 +331,9 @@ describe('The useAuth0 hook', () => {
 
   it('does not set user prop when authorization fails', async () => {
     mockAuth0.webAuth.authorize.mockRejectedValue(mockAuthError);
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorize();
     await waitForNextUpdate();
@@ -317,7 +343,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('sends SMS code', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.sendSMSCode();
     await waitForNextUpdate();
@@ -326,7 +354,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('can authorize with SMS, passing through all parameters', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithSMS({
       phoneNumber: '+11234567890',
@@ -346,7 +376,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('adds the default scopes when none are specified for SMS login', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithSMS();
 
@@ -358,9 +390,11 @@ describe('The useAuth0 hook', () => {
   });
 
   it('adds the default scopes when some are specified with custom scope for SMS login', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
-    result.current.authorizeWithSMS({scope: 'custom-scope openid'});
+    result.current.authorizeWithSMS({ scope: 'custom-scope openid' });
 
     await waitForNextUpdate();
 
@@ -370,7 +404,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('does not duplicate default scopes for SMS login', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithSMS({
       scope: 'openid profile',
@@ -386,7 +422,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('sets the user prop after authorizing with SMS', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithSMS();
     await waitForNextUpdate();
@@ -400,7 +438,9 @@ describe('The useAuth0 hook', () => {
 
   it('does not set user prop when SMS authorization fails', async () => {
     mockAuth0.auth.loginWithSMS.mockRejectedValue(mockAuthError);
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithSMS();
     await waitForNextUpdate();
@@ -410,7 +450,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('sends email code', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.sendEmailCode();
     await waitForNextUpdate();
@@ -419,7 +461,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('can authorize with email, passing through all parameters', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithEmail({
       email: 'foo@gmail.com',
@@ -439,7 +483,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('adds the default scopes when none are specified for email login', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithEmail();
 
@@ -451,9 +497,11 @@ describe('The useAuth0 hook', () => {
   });
 
   it('adds the default scopes when some are specified with custom scope for email login', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
-    result.current.authorizeWithEmail({scope: 'custom-scope openid'});
+    result.current.authorizeWithEmail({ scope: 'custom-scope openid' });
 
     await waitForNextUpdate();
 
@@ -463,7 +511,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('does not duplicate default scopes for email login', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithEmail({
       scope: 'openid profile',
@@ -479,7 +529,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('sets the user prop after authorizing with email', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithEmail();
     await waitForNextUpdate();
@@ -493,7 +545,9 @@ describe('The useAuth0 hook', () => {
 
   it('does not set user prop when email authorization fails', async () => {
     mockAuth0.auth.loginWithEmail.mockRejectedValue(mockAuthError);
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithEmail();
     await waitForNextUpdate();
@@ -503,7 +557,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('sends multifactor challenge code', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.sendMultifactorChallenge();
     await waitForNextUpdate();
@@ -512,7 +568,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('can authorize with OOB, passing through all parameters', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithOOB({
       mfaToken: 'mfa_token',
@@ -530,7 +588,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('sets the user prop after authorizing with OOB', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithOOB();
     await waitForNextUpdate();
@@ -544,7 +604,9 @@ describe('The useAuth0 hook', () => {
 
   it('does not set user prop when OOB authorization fails', async () => {
     mockAuth0.auth.loginWithOOB.mockRejectedValue(mockAuthError);
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithOOB();
     await waitForNextUpdate();
@@ -554,7 +616,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('can authorize with OTP, passing through all parameters', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithOTP({
       mfaToken: 'mfa_token',
@@ -570,7 +634,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('sets the user prop after authorizing with OTP', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithOTP();
     await waitForNextUpdate();
@@ -584,7 +650,9 @@ describe('The useAuth0 hook', () => {
 
   it('does not set user prop when OTP authorization fails', async () => {
     mockAuth0.auth.loginWithOTP.mockRejectedValue(mockAuthError);
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithOTP();
     await waitForNextUpdate();
@@ -594,7 +662,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('can authorize with recover code, passing through all parameters', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithRecoveryCode({
       mfaToken: 'mfa_token',
@@ -610,7 +680,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('sets the user prop after authorizing with recovery code', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithRecoveryCode();
     await waitForNextUpdate();
@@ -624,7 +696,9 @@ describe('The useAuth0 hook', () => {
 
   it('does not set user prop when recovery code authorization fails', async () => {
     mockAuth0.auth.loginWithRecoveryCode.mockRejectedValue(mockAuthError);
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.authorizeWithRecoveryCode();
     await waitForNextUpdate();
@@ -634,7 +708,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('can clear the session', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     result.current.clearSession();
     await waitForNextUpdate();
@@ -644,19 +720,23 @@ describe('The useAuth0 hook', () => {
   });
 
   it('can clear the session and pass parameters', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
-    result.current.clearSession({parameter: 1}, {option: 1});
+    result.current.clearSession({ parameter: 1 }, { option: 1 });
     await waitForNextUpdate();
 
     expect(mockAuth0.webAuth.clearSession).toHaveBeenCalledWith(
-      {parameter: 1},
-      {option: 1},
+      { parameter: 1 },
+      { option: 1 }
     );
   });
 
   it('can clear the credentials', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     act(() => {
       result.current.clearCredentials();
@@ -667,11 +747,13 @@ describe('The useAuth0 hook', () => {
   });
 
   it('sets the error property when an error is raised in clearing credentials', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
     const errorToThrow = new Error('Error clearing credentials');
 
     mockAuth0.credentialsManager.clearCredentials.mockRejectedValue(
-      errorToThrow,
+      errorToThrow
     );
 
     result.current.clearCredentials();
@@ -680,11 +762,13 @@ describe('The useAuth0 hook', () => {
   });
 
   it('clears the error on successful logout when clearing credentials', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
     const errorToThrow = new Error('Error clearing credentials');
 
     mockAuth0.credentialsManager.clearCredentials.mockRejectedValueOnce(
-      errorToThrow,
+      errorToThrow
     );
     mockAuth0.credentialsManager.clearCredentials.mockResolvedValue();
 
@@ -697,7 +781,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('sets the error property when an error is raised in authorize', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
     const errorToThrow = new Error('Authorize error');
 
     mockAuth0.webAuth.authorize.mockRejectedValue(errorToThrow);
@@ -708,7 +794,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('clears the error on successful login', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
     const errorToThrow = new Error('Authorize error');
 
     mockAuth0.webAuth.authorize.mockRejectedValueOnce(errorToThrow);
@@ -723,7 +811,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('sets the error property when an error is raised in clearSession', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
     const errorToThrow = new Error('Authorize error');
 
     mockAuth0.webAuth.clearSession.mockRejectedValue(errorToThrow);
@@ -734,7 +824,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('clears the error on successful logout', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
     const errorToThrow = new Error('Authorize error');
 
     mockAuth0.webAuth.clearSession.mockRejectedValueOnce(errorToThrow);
@@ -750,7 +842,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('can get credentials', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     await waitForNextUpdate();
     let credentials;
@@ -761,7 +855,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('can get credentials with options', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     await waitForNextUpdate();
 
@@ -779,11 +875,14 @@ describe('The useAuth0 hook', () => {
       {
         hello: 'world',
       },
+      false
     );
   });
 
   it('can get credentials and update user when id token is present', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
     act(() => {
       result.current.authorize();
     });
@@ -797,7 +896,7 @@ describe('The useAuth0 hook', () => {
     });
 
     mockAuth0.credentialsManager.getCredentials.mockResolvedValue(
-      updatedMockCredentialsWithIdToken,
+      updatedMockCredentialsWithIdToken
     );
     result.current.getCredentials();
     await waitForNextUpdate();
@@ -809,7 +908,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('can get credentials and not update user when id token is not present', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
     act(() => {
       result.current.authorize();
     });
@@ -823,7 +924,7 @@ describe('The useAuth0 hook', () => {
     });
 
     mockAuth0.credentialsManager.getCredentials.mockResolvedValue(
-      updatedMockCredentialsWithoutIdToken,
+      updatedMockCredentialsWithoutIdToken
     );
     result.current.getCredentials();
     expect(result.current.user).toMatchObject({
@@ -834,7 +935,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('can get credentials and not update user when same as before', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
     act(() => {
       result.current.authorize();
     });
@@ -848,7 +951,7 @@ describe('The useAuth0 hook', () => {
     });
 
     mockAuth0.credentialsManager.getCredentials.mockResolvedValue(
-      mockCredentials,
+      mockCredentials
     );
     await act(async () => {
       await result.current.getCredentials();
@@ -857,7 +960,9 @@ describe('The useAuth0 hook', () => {
   });
 
   it('dispatches an error when getCredentials fails', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
     const thrownError = new Error('Get credentials failed');
 
     mockAuth0.credentialsManager.getCredentials.mockRejectedValue(thrownError);
@@ -870,19 +975,23 @@ describe('The useAuth0 hook', () => {
   });
 
   it('can require local authentication', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     await waitForNextUpdate();
 
     result.current.requireLocalAuthentication();
 
     expect(
-      mockAuth0.credentialsManager.requireLocalAuthentication,
+      mockAuth0.credentialsManager.requireLocalAuthentication
     ).toHaveBeenCalled();
   });
 
   it('can require local authentication with options', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     await waitForNextUpdate();
 
@@ -891,26 +1000,28 @@ describe('The useAuth0 hook', () => {
       'description',
       'cancel',
       'fallback',
-      LocalAuthenticationStrategy.deviceOwner,
+      LocalAuthenticationStrategy.deviceOwner
     );
 
     expect(
-      mockAuth0.credentialsManager.requireLocalAuthentication,
+      mockAuth0.credentialsManager.requireLocalAuthentication
     ).toHaveBeenCalledWith(
       'title',
       'description',
       'cancel',
       'fallback',
-      LocalAuthenticationStrategy.deviceOwner,
+      LocalAuthenticationStrategy.deviceOwner
     );
   });
 
   it('dispatches an error when requireLocalAuthentication fails', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
     const thrownError = new Error('requireLocalAuthentication failed');
 
     mockAuth0.credentialsManager.requireLocalAuthentication.mockRejectedValue(
-      thrownError,
+      thrownError
     );
 
     result.current.requireLocalAuthentication();
@@ -919,14 +1030,16 @@ describe('The useAuth0 hook', () => {
   });
 
   it('calls hasValidCredentials with correct parameters', async () => {
-    const {result, waitForNextUpdate} = renderHook(() => useAuth0(), {wrapper});
+    const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
 
     await waitForNextUpdate();
 
     result.current.hasValidCredentials(100);
 
     expect(
-      mockAuth0.credentialsManager.hasValidCredentials,
+      mockAuth0.credentialsManager.hasValidCredentials
     ).toHaveBeenCalledWith(100);
   });
 });
