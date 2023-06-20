@@ -1,7 +1,9 @@
 PODS:
-  - A0Auth0 (2.17.2):
-    - Auth0 (~> 2.3)
+  - A0Auth0 (2.17.4):
+    - Auth0 (= 2.3.2)
+    - JWTDecode (= 3.0.1)
     - React-Core
+    - SimpleKeychain (= 1.0.1)
   - Auth0 (2.3.2):
     - JWTDecode (~> 3.0)
     - SimpleKeychain (~> 1.0)
@@ -582,7 +584,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  A0Auth0: a8e9688791cd7429250ff2402fbd6ecfa71993f4
+  A0Auth0: 5ae918d2f043395f83ac26d6eb85b249bcb54634
   Auth0: 64da28fdc5cd499aa516dc4bfd0ace8efae2c1da
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
