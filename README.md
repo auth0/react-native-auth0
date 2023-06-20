@@ -285,7 +285,7 @@ const Component = () => {
   const { authorize, user, isLoading, error } = useAuth0();
 
   const login = async () => {
-    await clearSession(); // clearSession({customScheme: 'CUSTOM_SCHEME') when using Expo or a custom scheme
+    await authorize({ scope: 'openid profile email' }); // authorize({scope: 'openid profile email'}, {customScheme: 'CUSTOM_SCHEME'}) when using Expo or a custom scheme
   };
 
   if (isLoading) {
@@ -336,7 +336,7 @@ const Component = () => {
   const { clearSession, user } = useAuth0();
 
   const logout = async () => {
-    await clearSession(); // clearSession({customScheme: 'CUSTOM_SCHEME') when using Expo or a custom scheme
+    await clearSession(); // clearSession({customScheme: 'CUSTOM_SCHEME'}) when using Expo or a custom scheme
   };
 
   return <View>{user && <Button onPress={logout} title="Log out" />}</View>;

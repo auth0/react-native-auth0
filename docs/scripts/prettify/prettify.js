@@ -1,6 +1,6 @@
 var q = null;
 window.PR_SHOULD_USE_CONTINUATION = !0;
-(function() {
+(function () {
   function L(a) {
     function m(a) {
       var f = a.charCodeAt(0);
@@ -25,7 +25,7 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
         var f = a
             .substring(1, a.length - 1)
             .match(
-              /\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2}|\\[0-3][0-7]{0,2}|\\[0-7]{1,2}|\\[\S\s]|[^\\]/g,
+              /\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2}|\\[0-3][0-7]{0,2}|\\[0-7]{1,2}|\\[\S\s]|[^\\]/g
             ),
           a = [],
           b = [],
@@ -54,7 +54,7 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
               b.push([Math.max(97, j) & -33, Math.min(d, 122) & -33]));
         }
       }
-      b.sort(function(a, f) {
+      b.sort(function (a, f) {
         return a[0] - f[0] || f[1] - a[1];
       });
       f = [];
@@ -75,7 +75,7 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
     function y(a) {
       for (
         var f = a.source.match(
-            /\[(?:[^\\\]]|\\[\S\s])*]|\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2}|\\\d+|\\[^\dux]|\(\?[!:=]|[()^]|[^()[\\^]+/g,
+            /\[(?:[^\\\]]|\\[\S\s])*]|\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2}|\\\d+|\\[^\dux]|\(\?[!:=]|[()^]|[^()[\\^]+/g
           ),
           b = f.length,
           d = [],
@@ -110,7 +110,7 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
             j.length >= 2 && a === '['
               ? (f[c] = h(j))
               : a !== '\\' &&
-                (f[c] = j.replace(/[A-Za-z]/g, function(a) {
+                (f[c] = j.replace(/[A-Za-z]/g, function (a) {
                   a = a.charCodeAt(0);
                   return '[' + String.fromCharCode(a & -33, a | 32) + ']';
                 }));
@@ -121,7 +121,7 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
       if (g.ignoreCase) l = !0;
       else if (
         /[a-z]/i.test(
-          g.source.replace(/\\u[\da-f]{4}|\\x[\da-f]{2}|\\[^UXux]/gi, ''),
+          g.source.replace(/\\u[\da-f]{4}|\\x[\da-f]{2}|\\[^UXux]/gi, '')
         )
       ) {
         s = !0;
@@ -130,7 +130,7 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
       }
     }
     for (
-      var r = {b: 8, t: 9, n: 10, v: 11, f: 12, r: 13},
+      var r = { b: 8, t: 9, n: 10, v: 11, f: 12, r: 13 },
         n = [],
         p = 0,
         d = a.length;
@@ -180,10 +180,10 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
           .getPropertyValue('white-space'));
     var p = l && 'pre' === l.substring(0, 3);
     m(a);
-    return {a: h.join('').replace(/\n$/, ''), c: t};
+    return { a: h.join('').replace(/\n$/, ''), c: t };
   }
   function B(a, m, e, h) {
-    m && ((a = {a: m, d: a}), e(a), h.push.apply(h, a.e));
+    m && ((a = { a: m, d: a }), e(a), h.push.apply(h, a.e));
   }
   function x(a, m) {
     function e(a) {
@@ -238,7 +238,7 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
     }
     var h = {},
       y;
-    (function() {
+    (function () {
       for (
         var e = a.concat(m), l = [], p = {}, d = 0, g = e.length;
         d < g;
@@ -322,7 +322,7 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
         '0123456789',
       ],
       ['pln', /^\\[\S\s]?/, q],
-      ['pun', /^.[^\s\w"-$'./@\\`]*/, q],
+      ['pun', /^.[^\s\w"-$'./@\\`]*/, q]
     );
     return x(m, e);
   }
@@ -505,7 +505,8 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
       'alias,and,begin,case,class,def,defined,elsif,end,ensure,false,in,module,next,nil,not,or,redo,rescue,retry,self,super,then,true,undef,unless,until,when,yield,BEGIN,END',
     ],
     v = [v, 'case,done,elif,esac,eval,fi,function,in,local,set,then,until'],
-    K = /^(DIR|FILE|vector|(de|priority_)?queue|list|stack|(const_)?iterator|(multi)?(set|map)|bitset|u?(int|float)\d*)/,
+    K =
+      /^(DIR|FILE|vector|(de|priority_)?queue|list|stack|(const_)?iterator|(multi)?(set|map)|bitset|u?(int|float)\d*)/,
     N = /\S/,
     O = u({
       keywords: [
@@ -538,9 +539,9 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
         ['lang-js', /^<script\b[^>]*>([\S\s]*?)(<\/script\b[^>]*>)/i],
         ['lang-css', /^<style\b[^>]*>([\S\s]*?)(<\/style\b[^>]*>)/i],
         ['lang-in.tag', /^(<\/?[a-z][^<>]*>)/i],
-      ],
+      ]
     ),
-    ['default-markup', 'htm', 'html', 'mxml', 'xhtml', 'xml', 'xsl'],
+    ['default-markup', 'htm', 'html', 'mxml', 'xhtml', 'xml', 'xsl']
   );
   k(
     x(
@@ -559,12 +560,12 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
         ['lang-css', /^style\s*=\s*"([^"]+)"/i],
         ['lang-css', /^style\s*=\s*'([^']+)'/i],
         ['lang-css', /^style\s*=\s*([^\s"'>]+)/i],
-      ],
+      ]
     ),
-    ['in.tag'],
+    ['in.tag']
   );
   k(x([], [['atv', /^[\S\s]+/]]), ['uq.val']);
-  k(u({keywords: F, hashComments: !0, cStyleComments: !0, types: K}), [
+  k(u({ keywords: F, hashComments: !0, cStyleComments: !0, types: K }), [
     'c',
     'cc',
     'cpp',
@@ -572,7 +573,7 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
     'cyc',
     'm',
   ]);
-  k(u({keywords: 'null,true,false'}), ['json']);
+  k(u({ keywords: 'null,true,false' }), ['json']);
   k(
     u({
       keywords: H,
@@ -581,10 +582,10 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
       verbatimStrings: !0,
       types: K,
     }),
-    ['cs'],
+    ['cs']
   );
-  k(u({keywords: G, cStyleComments: !0}), ['java']);
-  k(u({keywords: v, hashComments: !0, multiLineStrings: !0}), [
+  k(u({ keywords: G, cStyleComments: !0 }), ['java']);
+  k(u({ keywords: v, hashComments: !0, multiLineStrings: !0 }), [
     'bsh',
     'csh',
     'sh',
@@ -596,7 +597,7 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
       multiLineStrings: !0,
       tripleQuotedStrings: !0,
     }),
-    ['cv', 'py'],
+    ['cv', 'py']
   );
   k(
     u({
@@ -606,13 +607,18 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
       multiLineStrings: !0,
       regexLiterals: !0,
     }),
-    ['perl', 'pl', 'pm'],
+    ['perl', 'pl', 'pm']
   );
   k(
-    u({keywords: J, hashComments: !0, multiLineStrings: !0, regexLiterals: !0}),
-    ['rb'],
+    u({
+      keywords: J,
+      hashComments: !0,
+      multiLineStrings: !0,
+      regexLiterals: !0,
+    }),
+    ['rb']
   );
-  k(u({keywords: w, cStyleComments: !0, regexLiterals: !0}), ['js']);
+  k(u({ keywords: w, cStyleComments: !0, regexLiterals: !0 }), ['js']);
   k(
     u({
       keywords:
@@ -623,17 +629,17 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
       tripleQuotedStrings: !0,
       regexLiterals: !0,
     }),
-    ['coffee'],
+    ['coffee']
   );
   k(x([], [['str', /^[\S\s]+/]]), ['regex']);
-  window.prettyPrintOne = function(a, m, e) {
+  window.prettyPrintOne = function (a, m, e) {
     var h = document.createElement('PRE');
     h.innerHTML = a;
     e && D(h, e);
-    E({g: m, i: e, h: h});
+    E({ g: m, i: e, h: h });
     return h.innerHTML;
   };
-  window.prettyPrint = function(a) {
+  window.prettyPrint = function (a) {
     function m() {
       for (
         var e = window.PR_SHOULD_USE_CONTINUATION ? l.now() + 250 : Infinity;
@@ -682,7 +688,7 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
                 ? +b[1]
                 : !0
               : !1) && D(n, b),
-            (d = {g: k, h: n, i: b}),
+            (d = { g: k, h: n, i: b }),
             E(d));
         }
       }
@@ -704,7 +710,7 @@ window.PR_SHOULD_USE_CONTINUATION = !0;
       l = Date;
     l.now ||
       (l = {
-        now: function() {
+        now: function () {
           return +new Date();
         },
       });

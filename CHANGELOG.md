@@ -1,5 +1,21 @@
 # Change Log
 
+## [v2.17.4](https://github.com/auth0/react-native-auth0/tree/v2.17.4) (2023-06-15)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.17.3...v2.17.4)
+
+**Fixed**
+
+- Fix Auth0.Swift transitive dependencies [\#649](https://github.com/auth0/react-native-auth0/pull/649) ([poovamraj](https://github.com/poovamraj))
+
+## [v2.17.3](https://github.com/auth0/react-native-auth0/tree/v2.17.3) (2023-06-15)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.17.2...v2.17.3)
+
+**Fixed**
+
+- Fix Auth0 pod version to constant [\#647](https://github.com/auth0/react-native-auth0/pull/647) ([poovamraj](https://github.com/poovamraj))
+
 ## [v2.17.2](https://github.com/auth0/react-native-auth0/tree/v2.17.2) (2023-04-27)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.17.1...v2.17.2)
@@ -640,7 +656,7 @@ const auth0 = new Auth0({
 
 ```js
 auth0.webAuth
-  .authorize({scope: 'openid email'})
-  .then(credentials => console.log(credentials))
-  .catch(error => console.log(error));
+  .authorize({ scope: 'openid email' })
+  .then((credentials) => console.log(credentials))
+  .catch((error) => console.log(error));
 ```
