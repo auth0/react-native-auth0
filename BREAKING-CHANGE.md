@@ -1,4 +1,6 @@
 - Revoke Token and Change Password now return void instead of empty object
 - Returned `user` object will now be camel case
 - Removed `type` property returned in Android. Use `tokenType` instead.
-
+- `getCredentials` in Android will return `expiresIn` instead of `expiresAt`
+- `max_age` parameter is changed to `maxAge` in `WebAuth.authorize()`
+- Web Auth will now have default scope of 'openid profile email'

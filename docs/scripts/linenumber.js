@@ -1,5 +1,5 @@
 /*global document */
-(function() {
+(function () {
   var source = document.getElementsByClassName('prettyprint source linenums');
   var i = 0;
   var lineNumber = 0;
