@@ -11,6 +11,7 @@ import {
   WebAuthorizeParameters,
 } from '../types';
 import Auth from '../auth';
+import { Auth0Module } from 'src/internal-types';
 
 /**
  * Helper to perform Auth against Auth0 hosted login page
