@@ -3,7 +3,7 @@ import url from 'url';
 import base64 from 'base-64';
 import {fetchWithTimeout} from '../utils/fetchWithTimeout';
 
-export default class Client {
+class Client {
   public telemetry: Telemetry;
   public baseUrl: string;
   public domain: string;
@@ -135,3 +135,5 @@ export type Auth0Response<TData> = {
   ok?: boolean;
   headers?: Headers;
 };
+
+export default Client;

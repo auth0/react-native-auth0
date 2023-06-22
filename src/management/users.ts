@@ -35,7 +35,7 @@ const attributes = [
  * @see https://auth0.com/docs/api/management/v2#!/Users/
  * @class Users
  */
-export default class Users {
+class Users {
   private client: Client;
 
   constructor(options: {
@@ -97,3 +97,5 @@ export default class Users {
       );
   }
 }
+
+export default Users;
