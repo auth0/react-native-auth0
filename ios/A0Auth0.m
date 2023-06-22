@@ -21,13 +21,13 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(hasValidAuth0Instance:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-    BOOL valid = [self checkHasValidCredentialManagerInstance];
+    BOOL valid = [self checkHasValidNativeBridgeInstance];
     resolve(@(valid));
 }
 
 
 RCT_EXPORT_METHOD(initializeAuth0:(NSString *)clientId domain:(NSString *)domain) {
-    [self tryAndInitializeCredentialManager:clientId domain:domain];
+    [self tryAndInitializeNativeBridge:clientId domain:domain];
 }
 
 RCT_EXPORT_METHOD(saveCredentials:(NSDictionary *)credentials resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
@@ -70,12 +70,12 @@ RCT_EXPORT_METHOD(webAuthLogout:(NSString *)scheme federated:(BOOL)federated res
 
 UIBackgroundTaskIdentifier taskId;
 
-- (BOOL)checkHasValidCredentialManagerInstance {
+- (BOOL)checkHasValidNativeBridgeInstance {
     BOOL valid = self.nativeBridge != nil;
     return valid;
 }
 
-- (void)tryAndInitializeCredentialManager:(NSString *)clientId domain:(NSString *)domain {
+- (void)tryAndInitializeNativeBridge:(NSString *)clientId domain:(NSString *)domain {
     NativeBridge *bridge = [[NativeBridge alloc] initWithClientId: clientId domain: domain];
     self.nativeBridge = bridge;
 }
