@@ -1,4 +1,4 @@
-export default class BaseError extends Error {
+class BaseError extends Error {
   constructor(name: string, message: string) {
     super();
     if (Error.captureStackTrace) {
@@ -8,3 +8,5 @@ export default class BaseError extends Error {
     this.message = message;
   }
 }
+
+export default BaseError;
