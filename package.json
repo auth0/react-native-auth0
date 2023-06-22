@@ -30,7 +30,7 @@
   "scripts": {
     "test": "jest",
     "test:ci": "jest --coverage",
-    "jsdocs": "jsdoc --configure .jsdoc.json --verbose",
+    "docs": "typedoc",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "prepack": "bob build",
@@ -119,6 +119,8 @@
     "react": "18.2.0",
     "react-native": "0.71.10",
     "react-native-builder-bob": "^0.20.4",
+    "typedoc": "^0.24.8",
+    "typedoc-plugin-missing-exports": "^2.0.0",
     "release-it": "^15.0.0"
   },
   "dependencies": {

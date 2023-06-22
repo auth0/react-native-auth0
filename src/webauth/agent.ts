@@ -14,7 +14,7 @@ import {
 } from 'src/internal-types';
 
 const A0Auth0: Auth0Module = NativeModules.A0Auth0;
-export default class Agent {
+class Agent {
   async login(
     parameters: AgentParameters,
     options: AgentLoginOptions
@@ -144,3 +144,5 @@ export default class Agent {
     return customScheme ?? NativeModules.A0Auth0.bundleIdentifier.toLowerCase();
   }
 }
+
+export default Agent;
