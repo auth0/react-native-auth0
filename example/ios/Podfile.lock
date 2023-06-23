@@ -1,12 +1,12 @@
 PODS:
   - A0Auth0 (2.17.4):
-    - Auth0 (= 2.3.2)
-    - JWTDecode (= 3.0.1)
+    - Auth0 (= 2.4.0)
+    - JWTDecode (= 3.1.0)
     - React-Core
-    - SimpleKeychain (= 1.0.1)
-  - Auth0 (2.3.2):
-    - JWTDecode (~> 3.0)
-    - SimpleKeychain (~> 1.0)
+    - SimpleKeychain (= 1.1.0)
+  - Auth0 (2.4.0):
+    - JWTDecode (~> 3.1)
+    - SimpleKeychain (~> 1.1)
   - boost (1.76.0)
   - CocoaAsyncSocket (7.6.5)
   - DoubleConversion (1.1.6)
@@ -84,7 +84,7 @@ PODS:
   - hermes-engine (0.71.10):
     - hermes-engine/Pre-built (= 0.71.10)
   - hermes-engine/Pre-built (0.71.10)
-  - JWTDecode (3.0.1)
+  - JWTDecode (3.1.0)
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
   - RCT-Folly (2021.07.22.00):
@@ -422,7 +422,7 @@ PODS:
     - React-jsi (= 0.71.10)
     - React-logger (= 0.71.10)
     - React-perflogger (= 0.71.10)
-  - SimpleKeychain (1.0.1)
+  - SimpleKeychain (1.1.0)
   - SocketRocket (0.6.0)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
@@ -584,8 +584,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  A0Auth0: 5ae918d2f043395f83ac26d6eb85b249bcb54634
-  Auth0: 64da28fdc5cd499aa516dc4bfd0ace8efae2c1da
+  A0Auth0: e9f7ade527d315e0ca51991c56d254fd0c47d54b
+  Auth0: 7c454e679f19d160f1f32bf1e9fa095db19f8769
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
@@ -603,7 +603,7 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   hermes-engine: d27603b55a48402501ad1928c05411dae9cd6b85
-  JWTDecode: 2eed97c2fa46ccaf3049a787004eedf0be474a87
+  JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
@@ -633,11 +633,11 @@ SPEC CHECKSUMS:
   React-RCTVibration: d13cc2d63286c633393d3a7f6f607cc2a09ec011
   React-runtimeexecutor: a9a1cd79996c9a0846e3232ecb25c64e1cc0172e
   ReactCommon: 65718685d4095d06b4b1af8042e12f1df2925c31
-  SimpleKeychain: 130211269f88f038d7dc5254cf0b1b9ce978c398
+  SimpleKeychain: f8707c8e97b38c6a6e687b17732afc9bcef06439
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: e7ea9e590e27460d28911403b894722354d73479
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 84ce4547618e0e64c93e7c77fae4b652e0db3fb1
+PODFILE CHECKSUM: 78e8dab006d0d9a82e41a924fda07d925d4623c7
 
 COCOAPODS: 1.12.1

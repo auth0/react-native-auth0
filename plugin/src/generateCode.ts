@@ -10,17 +10,17 @@ import crypto from 'crypto';
 
 function getGeneratedSectionIndexes(
   src: string,
-  tag: string,
-): {contents: string[]; start: number; end: number} {
+  tag: string
+): { contents: string[]; start: number; end: number } {
   const contents = src.split('\n');
   const start = contents.findIndex((line) =>
-    line.includes(`@generated begin ${tag}`),
+    line.includes(`@generated begin ${tag}`)
   );
   const end = contents.findIndex((line) =>
-    line.includes(`@generated end ${tag}`),
+    line.includes(`@generated end ${tag}`)
   );
 
-  return {contents, start, end};
+  return { contents, start, end };
 }
 
 export type MergeResults = {
@@ -68,7 +68,7 @@ export function mergeContents({
       didClear: !!sanitizedTarget,
     };
   }
-  return {contents: src, didClear: false, didMerge: false};
+  return { contents: src, didClear: false, didMerge: false };
 }
 
 export function removeContents({
@@ -91,14 +91,14 @@ function addLines(
   content: string,
   find: string | RegExp,
   offset: number,
-  toAdd: string[],
+  toAdd: string[]
 ) {
   const lines = content.split('\n');
 
   let lineIndex = lines.findIndex((line) => line.match(find));
   if (lineIndex < 0) {
     const error = new Error(
-      `Failed to match "${find}" in contents:\n${content}`,
+      `Failed to match "${find}" in contents:\n${content}`
     );
     // @ts-ignore
     error.code = 'ERR_NO_MATCH';
@@ -120,9 +120,9 @@ function addLines(
  */
 export function removeGeneratedContents(
   src: string,
-  tag: string,
+  tag: string
 ): string | null {
-  const {contents, start, end} = getGeneratedSectionIndexes(src, tag);
+  const { contents, start, end } = getGeneratedSectionIndexes(src, tag);
   if (start > -1 && end > -1 && start < end) {
     contents.splice(start, end - start + 1);
     // TODO: We could in theory check that the contents we're removing match the hash used in the header,
@@ -135,7 +135,7 @@ export function removeGeneratedContents(
 export function createGeneratedHeaderComment(
   contents: string,
   tag: string,
-  comment: string,
+  comment: string
 ): string {
   const hashKey = createHash(contents);
 

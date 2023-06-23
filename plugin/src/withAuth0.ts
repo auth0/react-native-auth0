@@ -7,9 +7,9 @@ import {
   withAppDelegate,
   withInfoPlist,
 } from 'expo/config-plugins';
-import {mergeContents} from './generateCode';
+import { mergeContents } from './generateCode';
 
-let pkg: {name: string; version?: string} = {
+let pkg: { name: string; version?: string } = {
   name: 'react-native-auth0',
 };
 try {
@@ -21,7 +21,7 @@ try {
 export const addAuth0GradleValues = (
   src: string,
   auth0Domain: string,
-  auth0Scheme = 'applicationId',
+  auth0Scheme = 'applicationId'
 ): string => {
   return mergeContents({
     tag: 'react-native-auth0-manifest-placeholder',
@@ -35,7 +35,7 @@ export const addAuth0GradleValues = (
 
 const withAndroidAuth0Gradle: ConfigPlugin<Auth0PluginConfig> = (
   config,
-  props,
+  props
 ) => {
   return withAppBuildGradle(config, (config) => {
     return addAndroidAuth0Gradle(props, config);
@@ -44,7 +44,7 @@ const withAndroidAuth0Gradle: ConfigPlugin<Auth0PluginConfig> = (
 
 export const addAndroidAuth0Gradle = (
   props: Auth0PluginConfig,
-  config: ExportedConfigWithProps<any>, //Ignore any here as the required GradleProjectFile is not exported by Expo
+  config: ExportedConfigWithProps<any> //Ignore any here as the required GradleProjectFile is not exported by Expo
 ) => {
   if (config.modResults.language === 'groovy') {
     if (!props?.domain) {
@@ -56,18 +56,18 @@ export const addAndroidAuth0Gradle = (
       config.android?.package ??
       (() => {
         throw new Error(
-          'No auth0 scheme specified or package found in expo config',
+          'No auth0 scheme specified or package found in expo config'
         );
       })();
     config.modResults.contents = addAuth0GradleValues(
       config.modResults.contents,
       auth0Domain,
-      auth0Scheme,
+      auth0Scheme
     );
     return config;
   } else {
     throw new Error(
-      'Cannot add auth0 build.gradle modifications because the build.gradle is not groovy',
+      'Cannot add auth0 build.gradle modifications because the build.gradle is not groovy'
     );
   }
 };
@@ -117,7 +117,7 @@ const withIOSAuth0AppDelegate: ConfigPlugin<Auth0PluginConfig> = (config) => {
 
 const withIOSAuth0InfoPList: ConfigPlugin<Auth0PluginConfig> = (
   config,
-  props,
+  props
 ) => {
   return withInfoPlist(config, (config) => {
     return addIOSAuth0ConfigInInfoPList(props, config);
@@ -126,7 +126,7 @@ const withIOSAuth0InfoPList: ConfigPlugin<Auth0PluginConfig> = (
 
 export const addIOSAuth0ConfigInInfoPList = (
   props: Auth0PluginConfig,
-  config: ExportedConfigWithProps<InfoPlist>,
+  config: ExportedConfigWithProps<InfoPlist>
 ) => {
   if (!config.modResults.CFBundleURLTypes) {
     config.modResults.CFBundleURLTypes = [];
@@ -136,13 +136,13 @@ export const addIOSAuth0ConfigInInfoPList = (
     config.ios?.bundleIdentifier ??
     (() => {
       throw new Error(
-        'No auth0 scheme specified or bundle identifier found in expo config',
+        'No auth0 scheme specified or bundle identifier found in expo config'
       );
     })();
   if (auth0Scheme) {
     if (
-      config.modResults.CFBundleURLTypes.some(({CFBundleURLSchemes}) =>
-        CFBundleURLSchemes.includes(auth0Scheme),
+      config.modResults.CFBundleURLTypes.some(({ CFBundleURLSchemes }) =>
+        CFBundleURLSchemes.includes(auth0Scheme)
       )
     ) {
       return config;

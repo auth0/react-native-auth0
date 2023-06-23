@@ -7,7 +7,7 @@ import {
 import appDelegateFixtureWithLinking from './fixtures/appdelegate-withlinking';
 import appDelegateFixtureWithoutLinking from './fixtures/appdelegate-withoutlinking';
 import buildGradleFixture from './fixtures/buildgradle';
-import {ModConfig} from '@expo/config-plugins';
+import { ModConfig } from '@expo/config-plugins';
 
 describe(addAuth0GradleValues, () => {
   it(`modifies the build.gradle`, () => {
@@ -15,14 +15,14 @@ describe(addAuth0GradleValues, () => {
       addAuth0GradleValues(
         buildGradleFixture,
         'com.example.app',
-        'com.example.app',
-      ),
+        'com.example.app'
+      )
     ).toMatchSnapshot();
   });
 
   it(`modifies the build.gradle without custom scheme`, () => {
     expect(
-      addAuth0GradleValues(buildGradleFixture, 'com.example.app'),
+      addAuth0GradleValues(buildGradleFixture, 'com.example.app')
     ).toMatchSnapshot();
   });
 });
@@ -30,7 +30,7 @@ describe(addAuth0GradleValues, () => {
 describe(addAuth0AppDelegateCode, () => {
   it(`does not modify the AppDelegate`, () => {
     expect(
-      addAuth0AppDelegateCode(appDelegateFixtureWithLinking),
+      addAuth0AppDelegateCode(appDelegateFixtureWithLinking)
     ).toMatchSnapshot();
   });
 });
@@ -38,14 +38,14 @@ describe(addAuth0AppDelegateCode, () => {
 describe(addAuth0AppDelegateCode, () => {
   it(`modifies the AppDelegate`, () => {
     expect(
-      addAuth0AppDelegateCode(appDelegateFixtureWithoutLinking),
+      addAuth0AppDelegateCode(appDelegateFixtureWithoutLinking)
     ).toMatchSnapshot();
   });
 });
 
 describe(addAndroidAuth0Gradle, () => {
   it(`should throw if file is kt`, () => {
-    const config = {
+    const config: any = {
       name: ' ',
       slug: ' ',
       modRequest: {
@@ -55,7 +55,7 @@ describe(addAndroidAuth0Gradle, () => {
         platform: 'android' as keyof ModConfig,
         introspect: true,
       },
-      modResults: {path: '', language: 'kt' as const, contents: ''},
+      modResults: { path: '', language: 'kt' as const, contents: '' },
     };
     function ktFileCheck() {
       addAndroidAuth0Gradle({}, config);
@@ -64,7 +64,7 @@ describe(addAndroidAuth0Gradle, () => {
   });
 
   it(`should throw if domain is not present`, () => {
-    const config = {
+    const config: any = {
       name: ' ',
       slug: ' ',
       modRequest: {
@@ -74,7 +74,7 @@ describe(addAndroidAuth0Gradle, () => {
         platform: 'android' as keyof ModConfig,
         introspect: true,
       },
-      modResults: {path: '', language: 'groovy' as const, contents: ''},
+      modResults: { path: '', language: 'groovy' as const, contents: '' },
     };
     function domainCheck() {
       addAndroidAuth0Gradle({}, config);
@@ -83,7 +83,7 @@ describe(addAndroidAuth0Gradle, () => {
   });
 
   it(`should throw if scheme is not present`, () => {
-    const config = {
+    const config: any = {
       name: ' ',
       slug: ' ',
       modRequest: {
@@ -93,16 +93,16 @@ describe(addAndroidAuth0Gradle, () => {
         platform: 'android' as keyof ModConfig,
         introspect: true,
       },
-      modResults: {path: '', language: 'groovy' as const, contents: ''},
+      modResults: { path: '', language: 'groovy' as const, contents: '' },
     };
     function domainCheck() {
-      addAndroidAuth0Gradle({domain: 'sample.auth0.com'}, config);
+      addAndroidAuth0Gradle({ domain: 'sample.auth0.com' }, config);
     }
     expect(domainCheck).toThrowErrorMatchingSnapshot();
   });
 
   it(`without scheme should have package name`, () => {
-    const config = {
+    const config: any = {
       name: ' ',
       slug: ' ',
       modRequest: {
@@ -122,13 +122,13 @@ describe(addAndroidAuth0Gradle, () => {
       },
     };
     function check() {
-      return addAndroidAuth0Gradle({domain: 'sample.auth0.com'}, config);
+      return addAndroidAuth0Gradle({ domain: 'sample.auth0.com' }, config);
     }
     expect(check()).toMatchSnapshot();
   });
 
   it(`with scheme should have that value`, () => {
-    const config = {
+    const config: any = {
       name: ' ',
       slug: ' ',
       modRequest: {
@@ -146,8 +146,8 @@ describe(addAndroidAuth0Gradle, () => {
     };
     function check() {
       return addAndroidAuth0Gradle(
-        {domain: 'sample.auth0.com', customScheme: 'com.sample.application'},
-        config,
+        { domain: 'sample.auth0.com', customScheme: 'com.sample.application' },
+        config
       );
     }
     expect(check()).toMatchSnapshot();
@@ -156,7 +156,7 @@ describe(addAndroidAuth0Gradle, () => {
 
 describe(addIOSAuth0ConfigInInfoPList, () => {
   it(`should throw if scheme and bundle identifier is not defined`, () => {
-    const config = {
+    const config: any = {
       name: ' ',
       slug: ' ',
       modRequest: {
@@ -166,7 +166,7 @@ describe(addIOSAuth0ConfigInInfoPList, () => {
         platform: 'ios' as keyof ModConfig,
         introspect: true,
       },
-      modResults: {path: '', contents: ''},
+      modResults: { path: '', contents: '' },
     };
     function check() {
       addIOSAuth0ConfigInInfoPList({}, config);
@@ -175,7 +175,7 @@ describe(addIOSAuth0ConfigInInfoPList, () => {
   });
 
   it(`should have the scheme provided `, () => {
-    const config = {
+    const config: any = {
       name: ' ',
       slug: ' ',
       modRequest: {
@@ -188,19 +188,19 @@ describe(addIOSAuth0ConfigInInfoPList, () => {
       ios: {
         bundleIdentifier: 'different.bundle.id',
       },
-      modResults: {path: '', contents: ''},
+      modResults: { path: '', contents: '' },
     };
     function check() {
       return addIOSAuth0ConfigInInfoPList(
-        {customScheme: 'com.sample.auth0'},
-        config,
+        { customScheme: 'com.sample.auth0' },
+        config
       );
     }
     expect(check()).toMatchSnapshot();
   });
 
   it(`should have the bundle identifier if scheme is not provided `, () => {
-    const config = {
+    const config: any = {
       name: ' ',
       slug: ' ',
       modRequest: {
@@ -213,7 +213,7 @@ describe(addIOSAuth0ConfigInInfoPList, () => {
       ios: {
         bundleIdentifier: 'com.sample.auth0',
       },
-      modResults: {path: '', contents: ''},
+      modResults: { path: '', contents: '' },
     };
     function check() {
       return addIOSAuth0ConfigInInfoPList({}, config);
@@ -222,7 +222,7 @@ describe(addIOSAuth0ConfigInInfoPList, () => {
   });
 
   it(`should ignore if scheme is already present`, () => {
-    const config = {
+    const config: any = {
       name: ' ',
       slug: ' ',
       modRequest: {
@@ -245,15 +245,15 @@ describe(addIOSAuth0ConfigInInfoPList, () => {
     };
     function check() {
       return addIOSAuth0ConfigInInfoPList(
-        {customScheme: 'com.sample.auth0'},
-        config,
+        { customScheme: 'com.sample.auth0' },
+        config
       );
     }
     expect(check()).toMatchSnapshot();
   });
 
   it(`should not ignore if another scheme is already present`, () => {
-    const config = {
+    const config: any = {
       name: ' ',
       slug: ' ',
       modRequest: {
@@ -276,8 +276,8 @@ describe(addIOSAuth0ConfigInInfoPList, () => {
     };
     function check() {
       return addIOSAuth0ConfigInInfoPList(
-        {customScheme: 'com.sample.auth0'},
-        config,
+        { customScheme: 'com.sample.auth0' },
+        config
       );
     }
     expect(check()).toMatchSnapshot();

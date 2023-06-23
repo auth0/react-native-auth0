@@ -1,6 +1,5 @@
 import { createContext } from 'react';
 import {
-  ClearSessionOptions,
   ClearSessionParameters,
   LoginWithEmailOptions,
   LoginWithOOBOptions,
@@ -14,6 +13,7 @@ import {
   WebAuthorizeOptions,
   WebAuthorizeParameters,
   PasswordlessWithSMSOptions,
+  ClearSessionOptions,
 } from '../types';
 import LocalAuthenticationStrategy from '../credentials-manager/localAuthenticationStrategy';
 

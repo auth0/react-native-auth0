@@ -1,3 +1,4 @@
+import { string } from 'prop-types';
 import {
   RawCredentials,
   RawMultifactorChallengeOOBResponse,
@@ -6,8 +7,7 @@ import {
   RawMultifactorChallengeResponse,
 } from './internal-types';
 
-
-export type Credentials =  {
+export type Credentials = {
   idToken: string;
   accessToken: string;
   tokenType: string;
@@ -49,22 +49,21 @@ export interface WebAuthorizeParameters {
   maxAge?: number;
   organization?: string;
   invitationUrl?: string;
+  additionalParameters?: { [key: string]: string };
 }
 
 export interface WebAuthorizeOptions {
   leeway?: number;
   ephemeralSession?: boolean;
   customScheme?: string;
-  skipLegacyListener?: boolean;
 }
 
 export interface ClearSessionParameters {
   federated?: boolean;
-  customScheme?: string;
 }
 
 export interface ClearSessionOptions {
-  skipLegacyListener?: boolean;
+  customScheme?: string;
 }
 
 export interface GetUserOptions {

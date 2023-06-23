@@ -3,21 +3,21 @@
 exports[`client constructor should fail with no domain 1`] = `"Cannot read properties of undefined (reading 'baseUrl')"`;
 
 exports[`client requests GET json should build proper request with no query 1`] = `
-Array [
+[
   "https://samples.auth0.com/method",
-  Object {
+  {
     "headers": Headers {
-      Symbol(map): Object {
-        "Accept": Array [
+      Symbol(map): {
+        "Accept": [
           "application/json",
         ],
-        "Auth0-Client": Array [
+        "Auth0-Client": [
           "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
         ],
-        "Authorization": Array [
+        "Authorization": [
           "Bearer a.bearer.token",
         ],
-        "Content-Type": Array [
+        "Content-Type": [
           "application/json",
         ],
       },
@@ -29,21 +29,21 @@ Array [
 `;
 
 exports[`client requests GET json should build proper request with query 1`] = `
-Array [
+[
   "https://samples.auth0.com/method?string=value&number=10",
-  Object {
+  {
     "headers": Headers {
-      Symbol(map): Object {
-        "Accept": Array [
+      Symbol(map): {
+        "Accept": [
           "application/json",
         ],
-        "Auth0-Client": Array [
+        "Auth0-Client": [
           "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
         ],
-        "Authorization": Array [
+        "Authorization": [
           "Bearer a.bearer.token",
         ],
-        "Content-Type": Array [
+        "Content-Type": [
           "application/json",
         ],
       },
@@ -55,9 +55,9 @@ Array [
 `;
 
 exports[`client requests GET json should handle no response 1`] = `
-Object {
+{
   "headers": Headers {
-    Symbol(map): Object {},
+    Symbol(map): {},
   },
   "ok": true,
   "status": 201,
@@ -68,18 +68,18 @@ Object {
 exports[`client requests GET json should handle request error 1`] = `[Error: pawned!]`;
 
 exports[`client requests GET json should return json on success 1`] = `
-Object {
+{
   "headers": Headers {
-    Symbol(map): Object {
-      "Content-Length": Array [
+    Symbol(map): {
+      "Content-Length": [
         "15",
       ],
-      "Content-Type": Array [
+      "Content-Type": [
         "application/json",
       ],
     },
   },
-  "json": Object {
+  "json": {
     "key": "value",
   },
   "ok": true,
@@ -88,22 +88,22 @@ Object {
 `;
 
 exports[`client requests PATCH json should build proper request with body 1`] = `
-Array [
+[
   "https://samples.auth0.com/method",
-  Object {
-    "body": "{\\"string\\":\\"value\\",\\"number\\":10}",
+  {
+    "body": "{"string":"value","number":10}",
     "headers": Headers {
-      Symbol(map): Object {
-        "Accept": Array [
+      Symbol(map): {
+        "Accept": [
           "application/json",
         ],
-        "Auth0-Client": Array [
+        "Auth0-Client": [
           "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
         ],
-        "Authorization": Array [
+        "Authorization": [
           "Bearer a.bearer.token",
         ],
-        "Content-Type": Array [
+        "Content-Type": [
           "application/json",
         ],
       },
@@ -115,21 +115,21 @@ Array [
 `;
 
 exports[`client requests PATCH json should build proper request with no body 1`] = `
-Array [
+[
   "https://samples.auth0.com/method",
-  Object {
+  {
     "headers": Headers {
-      Symbol(map): Object {
-        "Accept": Array [
+      Symbol(map): {
+        "Accept": [
           "application/json",
         ],
-        "Auth0-Client": Array [
+        "Auth0-Client": [
           "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
         ],
-        "Authorization": Array [
+        "Authorization": [
           "Bearer a.bearer.token",
         ],
-        "Content-Type": Array [
+        "Content-Type": [
           "application/json",
         ],
       },
@@ -141,9 +141,9 @@ Array [
 `;
 
 exports[`client requests PATCH json should handle no response 1`] = `
-Object {
+{
   "headers": Headers {
-    Symbol(map): Object {},
+    Symbol(map): {},
   },
   "ok": true,
   "status": 201,
@@ -154,18 +154,18 @@ Object {
 exports[`client requests PATCH json should handle request error 1`] = `[Error: pawned!]`;
 
 exports[`client requests PATCH json should return json on success 1`] = `
-Object {
+{
   "headers": Headers {
-    Symbol(map): Object {
-      "Content-Length": Array [
+    Symbol(map): {
+      "Content-Length": [
         "15",
       ],
-      "Content-Type": Array [
+      "Content-Type": [
         "application/json",
       ],
     },
   },
-  "json": Object {
+  "json": {
     "key": "value",
   },
   "ok": true,
@@ -174,22 +174,22 @@ Object {
 `;
 
 exports[`client requests POST json should build proper request with body 1`] = `
-Array [
+[
   "https://samples.auth0.com/method",
-  Object {
-    "body": "{\\"string\\":\\"value\\",\\"number\\":10}",
+  {
+    "body": "{"string":"value","number":10}",
     "headers": Headers {
-      Symbol(map): Object {
-        "Accept": Array [
+      Symbol(map): {
+        "Accept": [
           "application/json",
         ],
-        "Auth0-Client": Array [
+        "Auth0-Client": [
           "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
         ],
-        "Authorization": Array [
+        "Authorization": [
           "Bearer a.bearer.token",
         ],
-        "Content-Type": Array [
+        "Content-Type": [
           "application/json",
         ],
       },
@@ -201,21 +201,21 @@ Array [
 `;
 
 exports[`client requests POST json should build proper request with no body 1`] = `
-Array [
+[
   "https://samples.auth0.com/method",
-  Object {
+  {
     "headers": Headers {
-      Symbol(map): Object {
-        "Accept": Array [
+      Symbol(map): {
+        "Accept": [
           "application/json",
         ],
-        "Auth0-Client": Array [
+        "Auth0-Client": [
           "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
         ],
-        "Authorization": Array [
+        "Authorization": [
           "Bearer a.bearer.token",
         ],
-        "Content-Type": Array [
+        "Content-Type": [
           "application/json",
         ],
       },
@@ -227,9 +227,9 @@ Array [
 `;
 
 exports[`client requests POST json should handle no response 1`] = `
-Object {
+{
   "headers": Headers {
-    Symbol(map): Object {},
+    Symbol(map): {},
   },
   "ok": true,
   "status": 201,
@@ -240,18 +240,18 @@ Object {
 exports[`client requests POST json should handle request error 1`] = `[Error: pawned!]`;
 
 exports[`client requests POST json should return json on success 1`] = `
-Object {
+{
   "headers": Headers {
-    Symbol(map): Object {
-      "Content-Length": Array [
+    Symbol(map): {
+      "Content-Length": [
         "15",
       ],
-      "Content-Type": Array [
+      "Content-Type": [
         "application/json",
       ],
     },
   },
-  "json": Object {
+  "json": {
     "key": "value",
   },
   "ok": true,

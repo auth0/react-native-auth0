@@ -724,12 +724,14 @@ describe('The useAuth0 hook', () => {
       wrapper,
     });
 
-    result.current.clearSession({ parameter: 1 }, { option: 1 });
+    result.current.clearSession({ parameter: 1 });
     await waitForNextUpdate();
 
     expect(mockAuth0.webAuth.clearSession).toHaveBeenCalledWith(
-      { parameter: 1 },
-      { option: 1 }
+      {
+        parameter: 1,
+      },
+      {}
     );
   });
 

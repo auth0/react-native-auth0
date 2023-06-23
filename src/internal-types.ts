@@ -69,7 +69,9 @@ export type Auth0Module = {
     maxAge?: number,
     organization?: string,
     invitationUrl?: string,
-    leeway?: number
+    leeway?: number,
+    ephemeralSession?: boolean,
+    additionalParameters?: { [key: string]: string }
   ) => Promise<Credentials>;
   webAuthLogout: (scheme: string, federated: boolean) => Promise<void>;
   saveCredentials: (credentials: Credentials) => Promise<void>;
@@ -115,4 +117,5 @@ export interface AgentLoginOptions {
   customScheme?: string;
   leeway?: number;
   ephemeralSession?: boolean;
+  additionalParameters?: { [key: string]: string };
 }
