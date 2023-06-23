@@ -6,4 +6,4 @@
 - Web Auth will now have default scope of 'openid profile email'
 - Minimum supported version for iOS is bumped to 13
 - skipLegacyListener has been removed in `authorize` and `clearSession`
-- ClearSessionOptions has been removed in `clearSession`
+- `customScheme` is now part of `ClearSessionOptions` instead of `ClearSessionParameters` in `clearSession`

@@ -7,8 +7,7 @@ import {
   RawMultifactorChallengeResponse,
 } from './internal-types';
 
-
-export type Credentials =  {
+export type Credentials = {
   idToken: string;
   accessToken: string;
   tokenType: string;
@@ -61,6 +60,9 @@ export interface WebAuthorizeOptions {
 
 export interface ClearSessionParameters {
   federated?: boolean;
+}
+
+export interface ClearSessionOptions {
   customScheme?: string;
 }
 
