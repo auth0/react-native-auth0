@@ -77,7 +77,7 @@ public class NativeBridge: NSObject {
             case .success(let credentials):
                 resolve(credentials.asDictionary())
             case .failure(let error):
-                reject(error.getReactNativeErrorCode(), error.errorDescription, error)
+                reject(error.reactNativeErrorCode(), error.errorDescription, error)
             }
         }
             
@@ -90,7 +90,7 @@ public class NativeBridge: NSObject {
                 case .success:
                     resolve(true)
                 case .failure(let error):
-                    reject(error.getReactNativeErrorCode(), error.errorDescription, error)
+                    reject(error.reactNativeErrorCode(), error.errorDescription, error)
                 }
             }
     }
@@ -134,7 +134,7 @@ public class NativeBridge: NSObject {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
                 case .failure(let error):
-                    reject(error.getReactNativeErrorCode(), error.errorDescription, error)
+                    reject(error.reactNativeErrorCode(), error.errorDescription, error)
                 }
             }
         } else {
@@ -143,7 +143,7 @@ public class NativeBridge: NSObject {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
                 case .failure(let error):
-                    reject(error.getReactNativeErrorCode(), error.errorDescription, error)
+                    reject(error.reactNativeErrorCode(), error.errorDescription, error)
                 }
             }
         }
@@ -186,7 +186,7 @@ extension Credentials {
 }
 
 extension WebAuthError {
-    func getReactNativeErrorCode() -> String {
+    func reactNativeErrorCode() -> String {
         var code: String
         switch self {
             case .noBundleIdentifier: code = "NO_BUNDLE_IDENTIFIER"
@@ -203,7 +203,7 @@ extension WebAuthError {
 }
 
 extension CredentialsManagerError {
-    func getReactNativeErrorCode() -> String {
+    func reactNativeErrorCode() -> String {
         var code: String
         switch self {
             case .noCredentials: code = "NO_CREDENTIALS"
