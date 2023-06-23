@@ -24,7 +24,7 @@ public class NativeBridge: NSObject {
     static let expiresInKey = "expiresIn";
     static let dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     
-    static let errorCode = "a0.invalid_state.credential_manager_exception"
+    static let credentialsManagerErrorCode = "a0.invalid_state.credential_manager_exception"
     
     var credentialsManager: CredentialsManager
     var clientId: String
@@ -71,13 +71,13 @@ public class NativeBridge: NSObject {
         if(ephemeralSession) {
             let _ = builder.useEphemeralSession()
         }
-        builder.parameters(additionalParameters)
+        let _ = builder.parameters(additionalParameters)
         builder.start { result in
             switch result {
             case .success(let credentials):
                 resolve(credentials.asDictionary())
             case .failure(let error):
-                reject(NativeBridge.errorCode, error.errorDescription, error)
+                reject(error.getReactNativeErrorCode(), error.errorDescription, error)
             }
         }
             
@@ -90,14 +90,14 @@ public class NativeBridge: NSObject {
                 case .success:
                     resolve(true)
                 case .failure(let error):
-                    reject(NativeBridge.errorCode, error.errorDescription, error)
+                    reject(error.getReactNativeErrorCode(), error.errorDescription, error)
                 }
             }
     }
     
     @objc public func saveCredentials(credentialsDict: [String: Any], resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         
-        guard let accessToken = credentialsDict[NativeBridge.accessTokenKey] as? String, let tokenType = credentialsDict[NativeBridge.tokenTypeKey] as? String, let idToken = credentialsDict[NativeBridge.idTokenKey] as? String else { reject(NativeBridge.errorCode, "Incomplete information provided for credentials", NSError.init(domain: NativeBridge.errorCode, code: -99999, userInfo: nil)); return; }
+        guard let accessToken = credentialsDict[NativeBridge.accessTokenKey] as? String, let tokenType = credentialsDict[NativeBridge.tokenTypeKey] as? String, let idToken = credentialsDict[NativeBridge.idTokenKey] as? String else { reject(NativeBridge.credentialsManagerErrorCode, "Incomplete information provided for credentials", NSError.init(domain: NativeBridge.credentialsManagerErrorCode, code: -99999, userInfo: nil)); return; }
         
         let refreshToken = credentialsDict[NativeBridge.refreshTokenKey] as? String
         let scope = credentialsDict[NativeBridge.scopeKey] as? String
@@ -111,18 +111,20 @@ public class NativeBridge: NSObject {
              dateFormatter.dateFormat = NativeBridge.dateFormat
              expiresIn = dateFormatter.date(from: dateStr)
          }
-     
-        
-        let credentials =  Credentials(
-            accessToken: accessToken,
-            tokenType: tokenType,
-            idToken:  idToken,
-            refreshToken: refreshToken,
-            expiresIn: expiresIn ?? Date(),
-            scope: scope,
-            recoveryCode: nil
-        )
-        resolve(credentialsManager.store(credentials: credentials))
+        if let expiresIn = expiresIn {
+            let credentials =  Credentials(
+                accessToken: accessToken,
+                tokenType: tokenType,
+                idToken:  idToken,
+                refreshToken: refreshToken,
+                expiresIn: expiresIn,
+                scope: scope,
+                recoveryCode: nil
+            )
+            resolve(credentialsManager.store(credentials: credentials))
+        } else {
+            reject(NativeBridge.credentialsManagerErrorCode, "Incomplete information provided for credentials - 'expiresIn' not found", NSError.init(domain: NativeBridge.credentialsManagerErrorCode, code: -99999, userInfo: nil));
+        }
     }
     
     @objc public func getCredentials(scope: String?, minTTL: Int, parameters: [String: Any], forceRefresh: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
@@ -132,7 +134,7 @@ public class NativeBridge: NSObject {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
                 case .failure(let error):
-                    reject(NativeBridge.errorCode, error.errorDescription, error)
+                    reject(error.getReactNativeErrorCode(), error.errorDescription, error)
                 }
             }
         } else {
@@ -141,7 +143,7 @@ public class NativeBridge: NSObject {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
                 case .failure(let error):
-                    reject(NativeBridge.errorCode, error.errorDescription, error)
+                    reject(error.getReactNativeErrorCode(), error.errorDescription, error)
                 }
             }
         }
@@ -180,5 +182,39 @@ extension Credentials {
             NativeBridge.expiresInKey: floor(self.expiresIn.timeIntervalSince1970),
             NativeBridge.scopeKey: self.scope as Any
         ]
+    }
+}
+
+extension WebAuthError {
+    func getReactNativeErrorCode() -> String {
+        var code: String
+        switch self {
+            case .noBundleIdentifier: code = "NO_BUNDLE_IDENTIFIER"
+            case .invalidInvitationURL: code = "INVALID_INVITATION_URL"
+            case .userCancelled: code = "USER_CANCELLED"
+            case .noAuthorizationCode: code = "NO_AUTHORIZATION_CODE"
+            case .pkceNotAllowed: code = "PKCE_NOT_ALLOWED"
+            case .idTokenValidationFailed: code = "ID_TOKEN_VALIDATION_FAILED"
+            case .other: code = "OTHER"
+            default: code = "UNKNOWN"
+        }
+        return code
+    }
+}
+
+extension CredentialsManagerError {
+    func getReactNativeErrorCode() -> String {
+        var code: String
+        switch self {
+            case .noCredentials: code = "NO_CREDENTIALS"
+            case .noRefreshToken: code = "NO_REFRESH_TOKEN"
+            case .renewFailed: code = "RENEW_FAILED"
+            case .storeFailed: code = "STORE_FAILED"
+            case .biometricsFailed: code = "BIOMETRICS_FAILED"
+            case .revokeFailed: code = "REVOKE_FAILED"
+            case .largeMinTTL: code = "LARGE_MIN_TTL"
+            default: code = "UNKNOWN"
+        }
+        return code
     }
 }
