@@ -52,9 +52,13 @@ export const addAndroidAuth0Gradle = (
       throw Error('No auth0 domain specified in expo config');
     }
     const auth0Domain = props.domain;
+    let applicationId;
+    if (config.android?.package) {
+      applicationId = config.android?.package + APPLICATION_ID_SUFFIX;
+    }
     let auth0Scheme =
       props.customScheme ??
-      config.android?.package + APPLICATION_ID_SUFFIX ??
+      applicationId ??
       (() => {
         throw new Error(
           'No auth0 scheme specified or package found in expo config'
@@ -132,9 +136,13 @@ export const addIOSAuth0ConfigInInfoPList = (
   if (!config.modResults.CFBundleURLTypes) {
     config.modResults.CFBundleURLTypes = [];
   }
+  let bundleIdentifier;
+  if (config.ios?.bundleIdentifier) {
+    bundleIdentifier = config.ios?.bundleIdentifier + APPLICATION_ID_SUFFIX;
+  }
   let auth0Scheme =
     props.customScheme ??
-    config.ios?.bundleIdentifier + APPLICATION_ID_SUFFIX ??
+    bundleIdentifier ??
     (() => {
       throw new Error(
         'No auth0 scheme specified or bundle identifier found in expo config'

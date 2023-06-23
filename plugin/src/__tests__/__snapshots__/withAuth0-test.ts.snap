@@ -85,8 +85,8 @@ android {
     }
 
     defaultConfig {
-// @generated begin react-native-auth0-manifest-placeholder - expo prebuild (DO NOT MODIFY) sync-5c2b93e2cd1c118d64d307ce22e7a639e8ac8e15
-manifestPlaceholders = [auth0Domain: "sample.auth0.com", auth0Scheme: "com.auth0.sample"]
+// @generated begin react-native-auth0-manifest-placeholder - expo prebuild (DO NOT MODIFY) sync-390402dddcbdc956c1498501708569e2654135a0
+manifestPlaceholders = [auth0Domain: "sample.auth0.com", auth0Scheme: "com.auth0.sample.auth0"]
 // @generated end react-native-auth0-manifest-placeholder
         applicationId 'com.example.app'
         minSdkVersion rootProject.ext.minSdkVersion
@@ -399,7 +399,7 @@ exports[`addIOSAuth0ConfigInInfoPList should have the bundle identifier if schem
       {
         "CFBundleURLName": "auth0",
         "CFBundleURLSchemes": [
-          "com.sample.auth0",
+          "com.sample.auth0.auth0",
         ],
       },
     ],
