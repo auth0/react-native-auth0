@@ -1,10 +1,8 @@
 import Agent from './agent';
 import { NativeModules, Platform } from 'react-native';
 
-import url from 'url';
-import AuthError from '../auth/authError';
-import verifyToken from '../jwt';
 import {
+  ClearSessionOptions,
   ClearSessionParameters,
   Credentials,
   WebAuthorizeOptions,
@@ -78,19 +76,22 @@ class WebAuth {
    *
    * @param {Object} parameters Parameters to send
    * @param {Bool} [parameters.federated] Optionally remove the IdP session.
-   * @param {String} [parameters.customScheme] Custom scheme to build the callback URL with.
    * @param {Object} options Other configuration options.
+   * @param {String} [options.customScheme] Custom scheme to build the callback URL with.
    * @returns {Promise}
    * @see https://auth0.com/docs/logout
    *
    * @memberof WebAuth
    */
-  clearSession(parameters: ClearSessionParameters = {}) {
+  clearSession(
+    parameters: ClearSessionParameters = {},
+    options?: ClearSessionOptions
+  ) {
     const { agent, domain, clientId } = this;
     return agent.logout(
       { clientId, domain },
       {
-        customScheme: parameters.customScheme,
+        customScheme: options?.customScheme,
         federated: parameters.federated,
       }
     );

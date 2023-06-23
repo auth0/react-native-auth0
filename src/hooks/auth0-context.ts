@@ -13,6 +13,7 @@ import {
   WebAuthorizeOptions,
   WebAuthorizeParameters,
   PasswordlessWithSMSOptions,
+  ClearSessionOptions,
 } from '../types';
 import LocalAuthenticationStrategy from '../credentials-manager/localAuthenticationStrategy';
 
@@ -35,7 +36,10 @@ export interface Auth0ContextInterface<TUser extends User = User>
     parameters: LoginWithRecoveryCodeOptions
   ) => Promise<void>;
   hasValidCredentials: (minTtl: number) => Promise<boolean>;
-  clearSession: (parameters: ClearSessionParameters) => Promise<void>;
+  clearSession: (
+    parameters: ClearSessionParameters,
+    options?: ClearSessionOptions
+  ) => Promise<void>;
   getCredentials: (
     scope?: string,
     minTtl?: number,
