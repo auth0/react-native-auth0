@@ -119,7 +119,7 @@ const Auth0Provider = ({
   const clearSession = useCallback(
     async (
       parameters: ClearSessionParameters = {},
-      options?: ClearSessionOptions
+      options: ClearSessionOptions = {}
     ) => {
       try {
         await client.webAuth.clearSession(parameters, options);

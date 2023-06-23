@@ -85,13 +85,13 @@ class WebAuth {
    */
   clearSession(
     parameters: ClearSessionParameters = {},
-    options?: ClearSessionOptions
+    options: ClearSessionOptions = {}
   ) {
     const { agent, domain, clientId } = this;
     return agent.logout(
       { clientId, domain },
       {
-        customScheme: options?.customScheme,
+        customScheme: options.customScheme,
         federated: parameters.federated,
       }
     );

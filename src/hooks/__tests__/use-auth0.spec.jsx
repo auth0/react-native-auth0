@@ -727,9 +727,12 @@ describe('The useAuth0 hook', () => {
     result.current.clearSession({ parameter: 1 });
     await waitForNextUpdate();
 
-    expect(mockAuth0.webAuth.clearSession).toHaveBeenCalledWith({
-      parameter: 1,
-    });
+    expect(mockAuth0.webAuth.clearSession).toHaveBeenCalledWith(
+      {
+        parameter: 1,
+      },
+      {}
+    );
   });
 
   it('can clear the credentials', async () => {

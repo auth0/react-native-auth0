@@ -38,7 +38,7 @@ export interface Auth0ContextInterface<TUser extends User = User>
   hasValidCredentials: (minTtl: number) => Promise<boolean>;
   clearSession: (
     parameters: ClearSessionParameters,
-    options?: ClearSessionOptions
+    options: ClearSessionOptions
   ) => Promise<void>;
   getCredentials: (
     scope?: string,

@@ -57,15 +57,17 @@ describe('WebAuth', () => {
     it('should clearSession with provided parameters', async () => {
       let parameters = {
         federated: true,
+      };
+      let options = {
         customScheme: 'scheme',
       };
       const showMock = jest
         .spyOn(webauth.agent, 'logout')
         .mockImplementation(() => Promise.resolve());
-      await webauth.clearSession(parameters);
+      await webauth.clearSession(parameters, options);
       expect(showMock).toHaveBeenCalledWith(
         { clientId, domain },
-        { ...parameters }
+        { ...parameters, ...options }
       );
       showMock.mockRestore();
     });
