@@ -1,9 +1,27 @@
 export type Credentials = {
+  /**
+   * A token in JWT format that has user claims
+   */
   idToken: string;
+  /**
+   * The token used to make API calls
+   */
   accessToken: string;
+  /**
+   * The type of the token, e.g.: Bearer
+   */
   tokenType: string;
+  /**
+   * Used to denote when the token will expire from the issued time
+   */
   expiresIn: number;
+  /**
+   * The token used to refresh the access token
+   */
   refreshToken?: string;
+  /**
+   * Represents the scope of the current token
+   */
   scope?: string;
   [key: string]: any;
 };
