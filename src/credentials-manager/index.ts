@@ -62,7 +62,7 @@ class CredentialsManager {
   async getCredentials(
     scope?: string,
     minTtl: number = 0,
-    parameters: object = {},
+    parameters: Record<string, unknown> = {},
     forceRefresh: boolean = false
   ): Promise<Credentials> {
     try {
