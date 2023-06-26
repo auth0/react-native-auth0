@@ -1,13 +1,13 @@
-import Client, {Auth0Response} from '../networking';
-import {toCamelCase} from '../utils/camel';
+import Client, { Auth0Response } from '../networking';
+import { toCamelCase } from '../utils/camel';
 import Auth0Error from './error';
-import {Telemetry} from '../networking/telemetry';
-import {GetUserOptions, PatchUserOptions, User} from '../types';
-import {RawUser} from '../internal-types';
+import { Telemetry } from '../networking/telemetry';
+import { GetUserOptions, PatchUserOptions, User } from '../types';
+import { RawUser } from '../internal-types';
 
 function responseHandler<TRawResult = unknown, TResult = unknown>(
   response: Auth0Response<TRawResult>,
-  exceptions = {},
+  exceptions = {}
 ) {
   if (response.ok && response.json) {
     return toCamelCase(response.json, exceptions) as TResult;
@@ -68,7 +68,7 @@ class Users {
           attributes,
           whitelist: true,
           rootOnly: true,
-        }),
+        })
       );
   }
 
@@ -93,7 +93,7 @@ class Users {
           attributes,
           whitelist: true,
           rootOnly: true,
-        }),
+        })
       );
   }
 }

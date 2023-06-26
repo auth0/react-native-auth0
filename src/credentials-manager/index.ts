@@ -11,7 +11,7 @@ class CredentialsManager {
   private Auth0Module: Auth0Module;
 
   /**
-   * Construct an instance of CredentialsManager
+   * @ignore
    */
   constructor(domain: string, clientId: string) {
     this.domain = domain;

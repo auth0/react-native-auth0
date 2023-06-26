@@ -1,8 +1,11 @@
-import {Telemetry, defaults} from './telemetry';
+import { Telemetry, defaults } from './telemetry';
 import url from 'url';
 import base64 from 'base-64';
-import {fetchWithTimeout} from '../utils/fetchWithTimeout';
+import { fetchWithTimeout } from '../utils/fetchWithTimeout';
 
+/**
+ * @ignore
+ */
 class Client {
   public telemetry: Telemetry;
   public baseUrl: string;
@@ -30,8 +33,8 @@ class Client {
     if (!baseUrl) {
       throw new Error('Missing Auth0 domain');
     }
-    const {name = defaults.name, version = defaults.version} = telemetry;
-    this.telemetry = {name, version};
+    const { name = defaults.name, version = defaults.version } = telemetry;
+    this.telemetry = { name, version };
     if (name !== defaults.name) {
       this.telemetry.env = {};
       this.telemetry.env[defaults.name] = defaults.version;
@@ -77,7 +80,7 @@ class Client {
   request<TData, TBody = unknown>(
     method: 'GET' | 'POST' | 'PATCH',
     url: string,
-    body?: TBody,
+    body?: TBody
   ): Promise<Auth0Response<TData>> {
     const headers = new Headers();
 
@@ -107,19 +110,19 @@ class Client {
         return response
           .json()
           .then((json: TData) => {
-            return {...payload, json};
+            return { ...payload, json };
           })
           .catch(() => {
             return response
               .text()
               .then((text: string) => {
-                return {...payload, text};
+                return { ...payload, text };
               })
               .catch(() => {
-                return {...payload, text: response.statusText};
+                return { ...payload, text: response.statusText };
               });
           });
-      },
+      }
     );
   }
 

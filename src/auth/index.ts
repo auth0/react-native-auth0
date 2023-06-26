@@ -50,8 +50,14 @@ function responseHandler<TRawResult = unknown, TResult = unknown>(
  */
 class Auth {
   private client: Client;
-  public clientId: string;
-  public domain: string;
+  /**
+   * The Auth0 client ID
+   */
+  public readonly clientId: string;
+  /**
+   * The Auth0 tenant domain
+   */
+  public readonly domain: string;
 
   constructor(options: {
     baseUrl: string;

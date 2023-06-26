@@ -1,7 +1,7 @@
 import Auth from './auth';
 import CredentialsManager from './credentials-manager';
 import Users from './management/users';
-import {Telemetry} from './networking/telemetry';
+import { Telemetry } from './networking/telemetry';
 import WebAuth from './webauth';
 
 /**
@@ -26,8 +26,8 @@ class Auth0 {
     token?: string;
     timeout?: number;
   }) {
-    const {domain, clientId, ...extras} = options;
-    this.auth = new Auth({baseUrl: domain, clientId, ...extras});
+    const { domain, clientId, ...extras } = options;
+    this.auth = new Auth({ baseUrl: domain, clientId, ...extras });
     this.webAuth = new WebAuth(this.auth);
     this.credentialsManager = new CredentialsManager(domain, clientId);
     this.options = options;
@@ -39,8 +39,8 @@ class Auth0 {
    * @return {Users}
    */
   users(token: string) {
-    const {domain, ...extras} = this.options;
-    return new Users({baseUrl: domain, ...extras, token});
+    const { domain, ...extras } = this.options;
+    return new Users({ baseUrl: domain, ...extras, token });
   }
 }
 

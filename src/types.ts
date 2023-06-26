@@ -50,29 +50,87 @@ export type User = {
   [key: string]: any;
 };
 
+/**
+ * Parameters that are sent to a call to the `/authorize` endpoint.
+ */
 export interface WebAuthorizeParameters {
+  /**
+   * Random string to prevent CSRF attacks.
+   */
   state?: string;
+  /**
+   * One-time random value that is used to prevent replay attacks.
+   */
   nonce?: string;
+  /**
+   * The intended API identifier that will be the consumer for the issued access token.
+   */
   audience?: string;
+  /**
+   * The scopes requested for the issued tokens. e.g. `openid profile`
+   */
   scope?: string;
+  /**
+   * The database connection in which to look for users.
+   */
   connection?: string;
+  /**
+   * The maximum age in seconds that the resulting ID token should be issued for.
+   */
   maxAge?: number;
+  /**
+   * The organization in which user's should be authenticated into.
+   */
   organization?: string;
+  /**
+   * The invitation URL for those users who have been invited to join a specific organization.
+   */
   invitationUrl?: string;
+  /**
+   * Any additional arbitrary parameters to send along in the URL.
+   */
   additionalParameters?: { [key: string]: string };
 }
 
+/**
+ * Options for controlling the SDK's behaviour when calling the `/authorize` endpoint.
+ */
 export interface WebAuthorizeOptions {
+  /**
+   * The amount of leeway, in seconds, to accommodate potential clock skew when validating an ID token's claims.
+   * @default 60 seconds.
+   */
   leeway?: number;
+  /**
+   * **iOS only**: Disable Single-Sign-On (SSO). It only affects iOS with versions 13 and above.
+   * @default `false`
+   */
   ephemeralSession?: boolean;
+  /**
+   * **Android only:** Custom scheme to build the callback URL with.
+   */
   customScheme?: string;
 }
 
+/**
+ * Parameters for sending to the Auth0 logout endpoint.
+ */
 export interface ClearSessionParameters {
+  /**
+   * If `true`, the user will be signed out of any connected identity providers in addition to their Auth0 session.
+   * @default `false`
+   * @see https://auth0.com/docs/authenticate/login/logout/log-users-out-of-idps
+   */
   federated?: boolean;
 }
 
+/**
+ * Options for configuring the SDK's clear session behaviour.
+ */
 export interface ClearSessionOptions {
+  /**
+   * **Android only:** Custom scheme to build the callback URL with.
+   */
   customScheme?: string;
 }
 

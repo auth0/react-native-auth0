@@ -1,4 +1,4 @@
-import {useContext} from 'react';
+import { useContext } from 'react';
 import Auth0Context from './auth0-context';
 
 /**
@@ -24,7 +24,8 @@ import Auth0Context from './auth0-context';
 /**
  * Use the `useAuth0` in your function components to access authentication state and methods.
  * @returns {Auth0ContextInterface} The useAuth0 hook interface
- * @example
+ *
+ * ```ts
  * const {
  *   // State
  *   error,
@@ -45,6 +46,7 @@ import Auth0Context from './auth0-context';
  *   clearCredentials,
  *   requireLocalAuthentication
  * } = useAuth0();
+ * ```
  */
 const useAuth0 = () => useContext(Auth0Context);
 
