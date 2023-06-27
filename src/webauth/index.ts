@@ -91,8 +91,8 @@ class WebAuth {
     return agent.logout(
       { clientId, domain },
       {
-        customScheme: options.customScheme,
-        federated: parameters.federated,
+        ...parameters,
+        ...options,
       }
     );
   }

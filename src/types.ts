@@ -56,6 +56,7 @@ export interface WebAuthorizeOptions {
   leeway?: number;
   ephemeralSession?: boolean;
   customScheme?: string;
+  useLegacyCallbackUrl?: boolean;
 }
 
 export interface ClearSessionParameters {
@@ -64,6 +65,7 @@ export interface ClearSessionParameters {
 
 export interface ClearSessionOptions {
   customScheme?: string;
+  useLegacyCallbackUrl?: boolean;
 }
 
 export interface GetUserOptions {
