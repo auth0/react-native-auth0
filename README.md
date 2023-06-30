@@ -29,7 +29,7 @@ Version **2.9.0** introduced a **breaking change** to the Android configuration.
 
 This SDK targets apps that are using React Native SDK version `0.60.5` and up. If you're using an older React Native version, see the compatibility matrix below.
 
-### Compatibility Matrix
+### Compatibility matrix
 
 This SDK attempts to follow [semver](https://semver.org/) in a best-effort basis, but React Native is still making releases that eventually include breaking changes on it making this approach difficult for any React Native library module. Use the table below to find the version that best suites your application.
 
@@ -41,6 +41,15 @@ This SDK attempts to follow [semver](https://semver.org/) in a best-effort basis
 | v0.59.0 or lower |  v1.6.0   |
 
 The contents of previous release can be found on the [branch v1](https://github.com/auth0/react-native-auth0/tree/v1).
+
+### Platform compatibility
+
+The following shows platform minimums for running projects with this SDK:
+
+| Platform | Minimum version |
+| -------- | :-------------: |
+| iOS      |      13.0       |
+| Android  |       ???       |
 
 ### Installation
 
@@ -79,12 +88,12 @@ android {
 }
 ```
 
-The `auth0Domain` value must be replaced with your Auth0 domain value. So if you have `samples.auth0.com` as your Auth0 domain you would have a configuration like the following:
+The `auth0Domain` value must be replaced with your Auth0 domain value. So if you have `samples.us.auth0.com` as your Auth0 domain you would have a configuration like the following:
 
 ```groovy
 android {
     defaultConfig {
-        manifestPlaceholders = [auth0Domain: "samples.auth0.com", auth0Scheme: "${applicationId}"]
+        manifestPlaceholders = [auth0Domain: "samples.us.auth0.com", auth0Scheme: "${applicationId}"]
     }
     ...
 }
@@ -189,10 +198,10 @@ To use the SDK with Expo, configure the app at build time by providing the `doma
 }
 ```
 
-| API          | Description                                                                                                                                                                                                                                                                                                                                   |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| domain       | Mandatory: Provide the Auth0 domain that can be found at the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                                                                                                  |
-| customScheme | Mandatory: Custom scheme to build the callback URL with. The value provided here should be passed to the `customScheme` option parameter of the `authorize` and `clearSession` methods. The custom scheme should be a unique, all lowercase value with no special characters (For example: auth0.YOUR_APP_PACKAGE_NAME_OR_BUNDLE_IDENTIFIER). |
+| API          | Description                                                                                                                                                                                                                                                                                                                                  |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| domain       | Mandatory: Provide the Auth0 domain that can be found at the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                                                                                                 |
+| customScheme | Optional: Custom scheme to build the callback URL with. The value provided here should be passed to the `customScheme` option parameter of the `authorize` and `clearSession` methods. The custom scheme should be a unique, all lowercase value with no special characters (For example: auth0.YOUR_APP_PACKAGE_NAME_OR_BUNDLE_IDENTIFIER). |
 
 Now you can run the application using `expo run:android` or `expo run:ios`.
 
@@ -209,18 +218,18 @@ If in addition you plan to use the log out method, you must also add these URLs 
 #### Android
 
 ```text
-{APP_PACKAGE_NAME_OR_CUSTOM_SCHEME}://{AUTH0_DOMAIN}/android/{APP_PACKAGE_NAME}/callback
+{YOUR_APP_PACKAGE_NAME}.auth0://{AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
 ```
 
-> Make sure to replace {APP_PACKAGE_NAME_OR_CUSTOM_SCHEME} and {AUTH0_DOMAIN} with the actual values for your application. The {APP_PACKAGE_NAME_OR_CUSTOM_SCHEME} value provided should be all lower case.
+> Make sure to replace {YOUR_APP_PACKAGE_NAME} and {AUTH0_DOMAIN} with the actual values for your application. The {YOUR_APP_PACKAGE_NAME} value provided should be all lower case.
 
 #### iOS
 
 ```text
-{BUNDLE_IDENTIFIER_OR_CUSTOM_SCHEME}://{AUTH0_DOMAIN}/ios/{BUNDLE_IDENTIFIER}/callback
+{PRODUCT_BUNDLE_IDENTIFIER}.auth0://{AUTH0_DOMAIN}/ios/{PRODUCT_BUNDLE_IDENTIFIER}/callback
 ```
 
-> Make sure to replace {BUNDLE_IDENTIFIER_OR_CUSTOM_SCHEME} and {AUTH0_DOMAIN} with the actual values for your application. The {BUNDLE_IDENTIFIER_OR_CUSTOM_SCHEME} value provided should be all lower case.
+> Make sure to replace {PRODUCT_BUNDLE_IDENTIFIER} and {AUTH0_DOMAIN} with the actual values for your application. The {PRODUCT_BUNDLE_IDENTIFIER} value provided should be all lower case.
 
 ## Next Steps
 
@@ -274,7 +283,7 @@ import { useAuth0 } from 'react-native-auth0';
 
 #### Login
 
-Use the `authorize` method to redirect the user to the Auth0 [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) page for authentication.
+Use the `authorize` method to redirect the user to the Auth0 [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) page for authentication. If `scope` is not specified, `openid profile email` is used by default.
 
 - The `isLoading` property is set to true once the authentication state of the user is known to the SDK.
 - The `user` property is populated with details about the authenticated user. If `user` is `null`, no user is currently authenticated.
@@ -285,7 +294,7 @@ const Component = () => {
   const { authorize, user, isLoading, error } = useAuth0();
 
   const login = async () => {
-    await authorize({ scope: 'openid profile email' }); // authorize({scope: 'openid profile email'}, {customScheme: 'CUSTOM_SCHEME'}) when using Expo or a custom scheme
+    await authorize(); // authorize({}, {customScheme: 'CUSTOM_SCHEME'}) when using Expo or a custom scheme
   };
 
   if (isLoading) {
@@ -311,7 +320,7 @@ const Component = () => {
   
   ```js
   auth0.webAuth
-    .authorize({scope: 'openid email profile'})
+    .authorize()
     .then(credentials => console.log(credentials))
     .catch(error => console.log(error));
   ```
@@ -336,7 +345,7 @@ const Component = () => {
   const { clearSession, user } = useAuth0();
 
   const logout = async () => {
-    await clearSession(); // clearSession({customScheme: 'CUSTOM_SCHEME'}) when using Expo or a custom scheme
+    await clearSession(); // clearSession({}, { customScheme: 'CUSTOM_SCHEME' }) when using Expo or a custom scheme
   };
 
   return <View>{user && <Button onPress={logout} title="Log out" />}</View>;

@@ -48,7 +48,7 @@ auth0.auth
 
 ```js
 auth0.auth
-  .userInfo({token: 'the user access_token'})
+  .userInfo({ token: 'the user access_token' })
   .then(console.log)
   .catch(console.error);
 ```
@@ -59,19 +59,17 @@ This endpoint requires an access token that was granted the `/userinfo` audience
 
 ```js
 auth0.auth
-  .refreshToken({refreshToken: 'the user refresh_token'})
+  .refreshToken({ refreshToken: 'the user refresh_token' })
   .then(console.log)
   .catch(console.error);
 ```
 
 ### Using custom scheme for web authentication redirection
 
-Custom Schemes can be used for redirecting to the React Native application after web authentication. Using this is <strong>mandatory</strong> for Expo applications.
+Custom Schemes can be used for redirecting to the React Native application after web authentication:
 
 ```js
-authorize({}, {customScheme: 'auth0'})
-  .then(console.log)
-  .catch(console.error);
+authorize({}, { customScheme: 'auth0' }).then(console.log).catch(console.error);
 ```
 
 ### Login using MFA with One Time Password code
@@ -162,7 +160,10 @@ auth0.auth
 ```js
 auth0
   .users('the user access_token')
-  .patchUser({id: 'user_id', metadata: {first_name: 'John', last_name: 'Doe'}})
+  .patchUser({
+    id: 'user_id',
+    metadata: { first_name: 'John', last_name: 'Doe' },
+  })
   .then(console.log)
   .catch(console.error);
 ```
@@ -171,8 +172,8 @@ auth0
 
 ```js
 auth0
-  .users('the user access_token')
-  .getUser({id: 'user_id'})
+  .users('{ACCESS_TOKEN}')
+  .getUser({ id: 'user_id' })
   .then(console.log)
   .catch(console.error);
 ```
@@ -190,9 +191,9 @@ Note that Organizations is currently only available to customers on our Enterpri
 
 ```js
 auth0.webAuth
-  .authorize({organization: 'organization-id'})
-  .then(credentials => console.log(credentials))
-  .catch(error => console.log(error));
+  .authorize({ organization: 'organization-id' })
+  .then((credentials) => console.log(credentials))
+  .catch((error) => console.log(error));
 ```
 
 ### Accept user invitations
@@ -209,8 +210,8 @@ auth0.webAuth
     invitationUrl:
       'https://myapp.com/login?invitation=inv123&organization=org123',
   })
-  .then(credentials => console.log(credentials))
-  .catch(error => console.log(error));
+  .then((credentials) => console.log(credentials))
+  .catch((error) => console.log(error));
 ```
 
 If the URL doesn't contain the expected values, an error will be raised through the provided callback.
@@ -231,10 +232,10 @@ auth0.auth
     realm: realm,
     scope: scope,
   })
-  .then(credentials => {
+  .then((credentials) => {
     // Logged in!
   })
-  .catch(error => {
+  .catch((error) => {
     if (error.name === 'requires_verification') {
       auth0.webAuth
         .authorize({
@@ -242,7 +243,7 @@ auth0.auth
           scope: scope,
           login_hint: email, // So the user doesn't have to type it again
         })
-        .then(credentials => {
+        .then((credentials) => {
           // Logged in!
         })
         .catch(console.error);
