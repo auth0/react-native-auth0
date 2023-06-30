@@ -6,11 +6,11 @@
 
 - Web Auth will now have default scope of 'openid profile email', so these scopes can be removed if you're explicitly specifying them
 - Minimum supported version for iOS is bumped to 13
+- Revoke Token and Change Password now return `void` instead of an empty object
 
 ### Breaking changes
 
-- Revoke Token and Change Password now return void instead of empty object
-- Returned `user` object will now be camel case
+- The properties inside the `user` object will now be camelCase instead of snake_case
 - Removed `type` property returned in Android. Use `tokenType` instead.
 - `getCredentials` in Android will return `expiresIn` instead of `expiresAt`
 - `max_age` parameter is changed to `maxAge` in `WebAuth.authorize()`
