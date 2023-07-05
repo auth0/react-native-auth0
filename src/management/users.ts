@@ -38,6 +38,9 @@ const attributes = [
 class Users {
   private client: Client;
 
+  /**
+   * @ignore
+   */
   constructor(options: {
     baseUrl: string;
     telemetry?: Telemetry;

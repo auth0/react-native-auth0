@@ -59,6 +59,9 @@ class Auth {
    */
   public readonly domain: string;
 
+  /**
+   * @ignore
+   */
   constructor(options: {
     baseUrl: string;
     clientId: string;
