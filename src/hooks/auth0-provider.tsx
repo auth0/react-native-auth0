@@ -62,9 +62,11 @@ const finalizeScopeParam = (inputScopes?: string) => {
  * @param {String} clientId Your Auth0 client ID
  *
  * @example
+ * ```ts
  * <Auth0Provider domain="YOUR AUTH0 DOMAIN" clientId="YOUR CLIENT ID">
  *   <App />
  * </Auth0Provider>
+ * ```
  */
 const Auth0Provider = ({
   domain,
