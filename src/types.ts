@@ -110,6 +110,7 @@ export interface WebAuthorizeOptions {
    * **Android only:** Custom scheme to build the callback URL with.
    */
   customScheme?: string;
+  useLegacyCallbackUrl?: boolean;
 }
 
 /**
@@ -132,6 +133,7 @@ export interface ClearSessionOptions {
    * **Android only:** Custom scheme to build the callback URL with.
    */
   customScheme?: string;
+  useLegacyCallbackUrl?: boolean;
 }
 
 export interface GetUserOptions {

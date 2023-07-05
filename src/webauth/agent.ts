@@ -31,7 +31,10 @@ class Agent {
       parameters.clientId,
       parameters.domain
     );
-    let scheme = this.getScheme(options.customScheme);
+    let scheme = this.getScheme(
+      options.useLegacyCallbackUrl ?? false,
+      options.customScheme
+    );
     return A0Auth0.webAuth(
       scheme,
       options.state,
@@ -60,7 +63,10 @@ class Agent {
       );
     }
     let federated = options.federated ?? false;
-    let scheme = this.getScheme(options.customScheme);
+    let scheme = this.getScheme(
+      options.useLegacyCallbackUrl ?? false,
+      options.customScheme
+    );
     await _ensureNativeModuleIsInitialized(
       NativeModules.A0Auth0,
       parameters.clientId,
@@ -70,8 +76,12 @@ class Agent {
     return A0Auth0.webAuthLogout(scheme, federated);
   }
 
-  getScheme(customScheme?: string) {
-    return customScheme ?? NativeModules.A0Auth0.bundleIdentifier.toLowerCase();
+  getScheme(useLegacyCustomSchemeBehaviour: boolean, customScheme?: string) {
+    let scheme = NativeModules.A0Auth0.bundleIdentifier.toLowerCase();
+    if (!useLegacyCustomSchemeBehaviour) {
+      scheme = scheme + '.auth0';
+    }
+    return customScheme ?? scheme;
   }
 }
 

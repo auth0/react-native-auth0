@@ -138,17 +138,26 @@ describe('Agent', () => {
 
   describe('getScheme', () => {
     it('should return custom scheme', async () => {
-      await expect(agent.getScheme('custom')).toEqual('custom');
+      await expect(agent.getScheme(false, 'custom')).toEqual('custom');
+    });
+
+    it('should return custom scheme even if legacy behaviour set to true', async () => {
+      await expect(agent.getScheme(true, 'custom')).toEqual('custom');
     });
 
     it('should return bundle identifier', async () => {
       NativeModules.A0Auth0.bundleIdentifier = 'com.test';
-      await expect(agent.getScheme()).toEqual('com.test');
+      await expect(agent.getScheme()).toEqual('com.test.auth0');
     });
 
     it('should return bundle identifier lower cased', async () => {
       NativeModules.A0Auth0.bundleIdentifier = 'com.Test';
-      await expect(agent.getScheme()).toEqual('com.test');
+      await expect(agent.getScheme()).toEqual('com.test.auth0');
+    });
+
+    it('should return legacy scheme', async () => {
+      NativeModules.A0Auth0.bundleIdentifier = 'com.Test';
+      await expect(agent.getScheme(true)).toEqual('com.test');
     });
   });
 });
