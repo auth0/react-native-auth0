@@ -1,4 +1,4 @@
-import {Auth0Response} from '../networking';
+import { Auth0Response } from '../networking';
 import BaseError from '../utils/baseError';
 
 export default class AuthError<AuthErrorDetails> extends BaseError {
@@ -6,17 +6,17 @@ export default class AuthError<AuthErrorDetails> extends BaseError {
   public status;
 
   constructor(response: Auth0Response<AuthErrorDetails>) {
-    const {status, json, text} = response;
+    const { status, json, text } = response;
     const {
       error,
       error_description: description,
-    }: {error?: string; error_description?: string} = json ?? {
+    }: { error?: string; error_description?: string } = json ?? {
       error: undefined,
       error_description: undefined,
     };
     super(
       error || 'a0.response.invalid',
-      description || text || handleInvalidToken(response) || 'unknown error',
+      description || text || handleInvalidToken(response) || 'unknown error'
     );
     this.json = json;
     this.status = status;

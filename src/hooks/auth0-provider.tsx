@@ -5,7 +5,7 @@ import React, {
   PropsWithChildren,
 } from 'react';
 import { useCallback, useMemo } from 'react';
-import jwtDecode, { JwtPayload } from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 import PropTypes from 'prop-types';
 import Auth0Context from './auth0-context';
 import Auth0 from '../auth0';
@@ -62,9 +62,11 @@ const finalizeScopeParam = (inputScopes?: string) => {
  * @param {String} clientId Your Auth0 client ID
  *
  * @example
+ * ```ts
  * <Auth0Provider domain="YOUR AUTH0 DOMAIN" clientId="YOUR CLIENT ID">
  *   <App />
  * </Auth0Provider>
+ * ```
  */
 const Auth0Provider = ({
   domain,
@@ -137,7 +139,7 @@ const Auth0Provider = ({
     async (
       scope?: string,
       minTtl: number = 0,
-      parameters: object = {},
+      parameters: Record<string, unknown> = {},
       forceRefresh: boolean = false
     ): Promise<Credentials | undefined> => {
       try {
@@ -323,7 +325,7 @@ const Auth0Provider = ({
         return;
       }
     },
-    []
+    [client.credentialsManager]
   );
 
   const contextValue = useMemo(
