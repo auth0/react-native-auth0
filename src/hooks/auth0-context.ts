@@ -27,7 +27,7 @@ export interface Auth0ContextInterface<TUser extends User = User>
   authorize: (
     parameters: WebAuthorizeParameters,
     options: WebAuthorizeOptions
-  ) => Promise<void>;
+  ) => Promise<Credentials | undefined>;
   /**
    * Start the passwordless SMS login flow. See {@link Auth#passwordlessWithSMS}
    */
@@ -35,7 +35,7 @@ export interface Auth0ContextInterface<TUser extends User = User>
   /**
    * Authorize the user using a SMS code. See {@link Auth#loginWithSMS}
    */
-  authorizeWithSMS: (parameters: LoginWithSMSOptions) => Promise<void>;
+  authorizeWithSMS: (parameters: LoginWithSMSOptions) => Promise<Credentials | undefined>;
   /**
    * Start the passwordless email login flow. See {@link Auth#passwordlessWithEmail}
    */
@@ -43,7 +43,7 @@ export interface Auth0ContextInterface<TUser extends User = User>
   /**
    * Authorize the user using an email code. See {@link Auth#loginWithEmail}
    */
-  authorizeWithEmail: (parameters: LoginWithEmailOptions) => Promise<void>;
+  authorizeWithEmail: (parameters: LoginWithEmailOptions) => Promise<Credentials | undefined>;
   /**
    * Send a challenge for multi-factor authentication. See {@link Auth#multifactorChallenge}
    */
@@ -53,17 +53,17 @@ export interface Auth0ContextInterface<TUser extends User = User>
   /**
    * Authorize the user using an Out Of Band authentication code. See {@link Auth#loginWithOOB}
    */
-  authorizeWithOOB: (parameters: LoginWithOOBOptions) => Promise<void>;
+  authorizeWithOOB: (parameters: LoginWithOOBOptions) => Promise<Credentials | undefined>;
   /**
    * Autohrize the user using a One Time Password code. See {@link Auth#loginWithOTP}.
    */
-  authorizeWithOTP: (parameters: LoginWithOTPOptions) => Promise<void>;
+  authorizeWithOTP: (parameters: LoginWithOTPOptions) => Promise<Credentials | undefined>;
   /**
    * Authorize the user using a multi-factor authentication Recovery Code. See {@link Auth#loginWithRecoveryCode}
    */
   authorizeWithRecoveryCode: (
     parameters: LoginWithRecoveryCodeOptions
-  ) => Promise<void>;
+  ) => Promise<Credentials | undefined>;
   /**
    * Whether the SDK currently holds valid, unexpired credentials.
    * @param minTtl The minimum time in seconds that the access token should last before expiration
