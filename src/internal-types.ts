@@ -61,6 +61,7 @@ export type Auth0Module = {
   bundleIdentifier: string;
   webAuth: (
     scheme: string,
+    redirectUri: string,
     state?: string,
     nonce?: string,
     audience?: string,
@@ -73,7 +74,11 @@ export type Auth0Module = {
     ephemeralSession?: boolean,
     additionalParameters?: { [key: string]: string }
   ) => Promise<Credentials>;
-  webAuthLogout: (scheme: string, federated: boolean) => Promise<void>;
+  webAuthLogout: (
+    scheme: string,
+    federated: boolean,
+    redirectUri: string
+  ) => Promise<void>;
   saveCredentials: (credentials: Credentials) => Promise<void>;
   getCredentials: (
     scope?: string,

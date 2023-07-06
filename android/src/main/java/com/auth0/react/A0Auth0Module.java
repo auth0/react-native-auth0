@@ -140,7 +140,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void webAuth(String scheme, String state, String nonce, String audience, String scope, String connection, int maxAge, String organization, String invitationUrl, int leeway, boolean ephemeralSession, ReadableMap additionalParameters, Promise promise) {
+    public void webAuth(String scheme, String redirectUri, String state, String nonce, String audience, String scope, String connection, int maxAge, String organization, String invitationUrl, int leeway, boolean ephemeralSession, ReadableMap additionalParameters, Promise promise) {
         Map<String,String> cleanedParameters = new HashMap<>();
         for (Map.Entry<String, Object> entry : additionalParameters.toHashMap().entrySet()) {
             if (entry.getValue() != null) {
@@ -192,7 +192,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void webAuthLogout(String scheme, boolean federated, Promise promise) {
+    public void webAuthLogout(String scheme, boolean federated, String redirectUri, Promise promise) {
         WebAuthProvider.LogoutBuilder builder = WebAuthProvider.logout(this.auth0)
                 .withScheme(scheme);
         if(federated) {
