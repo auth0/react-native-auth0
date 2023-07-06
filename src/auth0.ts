@@ -1,7 +1,7 @@
 import Auth from './auth';
 import CredentialsManager from './credentials-manager';
 import Users from './management/users';
-import {Telemetry} from './networking/telemetry';
+import { Telemetry } from './networking/telemetry';
 import WebAuth from './webauth';
 
 /**
@@ -15,9 +15,12 @@ class Auth0 {
 
   /**
    * Creates an instance of Auth0.
-   * @param {Object} options your Auth0 application information
-   * @param {String} options.domain your Auth0 domain
-   * @param {String} options.clientId your Auth0 application client identifier=
+   * @param {Object} options Your Auth0 application information
+   * @param {String} options.domain Your Auth0 domain
+   * @param {String} options.clientId Your Auth0 application client identifier
+   * @param {String} options.telemetry The telemetry information to be sent along with the requests
+   * @param {String} options.token Token to be used for Management APIs
+   * @param {String} options.timeout Timeout to be set for requests.
    */
   constructor(options: {
     domain: string;
@@ -26,8 +29,8 @@ class Auth0 {
     token?: string;
     timeout?: number;
   }) {
-    const {domain, clientId, ...extras} = options;
-    this.auth = new Auth({baseUrl: domain, clientId, ...extras});
+    const { domain, clientId, ...extras } = options;
+    this.auth = new Auth({ baseUrl: domain, clientId, ...extras });
     this.webAuth = new WebAuth(this.auth);
     this.credentialsManager = new CredentialsManager(domain, clientId);
     this.options = options;
@@ -39,8 +42,8 @@ class Auth0 {
    * @return {Users}
    */
   users(token: string) {
-    const {domain, ...extras} = this.options;
-    return new Users({baseUrl: domain, ...extras, token});
+    const { domain, ...extras } = this.options;
+    return new Users({ baseUrl: domain, ...extras, token });
   }
 }
 

@@ -3,15 +3,17 @@ if (process.platform === 'win32') {
   process.exit(1);
 }
 
-var library = require('../package.json');
 var execSync = require('child_process').execSync;
 var fs = require('fs');
 
-execSync('yarn run jsdocs', {stdio: 'inherit'});
+execSync('yarn docs', { stdio: 'inherit' });
+
 if (fs.existsSync('docs')) {
-  execSync('rm -r docs', {stdio: 'inherit'});
+  execSync('rm -r docs', { stdio: 'inherit' });
 }
-execSync(`mv out/react-native-auth0/${library.version}/ docs`, {
+
+execSync('mv out/ docs/', {
   stdio: 'inherit',
 });
+
 execSync('git add docs');

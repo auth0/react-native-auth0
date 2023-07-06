@@ -1,5 +1,5 @@
 import AuthError from '../auth/authError';
-import {verifySignature} from './signatureVerifier';
+import { verifySignature } from './signatureVerifier';
 
 type TokenVerificationOptions = {
   domain: string;
@@ -24,14 +24,14 @@ const DEFAULT_LEEWAY = 60;
  */
 export const verifyToken = (
   idToken: string,
-  options: TokenVerificationOptions,
+  options: TokenVerificationOptions
 ) => {
   if (typeof idToken !== 'string') {
     return Promise.resolve();
   }
 
-  return verifySignature(idToken, {domain: options.domain})
-    .then(payload => validateClaims(payload, options))
+  return verifySignature(idToken, { domain: options.domain })
+    .then((payload) => validateClaims(payload, options))
     .then(() => Promise.resolve());
 };
 
@@ -42,7 +42,7 @@ const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
       idTokenError({
         error: 'missing_issuer_claim',
         desc: 'Issuer (iss) claim must be a string present in the ID token',
-      }),
+      })
     );
   }
 
@@ -51,7 +51,7 @@ const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
       idTokenError({
         error: 'invalid_issuer_claim',
         desc: `Issuer (iss) claim mismatch in the ID token; expected "https://${opts.domain}/", found "${payload.iss}"`,
-      }),
+      })
     );
   }
 
@@ -61,7 +61,7 @@ const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
       idTokenError({
         error: 'missing_subject_claim',
         desc: 'Subject (sub) claim must be a string present in the ID token',
-      }),
+      })
     );
   }
 
@@ -70,9 +70,8 @@ const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
     return Promise.reject(
       idTokenError({
         error: 'missing_audience_claim',
-        desc:
-          'Audience (aud) claim must be a string or array of strings present in the ID token',
-      }),
+        desc: 'Audience (aud) claim must be a string or array of strings present in the ID token',
+      })
     );
   }
 
@@ -83,14 +82,14 @@ const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
         desc: `Audience (aud) claim mismatch in the ID token; expected "${
           opts.clientId
         }" but was not one of "${payload.aud.join(', ')}"`,
-      }),
+      })
     );
   } else if (typeof payload.aud === 'string' && payload.aud !== opts.clientId) {
     return Promise.reject(
       idTokenError({
         error: 'invalid_audience_claim',
         desc: `Audience (aud) claim mismatch in the ID token; expected "${opts.clientId}" but found "${payload.aud}"`,
-      }),
+      })
     );
   }
 
@@ -105,9 +104,8 @@ const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
     return Promise.reject(
       idTokenError({
         error: 'missing_expires_at_claim',
-        desc:
-          'Expiration Time (exp) claim must be a number present in the ID token',
-      }),
+        desc: 'Expiration Time (exp) claim must be a number present in the ID token',
+      })
     );
   }
 
@@ -118,7 +116,7 @@ const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
       idTokenError({
         error: 'invalid_expires_at_claim',
         desc: `Expiration Time (exp) claim error in the ID token; current time "${now}" is after expiration time "${expTime}"`,
-      }),
+      })
     );
   }
 
@@ -128,7 +126,7 @@ const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
       idTokenError({
         error: 'missing_issued_at_claim',
         desc: 'Issued At (iat) claim must be a number present in the ID token',
-      }),
+      })
     );
   }
 
@@ -139,7 +137,7 @@ const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
         idTokenError({
           error: 'missing_nonce_claim',
           desc: 'Nonce (nonce) claim must be a string present in the ID token',
-        }),
+        })
       );
     }
     if (payload.nonce !== opts.nonce) {
@@ -147,7 +145,7 @@ const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
         idTokenError({
           error: 'invalid_nonce_claim',
           desc: `Nonce (nonce) claim mismatch in the ID token; expected "${opts.nonce}", found "${payload.nonce}"`,
-        }),
+        })
       );
     }
   }
@@ -158,9 +156,8 @@ const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
       return Promise.reject(
         idTokenError({
           error: 'missing_org_id_claim',
-          desc:
-            'Organization ID (org_id) claim must be a string present in the ID token',
-        }),
+          desc: 'Organization ID (org_id) claim must be a string present in the ID token',
+        })
       );
     }
     if (payload.org_id !== opts.orgId) {
@@ -168,7 +165,7 @@ const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
         idTokenError({
           error: 'invalid_org_id_claim',
           desc: `Organization ID (org_id) claim mismatch in the ID token; expected "${opts.orgId}", found "${payload.org_id}"`,
-        }),
+        })
       );
     }
   }
@@ -179,9 +176,8 @@ const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
       return Promise.reject(
         idTokenError({
           error: 'missing_authorized_party_claim',
-          desc:
-            'Authorized Party (azp) claim must be a string present in the ID token when Audience (aud) claim has multiple values',
-        }),
+          desc: 'Authorized Party (azp) claim must be a string present in the ID token when Audience (aud) claim has multiple values',
+        })
       );
     }
 
@@ -190,7 +186,7 @@ const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
         idTokenError({
           error: 'invalid_authorized_party_claim',
           desc: `Authorized Party (azp) claim mismatch in the ID token; expected "${opts.clientId}", found "${payload.azp}"`,
-        }),
+        })
       );
     }
   }
@@ -201,9 +197,8 @@ const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
       return Promise.reject(
         idTokenError({
           error: 'missing_authorization_time_claim',
-          desc:
-            'Authentication Time (auth_time) claim must be a number present in the ID token when Max Age (max_age) is specified',
-        }),
+          desc: 'Authentication Time (auth_time) claim must be a number present in the ID token when Max Age (max_age) is specified',
+        })
       );
     }
 
@@ -214,7 +209,7 @@ const validateClaims = (payload: any, opts: TokenVerificationOptions) => {
         idTokenError({
           error: 'invalid_authorization_time_claim',
           desc: `Authentication Time (auth_time) claim in the ID token indicates that too much time has passed since the last end-user authentication. Current time "${now}" is after last auth time "${authValidUntil}"`,
-        }),
+        })
       );
     }
   }
