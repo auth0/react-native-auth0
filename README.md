@@ -19,28 +19,11 @@
 - [Examples](https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES.md)
 - [Docs Site](https://auth0.github.io/react-native-auth0/)
 
-## Important Notices
-
-Version **2.9.0** introduced a **breaking change** to the Android configuration. Previously it was required to add an intent filter in the definition of the Activity that receives the authentication result, and to use the `singleTask` **launchMode** in that activity. Now both the intent filter and the launch mode **must be removed** and instead you need to add a couple of manifest placeholders. Check out the [Android](#android) section for more details.
-
 ## Getting Started
 
 ### Requirements
 
 This SDK targets apps that are using React Native SDK version `0.60.5` and up. If you're using an older React Native version, see the compatibility matrix below.
-
-### Compatibility matrix
-
-This SDK attempts to follow [semver](https://semver.org/) in a best-effort basis, but React Native is still making releases that eventually include breaking changes on it making this approach difficult for any React Native library module. Use the table below to find the version that best suites your application.
-
-| React Native SDK | Auth0 SDK |
-| :--------------: | :-------: |
-|     v0.65.0      |  v2.11.0  |
-|     v0.62.2      |  v2.5.0   |
-|     v0.60.5      |  v2.0.0   |
-| v0.59.0 or lower |  v1.6.0   |
-
-The contents of previous release can be found on the [branch v1](https://github.com/auth0/react-native-auth0/tree/v1).
 
 ### Platform compatibility
 
@@ -49,7 +32,7 @@ The following shows platform minimums for running projects with this SDK:
 | Platform | Minimum version |
 | -------- | :-------------: |
 | iOS      |      13.0       |
-| Android  |       ???       |
+| Android  |       28        |
 
 ### Installation
 
@@ -82,7 +65,7 @@ Open your app's `build.gradle` file (typically at `android/app/build.gradle`) an
 android {
     defaultConfig {
         // Add the next line
-        manifestPlaceholders = [auth0Domain: "YOUR_AUTH0_DOMAIN", auth0Scheme: "${applicationId}"]
+        manifestPlaceholders = [auth0Domain: "YOUR_AUTH0_DOMAIN", auth0Scheme: "${applicationId}.auth0"]
     }
     ...
 }
@@ -93,7 +76,7 @@ The `auth0Domain` value must be replaced with your Auth0 domain value. So if you
 ```groovy
 android {
     defaultConfig {
-        manifestPlaceholders = [auth0Domain: "samples.us.auth0.com", auth0Scheme: "${applicationId}"]
+        manifestPlaceholders = [auth0Domain: "samples.us.auth0.com", auth0Scheme: "${applicationId}.auth0"]
     }
     ...
 }
@@ -158,7 +141,7 @@ and then below it register a URL type entry using the value of `CFBundleIdentifi
         <string>auth0</string>
         <key>CFBundleURLSchemes</key>
         <array>
-            <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+            <string>$(PRODUCT_BUNDLE_IDENTIFIER).auth0</string>
         </array>
     </dict>
 </array>
@@ -201,7 +184,7 @@ To use the SDK with Expo, configure the app at build time by providing the `doma
 | API          | Description                                                                                                                                                                                                                                                                                                                                  |
 | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | domain       | Mandatory: Provide the Auth0 domain that can be found at the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                                                                                                 |
-| customScheme | Optional: Custom scheme to build the callback URL with. The value provided here should be passed to the `customScheme` option parameter of the `authorize` and `clearSession` methods. The custom scheme should be a unique, all lowercase value with no special characters (For example: auth0.YOUR_APP_PACKAGE_NAME_OR_BUNDLE_IDENTIFIER). |
+| customScheme | Optional: Custom scheme to build the callback URL with. The value provided here should be passed to the `customScheme` option parameter of the `authorize` and `clearSession` methods. The custom scheme should be a unique, all lowercase value with no special characters. |
 
 Now you can run the application using `expo run:android` or `expo run:ios`.
 
