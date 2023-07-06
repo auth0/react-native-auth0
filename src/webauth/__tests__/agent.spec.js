@@ -161,4 +161,11 @@ describe('Agent', () => {
       await expect(agent.getScheme(true)).toEqual('com.test');
     });
   });
+
+
+  describe('callbackUri', () => {
+    it('should return callback uri with given domain and scheme', async () => {
+      await expect(agent.callbackUri('domain', 'scheme')).toEqual("scheme://domain/test-os/com.my.app/callback");
+    });
+  });
 });
