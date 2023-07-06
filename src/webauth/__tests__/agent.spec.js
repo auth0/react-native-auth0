@@ -69,6 +69,7 @@ describe('Agent', () => {
       expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
       expect(mockLogin).toBeCalledWith(
         'test',
+        'test://test.com/test-os/com.my.app/callback',
         'state',
         'nonce',
         'audience',
@@ -132,7 +133,7 @@ describe('Agent', () => {
         }
       );
       expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
-      expect(mockLogin).toBeCalledWith('test', true);
+      expect(mockLogin).toBeCalledWith('test', true, 'test://test.com/test-os/com.my.app/callback');
     });
   });
 
