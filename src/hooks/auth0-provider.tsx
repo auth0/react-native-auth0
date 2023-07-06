@@ -110,6 +110,7 @@ const Auth0Provider = ({
 
         await client.credentialsManager.saveCredentials(credentials);
         dispatch({ type: 'LOGIN_COMPLETE', user });
+        return credentials;
       } catch (error) {
         dispatch({ type: 'ERROR', error });
         return;
@@ -186,6 +187,7 @@ const Auth0Provider = ({
 
         await client.credentialsManager.saveCredentials(credentials);
         dispatch({ type: 'LOGIN_COMPLETE', user });
+        return credentials;
       } catch (error) {
         dispatch({ type: 'ERROR', error });
         return;
@@ -219,6 +221,7 @@ const Auth0Provider = ({
 
         await client.credentialsManager.saveCredentials(credentials);
         dispatch({ type: 'LOGIN_COMPLETE', user });
+        return credentials;
       } catch (error) {
         dispatch({ type: 'ERROR', error });
         return;
@@ -247,6 +250,7 @@ const Auth0Provider = ({
 
         await client.credentialsManager.saveCredentials(credentials);
         dispatch({ type: 'LOGIN_COMPLETE', user });
+        return credentials;
       } catch (error) {
         dispatch({ type: 'ERROR', error });
         return;
@@ -263,6 +267,7 @@ const Auth0Provider = ({
 
         await client.credentialsManager.saveCredentials(credentials);
         dispatch({ type: 'LOGIN_COMPLETE', user });
+        return credentials;
       } catch (error) {
         dispatch({ type: 'ERROR', error });
         return;
@@ -279,6 +284,7 @@ const Auth0Provider = ({
 
         await client.credentialsManager.saveCredentials(credentials);
         dispatch({ type: 'LOGIN_COMPLETE', user });
+        return credentials;
       } catch (error) {
         dispatch({ type: 'ERROR', error });
         return;
