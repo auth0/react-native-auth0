@@ -191,12 +191,19 @@ describe('The useAuth0 hook', () => {
     const { result, waitForNextUpdate } = renderHook(() => useAuth0(), {
       wrapper,
     });
-    result.current.authorize();
+    const promise = result.current.authorize();
 
     await waitForNextUpdate();
     expect(result.current.user).not.toBeNull();
     expect(mockAuth0.webAuth.authorize).toBeCalled();
     expect(mockAuth0.credentialsManager.saveCredentials).toBeCalled();
+
+    let credentials;
+    await act(async () => {credentials = await promise})
+    expect(credentials).toEqual({
+      idToken: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
+      accessToken: 'ACCESS TOKEN'
+    })
   });
 
   it('can authorize, passing through all parameters', async () => {
@@ -204,7 +211,7 @@ describe('The useAuth0 hook', () => {
       wrapper,
     });
 
-    result.current.authorize(
+    const promise = result.current.authorize(
       {
         scope: 'custom-scope',
         audience: 'http://my-api',
@@ -227,6 +234,12 @@ describe('The useAuth0 hook', () => {
         ephemeralSession: true,
       }
     );
+    let credentials;
+    await act(async () => {credentials = await promise})
+    expect(credentials).toEqual({
+      idToken: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
+      accessToken: 'ACCESS TOKEN'
+    })
   });
 
   it('can authorize, passing through all options', async () => {
@@ -358,7 +371,7 @@ describe('The useAuth0 hook', () => {
       wrapper,
     });
 
-    result.current.authorizeWithSMS({
+    let promise = result.current.authorizeWithSMS({
       phoneNumber: '+11234567890',
       code: '123456',
       scope: 'custom-scope',
@@ -373,6 +386,13 @@ describe('The useAuth0 hook', () => {
       scope: 'custom-scope openid profile email',
       audience: 'http://my-api',
     });
+
+    let credentials;
+    await act(async () => {credentials = await promise})
+    expect(credentials).toEqual({
+      idToken: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
+      accessToken: 'ACCESS TOKEN'
+    })
   });
 
   it('adds the default scopes when none are specified for SMS login', async () => {
@@ -465,7 +485,7 @@ describe('The useAuth0 hook', () => {
       wrapper,
     });
 
-    result.current.authorizeWithEmail({
+    let promise = result.current.authorizeWithEmail({
       email: 'foo@gmail.com',
       code: '123456',
       scope: 'custom-scope',
@@ -480,6 +500,13 @@ describe('The useAuth0 hook', () => {
       scope: 'custom-scope openid profile email',
       audience: 'http://my-api',
     });
+
+    let credentials;
+    await act(async () => {credentials = await promise})
+    expect(credentials).toEqual({
+      idToken: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
+      accessToken: 'ACCESS TOKEN'
+    })
   });
 
   it('adds the default scopes when none are specified for email login', async () => {
@@ -572,7 +599,7 @@ describe('The useAuth0 hook', () => {
       wrapper,
     });
 
-    result.current.authorizeWithOOB({
+    let promise = result.current.authorizeWithOOB({
       mfaToken: 'mfa_token',
       oobCode: 'oob_code',
       bindingCode: 'binding_code',
@@ -585,6 +612,13 @@ describe('The useAuth0 hook', () => {
       oobCode: 'oob_code',
       bindingCode: 'binding_code',
     });
+
+    let credentials;
+    await act(async () => {credentials = await promise})
+    expect(credentials).toEqual({
+      idToken: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
+      accessToken: 'ACCESS TOKEN'
+    })
   });
 
   it('sets the user prop after authorizing with OOB', async () => {
@@ -620,7 +654,7 @@ describe('The useAuth0 hook', () => {
       wrapper,
     });
 
-    result.current.authorizeWithOTP({
+    let promise = result.current.authorizeWithOTP({
       mfaToken: 'mfa_token',
       otp: 'otp',
     });
@@ -631,6 +665,13 @@ describe('The useAuth0 hook', () => {
       mfaToken: 'mfa_token',
       otp: 'otp',
     });
+
+    let credentials;
+    await act(async () => {credentials = await promise})
+    expect(credentials).toEqual({
+      idToken: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
+      accessToken: 'ACCESS TOKEN'
+    })
   });
 
   it('sets the user prop after authorizing with OTP', async () => {
@@ -666,7 +707,7 @@ describe('The useAuth0 hook', () => {
       wrapper,
     });
 
-    result.current.authorizeWithRecoveryCode({
+    let promise = result.current.authorizeWithRecoveryCode({
       mfaToken: 'mfa_token',
       recoveryCode: 'recovery_code',
     });
@@ -677,6 +718,13 @@ describe('The useAuth0 hook', () => {
       mfaToken: 'mfa_token',
       recoveryCode: 'recovery_code',
     });
+
+    let credentials;
+    await act(async () => {credentials = await promise})
+    expect(credentials).toEqual({
+      idToken: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
+      accessToken: 'ACCESS TOKEN'
+    })
   });
 
   it('sets the user prop after authorizing with recovery code', async () => {

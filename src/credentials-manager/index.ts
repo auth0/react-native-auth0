@@ -11,10 +11,7 @@ class CredentialsManager {
   private Auth0Module: Auth0Module;
 
   /**
-   * Construct an instance of CredentialsManager
-   *
-   * @param {String} domain - required - the domain of the credentials to be managed
-   * @param {String} clientId - required - clientId of the credentials to be managed
+   * @ignore
    */
   constructor(domain: string, clientId: string) {
     this.domain = domain;
@@ -24,15 +21,6 @@ class CredentialsManager {
 
   /**
    * Saves the provided credentials
-   *
-   * @param {Object} credentials credential values
-   * @param {String} credentials.idToken required - JWT token that has user claims
-   * @param {String} credentials.accessToken required - token used for API calls
-   * @param {String} credentials.tokenType required - type of the token, ex - Bearer
-   * @param {Number} credentials.expiresIn required - Used to denote when the token will expire from the issued time
-   * @param {String} credentials.refreshToken optional - used to refresh access token
-   * @param {String} credentials.scope optional - represents the scope of the current token
-   * @returns {Promise}
    */
   async saveCredentials(credentials: Credentials): Promise<void> {
     const validateKeys = ['idToken', 'accessToken', 'tokenType', 'expiresIn'];
@@ -65,16 +53,16 @@ class CredentialsManager {
   /**
    * Gets the credentials that has already been saved
    *
-   * @param {String} scope optional - the scope to request for the access token. If null is passed, the previous scope will be kept.
-   * @param {String} minTtl optional - the minimum time in seconds that the access token should last before expiration.
-   * @param {Object} parameters optional - additional parameters to send in the request to refresh expired credentials.
-   * @param {Object} forceRefresh optional - to force refresh the credentials. It will work only if the refresh token already exists. For iOS, doing forceRefresh will not send the scope and addtional parameters. Since scope change already does force refresh, it is better to avoid force refresh is scope is being changed.
-   * @returns {Promise}
+   * @param scope The scope to request for the access token. If null is passed, the previous scope will be kept.
+   * @param minTtl The minimum time in seconds that the access token should last before expiration.
+   * @param parameters Additional parameters to send in the request to refresh expired credentials.
+   * @param forceRefresh Whether to force refresh the credentials. It will work only if the refresh token already exists. For iOS, doing forceRefresh will not send the scope and addtional parameters. Since scope change already does force refresh, it is better to avoid force refresh if the scope is being changed.
+   * @returns A populated instance of {@link Credentials}.
    */
   async getCredentials(
     scope?: string,
     minTtl: number = 0,
-    parameters: object = {},
+    parameters: Record<string, unknown> = {},
     forceRefresh: boolean = false
   ): Promise<Credentials> {
     try {
@@ -101,12 +89,11 @@ class CredentialsManager {
   /**
    * Enables Local Authentication (PIN, Biometric, Swipe etc) to get the credentials
    *
-   * @param {String} title optional - the text to use as title in the authentication screen. Passing null will result in using the OS's default value in Android and "Please authenticate to continue" in iOS.
-   * @param {String} description Android Only - optional - the text to use as description in the authentication screen. On some Android versions it might not be shown. Passing null will result in using the OS's default value.
-   * @param {String} cancelTitle iOS Only - optional - the cancel message to display on the local authentication prompt.
-   * @param {String} fallbackTitle iOS Only - optional - the fallback message to display on the local authentication prompt after a failed match.
-   * @param {Number} strategy iOS Only - optional - the evaluation policy to use when accessing the credentials. Defaults to LocalAuthenticationStrategy.deviceOwnerWithBiometrics.
-   * @returns {Promise}
+   * @param title the text to use as title in the authentication screen. Passing null will result in using the OS's default value in Android and "Please authenticate to continue" in iOS.
+   * @param description **Android only:** the text to use as description in the authentication screen. On some Android versions it might not be shown. Passing null will result in using the OS's default value.
+   * @param cancelTitle **iOS only:** the cancel message to display on the local authentication prompt.
+   * @param fallbackTitle **iOS only:** the fallback message to display on the local authentication prompt after a failed match.
+   * @param strategy **iOS only:** the evaluation policy to use when accessing the credentials. Defaults to LocalAuthenticationStrategy.deviceOwnerWithBiometrics.
    */
   async requireLocalAuthentication(
     title?: string,
@@ -143,7 +130,8 @@ class CredentialsManager {
   /**
    * Returns whether this manager contains a valid non-expired pair of credentials.
    *
-   * @param {Number} minTtl optional - the minimum time in seconds that the access token should last before expiration
+   * @param minTtl The minimum time in seconds that the access token should last before expiration
+   * @returns `true` if a valid set of credentials are available, or `false` if there are no credentials to return.
    */
   async hasValidCredentials(minTtl = 0): Promise<boolean> {
     await _ensureNativeModuleIsInitialized(
