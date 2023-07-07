@@ -1,9 +1,4 @@
-import {
-  NativeModules,
-  Linking,
-  Platform,
-  EmitterSubscription,
-} from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 import { Credentials } from 'src/types';
 import { _ensureNativeModuleIsInitialized } from '../utils/nativeHelper';
 import {
@@ -35,8 +30,10 @@ class Agent {
       options.useLegacyCallbackUrl ?? false,
       options.customScheme
     );
+    let redirectUri = this.callbackUri(parameters.domain, scheme);
     return A0Auth0.webAuth(
       scheme,
+      redirectUri,
       options.state,
       options.nonce,
       options.audience,
@@ -47,7 +44,7 @@ class Agent {
       options.invitationUrl,
       options.leeway ?? 0,
       options.ephemeralSession ?? false,
-      options.additionalParameters
+      options.additionalParameters ?? {}
     );
   }
 
@@ -67,21 +64,30 @@ class Agent {
       options.useLegacyCallbackUrl ?? false,
       options.customScheme
     );
+    let redirectUri = this.callbackUri(parameters.domain, scheme);
     await _ensureNativeModuleIsInitialized(
       NativeModules.A0Auth0,
       parameters.clientId,
       parameters.domain
     );
 
-    return A0Auth0.webAuthLogout(scheme, federated);
+    return A0Auth0.webAuthLogout(scheme, federated, redirectUri);
   }
 
-  getScheme(useLegacyCustomSchemeBehaviour: boolean, customScheme?: string) {
+  private getScheme(
+    useLegacyCustomSchemeBehaviour: boolean,
+    customScheme?: string
+  ) {
     let scheme = NativeModules.A0Auth0.bundleIdentifier.toLowerCase();
     if (!useLegacyCustomSchemeBehaviour) {
       scheme = scheme + '.auth0';
     }
     return customScheme ?? scheme;
+  }
+
+  private callbackUri(domain: string, scheme: string) {
+    let bundleIdentifier = NativeModules.A0Auth0.bundleIdentifier.toLowerCase();
+    return `${scheme}://${domain}/${Platform.OS}/${bundleIdentifier}/callback`;
   }
 }
 

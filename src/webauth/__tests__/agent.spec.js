@@ -69,6 +69,7 @@ describe('Agent', () => {
       expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
       expect(mockLogin).toBeCalledWith(
         'test',
+        'test://test.com/test-os/com.my.app/callback',
         'state',
         'nonce',
         'audience',
@@ -132,7 +133,7 @@ describe('Agent', () => {
         }
       );
       expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
-      expect(mockLogin).toBeCalledWith('test', true);
+      expect(mockLogin).toBeCalledWith('test', true, 'test://test.com/test-os/com.my.app/callback');
     });
   });
 
@@ -158,6 +159,13 @@ describe('Agent', () => {
     it('should return legacy scheme', async () => {
       NativeModules.A0Auth0.bundleIdentifier = 'com.Test';
       await expect(agent.getScheme(true)).toEqual('com.test');
+    });
+  });
+
+
+  describe('callbackUri', () => {
+    it('should return callback uri with given domain and scheme', async () => {
+      await expect(agent.callbackUri('domain', 'scheme')).toEqual("scheme://domain/test-os/com.test/callback");
     });
   });
 });

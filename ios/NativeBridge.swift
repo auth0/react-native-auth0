@@ -39,8 +39,11 @@ public class NativeBridge: NSObject {
         super.init()
    }
     
-    @objc public func webAuth(state: String?, nonce: String?, audience: String?, scope: String?, connection: String?, maxAge: Int, organization: String?, invitationUrl: String?, leeway: Int, ephemeralSession: Bool, additionalParameters: [String: String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func webAuth(state: String?, redirectUri: String, nonce: String?, audience: String?, scope: String?, connection: String?, maxAge: Int, organization: String?, invitationUrl: String?, leeway: Int, ephemeralSession: Bool, additionalParameters: [String: String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
+        if let value = URL(string: redirectUri) {
+            let _ = builder.redirectURL(value)
+        }
         if let value = state {
             let _ = builder.state(value)
         }
@@ -83,8 +86,11 @@ public class NativeBridge: NSObject {
             
     }
     
-    @objc public func webAuthLogout(federated: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func webAuthLogout(federated: Bool, redirectUri: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
+        if let value = URL(string: redirectUri) {
+            let _ = builder.redirectURL(value)
+        }
         builder.clearSession(federated: federated) { result in
                 switch result {
                 case .success:
