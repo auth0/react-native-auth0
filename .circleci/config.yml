@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  ship: auth0/ship@0.7.1
+  ship: auth0/ship@0.7.5
   codecov: codecov/codecov@3
 
 jobs:
