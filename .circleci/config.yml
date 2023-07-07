@@ -24,7 +24,7 @@ workflows:
       - ship/node-publish:
           node-version: 18.16.0
           pkg-manager: yarn
-          publish-command: npm publish --tag 3.0.0-beta.0
+          publish-command: npm publish --tag v3-beta
           requires:
             - build
           context:
