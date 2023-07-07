@@ -11,8 +11,8 @@
 ### Breaking changes
 
 - The properties inside the `user` object will now be camelCase instead of snake_case
-- Removed `type` property returned in Android. Use `tokenType` instead.
-- `getCredentials` in Android will return `expiresIn` instead of `expiresAt`
+- Removed the `type` property returned in the `Credentials` object in Android. Use `tokenType` instead.
+- `Credentials` object in Android will return `expiresIn` instead of `expiresAt`
 - `max_age` parameter is changed to `maxAge` in `WebAuth.authorize()`
 - `skipLegacyListener` has been removed in `authorize` and `clearSession`
 - `customScheme` is now part of `ClearSessionOptions` instead of `ClearSessionParameters` in `clearSession`
