@@ -20,7 +20,10 @@ jobs:
 workflows:
   build-and-test:
     jobs:
-      - build
+      - build:
+          executor:
+            name: ship/node
+            tag: 18.16.0
       - ship/node-publish:
           pkg-manager: yarn
           requires:
