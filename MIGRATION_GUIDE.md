@@ -1,0 +1,50 @@
+# Migration Guide
+
+## Upgrading from v2 -> v3
+
+### Improvements and changes
+
+- Web Auth will now have default scope of 'openid profile email', so these scopes can be removed if you're explicitly specifying them
+- Minimum supported version for iOS is bumped to 13
+- Revoke Token and Change Password now return `void` instead of an empty object
+
+### Breaking changes
+
+- The properties inside the `user` object will now be camelCase instead of snake_case
+- Removed the `type` property returned in the `Credentials` object in Android. Use `tokenType` instead.
+- `Credentials` object in Android will return `expiresIn` instead of `expiresAt`
+- `max_age` parameter is changed to `maxAge` in `WebAuth.authorize()`
+- `skipLegacyListener` has been removed in `authorize` and `clearSession`
+- `customScheme` is now part of `ClearSessionOptions` instead of `ClearSessionParameters` in `clearSession`
+
+### Callback URL migration
+
+We are migrating the callback URL we use for the SDK to below.
+
+**Old**
+
+```
+iOS: {PRODUCT_BUNDLE_IDENTIFIER}://{DOMAIN}/ios/{PRODUCT_BUNDLE_IDENTIFIER}/callback
+Android: {YOUR_APP_PACKAGE_NAME}://{DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
+```
+
+**New**
+
+Notice the new `.auth0` suffix after the bundle identifier / package name:
+
+```
+iOS: {PRODUCT_BUNDLE_IDENTIFIER}.auth0://{DOMAIN}/ios/{PRODUCT_BUNDLE_IDENTIFIER}/callback
+Android: {YOUR_APP_PACKAGE_NAME}.auth0://{DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
+```
+
+Choose one of the following migration paths depending on your application:
+
+- **If your project is built with Expo:**
+  - To keep things as it is, no changes are required
+  - To migrate to new non-custom scheme flow:
+    - Remove custom scheme in app.json and `authorize()`.
+    - Run `npx expo prebuild --clean` (any manual changes to Android or iOS folders will be lost)
+    - Add the new callback URL to Auth0 dashboard
+- **If your project is built with Non Expo:**
+  - To keep things as it is, set `useLegacyCallbackUrl` to true in `authorize` and `clearSession`
+  - To migrate to new non-custom scheme flow, add the new callback URL to Auth0 dashboard
