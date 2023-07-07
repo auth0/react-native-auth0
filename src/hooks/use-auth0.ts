@@ -21,6 +21,7 @@ import Auth0Context, { Auth0ContextInterface } from './auth0-context';
  *   authorizeWithOOB,
  *   authorizeWithOTP,
  *   authorizeWithRecoveryCode,
+ *   hasValidCredentials,
  *   clearSession,
  *   getCredentials,
  *   clearCredentials,
