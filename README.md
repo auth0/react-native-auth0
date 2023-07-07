@@ -40,11 +40,11 @@ First install the native library module:
 
 ### With [npm](https://www.npmjs.com)
 
-`$ npm install react-native-auth0 --save`
+`$ npm install react-native-auth0@v3-beta --save`
 
 ### With [Yarn](https://yarnpkg.com/en/)
 
-`$ yarn add react-native-auth0`
+`$ yarn add react-native-auth0@v3-beta`
 
 Then, you need to run the following command to install the ios app pods with Cocoapods. That will auto-link the iOS library:
 
