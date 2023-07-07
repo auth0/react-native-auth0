@@ -1,5 +1,20 @@
 # Change Log
 
+## [v3.0.0-beta.0](https://github.com/auth0/react-native-auth0/tree/v3.0.0-beta.0) (2023-07-07)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.17.4...v3.0.0-beta.0)
+
+**Added**
+
+- [SDK-4365] Return credentials for authorize methods [\#662](https://github.com/auth0/react-native-auth0/pull/662) ([poovamraj](https://github.com/poovamraj))
+- [SDK-3598] RNA sample app [\#639](https://github.com/auth0/react-native-auth0/pull/639) ([poovamraj](https://github.com/poovamraj))
+- [SDK-3885] Expo plugin update [\#638](https://github.com/auth0/react-native-auth0/pull/638) ([poovamraj](https://github.com/poovamraj))
+
+**Changed**
+
+- [SDK-3881] Fix expo scheme clash issue [\#658](https://github.com/auth0/react-native-auth0/pull/658) ([poovamraj](https://github.com/poovamraj))
+- [SDK-4355] iOS Native Code Migration [\#654](https://github.com/auth0/react-native-auth0/pull/654) ([poovamraj](https://github.com/poovamraj))
+
 ## [v2.17.4](https://github.com/auth0/react-native-auth0/tree/v2.17.4) (2023-06-15)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.17.3...v2.17.4)
