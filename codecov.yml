@@ -3,7 +3,7 @@ coverage:
   round: down
   range: '70...100'
   ignore:
-    - 'src/networking/telemetry.js'
+    - 'src/networking/telemetry.ts'
   status:
     project:
       default:
