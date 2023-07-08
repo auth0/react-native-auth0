@@ -33,15 +33,11 @@
     "docs": "typedoc",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "prepack": "bob build",
     "release": "release-it",
     "example": "yarn --cwd example",
     "bootstrap": "yarn example && yarn install && yarn example pods",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build && expo-module clean",
-    "build": "expo-module build",
-    "prepare": "expo-module prepare",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepare": "bob build"
   },
   "keywords": [
     "react-native",
@@ -99,7 +95,6 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
     "expo": "^48.0.0",
-    "expo-module-scripts": "^2.0.0",
     "faker": "^4.1.0",
     "fetch-mock": "^7.3.9",
     "husky": "^4.2.5",
