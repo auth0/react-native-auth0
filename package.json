@@ -15,6 +15,7 @@
     "ios",
     "cpp",
     "*.podspec",
+    "app.plugin.js",
     "!lib/typescript/example",
     "!ios/build",
     "!android/build",
