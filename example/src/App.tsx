@@ -8,7 +8,7 @@
 
 import React, { useEffect } from 'react';
 import { Alert, Button, StyleSheet, Text, View } from 'react-native';
-import { useAuth0, Auth0Provider } from 'react-native-auth0';
+import { useAuth0, Auth0Provider } from 'src';
 import config from './auth0-configuration';
 
 const Home = () => {
