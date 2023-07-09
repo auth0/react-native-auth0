@@ -6,9 +6,9 @@
  * @flow strict-local
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Alert, Button, StyleSheet, Text, View } from 'react-native';
-import { useAuth0, Auth0Provider } from 'src';
+import { useAuth0, Auth0Provider } from 'react-native-auth0';
 import config from './auth0-configuration';
 
 const Home = () => {
