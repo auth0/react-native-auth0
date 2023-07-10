@@ -34,4 +34,4 @@ workflows:
             branches:
               only:
                 - master
-                # - vnext
+                - vnext
