@@ -7,6 +7,9 @@
 [![Downloads][downloads-image]][downloads-url]
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0?ref=badge_shield)
 
+| Exciting news! We have just released our latest beta version of v3, packed with powerful features and improvements. [Check out the release for more details](https://github.com/auth0/react-native-auth0/releases/tag/v3.0.0-beta.2) |
+| --- |
+
 📚 [Documentation](#documentation) • 🚀 [Getting Started](#getting-started) • ⏭️ [Next Steps](#next-steps) • ❓ [FAQs](https://github.com/auth0/react-native-auth0/blob/master/FAQ.md) • ❓ [Feedback](#feedback)
 
 ## Documentation
@@ -18,7 +21,7 @@
 - [FAQs](https://github.com/auth0/react-native-auth0/blob/master/FAQ.md)
 - [Examples](https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES.md)
 - [Docs Site](https://auth0.github.io/react-native-auth0/)
-
+git
 ## Important Notices
 
 Version **2.9.0** introduced a **breaking change** to the Android configuration. Previously it was required to add an intent filter in the definition of the Activity that receives the authentication result, and to use the `singleTask` **launchMode** in that activity. Now both the intent filter and the launch mode **must be removed** and instead you need to add a couple of manifest placeholders. Check out the [Android](#android) section for more details.
