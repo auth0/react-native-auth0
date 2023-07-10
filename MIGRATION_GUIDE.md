@@ -6,6 +6,7 @@
 
 - Web Auth will now have default scope of 'openid profile email', so these scopes can be removed if you're explicitly specifying them
 - Minimum supported version for iOS is bumped to 13
+- Minimum supported version for Expo is bumped to 48
 - Revoke Token and Change Password now return `void` instead of an empty object
 
 ### Breaking changes

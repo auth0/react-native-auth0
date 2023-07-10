@@ -1,1 +1,1 @@
-module.exports = require('./plugin/build/withAuth0');
+module.exports = require('./lib/commonjs/plugin/withAuth0');
