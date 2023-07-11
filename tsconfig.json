@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "react-native-auth0": ["./index"]
+      "react-native-auth0": ["./src/index"]
     },
     "module": "esnext",
     "allowJs": true,
@@ -24,15 +24,5 @@
     "declaration": true,
     "declarationDir": "./lib/typescript/",
     "outDir": "./lib/typescript"
-  },
-  "exclude": [
-    "node_modules",
-    "babel.config.js",
-    "metro.config.js",
-    "jest.config.js",
-    "./dist",
-    "**/__mocks__/**",
-    "**/__tests__/**",
-    "./lib"
-  ]
+  }
 }
