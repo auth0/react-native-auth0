@@ -1,5 +1,3 @@
-.circleci/
-.github/
 docs/
 src/auth/__tests__
 src/credentials-manager/__tests__
