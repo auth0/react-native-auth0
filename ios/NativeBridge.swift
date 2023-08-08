@@ -109,9 +109,9 @@ public class NativeBridge: NSObject {
         let scope = credentialsDict[NativeBridge.scopeKey] as? String
         var expiresIn: Date?
          if let string = credentialsDict[NativeBridge.expiresInKey] as? String, let double = Double(string) {
-             expiresIn = Date(timeIntervalSinceNow: double)
+             expiresIn = Date(timeIntervalSince1970: double)
          } else if let double = credentialsDict[NativeBridge.expiresInKey] as? Double {
-             expiresIn = Date(timeIntervalSinceNow: double)
+             expiresIn = Date(timeIntervalSince1970: double)
          } else if let dateStr = credentialsDict[NativeBridge.expiresInKey] as? String {
              let dateFormatter = DateFormatter()
              dateFormatter.dateFormat = NativeBridge.dateFormat
