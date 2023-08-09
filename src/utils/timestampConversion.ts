@@ -1,14 +1,6 @@
-export function convertExpiresInToExpiresAt(expiresIn: number): Date | null {
+export function convertExpiresInToExpiresAt(expiresIn: number): number | null {
     if(expiresIn === null || expiresIn === undefined) {
         return null
     }
-    return new Date(Date.now() + (expiresIn * 1000))
+    return Math.floor(Date.now() / 1000 + expiresIn)
 }
-
-export function convertUnixTimestampToDate(timestampInSeconds: number): Date | null {
-    if(timestampInSeconds === null || timestampInSeconds === undefined) {
-        return null
-    }
-    return new Date(timestampInSeconds * 1000)
-}
-  

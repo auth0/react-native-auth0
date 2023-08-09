@@ -23,7 +23,7 @@ class CredentialsManager {
    * Saves the provided credentials
    */
   async saveCredentials(credentials: Credentials): Promise<void> {
-    const validateKeys = ['idToken', 'accessToken', 'tokenType', 'expiresIn'];
+    const validateKeys = ['idToken', 'accessToken', 'tokenType', 'expiresAt'];
     validateKeys.forEach((key) => {
       if (!credentials[key]) {
         const json = {

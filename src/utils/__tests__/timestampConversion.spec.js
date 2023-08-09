@@ -32,30 +32,4 @@ describe('timestamp conversion', () => {
             expect(result).toMatchSnapshot();
         });
     })
-
-    describe('convertUnixTimestampToDate', () => {
-        it('should successfully convert', () => {
-            let timestampInSeconds = 1691594356
-            const result = convertUnixTimestampToDate(timestampInSeconds)
-            expect(result).toMatchSnapshot();
-        });
-
-        it('should handle zero', () => {
-            let timestampInSeconds = 0
-            const result = convertUnixTimestampToDate(timestampInSeconds)
-            expect(result).toMatchSnapshot();
-        });
-
-        it('should handle null', () => {
-            let timestampInSeconds = null
-            const result = convertUnixTimestampToDate(timestampInSeconds)
-            expect(result).toMatchSnapshot();
-        });
-
-        it('should handle undefined', () => {
-            let timestampInSeconds = undefined
-            const result = convertUnixTimestampToDate(timestampInSeconds)
-            expect(result).toMatchSnapshot();
-        });
-    })
 });

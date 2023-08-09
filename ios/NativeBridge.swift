@@ -21,7 +21,6 @@ public class NativeBridge: NSObject {
     static let refreshTokenKey = "refreshToken";
     static let typeKey = "type";
     static let tokenTypeKey = "tokenType";
-    static let expiresInKey = "expiresIn";
     static let dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     
     static let credentialsManagerErrorCode = "a0.invalid_state.credential_manager_exception"
@@ -108,11 +107,11 @@ public class NativeBridge: NSObject {
         let refreshToken = credentialsDict[NativeBridge.refreshTokenKey] as? String
         let scope = credentialsDict[NativeBridge.scopeKey] as? String
         var expiresIn: Date?
-         if let string = credentialsDict[NativeBridge.expiresInKey] as? String, let double = Double(string) {
+         if let string = credentialsDict[NativeBridge.expiresAtKey] as? String, let double = Double(string) {
              expiresIn = Date(timeIntervalSince1970: double)
-         } else if let double = credentialsDict[NativeBridge.expiresInKey] as? Double {
+         } else if let double = credentialsDict[NativeBridge.expiresAtKey] as? Double {
              expiresIn = Date(timeIntervalSince1970: double)
-         } else if let dateStr = credentialsDict[NativeBridge.expiresInKey] as? String {
+         } else if let dateStr = credentialsDict[NativeBridge.expiresAtKey] as? String {
              let dateFormatter = DateFormatter()
              dateFormatter.dateFormat = NativeBridge.dateFormat
              expiresIn = dateFormatter.date(from: dateStr)
@@ -185,7 +184,7 @@ extension Credentials {
             NativeBridge.tokenTypeKey: self.tokenType,
             NativeBridge.idTokenKey: self.idToken,
             NativeBridge.refreshTokenKey: self.refreshToken as Any,
-            NativeBridge.expiresInKey: floor(self.expiresIn.timeIntervalSince1970),
+            NativeBridge.expiresAtKey: floor(self.expiresIn.timeIntervalSince1970),
             NativeBridge.scopeKey: self.scope as Any
         ]
     }
