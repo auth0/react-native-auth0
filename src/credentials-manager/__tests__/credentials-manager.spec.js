@@ -49,7 +49,7 @@ describe('credentials manager tests', () => {
 
     it('throws when expiresIn type is empty', async () => {
       const testToken = Object.assign({}, validToken);
-      testToken.expiresIn = undefined;
+      testToken.expiresAt = undefined;
       await expect(
         credentialsManager.saveCredentials(testToken)
       ).rejects.toThrow();
@@ -57,7 +57,7 @@ describe('credentials manager tests', () => {
 
     it('throws when expiresIn type is zero', async () => {
       const testToken = Object.assign({}, validToken);
-      testToken.expiresIn = 0;
+      testToken.expiresAt = 0;
       await expect(
         credentialsManager.saveCredentials(testToken)
       ).rejects.toThrow();
