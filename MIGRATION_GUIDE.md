@@ -13,7 +13,8 @@
 
 - The properties inside the `user` object will now be camelCase instead of snake_case
 - Removed the `type` property returned in the `Credentials` object in Android. Use `tokenType` instead.
-- `Credentials` object in Android will return `expiresIn` instead of `expiresAt`
+- `Credentials` object in iOS will return `expiresAt` instead of `expiresIn`
+- `expiresIn` value will now return `expiresAt` value which is a UNIX timestamp of the expiration time.
 - `max_age` parameter is changed to `maxAge` in `WebAuth.authorize()`
 - `skipLegacyListener` has been removed in `authorize` and `clearSession`
 - `customScheme` is now part of `ClearSessionOptions` instead of `ClearSessionParameters` in `clearSession`
