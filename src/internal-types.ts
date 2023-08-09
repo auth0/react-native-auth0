@@ -2,12 +2,22 @@ import { JwtPayload } from 'jwt-decode';
 import LocalAuthenticationStrategy from './credentials-manager/localAuthenticationStrategy';
 import { Credentials } from './types';
 
-export type RawCredentials = {
+export type CredentialsResponse = {
   id_token: string;
   access_token: string;
   token_type: string;
   expires_in: number;
   refresh_token?: string;
+  scope?: string;
+  [key: string]: any;
+};
+
+export type RawCredentials = {
+  idToken: string;
+  accessToken: string;
+  tokenType: string;
+  expiresIn: number;
+  refreshToken?: string;
   scope?: string;
   [key: string]: any;
 };

@@ -26,7 +26,15 @@ exports[`auth Multifactor Challenge Flow should require MFA Token 1`] = `
 ]"
 `;
 
-exports[`auth OOB flow binding code should be optional 1`] = `{}`;
+exports[`auth OOB flow binding code should be optional 1`] = `
+{
+  "accessToken": "1234",
+  "expiresAt": 2023-01-02T00:00:00.000Z,
+  "idToken": "id-123",
+  "scope": "openid profile email address phone",
+  "tokenType": "Bearer",
+}
+`;
 
 exports[`auth OOB flow should handle custom parameter 1`] = `
 [
@@ -57,7 +65,7 @@ exports[`auth OOB flow should handle malformed OOB code 1`] = `[invalid_grant: M
 exports[`auth OOB flow should handle success with binding code 1`] = `
 {
   "accessToken": "1234",
-  "expiresIn": 86400,
+  "expiresAt": 2023-01-02T00:00:00.000Z,
   "idToken": "id-123",
   "scope": "openid profile email address phone",
   "tokenType": "Bearer",
@@ -67,7 +75,7 @@ exports[`auth OOB flow should handle success with binding code 1`] = `
 exports[`auth OOB flow should handle success without binding code 1`] = `
 {
   "accessToken": "1234",
-  "expiresIn": 86400,
+  "expiresAt": 2023-01-02T00:00:00.000Z,
   "idToken": "id-123",
   "scope": "openid profile email address phone",
   "tokenType": "Bearer",
@@ -121,7 +129,7 @@ exports[`auth OTP flow when MFA is not associated 1`] = `[unsupported_challenge_
 exports[`auth OTP flow when MFA succeeds 1`] = `
 {
   "accessToken": "1234",
-  "expiresIn": 86400,
+  "expiresAt": 2023-01-02T00:00:00.000Z,
   "idToken": "id-123",
   "scope": "openid profile email address phone",
   "tokenType": "Bearer",
@@ -166,7 +174,7 @@ exports[`auth Recovery Code flow should require MFA Token and Recovery Code 1`] 
 exports[`auth Recovery Code flow when Recovery code succeeds 1`] = `
 {
   "accessToken": "1234",
-  "expiresIn": 86400,
+  "expiresAt": 2023-01-02T00:00:00.000Z,
   "idToken": "id-123",
   "scope": "openid profile email address phone",
   "tokenType": "Bearer",
@@ -216,7 +224,7 @@ exports[`auth code exchange for native social should handle unexpected error 1`]
 exports[`auth code exchange for native social should return successful response 1`] = `
 {
   "accessToken": "an access token",
-  "expiresIn": 1234567890,
+  "expiresAt": 2062-02-13T23:31:30.000Z,
   "idToken": "an id token",
   "scope": "openid",
   "state": "a random state for auth",
@@ -226,7 +234,7 @@ exports[`auth code exchange for native social should return successful response 
 exports[`auth code exchange for native social should return successful response with optional parameters 1`] = `
 {
   "accessToken": "an access token",
-  "expiresIn": 1234567890,
+  "expiresAt": 2062-02-13T23:31:30.000Z,
   "idToken": "an id token",
   "scope": "openid",
   "state": "a random state for auth",
@@ -288,7 +296,7 @@ exports[`auth code exchange should handle unexpected error 1`] = `[a0.response.i
 exports[`auth code exchange should return successful response 1`] = `
 {
   "accessToken": "an access token",
-  "expiresIn": 1234567890,
+  "expiresAt": 2062-02-13T23:31:30.000Z,
   "idToken": "an id token",
   "scope": "openid",
   "state": "a random state for auth",
@@ -419,7 +427,7 @@ exports[`auth password realm should handle unexpected error 1`] = `[a0.response.
 exports[`auth password realm should return successful response 1`] = `
 {
   "accessToken": "an access token",
-  "expiresIn": 1234567890,
+  "expiresAt": 2062-02-13T23:31:30.000Z,
   "idToken": "an id token",
   "scope": "openid",
   "state": "a random state for auth",
@@ -821,7 +829,7 @@ exports[`auth refresh token should handle unknown error 1`] = `[a0.response.inva
 exports[`auth refresh token should return successful response 1`] = `
 {
   "accessToken": "an access token",
-  "expiresIn": 1234567890,
+  "expiresAt": 2062-02-13T23:31:30.000Z,
   "idToken": "an id token",
   "scope": "openid",
   "state": "a random state for auth",
