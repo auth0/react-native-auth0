@@ -19,7 +19,7 @@ describe('credentials manager tests', () => {
     idToken: '1234',
     accessToken: '1234',
     tokenType: 'Bearer',
-    expiresIn: 86000,
+    expiresAt: 1691603391,
   };
 
   describe('test saving credentials', () => {
