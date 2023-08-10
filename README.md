@@ -7,6 +7,9 @@
 [![Downloads][downloads-image]][downloads-url]
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Freact-native-auth0?ref=badge_shield)
 
+| Exciting news! We have just released React Native Auth0 v3 BETA, packed with powerful features and improvements. [Check out the release for more details](https://github.com/auth0/react-native-auth0/releases/tag/v3.0.0-beta.2) |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+
 📚 [Documentation](#documentation) • 🚀 [Getting Started](#getting-started) • ⏭️ [Next Steps](#next-steps) • ❓ [FAQs](https://github.com/auth0/react-native-auth0/blob/master/FAQ.md) • ❓ [Feedback](#feedback)
 
 ## Documentation
@@ -181,9 +184,9 @@ To use the SDK with Expo, configure the app at build time by providing the `doma
 }
 ```
 
-| API          | Description                                                                                                                                                                                                                                                                                                                                  |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| domain       | Mandatory: Provide the Auth0 domain that can be found at the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                                                                                                 |
+| API          | Description                                                                                                                                                                                                                                                                  |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| domain       | Mandatory: Provide the Auth0 domain that can be found at the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                                 |
 | customScheme | Optional: Custom scheme to build the callback URL with. The value provided here should be passed to the `customScheme` option parameter of the `authorize` and `clearSession` methods. The custom scheme should be a unique, all lowercase value with no special characters. |
 
 Now you can run the application using `expo run:android` or `expo run:ios`.
@@ -277,7 +280,7 @@ const Component = () => {
   const { authorize, user, isLoading, error } = useAuth0();
 
   const login = async () => {
-    await authorize(); // authorize({}, {customScheme: 'CUSTOM_SCHEME'}) when using Expo or a custom scheme
+    await authorize();
   };
 
   if (isLoading) {
@@ -328,7 +331,7 @@ const Component = () => {
   const { clearSession, user } = useAuth0();
 
   const logout = async () => {
-    await clearSession(); // clearSession({}, { customScheme: 'CUSTOM_SCHEME' }) when using Expo or a custom scheme
+    await clearSession();
   };
 
   return <View>{user && <Button onPress={logout} title="Log out" />}</View>;

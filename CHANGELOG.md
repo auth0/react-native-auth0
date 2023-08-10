@@ -15,6 +15,7 @@
 💡 Check the [Migration Guide](MIGRATION_GUIDE.md) to understand the changes required to migrate your application to v3.
 
 **Added**
+
 - Credentials are returned as part of authorize methods in hooks
 - Added sample app in the repository
 - Expo plugin is updated to latest version
@@ -40,9 +41,9 @@
 - Revoke Token and Change Password now return `void` instead of an empty object
 
 **Removed**
+
 - Removed the `type` property returned in the `Credentials` object in Android. Use `tokenType` instead.
 - `skipLegacyListener` has been removed in `authorize` and `clearSession`
-
 
 ## [v2.17.4](https://github.com/auth0/react-native-auth0/tree/v2.17.4) (2023-06-15)
 
