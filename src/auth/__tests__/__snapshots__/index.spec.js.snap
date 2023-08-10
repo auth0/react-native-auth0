@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`auth Multifactor Challenge Flow should handle Challenge Type and Authenticator ID as optional 1`] = `Object {}`;
+exports[`auth Multifactor Challenge Flow should handle Challenge Type and Authenticator ID as optional 1`] = `{}`;
 
 exports[`auth Multifactor Challenge Flow should handle success 1`] = `
-Object {
+{
   "bindingMethod": "prompt",
   "challengeType": "oob",
   "oobCode": "oob-code",
@@ -11,7 +11,7 @@ Object {
 `;
 
 exports[`auth Multifactor Challenge Flow should handle success with optional parameters Challenge Type and Authenticator Id 1`] = `
-Object {
+{
   "bindingMethod": "prompt",
   "challengeType": "oob",
   "oobCode": "oob-code",
@@ -22,45 +22,40 @@ exports[`auth Multifactor Challenge Flow should handle unexpected error 1`] = `[
 
 exports[`auth Multifactor Challenge Flow should require MFA Token 1`] = `
 "Missing required parameters: [
-  \\"mfa_token\\"
+  "mfa_token"
 ]"
 `;
 
-exports[`auth OOB flow binding code should be optional 1`] = `Object {}`;
+exports[`auth OOB flow binding code should be optional 1`] = `
+{
+  "accessToken": "1234",
+  "expiresAt": 1672617600,
+  "idToken": "id-123",
+  "scope": "openid profile email address phone",
+  "tokenType": "Bearer",
+}
+`;
 
 exports[`auth OOB flow should handle custom parameter 1`] = `
-Array [
+[
   "https://samples.auth0.com/oauth/token",
-  Object {
-    "body": "{\\"mfa_token\\":\\"1234\\",\\"oob_code\\":\\"123\\",\\"binding_code\\":\\"1234\\",\\"custom\\":\\"should not be filtered\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/mfa-oob\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"mfa_token":"1234","oob_code":"123","binding_code":"1234","custom":"should not be filtered","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","grant_type":"http://auth0.com/oauth/grant-type/mfa-oob"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -68,9 +63,9 @@ Array [
 exports[`auth OOB flow should handle malformed OOB code 1`] = `[invalid_grant: Malformed oob_code]`;
 
 exports[`auth OOB flow should handle success with binding code 1`] = `
-Object {
+{
   "accessToken": "1234",
-  "expiresIn": 86400,
+  "expiresAt": 1672617600,
   "idToken": "id-123",
   "scope": "openid profile email address phone",
   "tokenType": "Bearer",
@@ -78,9 +73,9 @@ Object {
 `;
 
 exports[`auth OOB flow should handle success without binding code 1`] = `
-Object {
+{
   "accessToken": "1234",
-  "expiresIn": 86400,
+  "expiresAt": 1672617600,
   "idToken": "id-123",
   "scope": "openid profile email address phone",
   "tokenType": "Bearer",
@@ -91,44 +86,31 @@ exports[`auth OOB flow should handle unexpected error 1`] = `[a0.response.invali
 
 exports[`auth OOB flow should require MFA Token and OOB Code 1`] = `
 "Missing required parameters: [
-  \\"mfa_token\\",
-  \\"oob_code\\"
+  "mfa_token",
+  "oob_code"
 ]"
 `;
 
 exports[`auth OTP flow should handle custom parameters 1`] = `
-Array [
+[
   "https://samples.auth0.com/oauth/token",
-  Object {
-    "body": "{\\"mfa_token\\":\\"1234\\",\\"otp\\":\\"1234\\",\\"custom\\":\\"should not be filtered\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/mfa-otp\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"mfa_token":"1234","otp":"1234","custom":"should not be filtered","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","grant_type":"http://auth0.com/oauth/grant-type/mfa-otp"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -137,17 +119,17 @@ exports[`auth OTP flow should handle unexpected error 1`] = `[a0.response.invali
 
 exports[`auth OTP flow should require MFA Token and OTP 1`] = `
 "Missing required parameters: [
-  \\"mfa_token\\",
-  \\"otp\\"
+  "mfa_token",
+  "otp"
 ]"
 `;
 
 exports[`auth OTP flow when MFA is not associated 1`] = `[unsupported_challenge_type: User is not enrolled. You can use /mfa/associate endpoint to enroll the first authenticator.]`;
 
 exports[`auth OTP flow when MFA succeeds 1`] = `
-Object {
+{
   "accessToken": "1234",
-  "expiresIn": 86400,
+  "expiresAt": 1672617600,
   "idToken": "id-123",
   "scope": "openid profile email address phone",
   "tokenType": "Bearer",
@@ -157,38 +139,25 @@ Object {
 exports[`auth OTP flow when OTP Code is invalid 1`] = `[invalid_grant: Invalid otp_code.]`;
 
 exports[`auth Recovery Code flow should handle custom parameter 1`] = `
-Array [
+[
   "https://samples.auth0.com/oauth/token",
-  Object {
-    "body": "{\\"mfa_token\\":\\"123\\",\\"recovery_code\\":\\"123\\",\\"custom\\":\\"should not be filtered\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/mfa-recovery-code\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"mfa_token":"123","recovery_code":"123","custom":"should not be filtered","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","grant_type":"http://auth0.com/oauth/grant-type/mfa-recovery-code"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -197,15 +166,15 @@ exports[`auth Recovery Code flow should handle unexpected error 1`] = `[a0.respo
 
 exports[`auth Recovery Code flow should require MFA Token and Recovery Code 1`] = `
 "Missing required parameters: [
-  \\"mfa_token\\",
-  \\"recovery_code\\"
+  "mfa_token",
+  "recovery_code"
 ]"
 `;
 
 exports[`auth Recovery Code flow when Recovery code succeeds 1`] = `
-Object {
+{
   "accessToken": "1234",
-  "expiresIn": 86400,
+  "expiresAt": 1672617600,
   "idToken": "id-123",
   "scope": "openid profile email address phone",
   "tokenType": "Bearer",
@@ -222,41 +191,28 @@ exports[`auth change password should handle oauth error 1`] = `[invalid_request:
 
 exports[`auth change password should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
 
-exports[`auth change password should return successful response 1`] = `Object {}`;
+exports[`auth change password should return successful response 1`] = `undefined`;
 
 exports[`auth change password should send correct payload 1`] = `
-Array [
+[
   "https://samples.auth0.com/dbconnections/change_password",
-  Object {
-    "body": "{\\"email\\":\\"info@auth0.com\\",\\"connection\\":\\"Username-Password-Authentication\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"email":"info@auth0.com","connection":"Username-Password-Authentication","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -266,9 +222,9 @@ exports[`auth code exchange for native social should handle oauth error 1`] = `[
 exports[`auth code exchange for native social should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
 
 exports[`auth code exchange for native social should return successful response 1`] = `
-Object {
+{
   "accessToken": "an access token",
-  "expiresIn": 1234567890,
+  "expiresAt": 2907099090,
   "idToken": "an id token",
   "scope": "openid",
   "state": "a random state for auth",
@@ -276,9 +232,9 @@ Object {
 `;
 
 exports[`auth code exchange for native social should return successful response with optional parameters 1`] = `
-Object {
+{
   "accessToken": "an access token",
-  "expiresIn": 1234567890,
+  "expiresAt": 2907099090,
   "idToken": "an id token",
   "scope": "openid",
   "state": "a random state for auth",
@@ -286,75 +242,49 @@ Object {
 `;
 
 exports[`auth code exchange for native social should send correct payload 1`] = `
-Array [
+[
   "https://samples.auth0.com/oauth/token",
-  Object {
-    "body": "{\\"subject_token\\":\\"a subject token\\",\\"subject_token_type\\":\\"a subject token type\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"urn:ietf:params:oauth:grant-type:token-exchange\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"subject_token":"a subject token","subject_token_type":"a subject token type","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","grant_type":"urn:ietf:params:oauth:grant-type:token-exchange"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth code exchange for native social should send correct payload with optional parameters 1`] = `
-Array [
+[
   "https://samples.auth0.com/oauth/token",
-  Object {
-    "body": "{\\"subject_token\\":\\"a subject token\\",\\"subject_token_type\\":\\"a subject token type\\",\\"user_profile\\":{\\"name\\":{\\"firstName\\":\\"John\\",\\"lastName\\":\\"Smith\\"}},\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"urn:ietf:params:oauth:grant-type:token-exchange\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"subject_token":"a subject token","subject_token_type":"a subject token type","user_profile":{"name":{"firstName":"John","lastName":"Smith"}},"audience":"http://myapi.com","scope":"openid","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","grant_type":"urn:ietf:params:oauth:grant-type:token-exchange"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -364,9 +294,9 @@ exports[`auth code exchange should handle oauth error 1`] = `[invalid_request: I
 exports[`auth code exchange should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
 
 exports[`auth code exchange should return successful response 1`] = `
-Object {
+{
   "accessToken": "an access token",
-  "expiresIn": 1234567890,
+  "expiresAt": 2907099090,
   "idToken": "an id token",
   "scope": "openid",
   "state": "a random state for auth",
@@ -374,38 +304,25 @@ Object {
 `;
 
 exports[`auth code exchange should send correct payload 1`] = `
-Array [
+[
   "https://samples.auth0.com/oauth/token",
-  Object {
-    "body": "{\\"code\\":\\"a code\\",\\"code_verifier\\":\\"a verifier\\",\\"redirect_uri\\":\\"https://mysite.com/callback\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"authorization_code\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"code":"a code","code_verifier":"a verifier","redirect_uri":"https://mysite.com/callback","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","grant_type":"authorization_code"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -419,119 +336,80 @@ exports[`auth create user should handle auth0 error 1`] = `[BadRequestError: The
 exports[`auth create user should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
 
 exports[`auth create user should return successful response 1`] = `
-Object {
+{
   "email": "info@auth0.com",
   "emailVerified": false,
 }
 `;
 
 exports[`auth create user should send correct payload 1`] = `
-Array [
+[
   "https://samples.auth0.com/dbconnections/signup",
-  Object {
-    "body": "{\\"email\\":\\"info@auth0.com\\",\\"password\\":\\"secret\\",\\"connection\\":\\"aconnection\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"email":"info@auth0.com","password":"secret","connection":"aconnection","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth create user should send correct payload with metadata 1`] = `
-Array [
+[
   "https://samples.auth0.com/dbconnections/signup",
-  Object {
-    "body": "{\\"email\\":\\"info@auth0.com\\",\\"password\\":\\"secret\\",\\"connection\\":\\"aconnection\\",\\"user_metadata\\":{\\"customerId\\":12345},\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"email":"info@auth0.com","password":"secret","connection":"aconnection","user_metadata":{"customerId":12345},"client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth create user should send correct payload with username 1`] = `
-Array [
+[
   "https://samples.auth0.com/dbconnections/signup",
-  Object {
-    "body": "{\\"email\\":\\"info@auth0.com\\",\\"password\\":\\"secret\\",\\"connection\\":\\"aconnection\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"email":"info@auth0.com","password":"secret","connection":"aconnection","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -547,9 +425,9 @@ exports[`auth password realm should handle oauth error 1`] = `[invalid_request: 
 exports[`auth password realm should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
 
 exports[`auth password realm should return successful response 1`] = `
-Object {
+{
   "accessToken": "an access token",
-  "expiresIn": 1234567890,
+  "expiresAt": 2907099090,
   "idToken": "an id token",
   "scope": "openid",
   "state": "a random state for auth",
@@ -557,593 +435,385 @@ Object {
 `;
 
 exports[`auth password realm should send correct payload 1`] = `
-Array [
+[
   "https://samples.auth0.com/oauth/token",
-  Object {
-    "body": "{\\"username\\":\\"info@auth0.com\\",\\"password\\":\\"secret pass\\",\\"realm\\":\\"Username-Password-Authentication\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/password-realm\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"username":"info@auth0.com","password":"secret pass","realm":"Username-Password-Authentication","audience":"http://myapi.com","scope":"openid","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","grant_type":"http://auth0.com/oauth/grant-type/password-realm"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth password realm should send extra parameters 1`] = `
-Array [
+[
   "https://samples.auth0.com/oauth/token",
-  Object {
-    "body": "{\\"username\\":\\"info@auth0.com\\",\\"password\\":\\"secret pass\\",\\"realm\\":\\"Username-Password-Authentication\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"foo\\":\\"bar\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/password-realm\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"username":"info@auth0.com","password":"secret pass","realm":"Username-Password-Authentication","audience":"http://myapi.com","scope":"openid","foo":"bar","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","grant_type":"http://auth0.com/oauth/grant-type/password-realm"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth passwordless flow with SMS connection should begin with code 1`] = `
-Array [
+[
   "https://samples.auth0.com/passwordless/start",
-  Object {
-    "body": "{\\"phone_number\\":\\"+5491159991000\\",\\"send\\":\\"code\\",\\"connection\\":\\"sms\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"phone_number":"+5491159991000","send":"code","connection":"sms","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth passwordless flow with SMS connection should begin with custom parameters 1`] = `
-Array [
+[
   "https://samples.auth0.com/passwordless/start",
-  Object {
-    "body": "{\\"phone_number\\":\\"+5491159991000\\",\\"send\\":\\"code\\",\\"authParams\\":{\\"scope\\":\\"openid profile\\"},\\"custom\\":\\"should not be filtered\\",\\"connection\\":\\"sms\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"phone_number":"+5491159991000","send":"code","authParams":{"scope":"openid profile"},"custom":"should not be filtered","connection":"sms","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth passwordless flow with SMS connection should begin with link 1`] = `
-Array [
+[
   "https://samples.auth0.com/passwordless/start",
-  Object {
-    "body": "{\\"phone_number\\":\\"+5491159991000\\",\\"send\\":\\"link\\",\\"connection\\":\\"sms\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"phone_number":"+5491159991000","send":"link","connection":"sms","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth passwordless flow with SMS connection should begin with optional parameters 1`] = `
-Array [
+[
   "https://samples.auth0.com/passwordless/start",
-  Object {
-    "body": "{\\"phone_number\\":\\"+5491159991000\\",\\"send\\":\\"code\\",\\"authParams\\":{\\"scope\\":\\"openid profile\\"},\\"connection\\":\\"sms\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"phone_number":"+5491159991000","send":"code","authParams":{"scope":"openid profile"},"connection":"sms","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth passwordless flow with SMS connection should continue 1`] = `
-Array [
+[
   "https://samples.auth0.com/oauth/token",
-  Object {
-    "body": "{\\"username\\":\\"+5491159991000\\",\\"otp\\":\\"123456\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"sms\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"username":"+5491159991000","otp":"123456","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","realm":"sms","grant_type":"http://auth0.com/oauth/grant-type/passwordless/otp"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth passwordless flow with SMS connection should continue with custom parameters 1`] = `
-Array [
+[
   "https://samples.auth0.com/oauth/token",
-  Object {
-    "body": "{\\"username\\":\\"+5491159991000\\",\\"otp\\":\\"123456\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"custom\\":\\"should not be filtered\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"sms\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"username":"+5491159991000","otp":"123456","audience":"http://myapi.com","scope":"openid","custom":"should not be filtered","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","realm":"sms","grant_type":"http://auth0.com/oauth/grant-type/passwordless/otp"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth passwordless flow with SMS connection should continue with optional parameters 1`] = `
-Array [
+[
   "https://samples.auth0.com/oauth/token",
-  Object {
-    "body": "{\\"username\\":\\"+5491159991000\\",\\"otp\\":\\"123456\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"sms\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"username":"+5491159991000","otp":"123456","audience":"http://myapi.com","scope":"openid","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","realm":"sms","grant_type":"http://auth0.com/oauth/grant-type/passwordless/otp"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth passwordless flow with email connection should begin with code 1`] = `
-Array [
+[
   "https://samples.auth0.com/passwordless/start",
-  Object {
-    "body": "{\\"email\\":\\"info@auth0.com\\",\\"send\\":\\"link\\",\\"connection\\":\\"email\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"email":"info@auth0.com","send":"link","connection":"email","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth passwordless flow with email connection should begin with custom parameters 1`] = `
-Array [
+[
   "https://samples.auth0.com/passwordless/start",
-  Object {
-    "body": "{\\"email\\":\\"info@auth0.com\\",\\"send\\":\\"code\\",\\"authParams\\":{\\"scope\\":\\"openid profile\\"},\\"custom\\":\\"should not be filtered\\",\\"connection\\":\\"email\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"email":"info@auth0.com","send":"code","authParams":{"scope":"openid profile"},"custom":"should not be filtered","connection":"email","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth passwordless flow with email connection should begin with link 1`] = `
-Array [
+[
   "https://samples.auth0.com/passwordless/start",
-  Object {
-    "body": "{\\"email\\":\\"info@auth0.com\\",\\"send\\":\\"link\\",\\"connection\\":\\"email\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"email":"info@auth0.com","send":"link","connection":"email","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth passwordless flow with email connection should begin with optional parameters 1`] = `
-Array [
+[
   "https://samples.auth0.com/passwordless/start",
-  Object {
-    "body": "{\\"email\\":\\"info@auth0.com\\",\\"send\\":\\"code\\",\\"authParams\\":{\\"scope\\":\\"openid profile\\"},\\"connection\\":\\"email\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"email":"info@auth0.com","send":"code","authParams":{"scope":"openid profile"},"connection":"email","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth passwordless flow with email connection should continue 1`] = `
-Array [
+[
   "https://samples.auth0.com/oauth/token",
-  Object {
-    "body": "{\\"username\\":\\"info@auth0.com\\",\\"otp\\":\\"123456\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"email\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"username":"info@auth0.com","otp":"123456","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","realm":"email","grant_type":"http://auth0.com/oauth/grant-type/passwordless/otp"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth passwordless flow with email connection should continue with custom parameters 1`] = `
-Array [
+[
   "https://samples.auth0.com/oauth/token",
-  Object {
-    "body": "{\\"username\\":\\"info@auth0.com\\",\\"otp\\":\\"123456\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"custom\\":\\"should not be filtered\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"email\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"username":"info@auth0.com","otp":"123456","audience":"http://myapi.com","scope":"openid","custom":"should not be filtered","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","realm":"email","grant_type":"http://auth0.com/oauth/grant-type/passwordless/otp"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
 
 exports[`auth passwordless flow with email connection should continue with optional parameters 1`] = `
-Array [
+[
   "https://samples.auth0.com/oauth/token",
-  Object {
-    "body": "{\\"username\\":\\"info@auth0.com\\",\\"otp\\":\\"123456\\",\\"audience\\":\\"http://myapi.com\\",\\"scope\\":\\"openid\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"realm\\":\\"email\\",\\"grant_type\\":\\"http://auth0.com/oauth/grant-type/passwordless/otp\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"username":"info@auth0.com","otp":"123456","audience":"http://myapi.com","scope":"openid","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","realm":"email","grant_type":"http://auth0.com/oauth/grant-type/passwordless/otp"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -1157,9 +827,9 @@ exports[`auth refresh token should handle unexpected error 1`] = `[a0.response.i
 exports[`auth refresh token should handle unknown error 1`] = `[a0.response.invalid: unknown error]`;
 
 exports[`auth refresh token should return successful response 1`] = `
-Object {
+{
   "accessToken": "an access token",
-  "expiresIn": 1234567890,
+  "expiresAt": 2907099090,
   "idToken": "an id token",
   "scope": "openid",
   "state": "a random state for auth",
@@ -1167,38 +837,25 @@ Object {
 `;
 
 exports[`auth refresh token should send correct payload 1`] = `
-Array [
+[
   "https://samples.auth0.com/oauth/token",
-  Object {
-    "body": "{\\"refresh_token\\":\\"a refresh token of a user\\",\\"scope\\":\\"openid\\",\\"customParam\\":\\"a custom value which should not be filtered out\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\",\\"grant_type\\":\\"refresh_token\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"refresh_token":"a refresh token of a user","scope":"openid","customParam":"a custom value which should not be filtered out","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","grant_type":"refresh_token"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -1207,41 +864,28 @@ exports[`auth revoke token should handle oauth error 1`] = `[invalid_request: In
 
 exports[`auth revoke token should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
 
-exports[`auth revoke token should return successful response 1`] = `Object {}`;
+exports[`auth revoke token should return successful response 1`] = `undefined`;
 
 exports[`auth revoke token should send correct payload 1`] = `
-Array [
+[
   "https://samples.auth0.com/oauth/revoke",
-  Object {
-    "body": "{\\"token\\":\\"a refresh token of a user\\",\\"client_id\\":\\"A_CLIENT_ID_OF_YOUR_ACCOUNT\\"}",
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Content-Type": "application/json",
+  {
+    "body": "{"token":"a refresh token of a user","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT"}",
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "POST",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
@@ -1251,13 +895,13 @@ exports[`auth user info should handle oauth error 1`] = `[invalid_request: Inval
 exports[`auth user info should handle unexpected error 1`] = `[a0.response.invalid: Internal Server Error]`;
 
 exports[`auth user info should return successful non-oidc response 1`] = `
-Object {
+{
   "sub": "auth0|1029837475",
 }
 `;
 
 exports[`auth user info should return successful oidc response 1`] = `
-Object {
+{
   "email": "janedoe@example.com",
   "familyName": "Doe",
   "givenName": "Jane",
@@ -1272,38 +916,27 @@ Object {
 `;
 
 exports[`auth user info should send correct payload 1`] = `
-Array [
+[
   "https://samples.auth0.com/userinfo",
-  Object {
-    "headers": Object {
-      "Accept": "application/json",
-      "Auth0-Client": "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
-      "Authorization": "Bearer an access token of a user",
-      "Content-Type": "application/json",
+  {
+    "headers": Headers {
+      Symbol(map): {
+        "Accept": [
+          "application/json",
+        ],
+        "Auth0-Client": [
+          "eyJuYW1lIjoicmVhY3QtbmF0aXZlLWF1dGgwIiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        ],
+        "Authorization": [
+          "Bearer an access token of a user",
+        ],
+        "Content-Type": [
+          "application/json",
+        ],
+      },
     },
     "method": "GET",
-    "signal": AbortSignal {
-      Symbol(kEvents): Map {
-        "abort" => Object {
-          "next": Listener {
-            "callback": [Function],
-            "capture": false,
-            "isNodeStyleListener": false,
-            "listener": [Function],
-            "next": undefined,
-            "once": false,
-            "passive": false,
-            "previous": [Circular],
-            "removed": false,
-            "weak": false,
-          },
-          "size": 1,
-        },
-      },
-      Symbol(events.maxEventTargetListeners): 10,
-      Symbol(events.maxEventTargetListenersWarned): false,
-      Symbol(kAborted): false,
-    },
+    "signal": AbortSignal {},
   },
 ]
 `;
