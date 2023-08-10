@@ -34,7 +34,7 @@ This SDK targets apps that are using React Native SDK version `0.60.5` and up. I
 
 ### Compatibility Matrix
 
-This SDK attempts to follow [semver](https://semver.org/) in a best-effort basis, but React Native is still making releases that eventually include breaking changes on it making this approach difficult for any React Native library module. Use the table below to find the version that best suites your application.
+This SDK attempts to follow [semver](https://semver.org/) in a best-effort basis, but React Native is still making releases that eventually include breaking changes on it making this approach difficult for any React Native library module. Use the table below to find the version that best suits your application.
 
 | React Native SDK | Auth0 SDK |
 | :--------------: | :-------: |
@@ -63,7 +63,7 @@ Then, you need to run the following command to install the ios app pods with Coc
 
 ### Configure the SDK
 
-You need make your Android, iOS or Expo applications aware that an authentication result will be received from the browser. This SDK makes use of the Android's Package Name and its analogous iOS's Product Bundle Identifier to generate the redirect URL. Each platform has its own set of instructions.
+You need to make your Android, iOS or Expo applications aware that an authentication result will be received from the browser. This SDK makes use of the Android's Package Name and its analogous iOS's Product Bundle Identifier to generate the redirect URL. Each platform has its own set of instructions.
 
 #### Android
 
@@ -194,7 +194,7 @@ To use the SDK with Expo, configure the app at build time by providing the `doma
 
 | API          | Description                                                                                                                                                                                                                                                           |
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| domain       | Mandatory: Provide the Auth0 domain that can be found at the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                          |
+| domain       | Mandatory: Provide the Auth0 domain that can be found in the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                          |
 | customScheme | Mandatory: Custom scheme to build the callback URL with. The value provided here should be passed to the `customScheme` option parameter of the `authorize` and `clearSession` methods. The custom scheme should be a unique, all lowercase value with no special characters (For example: auth0.YOUR_APP_PACKAGE_NAME_OR_BUNDLE_IDENTIFIER). |
 
 Now you can run the application using `expo run:android` or `expo run:ios`.
@@ -203,7 +203,7 @@ Now you can run the application using `expo run:android` or `expo run:ios`.
 
 Callback URLs are the URLs that Auth0 invokes after the authentication process. Auth0 routes your application back to this URL and appends additional parameters to it, including a token. Since callback URLs can be manipulated, you will need to add this URL to your Application's **Allowed Callback URLs** for security. This will enable Auth0 to recognize these URLs as valid. If omitted, authentication will not be successful.
 
-On the Android platform this URL is case-sensitive. Because of that, this SDK will auto convert the Bundle Identifier (iOS) and Application ID (Android) values to lowercase in order to build the Callback URL with them. If any of these values contains uppercase characters a warning message will be printed in the console. Make sure to check that the right Callback URL is whitelisted in the Auth0 dashboard or the browser will not route succesfully back to your application.
+On the Android platform this URL is case-sensitive. Because of that, this SDK will auto convert the Bundle Identifier (iOS) and Application ID (Android) values to lowercase in order to build the Callback URL with them. If any of these values contains uppercase characters a warning message will be printed in the console. Make sure to check that the right Callback URL is whitelisted in the Auth0 dashboard or the browser will not route successfully back to your application.
 
 Go to the [Auth0 Dashboard](https://manage.auth0.com/#/applications), select your application and make sure that **Allowed Callback URLs** contains the URLs defined below.
 
