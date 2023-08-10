@@ -14,10 +14,10 @@
 
 ## Documentation
 
-- [Quickstart](https://auth0.com/docs/quickstart/native/react-native-beta/interactive)
-- [Expo Quickstart](https://auth0.com/docs/quickstart/native/react-native-expo-beta/interactive)
-- [Sample App](https://github.com/auth0-samples/auth0-react-native-sample/tree/v3-beta/00-Login-Hooks)
-- [Expo Sample App](https://github.com/auth0-samples/auth0-react-native-sample/tree/v3-beta/00-Login-Expo)
+- [Quickstart](https://auth0.com/docs/quickstart/native/react-native/interactive)
+- [Expo Quickstart](https://auth0.com/docs/quickstart/native/react-native-expo/interactive)
+- [Sample App](https://github.com/auth0-samples/auth0-react-native-sample/tree/master/00-Login-Hooks)
+- [Expo Sample App](https://github.com/auth0-samples/auth0-react-native-sample/tree/master/00-Login-Expo)
 - [FAQs](https://github.com/auth0/react-native-auth0/blob/master/FAQ.md)
 - [Examples](https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES.md)
 - [Docs Site](https://auth0.github.io/react-native-auth0/)
