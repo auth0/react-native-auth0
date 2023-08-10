@@ -16,7 +16,7 @@
 
 **Added**
 
-- Credentials are returned as part of authorize methods in hooks
+- \Credentials are returned as part of authorize methods in hooks
 - Added sample app in the repository
 - Expo plugin is updated to latest version
 - Added 'openid profile email' as mandatory scopes
