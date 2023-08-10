@@ -116,6 +116,20 @@
                 alt="FOSSA Status"
             /></a>
           </p>
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  Exciting news! We have just released React Native Auth0 v3
+                  BETA, packed with powerful features and improvements.
+                  <a
+                    href="https://github.com/auth0/react-native-auth0/releases/tag/v3.0.0-beta.2"
+                    >Check out the release for more details</a
+                  >
+                </th>
+              </tr>
+            </thead>
+          </table>
           <p>
             📚 <a href="#documentation">Documentation</a> • 🚀
             <a href="#getting-started">Getting Started</a> • ⏭️
@@ -131,13 +145,13 @@
           <ul>
             <li>
               <a
-                href="https://auth0.com/docs/quickstart/native/react-native-beta/interactive"
+                href="https://auth0.com/docs/quickstart/native/react-native/interactive"
                 >Quickstart</a
               >
             </li>
             <li>
               <a
-                href="https://auth0.com/docs/quickstart/native/react-native-expo-beta/interactive"
+                href="https://auth0.com/docs/quickstart/native/react-native-expo/interactive"
                 >Expo Quickstart</a
               >
             </li>
@@ -215,14 +229,14 @@
               >With <a href="https://www.npmjs.com">npm</a></a
             >
           </h3>
-          <p><code>$ npm install react-native-auth0 --save</code></p>
+          <p><code>$ npm install react-native-auth0@v3-beta --save</code></p>
           <a id="md:with-yarn" class="tsd-anchor"></a>
           <h3>
             <a href="#md:with-yarn"
               >With <a href="https://yarnpkg.com/en/">Yarn</a></a
             >
           </h3>
-          <p><code>$ yarn add react-native-auth0</code></p>
+          <p><code>$ yarn add react-native-auth0@v3-beta</code></p>
           <p>
             Then, you need to run the following command to install the ios app
             pods with Cocoapods. That will auto-link the iOS library:
@@ -598,7 +612,7 @@
               The <code>error</code> property is populated if any error occurs.
             </li>
           </ul>
-          <pre><code class="language-js"><span class="hl-3">const</span><span class="hl-0"> </span><span class="hl-11">Component</span><span class="hl-0"> = () </span><span class="hl-3">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">  </span><span class="hl-3">const</span><span class="hl-0"> { </span><span class="hl-15">authorize</span><span class="hl-0">, </span><span class="hl-15">user</span><span class="hl-0">, </span><span class="hl-15">isLoading</span><span class="hl-0">, </span><span class="hl-15">error</span><span class="hl-0"> } = </span><span class="hl-11">useAuth0</span><span class="hl-0">();</span><br/><br/><span class="hl-0">  </span><span class="hl-3">const</span><span class="hl-0"> </span><span class="hl-11">login</span><span class="hl-0"> = </span><span class="hl-3">async</span><span class="hl-0"> () </span><span class="hl-3">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-9">await</span><span class="hl-0"> </span><span class="hl-11">authorize</span><span class="hl-0">(); </span><span class="hl-1">// authorize({}, {customScheme: &#39;CUSTOM_SCHEME&#39;}) when using Expo or a custom scheme</span><br/><span class="hl-0">  };</span><br/><br/><span class="hl-0">  </span><span class="hl-9">if</span><span class="hl-0"> (</span><span class="hl-14">isLoading</span><span class="hl-0">) {</span><br/><span class="hl-0">    </span><span class="hl-9">return</span><span class="hl-0"> (</span><br/><span class="hl-0">      </span><span class="hl-5">&lt;</span><span class="hl-10">View</span><span class="hl-5">&gt;</span><br/><span class="hl-0">        </span><span class="hl-5">&lt;</span><span class="hl-10">Text</span><span class="hl-5">&gt;</span><span class="hl-0">SDK is Loading</span><span class="hl-5">&lt;/</span><span class="hl-10">Text</span><span class="hl-5">&gt;</span><br/><span class="hl-0">      </span><span class="hl-5">&lt;/</span><span class="hl-10">View</span><span class="hl-5">&gt;</span><br/><span class="hl-0">    );</span><br/><span class="hl-0">  }</span><br/><br/><span class="hl-0">  </span><span class="hl-9">return</span><span class="hl-0"> (</span><br/><span class="hl-0">    </span><span class="hl-5">&lt;</span><span class="hl-10">View</span><span class="hl-5">&gt;</span><br/><span class="hl-0">      </span><span class="hl-3">{</span><span class="hl-0">!</span><span class="hl-14">user</span><span class="hl-4"> </span><span class="hl-0">&amp;&amp;</span><span class="hl-4"> </span><span class="hl-5">&lt;</span><span class="hl-10">Button</span><span class="hl-4"> </span><span class="hl-7">onPress</span><span class="hl-0">=</span><span class="hl-3">{</span><span class="hl-14">login</span><span class="hl-3">}</span><span class="hl-4"> </span><span class="hl-7">title</span><span class="hl-0">=</span><span class="hl-2">&quot;Log in&quot;</span><span class="hl-4"> </span><span class="hl-5">/&gt;</span><span class="hl-3">}</span><br/><span class="hl-0">      </span><span class="hl-3">{</span><span class="hl-14">user</span><span class="hl-4"> </span><span class="hl-0">&amp;&amp;</span><span class="hl-4"> </span><span class="hl-5">&lt;</span><span class="hl-10">Text</span><span class="hl-5">&gt;</span><span class="hl-4">Logged in as </span><span class="hl-3">{</span><span class="hl-14">user</span><span class="hl-4">.</span><span class="hl-14">name</span><span class="hl-3">}</span><span class="hl-5">&lt;/</span><span class="hl-10">Text</span><span class="hl-5">&gt;</span><span class="hl-3">}</span><br/><span class="hl-0">      </span><span class="hl-3">{</span><span class="hl-14">error</span><span class="hl-4"> </span><span class="hl-0">&amp;&amp;</span><span class="hl-4"> </span><span class="hl-5">&lt;</span><span class="hl-10">Text</span><span class="hl-5">&gt;</span><span class="hl-3">{</span><span class="hl-14">error</span><span class="hl-4">.</span><span class="hl-14">message</span><span class="hl-3">}</span><span class="hl-5">&lt;/</span><span class="hl-10">Text</span><span class="hl-5">&gt;</span><span class="hl-3">}</span><br/><span class="hl-0">    </span><span class="hl-5">&lt;/</span><span class="hl-10">View</span><span class="hl-5">&gt;</span><br/><span class="hl-0">  );</span><br/><span class="hl-0">};</span>
+          <pre><code class="language-js"><span class="hl-3">const</span><span class="hl-0"> </span><span class="hl-11">Component</span><span class="hl-0"> = () </span><span class="hl-3">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">  </span><span class="hl-3">const</span><span class="hl-0"> { </span><span class="hl-15">authorize</span><span class="hl-0">, </span><span class="hl-15">user</span><span class="hl-0">, </span><span class="hl-15">isLoading</span><span class="hl-0">, </span><span class="hl-15">error</span><span class="hl-0"> } = </span><span class="hl-11">useAuth0</span><span class="hl-0">();</span><br/><br/><span class="hl-0">  </span><span class="hl-3">const</span><span class="hl-0"> </span><span class="hl-11">login</span><span class="hl-0"> = </span><span class="hl-3">async</span><span class="hl-0"> () </span><span class="hl-3">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-9">await</span><span class="hl-0"> </span><span class="hl-11">authorize</span><span class="hl-0">();</span><br/><span class="hl-0">  };</span><br/><br/><span class="hl-0">  </span><span class="hl-9">if</span><span class="hl-0"> (</span><span class="hl-14">isLoading</span><span class="hl-0">) {</span><br/><span class="hl-0">    </span><span class="hl-9">return</span><span class="hl-0"> (</span><br/><span class="hl-0">      </span><span class="hl-5">&lt;</span><span class="hl-10">View</span><span class="hl-5">&gt;</span><br/><span class="hl-0">        </span><span class="hl-5">&lt;</span><span class="hl-10">Text</span><span class="hl-5">&gt;</span><span class="hl-0">SDK is Loading</span><span class="hl-5">&lt;/</span><span class="hl-10">Text</span><span class="hl-5">&gt;</span><br/><span class="hl-0">      </span><span class="hl-5">&lt;/</span><span class="hl-10">View</span><span class="hl-5">&gt;</span><br/><span class="hl-0">    );</span><br/><span class="hl-0">  }</span><br/><br/><span class="hl-0">  </span><span class="hl-9">return</span><span class="hl-0"> (</span><br/><span class="hl-0">    </span><span class="hl-5">&lt;</span><span class="hl-10">View</span><span class="hl-5">&gt;</span><br/><span class="hl-0">      </span><span class="hl-3">{</span><span class="hl-0">!</span><span class="hl-14">user</span><span class="hl-4"> </span><span class="hl-0">&amp;&amp;</span><span class="hl-4"> </span><span class="hl-5">&lt;</span><span class="hl-10">Button</span><span class="hl-4"> </span><span class="hl-7">onPress</span><span class="hl-0">=</span><span class="hl-3">{</span><span class="hl-14">login</span><span class="hl-3">}</span><span class="hl-4"> </span><span class="hl-7">title</span><span class="hl-0">=</span><span class="hl-2">&quot;Log in&quot;</span><span class="hl-4"> </span><span class="hl-5">/&gt;</span><span class="hl-3">}</span><br/><span class="hl-0">      </span><span class="hl-3">{</span><span class="hl-14">user</span><span class="hl-4"> </span><span class="hl-0">&amp;&amp;</span><span class="hl-4"> </span><span class="hl-5">&lt;</span><span class="hl-10">Text</span><span class="hl-5">&gt;</span><span class="hl-4">Logged in as </span><span class="hl-3">{</span><span class="hl-14">user</span><span class="hl-4">.</span><span class="hl-14">name</span><span class="hl-3">}</span><span class="hl-5">&lt;/</span><span class="hl-10">Text</span><span class="hl-5">&gt;</span><span class="hl-3">}</span><br/><span class="hl-0">      </span><span class="hl-3">{</span><span class="hl-14">error</span><span class="hl-4"> </span><span class="hl-0">&amp;&amp;</span><span class="hl-4"> </span><span class="hl-5">&lt;</span><span class="hl-10">Text</span><span class="hl-5">&gt;</span><span class="hl-3">{</span><span class="hl-14">error</span><span class="hl-4">.</span><span class="hl-14">message</span><span class="hl-3">}</span><span class="hl-5">&lt;/</span><span class="hl-10">Text</span><span class="hl-5">&gt;</span><span class="hl-3">}</span><br/><span class="hl-0">    </span><span class="hl-5">&lt;/</span><span class="hl-10">View</span><span class="hl-5">&gt;</span><br/><span class="hl-0">  );</span><br/><span class="hl-0">};</span>
 </code><button>Copy</button></pre>
           <details>
             <summary>Using the `Auth0` class</summary>
@@ -638,7 +652,7 @@
             Log the user out by using the <code>clearSession</code> method from
             the <code>useAuth0</code> hook.
           </p>
-          <pre><code class="language-js"><span class="hl-3">const</span><span class="hl-0"> </span><span class="hl-11">Component</span><span class="hl-0"> = () </span><span class="hl-3">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">  </span><span class="hl-3">const</span><span class="hl-0"> { </span><span class="hl-15">clearSession</span><span class="hl-0">, </span><span class="hl-15">user</span><span class="hl-0"> } = </span><span class="hl-11">useAuth0</span><span class="hl-0">();</span><br/><br/><span class="hl-0">  </span><span class="hl-3">const</span><span class="hl-0"> </span><span class="hl-11">logout</span><span class="hl-0"> = </span><span class="hl-3">async</span><span class="hl-0"> () </span><span class="hl-3">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-9">await</span><span class="hl-0"> </span><span class="hl-11">clearSession</span><span class="hl-0">(); </span><span class="hl-1">// clearSession({}, { customScheme: &#39;CUSTOM_SCHEME&#39; }) when using Expo or a custom scheme</span><br/><span class="hl-0">  };</span><br/><br/><span class="hl-0">  </span><span class="hl-9">return</span><span class="hl-0"> </span><span class="hl-5">&lt;</span><span class="hl-10">View</span><span class="hl-5">&gt;</span><span class="hl-3">{</span><span class="hl-14">user</span><span class="hl-4"> </span><span class="hl-0">&amp;&amp;</span><span class="hl-4"> </span><span class="hl-5">&lt;</span><span class="hl-10">Button</span><span class="hl-4"> </span><span class="hl-7">onPress</span><span class="hl-0">=</span><span class="hl-3">{</span><span class="hl-14">logout</span><span class="hl-3">}</span><span class="hl-4"> </span><span class="hl-7">title</span><span class="hl-0">=</span><span class="hl-2">&quot;Log out&quot;</span><span class="hl-4"> </span><span class="hl-5">/&gt;</span><span class="hl-3">}</span><span class="hl-5">&lt;/</span><span class="hl-10">View</span><span class="hl-5">&gt;</span><span class="hl-0">;</span><br/><span class="hl-0">};</span>
+          <pre><code class="language-js"><span class="hl-3">const</span><span class="hl-0"> </span><span class="hl-11">Component</span><span class="hl-0"> = () </span><span class="hl-3">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">  </span><span class="hl-3">const</span><span class="hl-0"> { </span><span class="hl-15">clearSession</span><span class="hl-0">, </span><span class="hl-15">user</span><span class="hl-0"> } = </span><span class="hl-11">useAuth0</span><span class="hl-0">();</span><br/><br/><span class="hl-0">  </span><span class="hl-3">const</span><span class="hl-0"> </span><span class="hl-11">logout</span><span class="hl-0"> = </span><span class="hl-3">async</span><span class="hl-0"> () </span><span class="hl-3">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-9">await</span><span class="hl-0"> </span><span class="hl-11">clearSession</span><span class="hl-0">();</span><br/><span class="hl-0">  };</span><br/><br/><span class="hl-0">  </span><span class="hl-9">return</span><span class="hl-0"> </span><span class="hl-5">&lt;</span><span class="hl-10">View</span><span class="hl-5">&gt;</span><span class="hl-3">{</span><span class="hl-14">user</span><span class="hl-4"> </span><span class="hl-0">&amp;&amp;</span><span class="hl-4"> </span><span class="hl-5">&lt;</span><span class="hl-10">Button</span><span class="hl-4"> </span><span class="hl-7">onPress</span><span class="hl-0">=</span><span class="hl-3">{</span><span class="hl-14">logout</span><span class="hl-3">}</span><span class="hl-4"> </span><span class="hl-7">title</span><span class="hl-0">=</span><span class="hl-2">&quot;Log out&quot;</span><span class="hl-4"> </span><span class="hl-5">/&gt;</span><span class="hl-3">}</span><span class="hl-5">&lt;/</span><span class="hl-10">View</span><span class="hl-5">&gt;</span><span class="hl-0">;</span><br/><span class="hl-0">};</span>
 </code><button>Copy</button></pre>
           <details>
             <summary>Using the `Auth0` class</summary>
@@ -1257,6 +1271,254 @@
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-128"></use></svg
                   ><span>default</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/AuthorizeUrlOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <g id="icon-256">
+                      <rect
+                        fill="var(--color-icon-background)"
+                        stroke="var(--color-ts-interface)"
+                        stroke-width="1.5"
+                        x="1"
+                        y="1"
+                        width="22"
+                        height="22"
+                        rx="6"
+                      ></rect>
+                      <path
+                        d="M9.51 16V15.016H11.298V8.224H9.51V7.24H14.19V8.224H12.402V15.016H14.19V16H9.51Z"
+                        fill="var(--color-text)"
+                      ></path>
+                    </g></svg
+                  ><span>Authorize<wbr />Url<wbr />Options</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/ClearSessionOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Clear<wbr />Session<wbr />Options</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/ClearSessionParameters.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Clear<wbr />Session<wbr />Parameters</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/CreateUserOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Create<wbr />User<wbr />Options</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/ExchangeNativeSocialOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span
+                    >Exchange<wbr />Native<wbr />Social<wbr />Options</span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/ExchangeOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Exchange<wbr />Options</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/GetUserOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Get<wbr />User<wbr />Options</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/LoginWithEmailOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Login<wbr />With<wbr />Email<wbr />Options</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/LoginWithOOBOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Login<wbr />WithOOBOptions</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/LoginWithOTPOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Login<wbr />WithOTPOptions</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/LoginWithRecoveryCodeOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span
+                    >Login<wbr />With<wbr />Recovery<wbr />Code<wbr />Options</span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/LoginWithSMSOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Login<wbr />WithSMSOptions</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/LogoutUrlOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Logout<wbr />Url<wbr />Options</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/MultifactorChallengeOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Multifactor<wbr />Challenge<wbr />Options</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/PasswordRealmOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Password<wbr />Realm<wbr />Options</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/PasswordlessWithEmailOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span
+                    >Passwordless<wbr />With<wbr />Email<wbr />Options</span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/PasswordlessWithSMSOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Passwordless<wbr />WithSMSOptions</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/PatchUserOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Patch<wbr />User<wbr />Options</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/RefreshTokenOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Refresh<wbr />Token<wbr />Options</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/ResetPasswordOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Reset<wbr />Password<wbr />Options</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/RevokeOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Revoke<wbr />Options</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/UserInfoOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>User<wbr />Info<wbr />Options</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/WebAuthorizeOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Web<wbr />Authorize<wbr />Options</span></a
+                >
+              </li>
+              <li>
+                <a href="interfaces/WebAuthorizeParameters.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  ><span>Web<wbr />Authorize<wbr />Parameters</span></a
+                >
+              </li>
+              <li>
+                <a href="types/Credentials.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <g id="icon-4194304">
+                      <rect
+                        fill="var(--color-icon-background)"
+                        stroke="var(--color-ts-type-alias)"
+                        stroke-width="1.5"
+                        x="1"
+                        y="1"
+                        width="22"
+                        height="22"
+                        rx="6"
+                      ></rect>
+                      <path
+                        d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z"
+                        fill="var(--color-text)"
+                      ></path>
+                    </g></svg
+                  ><span>Credentials</span></a
+                >
+              </li>
+              <li>
+                <a href="types/MultifactorChallengeOOBResponse.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-4194304"></use></svg
+                  ><span>Multifactor<wbr />ChallengeOOBResponse</span></a
+                >
+              </li>
+              <li>
+                <a href="types/MultifactorChallengeOOBWithBindingResponse.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-4194304"></use></svg
+                  ><span
+                    >Multifactor<wbr />ChallengeOOBWith<wbr />Binding<wbr />Response</span
+                  ></a
+                >
+              </li>
+              <li>
+                <a href="types/MultifactorChallengeOTPResponse.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-4194304"></use></svg
+                  ><span>Multifactor<wbr />ChallengeOTPResponse</span></a
+                >
+              </li>
+              <li>
+                <a href="types/MultifactorChallengeResponse.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-4194304"></use></svg
+                  ><span>Multifactor<wbr />Challenge<wbr />Response</span></a
+                >
+              </li>
+              <li>
+                <a href="types/User.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-4194304"></use></svg
+                  ><span>User</span></a
                 >
               </li>
               <li>
