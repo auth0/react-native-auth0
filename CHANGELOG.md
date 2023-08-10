@@ -38,14 +38,6 @@
 - Removed the `type` property returned in the `Credentials` object in Android. Use `tokenType` instead.
 - `skipLegacyListener` has been removed in `authorize` and `clearSession`
 
-## [v2.17.4](https://github.com/auth0/react-native-auth0/tree/v2.17.4) (2023-06-15)
-
-[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.17.3...v2.17.4)
-
-**Fixed**
-
-- Fix Auth0.Swift transitive dependencies [\#649](https://github.com/auth0/react-native-auth0/pull/649) ([poovamraj](https://github.com/poovamraj))
-
 **Security**
 
 - chore(deps): bump word-wrap from 1.2.3 to 1.2.4 [\#682](https://github.com/auth0/react-native-auth0/pull/682) ([dependabot[bot]](https://github.com/apps/dependabot))
