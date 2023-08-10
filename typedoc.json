@@ -1,5 +1,5 @@
 {
-  "entryPoints": ["index.ts"],
+  "entryPoints": ["src/index.ts"],
   "out": "out",
   "jsDocCompatibility": false,
   "plugin": ["typedoc-plugin-missing-exports"],
