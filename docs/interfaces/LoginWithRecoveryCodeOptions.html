@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
-    <title>WebAuth | react-native-auth0</title>
+    <title>LoginWithRecoveryCodeOptions | react-native-auth0</title>
     <meta name="description" content="Documentation for react-native-auth0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="../assets/style.css" />
@@ -76,43 +76,42 @@
         <div class="tsd-page-title">
           <ul class="tsd-breadcrumb">
             <li><a href="../modules.html">react-native-auth0</a></li>
-            <li><a href="../modules/Types.html">Types</a></li>
-            <li><a href="Types.WebAuth.html">WebAuth</a></li>
+            <li>
+              <a href="LoginWithRecoveryCodeOptions.html"
+                >LoginWithRecoveryCodeOptions</a
+              >
+            </li>
           </ul>
-          <h1>Class WebAuth</h1>
+          <h1>Interface LoginWithRecoveryCodeOptions</h1>
         </div>
         <section class="tsd-panel tsd-comment">
           <div class="tsd-comment tsd-typography">
-            <p>Helper to perform Auth against Auth0 hosted login page</p>
-            <p>
-              It will use <code>/authorize</code> endpoint of the Authorization
-              Server (AS) with Code Grant and Proof Key for Challenge Exchange
-              (PKCE).
-            </p>
+            <p>Options for logging in using a recovery code</p>
           </div>
-          <div class="tsd-comment tsd-typography">
-            <h4>See</h4>
-            <p>
-              <a
-                href="https://auth0.com/docs/api-auth/grant/authorization-code-pkce"
-                >https://auth0.com/docs/api-auth/grant/authorization-code-pkce</a
-              >
-            </p>
-          </div>
+          <div class="tsd-comment tsd-typography"></div>
         </section>
         <section class="tsd-panel tsd-hierarchy">
           <h4>Hierarchy</h4>
           <ul class="tsd-hierarchy">
-            <li><span class="target">WebAuth</span></li>
+            <li><span class="target">LoginWithRecoveryCodeOptions</span></li>
           </ul>
+        </section>
+        <section class="tsd-panel">
+          <h4 class="tsd-before-signature">Indexable</h4>
+          <div class="tsd-signature">
+            <span class="tsd-signature-symbol">[</span>key:
+            <span class="tsd-signature-type">string</span
+            ><span class="tsd-signature-symbol">]: </span
+            ><span class="tsd-signature-type">any</span>
+          </div>
         </section>
         <aside class="tsd-sources">
           <ul>
             <li>
               Defined in
               <a
-                href="https://github.com/auth0/react-native-auth0/blob/9b9ed243/src/webauth/index.ts#L21"
-                >webauth/index.ts:21</a
+                href="https://github.com/auth0/react-native-auth0/blob/9b9ed243/src/types.ts#L413"
+                >types.ts:413</a
               >
             </li>
           </ul>
@@ -141,8 +140,8 @@
                   <h3 class="tsd-index-heading">Properties</h3>
                   <div class="tsd-index-list">
                     <a
-                      href="Types.WebAuth.html#agent"
-                      class="tsd-index-link tsd-is-private"
+                      href="LoginWithRecoveryCodeOptions.html#mfaToken"
+                      class="tsd-index-link"
                       ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                         <g id="icon-1024">
                           <rect
@@ -160,55 +159,14 @@
                             fill="var(--color-text)"
                           ></path>
                         </g></svg
-                      ><span>agent</span></a
+                      ><span>mfa<wbr />Token</span></a
                     >
                     <a
-                      href="Types.WebAuth.html#clientId"
-                      class="tsd-index-link tsd-is-private"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                        <use href="#icon-1024"></use></svg
-                      ><span>client<wbr />Id</span></a
-                    >
-                    <a
-                      href="Types.WebAuth.html#domain"
-                      class="tsd-index-link tsd-is-private"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                        <use href="#icon-1024"></use></svg
-                      ><span>domain</span></a
-                    >
-                  </div>
-                </section>
-                <section class="tsd-index-section">
-                  <h3 class="tsd-index-heading">Methods</h3>
-                  <div class="tsd-index-list">
-                    <a
-                      href="Types.WebAuth.html#authorize"
+                      href="LoginWithRecoveryCodeOptions.html#recoveryCode"
                       class="tsd-index-link"
                       ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                        <g id="icon-2048">
-                          <rect
-                            fill="var(--color-icon-background)"
-                            stroke="#FF4DB8"
-                            stroke-width="1.5"
-                            x="1"
-                            y="1"
-                            width="22"
-                            height="22"
-                            rx="12"
-                          ></rect>
-                          <path
-                            d="M9.162 16V7.24H10.578L11.514 10.072C11.602 10.328 11.674 10.584 11.73 10.84C11.794 11.088 11.842 11.28 11.874 11.416C11.906 11.28 11.954 11.088 12.018 10.84C12.082 10.584 12.154 10.324 12.234 10.06L13.122 7.24H14.538V16H13.482V12.82C13.482 12.468 13.49 12.068 13.506 11.62C13.53 11.172 13.558 10.716 13.59 10.252C13.622 9.78 13.654 9.332 13.686 8.908C13.726 8.476 13.762 8.1 13.794 7.78L12.366 12.16H11.334L9.894 7.78C9.934 8.092 9.97 8.456 10.002 8.872C10.042 9.28 10.078 9.716 10.11 10.18C10.142 10.636 10.166 11.092 10.182 11.548C10.206 12.004 10.218 12.428 10.218 12.82V16H9.162Z"
-                            fill="var(--color-text)"
-                          ></path>
-                        </g></svg
-                      ><span>authorize</span></a
-                    >
-                    <a
-                      href="Types.WebAuth.html#clearSession"
-                      class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                        <use href="#icon-2048"></use></svg
-                      ><span>clear<wbr />Session</span></a
+                        <use href="#icon-1024"></use></svg
+                      ><span>recovery<wbr />Code</span></a
                     >
                   </div>
                 </section>
@@ -218,12 +176,14 @@
         </section>
         <section class="tsd-panel-group tsd-member-group">
           <h2>Properties</h2>
-          <section class="tsd-panel tsd-member tsd-is-private">
-            <a id="agent" class="tsd-anchor"></a>
+          <section class="tsd-panel tsd-member">
+            <a id="mfaToken" class="tsd-anchor"></a>
             <h3 class="tsd-anchor-link">
-              <code class="tsd-tag ts-flagPrivate">Private</code>
-              <span>agent</span
-              ><a href="#agent" aria-label="Permalink" class="tsd-anchor-icon"
+              <span>mfa<wbr />Token</span
+              ><a
+                href="#mfaToken"
+                aria-label="Permalink"
+                class="tsd-anchor-icon"
                 ><svg viewBox="0 0 24 24">
                   <g
                     stroke-width="2"
@@ -244,306 +204,57 @@
               ></a>
             </h3>
             <div class="tsd-signature">
-              <span class="tsd-kind-property">agent</span
+              <span class="tsd-kind-property">mfa<wbr />Token</span
               ><span class="tsd-signature-symbol">:</span>
-              <span class="tsd-signature-type">Agent</span>
+              <span class="tsd-signature-type">string</span>
             </div>
+            <div class="tsd-comment tsd-typography">
+              <p>The token received in the previous login response</p>
+            </div>
+            <div class="tsd-comment tsd-typography"></div>
             <aside class="tsd-sources">
               <ul>
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/9b9ed243/src/webauth/index.ts#L24"
-                    >webauth/index.ts:24</a
+                    href="https://github.com/auth0/react-native-auth0/blob/9b9ed243/src/types.ts#L417"
+                    >types.ts:417</a
                   >
                 </li>
               </ul>
             </aside>
           </section>
-          <section class="tsd-panel tsd-member tsd-is-private">
-            <a id="clientId" class="tsd-anchor"></a>
+          <section class="tsd-panel tsd-member">
+            <a id="recoveryCode" class="tsd-anchor"></a>
             <h3 class="tsd-anchor-link">
-              <code class="tsd-tag ts-flagPrivate">Private</code>
-              <span>client<wbr />Id</span
+              <span>recovery<wbr />Code</span
               ><a
-                href="#clientId"
+                href="#recoveryCode"
                 aria-label="Permalink"
                 class="tsd-anchor-icon"
                 ><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg
               ></a>
             </h3>
             <div class="tsd-signature">
-              <span class="tsd-kind-property">client<wbr />Id</span
+              <span class="tsd-kind-property">recovery<wbr />Code</span
               ><span class="tsd-signature-symbol">:</span>
               <span class="tsd-signature-type">string</span>
             </div>
+            <div class="tsd-comment tsd-typography">
+              <p>The recovery code provided by the end-user.</p>
+            </div>
+            <div class="tsd-comment tsd-typography"></div>
             <aside class="tsd-sources">
               <ul>
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/9b9ed243/src/webauth/index.ts#L23"
-                    >webauth/index.ts:23</a
+                    href="https://github.com/auth0/react-native-auth0/blob/9b9ed243/src/types.ts#L421"
+                    >types.ts:421</a
                   >
                 </li>
               </ul>
             </aside>
-          </section>
-          <section class="tsd-panel tsd-member tsd-is-private">
-            <a id="domain" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <code class="tsd-tag ts-flagPrivate">Private</code>
-              <span>domain</span
-              ><a href="#domain" aria-label="Permalink" class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <div class="tsd-signature">
-              <span class="tsd-kind-property">domain</span
-              ><span class="tsd-signature-symbol">:</span>
-              <span class="tsd-signature-type">string</span>
-            </div>
-            <aside class="tsd-sources">
-              <ul>
-                <li>
-                  Defined in
-                  <a
-                    href="https://github.com/auth0/react-native-auth0/blob/9b9ed243/src/webauth/index.ts#L22"
-                    >webauth/index.ts:22</a
-                  >
-                </li>
-              </ul>
-            </aside>
-          </section>
-        </section>
-        <section class="tsd-panel-group tsd-member-group">
-          <h2>Methods</h2>
-          <section class="tsd-panel tsd-member">
-            <a id="authorize" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <span>authorize</span
-              ><a
-                href="#authorize"
-                aria-label="Permalink"
-                class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <ul class="tsd-signatures">
-              <li
-                class="tsd-signature tsd-anchor-link"
-                id="authorize.authorize-1"
-              >
-                <span class="tsd-kind-call-signature">authorize</span
-                ><span class="tsd-signature-symbol">(</span
-                ><span class="tsd-kind-parameter">parameters</span
-                ><span class="tsd-signature-symbol">?</span>,
-                <span class="tsd-kind-parameter">options</span
-                ><span class="tsd-signature-symbol">?</span
-                ><span class="tsd-signature-symbol">)</span
-                ><span class="tsd-signature-symbol">: </span
-                ><span class="tsd-signature-type">Promise</span
-                ><span class="tsd-signature-symbol">&lt;</span
-                ><a
-                  href="../types/Credentials.html"
-                  class="tsd-signature-type tsd-kind-type-alias"
-                  >Credentials</a
-                ><span class="tsd-signature-symbol">&gt;</span
-                ><a
-                  href="#authorize.authorize-1"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg
-                ></a>
-              </li>
-              <li class="tsd-description">
-                <div class="tsd-comment tsd-typography">
-                  <p>
-                    Starts the AuthN/AuthZ transaction against the AS in the
-                    in-app browser.
-                  </p>
-                  <p>
-                    In iOS &lt;11 it will use
-                    <code>SFSafariViewController</code>, in iOS 11
-                    <code>SFAuthenticationSession</code> and in iOS &gt;11
-                    <code>ASWebAuthenticationSession</code>. In Android it will
-                    use Chrome Custom Tabs.
-                  </p>
-                  <p>
-                    To learn more about how to customize the authorize call,
-                    check the Universal Login Page article at
-                    <a href="https://auth0.com/docs/hosted-pages/login"
-                      >https://auth0.com/docs/hosted-pages/login</a
-                    >
-                  </p>
-                </div>
-                <div class="tsd-parameters">
-                  <h4 class="tsd-parameters-title">Parameters</h4>
-                  <ul class="tsd-parameter-list">
-                    <li>
-                      <h5>
-                        <span class="tsd-kind-parameter">parameters</span>:
-                        <a
-                          href="../interfaces/WebAuthorizeParameters.html"
-                          class="tsd-signature-type tsd-kind-interface"
-                          >WebAuthorizeParameters</a
-                        ><span class="tsd-signature-symbol"> = {}</span>
-                      </h5>
-                    </li>
-                    <li>
-                      <h5>
-                        <span class="tsd-kind-parameter">options</span>:
-                        <a
-                          href="../interfaces/WebAuthorizeOptions.html"
-                          class="tsd-signature-type tsd-kind-interface"
-                          >WebAuthorizeOptions</a
-                        ><span class="tsd-signature-symbol"> = {}</span>
-                      </h5>
-                    </li>
-                  </ul>
-                </div>
-                <h4 class="tsd-returns-title">
-                  Returns <span class="tsd-signature-type">Promise</span
-                  ><span class="tsd-signature-symbol">&lt;</span
-                  ><a
-                    href="../types/Credentials.html"
-                    class="tsd-signature-type tsd-kind-type-alias"
-                    >Credentials</a
-                  ><span class="tsd-signature-symbol">&gt;</span>
-                </h4>
-                <p>
-                  A poplulated instance of
-                  <a
-                    href="../types/Credentials.html"
-                    class="tsd-kind-type-alias"
-                    >Credentials</a
-                  >.
-                </p>
-
-                <div class="tsd-comment tsd-typography">
-                  <h4>See</h4>
-                  <p>
-                    <a
-                      href="https://auth0.com/docs/api/authentication#authorize-client"
-                      >https://auth0.com/docs/api/authentication#authorize-client</a
-                    >
-                  </p>
-                </div>
-                <aside class="tsd-sources">
-                  <ul>
-                    <li>
-                      Defined in
-                      <a
-                        href="https://github.com/auth0/react-native-auth0/blob/9b9ed243/src/webauth/index.ts#L48"
-                        >webauth/index.ts:48</a
-                      >
-                    </li>
-                  </ul>
-                </aside>
-              </li>
-            </ul>
-          </section>
-          <section class="tsd-panel tsd-member">
-            <a id="clearSession" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <span>clear<wbr />Session</span
-              ><a
-                href="#clearSession"
-                aria-label="Permalink"
-                class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <ul class="tsd-signatures">
-              <li
-                class="tsd-signature tsd-anchor-link"
-                id="clearSession.clearSession-1"
-              >
-                <span class="tsd-kind-call-signature">clear<wbr />Session</span
-                ><span class="tsd-signature-symbol">(</span
-                ><span class="tsd-kind-parameter">parameters</span
-                ><span class="tsd-signature-symbol">?</span>,
-                <span class="tsd-kind-parameter">options</span
-                ><span class="tsd-signature-symbol">?</span
-                ><span class="tsd-signature-symbol">)</span
-                ><span class="tsd-signature-symbol">: </span
-                ><span class="tsd-signature-type">Promise</span
-                ><span class="tsd-signature-symbol">&lt;</span
-                ><span class="tsd-signature-type">void</span
-                ><span class="tsd-signature-symbol">&gt;</span
-                ><a
-                  href="#clearSession.clearSession-1"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg
-                ></a>
-              </li>
-              <li class="tsd-description">
-                <div class="tsd-comment tsd-typography">
-                  <p>
-                    Removes Auth0 session and optionally remove the Identity
-                    Provider session.
-                  </p>
-                  <p>
-                    In iOS &lt;11 it will use
-                    <code>SFSafariViewController</code>, in iOS 11
-                    <code>SFAuthenticationSession</code> and in iOS &gt;11
-                    <code>ASWebAuthenticationSession</code>. In Android it will
-                    use Chrome Custom Tabs.
-                  </p>
-                </div>
-                <div class="tsd-parameters">
-                  <h4 class="tsd-parameters-title">Parameters</h4>
-                  <ul class="tsd-parameter-list">
-                    <li>
-                      <h5>
-                        <span class="tsd-kind-parameter">parameters</span>:
-                        <a
-                          href="../interfaces/ClearSessionParameters.html"
-                          class="tsd-signature-type tsd-kind-interface"
-                          >ClearSessionParameters</a
-                        ><span class="tsd-signature-symbol"> = {}</span>
-                      </h5>
-                    </li>
-                    <li>
-                      <h5>
-                        <span class="tsd-kind-parameter">options</span>:
-                        <a
-                          href="../interfaces/ClearSessionOptions.html"
-                          class="tsd-signature-type tsd-kind-interface"
-                          >ClearSessionOptions</a
-                        ><span class="tsd-signature-symbol"> = {}</span>
-                      </h5>
-                    </li>
-                  </ul>
-                </div>
-                <h4 class="tsd-returns-title">
-                  Returns <span class="tsd-signature-type">Promise</span
-                  ><span class="tsd-signature-symbol">&lt;</span
-                  ><span class="tsd-signature-type">void</span
-                  ><span class="tsd-signature-symbol">&gt;</span>
-                </h4>
-                <div class="tsd-comment tsd-typography">
-                  <h4>See</h4>
-                  <p>
-                    <a href="https://auth0.com/docs/logout"
-                      >https://auth0.com/docs/logout</a
-                    >
-                  </p>
-                </div>
-                <aside class="tsd-sources">
-                  <ul>
-                    <li>
-                      Defined in
-                      <a
-                        href="https://github.com/auth0/react-native-auth0/blob/9b9ed243/src/webauth/index.ts#L64"
-                        >webauth/index.ts:64</a
-                      >
-                    </li>
-                  </ul>
-                </aside>
-              </li>
-            </ul>
           </section>
         </section>
       </div>
@@ -689,38 +400,17 @@
             <div class="tsd-accordion-details">
               <ul>
                 <li>
-                  <a href="#agent" class="tsd-is-private"
+                  <a href="#mfaToken" class=""
                     ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                       <use href="#icon-1024"></use></svg
-                    ><span>agent</span></a
+                    ><span>mfa<wbr />Token</span></a
                   >
                 </li>
                 <li>
-                  <a href="#clientId" class="tsd-is-private"
+                  <a href="#recoveryCode" class=""
                     ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                       <use href="#icon-1024"></use></svg
-                    ><span>client<wbr />Id</span></a
-                  >
-                </li>
-                <li>
-                  <a href="#domain" class="tsd-is-private"
-                    ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                      <use href="#icon-1024"></use></svg
-                    ><span>domain</span></a
-                  >
-                </li>
-                <li>
-                  <a href="#authorize" class=""
-                    ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                      <use href="#icon-2048"></use></svg
-                    ><span>authorize</span></a
-                  >
-                </li>
-                <li>
-                  <a href="#clearSession" class=""
-                    ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                      <use href="#icon-2048"></use></svg
-                    ><span>clear<wbr />Session</span></a
+                    ><span>recovery<wbr />Code</span></a
                   >
                 </li>
               </ul>
@@ -751,129 +441,11 @@
             >
             <ul class="tsd-small-nested-navigation">
               <li>
-                <details class="tsd-index-accordion" open data-key="Types">
-                  <summary class="tsd-accordion-summary">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                      <use href="#icon-chevronDown"></use></svg
-                    ><a href="../modules/Types.html"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                        <use href="#icon-4"></use></svg
-                      ><span>Types</span></a
-                    >
-                  </summary>
-                  <div class="tsd-accordion-details">
-                    <ul class="tsd-nested-navigation">
-                      <li>
-                        <a href="Types.Auth.html"
-                          ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                            <g id="icon-128">
-                              <rect
-                                fill="var(--color-icon-background)"
-                                stroke="var(--color-ts-class)"
-                                stroke-width="1.5"
-                                x="1"
-                                y="1"
-                                width="22"
-                                height="22"
-                                rx="6"
-                              ></rect>
-                              <path
-                                d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z"
-                                fill="var(--color-text)"
-                              ></path>
-                            </g></svg
-                          ><span>Auth</span></a
-                        >
-                      </li>
-                      <li>
-                        <a href="Types.BaseError.html"
-                          ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                            <use href="#icon-128"></use></svg
-                          ><span>Base<wbr />Error</span></a
-                        >
-                      </li>
-                      <li>
-                        <a href="Types.CredentialsManager.html"
-                          ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                            <use href="#icon-128"></use></svg
-                          ><span>Credentials<wbr />Manager</span></a
-                        >
-                      </li>
-                      <li>
-                        <a href="Types.Users.html"
-                          ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                            <use href="#icon-128"></use></svg
-                          ><span>Users</span></a
-                        >
-                      </li>
-                      <li>
-                        <a href="Types.WebAuth.html" class="current"
-                          ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                            <use href="#icon-128"></use></svg
-                          ><span>Web<wbr />Auth</span></a
-                        >
-                      </li>
-                      <li>
-                        <a href="../interfaces/Types.Auth0ContextInterface.html"
-                          ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                            <g id="icon-256">
-                              <rect
-                                fill="var(--color-icon-background)"
-                                stroke="var(--color-ts-interface)"
-                                stroke-width="1.5"
-                                x="1"
-                                y="1"
-                                width="22"
-                                height="22"
-                                rx="6"
-                              ></rect>
-                              <path
-                                d="M9.51 16V15.016H11.298V8.224H9.51V7.24H14.19V8.224H12.402V15.016H14.19V16H9.51Z"
-                                fill="var(--color-text)"
-                              ></path>
-                            </g></svg
-                          ><span>Auth0<wbr />Context<wbr />Interface</span></a
-                        >
-                      </li>
-                      <li>
-                        <a href="../interfaces/Types.AuthState.html"
-                          ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                            <use href="#icon-256"></use></svg
-                          ><span>Auth<wbr />State</span></a
-                        >
-                      </li>
-                      <li>
-                        <a href="../types/Types.Auth0Response.html"
-                          ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                            <g id="icon-4194304">
-                              <rect
-                                fill="var(--color-icon-background)"
-                                stroke="var(--color-ts-type-alias)"
-                                stroke-width="1.5"
-                                x="1"
-                                y="1"
-                                width="22"
-                                height="22"
-                                rx="6"
-                              ></rect>
-                              <path
-                                d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z"
-                                fill="var(--color-text)"
-                              ></path>
-                            </g></svg
-                          ><span>Auth0<wbr />Response</span></a
-                        >
-                      </li>
-                      <li>
-                        <a href="../types/Types.Telemetry.html"
-                          ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                            <use href="#icon-4194304"></use></svg
-                          ><span>Telemetry</span></a
-                        >
-                      </li>
-                    </ul>
-                  </div>
-                </details>
+                <a href="../modules/Types.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-4"></use></svg
+                  ><span>Types</span></a
+                >
               </li>
               <li>
                 <a href="../modules/Auth0Provider.html"
@@ -905,49 +477,79 @@
                 >
               </li>
               <li>
-                <a href="TimeoutError.html"
+                <a href="../classes/TimeoutError.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                    <use href="#icon-128"></use></svg
+                    <g id="icon-128">
+                      <rect
+                        fill="var(--color-icon-background)"
+                        stroke="var(--color-ts-class)"
+                        stroke-width="1.5"
+                        x="1"
+                        y="1"
+                        width="22"
+                        height="22"
+                        rx="6"
+                      ></rect>
+                      <path
+                        d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z"
+                        fill="var(--color-text)"
+                      ></path>
+                    </g></svg
                   ><span>Timeout<wbr />Error</span></a
                 >
               </li>
               <li>
-                <a href="default.html"
+                <a href="../classes/default.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-128"></use></svg
                   ><span>default</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/AuthorizeUrlOptions.html"
+                <a href="AuthorizeUrlOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                    <use href="#icon-256"></use></svg
+                    <g id="icon-256">
+                      <rect
+                        fill="var(--color-icon-background)"
+                        stroke="var(--color-ts-interface)"
+                        stroke-width="1.5"
+                        x="1"
+                        y="1"
+                        width="22"
+                        height="22"
+                        rx="6"
+                      ></rect>
+                      <path
+                        d="M9.51 16V15.016H11.298V8.224H9.51V7.24H14.19V8.224H12.402V15.016H14.19V16H9.51Z"
+                        fill="var(--color-text)"
+                      ></path>
+                    </g></svg
                   ><span>Authorize<wbr />Url<wbr />Options</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/ClearSessionOptions.html"
+                <a href="ClearSessionOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Clear<wbr />Session<wbr />Options</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/ClearSessionParameters.html"
+                <a href="ClearSessionParameters.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Clear<wbr />Session<wbr />Parameters</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/CreateUserOptions.html"
+                <a href="CreateUserOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Create<wbr />User<wbr />Options</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/ExchangeNativeSocialOptions.html"
+                <a href="ExchangeNativeSocialOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span
@@ -956,42 +558,42 @@
                 >
               </li>
               <li>
-                <a href="../interfaces/ExchangeOptions.html"
+                <a href="ExchangeOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Exchange<wbr />Options</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/GetUserOptions.html"
+                <a href="GetUserOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Get<wbr />User<wbr />Options</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/LoginWithEmailOptions.html"
+                <a href="LoginWithEmailOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Login<wbr />With<wbr />Email<wbr />Options</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/LoginWithOOBOptions.html"
+                <a href="LoginWithOOBOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Login<wbr />WithOOBOptions</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/LoginWithOTPOptions.html"
+                <a href="LoginWithOTPOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Login<wbr />WithOTPOptions</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/LoginWithRecoveryCodeOptions.html"
+                <a href="LoginWithRecoveryCodeOptions.html" class="current"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span
@@ -1000,35 +602,35 @@
                 >
               </li>
               <li>
-                <a href="../interfaces/LoginWithSMSOptions.html"
+                <a href="LoginWithSMSOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Login<wbr />WithSMSOptions</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/LogoutUrlOptions.html"
+                <a href="LogoutUrlOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Logout<wbr />Url<wbr />Options</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/MultifactorChallengeOptions.html"
+                <a href="MultifactorChallengeOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Multifactor<wbr />Challenge<wbr />Options</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/PasswordRealmOptions.html"
+                <a href="PasswordRealmOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Password<wbr />Realm<wbr />Options</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/PasswordlessWithEmailOptions.html"
+                <a href="PasswordlessWithEmailOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span
@@ -1037,56 +639,56 @@
                 >
               </li>
               <li>
-                <a href="../interfaces/PasswordlessWithSMSOptions.html"
+                <a href="PasswordlessWithSMSOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Passwordless<wbr />WithSMSOptions</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/PatchUserOptions.html"
+                <a href="PatchUserOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Patch<wbr />User<wbr />Options</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/RefreshTokenOptions.html"
+                <a href="RefreshTokenOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Refresh<wbr />Token<wbr />Options</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/ResetPasswordOptions.html"
+                <a href="ResetPasswordOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Reset<wbr />Password<wbr />Options</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/RevokeOptions.html"
+                <a href="RevokeOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Revoke<wbr />Options</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/UserInfoOptions.html"
+                <a href="UserInfoOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>User<wbr />Info<wbr />Options</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/WebAuthorizeOptions.html"
+                <a href="WebAuthorizeOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Web<wbr />Authorize<wbr />Options</span></a
                 >
               </li>
               <li>
-                <a href="../interfaces/WebAuthorizeParameters.html"
+                <a href="WebAuthorizeParameters.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   ><span>Web<wbr />Authorize<wbr />Parameters</span></a
@@ -1095,7 +697,22 @@
               <li>
                 <a href="../types/Credentials.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                    <use href="#icon-4194304"></use></svg
+                    <g id="icon-4194304">
+                      <rect
+                        fill="var(--color-icon-background)"
+                        stroke="var(--color-ts-type-alias)"
+                        stroke-width="1.5"
+                        x="1"
+                        y="1"
+                        width="22"
+                        height="22"
+                        rx="6"
+                      ></rect>
+                      <path
+                        d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z"
+                        fill="var(--color-text)"
+                      ></path>
+                    </g></svg
                   ><span>Credentials</span></a
                 >
               </li>

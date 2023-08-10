@@ -1,5 +1,49 @@
 # Change Log
 
+## [v3.0.0](https://github.com/auth0/react-native-auth0/tree/v3.0.0) (2023-08-10)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.17.4...v3.0.0)
+
+💡 Check the [Migration Guide](MIGRATION_GUIDE.md) to understand the changes required to migrate your application to v3.
+
+**Added**
+
+- Credentials are returned as part of authorize methods in hooks
+- Support for organizations name in login
+- Added sample app in the repository
+- Expo plugin is updated to latest version
+- Added 'openid profile email' as mandatory scopes
+- Option to `forceRefresh` is added in `getCredentials`
+- Added `hasValidCredentials` to hooks
+- More options to authorize using Hooks
+  - `authorizeWithSMS`
+  - `authorizeWithEmail`
+  - `authorizeWithOOB`
+  - `authorizeWithOTP`
+  - `authorizeWithRecoveryCode`
+
+**Changed**
+
+- Custom Scheme is now optional in Expo
+- Migrated the codebase to Typescript
+- Use Native SDKs ([Auth0.Android](https://github.com/auth0/Auth0.Android/) and [Auth0.Swift](https://github.com/auth0/Auth0.Swift)) for Web Authentication
+- `Credentials` object in Android will return `expiresIn` instead of `expiresAt`
+- `max_age` parameter is changed to `maxAge` in `WebAuth.authorize()`
+- `customScheme` is now part of `ClearSessionOptions` instead of `ClearSessionParameters` in `clearSession`
+- Minimum supported version for iOS is bumped to 13
+- Revoke Token and Change Password now return `void` instead of an empty object
+
+**Removed**
+
+- Removed the `type` property returned in the `Credentials` object in Android. Use `tokenType` instead.
+- `skipLegacyListener` has been removed in `authorize` and `clearSession`
+
+**Security**
+
+- chore(deps): bump word-wrap from 1.2.3 to 1.2.4 [\#682](https://github.com/auth0/react-native-auth0/pull/682) ([dependabot[bot]](https://github.com/apps/dependabot))
+- chore: Expand `.semgrepignore` exclusions to tests [\#679](https://github.com/auth0/react-native-auth0/pull/679) ([evansims](https://github.com/evansims))
+- chore(deps-dev): bump semver from 6.3.0 to 7.5.2 [\#657](https://github.com/auth0/react-native-auth0/pull/657) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v3.0.0-beta.3](https://github.com/auth0/react-native-auth0/tree/v3.0.0-beta.3) (2023-07-11)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.0.0-beta.2...v3.0.0-beta.3)
@@ -16,7 +60,7 @@
 
 **Added**
 
-- \Credentials are returned as part of authorize methods in hooks
+- Credentials are returned as part of authorize methods in hooks
 - Added sample app in the repository
 - Expo plugin is updated to latest version
 - Added 'openid profile email' as mandatory scopes
