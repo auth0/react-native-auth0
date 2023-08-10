@@ -12,9 +12,9 @@ export type Credentials = {
    */
   tokenType: string;
   /**
-   * Used to denote when the token will expire from the issued time
+   * Used to denote when the token will expire, as a UNIX timestamp
    */
-  expiresIn: number;
+  expiresAt: number;
   /**
    * The token used to refresh the access token
    */

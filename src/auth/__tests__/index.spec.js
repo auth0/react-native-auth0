@@ -38,6 +38,12 @@ describe('auth', () => {
   };
   const auth = new Auth({baseUrl, clientId, telemetry});
 
+  beforeAll(() => {
+    jest
+      .useFakeTimers()
+      .setSystemTime(new Date('2023-01-01'));
+  });
+
   beforeEach(fetchMock.restore);
 
   describe('constructor', () => {
@@ -875,7 +881,7 @@ describe('auth', () => {
     });
 
     it('binding code should be optional', async () => {
-      fetchMock.postOnce('https://samples.auth0.com/oauth/token', {});
+      fetchMock.postOnce('https://samples.auth0.com/oauth/token', success);
       expect.assertions(1);
       await expect(auth.loginWithOOB(parameters)).resolves.toMatchSnapshot();
     });
