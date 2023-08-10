@@ -181,9 +181,9 @@ To use the SDK with Expo, configure the app at build time by providing the `doma
 }
 ```
 
-| API          | Description                                                                                                                                                                                                                                                                                                                                  |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| domain       | Mandatory: Provide the Auth0 domain that can be found at the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                                                                                                 |
+| API          | Description                                                                                                                                                                                                                                                                  |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| domain       | Mandatory: Provide the Auth0 domain that can be found at the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                                 |
 | customScheme | Optional: Custom scheme to build the callback URL with. The value provided here should be passed to the `customScheme` option parameter of the `authorize` and `clearSession` methods. The custom scheme should be a unique, all lowercase value with no special characters. |
 
 Now you can run the application using `expo run:android` or `expo run:ios`.
@@ -277,7 +277,7 @@ const Component = () => {
   const { authorize, user, isLoading, error } = useAuth0();
 
   const login = async () => {
-    await authorize(); // authorize({}, {customScheme: 'CUSTOM_SCHEME'}) when using Expo or a custom scheme
+    await authorize();
   };
 
   if (isLoading) {
@@ -328,7 +328,7 @@ const Component = () => {
   const { clearSession, user } = useAuth0();
 
   const logout = async () => {
-    await clearSession(); // clearSession({}, { customScheme: 'CUSTOM_SCHEME' }) when using Expo or a custom scheme
+    await clearSession();
   };
 
   return <View>{user && <Button onPress={logout} title="Log out" />}</View>;
