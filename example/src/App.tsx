@@ -15,7 +15,7 @@ const Home = () => {
   const { authorize, clearSession, user, getCredentials, error } = useAuth0();
 
   const onLogin = async () => {
-    await authorize({ scope: 'openid profile email' }, {});
+    await authorize();
     const credentials = await getCredentials(undefined, 0, {});
     Alert.alert('AccessToken: ' + credentials?.accessToken);
   };
@@ -23,7 +23,7 @@ const Home = () => {
   const loggedIn = user !== undefined && user !== null;
 
   const onLogout = async () => {
-    await clearSession({ federated: true }, {});
+    await clearSession();
   };
 
   return (
