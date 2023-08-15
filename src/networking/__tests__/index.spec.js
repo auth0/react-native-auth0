@@ -1,5 +1,5 @@
-import Client from '../';
-import defaults from '../telemetry';
+import Client from '..';
+import {defaults} from '../telemetry';
 import fetchMock from 'fetch-mock';
 import {TimeoutError} from '../../utils/fetchWithTimeout';
 

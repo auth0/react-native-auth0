@@ -1,0 +1,9 @@
+{
+  "entryPoints": ["src/index.ts"],
+  "out": "out",
+  "jsDocCompatibility": false,
+  "plugin": ["typedoc-plugin-missing-exports"],
+  "exclude": ["./src/internal-types.ts", "./src/webauth/agent.ts"],
+  "excludeExternals": true,
+  "internalModule": "Types"
+}

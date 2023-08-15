@@ -1,13 +1,13 @@
 import CredentialsManager from '../index';
-import {Platform} from 'react-native';
+import { Platform } from 'react-native';
 
 describe('credentials manager tests', () => {
   const credentialsManager = new CredentialsManager(
     'https://auth0.com',
-    'abc123',
+    'abc123'
   );
 
-  credentialsManager.Auth0Module.hasValidCredentialManagerInstance = () =>
+  credentialsManager.Auth0Module.hasValidAuth0Instance = () =>
     Promise.resolve(true);
   credentialsManager.Auth0Module.saveCredentials = () => {};
   credentialsManager.Auth0Module.getCredentials = () => {};
@@ -19,7 +19,7 @@ describe('credentials manager tests', () => {
     idToken: '1234',
     accessToken: '1234',
     tokenType: 'Bearer',
-    expiresIn: 86000,
+    expiresAt: 1691603391,
   };
 
   describe('test saving credentials', () => {
@@ -27,7 +27,7 @@ describe('credentials manager tests', () => {
       const testToken = Object.assign({}, validToken);
       testToken.idToken = undefined;
       await expect(
-        credentialsManager.saveCredentials(testToken),
+        credentialsManager.saveCredentials(testToken)
       ).rejects.toThrow();
     });
 
@@ -35,7 +35,7 @@ describe('credentials manager tests', () => {
       const testToken = Object.assign({}, validToken);
       testToken.tokenType = undefined;
       await expect(
-        credentialsManager.saveCredentials(testToken),
+        credentialsManager.saveCredentials(testToken)
       ).rejects.toThrow();
     });
 
@@ -43,37 +43,34 @@ describe('credentials manager tests', () => {
       const testToken = Object.assign({}, validToken);
       testToken.accessToken = undefined;
       await expect(
-        credentialsManager.saveCredentials(testToken),
+        credentialsManager.saveCredentials(testToken)
       ).rejects.toThrow();
     });
 
     it('throws when expiresIn type is empty', async () => {
       const testToken = Object.assign({}, validToken);
-      testToken.expiresIn = undefined;
+      testToken.expiresAt = undefined;
       await expect(
-        credentialsManager.saveCredentials(testToken),
+        credentialsManager.saveCredentials(testToken)
       ).rejects.toThrow();
     });
 
     it('throws when expiresIn type is zero', async () => {
       const testToken = Object.assign({}, validToken);
-      testToken.expiresIn = 0;
+      testToken.expiresAt = 0;
       await expect(
-        credentialsManager.saveCredentials(testToken),
+        credentialsManager.saveCredentials(testToken)
       ).rejects.toThrow();
     });
 
     it('proper error is thrown for exception', async () => {
       const newNativeModule = jest
-        .spyOn(
-          credentialsManager.Auth0Module,
-          'hasValidCredentialManagerInstance',
-        )
+        .spyOn(credentialsManager.Auth0Module, 'hasValidAuth0Instance')
         .mockImplementation(() => {
           throw Error('123123');
         });
       await expect(
-        credentialsManager.saveCredentials(validToken),
+        credentialsManager.saveCredentials(validToken)
       ).rejects.toThrow();
       newNativeModule.mockRestore();
     });
@@ -83,7 +80,7 @@ describe('credentials manager tests', () => {
         .spyOn(credentialsManager.Auth0Module, 'saveCredentials')
         .mockImplementation(() => Promise.resolve(true));
       await expect(
-        credentialsManager.saveCredentials(validToken),
+        credentialsManager.saveCredentials(validToken)
       ).resolves.toEqual(true);
       newNativeModule.mockRestore();
     });
@@ -105,8 +102,22 @@ describe('credentials manager tests', () => {
         .spyOn(credentialsManager.Auth0Module, 'getCredentials')
         .mockImplementation(() => Promise.resolve(validToken));
       await expect(credentialsManager.getCredentials()).resolves.toEqual(
-        validToken,
+        validToken
       );
+      newNativeModule.mockRestore();
+    });
+
+    it('passes along the forceRefresh parameter', async () => {
+      const newNativeModule = jest
+        .spyOn(credentialsManager.Auth0Module, 'getCredentials')
+        .mockImplementation(() => Promise.resolve(validToken));
+
+      await credentialsManager.getCredentials(null, 0, {}, true);
+
+      expect(
+        credentialsManager.Auth0Module.getCredentials
+      ).toHaveBeenCalledWith(null, 0, {}, true);
+
       newNativeModule.mockRestore();
     });
   });
@@ -117,7 +128,7 @@ describe('credentials manager tests', () => {
         .spyOn(credentialsManager.Auth0Module, 'hasValidCredentials')
         .mockImplementation(() => Promise.resolve(true));
       await expect(credentialsManager.hasValidCredentials()).resolves.toEqual(
-        true,
+        true
       );
       newNativeModule.mockRestore();
     });
@@ -127,7 +138,7 @@ describe('credentials manager tests', () => {
         .spyOn(credentialsManager.Auth0Module, 'hasValidCredentials')
         .mockImplementation(() => Promise.resolve(true));
       await expect(credentialsManager.hasValidCredentials()).resolves.toEqual(
-        true,
+        true
       );
       newNativeModule.mockRestore();
     });
@@ -139,7 +150,7 @@ describe('credentials manager tests', () => {
         .spyOn(credentialsManager.Auth0Module, 'clearCredentials')
         .mockImplementation(() => Promise.resolve(true));
       await expect(credentialsManager.clearCredentials()).resolves.toEqual(
-        true,
+        true
       );
       newNativeModule.mockRestore();
     });
@@ -149,7 +160,7 @@ describe('credentials manager tests', () => {
         .spyOn(credentialsManager.Auth0Module, 'clearCredentials')
         .mockImplementation(() => Promise.resolve(true));
       await expect(credentialsManager.clearCredentials()).resolves.toEqual(
-        true,
+        true
       );
       newNativeModule.mockRestore();
     });

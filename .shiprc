@@ -1,6 +1,6 @@
 {
     "files": {
-        "src/networking/telemetry.js": []
+        "src/networking/telemetry.ts": []
     },
     "postbump": "node scripts/jsdocs.js"
 }

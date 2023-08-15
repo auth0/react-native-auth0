@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.homepage     = package['repository']['baseUrl']
   s.license      = package['license']
   s.authors      = package['author']
-  s.platforms    = { :ios => '12.0' }
+  s.platforms    = { :ios => '13.0' }
   s.source       = { :git => 'https://github.com/auth0/react-native-auth0.git', :tag => "v#{s.version}" }
 
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency 'React-Core'
-  s.dependency 'Auth0', '2.3.2'
-  s.dependency 'JWTDecode', '3.0.1'
-  s.dependency 'SimpleKeychain', '1.0.1'
+  s.dependency 'Auth0', '2.5.0'
+  s.dependency 'JWTDecode', '3.1.0'
+  s.dependency 'SimpleKeychain', '1.1.0'
 end

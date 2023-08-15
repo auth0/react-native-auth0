@@ -1,9 +1,28 @@
 {
-  "extends": "expo-module-scripts/tsconfig.plugin",
   "compilerOptions": {
-    "outDir": "./plugin/build",
-    "rootDir": "./plugin/src"
-  },
-  "include": ["./plugin/src"],
-  "exclude": ["**/__tests__/**"]
+    "baseUrl": "./",
+    "paths": {
+      "react-native-auth0": ["./src/index"]
+    },
+    "module": "esnext",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "jsx": "react-native",
+    "lib": ["DOM", "ESNext"],
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "target": "ESNext",
+    "noImplicitAny": true,
+    "downlevelIteration": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "strictBindCallApply": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "declaration": true,
+    "declarationDir": "./lib/typescript/",
+    "outDir": "./lib/typescript"
+  }
 }
