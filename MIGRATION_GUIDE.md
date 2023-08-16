@@ -19,6 +19,7 @@
 - `skipLegacyListener` has been removed in `authorize` and `clearSession`
 - `customScheme` is now part of `ClearSessionOptions` instead of `ClearSessionParameters` in `clearSession`
 - iOS minimum deployment target is now 13. This can be migrated by adding `platform :ios '13.0'` to the ios/Podfile file
+- Additional or custom parameters to be sent in `authorize` method should now be sent as `additionalParameters`. This includes when sending `prompt` parameter.
 
 ### Callback URL migration
 
