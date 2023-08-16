@@ -25,8 +25,8 @@ export interface Auth0ContextInterface<TUser extends User = User>
    * @param options Options for customizing the SDK's handling of the authorize call
    */
   authorize: (
-    parameters: WebAuthorizeParameters,
-    options: WebAuthorizeOptions
+    parameters?: WebAuthorizeParameters,
+    options?: WebAuthorizeOptions
   ) => Promise<Credentials | undefined>;
   /**
    * Start the passwordless SMS login flow. See {@link Auth#passwordlessWithSMS}
@@ -35,7 +35,9 @@ export interface Auth0ContextInterface<TUser extends User = User>
   /**
    * Authorize the user using a SMS code. See {@link Auth#loginWithSMS}
    */
-  authorizeWithSMS: (parameters: LoginWithSMSOptions) => Promise<Credentials | undefined>;
+  authorizeWithSMS: (
+    parameters: LoginWithSMSOptions
+  ) => Promise<Credentials | undefined>;
   /**
    * Start the passwordless email login flow. See {@link Auth#passwordlessWithEmail}
    */
@@ -43,7 +45,9 @@ export interface Auth0ContextInterface<TUser extends User = User>
   /**
    * Authorize the user using an email code. See {@link Auth#loginWithEmail}
    */
-  authorizeWithEmail: (parameters: LoginWithEmailOptions) => Promise<Credentials | undefined>;
+  authorizeWithEmail: (
+    parameters: LoginWithEmailOptions
+  ) => Promise<Credentials | undefined>;
   /**
    * Send a challenge for multi-factor authentication. See {@link Auth#multifactorChallenge}
    */
@@ -53,11 +57,15 @@ export interface Auth0ContextInterface<TUser extends User = User>
   /**
    * Authorize the user using an Out Of Band authentication code. See {@link Auth#loginWithOOB}
    */
-  authorizeWithOOB: (parameters: LoginWithOOBOptions) => Promise<Credentials | undefined>;
+  authorizeWithOOB: (
+    parameters: LoginWithOOBOptions
+  ) => Promise<Credentials | undefined>;
   /**
    * Autohrize the user using a One Time Password code. See {@link Auth#loginWithOTP}.
    */
-  authorizeWithOTP: (parameters: LoginWithOTPOptions) => Promise<Credentials | undefined>;
+  authorizeWithOTP: (
+    parameters: LoginWithOTPOptions
+  ) => Promise<Credentials | undefined>;
   /**
    * Authorize the user using a multi-factor authentication Recovery Code. See {@link Auth#loginWithRecoveryCode}
    */
@@ -76,8 +84,8 @@ export interface Auth0ContextInterface<TUser extends User = User>
    * @param options Options for configuring the SDK's clear session behaviour.
    */
   clearSession: (
-    parameters: ClearSessionParameters,
-    options: ClearSessionOptions
+    parameters?: ClearSessionParameters,
+    options?: ClearSessionOptions
   ) => Promise<void>;
   /**
    * Gets the user's credentials from the native credential store. If credentials have expired, they are automatically refreshed
