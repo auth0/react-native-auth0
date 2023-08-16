@@ -18,6 +18,7 @@
 - `max_age` parameter is changed to `maxAge` in `WebAuth.authorize()`
 - `skipLegacyListener` has been removed in `authorize` and `clearSession`
 - `customScheme` is now part of `ClearSessionOptions` instead of `ClearSessionParameters` in `clearSession`
+- Additional or custom parameters to be sent in `authorize` method should now be sent as `additionalParameters`. This includes when sending `prompt` parameter.
 
 ### Callback URL migration
 
