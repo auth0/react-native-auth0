@@ -66,11 +66,11 @@ If you don't need SSO, you can disable this behavior by adding `ephemeralSession
 ```js
 auth0.webAuth
   .authorize(
-    {scope: 'openid profile email'},
-    {ephemeralSession: true}, // No SSO, therefore no alert box
+    { scope: 'openid profile email' },
+    { ephemeralSession: true } // No SSO, therefore no alert box
   )
-  .then(credentials => console.log(credentials))
-  .catch(error => console.log(error));
+  .then((credentials) => console.log(credentials))
+  .catch((error) => console.log(error));
 ```
 
 Note that with `ephemeralSession: true` you don't need to call `clearSession` at all. Just clearing the credentials from the app will suffice. What `clearSession` does is clear the shared session cookie, so that in the next login call the user gets asked to log in again. But with `ephemeralSession: true` there will be no shared cookie to remove.
@@ -83,18 +83,18 @@ You still need to call `clearSession` on Android, though, as `ephemeralSession` 
 
 ![ios-sso-alert](assets/ios-sso-alert.png)
 
-Since `clearSession` needs to use `ASWebAuthenticationSession` as well to clear the shared session cookie, the same alert box will be displayed. 
+Since `clearSession` needs to use `ASWebAuthenticationSession` as well to clear the shared session cookie, the same alert box will be displayed.
 
 If you need SSO and/or are willing to tolerate the alert box on the login call, but would prefer to get rid of it when calling `clearSession`, you can simply not call `clearSession` and just clear the credentials from the app. This means that the shared session cookie will not be removed, so to get the user to log in again you need to add the `prompt: 'login'` parameter to the _login_ call.
 
 ```js
 auth0.webAuth
   .authorize(
-    {scope: 'openid profile email', prompt: 'login'}, // Ignore the cookie (if present) and show the login page
-    {ephemeralSession: true},
+    { additionalParameters: { prompt: 'login' } }, // Ignore the cookie (if present) and show the login page
+    { ephemeralSession: true }
   )
-  .then(credentials => console.log(credentials))
-  .catch(error => console.log(error));
+  .then((credentials) => console.log(credentials))
+  .catch((error) => console.log(error));
 ```
 
 Otherwise, the browser modal will close right away and the user will be automatically logged in again, as the cookie will still be there.
