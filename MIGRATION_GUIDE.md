@@ -50,5 +50,31 @@ Choose one of the following migration paths depending on your application:
     - Run `npx expo prebuild --clean` (any manual changes to Android or iOS folders will be lost)
     - Add the new callback URL to Auth0 dashboard
 - **If your project is built with Non Expo:**
+
   - To keep things as it is, set `useLegacyCallbackUrl` to true in `authorize` and `clearSession`
   - To migrate to new non-custom scheme flow, add the new callback URL to Auth0 dashboard
+  - Change the manifest placeholders in your app's build.gradle file (typically at android/app/build.gradle):
+
+  **Old**
+
+```
+  android {
+    defaultConfig {
+        manifestPlaceholders = [auth0Domain: "YOUR_AUTH0_DOMAIN", auth0Scheme: "${applicationId}"]
+    }
+    ...
+}
+```
+
+**New**
+
+Notice the new `.auth0` suffix in auth0Scheme:
+
+```
+android {
+    defaultConfig {
+        manifestPlaceholders = [auth0Domain: "YOUR_AUTH0_DOMAIN", auth0Scheme: "${applicationId}.auth0"]
+    }
+    ...
+}
+```
