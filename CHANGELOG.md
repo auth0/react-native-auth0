@@ -1,5 +1,18 @@
 # Change Log
 
+## [v3.0.1](https://github.com/auth0/react-native-auth0/tree/v3.0.1) (2023-08-16)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.0.0...v3.0.1)
+
+**Fixed**
+
+- Make `authorize` and `clearSession` parameters optional [\#701](https://github.com/auth0/react-native-auth0/pull/701) ([poovamraj](https://github.com/poovamraj))
+
+**Security**
+
+- chore(deps): bump semver from 5.7.1 to 5.7.2 in /example [\#692](https://github.com/auth0/react-native-auth0/pull/692) ([dependabot[bot]](https://github.com/apps/dependabot))
+- chore(deps): bump fast-xml-parser from 4.2.4 to 4.2.7 in /example [\#693](https://github.com/auth0/react-native-auth0/pull/693) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v3.0.0](https://github.com/auth0/react-native-auth0/tree/v3.0.0) (2023-08-10)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v2.17.4...v3.0.0)
