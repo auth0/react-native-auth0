@@ -53,7 +53,7 @@ Choose one of the following migration paths depending on your application:
 
   - To keep things as it is, set `useLegacyCallbackUrl` to true in `authorize` and `clearSession`
   - To migrate to new non-custom scheme flow, add the new callback URL to Auth0 dashboard
-  - Replace the manifest placeholders in your app's build.gradle file (typically at android/app/build.gradle) from:
+  - Change the manifest placeholders in your app's build.gradle file (typically at android/app/build.gradle):
 
   **Old**
 
