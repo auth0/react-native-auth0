@@ -22,7 +22,7 @@ Alternatively, you can re-declare the `RedirectActivity` in the `AndroidManifest
         <!-- ... -->
 
         <activity
-            android:name="com.auth0.react.RedirectActivity"
+            android:name="com.auth0.android.provider.RedirectActivity"
             tools:node="replace">
             <intent-filter
                 android:autoVerify="true"

@@ -111,11 +111,11 @@ Re-declare the activity manually with `tools:node="remove"` in your app's Androi
 
 ```xml
 <activity
-    android:name="com.auth0.react.AuthenticationActivity"
+    android:name="com.auth0.android.provider.AuthenticationActivity"
     tools:node="remove"/>
 <!-- Optional: Remove RedirectActivity -->
 <activity
-    android:name="com.auth0.react.RedirectActivity"
+    android:name="com.auth0.android.provider.RedirectActivity"
     tools:node="remove"/>
 ```
 
