@@ -235,7 +235,7 @@ The SDK exports a React hook as the primary interface for performing [web authen
 
 Use the methods from the `useAuth0` hook to implement login, logout, and to retrieve details about the authenticated user.
 
-See the [API Documentation](https://auth0.github.io/react-native-auth0/global.html#useAuth0) for full details on the `useAuth0` hook.
+See the [API Documentation](https://auth0.github.io/react-native-auth0/functions/useAuth0.html) for full details on the `useAuth0` hook.
 
 First, import the `Auth0Provider` component and wrap it around your application. Provide the `domain` and `clientId` values as given to you when setting up your Auth0 app in the dashboard:
 
@@ -400,7 +400,7 @@ You can enable an additional level of user authentication before retrieving cred
 await auth0.credentialsManager.requireLocalAuthentication();
 ```
 
-Check the [API documentation](https://auth0.github.io/react-native-auth0/CredentialsManager#requireLocalAuthentication) to learn more about the available LocalAuthentication properties.
+Check the [API documentation](https://auth0.github.io/react-native-auth0/classes/Types.CredentialsManager.html#requireLocalAuthentication) to learn more about the available LocalAuthentication properties.
 
 > :warning: You need a real device to test Local Authentication for iOS. Local Authentication is not available in simulators.
 
