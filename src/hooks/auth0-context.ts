@@ -77,7 +77,7 @@ export interface Auth0ContextInterface<TUser extends User = User>
    * @param minTtl The minimum time in seconds that the access token should last before expiration
    * @returns `true` if there are valid credentials. Otherwise, `false`.
    */
-  hasValidCredentials: (minTtl: number) => Promise<boolean>;
+  hasValidCredentials: (minTtl?: number) => Promise<boolean>;
   /**
    * Clears the user's web session, credentials and logs them out. See {@link WebAuth#clearSession}
    * @param parameters Additional parameters to send to the Auth0 logout endpoint.
