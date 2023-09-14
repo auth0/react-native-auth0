@@ -5,7 +5,7 @@ orbs:
   codecov: codecov/codecov@3
 
 jobs:
-  build:
+  pre-publish:
     executor:
       name: ship/node
       tag: 18.16.0
@@ -13,20 +13,22 @@ jobs:
       - checkout
       - ship/node-install-packages:
           pkg-manager: yarn
-      - run: yarn run test:ci
-      - codecov/upload:
-          file: coverage/coverage-final.json
 
 workflows:
-  build-and-test:
+  publish:
     jobs:
-      - build
+      - pre-publish:
+          filters:
+            branches:
+              only:
+                - master
+
       - ship/node-publish:
           node-version: 18.16.0
           pkg-manager: yarn
           publish-command: npm publish
           requires:
-            - build
+            - pre-publish
           context:
             - publish-npm
             - publish-gh
