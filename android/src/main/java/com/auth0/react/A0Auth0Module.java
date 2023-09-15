@@ -83,7 +83,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
 
             @Override
             public void onFailure(@NonNull CredentialsManagerException e) {
-                promise.reject(ERROR_CODE, e.getMessage());
+                promise.reject(ERROR_CODE, e.getMessage(), e);
             }
         });
     }
@@ -94,7 +94,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
             this.secureCredentialsManager.saveCredentials(CredentialsParser.fromMap(credentials));
             promise.resolve(true);
         } catch (CredentialsManagerException e) {
-            promise.reject(ERROR_CODE, e.getMessage());
+            promise.reject(ERROR_CODE, e.getMessage(), e);
         }
     }
 
@@ -110,7 +110,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
                 A0Auth0Module.this.secureCredentialsManager.requireAuthentication(activity, LOCAL_AUTH_REQUEST_CODE, title, description);
                 promise.resolve(true);
             } catch (CredentialsManagerException e){
-                promise.reject(ERROR_CODE, e.getMessage());
+                promise.reject(ERROR_CODE, e.getMessage(), e);
             }
         });
     }
@@ -213,14 +213,22 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
 
     private void handleError(AuthenticationException error, Promise promise) {
         if(error.isBrowserAppNotAvailable()) {
-            promise.reject("a0.browser_not_available", "No Browser application is installed.");
+            promise.reject("a0.browser_not_available", "No Browser application is installed.", error);
             return;
         }
         if(error.isCanceled()) {
-            promise.reject("a0.session.user_cancelled", "User cancelled the Auth");
+            promise.reject("a0.session.user_cancelled", "User cancelled the Auth", error);
             return;
         }
-        promise.reject("a0.response.invalid", error.getMessage());
+        if(error.isNetworkError()) {
+            promise.reject("a0.network_error", "Network error", error);
+            return;
+        }
+        if(error.isIdTokenValidationError()) {
+            promise.reject("a0.session.invalid_idtoken", "Error validating ID Token", error);
+            return;
+        }
+        promise.reject(error.getCode(), error.getMessage(), error);
     }
 
     @Override
