@@ -20,6 +20,7 @@
 - `customScheme` is now part of `ClearSessionOptions` instead of `ClearSessionParameters` in `clearSession`
 - iOS minimum deployment target is now 13. This can be migrated by adding `platform :ios '13.0'` to the ios/Podfile file
 - Additional or custom parameters to be sent in `authorize` method should now be sent as `additionalParameters`. This includes when sending `prompt` parameter.
+- Error codes are now platform specific. For example - When user cancels authentication, Android error code is `a0.session.user_cancelled` and iOS error code is `USER_CANCELLED`
 
 ### Callback URL migration
 
