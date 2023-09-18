@@ -1,5 +1,5 @@
 PODS:
-  - A0Auth0 (3.0.0):
+  - A0Auth0 (3.0.1):
     - Auth0 (= 2.5.0)
     - JWTDecode (= 3.1.0)
     - React-Core
@@ -423,7 +423,7 @@ PODS:
     - React-logger (= 0.71.10)
     - React-perflogger (= 0.71.10)
   - SimpleKeychain (1.1.0)
-  - SocketRocket (0.6.0)
+  - SocketRocket (0.6.1)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -584,7 +584,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  A0Auth0: 1ef7e745d9cd80340fc81b9de7f712f0b467cd21
+  A0Auth0: 9c3222f9a2938e7dd61002108134fa4c39b66298
   Auth0: 72f19ad566fdf57f07bf37f828afd0c1570769a5
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
@@ -634,7 +634,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: a9a1cd79996c9a0846e3232ecb25c64e1cc0172e
   ReactCommon: 65718685d4095d06b4b1af8042e12f1df2925c31
   SimpleKeychain: f8707c8e97b38c6a6e687b17732afc9bcef06439
-  SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
+  SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: e7ea9e590e27460d28911403b894722354d73479
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
