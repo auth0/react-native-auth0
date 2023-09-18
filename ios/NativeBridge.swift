@@ -201,7 +201,11 @@ extension WebAuthError {
             case .pkceNotAllowed: code = "PKCE_NOT_ALLOWED"
             case .idTokenValidationFailed: code = "ID_TOKEN_VALIDATION_FAILED"
             case .other: code = "OTHER"
-            default: code = "UNKNOWN"
+            default: if let cause = self.cause as? AuthenticationError {
+                code = cause.code
+            } else {
+                code = "UNKNOWN"
+            }
         }
         return code
     }
@@ -218,7 +222,11 @@ extension CredentialsManagerError {
             case .biometricsFailed: code = "BIOMETRICS_FAILED"
             case .revokeFailed: code = "REVOKE_FAILED"
             case .largeMinTTL: code = "LARGE_MIN_TTL"
-            default: code = "UNKNOWN"
+            default: if let cause = self.cause as? AuthenticationError {
+                code = cause.code
+            } else {
+                code = "UNKNOWN"
+            }
         }
         return code
     }
