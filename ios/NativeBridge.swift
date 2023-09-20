@@ -200,12 +200,12 @@ extension WebAuthError {
             case .noAuthorizationCode: code = "NO_AUTHORIZATION_CODE"
             case .pkceNotAllowed: code = "PKCE_NOT_ALLOWED"
             case .idTokenValidationFailed: code = "ID_TOKEN_VALIDATION_FAILED"
-            case .other: code = "OTHER"
-            default: if let cause = self.cause as? AuthenticationError {
+            case .other: if let cause = self.cause as? AuthenticationError {
                 code = cause.code
             } else {
-                code = "UNKNOWN"
+                code = "OTHER"
             }
+            default: code = "UNKNOWN"
         }
         return code
     }
@@ -217,16 +217,20 @@ extension CredentialsManagerError {
         switch self {
             case .noCredentials: code = "NO_CREDENTIALS"
             case .noRefreshToken: code = "NO_REFRESH_TOKEN"
-            case .renewFailed: code = "RENEW_FAILED"
-            case .storeFailed: code = "STORE_FAILED"
-            case .biometricsFailed: code = "BIOMETRICS_FAILED"
-            case .revokeFailed: code = "REVOKE_FAILED"
-            case .largeMinTTL: code = "LARGE_MIN_TTL"
-            default: if let cause = self.cause as? AuthenticationError {
+            case .renewFailed: if let cause = self.cause as? AuthenticationError {
                 code = cause.code
             } else {
-                code = "UNKNOWN"
+                code = "RENEW_FAILED.UNKNOWN"
             }
+            case .storeFailed: code = "STORE_FAILED"
+            case .biometricsFailed: code = "BIOMETRICS_FAILED"
+            case .revokeFailed: if let cause = self.cause as? AuthenticationError {
+                code = cause.code
+            } else {
+                code = "REVOKE_FAILED.UNKNOWN"
+            } 
+            case .largeMinTTL: code = "LARGE_MIN_TTL"
+            default: code = "UNKNOWN"
         }
         return code
     }
