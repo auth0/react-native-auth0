@@ -220,14 +220,14 @@ extension CredentialsManagerError {
             case .renewFailed: if let cause = self.cause as? AuthenticationError {
                 code = cause.code
             } else {
-                code = "RENEW_FAILED.UNKNOWN"
+                code = "RENEW_FAILED"
             }
             case .storeFailed: code = "STORE_FAILED"
             case .biometricsFailed: code = "BIOMETRICS_FAILED"
             case .revokeFailed: if let cause = self.cause as? AuthenticationError {
                 code = cause.code
             } else {
-                code = "REVOKE_FAILED.UNKNOWN"
+                code = "REVOKE_FAILED"
             } 
             case .largeMinTTL: code = "LARGE_MIN_TTL"
             default: code = "UNKNOWN"
