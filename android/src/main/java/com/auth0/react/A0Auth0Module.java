@@ -228,7 +228,8 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
             promise.reject("a0.session.invalid_idtoken", "Error validating ID Token", error);
             return;
         }
-        promise.reject(error.getCode(), error.getMessage(), error);
+        String seperator = error.getMessage().endsWith(".") ? "" : ".";
+        promise.reject(error.getCode(), error.getMessage() + seperator + " CAUSE: " + error.getDescription(), error);
     }
 
     @Override
