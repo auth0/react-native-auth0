@@ -1,5 +1,17 @@
 # Change Log
 
+## [v3.0.2](https://github.com/auth0/react-native-auth0/tree/v3.0.2) (2023-10-06)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.0.1...v3.0.2)
+
+**Fixed**
+
+- [ESD-30932] Improve error handling [\#720](https://github.com/auth0/react-native-auth0/pull/720) ([poovamraj](https://github.com/poovamraj))
+
+**Security**
+
+- Update Auth0.Android to resolve CVE-2023-3635 [\#750](https://github.com/auth0/react-native-auth0/pull/750) ([poovamraj](https://github.com/poovamraj))
+
 ## [v3.0.1](https://github.com/auth0/react-native-auth0/tree/v3.0.1) (2023-08-16)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.0.0...v3.0.1)
