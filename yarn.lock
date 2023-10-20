@@ -2721,9 +2721,9 @@
     pretty-format "^29.0.0"
 
 "@types/jsbn@^1.1.0":
-  version "1.2.31"
-  resolved "https://registry.yarnpkg.com/@types/jsbn/-/jsbn-1.2.31.tgz#15012cf0df604371b5a05462bf3310f035a8eada"
-  integrity sha512-D/WCiM7SlMM50x6oSWdcqBsjNaHMXOF7SZpeH5C2t24pLN9XU3IvCD1Nv0ACWiPZJU/kYK1k9vmPZ8NMvyBckw==
+  version "1.2.32"
+  resolved "https://registry.yarnpkg.com/@types/jsbn/-/jsbn-1.2.32.tgz#2cb8a8737abd8b264c8d29dfcccc47bbc857bc40"
+  integrity sha512-zRragkEedY3qLrwZtFqTtvRutVpQdYXicWVj8MjVuL7ahNJWmbvGV6MiRRtNmU7uZQf0ylbSsqANxD16b2GqFg==
 
 "@types/jsdom@^20.0.0":
   version "20.0.1"
