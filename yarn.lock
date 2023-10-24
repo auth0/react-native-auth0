@@ -5595,9 +5595,9 @@ expo-modules-core@1.2.7:
     invariant "^2.2.4"
 
 expo@^48.0.0:
-  version "48.0.20"
-  resolved "https://registry.yarnpkg.com/expo/-/expo-48.0.20.tgz#098a19b1eba81a15062fa853ae6941fdf9aef1f4"
-  integrity sha512-SDRlLRINWWqf/OIPaUr/BsFZLhR5oEj1u9Cn06h1mPeo8pqv6ei/QTSZql4e0ixHIu3PWMPrUx9k/47nnTyTpg==
+  version "48.0.21"
+  resolved "https://registry.yarnpkg.com/expo/-/expo-48.0.21.tgz#40c5795c738ef05f8a7ddf466a53d73d86a3c456"
+  integrity sha512-Z211SC4wZP4Xd5/RBJhEw4uwSgpfzAvMh6IVdzwEVAJAcV1s48CACcSmIUe+7QJjEPzmb3T5Yo4EJ/JJXJ2o9A==
   dependencies:
     "@babel/runtime" "^7.20.0"
     "@expo/cli" "0.7.3"
