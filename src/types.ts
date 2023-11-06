@@ -522,7 +522,7 @@ export interface CreateUserOptions {
   /**
    * Additional information that will be stored in `user_metadata`
    */
-  metadata?: string;
+  metadata?: object;
   [key: string]: any;
 }
 
