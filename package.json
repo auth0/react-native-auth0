@@ -84,8 +84,6 @@
     "@react-native-community/eslint-config": "^3.0.2",
     "@release-it/conventional-changelog": "^5.0.0",
     "@types/base-64": "^1.0.0",
-    "@types/crypto-js": "^4.0.0",
-    "@types/jsbn": "^1.1.0",
     "@types/react-test-renderer": "^18.0.0",
     "@types/jest": "^29.5.0",
     "@types/react": "~17.0.21",
@@ -119,8 +117,6 @@
   },
   "dependencies": {
     "base-64": "^0.1.0",
-    "crypto-js": "^4.0.0",
-    "jsbn": "^1.1.0",
     "jwt-decode": "^3.1.2",
     "prettier-quick": "^0.0.5",
     "prop-types": "^15.8.1",
