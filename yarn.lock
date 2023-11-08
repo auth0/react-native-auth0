@@ -2801,9 +2801,9 @@
     csstype "^3.0.2"
 
 "@types/react@~17.0.21":
-  version "17.0.69"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.69.tgz#245a0cf2f5b0fb1d645691d3083e3c7d4409b98f"
-  integrity sha512-klEeru//GhiQvXUBayz0Q4l3rKHWsBR/EUOhOeow6hK2jV7MlO44+8yEk6+OtPeOlRfnpUnrLXzGK+iGph5aeg==
+  version "17.0.70"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.70.tgz#35301a9cb94ba1a65dc306b7ce169a2c4fda1986"
+  integrity sha512-yqYMK49/cnqw+T8R9/C+RNjRddYmPDGI5lKHi3bOYceQCBAh8X2ngSbZP0gnVeyvHr0T7wEgIIGKT1usNol08w==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
