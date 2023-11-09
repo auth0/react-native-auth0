@@ -247,7 +247,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     @Override
     public void onNewIntent(Intent intent) {
         if(webAuthPromise != null) {
-            webAuthPromise.reject("a0.session.user_cancelled", "User cancelled the Auth");
+            webAuthPromise.reject("a0.session.browser_terminated", "The browser window was closed by a new instance of the application");
             webAuthPromise = null;
         }
     }
