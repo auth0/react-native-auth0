@@ -43,6 +43,8 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     private final ReactApplicationContext reactContext;
     private Auth0 auth0;
     private SecureCredentialsManager secureCredentialsManager;
+    private Promise webAuthPromise;
+
     public A0Auth0Module(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
@@ -141,6 +143,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
 
     @ReactMethod
     public void webAuth(String scheme, String redirectUri, String state, String nonce, String audience, String scope, String connection, int maxAge, String organization, String invitationUrl, int leeway, boolean ephemeralSession, ReadableMap additionalParameters, Promise promise) {
+        this.webAuthPromise = promise;
         Map<String,String> cleanedParameters = new HashMap<>();
         for (Map.Entry<String, Object> entry : additionalParameters.toHashMap().entrySet()) {
             if (entry.getValue() != null) {
@@ -182,11 +185,13 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
                     public void onSuccess(Credentials result) {
                         ReadableMap map = CredentialsParser.toMap(result);
                         promise.resolve(map);
+                        webAuthPromise = null;
                     }
 
                     @Override
                     public void onFailure(@NonNull AuthenticationException error) {
                         handleError(error, promise);
+                        webAuthPromise = null;
                     }
                 });
     }
@@ -241,6 +246,9 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
 
     @Override
     public void onNewIntent(Intent intent) {
-        // NO OP
+        if(webAuthPromise != null) {
+            webAuthPromise.reject("a0.session.browser_terminated", "The browser window was closed by a new instance of the application");
+            webAuthPromise = null;
+        }
     }
 }
