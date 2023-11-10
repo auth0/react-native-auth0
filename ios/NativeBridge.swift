@@ -38,7 +38,7 @@ public class NativeBridge: NSObject {
         super.init()
    }
     
-    @objc public func webAuth(state: String?, redirectUri: String, nonce: String?, audience: String?, scope: String?, connection: String?, maxAge: Int, organization: String?, invitationUrl: String?, leeway: Int, ephemeralSession: Bool, additionalParameters: [String: String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func webAuth(state: String?, redirectUri: String, nonce: String?, audience: String?, scope: String?, connection: String?, maxAge: Int, organization: String?, invitationUrl: String?, leeway: Int, ephemeralSession: Bool, useSFSafariViewController: Bool, additionalParameters: [String: String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
         if let value = URL(string: redirectUri) {
             let _ = builder.redirectURL(value)
@@ -73,7 +73,11 @@ public class NativeBridge: NSObject {
         if(ephemeralSession) {
             let _ = builder.useEphemeralSession()
         }
-        let _ = builder.parameters(additionalParameters)
+        if(useSFSafariViewController) {
+            let _ = builder.provider(WebAuthentication.safariProvider())
+        }
+        let _ = builder
+            .parameters(additionalParameters)
         builder.start { result in
             switch result {
             case .success(let credentials):
@@ -84,11 +88,14 @@ public class NativeBridge: NSObject {
         }
             
     }
-    
-    @objc public func webAuthLogout(federated: Bool, redirectUri: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+
+    @objc public func webAuthLogout(federated: Bool, redirectUri: String, useSFSafariViewController: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
         if let value = URL(string: redirectUri) {
             let _ = builder.redirectURL(value)
+        }
+        if(useSFSafariViewController) {
+            let _ = builder.provider(WebAuthentication.safariProvider())
         }
         builder.clearSession(federated: federated) { result in
                 switch result {
@@ -98,6 +105,16 @@ public class NativeBridge: NSObject {
                     reject(error.reactNativeErrorCode(), error.errorDescription, error)
                 }
             }
+    }
+
+    @objc public func resumeWebAuth(url: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if let value = URL(string: url) {
+            if (!WebAuthentication.resume(with: value)) {
+                reject("ERROR_PARSING_URL", "The callback url \(url) is invalid", nil)
+            }
+        } else {
+            reject("ERROR_PARSING_URL", "The callback url \(url) is invalid", nil)
+        }
     }
     
     @objc public func saveCredentials(credentialsDict: [String: Any], resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {

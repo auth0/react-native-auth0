@@ -110,7 +110,14 @@ export interface WebAuthorizeOptions {
    * **Android only:** Custom scheme to build the callback URL with.
    */
   customScheme?: string;
+  /**
+   * This will use older callback URL. See {@link https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md#callback-url-migration} for more details.
+   */
   useLegacyCallbackUrl?: boolean;
+  /**
+   * **iOS only:** Uses SFSafariViewController instead of ASWebAuthenticationSession.
+   */
+  useSFSafariViewController?: boolean;
 }
 
 /**
@@ -133,7 +140,14 @@ export interface ClearSessionOptions {
    * **Android only:** Custom scheme to build the callback URL with.
    */
   customScheme?: string;
+  /**
+   * This will use older callback URL. See {@link https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md#callback-url-migration} for more details.
+   */
   useLegacyCallbackUrl?: boolean;
+  /**
+   * **iOS only:** Uses SFSafariViewController instead of ASWebAuthenticationSession.
+   */
+  useSFSafariViewController?: boolean;
 }
 
 export interface GetUserOptions {

@@ -36,9 +36,6 @@ class WebAuth {
   /**
    * Starts the AuthN/AuthZ transaction against the AS in the in-app browser.
    *
-   * In iOS <11 it will use `SFSafariViewController`, in iOS 11 `SFAuthenticationSession`  and in iOS >11 `ASWebAuthenticationSession`.
-   * In Android it will use Chrome Custom Tabs.
-   *
    * To learn more about how to customize the authorize call, check the Universal Login Page
    * article at https://auth0.com/docs/hosted-pages/login
    *
@@ -55,9 +52,6 @@ class WebAuth {
 
   /**
    *  Removes Auth0 session and optionally remove the Identity Provider session.
-   *
-   * In iOS <11 it will use `SFSafariViewController`, in iOS 11 `SFAuthenticationSession`  and in iOS >11 `ASWebAuthenticationSession`.
-   * In Android it will use Chrome Custom Tabs.
    *
    * @see https://auth0.com/docs/logout
    */

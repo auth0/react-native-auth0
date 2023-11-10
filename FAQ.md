@@ -55,11 +55,14 @@ Alternatively, you can re-declare the `RedirectActivity` in the `AndroidManifest
 
 ![ios-sso-alert](assets/ios-sso-alert.png)
 
-Under the hood, react-native-auth0 uses `ASWebAuthenticationSession` to perform web-based authentication on iOS 12+, which is the [API provided by Apple](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession) for such purpose.
+Under the hood, react-native-auth0 uses `ASWebAuthenticationSession` by default to perform web-based authentication, which is the [API provided by Apple](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession) for such purpose.
 
-That alert box is displayed and managed by `ASWebAuthenticationSession`, not by react-native-auth0, because by default this API will store the session cookie in the shared Safari cookie jar. This makes Single Sign-On (SSO) possible. According to Apple, that requires user consent.
+That alert box is displayed and managed by `ASWebAuthenticationSession`, not by react-native-auth0, because by default this API will store the session cookie in the shared Safari cookie jar. This makes single sign-on (SSO) possible. According to Apple, that requires user consent.
 
-> :bulb: See [this blog post](https://developer.okta.com/blog/2022/01/13/mobile-sso) for a detailed overview of SSO on iOS.
+> **Note**
+> See [this blog post](https://developer.okta.com/blog/2022/01/13/mobile-sso) for a detailed overview of SSO on iOS.
+
+### Use ephemeral sessions
 
 If you don't need SSO, you can disable this behavior by adding `ephemeralSession: true` to the login call. This will configure `ASWebAuthenticationSession` to not store the session cookie in the shared cookie jar, as if using an incognito browser window. With no shared cookie, `ASWebAuthenticationSession` will not prompt the user for consent.
 
@@ -77,7 +80,24 @@ Note that with `ephemeralSession: true` you don't need to call `clearSession` at
 
 You still need to call `clearSession` on Android, though, as `ephemeralSession` is iOS-only.
 
-> :bulb: `ephemeralSession` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`. This option is only available on [iOS 13+](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession/3237231-prefersephemeralwebbrowsersessio), so `ephemeralSession` will have no effect on older iOS versions. To improve the experience for users on older iOS versions, see the approach described below.
+> **Note** > `ephemeralSession: true` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`. This option is only available on [iOS 13+ and macOS](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession/3237231-prefersephemeralwebbrowsersessio), so `ephemeralSession: true` will have no effect on iOS 12. To improve the experience for iOS 12 users, see the approach described below.
+
+### Use `SFSafariViewController`
+
+An alternative is to use `SFSafariViewController` instead of `ASWebAuthenticationSession`. You can do so with the built-in `SFSafariViewController` Web Auth provider:
+
+```js
+auth0.webAuth
+  .authorize(
+    { scope: 'openid profile email' },
+    { useSFSafariViewController: true } // Use SFSafariViewController
+  )
+  .then((credentials) => console.log(credentials))
+  .catch((error) => console.log(error));
+```
+
+> **Note**
+> Since `SFSafariViewController` does not share cookies with the Safari app, SSO will not work either. But it will keep its own cookies, so you can use it to perform SSO between your app and your website as long as you open it inside your app using `SFSafariViewController`. This also means that any feature that relies on the persistence of cookies will work as expected.
 
 ## 3. How can I disable the iOS _logout_ alert box?
 
@@ -99,7 +119,8 @@ auth0.webAuth
 
 Otherwise, the browser modal will close right away and the user will be automatically logged in again, as the cookie will still be there.
 
-> :warning: Keeping the shared session cookie may not be an option if you have strong privacy and/or security requirements, for example in the case of a banking app.
+> **Warning**
+> Keeping the shared session cookie may not be an option if you have strong privacy and/or security requirements, for example in the case of a banking app.
 
 ## 4. Is there a way to disable the iOS _login_ alert box without `ephemeralSession`?
 
