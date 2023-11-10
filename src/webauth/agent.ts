@@ -28,17 +28,17 @@ class Agent {
       );
     }
     return new Promise(async (resolve, reject) => {
+      if (Platform.OS === 'ios' && options.useSFSafariViewController) {
+        linkSubscription = Linking.addEventListener('url', async (event) => {
+          linkSubscription.remove();
+          try {
+            await A0Auth0.resumeWebAuth(event.url);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      }
       try {
-        if (Platform.OS === 'ios' && options.useSFSafariViewController) {
-          linkSubscription = Linking.addEventListener('url', async (event) => {
-            linkSubscription.remove();
-            try {
-              await A0Auth0.resumeWebAuth(event.url);
-            } catch (error) {
-              reject(error);
-            }
-          });
-        }
         await _ensureNativeModuleIsInitialized(
           A0Auth0,
           parameters.clientId,
