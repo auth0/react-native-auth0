@@ -134,7 +134,7 @@ public class NativeBridge: NSObject {
     
     @objc public func getCredentials(scope: String?, minTTL: Int, parameters: [String: Any], forceRefresh: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if(forceRefresh) {
-            credentialsManager.renew { result in
+            credentialsManager.renew(parameters: parameters) { result in
                 switch result {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
