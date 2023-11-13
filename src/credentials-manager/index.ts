@@ -56,7 +56,7 @@ class CredentialsManager {
    * @param scope The scope to request for the access token. If null is passed, the previous scope will be kept.
    * @param minTtl The minimum time in seconds that the access token should last before expiration.
    * @param parameters Additional parameters to send in the request to refresh expired credentials.
-   * @param forceRefresh Whether to force refresh the credentials. It will work only if the refresh token already exists. For iOS, doing forceRefresh will not send the scope and addtional parameters. Since scope change already does force refresh, it is better to avoid force refresh if the scope is being changed.
+   * @param forceRefresh Whether to force refresh the credentials. It will work only if the refresh token already exists. For iOS, doing forceRefresh will not send the scope. Since scope change already does force refresh, it is better to avoid force refresh if the scope is being changed.
    * @returns A populated instance of {@link Credentials}.
    */
   async getCredentials(
