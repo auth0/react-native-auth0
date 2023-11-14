@@ -63,6 +63,7 @@ describe('Agent', () => {
           invitationUrl: 'invitationUrl',
           leeway: 220,
           ephemeralSession: true,
+          useSFSafariViewController: true,
           additionalParameters: { test: 'test' },
         }
       );
@@ -79,6 +80,7 @@ describe('Agent', () => {
         'organization',
         'invitationUrl',
         220,
+        true,
         true,
         { test: 'test' }
       );
@@ -130,10 +132,16 @@ describe('Agent', () => {
         {
           customScheme: 'test',
           federated: true,
+          useSFSafariViewController: true,
         }
       );
       expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
-      expect(mockLogin).toBeCalledWith('test', true, 'test://test.com/test-os/com.my.app/callback');
+      expect(mockLogin).toBeCalledWith(
+        'test',
+        true,
+        'test://test.com/test-os/com.my.app/callback',
+        true
+      );
     });
   });
 
@@ -162,10 +170,11 @@ describe('Agent', () => {
     });
   });
 
-
   describe('callbackUri', () => {
     it('should return callback uri with given domain and scheme', async () => {
-      await expect(agent.callbackUri('domain', 'scheme')).toEqual("scheme://domain/test-os/com.test/callback");
+      await expect(agent.callbackUri('domain', 'scheme')).toEqual(
+        'scheme://domain/test-os/com.test/callback'
+      );
     });
   });
 });
