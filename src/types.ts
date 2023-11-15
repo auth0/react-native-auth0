@@ -115,7 +115,7 @@ export interface WebAuthorizeOptions {
    */
   useLegacyCallbackUrl?: boolean;
   /**
-   * **iOS only:** Uses SFSafariViewController instead of ASWebAuthenticationSession.
+   * **iOS only:** Uses `SFSafariViewController` instead of `ASWebAuthenticationSession`.
    */
   useSFSafariViewController?: boolean;
 }
