@@ -30,7 +30,9 @@ class Agent {
     return new Promise(async (resolve, reject) => {
       if (Platform.OS === 'ios' && options.useSFSafariViewController) {
         linkSubscription = Linking.addEventListener('url', async (event) => {
-          linkSubscription.remove();
+          if (linkSubscription) {
+            linkSubscription.remove();
+          }
           try {
             await A0Auth0.resumeWebAuth(event.url);
           } catch (error) {
@@ -67,7 +69,9 @@ class Agent {
         );
         resolve(credentials);
       } catch (error) {
-        linkSubscription.remove();
+        if (linkSubscription) {
+          linkSubscription.remove();
+        }
         reject(error);
       }
     });
@@ -88,7 +92,9 @@ class Agent {
     return new Promise(async (resolve, reject) => {
       if (Platform.OS === 'ios' && options.useSFSafariViewController) {
         linkSubscription = Linking.addEventListener('url', async (event) => {
-          linkSubscription.remove();
+          if (linkSubscription) {
+            linkSubscription.remove();
+          }
           try {
             await A0Auth0.resumeWebAuth(event.url);
           } catch (error) {
@@ -118,6 +124,9 @@ class Agent {
           )
         );
       } catch (error) {
+        if (linkSubscription) {
+          linkSubscription.remove();
+        }
         reject(error);
       }
     });
