@@ -108,10 +108,8 @@ public class NativeBridge: NSObject {
     }
 
     @objc public func resumeWebAuth(url: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        if let value = URL(string: url) {
-            if (!WebAuthentication.resume(with: value)) {
-                reject("ERROR_PARSING_URL", "The callback url \(url) is invalid", nil)
-            }
+        if let value = URL(string: url), WebAuthentication.resume(with: value) {
+            resolve(true)
         } else {
             reject("ERROR_PARSING_URL", "The callback url \(url) is invalid", nil)
         }
