@@ -80,7 +80,7 @@ Note that with `ephemeralSession: true` you don't need to call `clearSession` at
 
 You still need to call `clearSession` on Android, though, as `ephemeralSession` is iOS-only.
 
-> **Note** > `ephemeralSession: true` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`. This option is only available on [iOS 13+ and macOS](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession/3237231-prefersephemeralwebbrowsersessio), so `ephemeralSession: true` will have no effect on iOS 12. To improve the experience for iOS 12 users, see the approach described below.
+> **Note** > `ephemeralSession: true` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`. This option is only available on [iOS 13+ and macOS](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession/3237231-prefersephemeralwebbrowsersessio), so `ephemeralSession: true` will have no effect on iOS 12. To improve the experience for iOS 13 users, see the approach described below.
 
 ### Use `SFSafariViewController`
 
