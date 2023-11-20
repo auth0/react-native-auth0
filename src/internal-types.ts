@@ -88,8 +88,7 @@ export type Auth0Module = {
   webAuthLogout: (
     scheme: string,
     federated: boolean,
-    redirectUri: string,
-    useSFSafariViewController?: boolean
+    redirectUri: string
   ) => Promise<void>;
   resumeWebAuth: (url: string) => Promise<void>;
   saveCredentials: (credentials: Credentials) => Promise<void>;

@@ -54,8 +54,8 @@ RCT_EXPORT_METHOD(webAuth:(NSString *)scheme redirectUri:(NSString *)redirectUri
     [self.nativeBridge webAuthWithState:state redirectUri:redirectUri nonce:nonce audience:audience scope:scope connection:connection maxAge:maxAge organization:organization invitationUrl:invitationUrl leeway:leeway ephemeralSession:ephemeralSession useSFSafariViewController:useSFSafariViewController additionalParameters:additionalParameters resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(webAuthLogout:(NSString *)scheme federated:(BOOL)federated redirectUri:(NSString *)redirectUri useSFSafariViewController:(BOOL)useSFSafariViewController resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    [self.nativeBridge webAuthLogoutWithFederated:federated redirectUri:redirectUri useSFSafariViewController:useSFSafariViewController resolve:resolve reject:reject];
+RCT_EXPORT_METHOD(webAuthLogout:(NSString *)scheme federated:(BOOL)federated redirectUri:(NSString *)redirectUri resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge webAuthLogoutWithFederated:federated redirectUri:redirectUri resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(resumeWebAuth:(NSString *)url resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {

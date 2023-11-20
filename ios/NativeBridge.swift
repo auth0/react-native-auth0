@@ -89,13 +89,10 @@ public class NativeBridge: NSObject {
             
     }
 
-    @objc public func webAuthLogout(federated: Bool, redirectUri: String, useSFSafariViewController: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func webAuthLogout(federated: Bool, redirectUri: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
         if let value = URL(string: redirectUri) {
             let _ = builder.redirectURL(value)
-        }
-        if(useSFSafariViewController) {
-            let _ = builder.provider(WebAuthentication.safariProvider())
         }
         builder.clearSession(federated: federated) { result in
                 switch result {

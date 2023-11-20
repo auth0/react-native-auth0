@@ -115,14 +115,7 @@ class Agent {
           parameters.domain
         );
 
-        resolve(
-          await A0Auth0.webAuthLogout(
-            scheme,
-            federated,
-            redirectUri,
-            options.useSFSafariViewController ?? false
-          )
-        );
+        resolve(await A0Auth0.webAuthLogout(scheme, federated, redirectUri));
       } catch (error) {
         if (linkSubscription) {
           linkSubscription.remove();

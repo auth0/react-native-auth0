@@ -158,15 +158,13 @@ describe('Agent', () => {
         {
           customScheme: 'test',
           federated: true,
-          useSFSafariViewController: true,
         }
       );
       expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
       expect(mockLogin).toBeCalledWith(
         'test',
         true,
-        'test://test.com/ios/com.my.app/callback',
-        true
+        'test://test.com/ios/com.my.app/callback'
       );
     });
   });
