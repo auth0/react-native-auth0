@@ -34,7 +34,9 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Run tests
-        run: yarn run test:ci
+        run: |
+          corepack enable
+          yarn run test:ci
 
       - name: Upload coverage report
         uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
