@@ -1,10 +1,36 @@
-jest.mock('react-native');
 import * as nativeUtils from '../../utils/nativeHelper';
 import Agent from '../agent';
-import { NativeModules } from 'react-native';
+import { NativeModules, Platform, Linking } from 'react-native';
+
+jest.mock('react-native', () => {
+  // Require the original module to not be mocked...
+  return {
+    __esModule: true, // Use it when dealing with esModules
+    Linking: {
+      addEventListener: jest.fn(),
+    },
+    NativeModules: {
+      A0Auth0: {
+        webAuth: () => {},
+        webAuthLogout: () => {},
+        resumeWebAuth: () => {},
+        hasValidAuth0Instance: () => {},
+        initializeAuth0: () => {},
+        bundleIdentifier: 'com.my.app',
+      },
+    },
+    Platform: {
+      OS: 'ios',
+    },
+  };
+});
 
 describe('Agent', () => {
   const agent = new Agent();
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
   describe('login', () => {
     it('should fail if native module is not linked', async () => {
@@ -70,7 +96,7 @@ describe('Agent', () => {
       expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
       expect(mockLogin).toBeCalledWith(
         'test',
-        'test://test.com/test-os/com.my.app/callback',
+        'test://test.com/ios/com.my.app/callback',
         'state',
         'nonce',
         'audience',
@@ -139,7 +165,7 @@ describe('Agent', () => {
       expect(mockLogin).toBeCalledWith(
         'test',
         true,
-        'test://test.com/test-os/com.my.app/callback',
+        'test://test.com/ios/com.my.app/callback',
         true
       );
     });
@@ -173,8 +199,27 @@ describe('Agent', () => {
   describe('callbackUri', () => {
     it('should return callback uri with given domain and scheme', async () => {
       await expect(agent.callbackUri('domain', 'scheme')).toEqual(
-        'scheme://domain/test-os/com.test/callback'
+        'scheme://domain/ios/com.test/callback'
       );
+    });
+  });
+
+  describe('handle app linking for SFSafariViewController', () => {
+    it('for login, with only SFSafariViewController AppLinking should be enabled', async () => {
+      await agent.login({}, { useSFSafariViewController: true });
+      expect(Linking.addEventListener).toHaveBeenCalledTimes(1);
+    });
+
+    it('for logout, with only SFSafariViewController AppLinking should be enabled', async () => {
+      await agent.login({}, {});
+      expect(Linking.addEventListener).toHaveBeenCalledTimes(0);
+    });
+
+    it('for logout, for only iOS platform AppLinking should be enabled', async () => {
+      Platform.OS = 'android';
+      await agent.login({}, { useSFSafariViewController: true });
+      expect(Linking.addEventListener).toHaveBeenCalledTimes(0);
+      Platform.OS = 'ios'; //reset value to ios
     });
   });
 });
