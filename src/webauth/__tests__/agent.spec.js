@@ -203,21 +203,54 @@ describe('Agent', () => {
   });
 
   describe('handle app linking for SFSafariViewController', () => {
-    it('for login, with only SFSafariViewController AppLinking should be enabled', async () => {
+    it('with useSFSafariViewController AppLinking should be enabled', async () => {
       await agent.login({}, { useSFSafariViewController: true });
       expect(Linking.addEventListener).toHaveBeenCalledTimes(1);
     });
 
-    it('for logout, with only SFSafariViewController AppLinking should be enabled', async () => {
+    it('without useSFSafariViewController AppLinking should be enabled', async () => {
       await agent.login({}, {});
       expect(Linking.addEventListener).toHaveBeenCalledTimes(0);
     });
 
-    it('for logout, for only iOS platform AppLinking should be enabled', async () => {
+    it('for only iOS platform AppLinking should be enabled', async () => {
       Platform.OS = 'android';
       await agent.login({}, { useSFSafariViewController: true });
       expect(Linking.addEventListener).toHaveBeenCalledTimes(0);
       Platform.OS = 'ios'; //reset value to ios
+    });
+
+    it('when login crashes and AppLinking is enabled, listener for AppLinking should be removed', async () => {
+      let mockSubscription = {
+        remove: () => {},
+      };
+      jest.spyOn(mockSubscription, 'remove').mockReturnValueOnce({});
+      jest
+        .spyOn(Linking, 'addEventListener')
+        .mockReturnValueOnce(mockSubscription);
+      jest
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .mockImplementationOnce(() => {
+          throw Error('123123');
+        });
+      try {
+        await agent.login({}, { useSFSafariViewController: true });
+      } catch (e) {}
+      expect(Linking.addEventListener).toHaveBeenCalledTimes(1);
+      expect(mockSubscription.remove).toHaveBeenCalledTimes(1);
+    });
+
+    it('when login crashes and AppLinking is not enabled, listener for AppLinking remove should not be called', async () => {
+      let mockSubscription = {
+        remove: () => {},
+      };
+      jest.spyOn(mockSubscription, 'remove').mockReturnValueOnce({});
+      jest
+        .spyOn(Linking, 'addEventListener')
+        .mockReturnValueOnce(mockSubscription);
+      await agent.login({}, { useSFSafariViewController: true });
+      expect(Linking.addEventListener).toHaveBeenCalledTimes(1);
+      expect(mockSubscription.remove).toHaveBeenCalledTimes(0);
     });
   });
 });
