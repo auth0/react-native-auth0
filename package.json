@@ -125,7 +125,6 @@
   "resolutions": {
     "@types/react": "17.0.21"
   },
-  "packageManager": "^yarn@1.22.15",
   "jest": {
     "coverageDirectory": "./coverage/",
     "collectCoverage": false,
