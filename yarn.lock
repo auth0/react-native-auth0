@@ -2768,10 +2768,10 @@
   dependencies:
     "@types/react" "^17"
 
-"@types/react-native@0.72.6":
-  version "0.72.6"
-  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.72.6.tgz#2c7a348ccb33637f482f36e4c6450d310805a290"
-  integrity sha512-5Tan0ejOjbYyrnRreRZ7ftcWbehQELoHevJQliAu0Rhqrsnall8dyodf/434jdDJuQEzLisBMg7ZkQNnghUXIw==
+"@types/react-native@0.72.7":
+  version "0.72.7"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.72.7.tgz#9479b6f68934a410b7b1b45a77336ae93b3d9a53"
+  integrity sha512-LvxJD7VINBiJVcY9UgUVcmPMPiKGO5jHjPM6JrchfP+z1zx0AENL6UOGng1ueaHTRROMTVxZRzO7WVi6DFrMyw==
   dependencies:
     "@react-native/virtualized-lists" "^0.72.4"
     "@types/react" "*"
