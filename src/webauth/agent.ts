@@ -81,7 +81,6 @@ class Agent {
     parameters: AgentParameters,
     options: AgentLogoutOptions
   ): Promise<void> {
-    let linkSubscription: EmitterSubscription;
     if (!NativeModules.A0Auth0) {
       return Promise.reject(
         new Error(
@@ -90,18 +89,6 @@ class Agent {
       );
     }
     return new Promise(async (resolve, reject) => {
-      if (Platform.OS === 'ios' && options.useSFSafariViewController) {
-        linkSubscription = Linking.addEventListener('url', async (event) => {
-          if (linkSubscription) {
-            linkSubscription.remove();
-          }
-          try {
-            await A0Auth0.resumeWebAuth(event.url);
-          } catch (error) {
-            reject(error);
-          }
-        });
-      }
       try {
         let federated = options.federated ?? false;
         let scheme = this.getScheme(
@@ -117,9 +104,6 @@ class Agent {
 
         resolve(await A0Auth0.webAuthLogout(scheme, federated, redirectUri));
       } catch (error) {
-        if (linkSubscription) {
-          linkSubscription.remove();
-        }
         reject(error);
       }
     });
