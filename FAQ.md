@@ -80,7 +80,6 @@ Note that with `ephemeralSession: true` you don't need to call `clearSession` at
 
 You still need to call `clearSession` on Android, though, as `ephemeralSession` is iOS-only.
 
-
 ### Use `SFSafariViewController`
 
 An alternative is to use `SFSafariViewController` instead of `ASWebAuthenticationSession`. You can do so with the built-in `SFSafariViewController` Web Auth provider:
@@ -89,7 +88,7 @@ An alternative is to use `SFSafariViewController` instead of `ASWebAuthenticatio
 auth0.webAuth
   .authorize(
     { scope: 'openid profile email' },
-    { useSFSafariViewController: true } // Use SFSafariViewController
+    { useSFSafariViewController: {} } // Use SFSafariViewController
   )
   .then((credentials) => console.log(credentials))
   .catch((error) => console.log(error));
