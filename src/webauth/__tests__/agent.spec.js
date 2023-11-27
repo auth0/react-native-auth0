@@ -89,7 +89,7 @@ describe('Agent', () => {
           invitationUrl: 'invitationUrl',
           leeway: 220,
           ephemeralSession: true,
-          useSFSafariViewController: true,
+          safariViewControllerPresentationStyle: 0,
           additionalParameters: { test: 'test' },
         }
       );
@@ -107,7 +107,7 @@ describe('Agent', () => {
         'invitationUrl',
         220,
         true,
-        true,
+        0,
         { test: 'test' }
       );
     });
@@ -204,7 +204,7 @@ describe('Agent', () => {
 
   describe('handle app linking for SFSafariViewController', () => {
     it('with useSFSafariViewController AppLinking should be enabled', async () => {
-      await agent.login({}, { useSFSafariViewController: true });
+      await agent.login({}, { safariViewControllerPresentationStyle: 0 });
       expect(Linking.addEventListener).toHaveBeenCalledTimes(1);
     });
 
@@ -215,7 +215,7 @@ describe('Agent', () => {
 
     it('for only iOS platform AppLinking should be enabled', async () => {
       Platform.OS = 'android';
-      await agent.login({}, { useSFSafariViewController: true });
+      await agent.login({}, { safariViewControllerPresentationStyle: 0 });
       expect(Linking.addEventListener).toHaveBeenCalledTimes(0);
       Platform.OS = 'ios'; //reset value to ios
     });
@@ -234,7 +234,7 @@ describe('Agent', () => {
           throw Error('123123');
         });
       try {
-        await agent.login({}, { useSFSafariViewController: true });
+        await agent.login({}, { safariViewControllerPresentationStyle: 0 });
       } catch (e) {}
       expect(Linking.addEventListener).toHaveBeenCalledTimes(1);
       expect(mockSubscription.remove).toHaveBeenCalledTimes(1);
@@ -248,7 +248,7 @@ describe('Agent', () => {
       jest
         .spyOn(Linking, 'addEventListener')
         .mockReturnValueOnce(mockSubscription);
-      await agent.login({}, { useSFSafariViewController: true });
+      await agent.login({}, { safariViewControllerPresentationStyle: 0 });
       expect(Linking.addEventListener).toHaveBeenCalledTimes(1);
       expect(mockSubscription.remove).toHaveBeenCalledTimes(0);
     });

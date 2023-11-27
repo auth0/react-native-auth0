@@ -9,3 +9,23 @@ exports[`WebAuth authorize should authorize with provided parameters 1`] = `
   "tokenType": "token type",
 }
 `;
+
+exports[`WebAuth authorize should set presentation style to 0 if set as empty 1`] = `
+{
+  "accessToken": "access token",
+  "idToken": "id token",
+  "refreshToken": "refresh token",
+  "scope": "scope",
+  "tokenType": "token type",
+}
+`;
+
+exports[`WebAuth authorize should set presentation style to undefined if object is empty 1`] = `
+{
+  "accessToken": "access token",
+  "idToken": "id token",
+  "refreshToken": "refresh token",
+  "scope": "scope",
+  "tokenType": "token type",
+}
+`;
