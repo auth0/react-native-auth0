@@ -2710,9 +2710,9 @@
     "@types/istanbul-lib-report" "*"
 
 "@types/jest@*", "@types/jest@^29.5.0":
-  version "29.5.9"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-29.5.9.tgz#eb997ab4a201b7504662ac9ebb84a748e17f95ab"
-  integrity sha512-zJeWhqBwVoPm83sP8h1/SVntwWTu5lZbKQGCvBjxQOyEWnKnsaomt2y7SlV4KfwlrHAHHAn00Sh4IAWaIsGOgQ==
+  version "29.5.10"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-29.5.10.tgz#a10fc5bab9e426081c12b2ef73d24d4f0c9b7f50"
+  integrity sha512-tE4yxKEphEyxj9s4inideLHktW/x6DwesIwWZ9NN1FKf9zbJYsnhBoA9vrHA/IuIOKwPa5PcFBNV4lpMIOEzyQ==
   dependencies:
     expect "^29.0.0"
     pretty-format "^29.0.0"
@@ -2777,9 +2777,9 @@
     "@types/react" "*"
 
 "@types/react-test-renderer@^18.0.0":
-  version "18.0.6"
-  resolved "https://registry.yarnpkg.com/@types/react-test-renderer/-/react-test-renderer-18.0.6.tgz#1db32c09d3931a7f4ed7f31612f6cccb2910d28f"
-  integrity sha512-O2JT1J3/v/NaYHYmPf2DXBSqUGmp6iwhFPicES6Pc1Y90B9Qgu99mmaBGqfZFpVuXLzF/pNJB4K9ySL3iqFeXA==
+  version "18.0.7"
+  resolved "https://registry.yarnpkg.com/@types/react-test-renderer/-/react-test-renderer-18.0.7.tgz#2cfe657adb3688cdf543995eceb2e062b5a68728"
+  integrity sha512-1+ANPOWc6rB3IkSnElhjv6VLlKg2dSv/OWClUyZimbLsQyBn8Js9Vtdsi3UICJ2rIQ3k2la06dkB+C92QfhKmg==
   dependencies:
     "@types/react" "*"
 
@@ -9880,9 +9880,9 @@ react-is@^17.0.1:
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
 react-native-builder-bob@^0.23.0:
-  version "0.23.1"
-  resolved "https://registry.yarnpkg.com/react-native-builder-bob/-/react-native-builder-bob-0.23.1.tgz#d7810798fa9898c3631c6d76679a991c0d77cac6"
-  integrity sha512-LA+cRp72+lCpOG/AhUu/TuBnAZrntPEWLt6z6xlAK8K5WanXOSFL49eYRCnxVx9EUrOW3ix/Y0j4zbXAC1R+rw==
+  version "0.23.2"
+  resolved "https://registry.yarnpkg.com/react-native-builder-bob/-/react-native-builder-bob-0.23.2.tgz#9f3f6509a9cba8102468169963ca7e1f0aa941a5"
+  integrity sha512-ehv2XKS9cvPR5JR7FIpSx3qY7tULkljT2Kb82FBAxXsFLjqlRU1WfqHRLh6lytL2XqAxLQODpPfHUH53SsXnag==
   dependencies:
     "@babel/core" "^7.18.5"
     "@babel/plugin-proposal-class-properties" "^7.17.12"
@@ -11465,9 +11465,9 @@ typedoc-plugin-missing-exports@^2.0.0:
   integrity sha512-+1DhqZCEu7Vu5APnrqpPwl31D+hXpt1fV0Le9ycCRL1eLVdatdl6KVt4SEVwPxnEpKwgOn2dNX6I9+0F1aO2aA==
 
 typedoc@^0.25.1:
-  version "0.25.3"
-  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.25.3.tgz#53c6d668e1001b3d488e9a750fcdfb05433554c0"
-  integrity sha512-Ow8Bo7uY1Lwy7GTmphRIMEo6IOZ+yYUyrc8n5KXIZg1svpqhZSWgni2ZrDhe+wLosFS8yswowUzljTAV/3jmWw==
+  version "0.25.4"
+  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.25.4.tgz#5c2c0677881f504e41985f29d9aef0dbdb6f1e6f"
+  integrity sha512-Du9ImmpBCw54bX275yJrxPVnjdIyJO/84co0/L9mwe0R3G4FSR6rQ09AlXVRvZEGMUg09+z/usc8mgygQ1aidA==
   dependencies:
     lunr "^2.3.9"
     marked "^4.3.0"
