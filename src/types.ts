@@ -115,9 +115,11 @@ export interface WebAuthorizeOptions {
    */
   useLegacyCallbackUrl?: boolean;
   /**
-   * **iOS only:** Uses `SFSafariViewController` instead of `ASWebAuthenticationSession`.
+   * **iOS only:** Uses `SFSafariViewController` instead of `ASWebAuthenticationSession`. If empty object is set, the presentationStyle defaults to {@link SafariViewControllerPresentationStyle.fullScreen}
    */
-  useSFSafariViewController?: boolean;
+  useSFSafariViewController?: {
+    presentationStyle?: SafariViewControllerPresentationStyle;
+  };
 }
 
 /**
@@ -551,3 +553,20 @@ export type MultifactorChallengeResponse =
   | MultifactorChallengeOTPResponse
   | MultifactorChallengeOOBResponse
   | MultifactorChallengeOOBWithBindingResponse;
+
+/**
+ * Presentation styles for when using SFSafariViewController on iOS.
+ * For the full description of what each option does, please see {@link https://developer.apple.com/documentation/uikit/uimodalpresentationstyle} for more details
+ */
+export enum SafariViewControllerPresentationStyle {
+  automatic = -2,
+  none,
+  fullScreen,
+  pageSheet,
+  formSheet,
+  currentContext,
+  custom,
+  overFullScreen,
+  overCurrentContext,
+  popover,
+}

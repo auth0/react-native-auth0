@@ -82,7 +82,7 @@ export type Auth0Module = {
     invitationUrl?: string,
     leeway?: number,
     ephemeralSession?: boolean,
-    useSFSafariViewController?: boolean,
+    safariViewControllerPresentationStyle?: number,
     additionalParameters?: { [key: string]: string }
   ) => Promise<Credentials>;
   webAuthLogout: (
@@ -120,7 +120,6 @@ export type AgentParameters = {
 export type AgentLogoutOptions = {
   customScheme?: string;
   federated?: boolean;
-  useSFSafariViewController?: boolean;
   useLegacyCallbackUrl?: boolean;
 };
 
@@ -136,7 +135,7 @@ export interface AgentLoginOptions {
   customScheme?: string;
   leeway?: number;
   ephemeralSession?: boolean;
-  useSFSafariViewController?: boolean;
+  safariViewControllerPresentationStyle?: number;
   additionalParameters?: { [key: string]: string };
   useLegacyCallbackUrl?: boolean;
 }

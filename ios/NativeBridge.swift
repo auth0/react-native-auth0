@@ -38,7 +38,7 @@ public class NativeBridge: NSObject {
         super.init()
    }
     
-    @objc public func webAuth(state: String?, redirectUri: String, nonce: String?, audience: String?, scope: String?, connection: String?, maxAge: Int, organization: String?, invitationUrl: String?, leeway: Int, ephemeralSession: Bool, useSFSafariViewController: Bool, additionalParameters: [String: String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func webAuth(state: String?, redirectUri: String, nonce: String?, audience: String?, scope: String?, connection: String?, maxAge: Int, organization: String?, invitationUrl: String?, leeway: Int, ephemeralSession: Bool, safariViewControllerPresentationStyle: Int, additionalParameters: [String: String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
         if let value = URL(string: redirectUri) {
             let _ = builder.redirectURL(value)
@@ -73,8 +73,8 @@ public class NativeBridge: NSObject {
         if(ephemeralSession) {
             let _ = builder.useEphemeralSession()
         }
-        if(useSFSafariViewController) {
-            let _ = builder.provider(WebAuthentication.safariProvider())
+        if let presentationStyle = UIModalPresentationStyle(rawValue: safariViewControllerPresentationStyle), safariViewControllerPresentationStyle != 99 {
+            let _ = builder.provider(WebAuthentication.safariProvider(style: presentationStyle))
         }
         let _ = builder
             .parameters(additionalParameters)

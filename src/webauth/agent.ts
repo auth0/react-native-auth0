@@ -28,7 +28,10 @@ class Agent {
       );
     }
     return new Promise(async (resolve, reject) => {
-      if (Platform.OS === 'ios' && options.useSFSafariViewController) {
+      if (
+        Platform.OS === 'ios' &&
+        options.safariViewControllerPresentationStyle !== undefined
+      ) {
         linkSubscription = Linking.addEventListener('url', async (event) => {
           if (linkSubscription) {
             linkSubscription.remove();
@@ -64,7 +67,7 @@ class Agent {
           options.invitationUrl,
           options.leeway ?? 0,
           options.ephemeralSession ?? false,
-          options.useSFSafariViewController ?? false,
+          options.safariViewControllerPresentationStyle ?? 99, //To avoid null issue in native layer, this will not be converted to UIModalPresentationStyle so this shouldn't be an issue
           options.additionalParameters ?? {}
         );
         resolve(credentials);

@@ -4,6 +4,7 @@ import {
   ClearSessionOptions,
   ClearSessionParameters,
   Credentials,
+  SafariViewControllerPresentationStyle,
   WebAuthorizeOptions,
   WebAuthorizeParameters,
 } from '../types';
@@ -47,7 +48,18 @@ class WebAuth {
     options: WebAuthorizeOptions = {}
   ): Promise<Credentials> {
     const { clientId, domain, agent } = this;
-    return agent.login({ clientId, domain }, { ...parameters, ...options });
+    let presentationStyle = options.useSFSafariViewController
+      ? options.useSFSafariViewController.presentationStyle ??
+        SafariViewControllerPresentationStyle.fullScreen
+      : undefined;
+    return agent.login(
+      { clientId, domain },
+      {
+        ...parameters,
+        safariViewControllerPresentationStyle: presentationStyle,
+        ...options,
+      }
+    );
   }
 
   /**
