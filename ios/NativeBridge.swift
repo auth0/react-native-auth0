@@ -73,6 +73,7 @@ public class NativeBridge: NSObject {
         if(ephemeralSession) {
             let _ = builder.useEphemeralSession()
         }
+        //Since we cannot have a null value here, the JS layer sends 99 if we have to ignore setting this value
         if let presentationStyle = UIModalPresentationStyle(rawValue: safariViewControllerPresentationStyle), safariViewControllerPresentationStyle != 99 {
             let _ = builder.provider(WebAuthentication.safariProvider(style: presentationStyle))
         }

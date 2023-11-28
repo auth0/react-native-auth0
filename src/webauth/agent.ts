@@ -19,7 +19,7 @@ class Agent {
     parameters: AgentParameters,
     options: AgentLoginOptions
   ): Promise<Credentials> {
-    let linkSubscription: EmitterSubscription;
+    let linkSubscription: EmitterSubscription | null = null;
     if (!NativeModules.A0Auth0) {
       return Promise.reject(
         new Error(
@@ -27,57 +27,53 @@ class Agent {
         )
       );
     }
-    return new Promise(async (resolve, reject) => {
-      if (
-        Platform.OS === 'ios' &&
-        options.safariViewControllerPresentationStyle !== undefined
-      ) {
-        linkSubscription = Linking.addEventListener('url', async (event) => {
-          if (linkSubscription) {
-            linkSubscription.remove();
-          }
-          try {
-            await A0Auth0.resumeWebAuth(event.url);
-          } catch (error) {
-            reject(error);
-          }
-        });
-      }
-      try {
-        await _ensureNativeModuleIsInitialized(
-          A0Auth0,
-          parameters.clientId,
-          parameters.domain
-        );
-        let scheme = this.getScheme(
-          options.useLegacyCallbackUrl ?? false,
-          options.customScheme
-        );
-        let redirectUri = this.callbackUri(parameters.domain, scheme);
-        let credentials = await A0Auth0.webAuth(
-          scheme,
-          redirectUri,
-          options.state,
-          options.nonce,
-          options.audience,
-          options.scope,
-          options.connection,
-          options.maxAge ?? 0,
-          options.organization,
-          options.invitationUrl,
-          options.leeway ?? 0,
-          options.ephemeralSession ?? false,
-          options.safariViewControllerPresentationStyle ?? 99, //To avoid null issue in native layer, this will not be converted to UIModalPresentationStyle so this shouldn't be an issue
-          options.additionalParameters ?? {}
-        );
-        resolve(credentials);
-      } catch (error) {
+    if (
+      Platform.OS === 'ios' &&
+      options.safariViewControllerPresentationStyle !== undefined
+    ) {
+      linkSubscription = Linking.addEventListener('url', async (event) => {
         if (linkSubscription) {
           linkSubscription.remove();
         }
-        reject(error);
-      }
-    });
+        try {
+          await A0Auth0.resumeWebAuth(event.url);
+        } catch (error) {
+          throw error;
+        }
+      });
+    }
+    try {
+      await _ensureNativeModuleIsInitialized(
+        A0Auth0,
+        parameters.clientId,
+        parameters.domain
+      );
+      let scheme = this.getScheme(
+        options.useLegacyCallbackUrl ?? false,
+        options.customScheme
+      );
+      let redirectUri = this.callbackUri(parameters.domain, scheme);
+      let credentials = await A0Auth0.webAuth(
+        scheme,
+        redirectUri,
+        options.state,
+        options.nonce,
+        options.audience,
+        options.scope,
+        options.connection,
+        options.maxAge ?? 0,
+        options.organization,
+        options.invitationUrl,
+        options.leeway ?? 0,
+        options.ephemeralSession ?? false,
+        options.safariViewControllerPresentationStyle ?? 99, //Since we can't pass null to the native layer, and we need a value to represent this parameter is not set, we are using 99.
+        //The native layer will check for this and ignore if the value is 99
+        options.additionalParameters ?? {}
+      );
+      return credentials;
+    } finally {
+      linkSubscription?.remove();
+    }
   }
 
   async logout(
@@ -91,25 +87,18 @@ class Agent {
         )
       );
     }
-    return new Promise(async (resolve, reject) => {
-      try {
-        let federated = options.federated ?? false;
-        let scheme = this.getScheme(
-          options.useLegacyCallbackUrl ?? false,
-          options.customScheme
-        );
-        let redirectUri = this.callbackUri(parameters.domain, scheme);
-        await _ensureNativeModuleIsInitialized(
-          NativeModules.A0Auth0,
-          parameters.clientId,
-          parameters.domain
-        );
-
-        resolve(await A0Auth0.webAuthLogout(scheme, federated, redirectUri));
-      } catch (error) {
-        reject(error);
-      }
-    });
+    let federated = options.federated ?? false;
+    let scheme = this.getScheme(
+      options.useLegacyCallbackUrl ?? false,
+      options.customScheme
+    );
+    let redirectUri = this.callbackUri(parameters.domain, scheme);
+    await _ensureNativeModuleIsInitialized(
+      NativeModules.A0Auth0,
+      parameters.clientId,
+      parameters.domain
+    );
+    return A0Auth0.webAuthLogout(scheme, federated, redirectUri);
   }
 
   private getScheme(
