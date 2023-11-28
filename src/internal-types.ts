@@ -118,6 +118,7 @@ export type AgentParameters = {
 export type AgentLogoutOptions = {
   customScheme?: string;
   federated?: boolean;
+  redirectUrl?: string;
   useLegacyCallbackUrl?: boolean;
 };
 
@@ -133,6 +134,7 @@ export interface AgentLoginOptions {
   customScheme?: string;
   leeway?: number;
   ephemeralSession?: boolean;
+  redirectUrl?: string;
   additionalParameters?: { [key: string]: string };
   useLegacyCallbackUrl?: boolean;
 }

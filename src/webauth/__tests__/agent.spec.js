@@ -83,6 +83,42 @@ describe('Agent', () => {
         { test: 'test' }
       );
     });
+
+    it('should ensure login is called with proper parameters when redirect URL is set', async () => {
+      let domain = 'test.com';
+      let clientId = 'client id value';
+      const mock = jest
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .mockImplementation(() => Promise.resolve(true));
+      const mockLogin = jest
+        .spyOn(NativeModules.A0Auth0, 'webAuth')
+        .mockImplementation(() => Promise.resolve(true));
+      await agent.login(
+        {
+          clientId: clientId,
+          domain: domain,
+        },
+        {
+          redirectUrl: 'redirect://redirect.com',
+        }
+      );
+      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mockLogin).toBeCalledWith(
+        'com.my.app.auth0',
+        'redirect://redirect.com',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        0,
+        undefined,
+        undefined,
+        0,
+        false,
+        {}
+      );
+    });
   });
 
   describe('logout', () => {
@@ -133,7 +169,37 @@ describe('Agent', () => {
         }
       );
       expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
-      expect(mockLogin).toBeCalledWith('test', true, 'test://test.com/test-os/com.my.app/callback');
+      expect(mockLogin).toBeCalledWith(
+        'test',
+        true,
+        'test://test.com/test-os/com.my.app/callback'
+      );
+    });
+
+    it('should ensure logout is called with proper parameters when redirect url is set', async () => {
+      let domain = 'test.com';
+      let clientId = 'client id value';
+      const mock = jest
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .mockImplementation(() => Promise.resolve(true));
+      const mockLogin = jest
+        .spyOn(NativeModules.A0Auth0, 'webAuthLogout')
+        .mockImplementation(() => Promise.resolve(true));
+      await agent.logout(
+        {
+          clientId: clientId,
+          domain: domain,
+        },
+        {
+          redirectUrl: 'redirect://redirect.com',
+        }
+      );
+      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mockLogin).toBeCalledWith(
+        'com.my.app.auth0',
+        false,
+        'redirect://redirect.com'
+      );
     });
   });
 
@@ -162,10 +228,11 @@ describe('Agent', () => {
     });
   });
 
-
   describe('callbackUri', () => {
     it('should return callback uri with given domain and scheme', async () => {
-      await expect(agent.callbackUri('domain', 'scheme')).toEqual("scheme://domain/test-os/com.test/callback");
+      await expect(agent.callbackUri('domain', 'scheme')).toEqual(
+        'scheme://domain/test-os/com.test/callback'
+      );
     });
   });
 });

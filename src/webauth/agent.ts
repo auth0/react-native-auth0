@@ -30,7 +30,8 @@ class Agent {
       options.useLegacyCallbackUrl ?? false,
       options.customScheme
     );
-    let redirectUri = this.callbackUri(parameters.domain, scheme);
+    let redirectUri =
+      options.redirectUrl ?? this.callbackUri(parameters.domain, scheme);
     return A0Auth0.webAuth(
       scheme,
       redirectUri,
@@ -64,7 +65,8 @@ class Agent {
       options.useLegacyCallbackUrl ?? false,
       options.customScheme
     );
-    let redirectUri = this.callbackUri(parameters.domain, scheme);
+    let redirectUri =
+      options.redirectUrl ?? this.callbackUri(parameters.domain, scheme);
     await _ensureNativeModuleIsInitialized(
       NativeModules.A0Auth0,
       parameters.clientId,
