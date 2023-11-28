@@ -240,6 +240,38 @@ describe('Agent', () => {
       expect(mockSubscription.remove).toHaveBeenCalledTimes(1);
     });
 
+    it('when login succeeds and AppLinking is enabled, listener for AppLinking subscription should be removed and resumeWebAuth should be called', async () => {
+      let mockSubscription = {
+        remove: () => {},
+      };
+      jest.spyOn(mockSubscription, 'remove').mockReturnValueOnce({});
+      const mockEventListener = jest
+        .spyOn(Linking, 'addEventListener')
+        .mockReturnValueOnce(mockSubscription);
+
+      jest
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .mockImplementationOnce(() => {});
+
+      jest.spyOn(NativeModules.A0Auth0, 'webAuth').mockImplementation(() => {
+        mockEventListener.mock.calls[0][1]({ url: 'https://callback.url.com' });
+        Promise.resolve(true);
+      });
+
+      jest
+        .spyOn(NativeModules.A0Auth0, 'resumeWebAuth')
+        .mockImplementation(() => Promise.resolve(true));
+
+      await agent.login({}, { safariViewControllerPresentationStyle: 0 });
+      expect(Linking.addEventListener).toHaveBeenCalledTimes(1);
+      expect(NativeModules.A0Auth0.resumeWebAuth).toHaveBeenCalledTimes(1);
+      expect(mockEventListener.mock.calls[0][0]).toEqual('url');
+      expect(NativeModules.A0Auth0.resumeWebAuth).toHaveBeenCalledWith(
+        'https://callback.url.com'
+      );
+      expect(mockSubscription.remove).toHaveBeenCalledTimes(1);
+    });
+
     it('when login crashes and AppLinking is not enabled, listener for AppLinking remove should not be called', async () => {
       let mockSubscription = {
         remove: () => {},

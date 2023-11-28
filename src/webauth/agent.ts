@@ -32,14 +32,8 @@ class Agent {
       options.safariViewControllerPresentationStyle !== undefined
     ) {
       linkSubscription = Linking.addEventListener('url', async (event) => {
-        if (linkSubscription) {
-          linkSubscription.remove();
-        }
-        try {
-          await A0Auth0.resumeWebAuth(event.url);
-        } catch (error) {
-          throw error;
-        }
+        linkSubscription?.remove();
+        await A0Auth0.resumeWebAuth(event.url);
       });
     }
     try {
@@ -71,8 +65,9 @@ class Agent {
         options.additionalParameters ?? {}
       );
       return credentials;
-    } finally {
+    } catch (error) {
       linkSubscription?.remove();
+      throw error;
     }
   }
 
