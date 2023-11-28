@@ -49,8 +49,6 @@ class WebAuth {
     options: WebAuthorizeOptions = {}
   ): Promise<Credentials> {
     const { clientId, domain, agent } = this;
-    console.log(options);
-    console.log(options.useSFSafariViewController);
     let presentationStyle = options.useSFSafariViewController
       ? (options.useSFSafariViewController as { presentationStyle: number })
           ?.presentationStyle ??

@@ -116,6 +116,20 @@ export interface WebAuthorizeOptions {
   useLegacyCallbackUrl?: boolean;
   /**
    * **iOS only:** Uses `SFSafariViewController` instead of `ASWebAuthenticationSession`. If empty object is set, the presentationStyle defaults to {@link SafariViewControllerPresentationStyle.fullScreen}
+   *
+   * This can be used as a boolean value like
+   *
+   * @example
+   * ```typescript
+   * await authorize({}, {useSFSafariViewController: true});
+   * ```
+   *
+   * or
+   *
+   * @example
+   * ```typescript
+   * await authorize({}, {useSFSafariViewController: {presentationStyle: SafariViewControllerPresentationStyle.fullScreen}});
+   * ```
    */
   useSFSafariViewController?:
     | {

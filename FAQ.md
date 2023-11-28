@@ -88,7 +88,7 @@ An alternative is to use `SFSafariViewController` instead of `ASWebAuthenticatio
 auth0.webAuth
   .authorize(
     { scope: 'openid profile email' },
-    { useSFSafariViewController: {} } // Use SFSafariViewController
+    { useSFSafariViewController: true } // Use SFSafariViewController
   )
   .then((credentials) => console.log(credentials))
   .catch((error) => console.log(error));
