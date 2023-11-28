@@ -248,8 +248,15 @@ describe('Agent', () => {
       jest
         .spyOn(Linking, 'addEventListener')
         .mockReturnValueOnce(mockSubscription);
-      await agent.login({}, { safariViewControllerPresentationStyle: 0 });
-      expect(Linking.addEventListener).toHaveBeenCalledTimes(1);
+      jest
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .mockImplementationOnce(() => {
+          throw Error('123123');
+        });
+      try {
+        await agent.login({}, {});
+      } catch (e) {}
+      expect(Linking.addEventListener).toHaveBeenCalledTimes(0);
       expect(mockSubscription.remove).toHaveBeenCalledTimes(0);
     });
   });
