@@ -92,7 +92,7 @@ describe('WebAuth', () => {
       showMock.mockRestore();
     });
 
-    it('should set presentation style to undefined if object is empty', async () => {
+    it('should set presentation style to undefined if object is undefined', async () => {
       let parameters = {
         state: 'state',
         nonce: 'nonce',
@@ -129,6 +129,92 @@ describe('WebAuth', () => {
           ...parameters,
           ...options,
           safariViewControllerPresentationStyle: undefined,
+        }
+      );
+      showMock.mockRestore();
+    });
+
+    it('should set presentation style to undefined if value is false', async () => {
+      let parameters = {
+        state: 'state',
+        nonce: 'nonce',
+        audience: 'audience',
+        scope: 'scope',
+        connection: 'connection',
+        maxAge: 120,
+        organization: 'org',
+        invitationUrl: 'invitation url',
+        additionalParameters: { test: 'test' },
+      };
+      let options = {
+        leeway: 220,
+        ephemeralSession: true,
+        customScheme: 'scheme',
+        useSFSafariViewController: false,
+      };
+      const showMock = jest
+        .spyOn(webauth.agent, 'login')
+        .mockImplementation(() =>
+          Promise.resolve({
+            idToken: 'id token',
+            accessToken: 'access token',
+            tokenType: 'token type',
+            refreshToken: 'refresh token',
+            scope: 'scope',
+          })
+        );
+      await expect(
+        webauth.authorize(parameters, options)
+      ).resolves.toMatchSnapshot();
+      expect(showMock).toHaveBeenCalledWith(
+        { clientId, domain },
+        {
+          ...parameters,
+          ...options,
+          safariViewControllerPresentationStyle: undefined,
+        }
+      );
+      showMock.mockRestore();
+    });
+
+    it('should set presentation style to 0 if value is true', async () => {
+      let parameters = {
+        state: 'state',
+        nonce: 'nonce',
+        audience: 'audience',
+        scope: 'scope',
+        connection: 'connection',
+        maxAge: 120,
+        organization: 'org',
+        invitationUrl: 'invitation url',
+        additionalParameters: { test: 'test' },
+      };
+      let options = {
+        leeway: 220,
+        ephemeralSession: true,
+        customScheme: 'scheme',
+        useSFSafariViewController: true,
+      };
+      const showMock = jest
+        .spyOn(webauth.agent, 'login')
+        .mockImplementation(() =>
+          Promise.resolve({
+            idToken: 'id token',
+            accessToken: 'access token',
+            tokenType: 'token type',
+            refreshToken: 'refresh token',
+            scope: 'scope',
+          })
+        );
+      await expect(
+        webauth.authorize(parameters, options)
+      ).resolves.toMatchSnapshot();
+      expect(showMock).toHaveBeenCalledWith(
+        { clientId, domain },
+        {
+          ...parameters,
+          ...options,
+          safariViewControllerPresentationStyle: 0,
         }
       );
       showMock.mockRestore();

@@ -10,6 +10,7 @@ import {
 } from '../types';
 
 import Auth from '../auth';
+import { object } from 'prop-types';
 
 /**
  * Helper to perform Auth against Auth0 hosted login page
@@ -48,8 +49,11 @@ class WebAuth {
     options: WebAuthorizeOptions = {}
   ): Promise<Credentials> {
     const { clientId, domain, agent } = this;
+    console.log(options);
+    console.log(options.useSFSafariViewController);
     let presentationStyle = options.useSFSafariViewController
-      ? options.useSFSafariViewController.presentationStyle ??
+      ? (options.useSFSafariViewController as { presentationStyle: number })
+          ?.presentationStyle ??
         SafariViewControllerPresentationStyle.fullScreen
       : undefined;
     return agent.login(

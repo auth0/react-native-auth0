@@ -117,9 +117,11 @@ export interface WebAuthorizeOptions {
   /**
    * **iOS only:** Uses `SFSafariViewController` instead of `ASWebAuthenticationSession`. If empty object is set, the presentationStyle defaults to {@link SafariViewControllerPresentationStyle.fullScreen}
    */
-  useSFSafariViewController?: {
-    presentationStyle?: SafariViewControllerPresentationStyle;
-  };
+  useSFSafariViewController?:
+    | {
+        presentationStyle?: SafariViewControllerPresentationStyle;
+      }
+    | boolean;
 }
 
 /**
