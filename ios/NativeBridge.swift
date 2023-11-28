@@ -38,7 +38,7 @@ public class NativeBridge: NSObject {
         super.init()
    }
     
-    @objc public func webAuth(state: String?, redirectUri: String, nonce: String?, audience: String?, scope: String?, connection: String?, maxAge: Int, organization: String?, invitationUrl: String?, leeway: Int, ephemeralSession: Bool, additionalParameters: [String: String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func webAuth(state: String?, redirectUri: String, nonce: String?, audience: String?, scope: String?, connection: String?, maxAge: Int, organization: String?, invitationUrl: String?, leeway: Int, ephemeralSession: Bool, safariViewControllerPresentationStyle: Int, additionalParameters: [String: String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
         if let value = URL(string: redirectUri) {
             let _ = builder.redirectURL(value)
@@ -73,7 +73,12 @@ public class NativeBridge: NSObject {
         if(ephemeralSession) {
             let _ = builder.useEphemeralSession()
         }
-        let _ = builder.parameters(additionalParameters)
+        //Since we cannot have a null value here, the JS layer sends 99 if we have to ignore setting this value
+        if let presentationStyle = UIModalPresentationStyle(rawValue: safariViewControllerPresentationStyle), safariViewControllerPresentationStyle != 99 {
+            let _ = builder.provider(WebAuthentication.safariProvider(style: presentationStyle))
+        }
+        let _ = builder
+            .parameters(additionalParameters)
         builder.start { result in
             switch result {
             case .success(let credentials):
@@ -84,7 +89,7 @@ public class NativeBridge: NSObject {
         }
             
     }
-    
+
     @objc public func webAuthLogout(federated: Bool, redirectUri: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
         if let value = URL(string: redirectUri) {
@@ -98,6 +103,14 @@ public class NativeBridge: NSObject {
                     reject(error.reactNativeErrorCode(), error.errorDescription, error)
                 }
             }
+    }
+
+    @objc public func resumeWebAuth(url: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if let value = URL(string: url), WebAuthentication.resume(with: value) {
+            resolve(true)
+        } else {
+            reject("ERROR_PARSING_URL", "The callback url \(url) is invalid", nil)
+        }
     }
     
     @objc public func saveCredentials(credentialsDict: [String: Any], resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {

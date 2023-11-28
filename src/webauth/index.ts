@@ -4,11 +4,13 @@ import {
   ClearSessionOptions,
   ClearSessionParameters,
   Credentials,
+  SafariViewControllerPresentationStyle,
   WebAuthorizeOptions,
   WebAuthorizeParameters,
 } from '../types';
 
 import Auth from '../auth';
+import { object } from 'prop-types';
 
 /**
  * Helper to perform Auth against Auth0 hosted login page
@@ -36,9 +38,6 @@ class WebAuth {
   /**
    * Starts the AuthN/AuthZ transaction against the AS in the in-app browser.
    *
-   * In iOS <11 it will use `SFSafariViewController`, in iOS 11 `SFAuthenticationSession`  and in iOS >11 `ASWebAuthenticationSession`.
-   * In Android it will use Chrome Custom Tabs.
-   *
    * To learn more about how to customize the authorize call, check the Universal Login Page
    * article at https://auth0.com/docs/hosted-pages/login
    *
@@ -50,14 +49,23 @@ class WebAuth {
     options: WebAuthorizeOptions = {}
   ): Promise<Credentials> {
     const { clientId, domain, agent } = this;
-    return agent.login({ clientId, domain }, { ...parameters, ...options });
+    let presentationStyle = options.useSFSafariViewController
+      ? (options.useSFSafariViewController as { presentationStyle: number })
+          ?.presentationStyle ??
+        SafariViewControllerPresentationStyle.fullScreen
+      : undefined;
+    return agent.login(
+      { clientId, domain },
+      {
+        ...parameters,
+        safariViewControllerPresentationStyle: presentationStyle,
+        ...options,
+      }
+    );
   }
 
   /**
    *  Removes Auth0 session and optionally remove the Identity Provider session.
-   *
-   * In iOS <11 it will use `SFSafariViewController`, in iOS 11 `SFAuthenticationSession`  and in iOS >11 `ASWebAuthenticationSession`.
-   * In Android it will use Chrome Custom Tabs.
    *
    * @see https://auth0.com/docs/logout
    */

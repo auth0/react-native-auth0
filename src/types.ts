@@ -122,7 +122,32 @@ export interface WebAuthorizeOptions {
    * **Android only:** Custom scheme to build the callback URL with.
    */
   customScheme?: string;
+  /**
+   * This will use older callback URL. See {@link https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md#callback-url-migration} for more details.
+   */
   useLegacyCallbackUrl?: boolean;
+  /**
+   * **iOS only:** Uses `SFSafariViewController` instead of `ASWebAuthenticationSession`. If empty object is set, the presentationStyle defaults to {@link SafariViewControllerPresentationStyle.fullScreen}
+   *
+   * This can be used as a boolean value or as an object which sets the `presentationStyle`. See the examples below for reference
+   *
+   * @example
+   * ```typescript
+   * await authorize({}, {useSFSafariViewController: true});
+   * ```
+   *
+   * or
+   *
+   * @example
+   * ```typescript
+   * await authorize({}, {useSFSafariViewController: {presentationStyle: SafariViewControllerPresentationStyle.fullScreen}});
+   * ```
+   */
+  useSFSafariViewController?:
+    | {
+        presentationStyle?: SafariViewControllerPresentationStyle;
+      }
+    | boolean;
 }
 
 /**
@@ -157,6 +182,9 @@ export interface ClearSessionOptions {
    * **Android only:** Custom scheme to build the callback URL with.
    */
   customScheme?: string;
+  /**
+   * This will use older callback URL. See {@link https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md#callback-url-migration} for more details.
+   */
   useLegacyCallbackUrl?: boolean;
 }
 
@@ -565,3 +593,20 @@ export type MultifactorChallengeResponse =
   | MultifactorChallengeOTPResponse
   | MultifactorChallengeOOBResponse
   | MultifactorChallengeOOBWithBindingResponse;
+
+/**
+ * Presentation styles for when using SFSafariViewController on iOS.
+ * For the full description of what each option does, please see {@link https://developer.apple.com/documentation/uikit/uimodalpresentationstyle} for more details
+ */
+export enum SafariViewControllerPresentationStyle {
+  automatic = -2,
+  none,
+  fullScreen,
+  pageSheet,
+  formSheet,
+  currentContext,
+  custom,
+  overFullScreen,
+  overCurrentContext,
+  popover,
+}

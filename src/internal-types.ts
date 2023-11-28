@@ -82,6 +82,7 @@ export type Auth0Module = {
     invitationUrl?: string,
     leeway?: number,
     ephemeralSession?: boolean,
+    safariViewControllerPresentationStyle?: number,
     additionalParameters?: { [key: string]: string }
   ) => Promise<Credentials>;
   webAuthLogout: (
@@ -89,6 +90,7 @@ export type Auth0Module = {
     federated: boolean,
     redirectUri: string
   ) => Promise<void>;
+  resumeWebAuth: (url: string) => Promise<void>;
   saveCredentials: (credentials: Credentials) => Promise<void>;
   getCredentials: (
     scope?: string,
@@ -135,6 +137,7 @@ export interface AgentLoginOptions {
   leeway?: number;
   ephemeralSession?: boolean;
   redirectUrl?: string;
+  safariViewControllerPresentationStyle?: number;
   additionalParameters?: { [key: string]: string };
   useLegacyCallbackUrl?: boolean;
 }
