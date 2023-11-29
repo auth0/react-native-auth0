@@ -220,7 +220,7 @@ describe('Agent', () => {
           domain: domain,
         },
         {
-          redirectUrl: 'redirect://redirect.com',
+          returnToUrl: 'redirect://redirect.com',
         }
       );
       expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
