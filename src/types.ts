@@ -171,7 +171,7 @@ export interface ClearSessionParameters {
    * Android: {YOUR_APP_PACKAGE_NAME}://{AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
    * iOS: {PRODUCT_BUNDLE_IDENTIFIER}://{AUTH0_DOMAIN}/ios/{PRODUCT_BUNDLE_IDENTIFIER}/callback
    */
-  redirectUrl?: string;
+  returnToUrl?: string;
 }
 
 /**

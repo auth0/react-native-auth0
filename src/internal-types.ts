@@ -120,7 +120,7 @@ export type AgentParameters = {
 export type AgentLogoutOptions = {
   customScheme?: string;
   federated?: boolean;
-  redirectUrl?: string;
+  returnToUrl?: string;
   useLegacyCallbackUrl?: boolean;
 };
 

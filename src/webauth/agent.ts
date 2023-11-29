@@ -95,7 +95,7 @@ class Agent {
       options.customScheme
     );
     let redirectUri =
-      options.redirectUrl ?? this.callbackUri(parameters.domain, scheme);
+      options.returnToUrl ?? this.callbackUri(parameters.domain, scheme);
     await _ensureNativeModuleIsInitialized(
       NativeModules.A0Auth0,
       parameters.clientId,
