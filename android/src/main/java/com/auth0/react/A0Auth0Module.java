@@ -179,6 +179,9 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
         if(leeway != 0) {
             builder.withIdTokenVerificationLeeway(leeway);
         }
+        if(redirectUri != null) {
+            builder.withRedirectUri(redirectUri);
+        }
         builder.withParameters(cleanedParameters);
         builder.start(reactContext.getCurrentActivity(), new com.auth0.android.callback.Callback<Credentials, AuthenticationException>() {
                     @Override
@@ -202,6 +205,9 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
                 .withScheme(scheme);
         if(federated) {
             builder.withFederated();
+        }
+        if(redirectUri != null) {
+            builder.withReturnToUrl(redirectUri);
         }
         builder.start(reactContext.getCurrentActivity(), new com.auth0.android.callback.Callback<Void, AuthenticationException>() {
             @Override

@@ -111,6 +111,43 @@ describe('Agent', () => {
         { test: 'test' }
       );
     });
+
+    it('should ensure login is called with proper parameters when redirect URL is set', async () => {
+      let domain = 'test.com';
+      let clientId = 'client id value';
+      const mock = jest
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .mockImplementation(() => Promise.resolve(true));
+      const mockLogin = jest
+        .spyOn(NativeModules.A0Auth0, 'webAuth')
+        .mockImplementation(() => Promise.resolve(true));
+      await agent.login(
+        {
+          clientId: clientId,
+          domain: domain,
+        },
+        {
+          redirectUrl: 'redirect://redirect.com',
+        }
+      );
+      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mockLogin).toBeCalledWith(
+        'com.my.app.auth0',
+        'redirect://redirect.com',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        0,
+        undefined,
+        undefined,
+        0,
+        false,
+        99,
+        {}
+      );
+    });
   });
 
   describe('logout', () => {
@@ -165,6 +202,32 @@ describe('Agent', () => {
         'test',
         true,
         'test://test.com/ios/com.my.app/callback'
+      );
+    });
+
+    it('should ensure logout is called with proper parameters when redirect url is set', async () => {
+      let domain = 'test.com';
+      let clientId = 'client id value';
+      const mock = jest
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .mockImplementation(() => Promise.resolve(true));
+      const mockLogin = jest
+        .spyOn(NativeModules.A0Auth0, 'webAuthLogout')
+        .mockImplementation(() => Promise.resolve(true));
+      await agent.logout(
+        {
+          clientId: clientId,
+          domain: domain,
+        },
+        {
+          returnToUrl: 'redirect://redirect.com',
+        }
+      );
+      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mockLogin).toBeCalledWith(
+        'com.my.app.auth0',
+        false,
+        'redirect://redirect.com'
       );
     });
   });

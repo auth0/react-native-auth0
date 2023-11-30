@@ -24,6 +24,7 @@ describe('WebAuth', () => {
         maxAge: 120,
         organization: 'org',
         invitationUrl: 'invitation url',
+        redirectUri: 'redirect://redirect.com',
         additionalParameters: { test: 'test' },
       };
       let options = {
@@ -225,6 +226,7 @@ describe('WebAuth', () => {
     it('should clearSession with provided parameters', async () => {
       let parameters = {
         federated: true,
+        returnToUrl: 'https://redirect.redirect.com',
       };
       let options = {
         customScheme: 'scheme',

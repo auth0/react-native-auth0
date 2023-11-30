@@ -120,6 +120,7 @@ export type AgentParameters = {
 export type AgentLogoutOptions = {
   customScheme?: string;
   federated?: boolean;
+  returnToUrl?: string;
   useLegacyCallbackUrl?: boolean;
 };
 
@@ -135,6 +136,7 @@ export interface AgentLoginOptions {
   customScheme?: string;
   leeway?: number;
   ephemeralSession?: boolean;
+  redirectUrl?: string;
   safariViewControllerPresentationStyle?: number;
   additionalParameters?: { [key: string]: string };
   useLegacyCallbackUrl?: boolean;
