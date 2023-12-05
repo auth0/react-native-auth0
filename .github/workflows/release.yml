@@ -41,7 +41,7 @@ jobs:
         uses: ./.github/actions/tag-exists
         with:
           tag: ${{ steps.get_version.outputs.version }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.A0_GITHUB_TOKEN }}
 
       # If the tag already exists, exit with an error
       - if: steps.tag_exists.outputs.exists == 'true'
@@ -57,12 +57,12 @@ jobs:
       - uses: ./.github/actions/tag-create
         with:
           tag: ${{ steps.get_version.outputs.version }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.A0_GITHUB_TOKEN }}
 
       # Create a release for the tag
       - uses: ./.github/actions/release-create
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.A0_GITHUB_TOKEN }}
           name: ${{ steps.get_version.outputs.version }}
           body: ${{ github.event.pull_request.body }}
           tag: ${{ steps.get_version.outputs.version }}
