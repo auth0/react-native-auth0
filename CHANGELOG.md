@@ -1,5 +1,20 @@
 # Change Log
 
+## [v3.1.0](https://github.com/auth0/react-native-auth0/tree/v3.1.0) (2023-12-05)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.0.2...v3.1.0)
+
+**Added**
+
+- Provide option to pass custom redirect url [\#813](https://github.com/auth0/react-native-auth0/pull/813) ([poovamraj](https://github.com/poovamraj))
+- Support SFSafariViewController [\#800](https://github.com/auth0/react-native-auth0/pull/800) ([poovamraj](https://github.com/poovamraj))
+- Support additional parameters for forceRefresh in iOS [\#801](https://github.com/auth0/react-native-auth0/pull/801) ([poovamraj](https://github.com/poovamraj))
+
+**Fixed**
+
+- Handle incomplete promise in web authentication [\#798](https://github.com/auth0/react-native-auth0/pull/798) ([poovamraj](https://github.com/poovamraj))
+- Fix metadata type in `CreateUserOptions` [\#789](https://github.com/auth0/react-native-auth0/pull/789) ([poovamraj](https://github.com/poovamraj))
+
 ## [v3.0.2](https://github.com/auth0/react-native-auth0/tree/v3.0.2) (2023-10-06)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.0.1...v3.0.2)
