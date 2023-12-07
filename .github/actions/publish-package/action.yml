@@ -20,6 +20,7 @@ runs:
         cache: 'yarn'
 
     - name: Install dependencies
+      shell: bash
       run: yarn install --frozen-lockfile
 
     - name: Publish release to NPM
