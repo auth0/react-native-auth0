@@ -1,7 +1,7 @@
 {
   "name": "react-native-auth0",
   "title": "React Native Auth0",
-  "version": "3.0.2",
+  "version": "3.1.0",
   "description": "React Native toolkit for Auth0 API",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
