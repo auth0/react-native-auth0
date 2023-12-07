@@ -4,6 +4,7 @@ on:
   pull_request:
     types:
       - closed
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -36,6 +37,16 @@ jobs:
         with:
           version: ${{ steps.get_version.outputs.version }}
 
+      # Get the release notes
+      # This will expose the release notes as env.RELEASE_NOTES
+      - id: get_release_notes
+        uses: ./.github/actions/get-release-notes
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ steps.get_version.outputs.version }}
+          repo_owner: ${{ github.repository_owner }}
+          repo_name: ${{ github.event.repository.name }}
+
       # Check if the tag already exists
       - id: tag_exists
         uses: ./.github/actions/tag-exists
@@ -64,7 +75,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: ${{ steps.get_version.outputs.version }}
-          body: ${{ github.event.pull_request.body }}
+          body: ${{ env.RELEASE_NOTES }}
           tag: ${{ steps.get_version.outputs.version }}
           commit: ${{ github.sha }}
           prerelease: ${{ steps.get_prerelease.outputs.prerelease }}
