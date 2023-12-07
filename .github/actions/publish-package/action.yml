@@ -20,11 +20,6 @@ runs:
         cache: 'npm'
         registry-url: 'https://registry.npmjs.org'
 
-    - name: Build package
-      uses: ./.github/actions/build
-      with:
-        ${{ inputs.node-version }}
-
     - name: Publish release to NPM
       run: npm publish
       shell: bash
