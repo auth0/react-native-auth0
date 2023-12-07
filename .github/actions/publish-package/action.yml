@@ -13,8 +13,8 @@ runs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65
+    - name: Setup Node
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ env.node }}
         cache: 'yarn'
