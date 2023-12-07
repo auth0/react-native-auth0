@@ -20,6 +20,10 @@ runs:
         cache: 'npm'
         registry-url: 'https://registry.npmjs.org'
 
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
     - name: Publish release to NPM
       run: npm publish
       shell: bash
