@@ -16,7 +16,7 @@ runs:
     - name: Setup Node
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ env.node }}
+        node-version: ${{ inputs.node-version }}
         cache: 'yarn'
 
     - name: Install dependencies
