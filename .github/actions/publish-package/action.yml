@@ -13,19 +13,17 @@ runs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup Node
-      uses: actions/setup-node@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65
       with:
-        node-version: ${{ inputs.node-version }}
-        cache: 'npm'
-        registry-url: 'https://registry.npmjs.org'
+        node-version: ${{ env.node }}
+        cache: 'yarn'
 
     - name: Install dependencies
-      shell: bash
-      run: npm ci
+      run: yarn install --frozen-lockfile
 
     - name: Publish release to NPM
-      run: npm publish
+      run: yarn publish
       shell: bash
       env:
         NODE_AUTH_TOKEN: ${{ inputs.npm-token }}
