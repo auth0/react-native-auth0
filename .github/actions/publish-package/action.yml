@@ -20,10 +20,9 @@ runs:
         cache: 'npm'
         registry-url: 'https://registry.npmjs.org'
 
-    - name: Build package
-      uses: ./.github/actions/build
-      with:
-        ${{ inputs.node-version }}
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
 
     - name: Publish release to NPM
       run: npm publish
