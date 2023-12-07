@@ -25,7 +25,7 @@ runs:
       run: yarn install --frozen-lockfile
 
     - name: Publish release to NPM
-      run: yarn npm publish
+      run: yarn publish
       shell: bash
       env:
         NODE_AUTH_TOKEN: ${{ inputs.npm-token }}
