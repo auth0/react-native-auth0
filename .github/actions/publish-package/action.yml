@@ -17,16 +17,15 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
-        cache: 'npm'
+        cache: 'yarn'
         registry-url: 'https://registry.npmjs.org'
 
-    - name: Build package
-      uses: ./.github/actions/build
-      with:
-        ${{ inputs.node-version }}
+    - name: Install dependencies
+      shell: bash
+      run: yarn install --frozen-lockfile
 
     - name: Publish release to NPM
-      run: npm publish
+      run: yarn publish
       shell: bash
       env:
         NODE_AUTH_TOKEN: ${{ inputs.npm-token }}
