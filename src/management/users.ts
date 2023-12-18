@@ -45,7 +45,7 @@ class Users {
     baseUrl: string;
     telemetry?: Telemetry;
     token?: string;
-    timeout?: number;
+    timeout?: number | null;
   }) {
     this.client = new Client(options);
     if (!options.token) {

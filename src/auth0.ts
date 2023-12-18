@@ -27,7 +27,7 @@ class Auth0 {
     clientId: string;
     telemetry?: Telemetry;
     token?: string;
-    timeout?: number;
+    timeout?: number | null;
   }) {
     const { domain, clientId, ...extras } = options;
     this.auth = new Auth({ baseUrl: domain, clientId, ...extras });

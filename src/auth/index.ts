@@ -78,7 +78,7 @@ class Auth {
     clientId: string;
     telemetry?: Telemetry;
     token?: string;
-    timeout?: number;
+    timeout?: number | null;
   }) {
     this.client = new Client(options);
     this.domain = this.client.domain;
