@@ -19,5 +19,3 @@ runs:
       run: |
         VERSION=$(head -1 .version)
         echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
-      env:
-        BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
