@@ -35,10 +35,11 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "release": "release-it",
-    "example": "yarn --cwd example",
-    "bootstrap": "yarn example && yarn install && yarn example pods",
+    "bootstrap": "cd example && npm ci",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build && expo-module clean",
-    "prepare": "bob build"
+    "prepare": "bob build",
+    "example:android": "cd example && npm run android",
+    "example:ios": "cd example && npm run ios"
   },
   "keywords": [
     "react-native",
