@@ -6,7 +6,7 @@ if (process.platform === 'win32') {
 var execSync = require('child_process').execSync;
 var fs = require('fs');
 
-execSync('yarn docs', { stdio: 'inherit' });
+execSync('npm run docs', { stdio: 'inherit' });
 
 if (fs.existsSync('docs')) {
   execSync('rm -r docs', { stdio: 'inherit' });

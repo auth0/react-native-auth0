@@ -35,10 +35,11 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "release": "release-it",
-    "example": "yarn --cwd example",
-    "bootstrap": "yarn example && yarn install && yarn example pods",
+    "bootstrap": "cd example && npm ci",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build && expo-module clean",
-    "prepare": "bob build"
+    "prepare": "bob build",
+    "example:android": "cd example && npm run android",
+    "example:ios": "cd example && npm run ios"
   },
   "keywords": [
     "react-native",
@@ -75,9 +76,8 @@
     }
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^12.1.5",
-    "@testing-library/react-hooks": "^8.0.1",
+    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/react": "^14.1.1",
     "@tsconfig/react-native": "^2.0.2",
     "babel-jest": "^29.5.0",
     "@commitlint/config-conventional": "^17.0.2",
