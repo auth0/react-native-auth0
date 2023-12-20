@@ -72,3 +72,4 @@ lib/
 # Other
 dist/
 out/
+coverage/
