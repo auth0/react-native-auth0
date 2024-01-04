@@ -42,7 +42,7 @@ The following shows platform minimums for running projects with this SDK:
 Our SDK requires a minimum iOS deployment target of 13.0. In your project's ios/Podfile, ensure your platform target is set to 13.0.
 
 ```
-platform :ios '13.0'
+platform :ios, '13.0'
 ```
 
 ### Installation
