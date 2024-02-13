@@ -55,7 +55,7 @@ RCT_EXPORT_METHOD(webAuth:(NSString *)scheme redirectUri:(NSString *)redirectUri
 }
 
 RCT_EXPORT_METHOD(webAuthLogout:(NSString *)scheme federated:(BOOL)federated redirectUri:(NSString *)redirectUri safariViewControllerPresentationStyle:(NSInteger)safariViewControllerPresentationStyle resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    [self.nativeBridge webAuthLogoutWithFederated:federated redirectUri:redirectUri resolve:resolve reject:reject];
+    [self.nativeBridge webAuthLogoutWithFederated:federated redirectUri:redirectUri safariViewControllerPresentationStyle: safariViewControllerPresentationStyle resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(resumeWebAuth:(NSString *)url resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
