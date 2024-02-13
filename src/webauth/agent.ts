@@ -82,6 +82,8 @@ class Agent {
     parameters: AgentParameters,
     options: AgentLogoutOptions
   ): Promise<void> {
+    let linkSubscription: EmitterSubscription | null = null;
+
     if (!NativeModules.A0Auth0) {
       return Promise.reject(
         new Error(
@@ -89,24 +91,46 @@ class Agent {
         )
       );
     }
-    let federated = options.federated ?? false;
-    let scheme = this.getScheme(
-      options.useLegacyCallbackUrl ?? false,
-      options.customScheme
-    );
-    let redirectUri =
-      options.returnToUrl ?? this.callbackUri(parameters.domain, scheme);
-    await _ensureNativeModuleIsInitialized(
-      NativeModules.A0Auth0,
-      parameters.clientId,
-      parameters.domain
-    );
-    return A0Auth0.webAuthLogout(
-      scheme,
-      federated,
-      redirectUri,
-      options.safariViewControllerPresentationStyle ?? 99
-    );
+    return new Promise(async (resolve, reject) => {
+      let federated = options.federated ?? false;
+      let scheme = this.getScheme(
+        options.useLegacyCallbackUrl ?? false,
+        options.customScheme
+      );
+      let redirectUri =
+        options.returnToUrl ?? this.callbackUri(parameters.domain, scheme);
+
+      if (
+        Platform.OS === 'ios' &&
+        options.safariViewControllerPresentationStyle !== undefined
+      ) {
+        linkSubscription = Linking.addEventListener('url', async (event) => {
+          try {
+            linkSubscription?.remove();
+            await A0Auth0.resumeWebAuth(redirectUri);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      }
+      await _ensureNativeModuleIsInitialized(
+        NativeModules.A0Auth0,
+        parameters.clientId,
+        parameters.domain
+      );
+      try {
+        await A0Auth0.webAuthLogout(
+          scheme,
+          federated,
+          redirectUri,
+          options.safariViewControllerPresentationStyle ?? 99
+        );
+        resolve();
+      } catch (error) {
+        linkSubscription?.remove();
+        reject(error);
+      }
+    });
   }
 
   private getScheme(
