@@ -88,7 +88,8 @@ export type Auth0Module = {
   webAuthLogout: (
     scheme: string,
     federated: boolean,
-    redirectUri: string
+    redirectUri: string,
+    safariViewControllerPresentationStyle: number
   ) => Promise<void>;
   resumeWebAuth: (url: string) => Promise<void>;
   saveCredentials: (credentials: Credentials) => Promise<void>;
@@ -122,6 +123,7 @@ export type AgentLogoutOptions = {
   federated?: boolean;
   returnToUrl?: string;
   useLegacyCallbackUrl?: boolean;
+  safariViewControllerPresentationStyle?: number;
 };
 
 export interface AgentLoginOptions {

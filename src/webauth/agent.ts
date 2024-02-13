@@ -101,7 +101,12 @@ class Agent {
       parameters.clientId,
       parameters.domain
     );
-    return A0Auth0.webAuthLogout(scheme, federated, redirectUri);
+    return A0Auth0.webAuthLogout(
+      scheme,
+      federated,
+      redirectUri,
+      options.safariViewControllerPresentationStyle ?? 99
+    );
   }
 
   private getScheme(

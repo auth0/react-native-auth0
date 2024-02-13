@@ -237,7 +237,45 @@ describe('WebAuth', () => {
       await webauth.clearSession(parameters, options);
       expect(showMock).toHaveBeenCalledWith(
         { clientId, domain },
-        { ...parameters, ...options }
+        { ...parameters, ...options, useSFSafariViewController: undefined }
+      );
+      showMock.mockRestore();
+    });
+    it('should call clearSession for iOS with a presentation style set to true for SFSafariViewController', async () => {
+      let parameters = {
+        federated: true,
+        returnToUrl: 'https://redirect.redirect.com',
+      };
+      let options = {
+        customScheme: 'scheme',
+        useSFSafariViewController: true,
+      };
+      const showMock = jest
+        .spyOn(webauth.agent, 'logout')
+        .mockImplementation(() => Promise.resolve());
+      await webauth.clearSession(parameters, options);
+      expect(showMock).toHaveBeenCalledWith(
+        { clientId, domain },
+        { ...parameters, ...options, safariViewControllerPresentationStyle: 0 }
+      );
+      showMock.mockRestore();
+    });
+    it('should call clearSession for iOS with a presentation style set to a provided presentation style value for SFSafariViewController', async () => {
+      let parameters = {
+        federated: true,
+        returnToUrl: 'https://redirect.redirect.com',
+      };
+      let options = {
+        customScheme: 'scheme',
+        useSFSafariViewController: { presentationStyle: 4 },
+      };
+      const showMock = jest
+        .spyOn(webauth.agent, 'logout')
+        .mockImplementation(() => Promise.resolve());
+      await webauth.clearSession(parameters, options);
+      expect(showMock).toHaveBeenCalledWith(
+        { clientId, domain },
+        { ...parameters, ...options, safariViewControllerPresentationStyle: 4 }
       );
       showMock.mockRestore();
     });

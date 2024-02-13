@@ -186,6 +186,17 @@ export interface ClearSessionOptions {
    * This will use older callback URL. See {@link https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md#callback-url-migration} for more details.
    */
   useLegacyCallbackUrl?: boolean;
+
+  /**
+   * **iOS only:** Uses `SFSafariViewController` instead of `ASWebAuthenticationSession`. If empty object is set, the presentationStyle defaults to {@link SafariViewControllerPresentationStyle.fullScreen}
+   *
+   * This can be used as a boolean value or as an object which sets the `presentationStyle`.
+   */
+  useSFSafariViewController?:
+    | {
+        presentationStyle?: SafariViewControllerPresentationStyle;
+      }
+    | boolean;
 }
 
 export interface GetUserOptions {

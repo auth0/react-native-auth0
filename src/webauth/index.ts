@@ -74,10 +74,22 @@ class WebAuth {
     options: ClearSessionOptions = {}
   ) {
     const { agent, domain, clientId } = this;
+
+    let presentationStyle;
+    if (typeof options.useSFSafariViewController === 'object') {
+      presentationStyle =
+        options.useSFSafariViewController?.presentationStyle ??
+        SafariViewControllerPresentationStyle.fullScreen;
+    } else if (options.useSFSafariViewController === true) {
+      presentationStyle = SafariViewControllerPresentationStyle.fullScreen;
+    } else {
+      presentationStyle = undefined;
+    }
     return agent.logout(
       { clientId, domain },
       {
         ...parameters,
+        safariViewControllerPresentationStyle: presentationStyle,
         ...options,
       }
     );

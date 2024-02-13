@@ -201,7 +201,8 @@ describe('Agent', () => {
       expect(mockLogin).toBeCalledWith(
         'test',
         true,
-        'test://test.com/ios/com.my.app/callback'
+        'test://test.com/ios/com.my.app/callback',
+        99
       );
     });
 
@@ -227,7 +228,35 @@ describe('Agent', () => {
       expect(mockLogin).toBeCalledWith(
         'com.my.app.auth0',
         false,
-        'redirect://redirect.com'
+        'redirect://redirect.com',
+        99
+      );
+    });
+    it('should be called with correct arguments when SFSafariViewController is set', async () => {
+      let domain = 'test.com';
+      let clientId = 'client id value';
+      const mock = jest
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .mockImplementation(() => Promise.resolve(true));
+      const mockLogout = jest
+        .spyOn(NativeModules.A0Auth0, 'webAuthLogout')
+        .mockImplementation(() => Promise.resolve(true));
+      await agent.logout(
+        {
+          clientId: clientId,
+          domain: domain,
+        },
+        {
+          returnToUrl: 'redirect://redirect.com',
+          safariViewControllerPresentationStyle: 0,
+        }
+      );
+      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mockLogout).toBeCalledWith(
+        'com.my.app.auth0',
+        false,
+        'redirect://redirect.com',
+        0
       );
     });
   });
