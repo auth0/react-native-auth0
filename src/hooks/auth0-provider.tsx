@@ -192,12 +192,8 @@ const Auth0Provider = ({
     ): Promise<Credentials | undefined> => {
       try {
         const credentials = await client.auth.refreshToken(refreshTokenOptions);
-
-        if (credentials.idToken) {
-          const user = getIdTokenProfileClaims(credentials.idToken);
-          dispatch({ type: 'SET_USER', user });
-        }
-        return credentials;
+        const newCredentials = saveCredentials(credentials)
+        return newCredentials;
       } catch (error) {
         dispatch({ type: 'ERROR', error });
         return;
