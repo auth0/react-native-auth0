@@ -14,6 +14,7 @@ import {
   WebAuthorizeParameters,
   PasswordlessWithSMSOptions,
   ClearSessionOptions,
+  RefreshTokenOptions,
 } from '../types';
 import LocalAuthenticationStrategy from '../credentials-manager/localAuthenticationStrategy';
 
@@ -101,6 +102,23 @@ export interface Auth0ContextInterface<TUser extends User = User>
     minTtl?: number,
     parameters?: Record<string, unknown>,
     forceRefresh?: boolean
+  ) => Promise<Credentials | undefined>;
+   /**
+   * Manually saves the user's credentials to the native credential store.
+   * by default. See {@link CredentialsManager#getCredentials}
+   * @returns
+   */
+  saveCredentials: (
+    credentials:Credentials
+  ) => Promise<Credentials | undefined>;
+   /**
+   * Obtain new tokens using the Refresh Token obtained during Auth (requesting `offline_access` scope)
+   *
+   * @returns A populated instance of {@link Credentials}.
+   * @see https://auth0.com/docs/tokens/refresh-token/current#use-a-refresh-token
+   */
+  refreshToken: (
+    refreshTokenOptions: RefreshTokenOptions
   ) => Promise<Credentials | undefined>;
   /**
    * Clears the user's credentials without clearing their web session and logs them out.

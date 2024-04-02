@@ -22,6 +22,7 @@ import {
   MultifactorChallengeOptions,
   PasswordlessWithEmailOptions,
   PasswordlessWithSMSOptions,
+  RefreshTokenOptions,
   User,
   WebAuthorizeOptions,
   WebAuthorizeParameters,
@@ -150,6 +151,48 @@ const Auth0Provider = ({
           parameters,
           forceRefresh
         );
+        if (credentials.idToken) {
+          const user = getIdTokenProfileClaims(credentials.idToken);
+          dispatch({ type: 'SET_USER', user });
+        }
+        return credentials;
+      } catch (error) {
+        dispatch({ type: 'ERROR', error });
+        return;
+      }
+    },
+    [client]
+  );
+
+   const saveCredentials = useCallback(
+    async (
+     credentials: Credentials
+    ): Promise<Credentials | undefined> => {
+      try {
+        await client.credentialsManager.saveCredentials(
+          credentials
+        );
+        const newCredentials = await getCredentials()
+        if (newCredentials.idToken) {
+          const user = getIdTokenProfileClaims(newCredentials.idToken);
+          dispatch({ type: 'SET_USER', user });
+        }
+        return newCredentials;
+      } catch (error) {
+        dispatch({ type: 'ERROR', error });
+        return;
+      }
+    },
+    [client]
+  );
+
+   const refreshToken = useCallback(
+    async (
+      refreshTokenOptions: RefreshTokenOptions
+    ): Promise<Credentials | undefined> => {
+      try {
+        const credentials = await client.auth.refreshToken(refreshTokenOptions);
+
         if (credentials.idToken) {
           const user = getIdTokenProfileClaims(credentials.idToken);
           dispatch({ type: 'SET_USER', user });
@@ -351,6 +394,8 @@ const Auth0Provider = ({
       getCredentials,
       clearCredentials,
       requireLocalAuthentication,
+      refreshToken,
+      saveCredentials
     }),
     [
       state,
@@ -368,6 +413,8 @@ const Auth0Provider = ({
       getCredentials,
       clearCredentials,
       requireLocalAuthentication,
+      refreshToken,
+      saveCredentials
     ]
   );
 
