@@ -103,15 +103,15 @@ export interface Auth0ContextInterface<TUser extends User = User>
     parameters?: Record<string, unknown>,
     forceRefresh?: boolean
   ) => Promise<Credentials | undefined>;
-   /**
+  /**
    * Manually saves the user's credentials to the native credential store.
    * by default. See {@link CredentialsManager#getCredentials}
    * @returns
    */
   saveCredentials: (
-    credentials:Credentials
+    credentials: Credentials
   ) => Promise<Credentials | undefined>;
-   /**
+  /**
    * Obtain new tokens using the Refresh Token obtained during Auth (requesting `offline_access` scope)
    *
    * @returns A populated instance of {@link Credentials}.
@@ -178,6 +178,8 @@ const initialContext = {
   getCredentials: stub,
   clearCredentials: stub,
   requireLocalAuthentication: stub,
+  saveCredentials: stub,
+  refreshToken: stub,
 };
 
 const Auth0Context = createContext<Auth0ContextInterface>(initialContext);
