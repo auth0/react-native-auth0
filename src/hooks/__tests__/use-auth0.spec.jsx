@@ -264,16 +264,19 @@ describe('The useAuth0 hook', () => {
     const { result } = renderHook(() => useAuth0(), {
       wrapper,
     });
-    const { refreshToken } = await result.current.getCredentials();
-    await result.current.refreshToken({
-      refreshToken,
-      scope: 'openid profile email offline_access',
+    let credentials;
+    await act(async () => {
+      credentials = await result.current.getCredentials();
+      await result.current.refreshToken({
+        refreshToken: credentials.refreshToken,
+        scope: 'openid profile email offline_access',
+      });
     });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(mockAuth0.auth.refreshToken).toHaveBeenCalledWith({
-      refreshToken,
+      refreshToken: credentials.refreshToken,
       scope: 'openid profile email offline_access',
     });
   });
