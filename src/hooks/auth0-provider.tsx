@@ -173,10 +173,6 @@ const Auth0Provider = ({
           credentials
         );
         const newCredentials = await getCredentials()
-        if (newCredentials.idToken) {
-          const user = getIdTokenProfileClaims(newCredentials.idToken);
-          dispatch({ type: 'SET_USER', user });
-        }
         return newCredentials;
       } catch (error) {
         dispatch({ type: 'ERROR', error });
