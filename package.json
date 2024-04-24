@@ -86,7 +86,7 @@
     "@types/base-64": "^1.0.0",
     "@types/react-test-renderer": "^18.0.0",
     "@types/jest": "^29.5.0",
-    "@types/react": "~17.0.21",
+    "@types/react": "^18.2.6",
     "@types/react-native": "0.72.8",
     "commitlint": "^17.0.2",
     "del-cli": "^5.0.0",
