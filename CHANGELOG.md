@@ -6,7 +6,7 @@
 
 **Added**
 
-- Update A0Auth0.podspec [\#887](https://github.com/auth0/react-native-auth0/pull/887) ([poovamraj](https://github.com/poovamraj))
+- Support for Apple's Privacy Manifest [\#887](https://github.com/auth0/react-native-auth0/pull/887) ([poovamraj](https://github.com/poovamraj))
 - chore(deps-dev): bump @types/react from 17.0.71 to 17.0.73 [\#831](https://github.com/auth0/react-native-auth0/pull/831) ([dependabot[bot]](https://github.com/apps/dependabot))
 - chore(deps-dev): bump react-native from 0.72.7 to 0.73.0 [\#823](https://github.com/auth0/react-native-auth0/pull/823) ([dependabot[bot]](https://github.com/apps/dependabot))
 
