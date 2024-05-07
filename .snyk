@@ -1,0 +1,15 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.0
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-SEMVER-3247795:
+    - '*':
+        reason: Latest version of expo (50.0.17) has this vulnerability
+        expires: 2024-06-06T07:21:25.131Z
+        created: 2024-05-07T07:21:25.134Z
+  SNYK-JS-INFLIGHT-6095116:
+    - '*':
+        reason: Latest version of expo (50.0.17) has this vulnerability
+        expires: 2024-06-06T07:22:09.438Z
+        created: 2024-05-07T07:22:09.445Z
+patch: {}
