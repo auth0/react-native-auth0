@@ -1,5 +1,15 @@
 # Change Log
 
+## [v3.2.0](https://github.com/auth0/react-native-auth0/tree/v3.2.0) (2024-04-26)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.1.0...v3.2.0)
+
+**Added**
+
+- Support for Apple's Privacy Manifest [\#887](https://github.com/auth0/react-native-auth0/pull/887) ([poovamraj](https://github.com/poovamraj))
+- chore(deps-dev): bump @types/react from 17.0.71 to 17.0.73 [\#831](https://github.com/auth0/react-native-auth0/pull/831) ([dependabot[bot]](https://github.com/apps/dependabot))
+- chore(deps-dev): bump react-native from 0.72.7 to 0.73.0 [\#823](https://github.com/auth0/react-native-auth0/pull/823) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v3.1.0](https://github.com/auth0/react-native-auth0/tree/v3.1.0) (2023-12-05)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.0.2...v3.1.0)
