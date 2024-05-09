@@ -1,5 +1,22 @@
 # Change Log
 
+## [v3.2.1](https://github.com/auth0/react-native-auth0/tree/v3.2.1) (2024-05-09)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.2.0...v3.2.1)
+
+**Fixed**
+
+- chore: upgraded dependency on Auth0.swift to 2.7.2 [\#895](https://github.com/auth0/react-native-auth0/pull/895) ([desusai7](https://github.com/desusai7))
+
+**Security**
+
+- chore(deps-dev): bump expo from 50.0.17 to 50.0.18 [\#902](https://github.com/auth0/react-native-auth0/pull/902) ([dependabot[bot]](https://github.com/apps/dependabot))
+- chore(deps-dev): bump @types/jest from 29.5.11 to 29.5.12 [\#901](https://github.com/auth0/react-native-auth0/pull/901) ([dependabot[bot]](https://github.com/apps/dependabot))
+- chore(deps-dev): bump @testing-library/react from 14.1.2 to 14.3.1 [\#900](https://github.com/auth0/react-native-auth0/pull/900) ([dependabot[bot]](https://github.com/apps/dependabot))
+- chore(deps-dev): bump pod-install from 0.1.39 to 0.2.2 [\#899](https://github.com/auth0/react-native-auth0/pull/899) ([dependabot[bot]](https://github.com/apps/dependabot))
+- chore(deps-dev): bump @types/react-native from 0.72.8 to 0.73.0 [\#898](https://github.com/auth0/react-native-auth0/pull/898) ([dependabot[bot]](https://github.com/apps/dependabot))
+- feat: bumped up react-native version to 0.74.1 and expo to 50.0.0 [\#889](https://github.com/auth0/react-native-auth0/pull/889) ([desusai7](https://github.com/desusai7))
+
 ## [v3.2.0](https://github.com/auth0/react-native-auth0/tree/v3.2.0) (2024-04-26)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.1.0...v3.2.0)
