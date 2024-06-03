@@ -31,6 +31,7 @@ const mockIdToken = makeJwt();
 const mockCredentials = {
   idToken: mockIdToken,
   accessToken: 'ACCESS TOKEN',
+  refreshToken: 'REFRESH TOKEN',
 };
 
 const mockAuthError = new Auth0Error({ json: { error: 'mock error' } });
@@ -38,10 +39,12 @@ const mockAuthError = new Auth0Error({ json: { error: 'mock error' } });
 const updatedMockCredentialsWithIdToken = {
   idToken: makeJwt({ name: 'Different User' }),
   accessToken: 'ACCESS TOKEN',
+  refreshToken: 'REFRESH TOKEN',
 };
 
 const updatedMockCredentialsWithoutIdToken = {
   accessToken: 'ACCESS TOKEN',
+  refreshToken: 'REFRESH TOKEN',
 };
 
 const wrapper = ({ children }) => (
@@ -65,6 +68,9 @@ const mockAuth0 = {
     loginWithOTP: jest.fn().mockResolvedValue(mockCredentials),
     loginWithRecoveryCode: jest.fn().mockResolvedValue(mockCredentials),
     hasValidCredentials: jest.fn().mockResolvedValue(),
+    refreshToken: jest
+      .fn()
+      .mockResolvedValue(updatedMockCredentialsWithIdToken),
   },
   credentialsManager: {
     getCredentials: jest.fn().mockResolvedValue(mockCredentials),
@@ -212,6 +218,7 @@ describe('The useAuth0 hook', () => {
       idToken:
         'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
       accessToken: 'ACCESS TOKEN',
+      refreshToken: 'REFRESH TOKEN',
     });
   });
 
@@ -251,6 +258,63 @@ describe('The useAuth0 hook', () => {
       idToken:
         'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
       accessToken: 'ACCESS TOKEN',
+      refreshToken: 'REFRESH TOKEN',
+    });
+  });
+
+  it("can refresh the user's credentials using refreshToken method", async () => {
+    const { result } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
+    let credentials;
+    let newCredentials;
+    await act(async () => {
+      credentials = await result.current.getCredentials();
+      await result.current.refreshToken({
+        refreshToken: credentials.refreshToken,
+        scope: 'openid profile email offline_access',
+      });
+      newCredentials = await result.current.getCredentials();
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(mockAuth0.auth.refreshToken).toHaveBeenCalledWith({
+      refreshToken: credentials.refreshToken,
+      scope: 'openid profile email offline_access',
+    });
+    expect(newCredentials).toEqual({
+      idToken:
+        'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
+      accessToken: 'ACCESS TOKEN',
+      refreshToken: 'REFRESH TOKEN',
+    });
+  });
+
+  it("can save the user's credentials using saveCredentials method", async () => {
+    const { result } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
+    let credentials;
+    let newCredentials;
+
+    await act(async () => {
+      const { refreshToken } = await result.current.getCredentials();
+      newCredentials = await result.current.refreshToken({
+        refreshToken,
+        scope: 'openid profile email offline_access',
+      });
+      result.current.saveCredentials(newCredentials);
+      credentials = await result.current.getCredentials();
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(newCredentials).toEqual({
+      idToken:
+        'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
+      accessToken: 'ACCESS TOKEN',
+      refreshToken: 'REFRESH TOKEN',
     });
   });
 
@@ -407,6 +471,7 @@ describe('The useAuth0 hook', () => {
       idToken:
         'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
       accessToken: 'ACCESS TOKEN',
+      refreshToken: 'REFRESH TOKEN',
     });
   });
 
@@ -524,6 +589,7 @@ describe('The useAuth0 hook', () => {
       idToken:
         'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
       accessToken: 'ACCESS TOKEN',
+      refreshToken: 'REFRESH TOKEN',
     });
   });
 
@@ -639,6 +705,7 @@ describe('The useAuth0 hook', () => {
       idToken:
         'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
       accessToken: 'ACCESS TOKEN',
+      refreshToken: 'REFRESH TOKEN',
     });
   });
 
@@ -695,6 +762,7 @@ describe('The useAuth0 hook', () => {
       idToken:
         'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
       accessToken: 'ACCESS TOKEN',
+      refreshToken: 'REFRESH TOKEN',
     });
   });
 
@@ -751,6 +819,7 @@ describe('The useAuth0 hook', () => {
       idToken:
         'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
       accessToken: 'ACCESS TOKEN',
+      refreshToken: 'REFRESH TOKEN',
     });
   });
 

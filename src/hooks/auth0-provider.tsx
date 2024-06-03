@@ -22,6 +22,7 @@ import {
   MultifactorChallengeOptions,
   PasswordlessWithEmailOptions,
   PasswordlessWithSMSOptions,
+  RefreshTokenOptions,
   User,
   WebAuthorizeOptions,
   WebAuthorizeParameters,
@@ -155,6 +156,40 @@ const Auth0Provider = ({
           dispatch({ type: 'SET_USER', user });
         }
         return credentials;
+      } catch (error) {
+        dispatch({ type: 'ERROR', error });
+        return;
+      }
+    },
+    [client]
+  );
+
+   const saveCredentials = useCallback(
+    async (
+     credentials: Credentials
+    ): Promise<Credentials | undefined> => {
+      try {
+        await client.credentialsManager.saveCredentials(
+          credentials
+        );
+        const newCredentials = await getCredentials()
+        return newCredentials;
+      } catch (error) {
+        dispatch({ type: 'ERROR', error });
+        return;
+      }
+    },
+    [client]
+  );
+
+   const refreshToken = useCallback(
+    async (
+      refreshTokenOptions: RefreshTokenOptions
+    ): Promise<Credentials | undefined> => {
+      try {
+        const credentials = await client.auth.refreshToken(refreshTokenOptions);
+        const newCredentials = saveCredentials(credentials)
+        return newCredentials;
       } catch (error) {
         dispatch({ type: 'ERROR', error });
         return;
@@ -351,6 +386,8 @@ const Auth0Provider = ({
       getCredentials,
       clearCredentials,
       requireLocalAuthentication,
+      refreshToken,
+      saveCredentials
     }),
     [
       state,
@@ -368,6 +405,8 @@ const Auth0Provider = ({
       getCredentials,
       clearCredentials,
       requireLocalAuthentication,
+      refreshToken,
+      saveCredentials
     ]
   );
 
