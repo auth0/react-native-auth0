@@ -11,13 +11,13 @@ class Client {
   public baseUrl: string;
   public domain: string;
   private bearer?: string;
-  private timeout: number;
+  private timeout: number | null;
 
   constructor(options: {
     baseUrl: string;
     telemetry?: Telemetry;
     token?: string;
-    timeout?: number;
+    timeout?: number | null;
   }) {
     const {
       baseUrl,
@@ -28,7 +28,7 @@ class Client {
       baseUrl: string;
       telemetry?: Telemetry;
       token?: string;
-      timeout?: number;
+      timeout?: number | null;
     } = options;
     if (!baseUrl) {
       throw new Error('Missing Auth0 domain');
@@ -100,8 +100,33 @@ class Client {
       options.body = JSON.stringify(body);
     }
 
-    return fetchWithTimeout(url, options, this.timeout).then(
-      (response: Response) => {
+    if (this.timeout) {
+      return fetchWithTimeout(url, options, this.timeout).then(
+        (response: Response) => {
+          const payload = {
+            status: response.status,
+            ok: response.ok,
+            headers: response.headers,
+          };
+          return response
+            .json()
+            .then((json: TData) => {
+              return { ...payload, json };
+            })
+            .catch(() => {
+              return response
+                .text()
+                .then((text: string) => {
+                  return { ...payload, text };
+                })
+                .catch(() => {
+                  return { ...payload, text: response.statusText };
+                });
+            });
+        }
+      );
+    } else {
+      return fetch(url, options).then(response => {
         const payload = {
           status: response.status,
           ok: response.ok,
@@ -109,21 +134,21 @@ class Client {
         };
         return response
           .json()
-          .then((json: TData) => {
+          .then(json => {
             return { ...payload, json };
           })
           .catch(() => {
             return response
               .text()
-              .then((text: string) => {
+              .then(text => {
                 return { ...payload, text };
               })
               .catch(() => {
                 return { ...payload, text: response.statusText };
               });
           });
-      }
-    );
+      });
+    }
   }
 
   _encodedTelemetry() {
