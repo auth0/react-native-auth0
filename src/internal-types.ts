@@ -108,7 +108,7 @@ export type Auth0Module = {
     | ((title?: string, description?: string) => Promise<void>);
   hasValidCredentials: (minTtl?: number) => Promise<boolean>;
   clearCredentials: () => Promise<void>;
-  hasValidAuth0Instance: () => Promise<boolean>;
+  hasValidAuth0Instance: (clientId: String, domain: String) => Promise<boolean>;
   initializeAuth0: (clientId: string, domain: string) => Promise<void>;
 };
 

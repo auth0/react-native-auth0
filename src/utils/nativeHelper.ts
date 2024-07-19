@@ -6,7 +6,7 @@ export async function _ensureNativeModuleIsInitialized(
   clientId: string,
   domain: string
 ) {
-  const hasValid = await nativeModule.hasValidAuth0Instance();
+  const hasValid = await nativeModule.hasValidAuth0Instance(clientId, domain);
   if (!hasValid) {
     await nativeModule.initializeAuth0(clientId, domain);
   }

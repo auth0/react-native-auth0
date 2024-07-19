@@ -19,9 +19,9 @@
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(hasValidAuth0Instance:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(hasValidAuth0Instance:(NSString *)clientId domain:(NSString *)domain resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-    BOOL valid = [self checkHasValidNativeBridgeInstance];
+    BOOL valid = [self checkHasValidNativeBridgeInstance:clientId domain:domain];
     resolve(@(valid));
 }
 
@@ -74,8 +74,8 @@ RCT_EXPORT_METHOD(resumeWebAuth:(NSString *)url resolver:(RCTPromiseResolveBlock
 
 UIBackgroundTaskIdentifier taskId;
 
-- (BOOL)checkHasValidNativeBridgeInstance {
-    BOOL valid = self.nativeBridge != nil;
+- (BOOL)checkHasValidNativeBridgeInstance:(NSString*) clientId domain:(NSString *)domain {
+    BOOL valid = self.nativeBridge != nil && [self.nativeBridge.getClientId isEqual:clientId] && [self.nativeBridge.getDomain isEqual:domain];
     return valid;
 }
 
