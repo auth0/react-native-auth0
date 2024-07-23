@@ -26,8 +26,8 @@ RCT_EXPORT_METHOD(hasValidAuth0Instance:(RCTPromiseResolveBlock)resolve
 }
 
 
-RCT_EXPORT_METHOD(initializeAuth0:(NSString *)clientId domain:(NSString *)domain) {
-    [self tryAndInitializeNativeBridge:clientId domain:domain];
+RCT_EXPORT_METHOD(initializeAuth0:(NSString *)clientId domain:(NSString *)domain localAuthenticationOptions:(NSDictionary*) options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self tryAndInitializeNativeBridge:clientId domain:domain withLocalAuthenticationOptions:options resolver:resolve rejecter:reject];
 }
 
 RCT_EXPORT_METHOD(saveCredentials:(NSDictionary *)credentials resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
@@ -79,8 +79,8 @@ UIBackgroundTaskIdentifier taskId;
     return valid;
 }
 
-- (void)tryAndInitializeNativeBridge:(NSString *)clientId domain:(NSString *)domain {
-    NativeBridge *bridge = [[NativeBridge alloc] initWithClientId: clientId domain: domain];
+- (void)tryAndInitializeNativeBridge:(NSString *)clientId domain:(NSString *)domain withLocalAuthenticationOptions:(NSDictionary*) options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+    NativeBridge *bridge = [[NativeBridge alloc] initWithClientId:clientId domain:domain localAuthenticationOptions:options resolve:resolve reject:reject];
     self.nativeBridge = bridge;
 }
 

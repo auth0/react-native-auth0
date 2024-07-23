@@ -12,12 +12,14 @@ import {
   AgentParameters,
   Auth0Module,
 } from 'src/internal-types';
+import LocalAuthenticationOptions from 'src/credentials-manager/localAuthenticationOptions';
 
 const A0Auth0: Auth0Module = NativeModules.A0Auth0;
 class Agent {
   async login(
     parameters: AgentParameters,
-    options: AgentLoginOptions
+    options: AgentLoginOptions,
+    localAuthenticationOptions?: LocalAuthenticationOptions
   ): Promise<Credentials> {
     let linkSubscription: EmitterSubscription | null = null;
     if (!NativeModules.A0Auth0) {
@@ -45,7 +47,8 @@ class Agent {
         await _ensureNativeModuleIsInitialized(
           A0Auth0,
           parameters.clientId,
-          parameters.domain
+          parameters.domain,
+          localAuthenticationOptions
         );
         let scheme = this.getScheme(
           options.useLegacyCallbackUrl ?? false,
@@ -80,7 +83,8 @@ class Agent {
 
   async logout(
     parameters: AgentParameters,
-    options: AgentLogoutOptions
+    options: AgentLogoutOptions,
+    localAuthenticationOptions?: LocalAuthenticationOptions
   ): Promise<void> {
     if (!NativeModules.A0Auth0) {
       return Promise.reject(
@@ -99,7 +103,8 @@ class Agent {
     await _ensureNativeModuleIsInitialized(
       NativeModules.A0Auth0,
       parameters.clientId,
-      parameters.domain
+      parameters.domain,
+      localAuthenticationOptions
     );
     return A0Auth0.webAuthLogout(scheme, federated, redirectUri);
   }

@@ -24,18 +24,32 @@ public class NativeBridge: NSObject {
     static let dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     
     static let credentialsManagerErrorCode = "a0.invalid_state.credential_manager_exception"
+    static let biometricsAuthenticationErrorCode = "a0.invalid_options_biometrics_authentication"
     
     var credentialsManager: CredentialsManager
     var clientId: String
     var domain: String
     
-    @objc public init(clientId: String, domain: String) {
+    @objc public init(clientId: String, domain: String, localAuthenticationOptions: [String: Any]?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let auth0 = Auth0
             .authentication(clientId: clientId, domain: domain)
         self.clientId = clientId
         self.domain = domain
         self.credentialsManager = CredentialsManager(authentication: auth0)
         super.init()
+        if let localAuthenticationOptions = localAuthenticationOptions {
+            if let title = localAuthenticationOptions["title"] as? String {
+                var evaluationPolicy = LAPolicy.deviceOwnerAuthenticationWithBiometrics
+                if let evaluationPolicyInt = localAuthenticationOptions["evaluationPolicy"] as? Int {
+                    evaluationPolicy = convert(policyInt: evaluationPolicyInt)
+                }
+                self.credentialsManager.enableBiometrics(withTitle: title, cancelTitle: localAuthenticationOptions["cancelTitle"] as? String, fallbackTitle: localAuthenticationOptions["fallbackTitle"] as? String, evaluationPolicy: evaluationPolicy)
+                resolve(true)
+            } else {
+                reject(NativeBridge.biometricsAuthenticationErrorCode, "Missing mandatory property title in LocalAuthenticationOptions, hence biometrics authentication cannot be enabled", nil)
+            }
+        }
+        resolve(true)
    }
     
     @objc public func webAuth(state: String?, redirectUri: String, nonce: String?, audience: String?, scope: String?, connection: String?, maxAge: Int, organization: String?, invitationUrl: String?, leeway: Int, ephemeralSession: Bool, safariViewControllerPresentationStyle: Int, additionalParameters: [String: String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {

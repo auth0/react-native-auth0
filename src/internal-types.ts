@@ -1,6 +1,6 @@
 import { JwtPayload } from 'jwt-decode';
-import LocalAuthenticationStrategy from './credentials-manager/localAuthenticationStrategy';
 import { Credentials } from './types';
+import LocalAuthenticationOptions from './credentials-manager/localAuthenticationOptions';
 
 export type CredentialsResponse = {
   id_token: string;
@@ -98,18 +98,14 @@ export type Auth0Module = {
     parameters?: Record<string, unknown>,
     forceRefresh?: boolean
   ) => Promise<Credentials>;
-  enableLocalAuthentication:
-    | ((
-        title?: string,
-        cancelTitle?: string,
-        fallbackTitle?: string,
-        strategy?: LocalAuthenticationStrategy
-      ) => Promise<void>)
-    | ((title?: string, description?: string) => Promise<void>);
   hasValidCredentials: (minTtl?: number) => Promise<boolean>;
   clearCredentials: () => Promise<void>;
   hasValidAuth0Instance: () => Promise<boolean>;
-  initializeAuth0: (clientId: string, domain: string) => Promise<void>;
+  initializeAuth0: (
+    clientId: string,
+    domain: string,
+    localAuthenticationOptions?: LocalAuthenticationOptions
+  ) => Promise<boolean>;
 };
 
 export type AgentParameters = {

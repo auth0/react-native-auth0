@@ -3,6 +3,7 @@ import CredentialsManager from './credentials-manager';
 import Users from './management/users';
 import { Telemetry } from './networking/telemetry';
 import WebAuth from './webauth';
+import LocalAuthenticationOptions from './credentials-manager/localAuthenticationOptions';
 
 /**
  * Auth0 for React Native client
@@ -21,6 +22,7 @@ class Auth0 {
    * @param {String} options.telemetry The telemetry information to be sent along with the requests
    * @param {String} options.token Token to be used for Management APIs
    * @param {String} options.timeout Timeout to be set for requests.
+   * @param {LocalAuthenticationOptions} options.localAuthenticationOptions The options for configuring the display of local authentication prompt, authentication level (Android only) and evaluation policy (iOS only).
    */
   constructor(options: {
     domain: string;
@@ -28,11 +30,16 @@ class Auth0 {
     telemetry?: Telemetry;
     token?: string;
     timeout?: number;
+    localAuthenticationOptions?: LocalAuthenticationOptions;
   }) {
     const { domain, clientId, ...extras } = options;
     this.auth = new Auth({ baseUrl: domain, clientId, ...extras });
-    this.webAuth = new WebAuth(this.auth);
-    this.credentialsManager = new CredentialsManager(domain, clientId);
+    this.webAuth = new WebAuth(this.auth, options.localAuthenticationOptions);
+    this.credentialsManager = new CredentialsManager(
+      domain,
+      clientId,
+      options.localAuthenticationOptions
+    );
     this.options = options;
   }
 

@@ -1,21 +1,27 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules } from 'react-native';
 import CredentialsManagerError from './credentialsManagerError';
-import LocalAuthenticationStrategy from './localAuthenticationStrategy';
 import { Credentials } from '../types';
 import { Auth0Module } from 'src/internal-types';
 import { _ensureNativeModuleIsInitialized } from '../utils/nativeHelper';
+import LocalAuthenticationOptions from './localAuthenticationOptions';
 
 class CredentialsManager {
   private domain;
   private clientId;
   private Auth0Module: Auth0Module;
+  private localAuthenticationOptions?: LocalAuthenticationOptions;
 
   /**
    * @ignore
    */
-  constructor(domain: string, clientId: string) {
+  constructor(
+    domain: string,
+    clientId: string,
+    localAuthenticationOptions?: LocalAuthenticationOptions
+  ) {
     this.domain = domain;
     this.clientId = clientId;
+    this.localAuthenticationOptions = localAuthenticationOptions;
     this.Auth0Module = NativeModules.A0Auth0;
   }
 
@@ -38,7 +44,8 @@ class CredentialsManager {
       await _ensureNativeModuleIsInitialized(
         this.Auth0Module,
         this.clientId,
-        this.domain
+        this.domain,
+        this.localAuthenticationOptions
       );
       return await this.Auth0Module.saveCredentials(credentials);
     } catch (e) {
@@ -69,7 +76,8 @@ class CredentialsManager {
       await _ensureNativeModuleIsInitialized(
         this.Auth0Module,
         this.clientId,
-        this.domain
+        this.domain,
+        this.localAuthenticationOptions
       );
       return this.Auth0Module.getCredentials(
         scope,
@@ -77,47 +85,6 @@ class CredentialsManager {
         parameters,
         forceRefresh
       );
-    } catch (e) {
-      const json = {
-        error: 'a0.credential_manager.invalid',
-        error_description: e.message,
-      };
-      throw new CredentialsManagerError({ json, status: 0 });
-    }
-  }
-
-  /**
-   * Enables Local Authentication (PIN, Biometric, Swipe etc) to get the credentials
-   *
-   * @param title the text to use as title in the authentication screen. Passing null will result in using the OS's default value in Android and "Please authenticate to continue" in iOS.
-   * @param description **Android only:** the text to use as description in the authentication screen. On some Android versions it might not be shown. Passing null will result in using the OS's default value.
-   * @param cancelTitle **iOS only:** the cancel message to display on the local authentication prompt.
-   * @param fallbackTitle **iOS only:** the fallback message to display on the local authentication prompt after a failed match.
-   * @param strategy **iOS only:** the evaluation policy to use when accessing the credentials. Defaults to LocalAuthenticationStrategy.deviceOwnerWithBiometrics.
-   */
-  async requireLocalAuthentication(
-    title?: string,
-    description?: string,
-    cancelTitle?: string,
-    fallbackTitle?: string,
-    strategy = LocalAuthenticationStrategy.deviceOwnerWithBiometrics
-  ): Promise<void> {
-    try {
-      await _ensureNativeModuleIsInitialized(
-        this.Auth0Module,
-        this.clientId,
-        this.domain
-      );
-      if (Platform.OS === 'ios') {
-        await this.Auth0Module.enableLocalAuthentication(
-          title,
-          cancelTitle,
-          fallbackTitle,
-          strategy
-        );
-      } else {
-        await this.Auth0Module.enableLocalAuthentication(title, description);
-      }
     } catch (e) {
       const json = {
         error: 'a0.credential_manager.invalid',
@@ -137,7 +104,8 @@ class CredentialsManager {
     await _ensureNativeModuleIsInitialized(
       this.Auth0Module,
       this.clientId,
-      this.domain
+      this.domain,
+      this.localAuthenticationOptions
     );
     return await this.Auth0Module.hasValidCredentials(minTtl);
   }
@@ -149,7 +117,8 @@ class CredentialsManager {
     await _ensureNativeModuleIsInitialized(
       this.Auth0Module,
       this.clientId,
-      this.domain
+      this.domain,
+      this.localAuthenticationOptions
     );
     return this.Auth0Module.clearCredentials();
   }

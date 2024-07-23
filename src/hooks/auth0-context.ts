@@ -15,7 +15,6 @@ import {
   PasswordlessWithSMSOptions,
   ClearSessionOptions,
 } from '../types';
-import LocalAuthenticationStrategy from '../credentials-manager/localAuthenticationStrategy';
 
 export interface Auth0ContextInterface<TUser extends User = User>
   extends AuthState<TUser> {
@@ -106,21 +105,6 @@ export interface Auth0ContextInterface<TUser extends User = User>
    * Clears the user's credentials without clearing their web session and logs them out.
    */
   clearCredentials: () => Promise<void>;
-  /**
-   * Enables Local Authentication (PIN, Biometric, Swipe etc) to get the credentials. See {@link CredentialsManager#requireLocalAuthentication}
-   * @param title the text to use as title in the authentication screen. Passing null will result in using the OS's default value in Android and "Please authenticate to continue" in iOS.
-   * @param description **Android only:** the text to use as description in the authentication screen. On some Android versions it might not be shown. Passing null will result in using the OS's default value.
-   * @param cancelTitle **iOS only:** the cancel message to display on the local authentication prompt.
-   * @param fallbackTitle **iOS only:** the fallback message to display on the local authentication prompt after a failed match.
-   * @param strategy **iOS only:** the evaluation policy to use when accessing the credentials. Defaults to LocalAuthenticationStrategy.deviceOwnerWithBiometrics.
-   */
-  requireLocalAuthentication: (
-    title?: string,
-    description?: string,
-    cancelTitle?: string,
-    fallbackTitle?: string,
-    strategy?: LocalAuthenticationStrategy
-  ) => Promise<void>;
 }
 
 export interface AuthState<TUser extends User = User> {

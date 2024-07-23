@@ -26,9 +26,9 @@ import {
   WebAuthorizeOptions,
   WebAuthorizeParameters,
 } from '../types';
-import LocalAuthenticationStrategy from '../credentials-manager/localAuthenticationStrategy';
 import { CustomJwtPayload } from '../internal-types';
 import { convertUser } from '../utils/userConversion';
+import LocalAuthenticationOptions from 'src/credentials-manager/localAuthenticationOptions';
 
 const initialState = {
   user: null,
@@ -71,9 +71,16 @@ const finalizeScopeParam = (inputScopes?: string) => {
 const Auth0Provider = ({
   domain,
   clientId,
+  localAuthenticationOptions,
   children,
-}: PropsWithChildren<{ domain: string; clientId: string }>) => {
-  const [client] = useState(() => new Auth0({ domain, clientId }));
+}: PropsWithChildren<{
+  domain: string;
+  clientId: string;
+  localAuthenticationOptions?: LocalAuthenticationOptions;
+}>) => {
+  const [client] = useState(
+    () => new Auth0({ domain, clientId, localAuthenticationOptions })
+  );
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
@@ -310,30 +317,6 @@ const Auth0Provider = ({
     }
   }, [client]);
 
-  const requireLocalAuthentication = useCallback(
-    async (
-      title?: string,
-      description?: string,
-      cancelTitle?: string,
-      fallbackTitle?: string,
-      strategy = LocalAuthenticationStrategy.deviceOwnerWithBiometrics
-    ) => {
-      try {
-        await client.credentialsManager.requireLocalAuthentication(
-          title,
-          description,
-          cancelTitle,
-          fallbackTitle,
-          strategy
-        );
-      } catch (error) {
-        dispatch({ type: 'ERROR', error });
-        return;
-      }
-    },
-    [client.credentialsManager]
-  );
-
   const contextValue = useMemo(
     () => ({
       ...state,
@@ -350,7 +333,6 @@ const Auth0Provider = ({
       clearSession,
       getCredentials,
       clearCredentials,
-      requireLocalAuthentication,
     }),
     [
       state,
@@ -367,7 +349,6 @@ const Auth0Provider = ({
       clearSession,
       getCredentials,
       clearCredentials,
-      requireLocalAuthentication,
     ]
   );
 
