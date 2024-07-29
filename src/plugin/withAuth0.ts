@@ -20,62 +20,83 @@ try {
   // empty catch block
 }
 
-export const withAndroidAuth0Manifest: ConfigPlugin<Auth0PluginConfig[]> = (
+export const addAndroidAuth0Manifest = (
+  auth0Configs: Auth0PluginConfig[],
+  manifest: ExportedConfigWithProps<AndroidConfig.Manifest.AndroidManifest>,
+  applicationId?: string
+) => {
+  const intentFilterContent = [
+    {
+      action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }],
+      category: [
+        { $: { 'android:name': 'android.intent.category.DEFAULT' } },
+        { $: { 'android:name': 'android.intent.category.BROWSABLE' } },
+      ],
+      data: [],
+    },
+  ];
+
+  const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(
+    manifest.modResults
+  );
+
+  AndroidConfig.Manifest.ensureToolsAvailable(manifest.modResults);
+
+  // Ensure RedirectActivity exists
+  let redirectActivity = mainApplication.activity?.find(
+    (activity) =>
+      activity.$['android:name'] ===
+      'com.auth0.android.provider.RedirectActivity'
+  );
+
+  if (!redirectActivity) {
+    redirectActivity = {
+      '$': {
+        'android:name': 'com.auth0.android.provider.RedirectActivity',
+        'tools:node': 'replace',
+        'android:exported': 'true',
+      },
+      'intent-filter': intentFilterContent,
+    };
+    mainApplication.activity = mainApplication.activity || [];
+    mainApplication.activity.push(redirectActivity);
+  }
+
+  redirectActivity['intent-filter'] =
+    redirectActivity['intent-filter'] || intentFilterContent;
+  const intentFilter = redirectActivity['intent-filter'][0] || {};
+  intentFilter.data = intentFilter.data || [];
+
+  // Add data elements for each auth0Config
+  auth0Configs.forEach((config) => {
+    let auth0Scheme =
+      config.customScheme ??
+      (applicationId != null
+        ? applicationId + APPLICATION_ID_SUFFIX
+        : undefined) ??
+      (() => {
+        throw new Error(
+          `No auth0 scheme specified or package found in expo config for domain ${config}`
+        );
+      })();
+    const dataElement = {
+      $: {
+        'android:scheme': auth0Scheme,
+        'android:host': config.domain,
+      },
+    };
+    intentFilter.data?.push(dataElement);
+  });
+  return manifest;
+};
+
+const withAndroidAuth0Manifest: ConfigPlugin<Auth0PluginConfig[]> = (
   config,
   auth0Configs
 ) => {
-  return withAndroidManifest(config, async (config) => {
-    const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(
-      config.modResults
-    );
-
-    AndroidConfig.Manifest.ensureToolsAvailable(config.modResults);
-
-    // Ensure RedirectActivity exists
-    let redirectActivity = mainApplication.activity?.find(
-      (activity) =>
-        activity.$['android:name'] ===
-        'com.auth0.android.provider.RedirectActivity'
-    );
-
-    if (!redirectActivity) {
-      redirectActivity = {
-        '$': {
-          'android:name': 'com.auth0.android.provider.RedirectActivity',
-          'tools:node': 'replace',
-          'android:exported': 'true',
-        },
-        'intent-filter': [
-          {
-            action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }],
-            category: [
-              { $: { 'android:name': 'android.intent.category.DEFAULT' } },
-              { $: { 'android:name': 'android.intent.category.BROWSABLE' } },
-            ],
-            data: [],
-          },
-        ],
-      };
-      mainApplication.activity = mainApplication.activity || [];
-      mainApplication.activity.push(redirectActivity);
-    }
-
-    redirectActivity['intent-filter'] = redirectActivity['intent-filter'] || [];
-    const intentFilter = redirectActivity['intent-filter'][0] || {};
-    intentFilter.data = intentFilter.data || [];
-
-    // Add data elements for each auth0Config
-    auth0Configs.forEach((config) => {
-      const dataElement = {
-        $: {
-          'android:scheme': config.customScheme,
-          'android:host': config.domain,
-        },
-      };
-      intentFilter.data?.push(dataElement);
-    });
-
-    return config;
+  let applicationId = config.android?.package;
+  return withAndroidManifest(config, (manifest) => {
+    return addAndroidAuth0Manifest(auth0Configs, manifest, applicationId);
   });
 };
 
@@ -140,26 +161,40 @@ export const addIOSAuth0ConfigInInfoPList = (
   if (config.ios?.bundleIdentifier) {
     bundleIdentifier = config.ios?.bundleIdentifier + APPLICATION_ID_SUFFIX;
   }
-  props.forEach((prop) => {
-    let auth0Scheme = prop.customScheme;
-    if (
-      urlTypes.some(({ CFBundleURLSchemes }) =>
-        CFBundleURLSchemes.includes(auth0Scheme)
-      )
-    ) {
-      return;
-    }
-    urlTypes.push({
-      CFBundleURLName: 'auth0',
-      CFBundleURLSchemes: [auth0Scheme],
+  props
+    .filter((prop) => prop.customScheme != null)
+    .forEach((prop) => {
+      let auth0Scheme = prop.customScheme ?? '';
+      if (
+        urlTypes.some(({ CFBundleURLSchemes }) =>
+          CFBundleURLSchemes.includes(auth0Scheme)
+        )
+      ) {
+        return;
+      }
+      const existingAuth0URLType = urlTypes.find(
+        (urlType) => urlType.CFBundleURLName === 'auth0'
+      );
+
+      if (existingAuth0URLType) {
+        // Add the scheme to the existing CFBundleURLSchemes array
+        if (!existingAuth0URLType.CFBundleURLSchemes.includes(auth0Scheme)) {
+          existingAuth0URLType.CFBundleURLSchemes.push(auth0Scheme);
+        }
+      } else {
+        // Add a new object
+        urlTypes.push({
+          CFBundleURLName: 'auth0',
+          CFBundleURLSchemes: [auth0Scheme],
+        });
+      }
     });
-  });
   config.modResults.CFBundleURLTypes = urlTypes;
   return config;
 };
 
 type Auth0PluginConfig = {
-  customScheme: string;
+  customScheme?: string;
   domain: string;
 };
 
