@@ -2,10 +2,8 @@ package com.auth0.react;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.ActivityNotFoundException;
-import android.net.Uri;
+
 import androidx.annotation.NonNull;
-import android.util.Base64;
 
 import com.auth0.android.Auth0;
 import com.auth0.android.authentication.AuthenticationAPIClient;
@@ -16,27 +14,21 @@ import com.auth0.android.authentication.storage.SharedPreferencesStorage;
 import com.auth0.android.provider.WebAuthProvider;
 import com.auth0.android.result.Credentials;
 import com.facebook.react.bridge.ActivityEventListener;
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import static android.app.Activity.RESULT_OK;
-
 public class A0Auth0Module extends ReactContextBaseJavaModule implements ActivityEventListener {
 
-    private static final String ERROR_CODE = "a0.invalid_state.credential_manager_exception";
+    private static final String CREDENTIAL_MANAGER_ERROR_CODE = "a0.invalid_state.credential_manager_exception";
+    private static final String INVALID_DOMAIN_URL_ERROR_CODE = "a0.invalid_domain_url";
     private static final int LOCAL_AUTH_REQUEST_CODE = 150;
     public static final int UNKNOWN_ERROR_RESULT_CODE = 1405;
 
@@ -64,7 +56,19 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
 
     @ReactMethod
     public void hasValidAuth0Instance(String clientId, String domain, Promise promise) {
-        promise.resolve(this.auth0 != null && this.auth0.getClientId().equals(clientId) && this.auth0.getDomainUrl().contains(domain));
+        if(this.auth0 == null) {
+            promise.resolve(false);
+            return;
+        }
+        String currentDomain;
+        try {
+            URL domainUrl = new URL(this.auth0.getDomainUrl());
+            currentDomain = domainUrl.getHost();
+        } catch (MalformedURLException e) {
+            promise.reject(INVALID_DOMAIN_URL_ERROR_CODE, "Invalid domain URL", e);
+            return;
+        }
+        promise.resolve(this.auth0.getClientId().equals(clientId) && currentDomain.equals(domain));
     }
 
     @ReactMethod
@@ -85,7 +89,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
 
             @Override
             public void onFailure(@NonNull CredentialsManagerException e) {
-                promise.reject(ERROR_CODE, e.getMessage(), e);
+                promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, e.getMessage(), e);
             }
         });
     }
@@ -96,7 +100,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
             this.secureCredentialsManager.saveCredentials(CredentialsParser.fromMap(credentials));
             promise.resolve(true);
         } catch (CredentialsManagerException e) {
-            promise.reject(ERROR_CODE, e.getMessage(), e);
+            promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, e.getMessage(), e);
         }
     }
 
@@ -104,7 +108,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     public void enableLocalAuthentication(String title, String description, Promise promise) {
         Activity activity = reactContext.getCurrentActivity();
         if (activity == null) {
-            promise.reject(ERROR_CODE, "No current activity present");
+            promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, "No current activity present");
             return;
         }
         activity.runOnUiThread(() -> {
@@ -112,7 +116,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
                 A0Auth0Module.this.secureCredentialsManager.requireAuthentication(activity, LOCAL_AUTH_REQUEST_CODE, title, description);
                 promise.resolve(true);
             } catch (CredentialsManagerException e) {
-                promise.reject(ERROR_CODE, e.getMessage(), e);
+                promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, e.getMessage(), e);
             }
         });
     }
