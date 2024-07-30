@@ -45,8 +45,10 @@ public class NativeBridge: NSObject {
                 }
                 self.credentialsManager.enableBiometrics(withTitle: title, cancelTitle: localAuthenticationOptions["cancelTitle"] as? String, fallbackTitle: localAuthenticationOptions["fallbackTitle"] as? String, evaluationPolicy: evaluationPolicy)
                 resolve(true)
+                return
             } else {
                 reject(NativeBridge.biometricsAuthenticationErrorCode, "Missing mandatory property title in LocalAuthenticationOptions, hence biometrics authentication cannot be enabled", nil)
+                return
             }
         }
         resolve(true)
