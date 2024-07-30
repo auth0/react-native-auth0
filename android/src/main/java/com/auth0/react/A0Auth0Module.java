@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.UiThreadUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
 
     @ReactMethod
     public void initializeAuth0(String clientId, String domain, ReadableMap localAuthenticationOptions, Promise promise) {
-        this.auth0 = new Auth0(clientId, domain);
+        this.auth0 = Auth0.getInstance(clientId, domain);
         AuthenticationAPIClient authenticationAPIClient = new AuthenticationAPIClient(auth0);
         if (localAuthenticationOptions != null) {
             Activity activity = getCurrentActivity();
@@ -54,31 +55,31 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
                     LocalAuthenticationOptions localAuthOptions = LocalAuthenticationOptionsParser.fromMap(localAuthenticationOptions);
                     this.secureCredentialsManager = new SecureCredentialsManager(
                             reactContext,
-                            authenticationAPIClient,
+                            auth0,
                             new SharedPreferencesStorage(reactContext),
                             (FragmentActivity) activity,
                             localAuthOptions);
                     promise.resolve(true);
                     return;
                 } catch (Exception e) {
-                    this.secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authenticationAPIClient);
+                    this.secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics();
                     promise.reject(BIOMETRICS_AUTHENTICATION_ERROR_CODE, "Failed to parse the Local Authentication Options, hence proceeding without Biometrics Authentication for handling Credentials");
                     return;
                 }
-            } else {       
-                this.secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authenticationAPIClient);
+            } else {
+                this.secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics();
                 promise.reject(BIOMETRICS_AUTHENTICATION_ERROR_CODE, "Biometrics Authentication for Handling Credentials are supported only on FragmentActivity, since a different activity is supplied, proceeding without it");
                 return;
             }
         }
-        this.secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authenticationAPIClient);
+        this.secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics();
         promise.resolve(true);
     }
 
-    private @NonNull SecureCredentialsManager getSecureCredentialsManagerWithoutBiometrics(AuthenticationAPIClient authenticationAPIClient) {
+    private @NonNull SecureCredentialsManager getSecureCredentialsManagerWithoutBiometrics() {
         return new SecureCredentialsManager(
                 reactContext,
-                authenticationAPIClient,
+                auth0,
                 new SharedPreferencesStorage(reactContext));
     }
 
@@ -97,7 +98,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
             }
         }
 
-        this.secureCredentialsManager.getCredentials(scope, (int) minTtl, cleanedParameters, forceRefresh,
+        UiThreadUtil.runOnUiThread(() -> secureCredentialsManager.getCredentials(scope, (int) minTtl, cleanedParameters, forceRefresh,
                 new com.auth0.android.callback.Callback<Credentials, CredentialsManagerException>() {
                     @Override
                     public void onSuccess(Credentials credentials) {
@@ -109,7 +110,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
                     public void onFailure(@NonNull CredentialsManagerException e) {
                         promise.reject(ERROR_CODE, e.getMessage(), e);
                     }
-                });
+                }));
     }
 
     @ReactMethod
