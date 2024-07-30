@@ -25,6 +25,10 @@ export const addAndroidAuth0Manifest = (
   manifest: ExportedConfigWithProps<AndroidConfig.Manifest.AndroidManifest>,
   applicationId?: string
 ) => {
+  if (auth0Configs.length === 0) {
+    throw new Error(`No auth0 domain specified in expo config`);
+  }
+
   const intentFilterContent = [
     {
       action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }],
@@ -39,7 +43,6 @@ export const addAndroidAuth0Manifest = (
   const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(
     manifest.modResults
   );
-
   AndroidConfig.Manifest.ensureToolsAvailable(manifest.modResults);
 
   // Ensure RedirectActivity exists
@@ -69,16 +72,17 @@ export const addAndroidAuth0Manifest = (
 
   // Add data elements for each auth0Config
   auth0Configs.forEach((config) => {
+    if (config.domain == null) {
+      throw new Error(`No auth0 domain specified in expo config`);
+    }
+    if (config.customScheme == null && applicationId == null) {
+      throw new Error(
+        `No auth0 scheme specified or package found in expo config`
+      );
+    }
     let auth0Scheme =
-      config.customScheme ??
-      (applicationId != null
-        ? applicationId + APPLICATION_ID_SUFFIX
-        : undefined) ??
-      (() => {
-        throw new Error(
-          `No auth0 scheme specified or package found in expo config for domain ${config}`
-        );
-      })();
+      config.customScheme ?? applicationId + APPLICATION_ID_SUFFIX;
+
     const dataElement = {
       $: {
         'android:scheme': auth0Scheme,
@@ -156,46 +160,56 @@ export const addIOSAuth0ConfigInInfoPList = (
   props: Auth0PluginConfig[],
   config: ExportedConfigWithProps<InfoPlist>
 ) => {
-  let urlTypes = config.modResults.CFBundleURLTypes || [];
+  let customSchemes = props
+    .filter((prop) => prop.customScheme != null)
+    .map((prop) => prop.customScheme as string);
+
   let bundleIdentifier;
   if (config.ios?.bundleIdentifier) {
     bundleIdentifier = config.ios?.bundleIdentifier + APPLICATION_ID_SUFFIX;
   }
-  props
-    .filter((prop) => prop.customScheme != null)
-    .forEach((prop) => {
-      let auth0Scheme = prop.customScheme ?? '';
-      if (
-        urlTypes.some(({ CFBundleURLSchemes }) =>
-          CFBundleURLSchemes.includes(auth0Scheme)
-        )
-      ) {
-        return;
-      }
-      const existingAuth0URLType = urlTypes.find(
-        (urlType) => urlType.CFBundleURLName === 'auth0'
-      );
 
-      if (existingAuth0URLType) {
-        // Add the scheme to the existing CFBundleURLSchemes array
-        if (!existingAuth0URLType.CFBundleURLSchemes.includes(auth0Scheme)) {
-          existingAuth0URLType.CFBundleURLSchemes.push(auth0Scheme);
-        }
-      } else {
-        // Add a new object
-        urlTypes.push({
-          CFBundleURLName: 'auth0',
-          CFBundleURLSchemes: [auth0Scheme],
-        });
-      }
-    });
+  if (customSchemes.length === 0) {
+    if (bundleIdentifier == null) {
+      throw Error(
+        'No auth0 scheme specified or bundle identifier found in expo config'
+      );
+    } else {
+      customSchemes = [bundleIdentifier];
+    }
+  }
+
+  let urlTypes = config.modResults.CFBundleURLTypes || [];
+  customSchemes.forEach((scheme) => {
+    if (
+      urlTypes.some(({ CFBundleURLSchemes }) =>
+        CFBundleURLSchemes.includes(scheme)
+      )
+    ) {
+      return;
+    }
+    const existingAuth0URLType = urlTypes.find(
+      (urlType) => urlType.CFBundleURLName === 'auth0'
+    );
+
+    if (existingAuth0URLType) {
+      // Add the scheme to the existing CFBundleURLSchemes array
+      existingAuth0URLType.CFBundleURLSchemes.push(scheme);
+    } else {
+      // Add a new object
+      urlTypes.push({
+        CFBundleURLName: 'auth0',
+        CFBundleURLSchemes: [scheme],
+      });
+    }
+  });
   config.modResults.CFBundleURLTypes = urlTypes;
   return config;
 };
 
 type Auth0PluginConfig = {
   customScheme?: string;
-  domain: string;
+  domain?: string;
 };
 
 const withAuth0: ConfigPlugin<[Auth0PluginConfig] | Auth0PluginConfig> = (
