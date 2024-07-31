@@ -44,7 +44,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void initializeAuth0(String clientId, String domain) {
+    public void initializeAuth0WithConfiguration(String clientId, String domain) {
         this.auth0 = new Auth0(clientId, domain);
         AuthenticationAPIClient authenticationAPIClient = new AuthenticationAPIClient(auth0);
         this.secureCredentialsManager = new SecureCredentialsManager(
@@ -55,7 +55,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void hasValidAuth0Instance(String clientId, String domain, Promise promise) {
+    public void hasValidAuth0InstanceWithConfiguration(String clientId, String domain, Promise promise) {
         if(this.auth0 == null) {
             promise.resolve(false);
             return;

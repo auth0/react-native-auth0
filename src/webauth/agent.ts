@@ -5,7 +5,7 @@ import {
   EmitterSubscription,
 } from 'react-native';
 import { Credentials } from 'src/types';
-import { _ensureNativeModuleIsInitialized } from '../utils/nativeHelper';
+import { _ensureNativeModuleIsInitializedWithConfiguration } from '../utils/nativeHelper';
 import {
   AgentLoginOptions,
   AgentLogoutOptions,
@@ -42,7 +42,7 @@ class Agent {
         });
       }
       try {
-        await _ensureNativeModuleIsInitialized(
+        await _ensureNativeModuleIsInitializedWithConfiguration(
           A0Auth0,
           parameters.clientId,
           parameters.domain
@@ -96,7 +96,7 @@ class Agent {
     );
     let redirectUri =
       options.returnToUrl ?? this.callbackUri(parameters.domain, scheme);
-    await _ensureNativeModuleIsInitialized(
+    await _ensureNativeModuleIsInitializedWithConfiguration(
       NativeModules.A0Auth0,
       parameters.clientId,
       parameters.domain

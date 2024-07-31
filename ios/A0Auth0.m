@@ -19,14 +19,14 @@
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(hasValidAuth0Instance:(NSString *)clientId domain:(NSString *)domain resolver:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(hasValidAuth0InstanceWithConfiguration:(NSString *)clientId domain:(NSString *)domain resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
     BOOL valid = [self checkHasValidNativeBridgeInstance:clientId domain:domain];
     resolve(@(valid));
 }
 
 
-RCT_EXPORT_METHOD(initializeAuth0:(NSString *)clientId domain:(NSString *)domain) {
+RCT_EXPORT_METHOD(initializeAuth0WithConfiguration:(NSString *)clientId domain:(NSString *)domain) {
     [self tryAndInitializeNativeBridge:clientId domain:domain];
 }
 
