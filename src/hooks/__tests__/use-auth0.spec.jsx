@@ -68,7 +68,6 @@ const mockAuth0 = {
   },
   credentialsManager: {
     getCredentials: jest.fn().mockResolvedValue(mockCredentials),
-    requireLocalAuthentication: jest.fn().mockResolvedValue(),
     clearCredentials: jest.fn().mockResolvedValue(),
     saveCredentials: jest.fn().mockResolvedValue(),
     hasValidCredentials: jest.fn(),
@@ -1047,61 +1046,6 @@ describe('The useAuth0 hook', () => {
     act(() => {
       result.current.getCredentials();
     });
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(result.current.error).toEqual(thrownError);
-  });
-
-  it('can require local authentication', async () => {
-    const { result } = renderHook(() => useAuth0(), {
-      wrapper,
-    });
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    result.current.requireLocalAuthentication();
-
-    expect(
-      mockAuth0.credentialsManager.requireLocalAuthentication
-    ).toHaveBeenCalled();
-  });
-
-  it('can require local authentication with options', async () => {
-    const { result } = renderHook(() => useAuth0(), {
-      wrapper,
-    });
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    result.current.requireLocalAuthentication(
-      'title',
-      'description',
-      'cancel',
-      'fallback',
-      LocalAuthenticationStrategy.deviceOwner
-    );
-
-    expect(
-      mockAuth0.credentialsManager.requireLocalAuthentication
-    ).toHaveBeenCalledWith(
-      'title',
-      'description',
-      'cancel',
-      'fallback',
-      LocalAuthenticationStrategy.deviceOwner
-    );
-  });
-
-  it('dispatches an error when requireLocalAuthentication fails', async () => {
-    const { result } = renderHook(() => useAuth0(), {
-      wrapper,
-    });
-    const thrownError = new Error('requireLocalAuthentication failed');
-
-    mockAuth0.credentialsManager.requireLocalAuthentication.mockRejectedValue(
-      thrownError
-    );
-
-    result.current.requireLocalAuthentication();
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.error).toEqual(thrownError);
   });

@@ -165,24 +165,4 @@ describe('credentials manager tests', () => {
       newNativeModule.mockRestore();
     });
   });
-
-  describe('test enabling local authentication', () => {
-    it('enable local authentication for iOS', async () => {
-      Platform.OS = 'ios';
-      const newNativeModule = jest
-        .spyOn(credentialsManager.Auth0Module, 'enableLocalAuthentication')
-        .mockImplementation(() => {});
-      await expect(credentialsManager.requireLocalAuthentication()).resolves;
-      newNativeModule.mockRestore();
-    });
-
-    it('enable local authentication for Android', async () => {
-      Platform.OS = 'android';
-      const newNativeModule = jest
-        .spyOn(credentialsManager.Auth0Module, 'enableLocalAuthentication')
-        .mockImplementation(() => {});
-      await expect(credentialsManager.requireLocalAuthentication()).resolves;
-      newNativeModule.mockRestore();
-    });
-  });
 });
