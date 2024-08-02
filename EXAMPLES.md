@@ -15,6 +15,7 @@
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
 - [Bot Protection](#bot-protection)
+- [Domain Switching](#domain-switching)
 
 ## Authentication API
 
@@ -263,3 +264,97 @@ auth0.webAuth.authorize({
   screen_hint: 'signup', // 👈🏻
 });
 ```
+
+### Domain Switching
+
+To switch between two different domains for authentication in your Android and iOS applications, follow these steps:
+
+#### Android
+
+To switch between two different domains for authentication in your Android application, you need to manually update your `AndroidManifest.xml` file. This involves adding an intent filter for the activity `com.auth0.android.provider.RedirectActivity`. Unlike using a single domain where you can add the domain and scheme values within the `manifestPlaceholders` of your app's `build.gradle` file, you need to add a `<data>` tag for each domain along with its scheme within the intent filter.
+
+Here is an example:
+
+```xml
+<activity
+    android:name="com.auth0.android.provider.RedirectActivity"
+    tools:node="replace"
+    android:exported="true">
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data
+            android:host="${domain1}"
+            android:pathPrefix="/android/${applicationId}/callback"
+            android:scheme="${applicationId}.auth0" />
+        <data
+            android:host="${domain2}"
+            android:pathPrefix="/android/${applicationId}/callback"
+            android:scheme="${applicationId}.auth0" />
+    </intent-filter>
+</activity>
+```
+
+If you customize the scheme by removing the default value of `${applicationId}.auth0`, you will also need to pass it as the `customScheme` option parameter of the `authorize` and `clearSession` methods.
+
+#### iOS
+
+For iOS, if you are not customizing the scheme, adding `$(PRODUCT_BUNDLE_IDENTIFIER).auth0` as an entry to the `CFBundleURLSchemes` array in your `Info.plist` file should be sufficient. However, if you want to customize the scheme for the domains, you need to add the customized scheme for each domain as an entry to the `CFBundleURLSchemes` array.
+
+Here is an example:
+
+```
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleTypeRole</key>
+        <string>None</string>
+        <key>CFBundleURLName</key>
+        <string>auth0</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>$(customScheme1)</string>
+            <string>$(customScheme2)</string>
+        </array>
+    </dict>
+</array>
+```
+
+By following these steps, you can configure your Android and iOS applications to handle authentication for multiple domains.
+
+#### Expo
+
+If using a single domain, you can simply pass an object in the format to the `react-native-auth0` plugin in your `app.json` as shown below:
+
+```json
+"plugins": [
+  "expo-router",
+  ["react-native-auth0",
+    {
+      "domain": "sample.auth0.com",
+      "customScheme": "sampleScheme"
+    }
+  ]
+]
+```
+
+If you want to support multiple domains, you would have to pass an array of objects as shown below:
+
+```json
+"plugins": [
+  "expo-router",
+  ["react-native-auth0",
+    [{
+      "domain": "sample.auth0.com",
+      "customScheme": "sampleScheme"
+    },
+    {
+      "domain": "sample2.auth0.com",
+      "customScheme": "sampleScheme2"
+    }]
+  ]
+]
+```
+
+You can skip sending the `customScheme` property if you do not want to customize it.
