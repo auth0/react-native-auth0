@@ -3,7 +3,7 @@ import CredentialsManagerError from './credentialsManagerError';
 import LocalAuthenticationStrategy from './localAuthenticationStrategy';
 import { Credentials } from '../types';
 import { Auth0Module } from 'src/internal-types';
-import { _ensureNativeModuleIsInitialized } from '../utils/nativeHelper';
+import { _ensureNativeModuleIsInitializedWithConfiguration } from '../utils/nativeHelper';
 
 class CredentialsManager {
   private domain;
@@ -35,7 +35,7 @@ class CredentialsManager {
       }
     });
     try {
-      await _ensureNativeModuleIsInitialized(
+      await _ensureNativeModuleIsInitializedWithConfiguration(
         this.Auth0Module,
         this.clientId,
         this.domain
@@ -66,7 +66,7 @@ class CredentialsManager {
     forceRefresh: boolean = false
   ): Promise<Credentials> {
     try {
-      await _ensureNativeModuleIsInitialized(
+      await _ensureNativeModuleIsInitializedWithConfiguration(
         this.Auth0Module,
         this.clientId,
         this.domain
@@ -103,7 +103,7 @@ class CredentialsManager {
     strategy = LocalAuthenticationStrategy.deviceOwnerWithBiometrics
   ): Promise<void> {
     try {
-      await _ensureNativeModuleIsInitialized(
+      await _ensureNativeModuleIsInitializedWithConfiguration(
         this.Auth0Module,
         this.clientId,
         this.domain
@@ -134,7 +134,7 @@ class CredentialsManager {
    * @returns `true` if a valid set of credentials are available, or `false` if there are no credentials to return.
    */
   async hasValidCredentials(minTtl = 0): Promise<boolean> {
-    await _ensureNativeModuleIsInitialized(
+    await _ensureNativeModuleIsInitializedWithConfiguration(
       this.Auth0Module,
       this.clientId,
       this.domain
@@ -146,7 +146,7 @@ class CredentialsManager {
    * Delete the stored credentials
    */
   async clearCredentials(): Promise<void> {
-    await _ensureNativeModuleIsInitialized(
+    await _ensureNativeModuleIsInitializedWithConfiguration(
       this.Auth0Module,
       this.clientId,
       this.domain

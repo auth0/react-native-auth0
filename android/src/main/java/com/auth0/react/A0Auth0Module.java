@@ -2,10 +2,8 @@ package com.auth0.react;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.ActivityNotFoundException;
-import android.net.Uri;
+
 import androidx.annotation.NonNull;
-import android.util.Base64;
 
 import com.auth0.android.Auth0;
 import com.auth0.android.authentication.AuthenticationAPIClient;
@@ -16,27 +14,21 @@ import com.auth0.android.authentication.storage.SharedPreferencesStorage;
 import com.auth0.android.provider.WebAuthProvider;
 import com.auth0.android.result.Credentials;
 import com.facebook.react.bridge.ActivityEventListener;
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import static android.app.Activity.RESULT_OK;
-
 public class A0Auth0Module extends ReactContextBaseJavaModule implements ActivityEventListener {
 
-    private static final String ERROR_CODE = "a0.invalid_state.credential_manager_exception";
+    private static final String CREDENTIAL_MANAGER_ERROR_CODE = "a0.invalid_state.credential_manager_exception";
+    private static final String INVALID_DOMAIN_URL_ERROR_CODE = "a0.invalid_domain_url";
     private static final int LOCAL_AUTH_REQUEST_CODE = 150;
     public static final int UNKNOWN_ERROR_RESULT_CODE = 1405;
 
@@ -52,7 +44,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void initializeAuth0(String clientId, String domain) {
+    public void initializeAuth0WithConfiguration(String clientId, String domain) {
         this.auth0 = new Auth0(clientId, domain);
         AuthenticationAPIClient authenticationAPIClient = new AuthenticationAPIClient(auth0);
         this.secureCredentialsManager = new SecureCredentialsManager(
@@ -63,13 +55,25 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void hasValidAuth0Instance(Promise promise) {
-        promise.resolve(this.auth0 != null && this.secureCredentialsManager != null);
+    public void hasValidAuth0InstanceWithConfiguration(String clientId, String domain, Promise promise) {
+        if(this.auth0 == null) {
+            promise.resolve(false);
+            return;
+        }
+        String currentDomain;
+        try {
+            URL domainUrl = new URL(this.auth0.getDomainUrl());
+            currentDomain = domainUrl.getHost();
+        } catch (MalformedURLException e) {
+            promise.reject(INVALID_DOMAIN_URL_ERROR_CODE, "Invalid domain URL", e);
+            return;
+        }
+        promise.resolve(this.auth0.getClientId().equals(clientId) && currentDomain.equals(domain));
     }
 
     @ReactMethod
     public void getCredentials(String scope, double minTtl, ReadableMap parameters, boolean forceRefresh, Promise promise) {
-        Map<String,String> cleanedParameters = new HashMap<>();
+        Map<String, String> cleanedParameters = new HashMap<>();
         for (Map.Entry<String, Object> entry : parameters.toHashMap().entrySet()) {
             if (entry.getValue() != null) {
                 cleanedParameters.put(entry.getKey(), entry.getValue().toString());
@@ -85,7 +89,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
 
             @Override
             public void onFailure(@NonNull CredentialsManagerException e) {
-                promise.reject(ERROR_CODE, e.getMessage(), e);
+                promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, e.getMessage(), e);
             }
         });
     }
@@ -96,7 +100,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
             this.secureCredentialsManager.saveCredentials(CredentialsParser.fromMap(credentials));
             promise.resolve(true);
         } catch (CredentialsManagerException e) {
-            promise.reject(ERROR_CODE, e.getMessage(), e);
+            promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, e.getMessage(), e);
         }
     }
 
@@ -104,15 +108,15 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     public void enableLocalAuthentication(String title, String description, Promise promise) {
         Activity activity = reactContext.getCurrentActivity();
         if (activity == null) {
-            promise.reject(ERROR_CODE, "No current activity present");
+            promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, "No current activity present");
             return;
         }
         activity.runOnUiThread(() -> {
             try {
                 A0Auth0Module.this.secureCredentialsManager.requireAuthentication(activity, LOCAL_AUTH_REQUEST_CODE, title, description);
                 promise.resolve(true);
-            } catch (CredentialsManagerException e){
-                promise.reject(ERROR_CODE, e.getMessage(), e);
+            } catch (CredentialsManagerException e) {
+                promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, e.getMessage(), e);
             }
         });
     }
@@ -144,7 +148,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     @ReactMethod
     public void webAuth(String scheme, String redirectUri, String state, String nonce, String audience, String scope, String connection, int maxAge, String organization, String invitationUrl, int leeway, boolean ephemeralSession, int safariViewControllerPresentationStyle, ReadableMap additionalParameters, Promise promise) {
         this.webAuthPromise = promise;
-        Map<String,String> cleanedParameters = new HashMap<>();
+        Map<String, String> cleanedParameters = new HashMap<>();
         for (Map.Entry<String, Object> entry : additionalParameters.toHashMap().entrySet()) {
             if (entry.getValue() != null) {
                 cleanedParameters.put(entry.getKey(), entry.getValue().toString());
@@ -152,61 +156,61 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
         }
         WebAuthProvider.Builder builder = WebAuthProvider.login(this.auth0)
                 .withScheme(scheme);
-        if(state != null) {
+        if (state != null) {
             builder.withState(state);
         }
-        if(nonce != null) {
+        if (nonce != null) {
             builder.withNonce(nonce);
         }
-        if(audience != null) {
+        if (audience != null) {
             builder.withAudience(audience);
         }
-        if(scope != null) {
+        if (scope != null) {
             builder.withScope(scope);
         }
-        if(connection != null) {
+        if (connection != null) {
             builder.withConnection(connection);
         }
-        if(maxAge != 0) {
+        if (maxAge != 0) {
             builder.withMaxAge(maxAge);
         }
-        if(organization != null) {
+        if (organization != null) {
             builder.withOrganization(organization);
         }
-        if(invitationUrl != null) {
+        if (invitationUrl != null) {
             builder.withInvitationUrl(invitationUrl);
         }
-        if(leeway != 0) {
+        if (leeway != 0) {
             builder.withIdTokenVerificationLeeway(leeway);
         }
-        if(redirectUri != null) {
+        if (redirectUri != null) {
             builder.withRedirectUri(redirectUri);
         }
         builder.withParameters(cleanedParameters);
         builder.start(reactContext.getCurrentActivity(), new com.auth0.android.callback.Callback<Credentials, AuthenticationException>() {
-                    @Override
-                    public void onSuccess(Credentials result) {
-                        ReadableMap map = CredentialsParser.toMap(result);
-                        promise.resolve(map);
-                        webAuthPromise = null;
-                    }
+            @Override
+            public void onSuccess(Credentials result) {
+                ReadableMap map = CredentialsParser.toMap(result);
+                promise.resolve(map);
+                webAuthPromise = null;
+            }
 
-                    @Override
-                    public void onFailure(@NonNull AuthenticationException error) {
-                        handleError(error, promise);
-                        webAuthPromise = null;
-                    }
-                });
+            @Override
+            public void onFailure(@NonNull AuthenticationException error) {
+                handleError(error, promise);
+                webAuthPromise = null;
+            }
+        });
     }
 
     @ReactMethod
     public void webAuthLogout(String scheme, boolean federated, String redirectUri, Promise promise) {
         WebAuthProvider.LogoutBuilder builder = WebAuthProvider.logout(this.auth0)
                 .withScheme(scheme);
-        if(federated) {
+        if (federated) {
             builder.withFederated();
         }
-        if(redirectUri != null) {
+        if (redirectUri != null) {
             builder.withReturnToUrl(redirectUri);
         }
         builder.start(reactContext.getCurrentActivity(), new com.auth0.android.callback.Callback<Void, AuthenticationException>() {
@@ -223,19 +227,19 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     private void handleError(AuthenticationException error, Promise promise) {
-        if(error.isBrowserAppNotAvailable()) {
+        if (error.isBrowserAppNotAvailable()) {
             promise.reject("a0.browser_not_available", "No Browser application is installed.", error);
             return;
         }
-        if(error.isCanceled()) {
+        if (error.isCanceled()) {
             promise.reject("a0.session.user_cancelled", "User cancelled the Auth", error);
             return;
         }
-        if(error.isNetworkError()) {
+        if (error.isNetworkError()) {
             promise.reject("a0.network_error", "Network error", error);
             return;
         }
-        if(error.isIdTokenValidationError()) {
+        if (error.isIdTokenValidationError()) {
             promise.reject("a0.session.invalid_idtoken", "Error validating ID Token", error);
             return;
         }
@@ -245,14 +249,14 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
 
     @Override
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-        if(requestCode == LOCAL_AUTH_REQUEST_CODE) {
+        if (requestCode == LOCAL_AUTH_REQUEST_CODE) {
             secureCredentialsManager.checkAuthenticationResult(requestCode, resultCode);
         }
     }
 
     @Override
     public void onNewIntent(Intent intent) {
-        if(webAuthPromise != null) {
+        if (webAuthPromise != null) {
             webAuthPromise.reject("a0.session.browser_terminated", "The browser window was closed by a new instance of the application");
             webAuthPromise = null;
         }

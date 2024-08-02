@@ -73,7 +73,10 @@ const Auth0Provider = ({
   clientId,
   children,
 }: PropsWithChildren<{ domain: string; clientId: string }>) => {
-  const [client] = useState(() => new Auth0({ domain, clientId }));
+  const client = useMemo(
+    () => new Auth0({ domain, clientId }),
+    [domain, clientId]
+  );
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {

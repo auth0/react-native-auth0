@@ -48,7 +48,7 @@ describe('Agent', () => {
       let domain = 'test.com';
       let clientId = 'client id value';
       const mock = jest
-        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementation(() => Promise.resolve(true));
       jest
         .spyOn(NativeModules.A0Auth0, 'webAuth')
@@ -67,7 +67,7 @@ describe('Agent', () => {
       let domain = 'test.com';
       let clientId = 'client id value';
       const mock = jest
-        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementation(() => Promise.resolve(true));
       const mockLogin = jest
         .spyOn(NativeModules.A0Auth0, 'webAuth')
@@ -116,7 +116,7 @@ describe('Agent', () => {
       let domain = 'test.com';
       let clientId = 'client id value';
       const mock = jest
-        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementation(() => Promise.resolve(true));
       const mockLogin = jest
         .spyOn(NativeModules.A0Auth0, 'webAuth')
@@ -166,7 +166,7 @@ describe('Agent', () => {
       let domain = 'test.com';
       let clientId = 'client id value';
       const mock = jest
-        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementation(() => Promise.resolve(true));
       agent.logout(
         {
@@ -182,7 +182,7 @@ describe('Agent', () => {
       let domain = 'test.com';
       let clientId = 'client id value';
       const mock = jest
-        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementation(() => Promise.resolve(true));
       const mockLogin = jest
         .spyOn(NativeModules.A0Auth0, 'webAuthLogout')
@@ -209,7 +209,7 @@ describe('Agent', () => {
       let domain = 'test.com';
       let clientId = 'client id value';
       const mock = jest
-        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementation(() => Promise.resolve(true));
       const mockLogin = jest
         .spyOn(NativeModules.A0Auth0, 'webAuthLogout')
@@ -292,7 +292,7 @@ describe('Agent', () => {
         .spyOn(Linking, 'addEventListener')
         .mockReturnValueOnce(mockSubscription);
       jest
-        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementationOnce(() => {
           throw Error('123123');
         });
@@ -313,7 +313,7 @@ describe('Agent', () => {
         .mockReturnValueOnce(mockSubscription);
 
       jest
-        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementationOnce(() => {});
 
       jest.spyOn(NativeModules.A0Auth0, 'webAuth').mockImplementation(() => {
@@ -344,7 +344,7 @@ describe('Agent', () => {
         .spyOn(Linking, 'addEventListener')
         .mockReturnValueOnce(mockSubscription);
       jest
-        .spyOn(nativeUtils, '_ensureNativeModuleIsInitialized')
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementationOnce(() => {
           throw Error('123123');
         });

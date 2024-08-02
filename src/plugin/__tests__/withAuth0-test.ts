@@ -1,31 +1,52 @@
+import { AndroidConfig, ExportedConfigWithProps } from 'expo/config-plugins';
 import {
-  addAuth0GradleValues,
+  addAndroidAuth0Manifest,
   addAuth0AppDelegateCode,
-  addAndroidAuth0Gradle,
   addIOSAuth0ConfigInInfoPList,
 } from '../withAuth0';
 import appDelegateFixtureWithLinking from './fixtures/appdelegate-withlinking';
 import appDelegateFixtureWithoutLinking from './fixtures/appdelegate-withoutlinking';
-import buildGradleFixture from './fixtures/buildgradle';
 import { ModConfig } from '@expo/config-plugins';
 
-describe(addAuth0GradleValues, () => {
-  it(`modifies the build.gradle`, () => {
-    expect(
-      addAuth0GradleValues(
-        buildGradleFixture,
-        'com.example.app',
-        'com.example.app'
-      )
-    ).toMatchSnapshot();
-  });
-
-  it(`modifies the build.gradle without custom scheme`, () => {
-    expect(
-      addAuth0GradleValues(buildGradleFixture, 'com.example.app')
-    ).toMatchSnapshot();
-  });
-});
+const getConfig = () => {
+  return {
+    name: ' ',
+    slug: ' ',
+    modRequest: {
+      projectRoot: '',
+      platformProjectRoot: '',
+      modName: '',
+      platform: 'android' as keyof ModConfig,
+      introspect: true,
+    },
+    modResults: {
+      manifest: {
+        $: {
+          'xmlns:android': 'http://schemas.android.com/apk/res/android',
+        },
+        queries: [],
+        application: [
+          {
+            $: {
+              'android:name': 'com.auth0.android.tests.MainApplication',
+            },
+            activity: [
+              {
+                $: {
+                  'android:name': 'com.auth0.android.provider.RedirectActivity',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+    modRawConfig: {
+      name: ' ',
+      slug: ' ',
+    },
+  } as ExportedConfigWithProps<AndroidConfig.Manifest.AndroidManifest>;
+};
 
 describe(addAuth0AppDelegateCode, () => {
   it(`does not modify the AppDelegate`, () => {
@@ -43,111 +64,87 @@ describe(addAuth0AppDelegateCode, () => {
   });
 });
 
-describe(addAndroidAuth0Gradle, () => {
-  it(`should throw if file is kt`, () => {
-    const config: any = {
-      name: ' ',
-      slug: ' ',
-      modRequest: {
-        projectRoot: '',
-        platformProjectRoot: '',
-        modName: '',
-        platform: 'android' as keyof ModConfig,
-        introspect: true,
-      },
-      modResults: { path: '', language: 'kt' as const, contents: '' },
-    };
-    function ktFileCheck() {
-      addAndroidAuth0Gradle({}, config);
-    }
-    expect(ktFileCheck).toThrowErrorMatchingSnapshot();
-  });
-
-  it(`should throw if domain is not present`, () => {
-    const config: any = {
-      name: ' ',
-      slug: ' ',
-      modRequest: {
-        projectRoot: '',
-        platformProjectRoot: '',
-        modName: '',
-        platform: 'android' as keyof ModConfig,
-        introspect: true,
-      },
-      modResults: { path: '', language: 'groovy' as const, contents: '' },
-    };
+describe(addAndroidAuth0Manifest, () => {
+  it(`should throw if domain is not present when config sent as array`, () => {
     function domainCheck() {
-      addAndroidAuth0Gradle({}, config);
+      addAndroidAuth0Manifest([], getConfig());
     }
     expect(domainCheck).toThrowErrorMatchingSnapshot();
   });
 
-  it(`should throw if scheme is not present`, () => {
-    const config: any = {
-      name: ' ',
-      slug: ' ',
-      modRequest: {
-        projectRoot: '',
-        platformProjectRoot: '',
-        modName: '',
-        platform: 'android' as keyof ModConfig,
-        introspect: true,
-      },
-      modResults: { path: '', language: 'groovy' as const, contents: '' },
-    };
+  it(`should throw if domain is not present when config sent as object`, () => {
     function domainCheck() {
-      addAndroidAuth0Gradle({ domain: 'sample.auth0.com' }, config);
+      addAndroidAuth0Manifest([{}], getConfig());
+    }
+    expect(domainCheck).toThrowErrorMatchingSnapshot();
+  });
+
+  it(`should throw if scheme & applicationId is not present`, () => {
+    function domainCheck() {
+      addAndroidAuth0Manifest([{ domain: 'sample.auth0.com' }], getConfig());
     }
     expect(domainCheck).toThrowErrorMatchingSnapshot();
   });
 
   it(`without scheme should have package name`, () => {
-    const config: any = {
-      name: ' ',
-      slug: ' ',
-      modRequest: {
-        projectRoot: '',
-        platformProjectRoot: '',
-        modName: '',
-        platform: 'android' as keyof ModConfig,
-        introspect: true,
-      },
-      modResults: {
-        path: '',
-        language: 'groovy' as const,
-        contents: buildGradleFixture,
-      },
-      android: {
-        package: 'com.auth0.sample',
-      },
-    };
     function check() {
-      return addAndroidAuth0Gradle({ domain: 'sample.auth0.com' }, config);
+      return addAndroidAuth0Manifest(
+        [{ domain: 'sample.auth0.com' }],
+        getConfig(),
+        'com.auth0.sample'
+      );
     }
     expect(check()).toMatchSnapshot();
   });
 
   it(`with scheme should have that value`, () => {
-    const config: any = {
-      name: ' ',
-      slug: ' ',
-      modRequest: {
-        projectRoot: '',
-        platformProjectRoot: '',
-        modName: '',
-        platform: 'android' as keyof ModConfig,
-        introspect: true,
-      },
-      modResults: {
-        path: '',
-        language: 'groovy' as const,
-        contents: buildGradleFixture,
-      },
-    };
     function check() {
-      return addAndroidAuth0Gradle(
-        { domain: 'sample.auth0.com', customScheme: 'com.sample.application' },
-        config
+      return addAndroidAuth0Manifest(
+        [
+          {
+            domain: 'sample.auth0.com',
+            customScheme: 'com.sample.application',
+          },
+        ],
+        getConfig()
+      );
+    }
+    expect(check()).toMatchSnapshot();
+  });
+
+  it(`with multiple domains should have that value and package name as scheme`, () => {
+    function check() {
+      return addAndroidAuth0Manifest(
+        [
+          {
+            domain: 'sample.us.auth0.com',
+          },
+          {
+            domain: 'sample.eu.auth0.com',
+          },
+        ],
+        getConfig(),
+        'com.sample.application'
+      );
+    }
+    expect(check()).toMatchSnapshot();
+  });
+
+  it(`with multiple domains and schemes should have that value`, () => {
+    function check() {
+      return addAndroidAuth0Manifest(
+        [
+          {
+            domain: 'sample.us.auth0.com',
+            customScheme: 'com.sample.us.auth0',
+          },
+          {
+            domain: 'sample.eu.auth0.com',
+            customScheme: 'com.sample.eu.auth0',
+          },
+        ],
+        getConfig(),
+        'com.sample.application'
       );
     }
     expect(check()).toMatchSnapshot();
@@ -168,10 +165,14 @@ describe(addIOSAuth0ConfigInInfoPList, () => {
       },
       modResults: { path: '', contents: '' },
     };
-    function check() {
-      addIOSAuth0ConfigInInfoPList({}, config);
+    function checkWithEmptyObject() {
+      return addIOSAuth0ConfigInInfoPList([{}], config);
     }
-    expect(check).toThrowErrorMatchingSnapshot();
+    function checkWithEmptyArray() {
+      return addIOSAuth0ConfigInInfoPList([], config);
+    }
+    expect(checkWithEmptyObject).toThrowErrorMatchingSnapshot();
+    expect(checkWithEmptyArray).toThrowErrorMatchingSnapshot();
   });
 
   it(`should have the scheme provided `, () => {
@@ -192,7 +193,7 @@ describe(addIOSAuth0ConfigInInfoPList, () => {
     };
     function check() {
       return addIOSAuth0ConfigInInfoPList(
-        { customScheme: 'com.sample.auth0' },
+        [{ customScheme: 'com.sample.auth0' }],
         config
       );
     }
@@ -215,10 +216,14 @@ describe(addIOSAuth0ConfigInInfoPList, () => {
       },
       modResults: { path: '', contents: '' },
     };
-    function check() {
-      return addIOSAuth0ConfigInInfoPList({}, config);
+    function checkWithEmptyObject() {
+      return addIOSAuth0ConfigInInfoPList([{}], config);
     }
-    expect(check()).toMatchSnapshot();
+    function checkWithEmptyArray() {
+      return addIOSAuth0ConfigInInfoPList([], config);
+    }
+    expect(checkWithEmptyObject()).toMatchSnapshot();
+    expect(checkWithEmptyArray()).toMatchSnapshot();
   });
 
   it(`should ignore if scheme is already present`, () => {
@@ -245,14 +250,14 @@ describe(addIOSAuth0ConfigInInfoPList, () => {
     };
     function check() {
       return addIOSAuth0ConfigInInfoPList(
-        { customScheme: 'com.sample.auth0' },
+        [{ customScheme: 'com.sample.auth0' }],
         config
       );
     }
     expect(check()).toMatchSnapshot();
   });
 
-  it(`should not ignore if another scheme is already present`, () => {
+  it(`should append if another scheme is already present`, () => {
     const config: any = {
       name: ' ',
       slug: ' ',
@@ -276,7 +281,69 @@ describe(addIOSAuth0ConfigInInfoPList, () => {
     };
     function check() {
       return addIOSAuth0ConfigInInfoPList(
-        { customScheme: 'com.sample.auth0' },
+        [{ customScheme: 'com.sample.auth0' }],
+        config
+      );
+    }
+    expect(check()).toMatchSnapshot();
+  });
+
+  it(`should append all the schemes`, () => {
+    const config: any = {
+      name: ' ',
+      slug: ' ',
+      modRequest: {
+        projectRoot: '',
+        platformProjectRoot: '',
+        modName: '',
+        platform: 'ios' as keyof ModConfig,
+        introspect: true,
+      },
+      modResults: {
+        path: '',
+        contents: '',
+        CFBundleURLTypes: [
+          {
+            CFBundleURLName: 'auth0',
+            CFBundleURLSchemes: ['com.differentsample.auth0'],
+          },
+        ],
+      },
+    };
+    function check() {
+      return addIOSAuth0ConfigInInfoPList(
+        [
+          { customScheme: 'com.sample.us.auth0' },
+          { customScheme: 'com.sample.eu.auth0' },
+        ],
+        config
+      );
+    }
+    expect(check()).toMatchSnapshot();
+  });
+
+  it(`should add all the schemes`, () => {
+    const config: any = {
+      name: ' ',
+      slug: ' ',
+      modRequest: {
+        projectRoot: '',
+        platformProjectRoot: '',
+        modName: '',
+        platform: 'ios' as keyof ModConfig,
+        introspect: true,
+      },
+      modResults: {
+        path: '',
+        contents: '',
+      },
+    };
+    function check() {
+      return addIOSAuth0ConfigInInfoPList(
+        [
+          { customScheme: 'com.sample.us.auth0' },
+          { customScheme: 'com.sample.eu.auth0' },
+        ],
         config
       );
     }
