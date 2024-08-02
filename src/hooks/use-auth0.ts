@@ -25,7 +25,9 @@ import Auth0Context, { Auth0ContextInterface } from './auth0-context';
  *   clearSession,
  *   getCredentials,
  *   clearCredentials,
- *   requireLocalAuthentication
+ *   requireLocalAuthentication,
+ *   refreshToken,
+ *   saveCredentials
  * } = useAuth0();
  * ```
  * 
