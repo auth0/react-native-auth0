@@ -48,9 +48,8 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void initializeAuth0(String clientId, String domain, ReadableMap localAuthenticationOptions, Promise promise) {
+    public void initializeAuth0WithConfiguration(String clientId, String domain, ReadableMap localAuthenticationOptions, Promise promise) {
         this.auth0 = Auth0.getInstance(clientId, domain);
-        AuthenticationAPIClient authenticationAPIClient = new AuthenticationAPIClient(auth0);
         if (localAuthenticationOptions != null) {
             Activity activity = getCurrentActivity();
             if (activity instanceof FragmentActivity) {
