@@ -392,15 +392,88 @@ const credentials = await auth0.credentialsManager.getCredentials();
 
 > 💡 You do not need to call credentialsManager.saveCredentials() afterward. The Credentials Manager automatically persists the renewed credentials.
 
-#### Local authentication
+#### Requiring Authentication before obtaining Credentials
+
+> :warning: The `requireLocalAuthentication` method is no longer available as part of the `CredentialsManager` class or the `useAuth0` Hook from v4 of the SDK.
 
 You can enable an additional level of user authentication before retrieving credentials using the local authentication supported by the device, for example PIN or fingerprint on Android, and Face ID or Touch ID on iOS.
 
-```js
-await auth0.credentialsManager.requireLocalAuthentication();
+Refer to the instructions below to understand how to enable authentication before retrieving credentials based on your setup:
+
+**Using Auth0 Class:**
+
+The `Auth0` class constructor now accepts a new parameter, which is an instance of the `LocalAuthenticationOptions` object. This needs to be passed while creating an instance of `Auth0` to enable authentication before obtaining credentials, as shown in the code snippet below:
+
+```tsx
+import Auth0 from 'react-native-auth0';
+const localAuthOptions: LocalAuthenticationOptions = {
+  title: 'Authenticate to retreive your credentials',
+  subtitle: 'Please authenticate to continue',
+  description: 'We need to authenticate you to retrieve your credentials',
+  cancelTitle: 'Cancel',
+  evaluationPolicy: LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
+  fallbackTitle: 'Use Passcode',
+  authenticationLevel: LocalAuthenticationLevel.strong,
+  deviceCredentialFallback: true,
+};
+const auth0 = new Auth0({
+  domain: config.domain,
+  clientId: config.clientId,
+  localAuthenticationOptions: localAuthOptions,
+});
 ```
 
-Check the [API documentation](https://auth0.github.io/react-native-auth0/classes/Types.CredentialsManager.html#requireLocalAuthentication) to learn more about the available LocalAuthentication properties.
+**Using Hooks (Auth0Provider):**
+
+`Auth0Provider` now accepts a new parameter, which is an instance of the `LocalAuthenticationOptions` object. This needs to be passed to enable authentication before obtaining credentials, as shown in the code snippet below:
+
+```tsx
+import { Auth0Provider } from 'react-native-auth0';
+
+const localAuthOptions: LocalAuthenticationOptions = {
+  title: 'Authenticate to retreive your credentials',
+  subtitle: 'Please authenticate to continue',
+  description: 'We need to authenticate you to retrieve your credentials',
+  cancelTitle: 'Cancel',
+  evaluationPolicy: LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
+  fallbackTitle: 'Use Passcode',
+  authenticationLevel: LocalAuthenticationLevel.strong,
+  deviceCredentialFallback: true,
+};
+
+const App = () => {
+  return (
+    <Auth0Provider
+      domain={config.domain}
+      clientId={config.clientId}
+      localAuthenticationOptions={localAuthOptions}
+    >
+      {/* YOUR APP */}
+    </Auth0Provider>
+  );
+};
+
+export default App;
+```
+
+Detailed information on `LocalAuthenticationOptions` is available [here](#localauthenticationoptions)
+
+**LocalAuthenticationOptions:**
+
+The options for configuring the display of local authentication prompt, authentication level (Android only), and evaluation policy (iOS only).
+
+**Properties:**
+
+| Property                   | Type                          | Description                                                                                                             | Applicable Platforms |
+| -------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| `title`                    | `String`                      | The title of the authentication prompt.                                                                                 | Android, iOS         |
+| `subtitle`                 | `String` (optional)           | The subtitle of the authentication prompt.                                                                              | Android              |
+| `description`              | `String` (optional)           | The description of the authentication prompt.                                                                           | Android              |
+| `cancelTitle`              | `String` (optional)           | The cancel button title of the authentication prompt.                                                                   | Android, iOS         |
+| `evaluationPolicy`         | `LocalAuthenticationStrategy` | The evaluation policy to use when prompting the user for authentication. Defaults to `deviceOwnerWithBiometrics`.       | iOS                  |
+| `fallbackTitle`            | `String` (optional)           | The fallback button title of the authentication prompt.                                                                 | iOS                  |
+| `authenticationLevel`      | `LocalAuthenticationLevel`    | The authentication level to use when prompting the user for authentication. Defaults to `strong`.                       | Android              |
+| `deviceCredentialFallback` | `Boolean` (optional)          | Should the user be given the option to authenticate with their device PIN, pattern, or password instead of a biometric. | Android              |
 
 > :warning: You need a real device to test Local Authentication for iOS. Local Authentication is not available in simulators.
 

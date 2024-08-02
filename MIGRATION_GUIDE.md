@@ -1,5 +1,61 @@
 # Migration Guide
 
+## Upgrading from v3 -> v4
+
+- **If your project is built with Expo:**
+  - Run `npx expo prebuild --clean` to ensure the intent-filters in `android` & custom scheme's in iOS are propertly setup. Please note that any manual changes to Android or iOS folders will be lost when this command is executed.
+
+### Breaking Changes:
+
+- `requireLocalAuthentication` method is no longer available as part of the `CredentialsManager` class or the `useAuth0` Hook from v4 of the SDK. Refer below sections on how to enable authentication before obtaining credentials now.
+
+### Changes:
+
+- Updated the `Auth0` class constructor to accept a new parameter, `LocalAuthenticationOptions`, for enabling authentication before obtaining credentials as shown below:
+
+```
+const localAuthOptions: LocalAuthenticationOptions = {
+    title: 'Authenticate to retreive your credentials',
+    subtitle: 'Please authenticate to continue',
+    description: 'We need to authenticate you to retrieve your credentials',
+    cancelTitle: 'Cancel',
+    evaluationPolicy: LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
+    fallbackTitle: 'Use Passcode',
+    authenticationLevel: LocalAuthenticationLevel.strong,
+    deviceCredentialFallback: true,
+  }
+const auth0 = new Auth0({ domain: config.domain, clientId: config.clientId, localAuthenticationOptions: localAuthOptions });
+```
+
+Modified the `Auth0Provider` to accept `LocalAuthenticationOptions` as a parameter to enable authentication before obtaining credentials.
+
+```
+const localAuthOptions: LocalAuthenticationOptions = {
+  title: 'Authenticate to retreive your credentials',
+  subtitle: 'Please authenticate to continue',
+  description: 'We need to authenticate you to retrieve your credentials',
+  cancelTitle: 'Cancel',
+  evaluationPolicy: LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
+  fallbackTitle: 'Use Passcode',
+  authenticationLevel: LocalAuthenticationLevel.strong,
+  deviceCredentialFallback: true,
+};
+
+const App = () => {
+  return (
+    <Auth0Provider
+      domain={config.domain}
+      clientId={config.clientId}
+      localAuthenticationOptions={localAuthOptions}
+    >
+      {/* YOUR APP */}
+    </Auth0Provider>
+  );
+};
+
+export default App;
+```
+
 ## Upgrading from v2 -> v3
 
 ### Improvements and changes
