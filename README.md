@@ -192,6 +192,8 @@ To use the SDK with Expo, configure the app at build time by providing the `doma
 }
 ```
 
+> :info: If you want to switch between multiple domains in your app, refer [here](https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES.md#domain-switching)
+
 | API          | Description                                                                                                                                                                                                                                                                  |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | domain       | Mandatory: Provide the Auth0 domain that can be found at the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                                 |

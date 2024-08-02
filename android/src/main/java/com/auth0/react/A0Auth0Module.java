@@ -22,13 +22,16 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class A0Auth0Module extends ReactContextBaseJavaModule implements ActivityEventListener {
 
-    private static final String ERROR_CODE = "a0.invalid_state.credential_manager_exception";
+    private static final String CREDENTIAL_MANAGER_ERROR_CODE = "a0.invalid_state.credential_manager_exception";
+    private static final String INVALID_DOMAIN_URL_ERROR_CODE = "a0.invalid_domain_url";
     private static final String BIOMETRICS_AUTHENTICATION_ERROR_CODE = "a0.invalid_options_biometrics_authentication";
     private static final int LOCAL_AUTH_REQUEST_CODE = 150;
     public static final int UNKNOWN_ERROR_RESULT_CODE = 1405;
@@ -84,8 +87,20 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void hasValidAuth0Instance(Promise promise) {
-        promise.resolve(this.auth0 != null && this.secureCredentialsManager != null);
+    public void hasValidAuth0InstanceWithConfiguration(String clientId, String domain, Promise promise) {
+        if(this.auth0 == null) {
+            promise.resolve(false);
+            return;
+        }
+        String currentDomain;
+        try {
+            URL domainUrl = new URL(this.auth0.getDomainUrl());
+            currentDomain = domainUrl.getHost();
+        } catch (MalformedURLException e) {
+            promise.reject(INVALID_DOMAIN_URL_ERROR_CODE, "Invalid domain URL", e);
+            return;
+        }
+        promise.resolve(this.auth0.getClientId().equals(clientId) && currentDomain.equals(domain));
     }
 
     @ReactMethod
@@ -108,7 +123,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
 
                     @Override
                     public void onFailure(@NonNull CredentialsManagerException e) {
-                        promise.reject(ERROR_CODE, e.getMessage(), e);
+                        promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, e.getMessage(), e);
                     }
                 }));
     }
@@ -119,7 +134,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
             this.secureCredentialsManager.saveCredentials(CredentialsParser.fromMap(credentials));
             promise.resolve(true);
         } catch (CredentialsManagerException e) {
-            promise.reject(ERROR_CODE, e.getMessage(), e);
+            promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, e.getMessage(), e);
         }
     }
 
@@ -201,12 +216,12 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
                         webAuthPromise = null;
                     }
 
-                    @Override
-                    public void onFailure(@NonNull AuthenticationException error) {
-                        handleError(error, promise);
-                        webAuthPromise = null;
-                    }
-                });
+            @Override
+            public void onFailure(@NonNull AuthenticationException error) {
+                handleError(error, promise);
+                webAuthPromise = null;
+            }
+        });
     }
 
     @ReactMethod

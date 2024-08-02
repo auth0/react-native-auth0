@@ -78,8 +78,9 @@ const Auth0Provider = ({
   clientId: string;
   localAuthenticationOptions?: LocalAuthenticationOptions;
 }>) => {
-  const [client] = useState(
-    () => new Auth0({ domain, clientId, localAuthenticationOptions })
+  const client = useMemo(
+    () => new Auth0({ domain, clientId }),
+    [domain, clientId]
   );
   const [state, dispatch] = useReducer(reducer, initialState);
 

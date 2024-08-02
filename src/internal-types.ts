@@ -100,12 +100,15 @@ export type Auth0Module = {
   ) => Promise<Credentials>;
   hasValidCredentials: (minTtl?: number) => Promise<boolean>;
   clearCredentials: () => Promise<void>;
-  hasValidAuth0Instance: () => Promise<boolean>;
-  initializeAuth0: (
+  hasValidAuth0InstanceWithConfiguration: (
+    clientId: String,
+    domain: String
+  ) => Promise<boolean>;
+  initializeAuth0WithConfiguration: (
     clientId: string,
     domain: string,
     localAuthenticationOptions?: LocalAuthenticationOptions
-  ) => Promise<boolean>;
+  ) => Promise<void>;
 };
 
 export type AgentParameters = {

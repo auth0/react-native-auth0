@@ -196,6 +196,14 @@ public class NativeBridge: NSObject {
         let policyValue = self.convert(policyInt: evaluationPolicy)
         self.credentialsManager.enableBiometrics(withTitle: titleValue, cancelTitle: cancelTitle, fallbackTitle: fallbackTitle, evaluationPolicy: policyValue)
     }
+    
+    @objc public func getClientId() -> String {
+        return clientId
+    }
+    
+    @objc public func getDomain() -> String {
+        return domain
+    }
 
     func convert(policyInt: Int) -> LAPolicy {
         if (policyInt == 2) {

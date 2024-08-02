@@ -19,14 +19,14 @@
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(hasValidAuth0Instance:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(hasValidAuth0InstanceWithConfiguration:(NSString *)clientId domain:(NSString *)domain resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-    BOOL valid = [self checkHasValidNativeBridgeInstance];
+    BOOL valid = [self checkHasValidNativeBridgeInstance:clientId domain:domain];
     resolve(@(valid));
 }
 
 
-RCT_EXPORT_METHOD(initializeAuth0:(NSString *)clientId domain:(NSString *)domain localAuthenticationOptions:(NSDictionary*) options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(initializeAuth0WithConfiguration:(NSString *)clientId domain:(NSString *)domain localAuthenticationOptions:(NSDictionary*) options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     [self tryAndInitializeNativeBridge:clientId domain:domain withLocalAuthenticationOptions:options resolver:resolve rejecter:reject];
 }
 
@@ -74,8 +74,8 @@ RCT_EXPORT_METHOD(resumeWebAuth:(NSString *)url resolver:(RCTPromiseResolveBlock
 
 UIBackgroundTaskIdentifier taskId;
 
-- (BOOL)checkHasValidNativeBridgeInstance {
-    BOOL valid = self.nativeBridge != nil;
+- (BOOL)checkHasValidNativeBridgeInstance:(NSString*) clientId domain:(NSString *)domain {
+    BOOL valid = self.nativeBridge != nil && [self.nativeBridge.getClientId isEqual:clientId] && [self.nativeBridge.getDomain isEqual:domain];
     return valid;
 }
 
