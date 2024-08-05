@@ -2,6 +2,12 @@ import * as nativeUtils from '../../utils/nativeHelper';
 import Agent from '../agent';
 import { NativeModules, Platform, Linking } from 'react-native';
 
+const localAuthenticationOptions = {
+  title: 'Authenticate With Your Biometrics',
+  evaluationPolicy: 1,
+  authenticationLevel: 0,
+};
+
 jest.mock('react-native', () => {
   // Require the original module to not be mocked...
   return {
@@ -58,9 +64,15 @@ describe('Agent', () => {
           clientId: clientId,
           domain: domain,
         },
-        { customScheme: 'test' }
+        { customScheme: 'test' },
+        localAuthenticationOptions
       );
-      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mock).toBeCalledWith(
+        NativeModules.A0Auth0,
+        clientId,
+        domain,
+        localAuthenticationOptions
+      );
     });
 
     it('should ensure login is called with proper parameters', async () => {
@@ -91,9 +103,15 @@ describe('Agent', () => {
           ephemeralSession: true,
           safariViewControllerPresentationStyle: 0,
           additionalParameters: { test: 'test' },
-        }
+        },
+        localAuthenticationOptions
       );
-      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mock).toBeCalledWith(
+        NativeModules.A0Auth0,
+        clientId,
+        domain,
+        localAuthenticationOptions
+      );
       expect(mockLogin).toBeCalledWith(
         'test',
         'test://test.com/ios/com.my.app/callback',
@@ -128,9 +146,15 @@ describe('Agent', () => {
         },
         {
           redirectUrl: 'redirect://redirect.com',
-        }
+        },
+        localAuthenticationOptions
       );
-      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mock).toBeCalledWith(
+        NativeModules.A0Auth0,
+        clientId,
+        domain,
+        localAuthenticationOptions
+      );
       expect(mockLogin).toBeCalledWith(
         'com.my.app.auth0',
         'redirect://redirect.com',
@@ -173,9 +197,15 @@ describe('Agent', () => {
           clientId: clientId,
           domain: domain,
         },
-        { customScheme: 'test' }
+        { customScheme: 'test' },
+        localAuthenticationOptions
       );
-      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mock).toBeCalledWith(
+        NativeModules.A0Auth0,
+        clientId,
+        domain,
+        localAuthenticationOptions
+      );
     });
 
     it('should ensure logout is called with proper parameters', async () => {
@@ -195,9 +225,15 @@ describe('Agent', () => {
         {
           customScheme: 'test',
           federated: true,
-        }
+        },
+        localAuthenticationOptions
       );
-      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mock).toBeCalledWith(
+        NativeModules.A0Auth0,
+        clientId,
+        domain,
+        localAuthenticationOptions
+      );
       expect(mockLogin).toBeCalledWith(
         'test',
         true,
@@ -221,9 +257,15 @@ describe('Agent', () => {
         },
         {
           returnToUrl: 'redirect://redirect.com',
-        }
+        },
+        localAuthenticationOptions
       );
-      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mock).toBeCalledWith(
+        NativeModules.A0Auth0,
+        clientId,
+        domain,
+        localAuthenticationOptions
+      );
       expect(mockLogin).toBeCalledWith(
         'com.my.app.auth0',
         false,

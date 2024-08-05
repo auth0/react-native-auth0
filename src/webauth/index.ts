@@ -11,6 +11,7 @@ import {
 
 import Auth from '../auth';
 import { object } from 'prop-types';
+import LocalAuthenticationOptions from 'src/credentials-manager/localAuthenticationOptions';
 
 /**
  * Helper to perform Auth against Auth0 hosted login page
@@ -24,15 +25,20 @@ class WebAuth {
   private domain: string;
   private clientId: string;
   private agent: Agent;
+  private localAuthenticationOptions?: LocalAuthenticationOptions;
 
   /**
    * @ignore
    */
-  constructor(auth: Auth) {
+  constructor(
+    auth: Auth,
+    localAuthenticationOptions?: LocalAuthenticationOptions
+  ) {
     const { clientId, domain } = auth;
     this.domain = domain;
     this.clientId = clientId;
     this.agent = new Agent();
+    this.localAuthenticationOptions = localAuthenticationOptions;
   }
 
   /**
@@ -60,7 +66,8 @@ class WebAuth {
         ...parameters,
         safariViewControllerPresentationStyle: presentationStyle,
         ...options,
-      }
+      },
+      this.localAuthenticationOptions
     );
   }
 
@@ -79,7 +86,8 @@ class WebAuth {
       {
         ...parameters,
         ...options,
-      }
+      },
+      this.localAuthenticationOptions
     );
   }
 }

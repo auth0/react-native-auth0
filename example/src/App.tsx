@@ -8,7 +8,13 @@
 
 import React from 'react';
 import { Alert, Button, StyleSheet, Text, View } from 'react-native';
-import { useAuth0, Auth0Provider } from 'react-native-auth0';
+import {
+  useAuth0,
+  Auth0Provider,
+  LocalAuthenticationOptions,
+  LocalAuthenticationLevel,
+  LocalAuthenticationStrategy,
+} from 'react-native-auth0';
 import config from './auth0-configuration';
 import { NavigationProp, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -49,8 +55,23 @@ const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
 };
 
 const HomeProvider = ({ navigation }: { navigation: NavigationProp<any> }) => {
+  const localAuthOptions: LocalAuthenticationOptions = {
+    title: 'Authenticate to retreive your credentials',
+    subtitle: 'Please authenticate to continue',
+    description: 'We need to authenticate you to retrieve your credentials',
+    cancelTitle: 'Cancel',
+    evaluationPolicy: LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
+    fallbackTitle: 'Use Passcode',
+    authenticationLevel: LocalAuthenticationLevel.strong,
+    deviceCredentialFallback: true,
+  };
+
   return (
-    <Auth0Provider domain={config.domain} clientId={config.clientId}>
+    <Auth0Provider
+      domain={config.domain}
+      clientId={config.clientId}
+      localAuthenticationOptions={localAuthOptions}
+    >
       <Home navigation={navigation} />
     </Auth0Provider>
   );
