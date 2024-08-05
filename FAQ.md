@@ -6,6 +6,7 @@
 4. [Is there a way to disable the iOS _login_ alert box without `ephemeralSession`?](#4-is-there-a-way-to-disable-the-ios-login-alert-box-without-ephemeralsession)
 5. [How can I change the message in the iOS alert box?](#5-how-can-i-change-the-message-in-the-ios-alert-box)
 6. [How can I programmatically close the iOS alert box?](#6-how-can-i-programmatically-close-the-ios-alert-box)
+7. [Auth0 web browser gets killed when going to the background on Android](#7-auth0-web-browser-gets-killed-when-going-to-the-background-on-android)
 
 ## 1. How can I have separate Auth0 domains for each environment on Android?
 
@@ -131,3 +132,95 @@ This library has no control whatsoever over the alert box. Its contents cannot b
 ## 6. How can I programmatically close the iOS alert box?
 
 This library has no control whatsoever over the alert box. It cannot be closed programmatically. Unfortunately, that's a limitation of `ASWebAuthenticationSession`.
+
+## 7. Auth0 web browser gets killed when going to the background on Android
+
+### The problem
+
+When opening the Auth0 web browser to perform authentication, the Android system may kill the browser when the app goes to the background and you re-launch the app by pressing the app icon. This is a common behaviour if a user has MFA enabled for example and the user switches to another app to get the MFA code.
+
+You may have seen other issues where the usage of `singleTop` fixes this issue. However, other different libraries may be using `singleTask` and this can cause other issues if you change it.
+
+See these issues for more information:
+- [Android: OTP auth browser closes when minimising app](https://github.com/auth0/react-native-auth0/issues/921)
+- [Fixed authentication restart when the app is minimized ](https://github.com/auth0/react-native-auth0/pull/350)
+- [possibility to run with launchMode:singleTop?](https://github.com/auth0/react-native-auth0/issues/170)
+- [Android singleTask launch mode is required for react-native deep links](https://github.com/auth0/react-native-auth0/issues/556)
+
+## The solution
+
+If your Android `launchMode` is set to `singleTask` (check your `AndroidManifest.xml`), that's why this is occurring. Unfortunately, this is not addressable by the react-native-auth0 library.
+
+This is [the same solution for the stripe-react-native library](https://github.com/stripe/stripe-react-native/issues/355#issuecomment-1701323254), but it also help other libraries that have the same issue.
+
+1. Modify your `MainApplication`:
+
+```diff
+public class MainApplication extends Application {
++   private ArrayList<Class> runningActivities = new ArrayList<>();
+
++   public void addActivityToStack (Class cls) {
++       if (!runningActivities.contains(cls)) runningActivities.add(cls);
++   }
+
++   public void removeActivityFromStack (Class cls) {
++       if (runningActivities.contains(cls)) runningActivities.remove(cls);
++   }
+
++   public boolean isActivityInBackStack (Class cls) {
++       return runningActivities.contains(cls);
++   }
+}
+```
+
+2. create `LaunchActivity`
+
+```diff
++ public class LaunchActivity extends Activity {
++    @Override
++    protected void onCreate(Bundle savedInstanceState) {
++        super.onCreate(savedInstanceState);
++        BaseApplication application = (BaseApplication) getApplication();
++        // check that MainActivity is not started yet
++        if (!application.isActivityInBackStack(MainActivity.class)) {
++            Intent intent = new Intent(this, MainActivity.class);
++            startActivity(intent);
++        }
++        finish();
++    }
++ }
+```
+
+3. Modify `AndroidManifest.xml` and move `android.intent.action.MAIN` and `android.intent.category.LAUNCHER` from your `.MainActivity` to `.LaunchActivity`
+
+```diff
++        <activity android:name=".LaunchActivity">
++            <intent-filter>
++                <action android:name="android.intent.action.MAIN" />
++                <category android:name="android.intent.category.LAUNCHER" />
++            </intent-filter>
++        </activity>
+
+...
+-            <intent-filter>
+-                <action android:name="android.intent.action.MAIN"/>
+-                <category android:name="android.intent.category.LAUNCHER"/>
+-            </intent-filter>
+...
+```
+
+4. Modify `MainActivity` to look _something_ like the following (you likely already have an `onCreate` method that you need to modify):
+
+```java
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(null);
+    ((BaseApplication) getApplication()).addActivityToStack(this.getClass());
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    ((BaseApplication) getApplication()).removeActivityFromStack(this.getClass());
+  }
+```
