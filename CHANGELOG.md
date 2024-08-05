@@ -1,5 +1,17 @@
 # Change Log
 
+## [v4.0.0-beta.0](https://github.com/auth0/react-native-auth0/tree/v4.0.0-beta.0) (2024-08-05)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.2.1...v4.0.0-beta.0)
+
+**⚠️ BREAKING CHANGES**
+
+- BREAKING CHANGE: Updated Android SDK to v3 beta & fixed issues with biometrics Authentication on Android. [\#940](https://github.com/auth0/react-native-auth0/pull/940) ([desusai7](https://github.com/desusai7))
+
+**Added**
+
+- feat: added support for domain switching [\#931](https://github.com/auth0/react-native-auth0/pull/931) ([desusai7](https://github.com/desusai7))
+
 ## [v3.2.1](https://github.com/auth0/react-native-auth0/tree/v3.2.1) (2024-05-09)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.2.0...v3.2.1)
