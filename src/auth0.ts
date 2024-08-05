@@ -4,6 +4,7 @@ import Users from './management/users';
 import { Telemetry } from './networking/telemetry';
 import WebAuth from './webauth';
 import LocalAuthenticationOptions from './credentials-manager/localAuthenticationOptions';
+import addDefaultLocalAuthOptions from './utils/addDefaultLocalAuthOptions';
 
 /**
  * Auth0 for React Native client
@@ -33,12 +34,15 @@ class Auth0 {
     localAuthenticationOptions?: LocalAuthenticationOptions;
   }) {
     const { domain, clientId, ...extras } = options;
+    const localAuthenticationOptions = options.localAuthenticationOptions
+      ? addDefaultLocalAuthOptions(options.localAuthenticationOptions)
+      : undefined;
     this.auth = new Auth({ baseUrl: domain, clientId, ...extras });
-    this.webAuth = new WebAuth(this.auth, options.localAuthenticationOptions);
+    this.webAuth = new WebAuth(this.auth, localAuthenticationOptions);
     this.credentialsManager = new CredentialsManager(
       domain,
       clientId,
-      options.localAuthenticationOptions
+      localAuthenticationOptions
     );
     this.options = options;
   }

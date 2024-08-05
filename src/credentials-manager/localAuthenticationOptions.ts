@@ -25,7 +25,7 @@ interface LocalAuthenticationOptions {
   /**
    * The evaluation policy to use when prompting the user for authentication. Defaults to LocalAuthenticationStrategy.deviceOwnerWithBiometrics. **Applicable for iOS only.**
    */
-  evaluationPolicy: LocalAuthenticationStrategy;
+  evaluationPolicy?: LocalAuthenticationStrategy;
   /**
    * The fallback button title of the authentication prompt. **Applicable for iOS only.**
    */
@@ -33,7 +33,7 @@ interface LocalAuthenticationOptions {
   /**
    * The authentication level to use when prompting the user for authentication. Defaults to LocalAuthenticationLevel.strong. **Applicable for Android only.**
    */
-  authenticationLevel: LocalAuthenticationLevel;
+  authenticationLevel?: LocalAuthenticationLevel;
   /**
    * Should the user be given the option to authenticate with their device PIN, pattern, or password instead of a biometric. **Applicable for Android only.**
    */
