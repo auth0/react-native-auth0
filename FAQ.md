@@ -147,7 +147,7 @@ See these issues for more information:
 - [possibility to run with launchMode:singleTop?](https://github.com/auth0/react-native-auth0/issues/170)
 - [Android singleTask launch mode is required for react-native deep links](https://github.com/auth0/react-native-auth0/issues/556)
 
-## The solution
+### The solution
 
 If your Android `launchMode` is set to `singleTask` (check your `AndroidManifest.xml`), that's why this is occurring. Unfortunately, this is not addressable by the react-native-auth0 library.
 
