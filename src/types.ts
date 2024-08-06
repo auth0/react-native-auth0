@@ -349,7 +349,7 @@ export interface PasswordlessWithEmailOptions {
   /**
    * Optional parameters, used when strategy is 'linḱ'
    */
-  authParams?: string;
+  authParams?: object;
   [key: string]: any;
 }
 
@@ -368,7 +368,7 @@ export interface PasswordlessWithSMSOptions {
   /**
    * Optional passwordless parameters
    */
-  authParams?: string;
+  authParams?: object;
   [key: string]: any;
 }
 
