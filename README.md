@@ -9,9 +9,9 @@
 
 📚 [Documentation](#documentation) • 🚀 [Getting Started](#getting-started) • ⏭️ [Next Steps](#next-steps) • ❓ [FAQs](https://github.com/auth0/react-native-auth0/blob/master/FAQ.md) • ❓ [Feedback](#feedback)
 
-### ⚠️ Important Migration Notice: v3.0.0
+### ⚠️ Important Migration Notice: v4.0.0-beta.0
 
-We're excited to announce the release of react-native-auth0 v3.0.0! Please note that this update includes breaking changes that require your attention. To ensure a smooth transition, please review our
+We're excited to announce the release of react-native-auth0 `v4.0.0-beta.0`! Please note that this update includes breaking changes that require your attention. To ensure a smooth transition, please review our
 👉 [Migration Guide](https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md) 👈 for detailed instructions on updating your integration.
 
 ## Documentation
