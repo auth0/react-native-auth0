@@ -37,6 +37,8 @@ public class NativeBridge: NSObject {
         self.domain = domain
         self.credentialsManager = CredentialsManager(authentication: auth0)
         super.init()
+        
+        #if os(iOS)
         if let localAuthenticationOptions = localAuthenticationOptions {
             if let title = localAuthenticationOptions["title"] as? String {
                 var evaluationPolicy = LAPolicy.deviceOwnerAuthenticationWithBiometrics
@@ -51,6 +53,8 @@ public class NativeBridge: NSObject {
                 return
             }
         }
+        #endif
+        
         resolve(true)
    }
     
@@ -106,7 +110,7 @@ public class NativeBridge: NSObject {
                     reject(error.reactNativeErrorCode(), error.errorDescription, error)
                 }
             }
-        #endif    
+        #endif
     }
 
     @objc public func webAuthLogout(federated: Bool, redirectUri: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
@@ -242,6 +246,7 @@ extension Credentials {
     }
 }
 
+#if os(iOS)
 extension WebAuthError {
     func reactNativeErrorCode() -> String {
         var code: String
@@ -262,6 +267,7 @@ extension WebAuthError {
         return code
     }
 }
+#endif
 
 extension CredentialsManagerError {
     func reactNativeErrorCode() -> String {
@@ -280,7 +286,7 @@ extension CredentialsManagerError {
                 code = cause.code
             } else {
                 code = "REVOKE_FAILED"
-            } 
+            }
             case .largeMinTTL: code = "LARGE_MIN_TTL"
             default: code = "UNKNOWN"
         }
