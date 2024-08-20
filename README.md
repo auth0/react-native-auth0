@@ -37,12 +37,23 @@ The following shows platform minimums for running projects with this SDK:
 | Platform | Minimum version |
 | -------- | :-------------: |
 | iOS      |      13.0       |
+| tvOS     |      14.0       |
 | Android  |       28        |
+
+**iOS**
 
 Our SDK requires a minimum iOS deployment target of 13.0. In your project's ios/Podfile, ensure your platform target is set to 13.0.
 
 ```
 platform :ios, '13.0'
+```
+
+**tvOS**
+
+Our SDK requires a minimum tvOS deployment target of 14.0. In your project's ios/Podfile, ensure your platform target is set to 14.0.
+
+```
+platform :tvos, '14.0'
 ```
 
 ### Installation

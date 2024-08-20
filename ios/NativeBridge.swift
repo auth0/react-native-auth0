@@ -55,78 +55,89 @@ public class NativeBridge: NSObject {
    }
     
     @objc public func webAuth(state: String?, redirectUri: String, nonce: String?, audience: String?, scope: String?, connection: String?, maxAge: Int, organization: String?, invitationUrl: String?, leeway: Int, ephemeralSession: Bool, safariViewControllerPresentationStyle: Int, additionalParameters: [String: String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
-        if let value = URL(string: redirectUri) {
-            let _ = builder.redirectURL(value)
-        }
-        if let value = state {
-            let _ = builder.state(value)
-        }
-        if let value = nonce {
-            let _ = builder.nonce(value)
-        }
-        if let value = audience {
-            let _ = builder.audience(value)
-        }
-        if let value = scope {
-            let _ = builder.scope(value)
-        }
-        if let value = connection {
-            let _ = builder.connection(value)
-        }
-        if(maxAge != 0) {
-            let _ = builder.maxAge(maxAge)
-        }
-        if let value = organization {
-            let _ = builder.organization(value)
-        }
-        if let value = invitationUrl, let invitationURL = URL(string: value) {
-            let _ = builder.invitationURL(invitationURL)
-        }
-        if(leeway != 0) {
-            let _ = builder.leeway(leeway)
-        }
-        if(ephemeralSession) {
-            let _ = builder.useEphemeralSession()
-        }
-        //Since we cannot have a null value here, the JS layer sends 99 if we have to ignore setting this value
-        if let presentationStyle = UIModalPresentationStyle(rawValue: safariViewControllerPresentationStyle), safariViewControllerPresentationStyle != 99 {
-            let _ = builder.provider(WebAuthentication.safariProvider(style: presentationStyle))
-        }
-        let _ = builder
-            .parameters(additionalParameters)
-        builder.start { result in
-            switch result {
-            case .success(let credentials):
-                resolve(credentials.asDictionary())
-            case .failure(let error):
-                reject(error.reactNativeErrorCode(), error.errorDescription, error)
+        #if os(tvOS)
+            reject("UNSUPPORTED_OPERATION", "webAuth is unsupported on tvOS", nil)
+        #else
+            let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
+            if let value = URL(string: redirectUri) {
+                let _ = builder.redirectURL(value)
             }
-        }
-            
-    }
-
-    @objc public func webAuthLogout(federated: Bool, redirectUri: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
-        if let value = URL(string: redirectUri) {
-            let _ = builder.redirectURL(value)
-        }
-        builder.clearSession(federated: federated) { result in
+            if let value = state {
+                let _ = builder.state(value)
+            }
+            if let value = nonce {
+                let _ = builder.nonce(value)
+            }
+            if let value = audience {
+                let _ = builder.audience(value)
+            }
+            if let value = scope {
+                let _ = builder.scope(value)
+            }
+            if let value = connection {
+                let _ = builder.connection(value)
+            }
+            if(maxAge != 0) {
+                let _ = builder.maxAge(maxAge)
+            }
+            if let value = organization {
+                let _ = builder.organization(value)
+            }
+            if let value = invitationUrl, let invitationURL = URL(string: value) {
+                let _ = builder.invitationURL(invitationURL)
+            }
+            if(leeway != 0) {
+                let _ = builder.leeway(leeway)
+            }
+            if(ephemeralSession) {
+                let _ = builder.useEphemeralSession()
+            }
+            //Since we cannot have a null value here, the JS layer sends 99 if we have to ignore setting this value
+            if let presentationStyle = UIModalPresentationStyle(rawValue: safariViewControllerPresentationStyle), safariViewControllerPresentationStyle != 99 {
+                let _ = builder.provider(WebAuthentication.safariProvider(style: presentationStyle))
+            }
+            let _ = builder
+                .parameters(additionalParameters)
+            builder.start { result in
                 switch result {
-                case .success:
-                    resolve(true)
+                case .success(let credentials):
+                    resolve(credentials.asDictionary())
                 case .failure(let error):
                     reject(error.reactNativeErrorCode(), error.errorDescription, error)
                 }
             }
+        #endif    
+    }
+
+    @objc public func webAuthLogout(federated: Bool, redirectUri: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        #if os(tvOS)
+            reject("UNSUPPORTED_OPERATION", "webAuthLogout is unsupported on tvOS", nil)
+        #else
+            let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
+            if let value = URL(string: redirectUri) {
+                let _ = builder.redirectURL(value)
+            }
+            builder.clearSession(federated: federated) { result in
+                    switch result {
+                    case .success:
+                        resolve(true)
+                    case .failure(let error):
+                        reject(error.reactNativeErrorCode(), error.errorDescription, error)
+                    }
+                }
+        #endif
     }
 
     @objc public func resumeWebAuth(url: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        if let value = URL(string: url), WebAuthentication.resume(with: value) {
-            resolve(true)
-        } else {
-            reject("ERROR_PARSING_URL", "The callback url \(url) is invalid", nil)
-        }
+        #if os(tvOS)
+            reject("UNSUPPORTED_OPERATION", "resumeWebAuth is unsupported on tvOS", nil)
+        #else
+            if let value = URL(string: url), WebAuthentication.resume(with: value) {
+                resolve(true)
+            } else {
+                reject("ERROR_PARSING_URL", "The callback url \(url) is invalid", nil)
+            }
+        #endif
     }
     
     @objc public func saveCredentials(credentialsDict: [String: Any], resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
@@ -192,9 +203,11 @@ public class NativeBridge: NSObject {
     }
     
     @objc public func enableLocalAuthentication(title: String?, cancelTitle: String?, fallbackTitle: String?, evaluationPolicy: Int) {
-        let titleValue = title ?? "Please authenticate to continue"
-        let policyValue = self.convert(policyInt: evaluationPolicy)
-        self.credentialsManager.enableBiometrics(withTitle: titleValue, cancelTitle: cancelTitle, fallbackTitle: fallbackTitle, evaluationPolicy: policyValue)
+        #if os(iOS)
+            let titleValue = title ?? "Please authenticate to continue"
+            let policyValue = self.convert(policyInt: evaluationPolicy)
+            self.credentialsManager.enableBiometrics(withTitle: titleValue, cancelTitle: cancelTitle, fallbackTitle: fallbackTitle, evaluationPolicy: policyValue)
+        #endif
     }
     
     @objc public func getClientId() -> String {
@@ -205,12 +218,14 @@ public class NativeBridge: NSObject {
         return domain
     }
 
+    #if os(iOS)
     func convert(policyInt: Int) -> LAPolicy {
         if (policyInt == 2) {
             return LAPolicy.deviceOwnerAuthentication
         }
         return LAPolicy.deviceOwnerAuthenticationWithBiometrics
     }
+    #endif
 }
 
 
