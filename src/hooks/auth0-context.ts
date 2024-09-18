@@ -14,6 +14,7 @@ import {
   WebAuthorizeParameters,
   PasswordlessWithSMSOptions,
   ClearSessionOptions,
+  ExchangeNativeSocialOptions,
 } from '../types';
 
 export interface Auth0ContextInterface<TUser extends User = User>
@@ -70,6 +71,13 @@ export interface Auth0ContextInterface<TUser extends User = User>
    */
   authorizeWithRecoveryCode: (
     parameters: LoginWithRecoveryCodeOptions
+  ) => Promise<Credentials | undefined>;
+  /**
+   * Exchange an external token obtained via a native social authentication solution for the user's tokens.
+   * See {@link Auth#exchangeNativeSocial}
+   */
+  exchangeNativeSocial: (
+    parameters: ExchangeNativeSocialOptions
   ) => Promise<Credentials | undefined>;
   /**
    * Whether the SDK currently holds valid, unexpired credentials.
@@ -139,6 +147,7 @@ const initialContext = {
   authorizeWithOOB: stub,
   authorizeWithOTP: stub,
   authorizeWithRecoveryCode: stub,
+  exchangeNativeSocial: stub,
   hasValidCredentials: stub,
   clearSession: stub,
   getCredentials: stub,

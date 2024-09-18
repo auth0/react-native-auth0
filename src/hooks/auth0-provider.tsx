@@ -14,6 +14,7 @@ import {
   ClearSessionOptions,
   ClearSessionParameters,
   Credentials,
+  ExchangeNativeSocialOptions,
   LoginWithEmailOptions,
   LoginWithOOBOptions,
   LoginWithOTPOptions,
@@ -301,6 +302,23 @@ const Auth0Provider = ({
     [client]
   );
 
+  const exchangeNativeSocial = useCallback(
+    async (parameters: ExchangeNativeSocialOptions) => {
+      try {
+        const credentials = await client.auth.exchangeNativeSocial(parameters);
+        const user = getIdTokenProfileClaims(credentials.idToken);
+
+        await client.credentialsManager.saveCredentials(credentials);
+        dispatch({ type: 'LOGIN_COMPLETE', user });
+        return credentials;
+      } catch (error) {
+        dispatch({ type: 'ERROR', error });
+        return;
+      }
+    },
+    [client]
+  );
+
   const hasValidCredentials = useCallback(
     async (minTtl: number = 0) => {
       return await client.credentialsManager.hasValidCredentials(minTtl);
@@ -330,6 +348,7 @@ const Auth0Provider = ({
       authorizeWithOOB,
       authorizeWithOTP,
       authorizeWithRecoveryCode,
+      exchangeNativeSocial,
       hasValidCredentials,
       clearSession,
       getCredentials,
@@ -346,6 +365,7 @@ const Auth0Provider = ({
       authorizeWithOOB,
       authorizeWithOTP,
       authorizeWithRecoveryCode,
+      exchangeNativeSocial,
       hasValidCredentials,
       clearSession,
       getCredentials,
