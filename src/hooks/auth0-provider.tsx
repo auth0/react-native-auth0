@@ -23,6 +23,7 @@ import {
   MultifactorChallengeOptions,
   PasswordlessWithEmailOptions,
   PasswordlessWithSMSOptions,
+  RevokeOptions,
   User,
   WebAuthorizeOptions,
   WebAuthorizeParameters,
@@ -336,6 +337,40 @@ const Auth0Provider = ({
     }
   }, [client]);
 
+<<<<<<< HEAD
+=======
+  const requireLocalAuthentication = useCallback(
+    async (
+      title?: string,
+      description?: string,
+      cancelTitle?: string,
+      fallbackTitle?: string,
+      strategy = LocalAuthenticationStrategy.deviceOwnerWithBiometrics
+    ) => {
+      try {
+        await client.credentialsManager.requireLocalAuthentication(
+          title,
+          description,
+          cancelTitle,
+          fallbackTitle,
+          strategy
+        );
+      } catch (error) {
+        dispatch({ type: 'ERROR', error });
+        return;
+      }
+    },
+    [client.credentialsManager]
+  );
+
+  const revoke = useCallback(
+    (parameters: RevokeOptions) => {
+      return client.auth.revoke(parameters);
+    },
+    [client]
+  );
+
+>>>>>>> b6515de (Add revoke function to top level hook)
   const contextValue = useMemo(
     () => ({
       ...state,
@@ -353,6 +388,11 @@ const Auth0Provider = ({
       clearSession,
       getCredentials,
       clearCredentials,
+<<<<<<< HEAD
+=======
+      requireLocalAuthentication,
+      revoke,
+>>>>>>> b6515de (Add revoke function to top level hook)
     }),
     [
       state,
@@ -370,6 +410,11 @@ const Auth0Provider = ({
       clearSession,
       getCredentials,
       clearCredentials,
+<<<<<<< HEAD
+=======
+      requireLocalAuthentication,
+      revoke,
+>>>>>>> b6515de (Add revoke function to top level hook)
     ]
   );
 

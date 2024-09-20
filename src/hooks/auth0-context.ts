@@ -15,6 +15,7 @@ import {
   PasswordlessWithSMSOptions,
   ClearSessionOptions,
   ExchangeNativeSocialOptions,
+  RevokeOptions,
 } from '../types';
 
 export interface Auth0ContextInterface<TUser extends User = User>
@@ -113,6 +114,10 @@ export interface Auth0ContextInterface<TUser extends User = User>
    * Clears the user's credentials without clearing their web session and logs them out.
    */
   clearCredentials: () => Promise<void>;
+  /**
+   *Revokes an issued refresh token. See {@link Auth#revoke}
+   */
+  revoke: (parameters: RevokeOptions) => Promise<void>;
 }
 
 export interface AuthState<TUser extends User = User> {
@@ -152,6 +157,7 @@ const initialContext = {
   clearSession: stub,
   getCredentials: stub,
   clearCredentials: stub,
+  revoke: stub,
 };
 
 const Auth0Context = createContext<Auth0ContextInterface>(initialContext);
