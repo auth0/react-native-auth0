@@ -67,6 +67,7 @@ def configureReactNativePom(def pom) {
         artifactId packageJson.name
         version = packageJson.version
         group = "com.auth0.react"
+        namespace = "com.auth0.react"
         description packageJson.description
         url packageJson.repository.baseUrl
 
