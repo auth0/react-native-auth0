@@ -1,5 +1,13 @@
 # Change Log
 
+## [v4.0.0](https://github.com/auth0/react-native-auth0/tree/v4.0.0) (2024-11-27)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.2.1...v4.0.0)
+
+**Added**
+
+- feat: added support for domain switching [\#931](https://github.com/auth0/react-native-auth0/pull/931) ([desusai7](https://github.com/desusai7))
+
 ## [v4.0.0-beta.0](https://github.com/auth0/react-native-auth0/tree/v4.0.0-beta.0) (2024-08-05)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.2.1...v4.0.0-beta.0)
