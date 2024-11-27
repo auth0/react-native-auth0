@@ -1,5 +1,21 @@
 # Change Log
 
+## [v4.0.0](https://github.com/auth0/react-native-auth0/tree/v4.0.0) (2024-11-27)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.2.1...v4.0.0)
+
+💡 Check the [Migration Guide](https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md) to understand the changes required to migrate your application to v4.
+
+💡 Check the [v4.0.0-beta.0](https://github.com/auth0/react-native-auth0/releases/tag/v4.0.0-beta.0) to understand other major changes .
+
+⚠️ BREAKING CHANGES
+
+- BREAKING CHANGE: `requireLocalAuthentication` method is no longer available as part of the CredentialsManager class or the useAuth0 Hook from v4 of the SDK. Refer [Migration Guide](https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md) for more details.
+
+**Added**
+
+- feat: added support for domain switching [\#931](https://github.com/auth0/react-native-auth0/pull/931) ([desusai7](https://github.com/desusai7))
+
 ## [v4.0.0-beta.0](https://github.com/auth0/react-native-auth0/tree/v4.0.0-beta.0) (2024-08-05)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.2.1...v4.0.0-beta.0)
