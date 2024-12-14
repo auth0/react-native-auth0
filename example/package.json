@@ -10,7 +10,7 @@
     "postinstall": "npm run pods"
   },
   "dependencies": {
-    "@react-navigation/native": "^6.1.18",
+    "@react-navigation/native": "^7.0.14",
     "@react-navigation/native-stack": "^6.10.1",
     "react": "18.2.0",
     "react-native": "0.71.10",
