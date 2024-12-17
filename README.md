@@ -493,6 +493,40 @@ try {
 }
 ```
 
+#### Malformed Access Tokens
+
+If a JWT access token returned by `getCredentials()` is malformed, you may have created an *opaque access token*, which is a token without an audience. In your `authorize()` function call be sure to specify `audience: {your audience}` to prevent malformed access tokens. You can find your application's audience in the auth0 webpage under "Applications" -> "APIs" -> "Auth0 Management API". 
+
+#### Prompting Login Page versus Signup Page
+
+If your application has one button for logging in and one button for signing up, you can prompt Auth0 to direct the user to the appropriate authentication page as such:
+
+```
+const login = async () => {
+      await authorize({
+        scope: ...,
+        audience: ...,
+        additionalParameters: {
+          prompt: 'select_account',
+          screen_hint: 'login'
+        }
+      });
+    // continue with login process!
+  }
+
+  const signup = async () => {
+      await authorize({
+        scope: ...,
+        audience: ...,
+        additionalParameters: {
+          prompt: 'select_account',
+          screen_hint: 'signup'
+        }
+      });
+    // continue with signup process!
+  }
+```
+
 ## Feedback
 
 ### Contributing
