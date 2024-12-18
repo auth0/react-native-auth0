@@ -1,9 +1,4 @@
-import React, {
-  useEffect,
-  useReducer,
-  useState,
-  PropsWithChildren,
-} from 'react';
+import React, { useEffect, useReducer, PropsWithChildren } from 'react';
 import { useCallback, useMemo } from 'react';
 import jwtDecode from 'jwt-decode';
 import PropTypes from 'prop-types';
@@ -14,6 +9,7 @@ import {
   ClearSessionOptions,
   ClearSessionParameters,
   Credentials,
+  ExchangeNativeSocialOptions,
   LoginWithEmailOptions,
   LoginWithOOBOptions,
   LoginWithOTPOptions,
@@ -22,6 +18,7 @@ import {
   MultifactorChallengeOptions,
   PasswordlessWithEmailOptions,
   PasswordlessWithSMSOptions,
+  RevokeOptions,
   User,
   WebAuthorizeOptions,
   WebAuthorizeParameters,
@@ -301,6 +298,23 @@ const Auth0Provider = ({
     [client]
   );
 
+  const exchangeNativeSocial = useCallback(
+    async (parameters: ExchangeNativeSocialOptions) => {
+      try {
+        const credentials = await client.auth.exchangeNativeSocial(parameters);
+        const user = getIdTokenProfileClaims(credentials.idToken);
+
+        await client.credentialsManager.saveCredentials(credentials);
+        dispatch({ type: 'LOGIN_COMPLETE', user });
+        return credentials;
+      } catch (error) {
+        dispatch({ type: 'ERROR', error });
+        return;
+      }
+    },
+    [client]
+  );
+
   const hasValidCredentials = useCallback(
     async (minTtl: number = 0) => {
       return await client.credentialsManager.hasValidCredentials(minTtl);
@@ -318,6 +332,13 @@ const Auth0Provider = ({
     }
   }, [client]);
 
+  const revoke = useCallback(
+    (parameters: RevokeOptions) => {
+      return client.auth.revoke(parameters);
+    },
+    [client]
+  );
+
   const contextValue = useMemo(
     () => ({
       ...state,
@@ -330,10 +351,12 @@ const Auth0Provider = ({
       authorizeWithOOB,
       authorizeWithOTP,
       authorizeWithRecoveryCode,
+      exchangeNativeSocial,
       hasValidCredentials,
       clearSession,
       getCredentials,
       clearCredentials,
+      revoke,
     }),
     [
       state,
@@ -346,10 +369,12 @@ const Auth0Provider = ({
       authorizeWithOOB,
       authorizeWithOTP,
       authorizeWithRecoveryCode,
+      exchangeNativeSocial,
       hasValidCredentials,
       clearSession,
       getCredentials,
       clearCredentials,
+      revoke,
     ]
   );
 

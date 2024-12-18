@@ -14,6 +14,8 @@ import {
   WebAuthorizeParameters,
   PasswordlessWithSMSOptions,
   ClearSessionOptions,
+  ExchangeNativeSocialOptions,
+  RevokeOptions,
 } from '../types';
 
 export interface Auth0ContextInterface<TUser extends User = User>
@@ -72,6 +74,13 @@ export interface Auth0ContextInterface<TUser extends User = User>
     parameters: LoginWithRecoveryCodeOptions
   ) => Promise<Credentials | undefined>;
   /**
+   * Exchange an external token obtained via a native social authentication solution for the user's tokens.
+   * See {@link Auth#exchangeNativeSocial}
+   */
+  exchangeNativeSocial: (
+    parameters: ExchangeNativeSocialOptions
+  ) => Promise<Credentials | undefined>;
+  /**
    * Whether the SDK currently holds valid, unexpired credentials.
    * @param minTtl The minimum time in seconds that the access token should last before expiration
    * @returns `true` if there are valid credentials. Otherwise, `false`.
@@ -105,6 +114,10 @@ export interface Auth0ContextInterface<TUser extends User = User>
    * Clears the user's credentials without clearing their web session and logs them out.
    */
   clearCredentials: () => Promise<void>;
+  /**
+   *Revokes an issued refresh token. See {@link Auth#revoke}
+   */
+  revoke: (parameters: RevokeOptions) => Promise<void>;
 }
 
 export interface AuthState<TUser extends User = User> {
@@ -139,10 +152,12 @@ const initialContext = {
   authorizeWithOOB: stub,
   authorizeWithOTP: stub,
   authorizeWithRecoveryCode: stub,
+  exchangeNativeSocial: stub,
   hasValidCredentials: stub,
   clearSession: stub,
   getCredentials: stub,
   clearCredentials: stub,
+  revoke: stub,
 };
 
 const Auth0Context = createContext<Auth0ContextInterface>(initialContext);
