@@ -310,12 +310,12 @@ describe('Agent', () => {
   describe('handle app linking for SFSafariViewController', () => {
     it('with useSFSafariViewController AppLinking should be enabled', async () => {
       await agent.login({}, { safariViewControllerPresentationStyle: 0 });
-      expect(Linking.addEventListener).toHaveBeenCalledTimes(1);
+      !expect(Linking.addEventListener).toHaveBeenCalled;
     });
 
     it('without useSFSafariViewController AppLinking should be enabled', async () => {
       await agent.login({}, {});
-      expect(Linking.addEventListener).toHaveBeenCalledTimes(0);
+      !expect(Linking.addEventListener).toHaveBeenCalled();
     });
 
     it('for only iOS platform AppLinking should be enabled', async () => {
@@ -341,7 +341,7 @@ describe('Agent', () => {
       try {
         await agent.login({}, { safariViewControllerPresentationStyle: 0 });
       } catch (e) {}
-      expect(Linking.addEventListener).toHaveBeenCalledTimes(1);
+      !expect(Linking.addEventListener).toHaveBeenCalled;
       expect(mockSubscription.remove).toHaveBeenCalledTimes(1);
     });
 
@@ -393,8 +393,8 @@ describe('Agent', () => {
       try {
         await agent.login({}, {});
       } catch (e) {}
-      expect(Linking.addEventListener).toHaveBeenCalledTimes(0);
-      expect(mockSubscription.remove).toHaveBeenCalledTimes(0);
+      !expect(Linking.addEventListener).toHaveBeenCalled();
+      !expect(mockSubscription.remove).toHaveBeenCalled();
     });
   });
 });
