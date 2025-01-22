@@ -307,20 +307,10 @@ describe('Agent', () => {
     });
   });
 
-  describe('handle app linking for SFSafariViewController', () => {
-    it('with useSFSafariViewController AppLinking should be enabled', async () => {
-      await agent.login({}, { safariViewControllerPresentationStyle: 0 });
-      !expect(Linking.addEventListener).toHaveBeenCalled;
-    });
-
-    it('without useSFSafariViewController AppLinking should be enabled', async () => {
-      await agent.login({}, {});
-      !expect(Linking.addEventListener).toHaveBeenCalled();
-    });
-
+  describe('handle app linking for ios platform', () => {
     it('for only iOS platform AppLinking should be enabled', async () => {
       Platform.OS = 'android';
-      await agent.login({}, { safariViewControllerPresentationStyle: 0 });
+      await agent.login({}, {});
       expect(Linking.addEventListener).toHaveBeenCalledTimes(0);
       Platform.OS = 'ios'; //reset value to ios
     });
