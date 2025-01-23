@@ -37,6 +37,6 @@ jobs:
         run: npm run test:ci
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+        uses: codecov/codecov-action@5a605bd92782ce0810fa3b8acc235c921b497052
         with:
           directory: coverage
