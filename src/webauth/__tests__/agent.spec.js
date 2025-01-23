@@ -329,7 +329,7 @@ describe('Agent', () => {
           throw Error('123123');
         });
       try {
-        await agent.login({}, { safariViewControllerPresentationStyle: 0 });
+        await agent.login({}, {});
       } catch (e) {}
       !expect(Linking.addEventListener).toHaveBeenCalled;
       expect(mockSubscription.remove).toHaveBeenCalledTimes(1);
