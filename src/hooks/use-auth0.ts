@@ -25,10 +25,11 @@ import Auth0Context, { Auth0ContextInterface } from './auth0-context';
  *   clearSession,
  *   getCredentials,
  *   clearCredentials,
- *   requireLocalAuthentication
+ *   requireLocalAuthentication,
+ *   authorizeWithPasswordRealm,
  * } = useAuth0();
  * ```
- * 
+ *
  * Refer to {@link Auth0ContextInterface} on how to use the above methods.
  */
 const useAuth0 = () => useContext(Auth0Context);
