@@ -43,11 +43,6 @@ target 'Auth0Example' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'Auth0ExampleTests' do
-    inherit! :complete
-    # Pods for testing
-  end
-
   post_install do |installer|
     react_native_post_install(
       installer,
