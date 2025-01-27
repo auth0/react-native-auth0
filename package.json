@@ -201,11 +201,6 @@
       ]
     ]
   },
-  "codegenConfig": {
-    "name": "RNAuth0Spec",
-    "type": "modules",
-    "jsSrcsDir": "src"
-  },
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged"
