@@ -109,8 +109,8 @@ const SecondScreen = () => {
 const SecondScreenProvider = () => {
   return (
     <Auth0Provider
-      domain="venkat-desu.us.auth0.com"
-      clientId="Wy9qORYVTokJFuJsvbXa2JJ6dDQhBGzI"
+      domain={config.domainSecondScreen}
+      clientId={config.clientIdSecondScreen}
     >
       <SecondScreen />
     </Auth0Provider>

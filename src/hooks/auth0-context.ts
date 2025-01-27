@@ -14,6 +14,7 @@ import {
   WebAuthorizeParameters,
   PasswordlessWithSMSOptions,
   ClearSessionOptions,
+  PasswordRealmOptions,
 } from '../types';
 
 export interface Auth0ContextInterface<TUser extends User = User>
@@ -105,6 +106,12 @@ export interface Auth0ContextInterface<TUser extends User = User>
    * Clears the user's credentials without clearing their web session and logs them out.
    */
   clearCredentials: () => Promise<void>;
+  /**
+   * Authorize user with credentials using the Password Realm Grant. See {@link Auth#passwordRealm}
+   */
+  authorizeWithPasswordRealm: (
+    parameters: PasswordRealmOptions
+  ) => Promise<Credentials | undefined>;
 }
 
 export interface AuthState<TUser extends User = User> {
@@ -143,6 +150,7 @@ const initialContext = {
   clearSession: stub,
   getCredentials: stub,
   clearCredentials: stub,
+  authorizeWithPasswordRealm: stub,
 };
 
 const Auth0Context = createContext<Auth0ContextInterface>(initialContext);

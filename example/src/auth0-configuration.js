@@ -1,6 +1,8 @@
 const config = {
-  clientId: 'u7KBoASmHOpIFqwp77tmGRHnUVaMupBj',
-  domain: 'brucke.auth0.com',
+  clientId: 'your-client-id',
+  domain: 'your-domain',
+  clientIdSecondScreen: 'your-client-id',
+  domainSecondScreen: 'your-domain',
 };
 
 export default config;
