@@ -22,4 +22,29 @@ ignore:
         reason: Latest version of react-native had this vulnerability
         expires: 2024-09-01T05:44:19.469Z
         created: 2024-08-02T05:44:19.472Z
+  
+  SNYK-JS-SEND-7926862:
+    - '*':
+        reason: Latest version of expo had this vulnerability
+        expires: 2025-01-31T05:44:59.682Z
+        created: 2025-01-27T05:44:59.685Z
+
+
+  SNYK-JS-SERVESTATIC-7926865:
+    - '*':
+        reason: Latest version of expo had this vulnerability
+        expires: 2025-01-31T05:44:59.682Z
+        created: 2025-01-27T05:44:59.685Z 
+
+  SNYK-JS-CROSSSPAWN-8303230:
+    - '*':
+        reason: Latest version of expo had this vulnerability
+        expires: 2025-01-31T05:44:59.682Z
+        created: 2025-01-27T05:44:59.685Z 
+
+  SNYK-JS-NANOID-8492085:
+     - '*':
+          reason: Latest version of expo had this vulnerability
+          expires: 2025-01-31T05:44:59.682Z
+          created: 2025-01-27T05:44:59.685Z                
 patch: {}
