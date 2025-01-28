@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import com.auth0example.BuildConfig
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
@@ -45,7 +46,7 @@ class MainApplication : Application(), ReactApplication {
       load()
     }
   }
-    
+
     override fun registerReceiver(receiver: BroadcastReceiver?, filter: IntentFilter?): Intent? {
         return if (Build.VERSION.SDK_INT >= 34 && applicationInfo.targetSdkVersion >= 34) {
             super.registerReceiver(receiver, filter, RECEIVER_EXPORTED)
