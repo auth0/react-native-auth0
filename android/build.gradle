@@ -57,7 +57,7 @@ repositories {
 dependencies {
     implementation "com.facebook.react:react-native:${safeExtGet('reactnativeVersion', '+')}"
     implementation "androidx.browser:browser:1.2.0"
-    implementation 'com.auth0.android:auth0:3.0.0-beta.0'
+    implementation 'com.auth0.android:auth0:3.2.1'
 }
 
 def configureReactNativePom(def pom) {
