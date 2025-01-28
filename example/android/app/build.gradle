@@ -1,5 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
+apply plugin: 'org.jetbrains.kotlin.android'
 
 import com.android.build.OutputFile
 
@@ -133,6 +134,9 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
 
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
@@ -157,6 +161,7 @@ dependencies {
 
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
     implementation("org.jetbrains:annotations:16.0.2")
+    implementation 'androidx.core:core-ktx:1.15.0'
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.squareup.okhttp3', module:'okhttp'
