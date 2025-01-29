@@ -1,10 +1,10 @@
 import React, {
   useEffect,
   useReducer,
-  useState,
+  useMemo,
+  useCallback,
   PropsWithChildren,
 } from 'react';
-import { useCallback, useMemo } from 'react';
 import jwtDecode from 'jwt-decode';
 import PropTypes from 'prop-types';
 import Auth0Context from './auth0-context';
@@ -61,6 +61,7 @@ const finalizeScopeParam = (inputScopes?: string) => {
  * Provides the Auth0Context to its child components.
  * @param {String} domain Your Auth0 domain
  * @param {String} clientId Your Auth0 client ID
+ * @param {LocalAuthenticationOptions} localAuthenticationOptions The local auth options
  *
  * @example
  * ```ts
@@ -81,7 +82,7 @@ const Auth0Provider = ({
 }>) => {
   const client = useMemo(
     () => new Auth0({ domain, clientId, localAuthenticationOptions }),
-    [domain, clientId]
+    [domain, clientId, localAuthenticationOptions]
   );
   const [state, dispatch] = useReducer(reducer, initialState);
 
