@@ -67,6 +67,7 @@ const mockAuth0 = {
     hasValidCredentials: jest.fn().mockResolvedValue(),
     passwordRealm: jest.fn().mockResolvedValue(mockCredentials),
     exchangeNativeSocial: jest.fn().mockResolvedValue(mockCredentials),
+    revoke: jest.fn().mockResolvedValue(mockCredentials),
   },
   credentialsManager: {
     getCredentials: jest.fn().mockResolvedValue(mockCredentials),
@@ -907,6 +908,22 @@ describe('The useAuth0 hook', () => {
 
     expect(result.current.user).toBeNull();
     expect(result.current.error).toBe(mockAuthError);
+  });
+
+  it('can revoke refresh tokens, passing through all parameters', async () => {
+    const { result } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
+
+    let promise = result.current.revokeRefreshToken({
+      refreshToken: 'dummyToken',
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(mockAuth0.auth.revoke).toHaveBeenCalledWith({
+      refreshToken: 'dummyToken',
+    });
   });
 
   it('can clear the session', async () => {

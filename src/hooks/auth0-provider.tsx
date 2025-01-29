@@ -27,6 +27,7 @@ import {
   WebAuthorizeParameters,
   PasswordRealmOptions,
   ExchangeNativeSocialOptions,
+  RevokeOptions,
 } from '../types';
 import { CustomJwtPayload } from '../internal-types';
 import { convertUser } from '../utils/userConversion';
@@ -318,6 +319,7 @@ const Auth0Provider = ({
     },
     [client]
   );
+
   const authorizeWithExchangeNativeSocial = useCallback(
     async (parameters: ExchangeNativeSocialOptions) => {
       try {
@@ -326,6 +328,19 @@ const Auth0Provider = ({
         await client.credentialsManager.saveCredentials(credentials);
         dispatch({ type: 'LOGIN_COMPLETE', user });
         return credentials;
+      } catch (error) {
+        dispatch({ type: 'ERROR', error });
+        return;
+      }
+    },
+    [client]
+  );
+
+  const revokeRefreshToken = useCallback(
+    async (parameters: RevokeOptions) => {
+      try {
+        await client.auth.revoke(parameters);
+        return;
       } catch (error) {
         dispatch({ type: 'ERROR', error });
         return;
@@ -369,6 +384,7 @@ const Auth0Provider = ({
       clearCredentials,
       authorizeWithPasswordRealm,
       authorizeWithExchangeNativeSocial,
+      revokeRefreshToken,
     }),
     [
       state,
@@ -387,6 +403,7 @@ const Auth0Provider = ({
       clearCredentials,
       authorizeWithPasswordRealm,
       authorizeWithExchangeNativeSocial,
+      revokeRefreshToken,
     ]
   );
 

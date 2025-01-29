@@ -27,7 +27,8 @@ import Auth0Context, { Auth0ContextInterface } from './auth0-context';
  *   clearCredentials,
  *   requireLocalAuthentication,
  *   authorizeWithPasswordRealm,
- *   authorizeWithExchangeNativeSocial
+ *   authorizeWithExchangeNativeSocial,
+ *   revokeRefreshToken
  * } = useAuth0();
  * ```
  *
