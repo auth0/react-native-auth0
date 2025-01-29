@@ -13,8 +13,5 @@ module.exports = {
         },
       },
     ],
-    'react-native-paper/babel.js',
-    '@babel/plugin-transform-private-methods',
-    '@babel/plugin-proposal-class-properties',
   ],
 };
