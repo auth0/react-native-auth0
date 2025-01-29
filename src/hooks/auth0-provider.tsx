@@ -26,6 +26,7 @@ import {
   WebAuthorizeOptions,
   WebAuthorizeParameters,
   PasswordRealmOptions,
+  ExchangeNativeSocialOptions,
 } from '../types';
 import { CustomJwtPayload } from '../internal-types';
 import { convertUser } from '../utils/userConversion';
@@ -317,6 +318,21 @@ const Auth0Provider = ({
     },
     [client]
   );
+  const authorizeWithExchangeNativeSocial = useCallback(
+    async (parameters: ExchangeNativeSocialOptions) => {
+      try {
+        const credentials = await client.auth.exchangeNativeSocial(parameters);
+        const user = getIdTokenProfileClaims(credentials.idToken);
+        await client.credentialsManager.saveCredentials(credentials);
+        dispatch({ type: 'LOGIN_COMPLETE', user });
+        return credentials;
+      } catch (error) {
+        dispatch({ type: 'ERROR', error });
+        return;
+      }
+    },
+    [client]
+  );
 
   const hasValidCredentials = useCallback(
     async (minTtl: number = 0) => {
@@ -352,6 +368,7 @@ const Auth0Provider = ({
       getCredentials,
       clearCredentials,
       authorizeWithPasswordRealm,
+      authorizeWithExchangeNativeSocial,
     }),
     [
       state,
@@ -369,6 +386,7 @@ const Auth0Provider = ({
       getCredentials,
       clearCredentials,
       authorizeWithPasswordRealm,
+      authorizeWithExchangeNativeSocial,
     ]
   );
 
