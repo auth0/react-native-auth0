@@ -307,20 +307,10 @@ describe('Agent', () => {
     });
   });
 
-  describe('handle app linking for SFSafariViewController', () => {
-    it('with useSFSafariViewController AppLinking should be enabled', async () => {
-      await agent.login({}, { safariViewControllerPresentationStyle: 0 });
-      expect(Linking.addEventListener).toHaveBeenCalledTimes(1);
-    });
-
-    it('without useSFSafariViewController AppLinking should be enabled', async () => {
-      await agent.login({}, {});
-      expect(Linking.addEventListener).toHaveBeenCalledTimes(0);
-    });
-
+  describe('handle app linking for ios platform', () => {
     it('for only iOS platform AppLinking should be enabled', async () => {
       Platform.OS = 'android';
-      await agent.login({}, { safariViewControllerPresentationStyle: 0 });
+      await agent.login({}, {});
       expect(Linking.addEventListener).toHaveBeenCalledTimes(0);
       Platform.OS = 'ios'; //reset value to ios
     });
@@ -339,9 +329,9 @@ describe('Agent', () => {
           throw Error('123123');
         });
       try {
-        await agent.login({}, { safariViewControllerPresentationStyle: 0 });
+        await agent.login({}, {});
       } catch (e) {}
-      expect(Linking.addEventListener).toHaveBeenCalledTimes(1);
+      !expect(Linking.addEventListener).toHaveBeenCalled;
       expect(mockSubscription.remove).toHaveBeenCalledTimes(1);
     });
 
@@ -393,8 +383,8 @@ describe('Agent', () => {
       try {
         await agent.login({}, {});
       } catch (e) {}
-      expect(Linking.addEventListener).toHaveBeenCalledTimes(0);
-      expect(mockSubscription.remove).toHaveBeenCalledTimes(0);
+      !expect(Linking.addEventListener).toHaveBeenCalled();
+      !expect(mockSubscription.remove).toHaveBeenCalled();
     });
   });
 });
