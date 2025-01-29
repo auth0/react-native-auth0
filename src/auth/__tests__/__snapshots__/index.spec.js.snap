@@ -269,7 +269,7 @@ exports[`auth code exchange for native social should send correct payload with o
 [
   "https://samples.auth0.com/oauth/token",
   {
-    "body": "{"subject_token":"a subject token","subject_token_type":"a subject token type","user_profile":{"name":{"firstName":"John","lastName":"Smith"}},"audience":"http://myapi.com","scope":"openid","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","grant_type":"urn:ietf:params:oauth:grant-type:token-exchange"}",
+    "body": "{"subject_token":"a subject token","subject_token_type":"a subject token type","user_profile":"{\\"name\\":{\\"firstName\\":\\"John\\",\\"lastName\\":\\"Smith\\"}}","audience":"http://myapi.com","scope":"openid","client_id":"A_CLIENT_ID_OF_YOUR_ACCOUNT","grant_type":"urn:ietf:params:oauth:grant-type:token-exchange"}",
     "headers": Headers {
       Symbol(map): {
         "Accept": [

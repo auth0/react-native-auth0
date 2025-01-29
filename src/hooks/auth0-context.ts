@@ -15,6 +15,8 @@ import {
   PasswordlessWithSMSOptions,
   ClearSessionOptions,
   PasswordRealmOptions,
+  ExchangeNativeSocialOptions,
+  RevokeOptions,
 } from '../types';
 
 export interface Auth0ContextInterface<TUser extends User = User>
@@ -112,6 +114,17 @@ export interface Auth0ContextInterface<TUser extends User = User>
   authorizeWithPasswordRealm: (
     parameters: PasswordRealmOptions
   ) => Promise<Credentials | undefined>;
+  /**
+   * Authorize user with credentials using the Password Realm Grant. See {@link Auth#passwordRealm}
+   */
+  authorizeWithExchangeNativeSocial: (
+    parameters: ExchangeNativeSocialOptions
+  ) => Promise<Credentials | undefined>;
+
+  /**
+   *Revokes an issued refresh token. See {@link Auth#revoke}
+   */
+  revokeRefreshToken: (parameters: RevokeOptions) => Promise<void>;
 }
 
 export interface AuthState<TUser extends User = User> {
@@ -151,6 +164,8 @@ const initialContext = {
   getCredentials: stub,
   clearCredentials: stub,
   authorizeWithPasswordRealm: stub,
+  authorizeWithExchangeNativeSocial: stub,
+  revokeRefreshToken: stub,
 };
 
 const Auth0Context = createContext<Auth0ContextInterface>(initialContext);

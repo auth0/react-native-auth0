@@ -280,7 +280,7 @@ export interface ExchangeNativeSocialOptions {
   /**
    * Additional profile attributes to set or override, only on select native social authentication solutions
    */
-  userProfile?: object;
+  userProfile?: string;
   /**
    * The API audience to request
    */
