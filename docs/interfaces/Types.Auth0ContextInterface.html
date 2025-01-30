@@ -112,6 +112,27 @@
           ><span class="tsd-signature-symbol">; </span><br /><span>    </span
           ><a
             class="tsd-kind-property"
+            href="Types.Auth0ContextInterface.html#authorizeWithExchangeNativeSocial"
+            >authorizeWithExchangeNativeSocial</a
+          ><span class="tsd-signature-symbol">: </span
+          ><span class="tsd-signature-symbol">(</span
+          ><span class="tsd-signature-symbol">(</span
+          ><span class="tsd-kind-parameter">parameters</span
+          ><span class="tsd-signature-symbol">)</span
+          ><span class="tsd-signature-symbol"> =&gt; </span
+          ><span class="tsd-signature-type">Promise</span
+          ><span class="tsd-signature-symbol">&lt;</span
+          ><span class="tsd-signature-type">undefined</span
+          ><span class="tsd-signature-symbol"> | </span
+          ><a
+            href="../types/Credentials.html"
+            class="tsd-signature-type tsd-kind-type-alias"
+            >Credentials</a
+          ><span class="tsd-signature-symbol">&gt;</span
+          ><span class="tsd-signature-symbol">)</span
+          ><span class="tsd-signature-symbol">; </span><br /><span>    </span
+          ><a
+            class="tsd-kind-property"
             href="Types.Auth0ContextInterface.html#authorizeWithOOB"
             >authorizeWithOOB</a
           ><span class="tsd-signature-symbol">: </span
@@ -312,6 +333,22 @@
           ><span class="tsd-signature-symbol">; </span><br /><span>    </span
           ><a
             class="tsd-kind-property"
+            href="Types.Auth0ContextInterface.html#revokeRefreshToken"
+            >revokeRefreshToken</a
+          ><span class="tsd-signature-symbol">: </span
+          ><span class="tsd-signature-symbol">(</span
+          ><span class="tsd-signature-symbol">(</span
+          ><span class="tsd-kind-parameter">parameters</span
+          ><span class="tsd-signature-symbol">)</span
+          ><span class="tsd-signature-symbol"> =&gt; </span
+          ><span class="tsd-signature-type">Promise</span
+          ><span class="tsd-signature-symbol">&lt;</span
+          ><span class="tsd-signature-type">void</span
+          ><span class="tsd-signature-symbol">&gt;</span
+          ><span class="tsd-signature-symbol">)</span
+          ><span class="tsd-signature-symbol">; </span><br /><span>    </span
+          ><a
+            class="tsd-kind-property"
             href="Types.Auth0ContextInterface.html#sendEmailCode"
             >sendEmailCode</a
           ><span class="tsd-signature-symbol">: </span
@@ -416,8 +453,8 @@
             <li>
               Defined in
               <a
-                href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L20"
-                >hooks/auth0-context.ts:20</a
+                href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L22"
+                >hooks/auth0-context.ts:22</a
               >
             </li>
           </ul>
@@ -455,6 +492,15 @@
                       ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                         <use href="#icon-1024"></use></svg
                       ><span>authorize<wbr />With<wbr />Email</span></a
+                    >
+                    <a
+                      href="Types.Auth0ContextInterface.html#authorizeWithExchangeNativeSocial"
+                      class="tsd-index-link"
+                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                        <use href="#icon-1024"></use></svg
+                      ><span
+                        >authorize<wbr />With<wbr />Exchange<wbr />Native<wbr />Social</span
+                      ></a
                     >
                     <a
                       href="Types.Auth0ContextInterface.html#authorizeWithOOB"
@@ -536,6 +582,13 @@
                       ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                         <use href="#icon-1024"></use></svg
                       ><span>is<wbr />Loading</span></a
+                    >
+                    <a
+                      href="Types.Auth0ContextInterface.html#revokeRefreshToken"
+                      class="tsd-index-link"
+                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                        <use href="#icon-1024"></use></svg
+                      ><span>revoke<wbr />Refresh<wbr />Token</span></a
                     >
                     <a
                       href="Types.Auth0ContextInterface.html#sendEmailCode"
@@ -708,8 +761,8 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L27"
-                    >hooks/auth0-context.ts:27</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L29"
+                    >hooks/auth0-context.ts:29</a
                   >
                 </li>
               </ul>
@@ -818,8 +871,120 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L48"
-                    >hooks/auth0-context.ts:48</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L50"
+                    >hooks/auth0-context.ts:50</a
+                  >
+                </li>
+              </ul>
+            </aside>
+          </section>
+          <section class="tsd-panel tsd-member">
+            <a id="authorizeWithExchangeNativeSocial" class="tsd-anchor"></a>
+            <h3 class="tsd-anchor-link">
+              <span
+                >authorize<wbr />With<wbr />Exchange<wbr />Native<wbr />Social</span
+              ><a
+                href="#authorizeWithExchangeNativeSocial"
+                aria-label="Permalink"
+                class="tsd-anchor-icon"
+                ><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg
+              ></a>
+            </h3>
+            <div class="tsd-signature">
+              <span class="tsd-kind-property"
+                >authorize<wbr />With<wbr />Exchange<wbr />Native<wbr />Social</span
+              ><span class="tsd-signature-symbol">:</span>
+              <span class="tsd-signature-symbol">(</span
+              ><span class="tsd-signature-symbol">(</span
+              ><span class="tsd-kind-parameter">parameters</span
+              ><span class="tsd-signature-symbol">)</span
+              ><span class="tsd-signature-symbol"> =&gt; </span
+              ><span class="tsd-signature-type">Promise</span
+              ><span class="tsd-signature-symbol">&lt;</span
+              ><span class="tsd-signature-type">undefined</span
+              ><span class="tsd-signature-symbol"> | </span
+              ><a
+                href="../types/Credentials.html"
+                class="tsd-signature-type tsd-kind-type-alias"
+                >Credentials</a
+              ><span class="tsd-signature-symbol">&gt;</span
+              ><span class="tsd-signature-symbol">)</span>
+            </div>
+            <div class="tsd-type-declaration">
+              <h4>Type declaration</h4>
+              <ul class="tsd-parameters">
+                <li class="tsd-parameter-signature">
+                  <ul class="tsd-signatures">
+                    <li
+                      class="tsd-signature"
+                      id="authorizeWithExchangeNativeSocial.__type-4.__type-5"
+                    >
+                      <span class="tsd-signature-symbol">(</span
+                      ><span class="tsd-kind-parameter">parameters</span
+                      ><span class="tsd-signature-symbol">)</span
+                      ><span class="tsd-signature-symbol">: </span
+                      ><span class="tsd-signature-type">Promise</span
+                      ><span class="tsd-signature-symbol">&lt;</span
+                      ><span class="tsd-signature-type">undefined</span
+                      ><span class="tsd-signature-symbol"> | </span
+                      ><a
+                        href="../types/Credentials.html"
+                        class="tsd-signature-type tsd-kind-type-alias"
+                        >Credentials</a
+                      ><span class="tsd-signature-symbol">&gt;</span>
+                    </li>
+                    <li class="tsd-description">
+                      <div class="tsd-comment tsd-typography">
+                        <p>
+                          Authorize user with credentials using the Password
+                          Realm Grant. See
+                          <a
+                            href="../classes/Types.Auth.html#passwordRealm"
+                            class="tsd-kind-method"
+                            >Auth#passwordRealm</a
+                          >
+                        </p>
+                      </div>
+                      <div class="tsd-parameters">
+                        <h4 class="tsd-parameters-title">Parameters</h4>
+                        <ul class="tsd-parameter-list">
+                          <li>
+                            <h5>
+                              <span class="tsd-kind-parameter">parameters</span
+                              >:
+                              <a
+                                href="ExchangeNativeSocialOptions.html"
+                                class="tsd-signature-type tsd-kind-interface"
+                                >ExchangeNativeSocialOptions</a
+                              >
+                            </h5>
+                          </li>
+                        </ul>
+                      </div>
+                      <h4 class="tsd-returns-title">
+                        Returns <span class="tsd-signature-type">Promise</span
+                        ><span class="tsd-signature-symbol">&lt;</span
+                        ><span class="tsd-signature-type">undefined</span
+                        ><span class="tsd-signature-symbol"> | </span
+                        ><a
+                          href="../types/Credentials.html"
+                          class="tsd-signature-type tsd-kind-type-alias"
+                          >Credentials</a
+                        ><span class="tsd-signature-symbol">&gt;</span>
+                      </h4>
+                      <div class="tsd-comment tsd-typography"></div>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <aside class="tsd-sources">
+              <ul>
+                <li>
+                  Defined in
+                  <a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L120"
+                    >hooks/auth0-context.ts:120</a
                   >
                 </li>
               </ul>
@@ -862,7 +1027,7 @@
                   <ul class="tsd-signatures">
                     <li
                       class="tsd-signature"
-                      id="authorizeWithOOB.__type-4.__type-5"
+                      id="authorizeWithOOB.__type-6.__type-7"
                     >
                       <span class="tsd-signature-symbol">(</span
                       ><span class="tsd-kind-parameter">parameters</span
@@ -928,8 +1093,8 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L60"
-                    >hooks/auth0-context.ts:60</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L62"
+                    >hooks/auth0-context.ts:62</a
                   >
                 </li>
               </ul>
@@ -972,7 +1137,7 @@
                   <ul class="tsd-signatures">
                     <li
                       class="tsd-signature"
-                      id="authorizeWithOTP.__type-6.__type-7"
+                      id="authorizeWithOTP.__type-8.__type-9"
                     >
                       <span class="tsd-signature-symbol">(</span
                       ><span class="tsd-kind-parameter">parameters</span
@@ -1037,8 +1202,8 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L66"
-                    >hooks/auth0-context.ts:66</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L68"
+                    >hooks/auth0-context.ts:68</a
                   >
                 </li>
               </ul>
@@ -1082,7 +1247,7 @@
                   <ul class="tsd-signatures">
                     <li
                       class="tsd-signature"
-                      id="authorizeWithPasswordRealm.__type-8.__type-9"
+                      id="authorizeWithPasswordRealm.__type-10.__type-11"
                     >
                       <span class="tsd-signature-symbol">(</span
                       ><span class="tsd-kind-parameter">parameters</span
@@ -1148,8 +1313,8 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L112"
-                    >hooks/auth0-context.ts:112</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L114"
+                    >hooks/auth0-context.ts:114</a
                   >
                 </li>
               </ul>
@@ -1193,7 +1358,7 @@
                   <ul class="tsd-signatures">
                     <li
                       class="tsd-signature"
-                      id="authorizeWithRecoveryCode.__type-10.__type-11"
+                      id="authorizeWithRecoveryCode.__type-12.__type-13"
                     >
                       <span class="tsd-signature-symbol">(</span
                       ><span class="tsd-kind-parameter">parameters</span
@@ -1259,8 +1424,8 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L72"
-                    >hooks/auth0-context.ts:72</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L74"
+                    >hooks/auth0-context.ts:74</a
                   >
                 </li>
               </ul>
@@ -1303,7 +1468,7 @@
                   <ul class="tsd-signatures">
                     <li
                       class="tsd-signature"
-                      id="authorizeWithSMS.__type-12.__type-13"
+                      id="authorizeWithSMS.__type-14.__type-15"
                     >
                       <span class="tsd-signature-symbol">(</span
                       ><span class="tsd-kind-parameter">parameters</span
@@ -1368,8 +1533,8 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L38"
-                    >hooks/auth0-context.ts:38</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L40"
+                    >hooks/auth0-context.ts:40</a
                   >
                 </li>
               </ul>
@@ -1406,7 +1571,7 @@
                   <ul class="tsd-signatures">
                     <li
                       class="tsd-signature"
-                      id="clearCredentials.__type-14.__type-15"
+                      id="clearCredentials.__type-16.__type-17"
                     >
                       <span class="tsd-signature-symbol">(</span
                       ><span class="tsd-signature-symbol">)</span
@@ -1440,8 +1605,8 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L108"
-                    >hooks/auth0-context.ts:108</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L110"
+                    >hooks/auth0-context.ts:110</a
                   >
                 </li>
               </ul>
@@ -1482,7 +1647,7 @@
                   <ul class="tsd-signatures">
                     <li
                       class="tsd-signature"
-                      id="clearSession.__type-16.__type-17"
+                      id="clearSession.__type-18.__type-19"
                     >
                       <span class="tsd-signature-symbol">(</span
                       ><span class="tsd-kind-parameter">parameters</span
@@ -1571,8 +1736,8 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L86"
-                    >hooks/auth0-context.ts:86</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L88"
+                    >hooks/auth0-context.ts:88</a
                   >
                 </li>
               </ul>
@@ -1608,8 +1773,8 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L121"
-                    >hooks/auth0-context.ts:121</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L134"
+                    >hooks/auth0-context.ts:134</a
                   >
                 </li>
               </ul>
@@ -1659,7 +1824,7 @@
                   <ul class="tsd-signatures">
                     <li
                       class="tsd-signature"
-                      id="getCredentials.__type-18.__type-19"
+                      id="getCredentials.__type-20.__type-21"
                     >
                       <span class="tsd-signature-symbol">(</span
                       ><span class="tsd-kind-parameter">scope</span
@@ -1790,8 +1955,8 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L99"
-                    >hooks/auth0-context.ts:99</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L101"
+                    >hooks/auth0-context.ts:101</a
                   >
                 </li>
               </ul>
@@ -1831,7 +1996,7 @@
                   <ul class="tsd-signatures">
                     <li
                       class="tsd-signature"
-                      id="hasValidCredentials.__type-20.__type-21"
+                      id="hasValidCredentials.__type-22.__type-23"
                     >
                       <span class="tsd-signature-symbol">(</span
                       ><span class="tsd-kind-parameter">minTtl</span
@@ -1892,8 +2057,8 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L80"
-                    >hooks/auth0-context.ts:80</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L82"
+                    >hooks/auth0-context.ts:82</a
                   >
                 </li>
               </ul>
@@ -1933,8 +2098,103 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L129"
-                    >hooks/auth0-context.ts:129</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L142"
+                    >hooks/auth0-context.ts:142</a
+                  >
+                </li>
+              </ul>
+            </aside>
+          </section>
+          <section class="tsd-panel tsd-member">
+            <a id="revokeRefreshToken" class="tsd-anchor"></a>
+            <h3 class="tsd-anchor-link">
+              <span>revoke<wbr />Refresh<wbr />Token</span
+              ><a
+                href="#revokeRefreshToken"
+                aria-label="Permalink"
+                class="tsd-anchor-icon"
+                ><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg
+              ></a>
+            </h3>
+            <div class="tsd-signature">
+              <span class="tsd-kind-property"
+                >revoke<wbr />Refresh<wbr />Token</span
+              ><span class="tsd-signature-symbol">:</span>
+              <span class="tsd-signature-symbol">(</span
+              ><span class="tsd-signature-symbol">(</span
+              ><span class="tsd-kind-parameter">parameters</span
+              ><span class="tsd-signature-symbol">)</span
+              ><span class="tsd-signature-symbol"> =&gt; </span
+              ><span class="tsd-signature-type">Promise</span
+              ><span class="tsd-signature-symbol">&lt;</span
+              ><span class="tsd-signature-type">void</span
+              ><span class="tsd-signature-symbol">&gt;</span
+              ><span class="tsd-signature-symbol">)</span>
+            </div>
+            <div class="tsd-type-declaration">
+              <h4>Type declaration</h4>
+              <ul class="tsd-parameters">
+                <li class="tsd-parameter-signature">
+                  <ul class="tsd-signatures">
+                    <li
+                      class="tsd-signature"
+                      id="revokeRefreshToken.__type-24.__type-25"
+                    >
+                      <span class="tsd-signature-symbol">(</span
+                      ><span class="tsd-kind-parameter">parameters</span
+                      ><span class="tsd-signature-symbol">)</span
+                      ><span class="tsd-signature-symbol">: </span
+                      ><span class="tsd-signature-type">Promise</span
+                      ><span class="tsd-signature-symbol">&lt;</span
+                      ><span class="tsd-signature-type">void</span
+                      ><span class="tsd-signature-symbol">&gt;</span>
+                    </li>
+                    <li class="tsd-description">
+                      <div class="tsd-comment tsd-typography">
+                        <p>
+                          Revokes an issued refresh token. See
+                          <a
+                            href="../classes/Types.Auth.html#revoke"
+                            class="tsd-kind-method"
+                            >Auth#revoke</a
+                          >
+                        </p>
+                      </div>
+                      <div class="tsd-parameters">
+                        <h4 class="tsd-parameters-title">Parameters</h4>
+                        <ul class="tsd-parameter-list">
+                          <li>
+                            <h5>
+                              <span class="tsd-kind-parameter">parameters</span
+                              >:
+                              <a
+                                href="RevokeOptions.html"
+                                class="tsd-signature-type tsd-kind-interface"
+                                >RevokeOptions</a
+                              >
+                            </h5>
+                          </li>
+                        </ul>
+                      </div>
+                      <h4 class="tsd-returns-title">
+                        Returns <span class="tsd-signature-type">Promise</span
+                        ><span class="tsd-signature-symbol">&lt;</span
+                        ><span class="tsd-signature-type">void</span
+                        ><span class="tsd-signature-symbol">&gt;</span>
+                      </h4>
+                      <div class="tsd-comment tsd-typography"></div>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <aside class="tsd-sources">
+              <ul>
+                <li>
+                  Defined in
+                  <a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L127"
+                    >hooks/auth0-context.ts:127</a
                   >
                 </li>
               </ul>
@@ -1972,7 +2232,7 @@
                   <ul class="tsd-signatures">
                     <li
                       class="tsd-signature"
-                      id="sendEmailCode.__type-22.__type-23"
+                      id="sendEmailCode.__type-26.__type-27"
                     >
                       <span class="tsd-signature-symbol">(</span
                       ><span class="tsd-kind-parameter">parameters</span
@@ -2027,8 +2287,8 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L44"
-                    >hooks/auth0-context.ts:44</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L46"
+                    >hooks/auth0-context.ts:46</a
                   >
                 </li>
               </ul>
@@ -2067,7 +2327,7 @@
                   <ul class="tsd-signatures">
                     <li
                       class="tsd-signature"
-                      id="sendMultifactorChallenge.__type-24.__type-25"
+                      id="sendMultifactorChallenge.__type-28.__type-29"
                     >
                       <span class="tsd-signature-symbol">(</span
                       ><span class="tsd-kind-parameter">parameters</span
@@ -2122,8 +2382,8 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L54"
-                    >hooks/auth0-context.ts:54</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L56"
+                    >hooks/auth0-context.ts:56</a
                   >
                 </li>
               </ul>
@@ -2161,7 +2421,7 @@
                   <ul class="tsd-signatures">
                     <li
                       class="tsd-signature"
-                      id="sendSMSCode.__type-26.__type-27"
+                      id="sendSMSCode.__type-30.__type-31"
                     >
                       <span class="tsd-signature-symbol">(</span
                       ><span class="tsd-kind-parameter">parameters</span
@@ -2216,8 +2476,8 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L34"
-                    >hooks/auth0-context.ts:34</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L36"
+                    >hooks/auth0-context.ts:36</a
                   >
                 </li>
               </ul>
@@ -2258,8 +2518,8 @@
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/92a98a3/src/hooks/auth0-context.ts#L125"
-                    >hooks/auth0-context.ts:125</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/auth0-context.ts#L138"
+                    >hooks/auth0-context.ts:138</a
                   >
                 </li>
               </ul>
@@ -2419,6 +2679,15 @@
                   >
                 </li>
                 <li>
+                  <a href="#authorizeWithExchangeNativeSocial" class=""
+                    ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                      <use href="#icon-1024"></use></svg
+                    ><span
+                      >authorize<wbr />With<wbr />Exchange<wbr />Native<wbr />Social</span
+                    ></a
+                  >
+                </li>
+                <li>
                   <a href="#authorizeWithOOB" class=""
                     ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                       <use href="#icon-1024"></use></svg
@@ -2497,6 +2766,13 @@
                     ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                       <use href="#icon-1024"></use></svg
                     ><span>is<wbr />Loading</span></a
+                  >
+                </li>
+                <li>
+                  <a href="#revokeRefreshToken" class=""
+                    ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                      <use href="#icon-1024"></use></svg
+                    ><span>revoke<wbr />Refresh<wbr />Token</span></a
                   >
                 </li>
                 <li>
