@@ -12,16 +12,6 @@ const {
  *
  * @type {import('metro-config').MetroConfig}
  */
-const config = {
-  transformer: {
-    babelTransformerPath: require.resolve('react-native-svg-transformer'),
-  },
-  resolver: {
-    assetExts: assetExts.filter((ext) => ext !== 'svg'),
-    sourceExts: [...sourceExts, 'svg'],
-    resolverMainFields: ['sbmodern', 'react-native', 'browser', 'main'],
-  },
-  watchFolders: [path.resolve(__dirname, '../')],
-};
+const config = {};
 
 module.exports = mergeConfig(defaultConfig, config);
