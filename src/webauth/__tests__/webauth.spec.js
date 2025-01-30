@@ -11,7 +11,12 @@ describe('WebAuth', () => {
   const domain = 'auth0.com';
   const baseUrl = 'https://' + domain;
   const auth = new Auth({ baseUrl: baseUrl, clientId: clientId });
-  const webauth = new WebAuth(auth);
+  const localAuthenticationOptions = {
+    title: 'Authenticate With Your Biometrics',
+    evaluationPolicy: 1,
+    authenticationLevel: 0,
+  };
+  const webauth = new WebAuth(auth, localAuthenticationOptions);
 
   describe('authorize', () => {
     it('should authorize with provided parameters', async () => {
@@ -49,7 +54,12 @@ describe('WebAuth', () => {
       ).resolves.toMatchSnapshot();
       expect(showMock).toHaveBeenCalledWith(
         { clientId, domain },
-        { ...parameters, ...options, safariViewControllerPresentationStyle: -2 }
+        {
+          ...parameters,
+          ...options,
+          safariViewControllerPresentationStyle: -2,
+        },
+        localAuthenticationOptions
       );
       showMock.mockRestore();
     });
@@ -88,7 +98,8 @@ describe('WebAuth', () => {
       ).resolves.toMatchSnapshot();
       expect(showMock).toHaveBeenCalledWith(
         { clientId, domain },
-        { ...parameters, ...options, safariViewControllerPresentationStyle: 0 }
+        { ...parameters, ...options, safariViewControllerPresentationStyle: 0 },
+        localAuthenticationOptions
       );
       showMock.mockRestore();
     });
@@ -130,7 +141,8 @@ describe('WebAuth', () => {
           ...parameters,
           ...options,
           safariViewControllerPresentationStyle: undefined,
-        }
+        },
+        localAuthenticationOptions
       );
       showMock.mockRestore();
     });
@@ -173,7 +185,8 @@ describe('WebAuth', () => {
           ...parameters,
           ...options,
           safariViewControllerPresentationStyle: undefined,
-        }
+        },
+        localAuthenticationOptions
       );
       showMock.mockRestore();
     });
@@ -216,7 +229,8 @@ describe('WebAuth', () => {
           ...parameters,
           ...options,
           safariViewControllerPresentationStyle: 0,
-        }
+        },
+        localAuthenticationOptions
       );
       showMock.mockRestore();
     });
@@ -234,10 +248,15 @@ describe('WebAuth', () => {
       const showMock = jest
         .spyOn(webauth.agent, 'logout')
         .mockImplementation(() => Promise.resolve());
-      await webauth.clearSession(parameters, options);
+      await webauth.clearSession(
+        parameters,
+        options,
+        localAuthenticationOptions
+      );
       expect(showMock).toHaveBeenCalledWith(
         { clientId, domain },
-        { ...parameters, ...options }
+        { ...parameters, ...options },
+        localAuthenticationOptions
       );
       showMock.mockRestore();
     });

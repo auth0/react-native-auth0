@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 
 import com.auth0.android.Auth0;
 import com.auth0.android.authentication.AuthenticationAPIClient;
 import com.auth0.android.authentication.AuthenticationException;
 import com.auth0.android.authentication.storage.CredentialsManagerException;
+import com.auth0.android.authentication.storage.LocalAuthenticationOptions;
 import com.auth0.android.authentication.storage.SecureCredentialsManager;
 import com.auth0.android.authentication.storage.SharedPreferencesStorage;
 import com.auth0.android.provider.WebAuthProvider;
@@ -19,9 +21,10 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-
+import com.facebook.react.bridge.UiThreadUtil;
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +32,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
 
     private static final String CREDENTIAL_MANAGER_ERROR_CODE = "a0.invalid_state.credential_manager_exception";
     private static final String INVALID_DOMAIN_URL_ERROR_CODE = "a0.invalid_domain_url";
+    private static final String BIOMETRICS_AUTHENTICATION_ERROR_CODE = "a0.invalid_options_biometrics_authentication";
     private static final int LOCAL_AUTH_REQUEST_CODE = 150;
     public static final int UNKNOWN_ERROR_RESULT_CODE = 1405;
 
@@ -44,14 +48,41 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void initializeAuth0WithConfiguration(String clientId, String domain) {
-        this.auth0 = new Auth0(clientId, domain);
-        AuthenticationAPIClient authenticationAPIClient = new AuthenticationAPIClient(auth0);
-        this.secureCredentialsManager = new SecureCredentialsManager(
+    public void initializeAuth0WithConfiguration(String clientId, String domain, ReadableMap localAuthenticationOptions, Promise promise) {
+        this.auth0 = Auth0.getInstance(clientId, domain);
+        if (localAuthenticationOptions != null) {
+            Activity activity = getCurrentActivity();
+            if (activity instanceof FragmentActivity) {
+                try {
+                    LocalAuthenticationOptions localAuthOptions = LocalAuthenticationOptionsParser.fromMap(localAuthenticationOptions);
+                    this.secureCredentialsManager = new SecureCredentialsManager(
+                            reactContext,
+                            auth0,
+                            new SharedPreferencesStorage(reactContext),
+                            (FragmentActivity) activity,
+                            localAuthOptions);
+                    promise.resolve(true);
+                    return;
+                } catch (Exception e) {
+                    this.secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics();
+                    promise.reject(BIOMETRICS_AUTHENTICATION_ERROR_CODE, "Failed to parse the Local Authentication Options, hence proceeding without Biometrics Authentication for handling Credentials");
+                    return;
+                }
+            } else {
+                this.secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics();
+                promise.reject(BIOMETRICS_AUTHENTICATION_ERROR_CODE, "Biometrics Authentication for Handling Credentials are supported only on FragmentActivity, since a different activity is supplied, proceeding without it");
+                return;
+            }
+        }
+        this.secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics();
+        promise.resolve(true);
+    }
+
+    private @NonNull SecureCredentialsManager getSecureCredentialsManagerWithoutBiometrics() {
+        return new SecureCredentialsManager(
                 reactContext,
-                authenticationAPIClient,
-                new SharedPreferencesStorage(reactContext)
-        );
+                auth0,
+                new SharedPreferencesStorage(reactContext));
     }
 
     @ReactMethod
@@ -72,7 +103,8 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void getCredentials(String scope, double minTtl, ReadableMap parameters, boolean forceRefresh, Promise promise) {
+    public void getCredentials(String scope, double minTtl, ReadableMap parameters, boolean forceRefresh,
+                               Promise promise) {
         Map<String, String> cleanedParameters = new HashMap<>();
         for (Map.Entry<String, Object> entry : parameters.toHashMap().entrySet()) {
             if (entry.getValue() != null) {
@@ -80,18 +112,19 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
             }
         }
 
-        this.secureCredentialsManager.getCredentials(scope, (int) minTtl, cleanedParameters, forceRefresh, new com.auth0.android.callback.Callback<Credentials, CredentialsManagerException>() {
-            @Override
-            public void onSuccess(Credentials credentials) {
-                ReadableMap map = CredentialsParser.toMap(credentials);
-                promise.resolve(map);
-            }
+        UiThreadUtil.runOnUiThread(() -> secureCredentialsManager.getCredentials(scope, (int) minTtl, cleanedParameters, forceRefresh,
+                new com.auth0.android.callback.Callback<Credentials, CredentialsManagerException>() {
+                    @Override
+                    public void onSuccess(Credentials credentials) {
+                        ReadableMap map = CredentialsParser.toMap(credentials);
+                        promise.resolve(map);
+                    }
 
-            @Override
-            public void onFailure(@NonNull CredentialsManagerException e) {
-                promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, e.getMessage(), e);
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull CredentialsManagerException e) {
+                        promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, e.getMessage(), e);
+                    }
+                }));
     }
 
     @ReactMethod
@@ -102,23 +135,6 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
         } catch (CredentialsManagerException e) {
             promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, e.getMessage(), e);
         }
-    }
-
-    @ReactMethod
-    public void enableLocalAuthentication(String title, String description, Promise promise) {
-        Activity activity = reactContext.getCurrentActivity();
-        if (activity == null) {
-            promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, "No current activity present");
-            return;
-        }
-        activity.runOnUiThread(() -> {
-            try {
-                A0Auth0Module.this.secureCredentialsManager.requireAuthentication(activity, LOCAL_AUTH_REQUEST_CODE, title, description);
-                promise.resolve(true);
-            } catch (CredentialsManagerException e) {
-                promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, e.getMessage(), e);
-            }
-        });
     }
 
     @ReactMethod
@@ -146,7 +162,10 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void webAuth(String scheme, String redirectUri, String state, String nonce, String audience, String scope, String connection, int maxAge, String organization, String invitationUrl, int leeway, boolean ephemeralSession, int safariViewControllerPresentationStyle, ReadableMap additionalParameters, Promise promise) {
+    public void webAuth(String scheme, String redirectUri, String state, String nonce, String audience, String scope,
+                        String connection, int maxAge, String organization, String invitationUrl, int leeway,
+                        boolean ephemeralSession, int safariViewControllerPresentationStyle, ReadableMap additionalParameters,
+                        Promise promise) {
         this.webAuthPromise = promise;
         Map<String, String> cleanedParameters = new HashMap<>();
         for (Map.Entry<String, Object> entry : additionalParameters.toHashMap().entrySet()) {
@@ -187,13 +206,14 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
             builder.withRedirectUri(redirectUri);
         }
         builder.withParameters(cleanedParameters);
-        builder.start(reactContext.getCurrentActivity(), new com.auth0.android.callback.Callback<Credentials, AuthenticationException>() {
-            @Override
-            public void onSuccess(Credentials result) {
-                ReadableMap map = CredentialsParser.toMap(result);
-                promise.resolve(map);
-                webAuthPromise = null;
-            }
+        builder.start(reactContext.getCurrentActivity(),
+                new com.auth0.android.callback.Callback<Credentials, AuthenticationException>() {
+                    @Override
+                    public void onSuccess(Credentials result) {
+                        ReadableMap map = CredentialsParser.toMap(result);
+                        promise.resolve(map);
+                        webAuthPromise = null;
+                    }
 
             @Override
             public void onFailure(@NonNull AuthenticationException error) {
@@ -213,17 +233,18 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
         if (redirectUri != null) {
             builder.withReturnToUrl(redirectUri);
         }
-        builder.start(reactContext.getCurrentActivity(), new com.auth0.android.callback.Callback<Void, AuthenticationException>() {
-            @Override
-            public void onSuccess(Void credentials) {
-                promise.resolve(true);
-            }
+        builder.start(reactContext.getCurrentActivity(),
+                new com.auth0.android.callback.Callback<Void, AuthenticationException>() {
+                    @Override
+                    public void onSuccess(Void credentials) {
+                        promise.resolve(true);
+                    }
 
-            @Override
-            public void onFailure(AuthenticationException e) {
-                handleError(e, promise);
-            }
-        });
+                    @Override
+                    public void onFailure(AuthenticationException e) {
+                        handleError(e, promise);
+                    }
+                });
     }
 
     private void handleError(AuthenticationException error, Promise promise) {
@@ -249,15 +270,14 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
 
     @Override
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-        if (requestCode == LOCAL_AUTH_REQUEST_CODE) {
-            secureCredentialsManager.checkAuthenticationResult(requestCode, resultCode);
-        }
+        // No-op
     }
 
     @Override
     public void onNewIntent(Intent intent) {
         if (webAuthPromise != null) {
-            webAuthPromise.reject("a0.session.browser_terminated", "The browser window was closed by a new instance of the application");
+            webAuthPromise.reject("a0.session.browser_terminated",
+                    "The browser window was closed by a new instance of the application");
             webAuthPromise = null;
         }
     }

@@ -102,7 +102,7 @@
                 ><span class="tsd-signature-symbol">&gt;</span>
               </h4>
               <p>The useAuth0 hook interface</p>
-              <pre><code class="language-ts"><span class="hl-5">const</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-4">// State</span><br/><span class="hl-1">  </span><span class="hl-16">error</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">user</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">isLoading</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-4">// Methods</span><br/><span class="hl-1">  </span><span class="hl-16">authorize</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">sendSMSCode</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">authorizeWithSMS</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">sendEmailCode</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">authorizeWithEmail</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">sendMultifactorChallenge</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">authorizeWithOOB</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">authorizeWithOTP</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">authorizeWithRecoveryCode</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">hasValidCredentials</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">clearSession</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">getCredentials</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">clearCredentials</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">requireLocalAuthentication</span><br/><span class="hl-1">} = </span><span class="hl-13">useAuth0</span><span class="hl-1">();</span>
+              <pre><code class="language-ts"><span class="hl-5">const</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-4">// State</span><br/><span class="hl-1">  </span><span class="hl-16">error</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">user</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">isLoading</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-4">// Methods</span><br/><span class="hl-1">  </span><span class="hl-16">authorize</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">sendSMSCode</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">authorizeWithSMS</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">sendEmailCode</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">authorizeWithEmail</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">sendMultifactorChallenge</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">authorizeWithOOB</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">authorizeWithOTP</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">authorizeWithRecoveryCode</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">hasValidCredentials</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">clearSession</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">getCredentials</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">clearCredentials</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">requireLocalAuthentication</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">authorizeWithPasswordRealm</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">authorizeWithExchangeNativeSocial</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-16">revokeRefreshToken</span><br/><span class="hl-1">} = </span><span class="hl-13">useAuth0</span><span class="hl-1">();</span>
 </code><button>Copy</button></pre>
               <p>
                 Refer to
@@ -119,8 +119,8 @@
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/f3dfb75/src/hooks/use-auth0.ts#L34"
-                      >hooks/use-auth0.ts:34</a
+                      href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/hooks/use-auth0.ts#L37"
+                      >hooks/use-auth0.ts:37</a
                     >
                   </li>
                 </ul>
@@ -284,6 +284,13 @@
                 >
               </li>
               <li>
+                <a href="../enums/LocalAuthenticationLevel.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-8"></use></svg
+                  >LocalAuthenticationLevel</a
+                >
+              </li>
+              <li>
                 <a href="../enums/LocalAuthenticationStrategy.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-8"></use></svg
@@ -361,6 +368,13 @@
                 >
               </li>
               <li>
+                <a href="../interfaces/LocalAuthenticationOptions.html"
+                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <use href="#icon-256"></use></svg
+                  >LocalAuthenticationOptions</a
+                >
+              </li>
+              <li>
                 <a href="../interfaces/LoginWithEmailOptions.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
@@ -400,20 +414,6 @@
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-256"></use></svg
                   >LogoutUrlOptions</a
-                >
-              </li>
-              <li>
-                <a href="../interfaces/MultifactorChallengeOptions.html"
-                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                    <use href="#icon-256"></use></svg
-                  >MultifactorChallengeOptions</a
-                >
-              </li>
-              <li>
-                <a href="../interfaces/PasswordRealmOptions.html"
-                  ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                    <use href="#icon-256"></use></svg
-                  >PasswordRealmOptions</a
                 >
               </li>
               <li>Loading...</li>

@@ -1,5 +1,59 @@
 # Change Log
 
+## [v4.2.0](https://github.com/auth0/react-native-auth0/tree/v4.2.0) (2025-01-30)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.1.0...v4.2.0)
+
+**Added**
+
+- Fixes type issue in ExhangeNativeSocial - Adds hook methods for exchangeNativeSocial and revoke [\#1049](https://github.com/auth0/react-native-auth0/pull/1049) ([mnemitz](https://github.com/mnemitz)) / [kailash-b](https://github.com/kailash-b))
+- Update android sdk version to v3.2.1 [\#1047](https://github.com/auth0/react-native-auth0/pull/1047) ([kailash-b](https://github.com/kailash-b))
+
+**Fixed**
+
+- fix: ios magic links handling [\#1034](https://github.com/auth0/react-native-auth0/pull/1034) ([pmathew92](https://github.com/pmathew92))
+
+## [v4.1.0](https://github.com/auth0/react-native-auth0/tree/v4.1.0) (2025-01-27)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.0.0...v4.1.0)
+
+**Added**
+
+- Add support for resource owner password flow [\#1039](https://github.com/auth0/react-native-auth0/pull/1039) ([kailash-b](https://github.com/kailash-b))
+- add: adding namespace in build.gradle [\#1044](https://github.com/auth0/react-native-auth0/pull/1044) ([pmathew92](https://github.com/pmathew92))
+
+**Fixed**
+
+- fix: Interop Layer [\#1045](https://github.com/auth0/react-native-auth0/pull/1045) ([guabu](https://github.com/guabu))
+
+## [v4.0.0](https://github.com/auth0/react-native-auth0/tree/v4.0.0) (2024-11-27)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.2.1...v4.0.0)
+
+💡 Check the [Migration Guide](https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md) to understand the changes required to migrate your application to v4.
+
+💡 Check the [v4.0.0-beta.0](https://github.com/auth0/react-native-auth0/releases/tag/v4.0.0-beta.0) to understand other major changes .
+
+⚠️ BREAKING CHANGES
+
+- BREAKING CHANGE: `requireLocalAuthentication` method is no longer available as part of the CredentialsManager class or the useAuth0 Hook from v4 of the SDK. Refer [Migration Guide](https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md) for more details.
+
+**Added**
+
+- feat: added support for domain switching [\#931](https://github.com/auth0/react-native-auth0/pull/931) ([desusai7](https://github.com/desusai7))
+
+## [v4.0.0-beta.0](https://github.com/auth0/react-native-auth0/tree/v4.0.0-beta.0) (2024-08-05)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.2.1...v4.0.0-beta.0)
+
+**⚠️ BREAKING CHANGES**
+
+- BREAKING CHANGE: Updated Android SDK to v3 beta & fixed issues with biometrics Authentication on Android. [\#940](https://github.com/auth0/react-native-auth0/pull/940) ([desusai7](https://github.com/desusai7))
+
+**Added**
+
+- feat: added support for domain switching [\#931](https://github.com/auth0/react-native-auth0/pull/931) ([desusai7](https://github.com/desusai7))
+
 ## [v3.2.1](https://github.com/auth0/react-native-auth0/tree/v3.2.1) (2024-05-09)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.2.0...v3.2.1)

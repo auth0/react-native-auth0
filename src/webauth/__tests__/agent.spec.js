@@ -2,6 +2,12 @@ import * as nativeUtils from '../../utils/nativeHelper';
 import Agent from '../agent';
 import { NativeModules, Platform, Linking } from 'react-native';
 
+const localAuthenticationOptions = {
+  title: 'Authenticate With Your Biometrics',
+  evaluationPolicy: 1,
+  authenticationLevel: 0,
+};
+
 jest.mock('react-native', () => {
   // Require the original module to not be mocked...
   return {
@@ -58,9 +64,15 @@ describe('Agent', () => {
           clientId: clientId,
           domain: domain,
         },
-        { customScheme: 'test' }
+        { customScheme: 'test' },
+        localAuthenticationOptions
       );
-      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mock).toBeCalledWith(
+        NativeModules.A0Auth0,
+        clientId,
+        domain,
+        localAuthenticationOptions
+      );
     });
 
     it('should ensure login is called with proper parameters', async () => {
@@ -91,9 +103,15 @@ describe('Agent', () => {
           ephemeralSession: true,
           safariViewControllerPresentationStyle: 0,
           additionalParameters: { test: 'test' },
-        }
+        },
+        localAuthenticationOptions
       );
-      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mock).toBeCalledWith(
+        NativeModules.A0Auth0,
+        clientId,
+        domain,
+        localAuthenticationOptions
+      );
       expect(mockLogin).toBeCalledWith(
         'test',
         'test://test.com/ios/com.my.app/callback',
@@ -128,9 +146,15 @@ describe('Agent', () => {
         },
         {
           redirectUrl: 'redirect://redirect.com',
-        }
+        },
+        localAuthenticationOptions
       );
-      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mock).toBeCalledWith(
+        NativeModules.A0Auth0,
+        clientId,
+        domain,
+        localAuthenticationOptions
+      );
       expect(mockLogin).toBeCalledWith(
         'com.my.app.auth0',
         'redirect://redirect.com',
@@ -173,9 +197,15 @@ describe('Agent', () => {
           clientId: clientId,
           domain: domain,
         },
-        { customScheme: 'test' }
+        { customScheme: 'test' },
+        localAuthenticationOptions
       );
-      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mock).toBeCalledWith(
+        NativeModules.A0Auth0,
+        clientId,
+        domain,
+        localAuthenticationOptions
+      );
     });
 
     it('should ensure logout is called with proper parameters', async () => {
@@ -195,9 +225,15 @@ describe('Agent', () => {
         {
           customScheme: 'test',
           federated: true,
-        }
+        },
+        localAuthenticationOptions
       );
-      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mock).toBeCalledWith(
+        NativeModules.A0Auth0,
+        clientId,
+        domain,
+        localAuthenticationOptions
+      );
       expect(mockLogin).toBeCalledWith(
         'test',
         true,
@@ -221,9 +257,15 @@ describe('Agent', () => {
         },
         {
           returnToUrl: 'redirect://redirect.com',
-        }
+        },
+        localAuthenticationOptions
       );
-      expect(mock).toBeCalledWith(NativeModules.A0Auth0, clientId, domain);
+      expect(mock).toBeCalledWith(
+        NativeModules.A0Auth0,
+        clientId,
+        domain,
+        localAuthenticationOptions
+      );
       expect(mockLogin).toBeCalledWith(
         'com.my.app.auth0',
         false,
@@ -265,20 +307,10 @@ describe('Agent', () => {
     });
   });
 
-  describe('handle app linking for SFSafariViewController', () => {
-    it('with useSFSafariViewController AppLinking should be enabled', async () => {
-      await agent.login({}, { safariViewControllerPresentationStyle: 0 });
-      expect(Linking.addEventListener).toHaveBeenCalledTimes(1);
-    });
-
-    it('without useSFSafariViewController AppLinking should be enabled', async () => {
-      await agent.login({}, {});
-      expect(Linking.addEventListener).toHaveBeenCalledTimes(0);
-    });
-
+  describe('handle app linking for ios platform', () => {
     it('for only iOS platform AppLinking should be enabled', async () => {
       Platform.OS = 'android';
-      await agent.login({}, { safariViewControllerPresentationStyle: 0 });
+      await agent.login({}, {});
       expect(Linking.addEventListener).toHaveBeenCalledTimes(0);
       Platform.OS = 'ios'; //reset value to ios
     });
@@ -297,9 +329,9 @@ describe('Agent', () => {
           throw Error('123123');
         });
       try {
-        await agent.login({}, { safariViewControllerPresentationStyle: 0 });
+        await agent.login({}, {});
       } catch (e) {}
-      expect(Linking.addEventListener).toHaveBeenCalledTimes(1);
+      !expect(Linking.addEventListener).toHaveBeenCalled;
       expect(mockSubscription.remove).toHaveBeenCalledTimes(1);
     });
 
@@ -351,8 +383,8 @@ describe('Agent', () => {
       try {
         await agent.login({}, {});
       } catch (e) {}
-      expect(Linking.addEventListener).toHaveBeenCalledTimes(0);
-      expect(mockSubscription.remove).toHaveBeenCalledTimes(0);
+      !expect(Linking.addEventListener).toHaveBeenCalled();
+      !expect(mockSubscription.remove).toHaveBeenCalled();
     });
   });
 });

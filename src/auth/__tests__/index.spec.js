@@ -4,13 +4,13 @@ import fetchMock from 'fetch-mock';
 describe('auth', () => {
   const baseUrl = 'samples.auth0.com';
   const clientId = 'A_CLIENT_ID_OF_YOUR_ACCOUNT';
-  const telemetry = {name: 'react-native-auth0', version: '1.0.0'};
+  const telemetry = { name: 'react-native-auth0', version: '1.0.0' };
   const redirectUri = 'https://mysite.com/callback';
   const state = 'a random state for auth';
   const emptySuccess = {
     status: 200,
     body: {},
-    headers: {'Content-Type': 'application/json'},
+    headers: { 'Content-Type': 'application/json' },
   };
   const tokens = {
     status: 200,
@@ -21,7 +21,7 @@ describe('auth', () => {
       state,
       scope: 'openid',
     },
-    headers: {'Content-Type': 'application/json'},
+    headers: { 'Content-Type': 'application/json' },
   };
   const oauthError = {
     status: 400,
@@ -29,35 +29,33 @@ describe('auth', () => {
       error: 'invalid_request',
       error_description: 'Invalid grant',
     },
-    headers: {'Content-Type': 'application/json'},
+    headers: { 'Content-Type': 'application/json' },
   };
   const unexpectedError = {
     status: 500,
     body: 'Internal Server Error....',
-    headers: {'Content-Type': 'text/plain'},
+    headers: { 'Content-Type': 'text/plain' },
   };
-  const auth = new Auth({baseUrl, clientId, telemetry});
+  const auth = new Auth({ baseUrl, clientId, telemetry });
 
   beforeAll(() => {
-    jest
-      .useFakeTimers()
-      .setSystemTime(new Date('2023-01-01'));
+    jest.useFakeTimers().setSystemTime(new Date('2023-01-01'));
   });
 
   beforeEach(fetchMock.restore);
 
   describe('constructor', () => {
     it('should build with domain', () => {
-      const auth = new Auth({baseUrl, clientId});
+      const auth = new Auth({ baseUrl, clientId });
       expect(auth.clientId).toEqual(clientId);
     });
 
     it('should fail without clientId', () => {
-      expect(() => new Auth({baseUrl})).toThrowErrorMatchingSnapshot();
+      expect(() => new Auth({ baseUrl })).toThrowErrorMatchingSnapshot();
     });
 
     it('should fail without domain', () => {
-      expect(() => new Auth({clientId})).toThrowErrorMatchingSnapshot();
+      expect(() => new Auth({ clientId })).toThrowErrorMatchingSnapshot();
     });
   });
 
@@ -68,7 +66,7 @@ describe('auth', () => {
           responseType: 'code',
           redirectUri,
           state: 'a_random_state',
-        }),
+        })
       ).toMatchSnapshot();
     });
 
@@ -79,7 +77,7 @@ describe('auth', () => {
           redirectUri,
           state: 'a_random_state',
           connection: 'facebook',
-        }),
+        })
       ).toMatchSnapshot();
     });
   });
@@ -95,7 +93,7 @@ describe('auth', () => {
           federated: true,
           clientId: 'CLIENT_ID',
           redirectTo: 'https://auth0.com',
-        }),
+        })
       ).toMatchSnapshot();
     });
 
@@ -104,7 +102,7 @@ describe('auth', () => {
         auth.logoutUrl({
           federated: true,
           shouldNotBeThere: 'really',
-        }),
+        })
       ).toMatchSnapshot();
     });
   });
@@ -152,7 +150,7 @@ describe('auth', () => {
     it('should handle unexpected error', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/oauth/token',
-        unexpectedError,
+        unexpectedError
       );
       expect.assertions(1);
       const parameters = {
@@ -183,12 +181,12 @@ describe('auth', () => {
       await auth.exchangeNativeSocial({
         subjectToken: 'a subject token',
         subjectTokenType: 'a subject token type',
-        userProfile: {
+        userProfile: JSON.stringify({
           name: {
             firstName: 'John',
             lastName: 'Smith',
           },
-        },
+        }),
         audience: 'http://myapi.com',
         scope: 'openid',
       });
@@ -203,7 +201,7 @@ describe('auth', () => {
         subjectTokenType: 'a subject token type',
       };
       await expect(
-        auth.exchangeNativeSocial(parameters),
+        auth.exchangeNativeSocial(parameters)
       ).resolves.toMatchSnapshot();
     });
 
@@ -213,17 +211,17 @@ describe('auth', () => {
       const parameters = {
         subjectToken: 'a subject token',
         subjectTokenType: 'a subject token type',
-        userProfile: {
+        userProfile: JSON.stringify({
           name: {
             firstName: 'John',
             lastName: 'Smith',
           },
-        },
+        }),
         audience: 'http://myapi.com',
         scope: 'openid',
       };
       await expect(
-        auth.exchangeNativeSocial(parameters),
+        auth.exchangeNativeSocial(parameters)
       ).resolves.toMatchSnapshot();
     });
 
@@ -235,14 +233,14 @@ describe('auth', () => {
         subjectTokenType: 'a subject token type',
       };
       await expect(
-        auth.exchangeNativeSocial(parameters),
+        auth.exchangeNativeSocial(parameters)
       ).rejects.toMatchSnapshot();
     });
 
     it('should handle unexpected error', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/oauth/token',
-        unexpectedError,
+        unexpectedError
       );
       expect.assertions(1);
       const parameters = {
@@ -250,7 +248,7 @@ describe('auth', () => {
         subjectTokenType: 'a subject token type',
       };
       await expect(
-        auth.exchangeNativeSocial(parameters),
+        auth.exchangeNativeSocial(parameters)
       ).rejects.toMatchSnapshot();
     });
   });
@@ -260,7 +258,7 @@ describe('auth', () => {
       it('should begin with code', async () => {
         fetchMock.postOnce(
           'https://samples.auth0.com/passwordless/start',
-          emptySuccess,
+          emptySuccess
         );
         expect.assertions(1);
         await auth.passwordlessWithEmail({
@@ -273,7 +271,7 @@ describe('auth', () => {
       it('should begin with link', async () => {
         fetchMock.postOnce(
           'https://samples.auth0.com/passwordless/start',
-          emptySuccess,
+          emptySuccess
         );
         expect.assertions(1);
         await auth.passwordlessWithEmail({
@@ -286,7 +284,7 @@ describe('auth', () => {
       it('should begin with optional parameters', async () => {
         fetchMock.postOnce(
           'https://samples.auth0.com/passwordless/start',
-          emptySuccess,
+          emptySuccess
         );
         expect.assertions(1);
         await auth.passwordlessWithEmail({
@@ -302,7 +300,7 @@ describe('auth', () => {
       it('should begin with custom parameters', async () => {
         fetchMock.postOnce(
           'https://samples.auth0.com/passwordless/start',
-          emptySuccess,
+          emptySuccess
         );
         expect.assertions(1);
         await auth.passwordlessWithEmail({
@@ -356,7 +354,7 @@ describe('auth', () => {
       it('should begin with code', async () => {
         fetchMock.postOnce(
           'https://samples.auth0.com/passwordless/start',
-          emptySuccess,
+          emptySuccess
         );
         expect.assertions(1);
         await auth.passwordlessWithSMS({
@@ -369,7 +367,7 @@ describe('auth', () => {
       it('should begin with link', async () => {
         fetchMock.postOnce(
           'https://samples.auth0.com/passwordless/start',
-          emptySuccess,
+          emptySuccess
         );
         expect.assertions(1);
         await auth.passwordlessWithSMS({
@@ -382,7 +380,7 @@ describe('auth', () => {
       it('should begin with optional parameters', async () => {
         fetchMock.postOnce(
           'https://samples.auth0.com/passwordless/start',
-          emptySuccess,
+          emptySuccess
         );
         expect.assertions(1);
         await auth.passwordlessWithSMS({
@@ -398,7 +396,7 @@ describe('auth', () => {
       it('should begin with custom parameters', async () => {
         fetchMock.postOnce(
           'https://samples.auth0.com/passwordless/start',
-          emptySuccess,
+          emptySuccess
         );
         expect.assertions(1);
         await auth.passwordlessWithSMS({
@@ -479,7 +477,7 @@ describe('auth', () => {
     it('should handle unexpected error', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/oauth/token',
-        unexpectedError,
+        unexpectedError
       );
       expect.assertions(1);
       await expect(auth.passwordRealm(parameters)).rejects.toMatchSnapshot();
@@ -488,7 +486,7 @@ describe('auth', () => {
     it('should send extra parameters', async () => {
       fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
       expect.assertions(1);
-      await auth.passwordRealm({...parameters, foo: 'bar'});
+      await auth.passwordRealm({ ...parameters, foo: 'bar' });
       expect(fetchMock.lastCall()).toMatchSnapshot();
     });
   });
@@ -521,7 +519,7 @@ describe('auth', () => {
     it('should handle unexpected error', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/oauth/token',
-        unexpectedError,
+        unexpectedError
       );
       expect.assertions(1);
       await expect(auth.refreshToken(parameters)).rejects.toMatchSnapshot();
@@ -531,7 +529,7 @@ describe('auth', () => {
       fetchMock.postOnce('https://samples.auth0.com/oauth/token', {
         status: 401,
         body: {},
-        headers: {'www-authenticate': 'Bearer error="invalid_token"'},
+        headers: { 'www-authenticate': 'Bearer error="invalid_token"' },
       });
       expect.assertions(1);
       await expect(auth.refreshToken(parameters)).rejects.toMatchSnapshot();
@@ -549,11 +547,11 @@ describe('auth', () => {
   });
 
   describe('revoke token', () => {
-    const parameters = {refreshToken: 'a refresh token of a user'};
+    const parameters = { refreshToken: 'a refresh token of a user' };
     const success = {
       status: 200,
       body: null,
-      headers: {'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
     };
     it('should send correct payload', async () => {
       fetchMock.postOnce('https://samples.auth0.com/oauth/revoke', success);
@@ -577,7 +575,7 @@ describe('auth', () => {
     it('should handle unexpected error', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/oauth/revoke',
-        unexpectedError,
+        unexpectedError
       );
       expect.assertions(1);
       await expect(auth.revoke(parameters)).rejects.toMatchSnapshot();
@@ -585,22 +583,22 @@ describe('auth', () => {
   });
 
   describe('user info', () => {
-    const parameters = {token: 'an access token of a user'};
+    const parameters = { token: 'an access token of a user' };
     const success = {
       status: 200,
       body: {
-        sub: '248289761001',
-        name: 'Jane Doe',
-        given_name: 'Jane',
-        family_name: 'Doe',
-        preferred_username: 'j.doe',
-        email: 'janedoe@example.com',
-        updated_at: 1497317424,
-        picture: 'http://example.com/janedoe/me.jpg',
+        'sub': '248289761001',
+        'name': 'Jane Doe',
+        'given_name': 'Jane',
+        'family_name': 'Doe',
+        'preferred_username': 'j.doe',
+        'email': 'janedoe@example.com',
+        'updated_at': 1497317424,
+        'picture': 'http://example.com/janedoe/me.jpg',
         'http://mysite.com/claims/customer': 192837465,
         'http://mysite.com/claims/status': 'closed',
       },
-      headers: {'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
     };
     it('should send correct payload', async () => {
       fetchMock.getOnce('https://samples.auth0.com/userinfo', success);
@@ -644,12 +642,12 @@ describe('auth', () => {
     const success = {
       status: 200,
       body: "We've just sent you an email to reset your password.",
-      headers: {'Content-Type': 'text/html'},
+      headers: { 'Content-Type': 'text/html' },
     };
     it('should send correct payload', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/dbconnections/change_password',
-        success,
+        success
       );
       expect.assertions(1);
       await auth.resetPassword(parameters);
@@ -659,7 +657,7 @@ describe('auth', () => {
     it('should return successful response', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/dbconnections/change_password',
-        success,
+        success
       );
       expect.assertions(1);
       await expect(auth.resetPassword(parameters)).resolves.toMatchSnapshot();
@@ -668,7 +666,7 @@ describe('auth', () => {
     it('should handle oauth error', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/dbconnections/change_password',
-        oauthError,
+        oauthError
       );
       expect.assertions(1);
       await expect(auth.resetPassword(parameters)).rejects.toMatchSnapshot();
@@ -677,7 +675,7 @@ describe('auth', () => {
     it('should handle unexpected error', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/dbconnections/change_password',
-        unexpectedError,
+        unexpectedError
       );
       expect.assertions(1);
       await expect(auth.resetPassword(parameters)).rejects.toMatchSnapshot();
@@ -696,7 +694,7 @@ describe('auth', () => {
         email: 'info@auth0.com',
         email_verified: false,
       },
-      headers: {'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
     };
     const auth0Error = {
       status: 400,
@@ -706,13 +704,13 @@ describe('auth', () => {
         name: 'BadRequestError',
         statusCode: 400,
       },
-      headers: {'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
     };
 
     it('should send correct payload', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/dbconnections/signup',
-        success,
+        success
       );
       expect.assertions(1);
       await auth.createUser(parameters);
@@ -722,27 +720,27 @@ describe('auth', () => {
     it('should send correct payload with username', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/dbconnections/signup',
-        success,
+        success
       );
       expect.assertions(1);
-      await auth.createUser({...parameters, usename: 'info'});
+      await auth.createUser({ ...parameters, usename: 'info' });
       expect(fetchMock.lastCall()).toMatchSnapshot();
     });
 
     it('should send correct payload with metadata', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/dbconnections/signup',
-        success,
+        success
       );
       expect.assertions(1);
-      await auth.createUser({...parameters, metadata: {customerId: 12345}});
+      await auth.createUser({ ...parameters, metadata: { customerId: 12345 } });
       expect(fetchMock.lastCall()).toMatchSnapshot();
     });
 
     it('should return successful response', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/dbconnections/signup',
-        success,
+        success
       );
       expect.assertions(1);
       await expect(auth.createUser(parameters)).resolves.toMatchSnapshot();
@@ -751,7 +749,7 @@ describe('auth', () => {
     it('should handle auth0 error', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/dbconnections/signup',
-        auth0Error,
+        auth0Error
       );
       expect.assertions(1);
       await expect(auth.createUser(parameters)).rejects.toMatchSnapshot();
@@ -760,7 +758,7 @@ describe('auth', () => {
     it('should handle unexpected error', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/dbconnections/signup',
-        unexpectedError,
+        unexpectedError
       );
       expect.assertions(1);
       await expect(auth.createUser(parameters)).rejects.toMatchSnapshot();
@@ -781,7 +779,7 @@ describe('auth', () => {
         error_description:
           'User is not enrolled. You can use /mfa/associate endpoint to enroll the first authenticator.',
       },
-      headers: {'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
     };
 
     const invalidOtpError = {
@@ -791,7 +789,7 @@ describe('auth', () => {
         error: 'invalid_grant',
         error_description: 'Invalid otp_code.',
       },
-      headers: {'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
     };
 
     const success = {
@@ -810,7 +808,7 @@ describe('auth', () => {
     it('should handle unexpected error', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/oauth/token',
-        unexpectedError,
+        unexpectedError
       );
       expect.assertions(1);
       await expect(auth.loginWithOTP(parameters)).rejects.toMatchSnapshot();
@@ -819,7 +817,7 @@ describe('auth', () => {
     it('when MFA is not associated', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/oauth/token',
-        notAssociatedError,
+        notAssociatedError
       );
       expect.assertions(1);
       await expect(auth.loginWithOTP(parameters)).rejects.toMatchSnapshot();
@@ -828,7 +826,7 @@ describe('auth', () => {
     it('when OTP Code is invalid', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/oauth/token',
-        invalidOtpError,
+        invalidOtpError
       );
       expect.assertions(1);
       await expect(auth.loginWithOTP(parameters)).rejects.toMatchSnapshot();
@@ -864,7 +862,7 @@ describe('auth', () => {
         error: 'invalid_grant',
         error_description: 'Malformed oob_code',
       },
-      headers: {'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
     };
 
     const success = {
@@ -889,7 +887,7 @@ describe('auth', () => {
     it('should handle unexpected error', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/oauth/token',
-        unexpectedError,
+        unexpectedError
       );
       expect.assertions(1);
       await expect(auth.loginWithOOB(parameters)).rejects.toMatchSnapshot();
@@ -898,7 +896,7 @@ describe('auth', () => {
     it('should handle malformed OOB code', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/oauth/token',
-        malformedOOBError,
+        malformedOOBError
       );
       expect.assertions(1);
       await expect(auth.loginWithOOB(parameters)).rejects.toMatchSnapshot();
@@ -949,35 +947,35 @@ describe('auth', () => {
         error: 'unsupported_challenge_type',
         error_description: 'User does not have a recovery-code.',
       },
-      headers: {'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
     };
 
     it('should require MFA Token and Recovery Code', async () => {
       expect.assertions(1);
       expect(() =>
-        auth.loginWithRecoveryCode({}),
+        auth.loginWithRecoveryCode({})
       ).toThrowErrorMatchingSnapshot();
     });
 
     it('when user does not have Recovery Code', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/oauth/token',
-        unAuthorizedClientError,
+        unAuthorizedClientError
       );
       expect.assertions(1);
       await expect(
-        auth.loginWithRecoveryCode(parameters),
+        auth.loginWithRecoveryCode(parameters)
       ).rejects.toMatchSnapshot();
     });
 
     it('should handle unexpected error', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/oauth/token',
-        unexpectedError,
+        unexpectedError
       );
       expect.assertions(1);
       await expect(
-        auth.loginWithRecoveryCode(parameters),
+        auth.loginWithRecoveryCode(parameters)
       ).rejects.toMatchSnapshot();
     });
 
@@ -985,7 +983,7 @@ describe('auth', () => {
       fetchMock.postOnce('https://samples.auth0.com/oauth/token', success);
       expect.assertions(1);
       await expect(
-        auth.loginWithRecoveryCode(parameters),
+        auth.loginWithRecoveryCode(parameters)
       ).resolves.toMatchSnapshot();
     });
 
@@ -1014,7 +1012,7 @@ describe('auth', () => {
     it('should require MFA Token', async () => {
       expect.assertions(1);
       expect(() =>
-        auth.multifactorChallenge({}),
+        auth.multifactorChallenge({})
       ).toThrowErrorMatchingSnapshot();
     });
 
@@ -1022,18 +1020,18 @@ describe('auth', () => {
       fetchMock.postOnce('https://samples.auth0.com/mfa/challenge', {});
       expect.assertions(1);
       await expect(
-        auth.multifactorChallenge(parameters),
+        auth.multifactorChallenge(parameters)
       ).resolves.toMatchSnapshot();
     });
 
     it('should handle unexpected error', async () => {
       fetchMock.postOnce(
         'https://samples.auth0.com/mfa/challenge',
-        unexpectedError,
+        unexpectedError
       );
       expect.assertions(1);
       await expect(
-        auth.multifactorChallenge(parameters),
+        auth.multifactorChallenge(parameters)
       ).rejects.toMatchSnapshot();
     });
 
@@ -1041,7 +1039,7 @@ describe('auth', () => {
       fetchMock.postOnce('https://samples.auth0.com/mfa/challenge', success);
       expect.assertions(1);
       await expect(
-        auth.multifactorChallenge(parameters),
+        auth.multifactorChallenge(parameters)
       ).resolves.toMatchSnapshot();
     });
 
@@ -1051,7 +1049,7 @@ describe('auth', () => {
       fetchMock.postOnce('https://samples.auth0.com/mfa/challenge', success);
       expect.assertions(1);
       await expect(
-        auth.multifactorChallenge(parameters),
+        auth.multifactorChallenge(parameters)
       ).resolves.toMatchSnapshot();
     });
   });

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
-    <title>default | react-native-auth0</title>
+    <title>LocalAuthenticationLevel | react-native-auth0</title>
     <meta name="description" content="Documentation for react-native-auth0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="../assets/style.css" />
@@ -52,13 +52,21 @@
         <div class="tsd-page-title">
           <ul class="tsd-breadcrumb">
             <li><a href="../modules.html">react-native-auth0</a></li>
-            <li><a href="default.html">default</a></li>
+            <li>
+              <a href="LocalAuthenticationLevel.html"
+                >LocalAuthenticationLevel</a
+              >
+            </li>
           </ul>
-          <h1>Class default</h1>
+          <h1>Enumeration LocalAuthenticationLevel</h1>
         </div>
         <section class="tsd-panel tsd-comment">
           <div class="tsd-comment tsd-typography">
-            <p>Auth0 for React Native client</p>
+            <p>
+              <strong>Used for Android only:</strong> The level of local
+              authentication required to access the credentials. Defaults to
+              LocalAuthenticationLevel.strong.
+            </p>
           </div>
           <div class="tsd-comment tsd-typography"></div>
         </section>
@@ -67,8 +75,8 @@
             <li>
               Defined in
               <a
-                href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/auth0.ts#L12"
-                >auth0.ts:12</a
+                href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/credentials-manager/localAuthenticationLevel.ts#L5"
+                >credentials-manager/localAuthenticationLevel.ts:5</a
               >
             </li>
           </ul>
@@ -91,51 +99,28 @@
               </summary>
               <div class="tsd-accordion-details">
                 <section class="tsd-index-section">
-                  <h3 class="tsd-index-heading">Constructors</h3>
+                  <h3 class="tsd-index-heading">Enumeration Members</h3>
                   <div class="tsd-index-list">
-                    <a href="default.html#constructor" class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                        <use href="#icon-512"></use></svg
-                      ><span>constructor</span></a
-                    >
-                  </div>
-                </section>
-                <section class="tsd-index-section">
-                  <h3 class="tsd-index-heading">Properties</h3>
-                  <div class="tsd-index-list">
-                    <a href="default.html#auth" class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                        <use href="#icon-1024"></use></svg
-                      ><span>auth</span></a
-                    >
                     <a
-                      href="default.html#credentialsManager"
+                      href="LocalAuthenticationLevel.html#deviceCredential"
                       class="tsd-index-link"
                       ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                        <use href="#icon-1024"></use></svg
-                      ><span>credentials<wbr />Manager</span></a
+                        <use href="#icon-16"></use></svg
+                      ><span>device<wbr />Credential</span></a
                     >
                     <a
-                      href="default.html#options"
-                      class="tsd-index-link tsd-is-private"
+                      href="LocalAuthenticationLevel.html#strong"
+                      class="tsd-index-link"
                       ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                        <use href="#icon-1024"></use></svg
-                      ><span>options</span></a
+                        <use href="#icon-16"></use></svg
+                      ><span>strong</span></a
                     >
-                    <a href="default.html#webAuth" class="tsd-index-link"
+                    <a
+                      href="LocalAuthenticationLevel.html#weak"
+                      class="tsd-index-link"
                       ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                        <use href="#icon-1024"></use></svg
-                      ><span>web<wbr />Auth</span></a
-                    >
-                  </div>
-                </section>
-                <section class="tsd-index-section">
-                  <h3 class="tsd-index-heading">Methods</h3>
-                  <div class="tsd-index-list">
-                    <a href="default.html#users" class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                        <use href="#icon-2048"></use></svg
-                      ><span>users</span></a
+                        <use href="#icon-16"></use></svg
+                      ><span>weak</span></a
                     >
                   </div>
                 </section>
@@ -144,504 +129,107 @@
           </section>
         </section>
         <section class="tsd-panel-group tsd-member-group">
-          <h2>Constructors</h2>
+          <h2>Enumeration Members</h2>
           <section class="tsd-panel tsd-member">
-            <a id="constructor" class="tsd-anchor"></a>
+            <a id="deviceCredential" class="tsd-anchor"></a>
             <h3 class="tsd-anchor-link">
-              <span>constructor</span
+              <span>device<wbr />Credential</span
               ><a
-                href="#constructor"
-                aria-label="Permalink"
-                class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <ul class="tsd-signatures">
-              <li class="tsd-signature tsd-anchor-link">
-                <a id="constructor.new_default" class="tsd-anchor"></a
-                ><span class="tsd-kind-constructor-signature">new default</span
-                ><span class="tsd-signature-symbol">(</span
-                ><span class="tsd-kind-parameter">options</span
-                ><span class="tsd-signature-symbol">)</span
-                ><span class="tsd-signature-symbol">: </span
-                ><a
-                  href="default.html"
-                  class="tsd-signature-type tsd-kind-class"
-                  >default</a
-                ><a
-                  href="#constructor.new_default"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg
-                ></a>
-              </li>
-              <li class="tsd-description">
-                <div class="tsd-comment tsd-typography">
-                  <p>Creates an instance of Auth0.</p>
-                </div>
-                <div class="tsd-parameters">
-                  <h4 class="tsd-parameters-title">Parameters</h4>
-                  <ul class="tsd-parameter-list">
-                    <li>
-                      <h5>
-                        <span class="tsd-kind-parameter">options</span>:
-                        <span class="tsd-signature-symbol">{ </span><br /><span
-                          >    </span
-                        ><span class="tsd-kind-property">clientId</span
-                        ><span class="tsd-signature-symbol">: </span
-                        ><span class="tsd-signature-type">string</span
-                        ><span class="tsd-signature-symbol">; </span><br /><span
-                          >    </span
-                        ><span class="tsd-kind-property">domain</span
-                        ><span class="tsd-signature-symbol">: </span
-                        ><span class="tsd-signature-type">string</span
-                        ><span class="tsd-signature-symbol">; </span><br /><span
-                          >    </span
-                        ><span class="tsd-kind-property"
-                          >localAuthenticationOptions</span
-                        ><span class="tsd-signature-symbol">?: </span
-                        ><a
-                          href="../interfaces/LocalAuthenticationOptions.html"
-                          class="tsd-signature-type tsd-kind-interface"
-                          >LocalAuthenticationOptions</a
-                        ><span class="tsd-signature-symbol">; </span><br /><span
-                          >    </span
-                        ><span class="tsd-kind-property">telemetry</span
-                        ><span class="tsd-signature-symbol">?: </span
-                        ><a
-                          href="../types/Types.Telemetry.html"
-                          class="tsd-signature-type tsd-kind-type-alias"
-                          >Telemetry</a
-                        ><span class="tsd-signature-symbol">; </span><br /><span
-                          >    </span
-                        ><span class="tsd-kind-property">timeout</span
-                        ><span class="tsd-signature-symbol">?: </span
-                        ><span class="tsd-signature-type">number</span
-                        ><span class="tsd-signature-symbol">; </span><br /><span
-                          >    </span
-                        ><span class="tsd-kind-property">token</span
-                        ><span class="tsd-signature-symbol">?: </span
-                        ><span class="tsd-signature-type">string</span
-                        ><span class="tsd-signature-symbol">; </span><br /><span
-                          class="tsd-signature-symbol"
-                          >}</span
-                        >
-                      </h5>
-                      <div class="tsd-comment tsd-typography">
-                        <p>Your Auth0 application information</p>
-                      </div>
-                      <div class="tsd-comment tsd-typography"></div>
-                      <ul class="tsd-parameters">
-                        <li class="tsd-parameter">
-                          <h5>
-                            <span class="tsd-kind-property"
-                              >client<wbr />Id</span
-                            ><span class="tsd-signature-symbol">: </span
-                            ><span class="tsd-signature-type">string</span>
-                          </h5>
-                          <div class="tsd-comment tsd-typography">
-                            <p>Your Auth0 application client identifier</p>
-                          </div>
-                          <div class="tsd-comment tsd-typography"></div>
-                        </li>
-                        <li class="tsd-parameter">
-                          <h5>
-                            <span class="tsd-kind-property">domain</span
-                            ><span class="tsd-signature-symbol">: </span
-                            ><span class="tsd-signature-type">string</span>
-                          </h5>
-                          <div class="tsd-comment tsd-typography">
-                            <p>Your Auth0 domain</p>
-                          </div>
-                          <div class="tsd-comment tsd-typography"></div>
-                        </li>
-                        <li class="tsd-parameter">
-                          <h5>
-                            <code class="tsd-tag ts-flagOptional"
-                              >Optional</code
-                            >
-                            <span class="tsd-kind-property"
-                              >local<wbr />Authentication<wbr />Options</span
-                            ><span class="tsd-signature-symbol">?: </span
-                            ><a
-                              href="../interfaces/LocalAuthenticationOptions.html"
-                              class="tsd-signature-type tsd-kind-interface"
-                              >LocalAuthenticationOptions</a
-                            >
-                          </h5>
-                          <div class="tsd-comment tsd-typography">
-                            <p>
-                              The options for configuring the display of local
-                              authentication prompt, authentication level
-                              (Android only) and evaluation policy (iOS only).
-                            </p>
-                          </div>
-                          <div class="tsd-comment tsd-typography"></div>
-                        </li>
-                        <li class="tsd-parameter">
-                          <h5>
-                            <code class="tsd-tag ts-flagOptional"
-                              >Optional</code
-                            >
-                            <span class="tsd-kind-property">telemetry</span
-                            ><span class="tsd-signature-symbol">?: </span
-                            ><a
-                              href="../types/Types.Telemetry.html"
-                              class="tsd-signature-type tsd-kind-type-alias"
-                              >Telemetry</a
-                            >
-                          </h5>
-                          <div class="tsd-comment tsd-typography">
-                            <p>
-                              The telemetry information to be sent along with
-                              the requests
-                            </p>
-                          </div>
-                          <div class="tsd-comment tsd-typography"></div>
-                        </li>
-                        <li class="tsd-parameter">
-                          <h5>
-                            <code class="tsd-tag ts-flagOptional"
-                              >Optional</code
-                            >
-                            <span class="tsd-kind-property">timeout</span
-                            ><span class="tsd-signature-symbol">?: </span
-                            ><span class="tsd-signature-type">number</span>
-                          </h5>
-                          <div class="tsd-comment tsd-typography">
-                            <p>Timeout to be set for requests.</p>
-                          </div>
-                          <div class="tsd-comment tsd-typography"></div>
-                        </li>
-                        <li class="tsd-parameter">
-                          <h5>
-                            <code class="tsd-tag ts-flagOptional"
-                              >Optional</code
-                            >
-                            <span class="tsd-kind-property">token</span
-                            ><span class="tsd-signature-symbol">?: </span
-                            ><span class="tsd-signature-type">string</span>
-                          </h5>
-                          <div class="tsd-comment tsd-typography">
-                            <p>Token to be used for Management APIs</p>
-                          </div>
-                          <div class="tsd-comment tsd-typography"></div>
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
-                </div>
-                <h4 class="tsd-returns-title">
-                  Returns
-                  <a
-                    href="default.html"
-                    class="tsd-signature-type tsd-kind-class"
-                    >default</a
-                  >
-                </h4>
-                <div class="tsd-comment tsd-typography"></div>
-                <aside class="tsd-sources">
-                  <ul>
-                    <li>
-                      Defined in
-                      <a
-                        href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/auth0.ts#L28"
-                        >auth0.ts:28</a
-                      >
-                    </li>
-                  </ul>
-                </aside>
-              </li>
-            </ul>
-          </section>
-        </section>
-        <section class="tsd-panel-group tsd-member-group">
-          <h2>Properties</h2>
-          <section class="tsd-panel tsd-member">
-            <a id="auth" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <span>auth</span
-              ><a href="#auth" aria-label="Permalink" class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <div class="tsd-signature">
-              <span class="tsd-kind-property">auth</span
-              ><span class="tsd-signature-symbol">:</span>
-              <a
-                href="Types.Auth.html"
-                class="tsd-signature-type tsd-kind-class"
-                >Auth</a
-              >
-            </div>
-            <aside class="tsd-sources">
-              <ul>
-                <li>
-                  Defined in
-                  <a
-                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/auth0.ts#L13"
-                    >auth0.ts:13</a
-                  >
-                </li>
-              </ul>
-            </aside>
-          </section>
-          <section class="tsd-panel tsd-member">
-            <a id="credentialsManager" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <span>credentials<wbr />Manager</span
-              ><a
-                href="#credentialsManager"
+                href="#deviceCredential"
                 aria-label="Permalink"
                 class="tsd-anchor-icon"
                 ><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg
               ></a>
             </h3>
             <div class="tsd-signature">
-              <span class="tsd-kind-property">credentials<wbr />Manager</span
+              <span class="tsd-kind-enum-member">device<wbr />Credential</span
               ><span class="tsd-signature-symbol">:</span>
-              <a
-                href="Types.CredentialsManager.html"
-                class="tsd-signature-type tsd-kind-class"
-                >CredentialsManager</a
-              >
+              <span class="tsd-signature-type">2</span>
             </div>
+            <div class="tsd-comment tsd-typography">
+              <p>
+                The non-biometric credential used to secure the device (i. e.
+                PIN, pattern, or password).
+              </p>
+            </div>
+            <div class="tsd-comment tsd-typography"></div>
             <aside class="tsd-sources">
               <ul>
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/auth0.ts#L15"
-                    >auth0.ts:15</a
-                  >
-                </li>
-              </ul>
-            </aside>
-          </section>
-          <section class="tsd-panel tsd-member tsd-is-private">
-            <a id="options" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <code class="tsd-tag ts-flagPrivate">Private</code>
-              <span>options</span
-              ><a href="#options" aria-label="Permalink" class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <div class="tsd-signature">
-              <span class="tsd-kind-property">options</span
-              ><span class="tsd-signature-symbol">:</span>
-              <span class="tsd-signature-symbol">{ </span><br /><span>    </span
-              ><span class="tsd-kind-property">clientId</span
-              ><span class="tsd-signature-symbol">: </span
-              ><span class="tsd-signature-type">string</span
-              ><span class="tsd-signature-symbol">; </span><br /><span
-                >    </span
-              ><span class="tsd-kind-property">domain</span
-              ><span class="tsd-signature-symbol">: </span
-              ><span class="tsd-signature-type">string</span
-              ><span class="tsd-signature-symbol">; </span><br /><span
-                >    </span
-              ><span class="tsd-kind-property">localAuthenticationOptions</span
-              ><span class="tsd-signature-symbol">?: </span
-              ><a
-                href="../interfaces/LocalAuthenticationOptions.html"
-                class="tsd-signature-type tsd-kind-interface"
-                >LocalAuthenticationOptions</a
-              ><span class="tsd-signature-symbol">; </span><br /><span
-                >    </span
-              ><span class="tsd-kind-property">telemetry</span
-              ><span class="tsd-signature-symbol">?: </span
-              ><a
-                href="../types/Types.Telemetry.html"
-                class="tsd-signature-type tsd-kind-type-alias"
-                >Telemetry</a
-              ><span class="tsd-signature-symbol">; </span><br /><span
-                >    </span
-              ><span class="tsd-kind-property">timeout</span
-              ><span class="tsd-signature-symbol">?: </span
-              ><span class="tsd-signature-type">number</span
-              ><span class="tsd-signature-symbol">; </span><br /><span
-                >    </span
-              ><span class="tsd-kind-property">token</span
-              ><span class="tsd-signature-symbol">?: </span
-              ><span class="tsd-signature-type">string</span
-              ><span class="tsd-signature-symbol">; </span><br /><span
-                class="tsd-signature-symbol"
-                >}</span
-              >
-            </div>
-            <div class="tsd-type-declaration">
-              <h4>Type declaration</h4>
-              <ul class="tsd-parameters">
-                <li class="tsd-parameter">
-                  <h5>
-                    <span class="tsd-kind-property">client<wbr />Id</span
-                    ><span class="tsd-signature-symbol">: </span
-                    ><span class="tsd-signature-type">string</span>
-                  </h5>
-                </li>
-                <li class="tsd-parameter">
-                  <h5>
-                    <span class="tsd-kind-property">domain</span
-                    ><span class="tsd-signature-symbol">: </span
-                    ><span class="tsd-signature-type">string</span>
-                  </h5>
-                </li>
-                <li class="tsd-parameter">
-                  <h5>
-                    <code class="tsd-tag ts-flagOptional">Optional</code>
-                    <span class="tsd-kind-property"
-                      >local<wbr />Authentication<wbr />Options</span
-                    ><span class="tsd-signature-symbol">?: </span
-                    ><a
-                      href="../interfaces/LocalAuthenticationOptions.html"
-                      class="tsd-signature-type tsd-kind-interface"
-                      >LocalAuthenticationOptions</a
-                    >
-                  </h5>
-                </li>
-                <li class="tsd-parameter">
-                  <h5>
-                    <code class="tsd-tag ts-flagOptional">Optional</code>
-                    <span class="tsd-kind-property">telemetry</span
-                    ><span class="tsd-signature-symbol">?: </span
-                    ><a
-                      href="../types/Types.Telemetry.html"
-                      class="tsd-signature-type tsd-kind-type-alias"
-                      >Telemetry</a
-                    >
-                  </h5>
-                </li>
-                <li class="tsd-parameter">
-                  <h5>
-                    <code class="tsd-tag ts-flagOptional">Optional</code>
-                    <span class="tsd-kind-property">timeout</span
-                    ><span class="tsd-signature-symbol">?: </span
-                    ><span class="tsd-signature-type">number</span>
-                  </h5>
-                </li>
-                <li class="tsd-parameter">
-                  <h5>
-                    <code class="tsd-tag ts-flagOptional">Optional</code>
-                    <span class="tsd-kind-property">token</span
-                    ><span class="tsd-signature-symbol">?: </span
-                    ><span class="tsd-signature-type">string</span>
-                  </h5>
-                </li>
-              </ul>
-            </div>
-            <aside class="tsd-sources">
-              <ul>
-                <li>
-                  Defined in
-                  <a
-                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/auth0.ts#L16"
-                    >auth0.ts:16</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/credentials-manager/localAuthenticationLevel.ts#L17"
+                    >credentials-manager/localAuthenticationLevel.ts:17</a
                   >
                 </li>
               </ul>
             </aside>
           </section>
           <section class="tsd-panel tsd-member">
-            <a id="webAuth" class="tsd-anchor"></a>
+            <a id="strong" class="tsd-anchor"></a>
             <h3 class="tsd-anchor-link">
-              <span>web<wbr />Auth</span
-              ><a href="#webAuth" aria-label="Permalink" class="tsd-anchor-icon"
+              <span>strong</span
+              ><a href="#strong" aria-label="Permalink" class="tsd-anchor-icon"
                 ><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg
               ></a>
             </h3>
             <div class="tsd-signature">
-              <span class="tsd-kind-property">web<wbr />Auth</span
+              <span class="tsd-kind-enum-member">strong</span
               ><span class="tsd-signature-symbol">:</span>
-              <a
-                href="Types.WebAuth.html"
-                class="tsd-signature-type tsd-kind-class"
-                >WebAuth</a
-              >
+              <span class="tsd-signature-type">0</span>
             </div>
+            <div class="tsd-comment tsd-typography">
+              <p>
+                Any biometric (e.g. fingerprint, iris, or face) on the device
+                that meets or exceeds the requirements for Class 3 (formerly
+                Strong), as defined by the Android CDD.
+              </p>
+            </div>
+            <div class="tsd-comment tsd-typography"></div>
             <aside class="tsd-sources">
               <ul>
                 <li>
                   Defined in
                   <a
-                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/auth0.ts#L14"
-                    >auth0.ts:14</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/credentials-manager/localAuthenticationLevel.ts#L9"
+                    >credentials-manager/localAuthenticationLevel.ts:9</a
                   >
                 </li>
               </ul>
             </aside>
           </section>
-        </section>
-        <section class="tsd-panel-group tsd-member-group">
-          <h2>Methods</h2>
           <section class="tsd-panel tsd-member">
-            <a id="users" class="tsd-anchor"></a>
+            <a id="weak" class="tsd-anchor"></a>
             <h3 class="tsd-anchor-link">
-              <span>users</span
-              ><a href="#users" aria-label="Permalink" class="tsd-anchor-icon"
+              <span>weak</span
+              ><a href="#weak" aria-label="Permalink" class="tsd-anchor-icon"
                 ><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg
               ></a>
             </h3>
-            <ul class="tsd-signatures">
-              <li class="tsd-signature tsd-anchor-link">
-                <a id="users.users-1" class="tsd-anchor"></a
-                ><span class="tsd-kind-call-signature">users</span
-                ><span class="tsd-signature-symbol">(</span
-                ><span class="tsd-kind-parameter">token</span
-                ><span class="tsd-signature-symbol">)</span
-                ><span class="tsd-signature-symbol">: </span
-                ><a
-                  href="Types.Users.html"
-                  class="tsd-signature-type tsd-kind-class"
-                  >Users</a
-                ><a
-                  href="#users.users-1"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg
-                ></a>
-              </li>
-              <li class="tsd-description">
-                <div class="tsd-comment tsd-typography">
-                  <p>Creates a Users API client</p>
-                </div>
-                <div class="tsd-parameters">
-                  <h4 class="tsd-parameters-title">Parameters</h4>
-                  <ul class="tsd-parameter-list">
-                    <li>
-                      <h5>
-                        <span class="tsd-kind-parameter">token</span>:
-                        <span class="tsd-signature-type">string</span>
-                      </h5>
-                      <div class="tsd-comment tsd-typography">
-                        <p>for Management API</p>
-                      </div>
-                      <div class="tsd-comment tsd-typography"></div>
-                    </li>
-                  </ul>
-                </div>
-                <h4 class="tsd-returns-title">
-                  Returns
+            <div class="tsd-signature">
+              <span class="tsd-kind-enum-member">weak</span
+              ><span class="tsd-signature-symbol">:</span>
+              <span class="tsd-signature-type">1</span>
+            </div>
+            <div class="tsd-comment tsd-typography">
+              <p>
+                Any biometric (e.g. fingerprint, iris, or face) on the device
+                that meets or exceeds the requirements for Class 2 (formerly
+                Weak), as defined by the Android CDD.
+              </p>
+            </div>
+            <div class="tsd-comment tsd-typography"></div>
+            <aside class="tsd-sources">
+              <ul>
+                <li>
+                  Defined in
                   <a
-                    href="Types.Users.html"
-                    class="tsd-signature-type tsd-kind-class"
-                    >Users</a
+                    href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/credentials-manager/localAuthenticationLevel.ts#L13"
+                    >credentials-manager/localAuthenticationLevel.ts:13</a
                   >
-                </h4>
-                <div class="tsd-comment tsd-typography"></div>
-                <aside class="tsd-sources">
-                  <ul>
-                    <li>
-                      Defined in
-                      <a
-                        href="https://github.com/auth0/react-native-auth0/blob/dc8a16f/src/auth0.ts#L55"
-                        >auth0.ts:55</a
-                      >
-                    </li>
-                  </ul>
-                </aside>
-              </li>
-            </ul>
+                </li>
+              </ul>
+            </aside>
           </section>
         </section>
       </div>
@@ -783,45 +371,24 @@
             <div class="tsd-accordion-details">
               <ul>
                 <li>
-                  <a href="#constructor" class=""
+                  <a href="#deviceCredential" class=""
                     ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                      <use href="#icon-512"></use></svg
-                    ><span>constructor</span></a
+                      <use href="#icon-16"></use></svg
+                    ><span>device<wbr />Credential</span></a
                   >
                 </li>
                 <li>
-                  <a href="#auth" class=""
+                  <a href="#strong" class=""
                     ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                      <use href="#icon-1024"></use></svg
-                    ><span>auth</span></a
+                      <use href="#icon-16"></use></svg
+                    ><span>strong</span></a
                   >
                 </li>
                 <li>
-                  <a href="#credentialsManager" class=""
+                  <a href="#weak" class=""
                     ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                      <use href="#icon-1024"></use></svg
-                    ><span>credentials<wbr />Manager</span></a
-                  >
-                </li>
-                <li>
-                  <a href="#options" class="tsd-is-private"
-                    ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                      <use href="#icon-1024"></use></svg
-                    ><span>options</span></a
-                  >
-                </li>
-                <li>
-                  <a href="#webAuth" class=""
-                    ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                      <use href="#icon-1024"></use></svg
-                    ><span>web<wbr />Auth</span></a
-                  >
-                </li>
-                <li>
-                  <a href="#users" class=""
-                    ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                      <use href="#icon-2048"></use></svg
-                    ><span>users</span></a
+                      <use href="#icon-16"></use></svg
+                    ><span>weak</span></a
                   >
                 </li>
               </ul>
@@ -855,35 +422,35 @@
                 >
               </li>
               <li>
-                <a href="../enums/LocalAuthenticationLevel.html"
+                <a href="LocalAuthenticationLevel.html" class="current"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-8"></use></svg
                   >LocalAuthenticationLevel</a
                 >
               </li>
               <li>
-                <a href="../enums/LocalAuthenticationStrategy.html"
+                <a href="LocalAuthenticationStrategy.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-8"></use></svg
                   >LocalAuthenticationStrategy</a
                 >
               </li>
               <li>
-                <a href="../enums/SafariViewControllerPresentationStyle.html"
+                <a href="SafariViewControllerPresentationStyle.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-8"></use></svg
                   >SafariViewControllerPresentationStyle</a
                 >
               </li>
               <li>
-                <a href="TimeoutError.html"
+                <a href="../classes/TimeoutError.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-128"></use></svg
                   >TimeoutError</a
                 >
               </li>
               <li>
-                <a href="default.html" class="current"
+                <a href="../classes/default.html"
                   ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
                     <use href="#icon-128"></use></svg
                   >default</a

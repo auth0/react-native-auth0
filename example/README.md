@@ -16,8 +16,4 @@ The application will be built and launched on the specified platform, allowing y
 ### To run on different Auth0 Application
 
 1. Change the `clientId` and `domain` value in `example/src/auth0-configuration.js`
-2. For Android, Change the `auth0Domain` value in `example/android/app/build.gradle`
-
-```
-manifestPlaceholders = [auth0Domain: "YOUR_DOMAIN_HERE", auth0Scheme: "${applicationId}"]
-```
+2. For Android, Change the `android:host` values in `example/android/app/src/main/AndroidManifest.xml`
