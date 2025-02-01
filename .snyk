@@ -3,8 +3,8 @@ version: v1.25.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   SNYK-JS-INFLIGHT-6095116:
-     - '*':
-          reason: Fix not available yet
-          expires: 2025-02-01T05:44:59.682Z
-          created: 2025-02-28T05:44:59.685Z
+    - '*':
+        reason: Fix not available
+        expires: 2025-01-31T05:44:59.682Z
+        created: 2024-08-02T05:42:54.239Z
 patch: {}
