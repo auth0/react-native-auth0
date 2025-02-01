@@ -66,6 +66,8 @@ const mockAuth0 = {
     loginWithRecoveryCode: jest.fn().mockResolvedValue(mockCredentials),
     hasValidCredentials: jest.fn().mockResolvedValue(),
     passwordRealm: jest.fn().mockResolvedValue(mockCredentials),
+    exchangeNativeSocial: jest.fn().mockResolvedValue(mockCredentials),
+    revoke: jest.fn().mockResolvedValue(mockCredentials),
   },
   credentialsManager: {
     getCredentials: jest.fn().mockResolvedValue(mockCredentials),
@@ -838,6 +840,90 @@ describe('The useAuth0 hook', () => {
 
     expect(result.current.user).toBeNull();
     expect(result.current.error).toBe(mockAuthError);
+  });
+
+  it('can authorize with exchange social native, passing through all parameters', async () => {
+    const { result } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
+
+    let promise = result.current.authorizeWithExchangeNativeSocial({
+      subjectToken: 'subject-token',
+      subjectTokenType: 'urn:ietf:params:oauth:token-type:access_token',
+      userProfile: JSON.stringify({
+        name: {
+          firstName: 'John',
+          lastName: 'Smith',
+        },
+      }),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(mockAuth0.auth.exchangeNativeSocial).toHaveBeenCalledWith({
+      subjectToken: 'subject-token',
+      subjectTokenType: 'urn:ietf:params:oauth:token-type:access_token',
+      userProfile: JSON.stringify({
+        name: {
+          firstName: 'John',
+          lastName: 'Smith',
+        },
+      }),
+    });
+
+    let credentials;
+    await act(async () => {
+      credentials = await promise;
+    });
+    expect(credentials).toEqual({
+      idToken:
+        'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoMC5jb20iLCJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vaW1hZ2VzL3BpYy5wbmcifQ==.c2lnbmF0dXJl',
+      accessToken: 'ACCESS TOKEN',
+    });
+  });
+
+  it('sets the user prop after successful authentication', async () => {
+    const { result } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
+
+    result.current.authorizeWithExchangeNativeSocial();
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.user).toMatchObject({
+      name: 'Test User',
+      familyName: 'User',
+      picture: 'https://images/pic.png',
+    });
+  });
+
+  it('does not set user prop when authentication fails', async () => {
+    mockAuth0.auth.exchangeNativeSocial.mockRejectedValue(mockAuthError);
+    const { result } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
+
+    result.current.authorizeWithExchangeNativeSocial();
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.user).toBeNull();
+    expect(result.current.error).toBe(mockAuthError);
+  });
+
+  it('can revoke refresh tokens, passing through all parameters', async () => {
+    const { result } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
+
+    let promise = result.current.revokeRefreshToken({
+      refreshToken: 'dummyToken',
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(mockAuth0.auth.revoke).toHaveBeenCalledWith({
+      refreshToken: 'dummyToken',
+    });
   });
 
   it('can clear the session', async () => {
