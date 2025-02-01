@@ -2,49 +2,9 @@
 version: v1.25.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
-  SNYK-JS-BRACES-6838727:
-    - '*':
-        reason: Updating dependey as fast follow up
-        expires: 2025-01-31T05:44:59.682Z
-        created: 2024-08-02T05:42:12.691Z
   SNYK-JS-INFLIGHT-6095116:
-    - '*':
-        reason: Updating dependey as fast follow up
-        expires: 2025-01-31T05:44:59.682Z
-        created: 2024-08-02T05:42:54.239Z
-  SNYK-JS-MICROMATCH-6838728:
-    - '*':
-        reason: Updating dependey as fast follow up
-        expires: 2025-01-31T05:44:59.682Z
-        created: 2024-08-02T05:43:37.959Z
-  SNYK-JS-WS-7266574:
-    - '*':
-        reason: Updating dependey as fast follow up
-        expires: 2025-01-31T05:44:59.682Z
-        created: 2024-08-02T05:44:19.472Z
-  
-  SNYK-JS-SEND-7926862:
-    - '*':
-        reason: Updating dependey as fast follow up
-        expires: 2025-01-31T05:44:59.682Z
-        created: 2025-01-27T05:44:59.685Z
-
-
-  SNYK-JS-SERVESTATIC-7926865:
-    - '*':
-        reason: Updating dependey as fast follow up
-        expires: 2025-01-31T05:44:59.682Z
-        created: 2025-01-27T05:44:59.685Z 
-
-  SNYK-JS-CROSSSPAWN-8303230:
-    - '*':
-        reason: Updating dependey as fast follow up
-        expires: 2025-01-31T05:44:59.682Z
-        created: 2025-01-27T05:44:59.685Z 
-
-  SNYK-JS-NANOID-8492085:
      - '*':
-          reason: Updating dependey as fast follow up
-          expires: 2025-01-31T05:44:59.682Z
-          created: 2025-01-27T05:44:59.685Z                
+          reason: Fix not available yet
+          expires: 2025-02-01T05:44:59.682Z
+          created: 2025-02-28T05:44:59.685Z
 patch: {}
