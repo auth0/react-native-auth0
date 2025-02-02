@@ -4,7 +4,7 @@ version: v1.25.0
 ignore:
   SNYK-JS-INFLIGHT-6095116:
     - '*':
-        reason: Fix not available
-        expires: 2025-01-31T05:44:59.682Z
-        created: 2024-08-02T05:42:54.239Z
+        reason: No fix available
+        expires: 2025-03-04T05:47:18.375Z
+        created: 2025-02-02T05:47:18.380Z
 patch: {}
