@@ -102,7 +102,7 @@
     "metro-react-native-babel-preset": "^0.77.0",
     "minami": "^1.2.3",
     "node-fetch": "^2.6.7",
-    "pod-install": "^0.2.2",
+    "pod-install": "^0.3.4",
     "prettier": "^2.8.8",
     "pretty-quick": "^1.11.1",
     "react": "18.2.0",
