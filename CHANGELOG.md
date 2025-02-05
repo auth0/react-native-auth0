@@ -1,5 +1,31 @@
 # Change Log
 
+## [v4.2.0](https://github.com/auth0/react-native-auth0/tree/v4.2.0) (2025-01-30)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.1.0...v4.2.0)
+
+**Added**
+
+- Fixes type issue in ExhangeNativeSocial - Adds hook methods for exchangeNativeSocial and revoke [\#1049](https://github.com/auth0/react-native-auth0/pull/1049) ([mnemitz](https://github.com/mnemitz)) / [kailash-b](https://github.com/kailash-b))
+- Update android sdk version to v3.2.1 [\#1047](https://github.com/auth0/react-native-auth0/pull/1047) ([kailash-b](https://github.com/kailash-b))
+
+**Fixed**
+
+- fix: ios magic links handling [\#1034](https://github.com/auth0/react-native-auth0/pull/1034) ([pmathew92](https://github.com/pmathew92))
+
+## [v4.1.0](https://github.com/auth0/react-native-auth0/tree/v4.1.0) (2025-01-27)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.0.0...v4.1.0)
+
+**Added**
+
+- Add support for resource owner password flow [\#1039](https://github.com/auth0/react-native-auth0/pull/1039) ([kailash-b](https://github.com/kailash-b))
+- add: adding namespace in build.gradle [\#1044](https://github.com/auth0/react-native-auth0/pull/1044) ([pmathew92](https://github.com/pmathew92))
+
+**Fixed**
+
+- fix: Interop Layer [\#1045](https://github.com/auth0/react-native-auth0/pull/1045) ([guabu](https://github.com/guabu))
+
 ## [v4.0.0](https://github.com/auth0/react-native-auth0/tree/v4.0.0) (2024-11-27)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v3.2.1...v4.0.0)

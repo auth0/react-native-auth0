@@ -2,24 +2,9 @@
 version: v1.25.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
-  SNYK-JS-BRACES-6838727:
-    - '*':
-        reason: Latest version of expo had this vulnerability
-        expires: 2024-09-01T05:42:12.684Z
-        created: 2024-08-02T05:42:12.691Z
   SNYK-JS-INFLIGHT-6095116:
     - '*':
-        reason: Latest version of expo had this vulnerability
-        expires: 2024-09-01T05:42:54.232Z
-        created: 2024-08-02T05:42:54.239Z
-  SNYK-JS-MICROMATCH-6838728:
-    - '*':
-        reason: Latest version of expo had this vulnerability
-        expires: 2024-09-01T05:43:37.950Z
-        created: 2024-08-02T05:43:37.959Z
-  SNYK-JS-WS-7266574:
-    - '*':
-        reason: Latest version of react-native had this vulnerability
-        expires: 2024-09-01T05:44:19.469Z
-        created: 2024-08-02T05:44:19.472Z
+        reason: No fix available
+        expires: 2025-03-04T05:47:18.375Z
+        created: 2025-02-02T05:47:18.380Z
 patch: {}

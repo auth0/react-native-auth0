@@ -19,14 +19,15 @@ apply plugin: 'maven-publish'
 
 // Matches values in recent template from React Native 0.62
 // https://github.com/facebook/react-native/blob/0.62-stable/template/android/build.gradle#L5-L8
-def DEFAULT_COMPILE_SDK_VERSION = 28
+def DEFAULT_COMPILE_SDK_VERSION = 34
 def DEFAULT_BUILD_TOOLS_VERSION = "28.0.3"
 def DEFAULT_MIN_SDK_VERSION = 16
-def DEFAULT_TARGET_SDK_VERSION = 28
+def DEFAULT_TARGET_SDK_VERSION = 34
 
 android {
   compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
   buildToolsVersion safeExtGet('buildToolsVersion', DEFAULT_BUILD_TOOLS_VERSION)
+  namespace 'com.auth0.react'
 
   defaultConfig {
     minSdkVersion safeExtGet('minSdkVersion', DEFAULT_MIN_SDK_VERSION)
@@ -56,7 +57,7 @@ repositories {
 dependencies {
     implementation "com.facebook.react:react-native:${safeExtGet('reactnativeVersion', '+')}"
     implementation "androidx.browser:browser:1.2.0"
-    implementation 'com.auth0.android:auth0:3.0.0-beta.0'
+    implementation 'com.auth0.android:auth0:3.2.1'
 }
 
 def configureReactNativePom(def pom) {

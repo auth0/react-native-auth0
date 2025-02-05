@@ -1,10 +1,10 @@
 import React, {
   useEffect,
   useReducer,
-  useState,
+  useMemo,
+  useCallback,
   PropsWithChildren,
 } from 'react';
-import { useCallback, useMemo } from 'react';
 import jwtDecode from 'jwt-decode';
 import PropTypes from 'prop-types';
 import Auth0Context from './auth0-context';
@@ -25,6 +25,9 @@ import {
   User,
   WebAuthorizeOptions,
   WebAuthorizeParameters,
+  PasswordRealmOptions,
+  ExchangeNativeSocialOptions,
+  RevokeOptions,
 } from '../types';
 import { CustomJwtPayload } from '../internal-types';
 import { convertUser } from '../utils/userConversion';
@@ -60,6 +63,7 @@ const finalizeScopeParam = (inputScopes?: string) => {
  * Provides the Auth0Context to its child components.
  * @param {String} domain Your Auth0 domain
  * @param {String} clientId Your Auth0 client ID
+ * @param {LocalAuthenticationOptions} localAuthenticationOptions The local auth options
  *
  * @example
  * ```ts
@@ -80,7 +84,7 @@ const Auth0Provider = ({
 }>) => {
   const client = useMemo(
     () => new Auth0({ domain, clientId, localAuthenticationOptions }),
-    [domain, clientId]
+    [domain, clientId, localAuthenticationOptions]
   );
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -301,6 +305,51 @@ const Auth0Provider = ({
     [client]
   );
 
+  const authorizeWithPasswordRealm = useCallback(
+    async (parameters: PasswordRealmOptions) => {
+      try {
+        const credentials = await client.auth.passwordRealm(parameters);
+        const user = getIdTokenProfileClaims(credentials.idToken);
+        await client.credentialsManager.saveCredentials(credentials);
+        dispatch({ type: 'LOGIN_COMPLETE', user });
+        return credentials;
+      } catch (error) {
+        dispatch({ type: 'ERROR', error });
+        return;
+      }
+    },
+    [client]
+  );
+
+  const authorizeWithExchangeNativeSocial = useCallback(
+    async (parameters: ExchangeNativeSocialOptions) => {
+      try {
+        const credentials = await client.auth.exchangeNativeSocial(parameters);
+        const user = getIdTokenProfileClaims(credentials.idToken);
+        await client.credentialsManager.saveCredentials(credentials);
+        dispatch({ type: 'LOGIN_COMPLETE', user });
+        return credentials;
+      } catch (error) {
+        dispatch({ type: 'ERROR', error });
+        return;
+      }
+    },
+    [client]
+  );
+
+  const revokeRefreshToken = useCallback(
+    async (parameters: RevokeOptions) => {
+      try {
+        await client.auth.revoke(parameters);
+        return;
+      } catch (error) {
+        dispatch({ type: 'ERROR', error });
+        return;
+      }
+    },
+    [client]
+  );
+
   const hasValidCredentials = useCallback(
     async (minTtl: number = 0) => {
       return await client.credentialsManager.hasValidCredentials(minTtl);
@@ -334,6 +383,9 @@ const Auth0Provider = ({
       clearSession,
       getCredentials,
       clearCredentials,
+      authorizeWithPasswordRealm,
+      authorizeWithExchangeNativeSocial,
+      revokeRefreshToken,
     }),
     [
       state,
@@ -350,6 +402,9 @@ const Auth0Provider = ({
       clearSession,
       getCredentials,
       clearCredentials,
+      authorizeWithPasswordRealm,
+      authorizeWithExchangeNativeSocial,
+      revokeRefreshToken,
     ]
   );
 

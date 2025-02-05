@@ -30,10 +30,7 @@ class Agent {
       );
     }
     return new Promise(async (resolve, reject) => {
-      if (
-        Platform.OS === 'ios' &&
-        options.safariViewControllerPresentationStyle !== undefined
-      ) {
+      if (Platform.OS === 'ios') {
         linkSubscription = Linking.addEventListener('url', async (event) => {
           try {
             linkSubscription?.remove();
