@@ -121,7 +121,26 @@ Re-declare the activity manually with `tools:node="remove"` in your app's Androi
 
 #### iOS
 
-Inside the `ios` folder find the file `AppDelegate.[swift|m]` add the following to it:
+**For react-native 0.77+**
+
+In the file `ios/<YOUR PROJECT>/AppDelegate.swift` add the following:
+
+```swift
+// …
+
+@main
+class AppDelegate: RCTAppDelegate {
+  // …
+
+  override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    return RCTLinkingManager.application(app, open: url, options: options)
+  }
+}
+```
+
+**For react-native < 0.77**
+
+In the file `ios/<YOUR PROJECT>/AppDelegate.mm` add the following:
 
 ```objc
 #import <React/RCTLinkingManager.h>
@@ -132,6 +151,10 @@ Inside the `ios` folder find the file `AppDelegate.[swift|m]` add the following 
   return [RCTLinkingManager application:app openURL:url options:options];
 }
 ```
+
+> This file will be `ios/<YOUR PROJECT>/AppDelegate.m` on applications using the [old architecture](https://reactnative.dev/docs/next/new-architecture-app-intro#ios---use-objective-c-mm-extension).
+
+Next, add a URLScheme using your App's bundle identifier.
 
 Inside the `ios` folder open the `Info.plist` and locate the value for `CFBundleIdentifier`, e.g.
 
