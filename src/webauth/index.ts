@@ -76,9 +76,9 @@ class WebAuth {
    * You need to call this method within your custom Web Auth provider implementation whenever the operation is
    * cancelled by the user.
    */
-  cancelWebAuthorization() {
+  cancelWebAuth() {
     const { agent, domain, clientId } = this;
-    return agent.cancelWebAuthorization(
+    return agent.cancelWebAuth(
       { clientId, domain },
       this.localAuthenticationOptions
     );

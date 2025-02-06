@@ -78,7 +78,7 @@ class Agent {
     });
   }
 
-  async cancelWebAuthorization(
+  async cancelWebAuth(
     parameters: AgentParameters,
     localAuthenticationOptions?: LocalAuthenticationOptions
   ): Promise<void> {
