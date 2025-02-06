@@ -62,6 +62,10 @@ RCT_EXPORT_METHOD(resumeWebAuth:(NSString *)url resolver:(RCTPromiseResolveBlock
     [self.nativeBridge resumeWebAuthWithUrl:url resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(cancelWebAuth:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge cancelWebAuthWithResolve:resolve reject:reject];
+}
+
 - (NSDictionary *)constantsToExport {
     return @{ @"bundleIdentifier": [[NSBundle mainBundle] bundleIdentifier] };
 }

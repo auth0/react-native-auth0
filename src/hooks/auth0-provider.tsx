@@ -130,6 +130,15 @@ const Auth0Provider = ({
     [client]
   );
 
+  const cancelWebAuthorization = useCallback(async () => {
+    try {
+      await client.webAuth.cancelWebAuthorization();
+    } catch (error) {
+      dispatch({ type: 'ERROR', error });
+      return;
+    }
+  }, [client]);
+
   const clearSession = useCallback(
     async (
       parameters: ClearSessionParameters = {},
@@ -370,6 +379,7 @@ const Auth0Provider = ({
     () => ({
       ...state,
       authorize,
+      cancelWebAuthorization,
       sendSMSCode,
       authorizeWithSMS,
       sendEmailCode,
@@ -389,6 +399,7 @@ const Auth0Provider = ({
     [
       state,
       authorize,
+      cancelWebAuthorization,
       sendSMSCode,
       authorizeWithSMS,
       sendEmailCode,

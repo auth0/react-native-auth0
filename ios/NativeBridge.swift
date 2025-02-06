@@ -129,6 +129,10 @@ public class NativeBridge: NSObject {
         }
     }
     
+    @objc public func cancelWebAuth(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        resolve(WebAuthentication.cancel())
+    }
+    
     @objc public func saveCredentials(credentialsDict: [String: Any], resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         
         guard let accessToken = credentialsDict[NativeBridge.accessTokenKey] as? String, let tokenType = credentialsDict[NativeBridge.tokenTypeKey] as? String, let idToken = credentialsDict[NativeBridge.idTokenKey] as? String else { reject(NativeBridge.credentialsManagerErrorCode, "Incomplete information provided for credentials", NSError.init(domain: NativeBridge.credentialsManagerErrorCode, code: -99999, userInfo: nil)); return; }

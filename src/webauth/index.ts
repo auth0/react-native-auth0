@@ -72,6 +72,19 @@ class WebAuth {
   }
 
   /**
+   * Terminates the ongoing web-based operation and reports back that it was cancelled.
+   * You need to call this method within your custom Web Auth provider implementation whenever the operation is
+   * cancelled by the user.
+   */
+  cancelWebAuthorization() {
+    const { agent, domain, clientId } = this;
+    return agent.cancelWebAuthorization(
+      { clientId, domain },
+      this.localAuthenticationOptions
+    );
+  }
+
+  /**
    *  Removes Auth0 session and optionally remove the Identity Provider session.
    *
    * @see https://auth0.com/docs/logout
