@@ -7,6 +7,7 @@
 5. [How can I change the message in the iOS alert box?](#5-how-can-i-change-the-message-in-the-ios-alert-box)
 6. [How can I programmatically close the iOS alert box?](#6-how-can-i-programmatically-close-the-ios-alert-box)
 7. [Auth0 web browser gets killed when going to the background on Android](#7-auth0-web-browser-gets-killed-when-going-to-the-background-on-android)
+8. [How to resolve the _Failed to start this transaction, as there is an active transaction at the moment_ error?](#8-how-to-resolve-the-failed-to-start-this-transaction-as-there-is-an-active-transaction-at-the-moment-error)
 
 ## 1. How can I have separate Auth0 domains for each environment on Android?
 
@@ -225,3 +226,27 @@ public class MainApplication extends Application {
     ((BaseApplication) getApplication()).removeActivityFromStack(this.getClass());
   }
 ```
+
+## 8. How to resolve the _Failed to start this transaction, as there is an active transaction at the moment_ error?
+
+Users might encounter this error when the app moves to the background and then back to the foreground while the login/logout alert box is displayed, for example by locking and unlocking the device. The alert box would get dismissed but when the user tries to log in again, the Web Auth operation fails with the `transactionActiveAlready` error.
+
+This is a known issue with `ASWebAuthenticationSession` and it is not specific to Auth0.swift. We have already filed a bug report with Apple and are awaiting for a response from them.
+
+### Workarounds
+
+#### Clear the login transaction when handling the `transactionActiveAlready` error
+
+You can invoke `cancelWebAuth()` to manually clear the current login transaction upon encountering this error. Then, you can retry login. For example:
+
+```js
+auth0.webAuth.cancelWebAuth();
+```
+
+#### Clear the login transaction when the app moves to the background/foreground
+
+You can invoke `cancelWebAuth()` to manually clear the current login transaction when the app moves to the background or back to the foreground. However, you need to make sure to not cancel valid login attempts –for example, when the user switches briefly to another app while the login page is open.
+
+#### Avoid the login/logout alert box
+
+If you don't need SSO, consider using `ephemeral sessions` or `SFSafariViewController` instead of `ASWebAuthenticationSession`. See [2. How can I disable the iOS _login_ alert box?](#2-how-can-i-disable-the-ios-login-alert-box) for more information.
