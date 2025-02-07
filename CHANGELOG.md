@@ -1,5 +1,24 @@
 # Change Log
 
+## [v4.3.0](https://github.com/auth0/react-native-auth0/tree/v4.3.0) (2025-02-07)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.2.0...v4.3.0)
+
+**Added**
+
+- Added webAuth cancel for ios to prevent active transaction errors [\#1063](https://github.com/auth0/react-native-auth0/pull/1063) ([pmathew92](https://github.com/pmathew92))
+- Update FAQ explaning workaround when browser gets killed when going t… [\#1052](https://github.com/auth0/react-native-auth0/pull/1052) ([mateoguzmana](https://github.com/mateoguzmana))
+
+**Fixed**
+
+- Change type of authParams to object in PasswordlessWithSMSOptions and… [\#1059](https://github.com/auth0/react-native-auth0/pull/1059) ([ben-qiu](https://github.com/ben-qiu))
+
+**Security**
+
+- Update typescript [\#1065](https://github.com/auth0/react-native-auth0/pull/1065) ([poovamraj](https://github.com/poovamraj))
+- chore(deps): bump actions/setup-node from 4.0.3 to 4.2.0 [\#1040](https://github.com/auth0/react-native-auth0/pull/1040) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update dependencies and sample application [\#1043](https://github.com/auth0/react-native-auth0/pull/1043) ([poovamraj](https://github.com/poovamraj))
+
 ## [v4.2.0](https://github.com/auth0/react-native-auth0/tree/v4.2.0) (2025-01-30)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.1.0...v4.2.0)
