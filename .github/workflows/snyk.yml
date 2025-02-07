@@ -35,6 +35,9 @@ jobs:
 
       - run: npm install -g snyk
 
-      - run: snyk test
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Run Snyk
+        uses: atko-security/devsecops-tooling/.github/actions/sca-scan@main
+        with:
+          additional-arguments: ""
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN | secrets.CIC_SNYK_TOKEN }}
+          SIGNAL_HANDLER_TOKEN: ${{ secrets.SIGNAL_HANDLER_TOKEN }}
