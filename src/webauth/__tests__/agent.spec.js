@@ -19,6 +19,7 @@ jest.mock('react-native', () => {
       A0Auth0: {
         webAuth: () => {},
         webAuthLogout: () => {},
+        cancelWebAuth: () => {},
         resumeWebAuth: () => {},
         hasValidAuth0Instance: () => {},
         initializeAuth0: () => {},
@@ -271,6 +272,56 @@ describe('Agent', () => {
         false,
         'redirect://redirect.com'
       );
+    });
+  });
+
+  describe('agent', () => {
+    it('should ensure module is initialized', async () => {
+      let domain = 'test.com';
+      let clientId = 'client id value';
+      const mock = jest
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
+        .mockImplementation(() => Promise.resolve(true));
+
+      await agent.cancelWebAuth(
+        {
+          clientId: clientId,
+          domain: domain,
+        },
+        localAuthenticationOptions
+      );
+
+      expect(mock).toBeCalledWith(
+        NativeModules.A0Auth0,
+        clientId,
+        domain,
+        localAuthenticationOptions
+      );
+    });
+
+    it('should ensure cancelWebAuth is called correctly', async () => {
+      let domain = 'test.com';
+      let clientId = 'client id value';
+      const mock = jest
+        .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
+        .mockImplementation(() => Promise.resolve(true));
+      const mockCancelWebAuth = jest
+        .spyOn(NativeModules.A0Auth0, 'cancelWebAuth')
+        .mockImplementation(() => Promise.resolve(true));
+      await agent.cancelWebAuth(
+        {
+          clientId: clientId,
+          domain: domain,
+        },
+        localAuthenticationOptions
+      );
+      expect(mock).toBeCalledWith(
+        NativeModules.A0Auth0,
+        clientId,
+        domain,
+        localAuthenticationOptions
+      );
+      expect(mockCancelWebAuth).toHaveBeenCalled();
     });
   });
 
