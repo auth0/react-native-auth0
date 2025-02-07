@@ -91,6 +91,7 @@ export type Auth0Module = {
     redirectUri: string
   ) => Promise<void>;
   resumeWebAuth: (url: string) => Promise<void>;
+  cancelWebAuth: () => Promise<void>;
   saveCredentials: (credentials: Credentials) => Promise<void>;
   getCredentials: (
     scope?: string,

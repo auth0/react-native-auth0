@@ -78,6 +78,26 @@ class Agent {
     });
   }
 
+  async cancelWebAuth(
+    parameters: AgentParameters,
+    localAuthenticationOptions?: LocalAuthenticationOptions
+  ): Promise<void> {
+    if (!NativeModules.A0Auth0) {
+      return Promise.reject(
+        new Error(
+          'Missing NativeModule. React Native versions 0.60 and up perform auto-linking. Please see https://github.com/react-native-community/cli/blob/master/docs/autolinking.md.'
+        )
+      );
+    }
+    await _ensureNativeModuleIsInitializedWithConfiguration(
+      NativeModules.A0Auth0,
+      parameters.clientId,
+      parameters.domain,
+      localAuthenticationOptions
+    );
+    return A0Auth0.cancelWebAuth();
+  }
+
   async logout(
     parameters: AgentParameters,
     options: AgentLogoutOptions,

@@ -30,6 +30,12 @@ export interface Auth0ContextInterface<TUser extends User = User>
     parameters?: WebAuthorizeParameters,
     options?: WebAuthorizeOptions
   ) => Promise<Credentials | undefined>;
+
+  /**
+   * Cancel any ongoing Universal Login transaction.
+   * This works only on iOS and not on any other platforms
+   */
+  cancelWebAuth: () => Promise<void>;
   /**
    * Start the passwordless SMS login flow. See {@link Auth#passwordlessWithSMS}
    */
@@ -151,6 +157,7 @@ const initialContext = {
   user: null,
   isLoading: true,
   authorize: stub,
+  cancelWebAuth: stub,
   sendSMSCode: stub,
   authorizeWithSMS: stub,
   sendEmailCode: stub,

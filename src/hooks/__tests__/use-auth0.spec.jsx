@@ -107,6 +107,14 @@ describe('The useAuth0 hook', () => {
     expect(result.current.clearSession).toBeDefined();
   });
 
+  it('defines cancelWebAuth ', async () => {
+    const { result } = renderHook(() => useAuth0(), {
+      wrapper,
+    });
+
+    expect(result.current.cancelWebAuth()).toBeDefined();
+  });
+
   it('isLoading is true until initialization finishes', async () => {
     const { result } = renderHook(() => useAuth0(), {
       wrapper,
