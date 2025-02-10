@@ -119,7 +119,7 @@
     "react-native-svg-transformer": "^1.5.0",
     "release-it": "^15.0.0",
     "semver": "^6.3.0",
-    "typedoc": "^0.25.1",
+    "typedoc": "^0.27.7",
     "typedoc-plugin-missing-exports": "^2.0.0",
     "typescript": "5.0.4"
   },
