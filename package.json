@@ -78,8 +78,8 @@
   "devDependencies": {
     "@commitlint/config-conventional": "^17.0.2",
     "@react-native-community/cli": "15.0.1",
-    "@react-native-community/cli-platform-android": "15.0.1",
-    "@react-native-community/cli-platform-ios": "15.0.1",
+    "@react-native-community/cli-platform-android": "15.1.3",
+    "@react-native-community/cli-platform-ios": "15.1.3",
     "@react-native/babel-preset": "^0.77.0",
     "@react-native/eslint-config": "^0.77.0",
     "@react-native/js-polyfills": "^0.77.0",
@@ -119,7 +119,7 @@
     "react-native-svg-transformer": "^1.5.0",
     "release-it": "^15.0.0",
     "semver": "^6.3.0",
-    "typedoc": "^0.25.1",
+    "typedoc": "^0.27.7",
     "typedoc-plugin-missing-exports": "^2.0.0",
     "typescript": "5.0.4"
   },
