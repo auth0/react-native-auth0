@@ -1,5 +1,5 @@
 PODS:
-  - A0Auth0 (4.1.0):
+  - A0Auth0 (4.3.0):
     - Auth0 (= 2.7.2)
     - JWTDecode (= 3.1.0)
     - React-Core
@@ -1845,7 +1845,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  A0Auth0: b92c7440bfc3833eb31f1ecfe5ccccc21559f6d2
+  A0Auth0: c246a55504e143a8b1dd2bd2f236991cfbd1e307
   Auth0: 28cb24cb19ebd51f0b07751f16d83b59f4019532
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
