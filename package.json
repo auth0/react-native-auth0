@@ -121,7 +121,7 @@
     "semver": "^6.3.0",
     "typedoc": "^0.27.7",
     "typedoc-plugin-missing-exports": "^3.1.0",
-    "typescript": "5.0.4"
+    "typescript": "5.7.3"
   },
   "dependencies": {
     "base-64": "^0.1.0",
