@@ -1,3 +1,4 @@
+import BaseError from 'src/utils/baseError';
 import { User } from '../types';
 import { deepEqual } from '../utils/deepEqual';
 import { AuthState } from './auth0-context';
@@ -5,7 +6,7 @@ import { AuthState } from './auth0-context';
 type Action =
   | { type: 'LOGIN_COMPLETE'; user: User }
   | { type: 'LOGOUT_COMPLETE' }
-  | { type: 'ERROR'; error: Error }
+  | { type: 'ERROR'; error: BaseError }
   | { type: 'INITIALIZED'; user: User | null }
   | { type: 'SET_USER'; user: User };
 

@@ -19,6 +19,7 @@ import {
   RevokeOptions,
   ResetPasswordOptions,
 } from '../types';
+import BaseError from 'src/utils/baseError';
 
 export interface Auth0ContextInterface<TUser extends User = User>
   extends AuthState<TUser> {
@@ -143,7 +144,7 @@ export interface AuthState<TUser extends User = User> {
   /**
    * An object representing the last exception
    */
-  error: Error | null;
+  error: BaseError | null;
   /**
    * The user profile as decoded from the ID token after authentication
    */
