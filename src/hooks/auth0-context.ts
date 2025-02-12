@@ -17,6 +17,7 @@ import {
   PasswordRealmOptions,
   ExchangeNativeSocialOptions,
   RevokeOptions,
+  ResetPasswordOptions,
 } from '../types';
 
 export interface Auth0ContextInterface<TUser extends User = User>
@@ -131,6 +132,11 @@ export interface Auth0ContextInterface<TUser extends User = User>
    *Revokes an issued refresh token. See {@link Auth#revoke}
    */
   revokeRefreshToken: (parameters: RevokeOptions) => Promise<void>;
+
+  /**
+   *Request an email with instructions to change password of a user {@link Auth#resetPassword}
+   */
+  resetPassword: (parameters: ResetPasswordOptions) => Promise<void>;
 }
 
 export interface AuthState<TUser extends User = User> {
@@ -173,6 +179,7 @@ const initialContext = {
   authorizeWithPasswordRealm: stub,
   authorizeWithExchangeNativeSocial: stub,
   revokeRefreshToken: stub,
+  resetPassword: stub,
 };
 
 const Auth0Context = createContext<Auth0ContextInterface>(initialContext);
