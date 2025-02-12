@@ -28,6 +28,7 @@ import {
   PasswordRealmOptions,
   ExchangeNativeSocialOptions,
   RevokeOptions,
+  ResetPasswordOptions,
 } from '../types';
 import { CustomJwtPayload } from '../internal-types';
 import { convertUser } from '../utils/userConversion';
@@ -359,6 +360,19 @@ const Auth0Provider = ({
     [client]
   );
 
+  const resetPassword = useCallback(
+    async (parameters: ResetPasswordOptions) => {
+      try {
+        await client.auth.resetPassword(parameters);
+        return;
+      } catch (error) {
+        dispatch({ type: 'ERROR', error });
+        return;
+      }
+    },
+    [client]
+  );
+
   const hasValidCredentials = useCallback(
     async (minTtl: number = 0) => {
       return await client.credentialsManager.hasValidCredentials(minTtl);
@@ -396,6 +410,7 @@ const Auth0Provider = ({
       authorizeWithPasswordRealm,
       authorizeWithExchangeNativeSocial,
       revokeRefreshToken,
+      resetPassword,
     }),
     [
       state,
@@ -416,6 +431,7 @@ const Auth0Provider = ({
       authorizeWithPasswordRealm,
       authorizeWithExchangeNativeSocial,
       revokeRefreshToken,
+      resetPassword,
     ]
   );
 
