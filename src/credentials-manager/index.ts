@@ -52,6 +52,7 @@ class CredentialsManager {
       const json = {
         error: 'a0.credential_manager.invalid',
         error_description: e.message,
+        code: e.code,
       };
       throw new CredentialsManagerError({ json, status: 0 });
     }
@@ -79,12 +80,18 @@ class CredentialsManager {
         this.domain,
         this.localAuthenticationOptions
       );
-      return this.Auth0Module.getCredentials(
-        scope,
-        minTtl,
-        parameters,
-        forceRefresh
-      );
+      return new Promise<Credentials>((resolve, reject) => {
+        this.Auth0Module.getCredentials(scope, minTtl, parameters, forceRefresh)
+          .then(resolve)
+          .catch((e) => {
+            const json = {
+              error: 'a0.credential_manager.invalid',
+              error_description: e.message,
+              code: e.code,
+            };
+            reject(new CredentialsManagerError({ json, status: 0 }));
+          });
+      });
     } catch (e) {
       const json = {
         error: 'a0.credential_manager.invalid',

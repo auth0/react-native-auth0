@@ -30,6 +30,43 @@ import java.util.Map;
 
 public class A0Auth0Module extends ReactContextBaseJavaModule implements ActivityEventListener {
 
+    public static final Map<CredentialsManagerException, String> ERROR_CODE_MAP = new HashMap<>() {{
+        put(CredentialsManagerException.Companion.getINVALID_CREDENTIALS(), "INVALID_CREDENTIALS");
+        put(CredentialsManagerException.Companion.getNO_CREDENTIALS(), "NO_CREDENTIALS");
+        put(CredentialsManagerException.Companion.getNO_REFRESH_TOKEN(), "NO_REFRESH_TOKEN");
+        put(CredentialsManagerException.Companion.getRENEW_FAILED(), "RENEW_FAILED");
+        put(CredentialsManagerException.Companion.getSTORE_FAILED(), "STORE_FAILED");
+        put(CredentialsManagerException.Companion.getREVOKE_FAILED(), "REVOKE_FAILED");
+        put(CredentialsManagerException.Companion.getLARGE_MIN_TTL(), "LARGE_MIN_TTL");
+        put(CredentialsManagerException.Companion.getINCOMPATIBLE_DEVICE(), "INCOMPATIBLE_DEVICE");
+        put(CredentialsManagerException.Companion.getCRYPTO_EXCEPTION(), "CRYPTO_EXCEPTION");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_NO_ACTIVITY(), "BIOMETRIC_NO_ACTIVITY");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_STATUS_UNKNOWN(), "BIOMETRIC_ERROR_STATUS_UNKNOWN");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_UNSUPPORTED(), "BIOMETRIC_ERROR_UNSUPPORTED");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_HW_UNAVAILABLE(), "BIOMETRIC_ERROR_HW_UNAVAILABLE");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_NONE_ENROLLED(), "BIOMETRIC_ERROR_NONE_ENROLLED");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_NO_HARDWARE(), "BIOMETRIC_ERROR_NO_HARDWARE");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED(), "BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_AUTHENTICATION_CHECK_FAILED(), "BIOMETRIC_AUTHENTICATION_CHECK_FAILED");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_DEVICE_CREDENTIAL_NOT_AVAILABLE(), "BIOMETRIC_ERROR_DEVICE_CREDENTIAL_NOT_AVAILABLE");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_STRONG_AND_DEVICE_CREDENTIAL_NOT_AVAILABLE(), "BIOMETRIC_ERROR_STRONG_AND_DEVICE_CREDENTIAL_NOT_AVAILABLE");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_NO_DEVICE_CREDENTIAL(), "BIOMETRIC_ERROR_NO_DEVICE_CREDENTIAL");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_NEGATIVE_BUTTON(), "BIOMETRIC_ERROR_NEGATIVE_BUTTON");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_HW_NOT_PRESENT(), "BIOMETRIC_ERROR_HW_NOT_PRESENT");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_NO_BIOMETRICS(), "BIOMETRIC_ERROR_NO_BIOMETRICS");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_USER_CANCELED(), "BIOMETRIC_ERROR_USER_CANCELED");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_LOCKOUT_PERMANENT(), "BIOMETRIC_ERROR_LOCKOUT_PERMANENT");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_VENDOR(), "BIOMETRIC_ERROR_VENDOR");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_LOCKOUT(), "BIOMETRIC_ERROR_LOCKOUT");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_CANCELED(), "BIOMETRIC_ERROR_CANCELED");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_NO_SPACE(), "BIOMETRIC_ERROR_NO_SPACE");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_TIMEOUT(), "BIOMETRIC_ERROR_TIMEOUT");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_ERROR_UNABLE_TO_PROCESS(), "BIOMETRIC_ERROR_UNABLE_TO_PROCESS");
+        put(CredentialsManagerException.Companion.getBIOMETRICS_INVALID_USER(), "BIOMETRICS_INVALID_USER");
+        put(CredentialsManagerException.Companion.getBIOMETRIC_AUTHENTICATION_FAILED(), "BIOMETRIC_AUTHENTICATION_FAILED");
+        put(CredentialsManagerException.Companion.getAPI_ERROR(), "API_ERROR");
+        put(CredentialsManagerException.Companion.getNO_NETWORK(), "NO_NETWORK");
+    }};
     private static final String CREDENTIAL_MANAGER_ERROR_CODE = "a0.invalid_state.credential_manager_exception";
     private static final String INVALID_DOMAIN_URL_ERROR_CODE = "a0.invalid_domain_url";
     private static final String BIOMETRICS_AUTHENTICATION_ERROR_CODE = "a0.invalid_options_biometrics_authentication";
@@ -122,9 +159,14 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
 
                     @Override
                     public void onFailure(@NonNull CredentialsManagerException e) {
-                        promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, e.getMessage(), e);
+                        String errorCode = deduceErrorCode(e);
+                        promise.reject(errorCode, e.getMessage(), e);
                     }
                 }));
+    }
+
+    private String deduceErrorCode(@NonNull CredentialsManagerException e) {
+        return ERROR_CODE_MAP.getOrDefault(e, CREDENTIAL_MANAGER_ERROR_CODE);
     }
 
     @ReactMethod
@@ -133,7 +175,8 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
             this.secureCredentialsManager.saveCredentials(CredentialsParser.fromMap(credentials));
             promise.resolve(true);
         } catch (CredentialsManagerException e) {
-            promise.reject(CREDENTIAL_MANAGER_ERROR_CODE, e.getMessage(), e);
+            String errorCode = deduceErrorCode(e);
+            promise.reject(errorCode, e.getMessage(), e);
         }
     }
 
