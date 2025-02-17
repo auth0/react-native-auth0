@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class A0Auth0Module extends ReactContextBaseJavaModule implements ActivityEventListener {
 
-    public static final Map<CredentialsManagerException, String> ERROR_CODE_MAP = new HashMap<>() {{
+    private final Map<CredentialsManagerException, String> ERROR_CODE_MAP = new HashMap<>() {{
         put(CredentialsManagerException.Companion.getINVALID_CREDENTIALS(), "INVALID_CREDENTIALS");
         put(CredentialsManagerException.Companion.getNO_CREDENTIALS(), "NO_CREDENTIALS");
         put(CredentialsManagerException.Companion.getNO_REFRESH_TOKEN(), "NO_REFRESH_TOKEN");

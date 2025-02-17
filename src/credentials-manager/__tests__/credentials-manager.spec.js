@@ -1,4 +1,5 @@
 import CredentialsManager from '../index';
+import CredentialsManagerError from '../credentialsManagerError';
 import { Platform } from 'react-native';
 
 describe('credentials manager tests', () => {
@@ -166,6 +167,143 @@ describe('credentials manager tests', () => {
         true
       );
       newNativeModule.mockRestore();
+    });
+  });
+
+  describe('CredentialsManagerError', () => {
+    describe('convertToCommonErrorCode', () => {
+      it('should return the correct common error code for known error codes', () => {
+        const error = new CredentialsManagerError({
+          status: 400,
+          json: {},
+          text: '',
+        });
+
+        expect(error.convertToCommonErrorCode('INVALID_CREDENTIALS')).toBe(
+          'INVALID_CREDENTIALS'
+        );
+        expect(error.convertToCommonErrorCode('NO_CREDENTIALS')).toBe(
+          'NO_CREDENTIALS'
+        );
+        expect(error.convertToCommonErrorCode('NO_REFRESH_TOKEN')).toBe(
+          'NO_REFRESH_TOKEN'
+        );
+        expect(error.convertToCommonErrorCode('RENEW_FAILED')).toBe(
+          'RENEW_FAILED'
+        );
+        expect(error.convertToCommonErrorCode('STORE_FAILED')).toBe(
+          'STORE_FAILED'
+        );
+        expect(error.convertToCommonErrorCode('REVOKE_FAILED')).toBe(
+          'REVOKE_FAILED'
+        );
+        expect(error.convertToCommonErrorCode('LARGE_MIN_TTL')).toBe(
+          'LARGE_MIN_TTL'
+        );
+        expect(error.convertToCommonErrorCode('INCOMPATIBLE_DEVICE')).toBe(
+          'INCOMPATIBLE_DEVICE'
+        );
+        expect(error.convertToCommonErrorCode('CRYPTO_EXCEPTION')).toBe(
+          'CRYPTO_EXCEPTION'
+        );
+        expect(error.convertToCommonErrorCode('BIOMETRIC_NO_ACTIVITY')).toBe(
+          'BIOMETRICS_FAILED'
+        );
+        expect(
+          error.convertToCommonErrorCode('BIOMETRIC_ERROR_STATUS_UNKNOWN')
+        ).toBe('BIOMETRICS_FAILED');
+        expect(
+          error.convertToCommonErrorCode('BIOMETRIC_ERROR_UNSUPPORTED')
+        ).toBe('BIOMETRICS_FAILED');
+        expect(
+          error.convertToCommonErrorCode('BIOMETRIC_ERROR_HW_UNAVAILABLE')
+        ).toBe('BIOMETRICS_FAILED');
+        expect(
+          error.convertToCommonErrorCode('BIOMETRIC_ERROR_NONE_ENROLLED')
+        ).toBe('BIOMETRICS_FAILED');
+        expect(
+          error.convertToCommonErrorCode('BIOMETRIC_ERROR_NO_HARDWARE')
+        ).toBe('BIOMETRICS_FAILED');
+        expect(
+          error.convertToCommonErrorCode(
+            'BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED'
+          )
+        ).toBe('BIOMETRICS_FAILED');
+        expect(
+          error.convertToCommonErrorCode(
+            'BIOMETRIC_AUTHENTICATION_CHECK_FAILED'
+          )
+        ).toBe('BIOMETRICS_FAILED');
+        expect(
+          error.convertToCommonErrorCode(
+            'BIOMETRIC_ERROR_DEVICE_CREDENTIAL_NOT_AVAILABLE'
+          )
+        ).toBe('BIOMETRICS_FAILED');
+        expect(
+          error.convertToCommonErrorCode(
+            'BIOMETRIC_ERROR_STRONG_AND_DEVICE_CREDENTIAL_NOT_AVAILABLE'
+          )
+        ).toBe('BIOMETRICS_FAILED');
+        expect(
+          error.convertToCommonErrorCode('BIOMETRIC_ERROR_NO_DEVICE_CREDENTIAL')
+        ).toBe('BIOMETRICS_FAILED');
+        expect(
+          error.convertToCommonErrorCode('BIOMETRIC_ERROR_NEGATIVE_BUTTON')
+        ).toBe('BIOMETRICS_FAILED');
+        expect(
+          error.convertToCommonErrorCode('BIOMETRIC_ERROR_HW_NOT_PRESENT')
+        ).toBe('BIOMETRICS_FAILED');
+        expect(
+          error.convertToCommonErrorCode('BIOMETRIC_ERROR_NO_BIOMETRICS')
+        ).toBe('BIOMETRICS_FAILED');
+        expect(
+          error.convertToCommonErrorCode('BIOMETRIC_ERROR_USER_CANCELED')
+        ).toBe('BIOMETRICS_FAILED');
+        expect(
+          error.convertToCommonErrorCode('BIOMETRIC_ERROR_LOCKOUT_PERMANENT')
+        ).toBe('BIOMETRICS_FAILED');
+        expect(error.convertToCommonErrorCode('BIOMETRIC_ERROR_VENDOR')).toBe(
+          'BIOMETRICS_FAILED'
+        );
+        expect(error.convertToCommonErrorCode('BIOMETRIC_ERROR_LOCKOUT')).toBe(
+          'BIOMETRICS_FAILED'
+        );
+        expect(error.convertToCommonErrorCode('BIOMETRIC_ERROR_CANCELED')).toBe(
+          'BIOMETRICS_FAILED'
+        );
+        expect(error.convertToCommonErrorCode('BIOMETRIC_ERROR_NO_SPACE')).toBe(
+          'BIOMETRICS_FAILED'
+        );
+        expect(error.convertToCommonErrorCode('BIOMETRIC_ERROR_TIMEOUT')).toBe(
+          'BIOMETRICS_FAILED'
+        );
+        expect(
+          error.convertToCommonErrorCode('BIOMETRIC_ERROR_UNABLE_TO_PROCESS')
+        ).toBe('BIOMETRICS_FAILED');
+        expect(error.convertToCommonErrorCode('BIOMETRICS_INVALID_USER')).toBe(
+          'BIOMETRICS_FAILED'
+        );
+        expect(
+          error.convertToCommonErrorCode('BIOMETRIC_AUTHENTICATION_FAILED')
+        ).toBe('BIOMETRICS_FAILED');
+        expect(error.convertToCommonErrorCode('BIOMETRICS_FAILED')).toBe(
+          'BIOMETRICS_FAILED'
+        );
+        expect(error.convertToCommonErrorCode('NO_NETWORK')).toBe('NO_NETWORK');
+        expect(error.convertToCommonErrorCode('API_ERROR')).toBe('API_ERROR');
+      });
+
+      it('should return UNKNOWN_ERROR for unknown error codes', () => {
+        const error = new CredentialsManagerError({
+          status: 400,
+          json: {},
+          text: '',
+        });
+
+        expect(error.convertToCommonErrorCode('UNKNOWN_CODE')).toBe(
+          'UNKNOWN_ERROR'
+        );
+      });
     });
   });
 });
