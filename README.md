@@ -493,6 +493,35 @@ try {
 }
 ```
 
+**Platform agnostic errors:**
+
+You can access the platform agnostic generic error codes as below :
+
+```js
+try {
+  const credentials = await auth0.credentialsManager.getCredentials();
+} catch (error) {
+  console.log(e.type);
+}
+```
+
+_Note_ : We have platform agnostic error codes available only for `CredentialsManagerError` as of now.
+
+| Generic Error Code    | Corresponding Error Code in Android                                                                                                                                                                                                                                                                                                              | Corresponding Error Code in iOS |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------- |
+| `INVALID_CREDENTIALS` | `INVALID_CREDENTIALS`                                                                                                                                                                                                                                                                                                                            |                                 |
+| `NO_CREDENTIALS`      | `NO_CREDENTIALS`                                                                                                                                                                                                                                                                                                                                 | `noCredentials`                 |
+| `NO_REFRESH_TOKEN`    | `NO_REFRESH_TOKEN`                                                                                                                                                                                                                                                                                                                               | `noRefreshToken`                |
+| `RENEW_FAILED`        | `RENEW_FAILED`                                                                                                                                                                                                                                                                                                                                   | `renewFailed`                   |
+| `STORE_FAILED`        | `STORE_FAILED`                                                                                                                                                                                                                                                                                                                                   | `storeFailed`                   |
+| `REVOKE_FAILED`       | `REVOKE_FAILED`                                                                                                                                                                                                                                                                                                                                  | `revokeFailed`                  |
+| `LARGE_MIN_TTL`       | `LARGE_MIN_TTL`                                                                                                                                                                                                                                                                                                                                  | `largeMinTTL`                   |
+| `INCOMPATIBLE_DEVICE` | `INCOMPATIBLE_DEVICE`                                                                                                                                                                                                                                                                                                                            |                                 |
+| `CRYPTO_EXCEPTION`    | `CRYPTO_EXCEPTION`                                                                                                                                                                                                                                                                                                                               |                                 |
+| `BIOMETRICS_FAILED`   | OneOf <br>`BIOMETRIC_NO_ACTIVITY`,`BIOMETRIC_ERROR_STATUS_UNKNOWN`,`BIOMETRIC_ERROR_UNSUPPORTED`,<br>`BIOMETRIC_ERROR_HW_UNAVAILABLE`,`BIOMETRIC_ERROR_NONE_ENROLLED`,`BIOMETRIC_ERROR_NO_HARDWARE`,<br>`BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED`,`BIOMETRIC_AUTHENTICATION_CHECK_FAILED`,<br>`BIOMETRIC_ERROR_DEVICE_CREDENTIAL_NOT_AVAILABLE` | `biometricsFailed`              |
+| `NO_NETWORK`          | `NO_NETWORK`                                                                                                                                                                                                                                                                                                                                     |                                 |
+| `API_ERROR`           | `API_ERROR`                                                                                                                                                                                                                                                                                                                                      |                                 |
+
 ## Feedback
 
 ### Contributing
