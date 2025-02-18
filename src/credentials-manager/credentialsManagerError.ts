@@ -8,7 +8,7 @@ export default class CredentialsManagerError<
   public json;
   public status;
   public invalid_parameter;
-  public generic_error_code;
+  public type;
 
   constructor(response: Auth0Response<CredentialsManagerErrorDetails>) {
     const { status, json, text } = response;
@@ -34,7 +34,7 @@ export default class CredentialsManagerError<
     );
     this.json = json;
     this.status = status;
-    this.generic_error_code = this.convertToCommonErrorCode(code || '');
+    this.type = this.convertToCommonErrorCode(code || '');
 
     if (invalid_parameter) {
       this.invalid_parameter = invalid_parameter;
