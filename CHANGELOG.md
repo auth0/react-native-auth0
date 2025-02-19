@@ -1,5 +1,19 @@
 # Change Log
 
+## [v4.4.0](https://github.com/auth0/react-native-auth0/tree/v4.4.0) (2025-02-19)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.3.0...v4.4.0)
+
+**Added**
+
+- Expose generic error codes for CredentialsManagerError [\#1076](https://github.com/auth0/react-native-auth0/pull/1076) ([kailash-b](https://github.com/kailash-b))
+- Add hooks support for resetPassword [\#1074](https://github.com/auth0/react-native-auth0/pull/1074) ([kailash-b](https://github.com/kailash-b))
+
+**Security**
+
+- Update dependencies [\#1073](https://github.com/auth0/react-native-auth0/pull/1073) ([poovamraj](https://github.com/poovamraj))
+- Update dependencies [\#1068](https://github.com/auth0/react-native-auth0/pull/1068) ([poovamraj](https://github.com/poovamraj))
+
 ## [v4.3.0](https://github.com/auth0/react-native-auth0/tree/v4.3.0) (2025-02-07)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.2.0...v4.3.0)

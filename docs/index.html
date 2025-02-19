@@ -889,6 +889,96 @@
           </p>
           <pre><code class="language-js"><span class="hl-11">try</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-16">credentials</span><span class="hl-1"> = </span><span class="hl-11">await</span><span class="hl-1"> </span><span class="hl-2">auth0</span><span class="hl-1">.</span><span class="hl-2">credentialsManager</span><span class="hl-1">.</span><span class="hl-13">getCredentials</span><span class="hl-1">();</span><br/><span class="hl-1">} </span><span class="hl-11">catch</span><span class="hl-1"> (</span><span class="hl-2">error</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-13">log</span><span class="hl-1">(</span><span class="hl-2">error</span><span class="hl-1">);</span><br/><span class="hl-1">}</span>
 </code><button>Copy</button></pre>
+          <p><strong>Platform agnostic errors:</strong></p>
+          <p>
+            You can access the platform agnostic generic error codes as below :
+          </p>
+          <pre><code class="language-js"><span class="hl-11">try</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-16">credentials</span><span class="hl-1"> = </span><span class="hl-11">await</span><span class="hl-1"> </span><span class="hl-2">auth0</span><span class="hl-1">.</span><span class="hl-2">credentialsManager</span><span class="hl-1">.</span><span class="hl-13">getCredentials</span><span class="hl-1">();</span><br/><span class="hl-1">} </span><span class="hl-11">catch</span><span class="hl-1"> (</span><span class="hl-2">error</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-13">log</span><span class="hl-1">(</span><span class="hl-2">e</span><span class="hl-1">.</span><span class="hl-2">type</span><span class="hl-1">);</span><br/><span class="hl-1">}</span>
+</code><button>Copy</button></pre>
+          <p>
+            <em>Note</em> : We have platform agnostic error codes available only
+            for <code>CredentialsManagerError</code> as of now.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Generic Error Code</th>
+                <th>Corresponding Error Code in Android</th>
+                <th>Corresponding Error Code in iOS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>INVALID_CREDENTIALS</code></td>
+                <td><code>INVALID_CREDENTIALS</code></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>NO_CREDENTIALS</code></td>
+                <td><code>NO_CREDENTIALS</code></td>
+                <td><code>noCredentials</code></td>
+              </tr>
+              <tr>
+                <td><code>NO_REFRESH_TOKEN</code></td>
+                <td><code>NO_REFRESH_TOKEN</code></td>
+                <td><code>noRefreshToken</code></td>
+              </tr>
+              <tr>
+                <td><code>RENEW_FAILED</code></td>
+                <td><code>RENEW_FAILED</code></td>
+                <td><code>renewFailed</code></td>
+              </tr>
+              <tr>
+                <td><code>STORE_FAILED</code></td>
+                <td><code>STORE_FAILED</code></td>
+                <td><code>storeFailed</code></td>
+              </tr>
+              <tr>
+                <td><code>REVOKE_FAILED</code></td>
+                <td><code>REVOKE_FAILED</code></td>
+                <td><code>revokeFailed</code></td>
+              </tr>
+              <tr>
+                <td><code>LARGE_MIN_TTL</code></td>
+                <td><code>LARGE_MIN_TTL</code></td>
+                <td><code>largeMinTTL</code></td>
+              </tr>
+              <tr>
+                <td><code>INCOMPATIBLE_DEVICE</code></td>
+                <td><code>INCOMPATIBLE_DEVICE</code></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>CRYPTO_EXCEPTION</code></td>
+                <td><code>CRYPTO_EXCEPTION</code></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>BIOMETRICS_FAILED</code></td>
+                <td>
+                  OneOf <br /><code>BIOMETRIC_NO_ACTIVITY</code
+                  >,<code>BIOMETRIC_ERROR_STATUS_UNKNOWN</code>,<code>BIOMETRIC_ERROR_UNSUPPORTED</code>,<br /><code
+                    >BIOMETRIC_ERROR_HW_UNAVAILABLE</code
+                  >,<code>BIOMETRIC_ERROR_NONE_ENROLLED</code>,<code>BIOMETRIC_ERROR_NO_HARDWARE</code>,<br /><code
+                    >BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED</code
+                  >,<code>BIOMETRIC_AUTHENTICATION_CHECK_FAILED</code>,<br /><code
+                    >BIOMETRIC_ERROR_DEVICE_CREDENTIAL_NOT_AVAILABLE</code
+                  >
+                </td>
+                <td><code>biometricsFailed</code></td>
+              </tr>
+              <tr>
+                <td><code>NO_NETWORK</code></td>
+                <td><code>NO_NETWORK</code></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>API_ERROR</code></td>
+                <td><code>API_ERROR</code></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
           <a id="md:feedback" class="tsd-anchor"></a>
           <h2><a href="#md:feedback">Feedback</a></h2>
           <a id="md:contributing" class="tsd-anchor"></a>
