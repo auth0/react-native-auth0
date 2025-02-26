@@ -9,7 +9,8 @@
     "esModuleInterop": true,
     "jsx": "react-native",
     "lib": ["DOM", "ESNext"],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "resolvePackageJsonImports": false,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "target": "ESNext",
@@ -22,7 +23,7 @@
     "strictFunctionTypes": true,
     "strictPropertyInitialization": true,
     "declaration": true,
-    "declarationDir": "./lib/typescript/",
-    "outDir": "./lib/typescript"
+    "emitDeclarationOnly": true,
+    "noEmit": false
   }
 }
