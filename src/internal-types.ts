@@ -1,6 +1,6 @@
-import { JwtPayload } from 'jwt-decode';
-import { Credentials } from './types';
-import LocalAuthenticationOptions from './credentials-manager/localAuthenticationOptions';
+import type { JwtPayload } from 'jwt-decode';
+import type { Credentials } from './types';
+import type { LocalAuthenticationOptions } from './credentials-manager/localAuthenticationOptions';
 
 export type CredentialsResponse = {
   id_token: string;
@@ -20,6 +20,11 @@ export type RawCredentials = {
   refreshToken?: string;
   scope?: string;
   [key: string]: any;
+};
+
+export type NativeModuleError = {
+  message: string;
+  code: string;
 };
 
 export type RawUser = {

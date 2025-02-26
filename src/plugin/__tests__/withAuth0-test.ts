@@ -1,4 +1,5 @@
-import { AndroidConfig, ExportedConfigWithProps } from 'expo/config-plugins';
+import { AndroidConfig } from 'expo/config-plugins';
+import type { ExportedConfigWithProps } from 'expo/config-plugins';
 import {
   addAndroidAuth0Manifest,
   addAuth0AppDelegateCode,
@@ -6,7 +7,7 @@ import {
 } from '../withAuth0';
 import appDelegateFixtureWithLinking from './fixtures/appdelegate-withlinking';
 import appDelegateFixtureWithoutLinking from './fixtures/appdelegate-withoutlinking';
-import { ModConfig } from '@expo/config-plugins';
+import type { ModConfig } from '@expo/config-plugins';
 
 const getConfig = () => {
   return {

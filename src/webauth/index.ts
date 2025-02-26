@@ -1,17 +1,17 @@
 import Agent from './agent';
 
-import {
+import type {
   ClearSessionOptions,
   ClearSessionParameters,
   Credentials,
-  SafariViewControllerPresentationStyle,
   WebAuthorizeOptions,
   WebAuthorizeParameters,
 } from '../types';
 
+import { SafariViewControllerPresentationStyle } from '../types';
+
 import Auth from '../auth';
-import { object } from 'prop-types';
-import LocalAuthenticationOptions from 'src/credentials-manager/localAuthenticationOptions';
+import type { LocalAuthenticationOptions } from '../credentials-manager/localAuthenticationOptions';
 
 /**
  * Helper to perform Auth against Auth0 hosted login page

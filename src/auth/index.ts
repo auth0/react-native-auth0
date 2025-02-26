@@ -1,11 +1,12 @@
-import Client, { Auth0Response } from '../networking';
+import Client from '../networking';
+import type { Auth0Response } from '../networking';
 import { apply } from '../utils/whitelist';
 import { toCamelCase } from '../utils/camel';
 import AuthError from './authError';
 import Auth0Error from './auth0Error';
-import { Telemetry } from '../networking/telemetry';
-import { convertExpiresInToExpiresAt } from '../utils/timestampConversion'
-import {
+import type { Telemetry } from '../networking/telemetry';
+import { convertExpiresInToExpiresAt } from '../utils/timestampConversion';
+import type {
   AuthorizeUrlOptions,
   CreateUserOptions,
   Credentials,
@@ -28,7 +29,7 @@ import {
   User,
   UserInfoOptions,
 } from '../types';
-import {
+import type {
   CredentialsResponse,
   RawCredentials,
   RawMultifactorChallengeResponse,
@@ -45,13 +46,15 @@ function responseHandler<TRawResult = unknown, TResult = unknown>(
   throw new AuthError(response);
 }
 
-function convertTimestampInCredentials(rawCredentials: RawCredentials): Credentials {
-  let expiresAt = convertExpiresInToExpiresAt(rawCredentials.expiresIn)
-  if(!expiresAt) {
-    throw Error('invalid expiry value found')
+function convertTimestampInCredentials(
+  rawCredentials: RawCredentials
+): Credentials {
+  let expiresAt = convertExpiresInToExpiresAt(rawCredentials.expiresIn);
+  if (!expiresAt) {
+    throw Error('invalid expiry value found');
   }
-  const { expiresIn, ...credentials } = rawCredentials
-  return {...credentials, expiresAt}
+  const { expiresIn, ...credentials } = rawCredentials;
+  return { ...credentials, expiresAt };
 }
 
 /**
@@ -161,7 +164,9 @@ class Auth {
         grant_type: 'authorization_code',
       })
       .then((response) =>
-        convertTimestampInCredentials(responseHandler<CredentialsResponse, RawCredentials>(response))
+        convertTimestampInCredentials(
+          responseHandler<CredentialsResponse, RawCredentials>(response)
+        )
       );
   }
 
@@ -193,7 +198,9 @@ class Auth {
         grant_type: 'urn:ietf:params:oauth:grant-type:token-exchange',
       })
       .then((response) => {
-        return convertTimestampInCredentials(responseHandler<CredentialsResponse, RawCredentials>(response))
+        return convertTimestampInCredentials(
+          responseHandler<CredentialsResponse, RawCredentials>(response)
+        );
       });
   }
 
@@ -211,7 +218,9 @@ class Auth {
         grant_type: 'http://auth0.com/oauth/grant-type/password-realm',
       })
       .then((response) =>
-        convertTimestampInCredentials(responseHandler<CredentialsResponse, RawCredentials>(response))
+        convertTimestampInCredentials(
+          responseHandler<CredentialsResponse, RawCredentials>(response)
+        )
       );
   }
 
@@ -239,7 +248,9 @@ class Auth {
         grant_type: 'refresh_token',
       })
       .then((response) =>
-        convertTimestampInCredentials(responseHandler<CredentialsResponse, RawCredentials>(response))
+        convertTimestampInCredentials(
+          responseHandler<CredentialsResponse, RawCredentials>(response)
+        )
       );
   }
 
@@ -312,7 +323,9 @@ class Auth {
         grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
       })
       .then((response) =>
-        convertTimestampInCredentials(responseHandler<CredentialsResponse, RawCredentials>(response))
+        convertTimestampInCredentials(
+          responseHandler<CredentialsResponse, RawCredentials>(response)
+        )
       );
   }
 
@@ -342,7 +355,9 @@ class Auth {
         grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
       })
       .then((response) =>
-        convertTimestampInCredentials(responseHandler<CredentialsResponse, RawCredentials>(response))
+        convertTimestampInCredentials(
+          responseHandler<CredentialsResponse, RawCredentials>(response)
+        )
       );
   }
 
@@ -373,7 +388,9 @@ class Auth {
         grant_type: 'http://auth0.com/oauth/grant-type/mfa-otp',
       })
       .then((response) =>
-        convertTimestampInCredentials(responseHandler<CredentialsResponse, RawCredentials>(response))
+        convertTimestampInCredentials(
+          responseHandler<CredentialsResponse, RawCredentials>(response)
+        )
       );
   }
 
@@ -406,7 +423,9 @@ class Auth {
         grant_type: 'http://auth0.com/oauth/grant-type/mfa-oob',
       })
       .then((response) =>
-        convertTimestampInCredentials(responseHandler<CredentialsResponse, RawCredentials>(response))
+        convertTimestampInCredentials(
+          responseHandler<CredentialsResponse, RawCredentials>(response)
+        )
       );
   }
 
@@ -439,7 +458,9 @@ class Auth {
         grant_type: 'http://auth0.com/oauth/grant-type/mfa-recovery-code',
       })
       .then((response) =>
-        convertTimestampInCredentials(responseHandler<CredentialsResponse, RawCredentials>(response))
+        convertTimestampInCredentials(
+          responseHandler<CredentialsResponse, RawCredentials>(response)
+        )
       );
   }
 

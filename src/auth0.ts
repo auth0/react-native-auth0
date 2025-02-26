@@ -1,9 +1,9 @@
 import Auth from './auth';
 import CredentialsManager from './credentials-manager';
 import Users from './management/users';
-import { Telemetry } from './networking/telemetry';
+import type { Telemetry } from './networking/telemetry';
 import WebAuth from './webauth';
-import LocalAuthenticationOptions from './credentials-manager/localAuthenticationOptions';
+import type { LocalAuthenticationOptions } from './credentials-manager/localAuthenticationOptions';
 import addDefaultLocalAuthOptions from './utils/addDefaultLocalAuthOptions';
 
 /**
