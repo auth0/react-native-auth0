@@ -103,6 +103,8 @@ Take note of this value as you'll be requiring it to define the callback URLs be
 
 > For more info please read the [React Native docs](https://facebook.github.io/react-native/docs/linking.html).
 
+> Whenever possible, Auth0 recommends using `https` scheme with [Android App Links](https://auth0.com/docs/applications/enable-android-app-links) as a secure way to link directly to content within your app. Custom URL schemes can be subject to [client impersonation attacks](https://datatracker.ietf.org/doc/html/rfc8252#section-8.6).
+
 ##### Skipping the Web Authentication setup
 
 If you don't plan to use Web Authentication, you will notice that the compiler will still prompt you to provide the `manifestPlaceholders` values, since the `RedirectActivity` included in this library will require them, and the Gradle tasks won't be able to run without them.
