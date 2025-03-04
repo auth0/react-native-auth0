@@ -3,11 +3,6 @@ import { TurboModuleRegistry } from 'react-native';
 
 export interface Spec extends TurboModule {
   /**
-   * Constant exported from native
-   */
-  // readonly bundleIdentifier: string;
-
-  /**
    * Check if the Auth0 instance is valid with the given configuration
    */
   hasValidAuth0InstanceWithConfiguration(
@@ -33,7 +28,7 @@ export interface Spec extends TurboModule {
    * Get credentials with the given scope
    */
   getCredentials(
-    scope: string,
+    scope: string | undefined,
     minTTL: number,
     parameters: Object,
     forceRefresh: boolean

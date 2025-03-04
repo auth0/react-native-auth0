@@ -9,19 +9,19 @@ interface LocalAuthenticationOptions {
   /**
    * The title of the authentication prompt. **Applicable for both Android and iOS**.
    */
-  title: String;
+  title: string;
   /**
    * The subtitle of the authentication prompt. **Applicable for Android only.**
    */
-  subtitle?: String;
+  subtitle?: string;
   /**
    * The description of the authentication prompt. **Applicable for Android only.**
    */
-  description?: String;
+  description?: string;
   /**
    * The cancel button title of the authentication prompt. **Applicable for both Android and iOS.**
    */
-  cancelTitle?: String;
+  cancelTitle?: string;
   /**
    * The evaluation policy to use when prompting the user for authentication. Defaults to LocalAuthenticationStrategy.deviceOwnerWithBiometrics. **Applicable for iOS only.**
    */
@@ -29,7 +29,7 @@ interface LocalAuthenticationOptions {
   /**
    * The fallback button title of the authentication prompt. **Applicable for iOS only.**
    */
-  fallbackTitle?: String;
+  fallbackTitle?: string;
   /**
    * The authentication level to use when prompting the user for authentication. Defaults to LocalAuthenticationLevel.strong. **Applicable for Android only.**
    */
@@ -37,7 +37,7 @@ interface LocalAuthenticationOptions {
   /**
    * Should the user be given the option to authenticate with their device PIN, pattern, or password instead of a biometric. **Applicable for Android only.**
    */
-  deviceCredentialFallback?: Boolean;
+  deviceCredentialFallback?: boolean;
 }
 
 export default LocalAuthenticationOptions;
