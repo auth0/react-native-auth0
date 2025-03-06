@@ -3,6 +3,11 @@ import { TurboModuleRegistry } from 'react-native';
 
 export interface Spec extends TurboModule {
   /**
+   * Get the bundle identifier
+   */
+  getBundleIdentifier(): Promise<string>;
+
+  /**
    * Check if the Auth0 instance is valid with the given configuration
    */
   hasValidAuth0InstanceWithConfiguration(
@@ -60,18 +65,18 @@ export interface Spec extends TurboModule {
   webAuth(
     scheme: string,
     redirectUri: string,
-    state: string,
-    nonce: string,
-    audience: string,
-    scope: string,
-    connection: string,
-    maxAge: number,
-    organization: string,
-    invitationUrl: string,
-    leeway: number,
-    ephemeralSession: boolean,
-    safariViewControllerPresentationStyle: number,
-    additionalParameters: { [key: string]: string }
+    state?: string,
+    nonce?: string,
+    audience?: string,
+    scope?: string,
+    connection?: string,
+    maxAge?: number,
+    organization?: string,
+    invitationUrl?: string,
+    leeway?: number,
+    ephemeralSession?: boolean,
+    safariViewControllerPresentationStyle?: number,
+    additionalParameters?: { [key: string]: string }
   ): Promise<CredentialsResponse>;
 
   /**

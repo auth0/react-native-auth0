@@ -85,6 +85,11 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
+    public String getBundleIdentifier() {
+        return reactContext.getApplicationInfo().packageName;
+    }
+
+    @ReactMethod
     public void initializeAuth0WithConfiguration(String clientId, String domain, ReadableMap localAuthenticationOptions, Promise promise) {
         this.auth0 = Auth0.getInstance(clientId, domain);
         if (localAuthenticationOptions != null) {
