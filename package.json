@@ -3,11 +3,11 @@
   "title": "React Native Auth0",
   "version": "4.4.0",
   "description": "React Native toolkit for Auth0 API",
-  "source": "./src/index.tsx",
+  "source": "./src/index.ts",
   "main": "./lib/commonjs/index.js",
   "module": "./lib/module/index.js",
   "types": "./lib/typescript/commonjs/src/index.d.ts",
-  "react-native": "./src/index.js",
+  "react-native": "./src/index.ts",
   "exports": {
     ".": {
       "import": {
