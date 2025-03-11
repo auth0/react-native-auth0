@@ -5,6 +5,7 @@ import LocalAuthenticationLevel from '../credentials-manager/localAuthentication
 const defaultLocalAuthOptions = {
   evaluationPolicy: LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
   authenticationLevel: LocalAuthenticationLevel.strong,
+  deviceCredentialFallback: false,
 };
 
 function addDefaultLocalAuthOptions(
