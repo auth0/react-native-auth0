@@ -111,7 +111,7 @@
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
-    "expo": "^52.0.32",
+    "expo": "^52.0.37",
     "faker": "^4.1.0",
     "fetch-mock": "^7.3.9",
     "husky": "^4.2.5",
