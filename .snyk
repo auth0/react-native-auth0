@@ -7,59 +7,64 @@ ignore:
         reason: No fix available
         expires: 2025-04-12T09:15:05.191Z
         created: 2025-02-02T05:47:18.380Z
+  SNYK-JS-BABELHELPERS-9397697:
+    - '*':
+        reason: This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.
+        expires: 2025-04-12T09:15:05.191Z
+        created: 2025-03-12T09:15:05.191Z
   snyk:lic:npm:lightningcss-win32-x64-msvc:MPL-2.0:
     - '*':
-        reason: 'This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.'
+        reason: This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.
         expires: 2025-04-12T09:15:05.191Z
         created: 2025-03-12T09:15:05.191Z
   snyk:lic:npm:lightningcss-linux-x64-musl:MPL-2.0:
     - '*':
-        reason: 'This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.'
+        reason: This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.
         expires: 2025-04-12T09:15:05.191Z
         created: 2025-03-12T09:15:05.191Z
   snyk:lic:npm:lightningcss-linux-x64-gnu:MPL-2.0:
     - '*':
-        reason: 'This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.'
+        reason: This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.
         expires: 2025-04-12T09:15:05.191Z
         created: 2025-03-12T09:15:05.191Z
   snyk:lic:npm:lightningcss-linux-arm64-musl:MPL-2.0:
     - '*':
-        reason: 'This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.'
+        reason: This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.
         expires: 2025-04-12T09:15:05.191Z
         created: 2025-03-12T09:15:05.191Z
   snyk:lic:npm:lightningcss-linux-arm64-gnu:MPL-2.0:
     - '*':
-        reason: 'This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.'
+        reason: This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.
         expires: 2025-04-12T09:15:05.191Z
         created: 2025-03-12T09:15:05.191Z
   snyk:lic:npm:lightningcss-linux-arm-gnueabihf:MPL-2.0:
     - '*':
-        reason: 'This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.'
+        reason: This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.
         expires: 2025-04-12T09:15:05.191Z
         created: 2025-03-12T09:15:05.191Z
   snyk:lic:npm:lightningcss-freebsd-x64:MPL-2.0:
     - '*':
-        reason: 'This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.'
+        reason: This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.
         expires: 2025-04-12T09:15:05.191Z
         created: 2025-03-12T09:15:05.191Z
   snyk:lic:npm:lightningcss-darwin-x64:MPL-2.0:
     - '*':
-        reason: 'This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.'
+        reason: This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.
         expires: 2025-04-12T09:15:05.191Z
         created: 2025-03-12T09:15:05.191Z
   snyk:lic:npm:lightningcss-darwin-arm64:MPL-2.0:
     - '*':
-        reason: 'This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.'
+        reason: This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.
         expires: 2025-04-12T09:15:05.191Z
         created: 2025-03-12T09:15:05.191Z
   snyk:lic:npm:lightningcss:MPL-2.0:
     - '*':
-        reason: 'This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.'
+        reason: This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.
         expires: 2025-04-12T09:15:05.191Z
         created: 2025-03-12T09:15:05.191Z
   snyk:lic:npm:lightningcss-win32-arm64-msvc:MPL-2.0:
     - '*':
-        reason: 'This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.'
+        reason: This issue is temporarily ignored while we evaluate alternative dependencies or wait for an update from Expo/Metro.
         expires: 2025-04-12T09:15:05.191Z
         created: 2025-03-12T09:15:05.191Z
 patch: {}
