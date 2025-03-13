@@ -1,6 +1,4 @@
 import { JwtPayload } from 'jwt-decode';
-import { Credentials } from './types';
-import LocalAuthenticationOptions from './credentials-manager/localAuthenticationOptions';
 
 export type CredentialsResponse = {
   id_token: string;
@@ -63,54 +61,6 @@ export type RawMultifactorChallengeResponse =
   | RawMultifactorChallengeOOBWithBindingResponse;
 
 export type CustomJwtPayload = JwtPayload & RawUser;
-
-/**
- * Type representing the Native Auth0 API's on iOS and Android
- */
-export type Auth0Module = {
-  bundleIdentifier: string;
-  webAuth: (
-    scheme: string,
-    redirectUri: string,
-    state?: string,
-    nonce?: string,
-    audience?: string,
-    scope?: string,
-    connection?: string,
-    maxAge?: number,
-    organization?: string,
-    invitationUrl?: string,
-    leeway?: number,
-    ephemeralSession?: boolean,
-    safariViewControllerPresentationStyle?: number,
-    additionalParameters?: { [key: string]: string }
-  ) => Promise<Credentials>;
-  webAuthLogout: (
-    scheme: string,
-    federated: boolean,
-    redirectUri: string
-  ) => Promise<void>;
-  resumeWebAuth: (url: string) => Promise<void>;
-  cancelWebAuth: () => Promise<void>;
-  saveCredentials: (credentials: Credentials) => Promise<void>;
-  getCredentials: (
-    scope?: string,
-    minTtl?: number,
-    parameters?: Record<string, unknown>,
-    forceRefresh?: boolean
-  ) => Promise<Credentials>;
-  hasValidCredentials: (minTtl?: number) => Promise<boolean>;
-  clearCredentials: () => Promise<void>;
-  hasValidAuth0InstanceWithConfiguration: (
-    clientId: String,
-    domain: String
-  ) => Promise<boolean>;
-  initializeAuth0WithConfiguration: (
-    clientId: string,
-    domain: string,
-    localAuthenticationOptions?: LocalAuthenticationOptions
-  ) => Promise<void>;
-};
 
 export type AgentParameters = {
   clientId: string;
