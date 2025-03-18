@@ -1,4 +1,5 @@
-import { Telemetry, defaults } from './telemetry';
+import { defaults } from './telemetry';
+import type { Telemetry } from './telemetry';
 import url from 'url';
 import base64 from 'base-64';
 import { fetchWithTimeout } from '../utils/fetchWithTimeout';

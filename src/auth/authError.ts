@@ -1,4 +1,4 @@
-import { Auth0Response } from '../networking';
+import type { Auth0Response } from '../networking';
 import BaseError from '../utils/baseError';
 
 export default class AuthError<AuthErrorDetails> extends BaseError {
