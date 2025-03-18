@@ -468,16 +468,16 @@ The options for configuring the display of local authentication prompt, authenti
 
 **Properties:**
 
-| Property                   | Type                                     | Description                                                                                                             | Applicable Platforms |
-| -------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------- |
-| `title`                    | `String`                                 | The title of the authentication prompt.                                                                                 | Android, iOS         |
-| `subtitle`                 | `String` (optional)                      | The subtitle of the authentication prompt.                                                                              | Android              |
-| `description`              | `String` (optional)                      | The description of the authentication prompt.                                                                           | Android              |
-| `cancelTitle`              | `String` (optional)                      | The cancel button title of the authentication prompt.                                                                   | Android, iOS         |
-| `evaluationPolicy`         | `LocalAuthenticationStrategy` (optional) | The evaluation policy to use when prompting the user for authentication. Defaults to `deviceOwnerWithBiometrics`.       | iOS                  |
-| `fallbackTitle`            | `String` (optional)                      | The fallback button title of the authentication prompt.                                                                 | iOS                  |
-| `authenticationLevel`      | `LocalAuthenticationLevel` (optional)    | The authentication level to use when prompting the user for authentication. Defaults to `strong`.                       | Android              |
-| `deviceCredentialFallback` | `Boolean` (optional)                     | Should the user be given the option to authenticate with their device PIN, pattern, or password instead of a biometric. | Android              |
+| Property                   | Type                                     | Description                                                                                                                                 | Applicable Platforms |
+| -------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| `title`                    | `String`                                 | The title of the authentication prompt.                                                                                                     | Android, iOS         |
+| `subtitle`                 | `String` (optional)                      | The subtitle of the authentication prompt.                                                                                                  | Android              |
+| `description`              | `String` (optional)                      | The description of the authentication prompt.                                                                                               | Android              |
+| `cancelTitle`              | `String` (optional)                      | The cancel button title of the authentication prompt.                                                                                       | Android, iOS         |
+| `evaluationPolicy`         | `LocalAuthenticationStrategy` (optional) | The evaluation policy to use when prompting the user for authentication. Defaults to `deviceOwnerWithBiometrics`.                           | iOS                  |
+| `fallbackTitle`            | `String` (optional)                      | The fallback button title of the authentication prompt.                                                                                     | iOS                  |
+| `authenticationLevel`      | `LocalAuthenticationLevel` (optional)    | The authentication level to use when prompting the user for authentication. Defaults to `strong`.                                           | Android              |
+| `deviceCredentialFallback` | `Boolean` (optional)                     | Should the user be given the option to authenticate with their device PIN, pattern, or password instead of a biometric. Defaults to `false` | Android              |
 
 > :warning: You need a real device to test Local Authentication for iOS. Local Authentication is not available in simulators.
 
