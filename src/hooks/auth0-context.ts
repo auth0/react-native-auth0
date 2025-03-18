@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import {
+import type {
   ClearSessionParameters,
   LoginWithEmailOptions,
   LoginWithOOBOptions,
@@ -19,7 +19,7 @@ import {
   RevokeOptions,
   ResetPasswordOptions,
 } from '../types';
-import BaseError from 'src/utils/baseError';
+import BaseError from '../utils/baseError';
 
 export interface Auth0ContextInterface<TUser extends User = User>
   extends AuthState<TUser> {

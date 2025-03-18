@@ -1,9 +1,10 @@
-import Client, { Auth0Response } from '../networking';
+import Client from '../networking';
+import type { Auth0Response } from '../networking';
 import { toCamelCase } from '../utils/camel';
 import Auth0Error from './error';
-import { Telemetry } from '../networking/telemetry';
-import { GetUserOptions, PatchUserOptions, User } from '../types';
-import { RawUser } from '../internal-types';
+import type { Telemetry } from '../networking/telemetry';
+import type { GetUserOptions, PatchUserOptions, User } from '../types';
+import type { RawUser } from '../internal-types';
 
 function responseHandler<TRawResult = unknown, TResult = unknown>(
   response: Auth0Response<TRawResult>,

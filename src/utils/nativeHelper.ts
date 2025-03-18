@@ -1,5 +1,5 @@
-import LocalAuthenticationOptions from 'src/credentials-manager/localAuthenticationOptions';
-import { Auth0Module } from 'src/internal-types';
+import type { LocalAuthenticationOptions } from '../credentials-manager/localAuthenticationOptions';
+import type { Auth0Module } from '../internal-types';
 
 //private
 export async function _ensureNativeModuleIsInitializedWithConfiguration(

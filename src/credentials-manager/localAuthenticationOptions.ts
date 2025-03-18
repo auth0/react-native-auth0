@@ -40,4 +40,4 @@ interface LocalAuthenticationOptions {
   deviceCredentialFallback?: Boolean;
 }
 
-export default LocalAuthenticationOptions;
+export type { LocalAuthenticationOptions };
