@@ -10,6 +10,7 @@ describe('addDefaultLocalAuthenticationOptions', () => {
       title: 'Please authenticate',
       authenticationLevel: LocalAuthenticationLevel.strong,
       evaluationPolicy: LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
+      deviceCredentialFallback: false,
     });
   });
 
@@ -18,6 +19,7 @@ describe('addDefaultLocalAuthenticationOptions', () => {
       title: 'Please authenticate',
       authenticationLevel: LocalAuthenticationLevel.deviceCredential,
       evaluationPolicy: LocalAuthenticationStrategy.deviceOwner,
+      deviceCredentialFallback: false,
     };
     const result = addDefaultLocalAuthOptions(localAuthOptions);
     expect(result).toEqual(localAuthOptions);
@@ -33,6 +35,7 @@ describe('addDefaultLocalAuthenticationOptions', () => {
       title: 'Please authenticate',
       authenticationLevel: LocalAuthenticationLevel.deviceCredential,
       evaluationPolicy: LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
+      deviceCredentialFallback: false,
     });
   });
 });

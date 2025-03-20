@@ -1,7 +1,7 @@
-import BaseError from 'src/utils/baseError';
-import { User } from '../types';
+import BaseError from '../utils/baseError';
+import type { User } from '../types';
 import { deepEqual } from '../utils/deepEqual';
-import { AuthState } from './auth0-context';
+import type { AuthState } from './auth0-context';
 
 type Action =
   | { type: 'LOGIN_COMPLETE'; user: User }

@@ -1,12 +1,14 @@
 import {
   AndroidConfig,
-  ConfigPlugin,
   createRunOncePlugin,
-  ExportedConfigWithProps,
-  InfoPlist,
   withAppDelegate,
   withInfoPlist,
   withAndroidManifest,
+} from 'expo/config-plugins';
+import type {
+  ConfigPlugin,
+  ExportedConfigWithProps,
+  InfoPlist,
 } from 'expo/config-plugins';
 import { mergeContents } from './generateCode';
 
