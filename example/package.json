@@ -16,7 +16,7 @@
     "react-native": "0.77.0",
     "react-native-paper": "^3.9.0",
     "react-native-safe-area-context": "^4.14.0",
-    "react-native-screens": "4.5.0"
+    "react-native-screens": "4.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
