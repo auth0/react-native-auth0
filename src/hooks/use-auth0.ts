@@ -1,5 +1,6 @@
 import { useContext } from 'react';
-import Auth0Context, { Auth0ContextInterface } from './auth0-context';
+import Auth0Context from './auth0-context';
+import type { Auth0ContextInterface } from './auth0-context';
 
 /**
  * Use the `useAuth0` in your function components to access authentication state and methods.
