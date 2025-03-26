@@ -1,12 +1,11 @@
 /**
  * @jest-environment jsdom
  */
-import * as React from 'react';
+import React, { act } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import Auth0Provider from '../auth0-provider';
 import useAuth0 from '../use-auth0';
 import LocalAuthenticationStrategy from '../../credentials-manager/localAuthenticationStrategy';
-import { act } from 'react-dom/test-utils';
 import Auth0Error from '../../auth/auth0Error';
 
 function makeJwt(claims) {
