@@ -1,16 +1,11 @@
-import React, {
-  useEffect,
-  useReducer,
-  useMemo,
-  useCallback,
-  PropsWithChildren,
-} from 'react';
+import { useEffect, useReducer, useMemo, useCallback } from 'react';
+import type { PropsWithChildren } from 'react';
 import jwtDecode from 'jwt-decode';
 import PropTypes from 'prop-types';
 import Auth0Context from './auth0-context';
 import Auth0 from '../auth0';
 import reducer from './reducer';
-import {
+import type {
   ClearSessionOptions,
   ClearSessionParameters,
   Credentials,
@@ -30,9 +25,10 @@ import {
   RevokeOptions,
   ResetPasswordOptions,
 } from '../types';
-import { CustomJwtPayload } from '../internal-types';
+import type { CustomJwtPayload } from '../internal-types';
 import { convertUser } from '../utils/userConversion';
-import LocalAuthenticationOptions from 'src/credentials-manager/localAuthenticationOptions';
+import type { LocalAuthenticationOptions } from '../credentials-manager/localAuthenticationOptions';
+import type BaseError from '../utils/baseError';
 
 const initialState = {
   user: null,
@@ -100,7 +96,7 @@ const Auth0Provider = ({
             user = getIdTokenProfileClaims(credentials.idToken);
           }
         } catch (error) {
-          dispatch({ type: 'ERROR', error });
+          dispatch({ type: 'ERROR', error: error as BaseError });
         }
       }
 
@@ -125,7 +121,7 @@ const Auth0Provider = ({
         dispatch({ type: 'LOGIN_COMPLETE', user });
         return credentials;
       } catch (error) {
-        dispatch({ type: 'ERROR', error });
+        dispatch({ type: 'ERROR', error: error as BaseError });
         return;
       }
     },
@@ -136,7 +132,7 @@ const Auth0Provider = ({
     try {
       await client.webAuth.cancelWebAuth();
     } catch (error) {
-      dispatch({ type: 'ERROR', error });
+      dispatch({ type: 'ERROR', error: error as BaseError });
       return;
     }
   }, [client]);
@@ -151,7 +147,7 @@ const Auth0Provider = ({
         await client.credentialsManager.clearCredentials();
         dispatch({ type: 'LOGOUT_COMPLETE' });
       } catch (error) {
-        dispatch({ type: 'ERROR', error });
+        dispatch({ type: 'ERROR', error: error as BaseError });
         return;
       }
     },
@@ -178,7 +174,7 @@ const Auth0Provider = ({
         }
         return credentials;
       } catch (error) {
-        dispatch({ type: 'ERROR', error });
+        dispatch({ type: 'ERROR', error: error as BaseError });
         return;
       }
     },
@@ -190,7 +186,7 @@ const Auth0Provider = ({
       try {
         await client.auth.passwordlessWithSMS(parameters);
       } catch (error) {
-        dispatch({ type: 'ERROR', error });
+        dispatch({ type: 'ERROR', error: error as BaseError });
         return;
       }
     },
@@ -211,7 +207,7 @@ const Auth0Provider = ({
         dispatch({ type: 'LOGIN_COMPLETE', user });
         return credentials;
       } catch (error) {
-        dispatch({ type: 'ERROR', error });
+        dispatch({ type: 'ERROR', error: error as BaseError });
         return;
       }
     },
@@ -223,7 +219,7 @@ const Auth0Provider = ({
       try {
         await client.auth.passwordlessWithEmail(parameters);
       } catch (error) {
-        dispatch({ type: 'ERROR', error });
+        dispatch({ type: 'ERROR', error: error as BaseError });
         return;
       }
     },
@@ -245,7 +241,7 @@ const Auth0Provider = ({
         dispatch({ type: 'LOGIN_COMPLETE', user });
         return credentials;
       } catch (error) {
-        dispatch({ type: 'ERROR', error });
+        dispatch({ type: 'ERROR', error: error as BaseError });
         return;
       }
     },
@@ -257,7 +253,7 @@ const Auth0Provider = ({
       try {
         await client.auth.multifactorChallenge(parameters);
       } catch (error) {
-        dispatch({ type: 'ERROR', error });
+        dispatch({ type: 'ERROR', error: error as BaseError });
         return;
       }
     },
@@ -274,7 +270,7 @@ const Auth0Provider = ({
         dispatch({ type: 'LOGIN_COMPLETE', user });
         return credentials;
       } catch (error) {
-        dispatch({ type: 'ERROR', error });
+        dispatch({ type: 'ERROR', error: error as BaseError });
         return;
       }
     },
@@ -291,7 +287,7 @@ const Auth0Provider = ({
         dispatch({ type: 'LOGIN_COMPLETE', user });
         return credentials;
       } catch (error) {
-        dispatch({ type: 'ERROR', error });
+        dispatch({ type: 'ERROR', error: error as BaseError });
         return;
       }
     },
@@ -308,7 +304,7 @@ const Auth0Provider = ({
         dispatch({ type: 'LOGIN_COMPLETE', user });
         return credentials;
       } catch (error) {
-        dispatch({ type: 'ERROR', error });
+        dispatch({ type: 'ERROR', error: error as BaseError });
         return;
       }
     },
@@ -324,7 +320,7 @@ const Auth0Provider = ({
         dispatch({ type: 'LOGIN_COMPLETE', user });
         return credentials;
       } catch (error) {
-        dispatch({ type: 'ERROR', error });
+        dispatch({ type: 'ERROR', error: error as BaseError });
         return;
       }
     },
@@ -340,7 +336,7 @@ const Auth0Provider = ({
         dispatch({ type: 'LOGIN_COMPLETE', user });
         return credentials;
       } catch (error) {
-        dispatch({ type: 'ERROR', error });
+        dispatch({ type: 'ERROR', error: error as BaseError });
         return;
       }
     },
@@ -353,7 +349,7 @@ const Auth0Provider = ({
         await client.auth.revoke(parameters);
         return;
       } catch (error) {
-        dispatch({ type: 'ERROR', error });
+        dispatch({ type: 'ERROR', error: error as BaseError });
         return;
       }
     },
@@ -366,7 +362,7 @@ const Auth0Provider = ({
         await client.auth.resetPassword(parameters);
         return;
       } catch (error) {
-        dispatch({ type: 'ERROR', error });
+        dispatch({ type: 'ERROR', error: error as BaseError });
         return;
       }
     },
@@ -385,7 +381,7 @@ const Auth0Provider = ({
       await client.credentialsManager.clearCredentials();
       dispatch({ type: 'LOGOUT_COMPLETE' });
     } catch (error) {
-      dispatch({ type: 'ERROR', error });
+      dispatch({ type: 'ERROR', error: error as BaseError });
       return;
     }
   }, [client]);

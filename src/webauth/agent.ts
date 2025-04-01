@@ -1,7 +1,7 @@
 import { Platform, Linking, EmitterSubscription } from 'react-native';
 import { Credentials } from 'src/types';
 import { _ensureNativeModuleIsInitializedWithConfiguration } from '../utils/nativeHelper';
-import {
+import type {
   AgentLoginOptions,
   AgentLogoutOptions,
   AgentParameters,

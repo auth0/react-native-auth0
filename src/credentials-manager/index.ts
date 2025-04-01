@@ -1,8 +1,9 @@
 import CredentialsManagerError from './credentialsManagerError';
-import { Credentials } from '../types';
+import type { Credentials } from '../types';
 import { _ensureNativeModuleIsInitializedWithConfiguration } from '../utils/nativeHelper';
-import LocalAuthenticationOptions from './localAuthenticationOptions';
+import type { LocalAuthenticationOptions } from './localAuthenticationOptions';
 import A0Auth0 from '../specs/NativeA0Auth0';
+import type { NativeModuleError } from '../internal-types';
 
 class CredentialsManager {
   private domain;
@@ -48,8 +49,8 @@ class CredentialsManager {
     } catch (e) {
       const json = {
         error: 'a0.credential_manager.invalid',
-        error_description: e.message,
-        code: e.code,
+        error_description: (e as NativeModuleError).message,
+        code: (e as NativeModuleError).code,
       };
       throw new CredentialsManagerError({ json, status: 0 });
     }
@@ -80,7 +81,7 @@ class CredentialsManager {
       return new Promise<Credentials>((resolve, reject) => {
         A0Auth0.getCredentials(scope, minTtl, parameters, forceRefresh)
           .then(resolve)
-          .catch((e) => {
+          .catch((e: NativeModuleError) => {
             const json = {
               error: 'a0.credential_manager.invalid',
               error_description: e.message,
@@ -92,7 +93,7 @@ class CredentialsManager {
     } catch (e) {
       const json = {
         error: 'a0.credential_manager.invalid',
-        error_description: e.message,
+        error_description: (e as NativeModuleError).message,
       };
       throw new CredentialsManagerError({ json, status: 0 });
     }

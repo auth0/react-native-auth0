@@ -1,6 +1,6 @@
-import {CustomJwtPayload, RawUser} from '../internal-types';
-import {idTokenNonProfileClaims} from '../jwt/utils';
-import {User} from '../types';
+import type { CustomJwtPayload, RawUser } from '../internal-types';
+import { idTokenNonProfileClaims } from '../jwt/utils';
+import type { User } from '../types';
 
 function snakeToCamel(str: string): string {
   var parts = str.split('_');
@@ -51,6 +51,6 @@ export function convertUser(payload: CustomJwtPayload): User {
         return profile;
       }
     },
-    {},
+    {}
   );
 }

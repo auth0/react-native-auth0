@@ -20,6 +20,11 @@ export type RawCredentials = {
   [key: string]: any;
 };
 
+export type NativeModuleError = {
+  message: string;
+  code: string;
+};
+
 export type RawUser = {
   name?: string;
   given_name?: string;
