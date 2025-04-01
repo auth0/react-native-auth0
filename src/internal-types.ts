@@ -1,4 +1,4 @@
-import { JwtPayload } from 'jwt-decode';
+import type { JwtPayload } from 'jwt-decode';
 
 export type CredentialsResponse = {
   id_token: string;

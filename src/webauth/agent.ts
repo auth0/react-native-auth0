@@ -1,12 +1,12 @@
-import { Platform, Linking, EmitterSubscription } from 'react-native';
-import { Credentials } from 'src/types';
+import { Platform, Linking, type EmitterSubscription } from 'react-native';
+import type { Credentials } from '../types';
 import { _ensureNativeModuleIsInitializedWithConfiguration } from '../utils/nativeHelper';
 import type {
   AgentLoginOptions,
   AgentLogoutOptions,
   AgentParameters,
-} from 'src/internal-types';
-import LocalAuthenticationOptions from 'src/credentials-manager/localAuthenticationOptions';
+} from '../internal-types';
+import type { LocalAuthenticationOptions } from '../credentials-manager/localAuthenticationOptions';
 import NativeA0Auth0 from '../specs/NativeA0Auth0';
 
 class Agent {

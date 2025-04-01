@@ -1,5 +1,5 @@
 import type { Spec } from '../specs/NativeA0Auth0';
-import type LocalAuthenticationOptions from '../credentials-manager/localAuthenticationOptions';
+import type { LocalAuthenticationOptions } from '../credentials-manager/localAuthenticationOptions';
 
 //private
 export async function _ensureNativeModuleIsInitializedWithConfiguration(
