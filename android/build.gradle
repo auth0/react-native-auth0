@@ -16,6 +16,7 @@ buildscript {
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
+apply plugin: "com.facebook.react"
 
 // Matches values in recent template from React Native 0.62
 // https://github.com/facebook/react-native/blob/0.62-stable/template/android/build.gradle#L5-L8
@@ -35,12 +36,24 @@ android {
     versionCode 1
     versionName "1.0"
   }
+  buildFeatures {
+    buildConfig true
+  }
   lintOptions {
     abortOnError false
   }
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  sourceSets {
+    main {
+      java.srcDirs += [
+        "generated/java",
+        "generated/jni"
+      ]
+    }
   }
 }
 
@@ -128,4 +141,10 @@ afterEvaluate { project ->
             }
         }
     }
+}
+
+react {
+  jsRootDir = file("../src/")
+  libraryName = "A0Auth0"
+  codegenJavaPackageName = "com.auth0.react"
 }

@@ -236,5 +236,13 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
+  },
+  "codegenConfig": {
+    "name": "RNAuth0Spec",
+    "type": "modules",
+    "jsSrcsDir": "src",
+    "android": {
+      "javaPackageName": "com.auth0.react"
+    }
   }
 }

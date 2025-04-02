@@ -1,16 +1,14 @@
-import { NativeModules, Platform, Linking } from 'react-native';
-import type { EmitterSubscription } from 'react-native';
+import { Platform, Linking, type EmitterSubscription } from 'react-native';
 import type { Credentials } from '../types';
 import { _ensureNativeModuleIsInitializedWithConfiguration } from '../utils/nativeHelper';
 import type {
   AgentLoginOptions,
   AgentLogoutOptions,
   AgentParameters,
-  Auth0Module,
 } from '../internal-types';
 import type { LocalAuthenticationOptions } from '../credentials-manager/localAuthenticationOptions';
+import NativeA0Auth0 from '../specs/NativeA0Auth0';
 
-const A0Auth0: Auth0Module = NativeModules.A0Auth0;
 class Agent {
   async login(
     parameters: AgentParameters,
@@ -18,80 +16,63 @@ class Agent {
     localAuthenticationOptions?: LocalAuthenticationOptions
   ): Promise<Credentials> {
     let linkSubscription: EmitterSubscription | null = null;
-    if (!NativeModules.A0Auth0) {
-      return Promise.reject(
-        new Error(
-          'Missing NativeModule. React Native versions 0.60 and up perform auto-linking. Please see https://github.com/react-native-community/cli/blob/master/docs/autolinking.md.'
-        )
-      );
-    }
-    return new Promise(async (resolve, reject) => {
-      if (Platform.OS === 'ios') {
-        linkSubscription = Linking.addEventListener('url', async (event) => {
-          try {
-            linkSubscription?.remove();
-            await A0Auth0.resumeWebAuth(event.url);
-          } catch (error) {
-            reject(error);
-          }
-        });
-      }
-      try {
-        await _ensureNativeModuleIsInitializedWithConfiguration(
-          A0Auth0,
-          parameters.clientId,
-          parameters.domain,
-          localAuthenticationOptions
-        );
-        let scheme = this.getScheme(
-          options.useLegacyCallbackUrl ?? false,
-          options.customScheme
-        );
-        let redirectUri =
-          options.redirectUrl ?? this.callbackUri(parameters.domain, scheme);
-        let credentials = await A0Auth0.webAuth(
-          scheme,
-          redirectUri,
-          options.state,
-          options.nonce,
-          options.audience,
-          options.scope,
-          options.connection,
-          options.maxAge ?? 0,
-          options.organization,
-          options.invitationUrl,
-          options.leeway ?? 0,
-          options.ephemeralSession ?? false,
-          options.safariViewControllerPresentationStyle ?? 99, //Since we can't pass null to the native layer, and we need a value to represent this parameter is not set, we are using 99.
-          //The native layer will check for this and ignore if the value is 99
-          options.additionalParameters ?? {}
-        );
-        resolve(credentials);
-      } catch (error) {
+    if (Platform.OS === 'ios') {
+      linkSubscription = Linking.addEventListener('url', async (event) => {
         linkSubscription?.remove();
-        reject(error);
-      }
-    });
+        await NativeA0Auth0.resumeWebAuth(event.url);
+      });
+    }
+
+    try {
+      await _ensureNativeModuleIsInitializedWithConfiguration(
+        NativeA0Auth0,
+        parameters.clientId,
+        parameters.domain,
+        localAuthenticationOptions
+      );
+      let scheme = await this.getScheme(
+        options.useLegacyCallbackUrl ?? false,
+        options.customScheme
+      );
+      let redirectUri =
+        options.redirectUrl ??
+        (await this.callbackUri(parameters.domain, scheme));
+      let credentials = await NativeA0Auth0.webAuth(
+        scheme,
+        redirectUri,
+        options.state,
+        options.nonce,
+        options.audience,
+        options.scope,
+        options.connection,
+        options.maxAge ?? 0,
+        options.organization,
+        options.invitationUrl,
+        options.leeway ?? 0,
+        options.ephemeralSession ?? false,
+        options.safariViewControllerPresentationStyle ?? 99, //Since we can't pass null to the native layer, and we need a value to represent this parameter is not set, we are using 99.
+        //The native layer will check for this and ignore if the value is 99
+        options.additionalParameters ?? {}
+      );
+
+      return credentials as unknown as Credentials;
+    } catch (error) {
+      linkSubscription?.remove();
+      throw error;
+    }
   }
 
   async cancelWebAuth(
     parameters: AgentParameters,
     localAuthenticationOptions?: LocalAuthenticationOptions
   ): Promise<void> {
-    if (!NativeModules.A0Auth0) {
-      return Promise.reject(
-        new Error(
-          'Missing NativeModule. React Native versions 0.60 and up perform auto-linking. Please see https://github.com/react-native-community/cli/blob/master/docs/autolinking.md.'
-        )
-      );
-    }
     await _ensureNativeModuleIsInitializedWithConfiguration(
-      NativeModules.A0Auth0,
+      NativeA0Auth0,
       parameters.clientId,
       parameters.domain,
       localAuthenticationOptions
     );
-    return A0Auth0.cancelWebAuth();
+    return NativeA0Auth0.cancelWebAuth();
   }
 
   async logout(
@@ -99,42 +80,38 @@ class Agent {
     options: AgentLogoutOptions,
     localAuthenticationOptions?: LocalAuthenticationOptions
   ): Promise<void> {
-    if (!NativeModules.A0Auth0) {
-      return Promise.reject(
-        new Error(
-          'Missing NativeModule. React Native versions 0.60 and up perform auto-linking. Please see https://github.com/react-native-community/cli/blob/master/docs/autolinking.md.'
-        )
-      );
-    }
     let federated = options.federated ?? false;
-    let scheme = this.getScheme(
+    let scheme = await this.getScheme(
       options.useLegacyCallbackUrl ?? false,
       options.customScheme
     );
     let redirectUri =
-      options.returnToUrl ?? this.callbackUri(parameters.domain, scheme);
+      options.returnToUrl ??
+      (await this.callbackUri(parameters.domain, scheme));
     await _ensureNativeModuleIsInitializedWithConfiguration(
-      NativeModules.A0Auth0,
+      NativeA0Auth0,
       parameters.clientId,
       parameters.domain,
       localAuthenticationOptions
     );
-    return A0Auth0.webAuthLogout(scheme, federated, redirectUri);
+    return NativeA0Auth0.webAuthLogout(scheme, federated, redirectUri);
   }
 
-  private getScheme(
+  private async getScheme(
     useLegacyCustomSchemeBehaviour: boolean,
     customScheme?: string
   ) {
-    let scheme = NativeModules.A0Auth0.bundleIdentifier.toLowerCase();
+    let scheme = (await NativeA0Auth0.getBundleIdentifier()).toLowerCase();
     if (!useLegacyCustomSchemeBehaviour) {
       scheme = scheme + '.auth0';
     }
     return customScheme ?? scheme;
   }
 
-  private callbackUri(domain: string, scheme: string) {
-    let bundleIdentifier = NativeModules.A0Auth0.bundleIdentifier.toLowerCase();
+  private async callbackUri(domain: string, scheme: string) {
+    let bundleIdentifier = (
+      await NativeA0Auth0.getBundleIdentifier()
+    ).toLowerCase();
     return `${scheme}://${domain}/${Platform.OS}/${bundleIdentifier}/callback`;
   }
 }
