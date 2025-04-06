@@ -85,7 +85,7 @@ const Auth0Provider = ({
 }>) => {
   const client = useMemo(
     () => new Auth0({ domain, clientId, localAuthenticationOptions, timeout }),
-    [domain, clientId, localAuthenticationOptions]
+    [domain, clientId, localAuthenticationOptions, timeout]
   );
   const [state, dispatch] = useReducer(reducer, initialState);
 
