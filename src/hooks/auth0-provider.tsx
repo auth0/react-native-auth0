@@ -61,6 +61,8 @@ const finalizeScopeParam = (inputScopes?: string) => {
  * @param {String} domain Your Auth0 domain
  * @param {String} clientId Your Auth0 client ID
  * @param {LocalAuthenticationOptions} localAuthenticationOptions The local auth options
+ * @param {number} timeout - Optional timeout in milliseconds for authentication requests.
+ * @param {React.ReactNode} children - The child components to render within the provider.
  *
  * @example
  * ```ts
@@ -73,14 +75,16 @@ const Auth0Provider = ({
   domain,
   clientId,
   localAuthenticationOptions,
+  timeout,
   children,
 }: PropsWithChildren<{
   domain: string;
   clientId: string;
   localAuthenticationOptions?: LocalAuthenticationOptions;
+  timeout?: number;
 }>) => {
   const client = useMemo(
-    () => new Auth0({ domain, clientId, localAuthenticationOptions }),
+    () => new Auth0({ domain, clientId, localAuthenticationOptions, timeout }),
     [domain, clientId, localAuthenticationOptions]
   );
   const [state, dispatch] = useReducer(reducer, initialState);
