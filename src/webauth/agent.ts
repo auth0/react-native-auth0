@@ -49,6 +49,10 @@ class Agent {
         );
         let redirectUri =
           options.redirectUrl ?? this.callbackUri(parameters.domain, scheme);
+
+        // Determine if we should use HTTPS
+        const useHTTPS = scheme.startsWith('https');
+
         let credentials = await A0Auth0.webAuth(
           scheme,
           redirectUri,
@@ -62,9 +66,9 @@ class Agent {
           options.invitationUrl,
           options.leeway ?? 0,
           options.ephemeralSession ?? false,
-          options.safariViewControllerPresentationStyle ?? 99, //Since we can't pass null to the native layer, and we need a value to represent this parameter is not set, we are using 99.
-          //The native layer will check for this and ignore if the value is 99
-          options.additionalParameters ?? {}
+          options.safariViewControllerPresentationStyle ?? 99,
+          options.additionalParameters ?? {},
+          useHTTPS
         );
         resolve(credentials);
       } catch (error) {
@@ -113,13 +117,17 @@ class Agent {
     );
     let redirectUri =
       options.returnToUrl ?? this.callbackUri(parameters.domain, scheme);
+
+    // Determine if we should use HTTPS
+    const useHTTPS = scheme.startsWith('https');
+
     await _ensureNativeModuleIsInitializedWithConfiguration(
       NativeModules.A0Auth0,
       parameters.clientId,
       parameters.domain,
       localAuthenticationOptions
     );
-    return A0Auth0.webAuthLogout(scheme, federated, redirectUri);
+    return A0Auth0.webAuthLogout(scheme, federated, redirectUri, useHTTPS);
   }
 
   private getScheme(
