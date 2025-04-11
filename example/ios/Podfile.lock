@@ -1,12 +1,12 @@
 PODS:
   - A0Auth0 (4.4.0):
-    - Auth0 (= 2.7.2)
-    - JWTDecode (= 3.1.0)
+    - Auth0 (= 2.10)
+    - JWTDecode (= 3.2.0)
     - React-Core
-    - SimpleKeychain (= 1.1.0)
-  - Auth0 (2.7.2):
-    - JWTDecode (~> 3.1)
-    - SimpleKeychain (~> 1.1)
+    - SimpleKeychain (= 1.2.0)
+  - Auth0 (2.10.0):
+    - JWTDecode (= 3.2.0)
+    - SimpleKeychain (= 1.2.0)
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
   - fast_float (6.1.4)
@@ -16,7 +16,7 @@ PODS:
   - hermes-engine (0.77.0):
     - hermes-engine/Pre-built (= 0.77.0)
   - hermes-engine/Pre-built (0.77.0)
-  - JWTDecode (3.1.0)
+  - JWTDecode (3.2.0)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -1619,7 +1619,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - SimpleKeychain (1.1.0)
+  - SimpleKeychain (1.2.0)
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
 
@@ -1845,8 +1845,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  A0Auth0: 1a9d69121ff2455486a2a4ddc40c4f36585e5260
-  Auth0: 28cb24cb19ebd51f0b07751f16d83b59f4019532
+  A0Auth0: c54e2b28344e08ab2387986d00f2a418044fdbf9
+  Auth0: 2876d0c36857422eda9cb580a6cc896c7d14cb36
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
@@ -1854,7 +1854,7 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
   hermes-engine: 1f783c3d53940aed0d2c84586f0b7a85ab7827ef
-  JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
+  JWTDecode: 7dae24cb9bf9b608eae61e5081029ec169bb5527
   RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
   RCTDeprecation: f5c19ebdb8804b53ed029123eb69914356192fc8
   RCTRequired: 6ae6cebe470486e0e0ce89c1c0eabb998e7c51f4
@@ -1915,7 +1915,7 @@ SPEC CHECKSUMS:
   ReactCodegen: c08a5113d9c9c895fe10f3c296f74c6b705a60a9
   ReactCommon: 1bd2dc684d7992acbf0dfee887b89a57a1ead86d
   RNScreens: b32d0d59b53acb574fa795a9343591ef4e7ab7c2
-  SimpleKeychain: f8707c8e97b38c6a6e687b17732afc9bcef06439
+  SimpleKeychain: 768cf43ae778b1c21816e94dddf01bb8ee96a075
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 78d74e245ed67bb94275a1316cdc170b9b7fe884
 

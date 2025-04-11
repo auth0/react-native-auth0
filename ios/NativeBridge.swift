@@ -54,7 +54,7 @@ public class NativeBridge: NSObject {
         resolve(true)
    }
     
-    @objc public func webAuth(state: String?, redirectUri: String, nonce: String?, audience: String?, scope: String?, connection: String?, maxAge: Int, organization: String?, invitationUrl: String?, leeway: Int, ephemeralSession: Bool, safariViewControllerPresentationStyle: Int, additionalParameters: [String: String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func webAuth(scheme: String, state: String?, redirectUri: String, nonce: String?, audience: String?, scope: String?, connection: String?, maxAge: Int, organization: String?, invitationUrl: String?, leeway: Int, ephemeralSession: Bool, safariViewControllerPresentationStyle: Int, additionalParameters: [String: String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
         if let value = URL(string: redirectUri) {
             let _ = builder.redirectURL(value)
@@ -89,6 +89,12 @@ public class NativeBridge: NSObject {
         if(ephemeralSession) {
             let _ = builder.useEphemeralSession()
         }
+        
+        // Check if scheme starts with https and use HTTPS if it does
+        if scheme.starts(with: "https") {
+            let _ = builder.useHTTPS()
+        }
+        
         //Since we cannot have a null value here, the JS layer sends 99 if we have to ignore setting this value
         if let presentationStyle = UIModalPresentationStyle(rawValue: safariViewControllerPresentationStyle), safariViewControllerPresentationStyle != 99 {
             let _ = builder.provider(WebAuthentication.safariProvider(style: presentationStyle))
@@ -103,14 +109,19 @@ public class NativeBridge: NSObject {
                 reject(error.reactNativeErrorCode(), error.errorDescription, error)
             }
         }
-            
     }
 
-    @objc public func webAuthLogout(federated: Bool, redirectUri: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func webAuthLogout(scheme: String, federated: Bool, redirectUri: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
         if let value = URL(string: redirectUri) {
             let _ = builder.redirectURL(value)
         }
+        
+        // Check if scheme starts with https and use HTTPS if it does
+        if scheme.starts(with: "https") {
+            let _ = builder.useHTTPS()
+        }
+        
         builder.clearSession(federated: federated) { result in
                 switch result {
                 case .success:

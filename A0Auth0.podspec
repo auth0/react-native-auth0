@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency 'React-Core'
-  s.dependency 'Auth0', '2.7.2'
-  s.dependency 'JWTDecode', '3.1.0'
-  s.dependency 'SimpleKeychain', '1.1.0'
+  s.dependency 'Auth0', '2.10'
+  s.dependency 'JWTDecode', '3.2.0'
+  s.dependency 'SimpleKeychain', '1.2.0'
 end

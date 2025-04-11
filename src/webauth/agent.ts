@@ -49,6 +49,8 @@ class Agent {
         );
         let redirectUri =
           options.redirectUrl ?? this.callbackUri(parameters.domain, scheme);
+
+        // The native modules will now check if scheme.startsWith("https") internally
         let credentials = await A0Auth0.webAuth(
           scheme,
           redirectUri,
@@ -62,8 +64,7 @@ class Agent {
           options.invitationUrl,
           options.leeway ?? 0,
           options.ephemeralSession ?? false,
-          options.safariViewControllerPresentationStyle ?? 99, //Since we can't pass null to the native layer, and we need a value to represent this parameter is not set, we are using 99.
-          //The native layer will check for this and ignore if the value is 99
+          options.safariViewControllerPresentationStyle ?? 99,
           options.additionalParameters ?? {}
         );
         resolve(credentials);
@@ -113,6 +114,8 @@ class Agent {
     );
     let redirectUri =
       options.returnToUrl ?? this.callbackUri(parameters.domain, scheme);
+
+    // The native modules will now check if scheme.startsWith("https") internally
     await _ensureNativeModuleIsInitializedWithConfiguration(
       NativeModules.A0Auth0,
       parameters.clientId,
