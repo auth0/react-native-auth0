@@ -50,9 +50,7 @@ class Agent {
         let redirectUri =
           options.redirectUrl ?? this.callbackUri(parameters.domain, scheme);
 
-        // Determine if we should use HTTPS
-        const useHTTPS = scheme.startsWith('https');
-
+        // The native modules will now check if scheme.startsWith("https") internally
         let credentials = await A0Auth0.webAuth(
           scheme,
           redirectUri,
@@ -67,8 +65,7 @@ class Agent {
           options.leeway ?? 0,
           options.ephemeralSession ?? false,
           options.safariViewControllerPresentationStyle ?? 99,
-          options.additionalParameters ?? {},
-          useHTTPS
+          options.additionalParameters ?? {}
         );
         resolve(credentials);
       } catch (error) {
@@ -118,16 +115,14 @@ class Agent {
     let redirectUri =
       options.returnToUrl ?? this.callbackUri(parameters.domain, scheme);
 
-    // Determine if we should use HTTPS
-    const useHTTPS = scheme.startsWith('https');
-
+    // The native modules will now check if scheme.startsWith("https") internally
     await _ensureNativeModuleIsInitializedWithConfiguration(
       NativeModules.A0Auth0,
       parameters.clientId,
       parameters.domain,
       localAuthenticationOptions
     );
-    return A0Auth0.webAuthLogout(scheme, federated, redirectUri, useHTTPS);
+    return A0Auth0.webAuthLogout(scheme, federated, redirectUri);
   }
 
   private getScheme(

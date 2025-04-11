@@ -88,14 +88,12 @@ export type Auth0Module = {
     leeway?: number,
     ephemeralSession?: boolean,
     safariViewControllerPresentationStyle?: number,
-    additionalParameters?: { [key: string]: string },
-    useHTTPS?: boolean
+    additionalParameters?: { [key: string]: string }
   ) => Promise<Credentials>;
   webAuthLogout: (
     scheme: string,
     federated: boolean,
-    redirectUri: string,
-    useHTTPS?: boolean
+    redirectUri: string
   ) => Promise<void>;
   resumeWebAuth: (url: string) => Promise<void>;
   cancelWebAuth: () => Promise<void>;
