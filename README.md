@@ -213,21 +213,60 @@ Go to the [Auth0 Dashboard](https://manage.auth0.com/#/applications), select you
 
 If in addition you plan to use the log out method, you must also add these URLs to the **Allowed Logout URLs**.
 
+> [!NOTE]
+> Whenever possible, Auth0 recommends using [Apple Universal Links](https://developer.apple.com/documentation/xcode/allowing-apps-and-websites-to-link-to-your-content) and [Android App Links](https://developer.android.com/training/app-links) for your callback and logout URLs. Custom URL schemes can be subject to [client impersonation attacks](https://datatracker.ietf.org/doc/html/rfc8252#section-8.6).
+> 
+> To configure Universal Links for iOS, refer to Auth0's guide: [Enable Universal Links Support in Apple Xcode](https://auth0.com/docs/get-started/applications/enable-universal-links-support-in-apple-xcode).
+> 
+> To configure App Links for Android, refer to Auth0's guide: [Enable Android App Links Support](https://auth0.com/docs/get-started/applications/enable-android-app-links-support).
+
 #### Android
+
+##### Custom Scheme
 
 ```text
 {YOUR_APP_PACKAGE_NAME}.auth0://{AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
 ```
 
-> Make sure to replace {YOUR_APP_PACKAGE_NAME} and {AUTH0_DOMAIN} with the actual values for your application. The {YOUR_APP_PACKAGE_NAME} value provided should be all lower case.
+##### App Link (Recommended):
+```text
+https://{YOUR_CUSTOM_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
+```
+
+> Replace {YOUR_APP_PACKAGE_NAME}, {AUTH0_DOMAIN}, and {YOUR_CUSTOM_DOMAIN} with your actual application package name, Auth0 domain, and custom domain respectively. Ensure that {YOUR_APP_PACKAGE_NAME} is all lowercase.
+
+To enable App Links, set the `auth0Scheme` to `https` in your `build.gradle` file.
+
+```text
+android {
+    defaultConfig {
+        manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "https"]
+    }
+}
+```
+This configuration ensures that your app uses https for the callback URL scheme, which is required for Android App Links.
 
 #### iOS
 
+##### Custom Scheme
 ```text
 {PRODUCT_BUNDLE_IDENTIFIER}.auth0://{AUTH0_DOMAIN}/ios/{PRODUCT_BUNDLE_IDENTIFIER}/callback
 ```
+##### Universal Link (Recommended):
+```text
+https://{YOUR_CUSTOM_DOMAIN}/ios/{PRODUCT_BUNDLE_IDENTIFIER}/callback
+```
 
-> Make sure to replace {PRODUCT_BUNDLE_IDENTIFIER} and {AUTH0_DOMAIN} with the actual values for your application. The {PRODUCT_BUNDLE_IDENTIFIER} value provided should be all lower case.
+> Replace `{PRODUCT_BUNDLE_IDENTIFIER}`, `{AUTH0_DOMAIN}`, and `{YOUR_CUSTOM_DOMAIN}` with your actual product bundle identifier, Auth0 domain, and custom domain respectively. Ensure that {PRODUCT_BUNDLE_IDENTIFIER} is all lowercase.
+
+To enable Universal Links, add the Associated Domains capability in your Xcode project and include your Auth0 domain as follows:
+```text
+webcredentials:{YOUR_AUTH0_DOMAIN}
+```
+This configuration allows your iOS app to handle Universal Links properly.
+
+Refer to the example of [Using custom scheme for web authentication redirection](https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES.md#using-custom-scheme-for-web-authentication-redirection)
+
 
 ## Next Steps
 
