@@ -166,10 +166,7 @@ HTTPS callback URLs provide enhanced security compared to custom URL schemes. Th
 
 ```js
 auth0.webAuth
-  .authorize(
-    { scope: 'openid profile email' },
-    { customScheme: 'https://yourdomain.com' }
-  )
+  .authorize({ scope: 'openid profile email' }, { customScheme: 'https' })
   .then((credentials) => console.log(credentials))
   .catch((error) => console.log(error));
 ```
