@@ -1,25 +1,25 @@
 # Examples using react-native-auth0
 
-* [Authentication API](#authentication-api)
-    * [Login with Password Realm Grant](#login-with-password-realm-grant)
-    * [Get user information using user's access\_token](#get-user-information-using-users-access_token)
-    * [Getting new access token with refresh token](#getting-new-access-token-with-refresh-token)
-    * [Using custom scheme for web authentication redirection](#using-custom-scheme-for-web-authentication-redirection)
-    * [Login using MFA with One Time Password code](#login-using-mfa-with-one-time-password-code)
-    * [Login with Passwordless](#login-with-passwordless)
-    * [Create user in database connection](#create-user-in-database-connection)
-    * [Using HTTPS callback URLs](#using-https-callback-urls)
-* [Management API (Users)](#management-api-users)
-    * [Patch user with user\_metadata](#patch-user-with-user_metadata)
-    * [Get full user profile](#get-full-user-profile)
-* [Organizations](#organizations)
-    * [Log in to an organization](#log-in-to-an-organization)
-    * [Accept user invitations](#accept-user-invitations)
-* [Bot Protection](#bot-protection)
-    * [Domain Switching](#domain-switching)
-        * [Android](#android)
-        * [iOS](#ios)
-        * [Expo](#expo)
+- [Authentication API](#authentication-api)
+  - [Login with Password Realm Grant](#login-with-password-realm-grant)
+  - [Get user information using user's access_token](#get-user-information-using-users-access_token)
+  - [Getting new access token with refresh token](#getting-new-access-token-with-refresh-token)
+  - [Using custom scheme for web authentication redirection](#using-custom-scheme-for-web-authentication-redirection)
+  - [Login using MFA with One Time Password code](#login-using-mfa-with-one-time-password-code)
+  - [Login with Passwordless](#login-with-passwordless)
+  - [Create user in database connection](#create-user-in-database-connection)
+  - [Using HTTPS callback URLs](#using-https-callback-urls)
+- [Management API (Users)](#management-api-users)
+  - [Patch user with user_metadata](#patch-user-with-user_metadata)
+  - [Get full user profile](#get-full-user-profile)
+- [Organizations](#organizations)
+  - [Log in to an organization](#log-in-to-an-organization)
+  - [Accept user invitations](#accept-user-invitations)
+- [Bot Protection](#bot-protection)
+  - [Domain Switching](#domain-switching)
+    - [Android](#android)
+    - [iOS](#ios)
+    - [Expo](#expo)
 
 ## Authentication API
 
@@ -27,7 +27,7 @@ Unlike web authentication, we do not provide a hook for integrating with the Aut
 
 Instantiate the `Auth0` class to get access to the methods that call Auth0's Authentication API endpoints:
 
-``` js
+```js
 import Auth0 from 'react-native-auth0';
 
 const auth0 = new Auth0({
@@ -38,7 +38,7 @@ const auth0 = new Auth0({
 
 ### Login with Password Realm Grant
 
-``` js
+```js
 auth0.auth
   .passwordRealm({
     username: 'info@auth0.com',
@@ -49,9 +49,9 @@ auth0.auth
   .catch(console.error);
 ```
 
-### Get user information using user's access\_token
+### Get user information using user's access_token
 
-``` js
+```js
 auth0.auth
   .userInfo({ token: 'the user access_token' })
   .then(console.log)
@@ -62,7 +62,7 @@ This endpoint requires an access token that was granted the `/userinfo` audience
 
 ### Getting new access token with refresh token
 
-``` js
+```js
 auth0.auth
   .refreshToken({ refreshToken: 'the user refresh_token' })
   .then(console.log)
@@ -73,17 +73,19 @@ auth0.auth
 
 Custom Schemes can be used for redirecting to the React Native application after web authentication:
 
-``` js
-authorize({}, { customScheme: 'YOUR_AUTH0_DOMAIN' }).then(console.log).catch(console.error);
+```js
+authorize({}, { customScheme: 'YOUR_AUTH0_DOMAIN' })
+  .then(console.log)
+  .catch(console.error);
 ```
 
 ### Login using MFA with One Time Password code
 
-This call requires the client to have the *MFA* Client Grant Type enabled. Check [this article](https://auth0.com/docs/clients/client-grant-types) to learn how to enable it.
+This call requires the client to have the _MFA_ Client Grant Type enabled. Check [this article](https://auth0.com/docs/clients/client-grant-types) to learn how to enable it.
 
 When you sign in to a multifactor authentication enabled connection using the `passwordRealm` method, you receive an error stating that MFA is required for that user along with an `mfa_token` value. Use this value to call `loginWithOTP` and complete the MFA flow passing the One Time Password from the enrolled MFA code generator app.
 
-``` js
+```js
 auth0.auth
   .loginWithOTP({
     mfaToken: error.json.mfa_token,
@@ -99,7 +101,7 @@ Passwordless is a two-step authentication flow that makes use of this type of co
 
 To start the flow, you request a code to be sent to the user's email or phone number. For email scenarios only, a link can be sent in place of the code.
 
-``` js
+```js
 auth0.auth
   .passwordlessWithEmail({
     email: 'info@auth0.com',
@@ -111,7 +113,7 @@ auth0.auth
 
 or
 
-``` js
+```js
 auth0.auth
   .passwordlessWithSMS({
     phoneNumber: '+5491159991000',
@@ -122,7 +124,7 @@ auth0.auth
 
 Then, in order to complete the authentication, you must send back that received code value along with the email or phone number used:
 
-``` js
+```js
 auth0.auth
   .loginWithEmail({
     email: 'info@auth0.com',
@@ -134,7 +136,7 @@ auth0.auth
 
 or
 
-``` js
+```js
 auth0.auth
   .loginWithSMS({
     phoneNumber: '+5491159991000',
@@ -146,7 +148,7 @@ auth0.auth
 
 ### Create user in database connection
 
-``` js
+```js
 auth0.auth
   .createUser({
     email: 'info@auth0.com',
@@ -162,7 +164,7 @@ auth0.auth
 
 HTTPS callback URLs provide enhanced security compared to custom URL schemes. They work with Android App Links and iOS Universal Links to prevent URL scheme hijacking:
 
-``` js
+```js
 auth0.webAuth
   .authorize(
     { scope: 'openid profile email' },
@@ -172,17 +174,11 @@ auth0.webAuth
   .catch((error) => console.log(error));
 ```
 
-For this to work:
-
-1\. Register [https://yourdomain.com/{YOUR\_APP\_BUNDLE\_ID}/{PLATFORM}/callback](https://yourdomain.com/{YOUR_APP_BUNDLE_ID}/{PLATFORM}/callback) as an allowed callback URL in your Auth0 Dashboard
-2\. Configure your app to handle Universal Links \(iOS\) and App Links \(Android\)
-3\. Set up your domain with proper verification for these deep linking mechanisms
-
 ## Management API (Users)
 
-### Patch user with user\_metadata
+### Patch user with user_metadata
 
-``` js
+```js
 auth0
   .users('the user access_token')
   .patchUser({
@@ -195,7 +191,7 @@ auth0
 
 ### Get full user profile
 
-``` js
+```js
 auth0
   .users('{ACCESS_TOKEN}')
   .getUser({ id: 'user_id' })
@@ -214,7 +210,7 @@ Note that Organizations is currently only available to customers on our Enterpri
 
 ### Log in to an organization
 
-``` js
+```js
 auth0.webAuth
   .authorize({ organization: 'organization-id' })
   .then((credentials) => console.log(credentials))
@@ -229,7 +225,7 @@ In [Enable Android App Links Support](https://auth0.com/docs/applications/enable
 
 When your app gets opened by an invitation link, grab the invitation URL and pass it as a parameter to the webauth call. Use the [Linking Module](https://reactnative.dev/docs/linking) method called `getInitialUrl()` to obtain the URL that launched your application.
 
-``` js
+```js
 auth0.webAuth
   .authorize({
     invitationUrl:
@@ -245,7 +241,7 @@ If the URL doesn't contain the expected values, an error will be raised through 
 
 If you are using the [Bot Protection](https://auth0.com/docs/anomaly-detection/bot-protection) feature and performing database login/signup via the Authentication API, you need to handle the `requires_verification` error. It indicates that the request was flagged as suspicious and an additional verification step is necessary to log the user in. That verification step is web-based, so you need to use Universal Login to complete it.
 
-``` js
+```js
 const email = 'support@auth0.com';
 const realm = 'Username-Password-Authentication';
 const scope = 'openid profile';
@@ -280,7 +276,7 @@ auth0.auth
 
 In the case of signup, you can add [an additional parameter](https://auth0.com/docs/universal-login/new-experience#signup) to make the user land directly on the signup page:
 
-``` js
+```js
 auth0.webAuth.authorize({
   connection: realm,
   scope: scope,
@@ -299,7 +295,7 @@ To switch between two different domains for authentication in your Android appli
 
 Here is an example:
 
-``` xml
+```xml
 <activity
     android:name="com.auth0.android.provider.RedirectActivity"
     tools:node="replace"
@@ -351,7 +347,7 @@ By following these steps, you can configure your Android and iOS applications to
 
 If using a single domain, you can simply pass an object in the format to the `react-native-auth0` plugin in your `app.json` as shown below:
 
-``` json
+```json
 "plugins": [
   "expo-router",
   ["react-native-auth0",
@@ -365,7 +361,7 @@ If using a single domain, you can simply pass an object in the format to the `re
 
 If you want to support multiple domains, you would have to pass an array of objects as shown below:
 
-``` json
+```json
 "plugins": [
   "expo-router",
   ["react-native-auth0",

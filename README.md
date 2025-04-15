@@ -103,8 +103,6 @@ Take note of this value as you'll be requiring it to define the callback URLs be
 
 > For more info please read the [React Native docs](https://facebook.github.io/react-native/docs/linking.html).
 
-> Whenever possible, Auth0 recommends using `https` scheme with [Android App Links](https://auth0.com/docs/applications/enable-android-app-links) as a secure way to link directly to content within your app. Custom URL schemes can be subject to [client impersonation attacks](https://datatracker.ietf.org/doc/html/rfc8252#section-8.6).
-
 ##### Skipping the Web Authentication setup
 
 If you don't plan to use Web Authentication, you will notice that the compiler will still prompt you to provide the `manifestPlaceholders` values, since the `RedirectActivity` included in this library will require them, and the Gradle tasks won't be able to run without them.
@@ -214,26 +212,25 @@ Go to the [Auth0 Dashboard](https://manage.auth0.com/#/applications), select you
 If in addition you plan to use the log out method, you must also add these URLs to the **Allowed Logout URLs**.
 
 > [!NOTE]
-> Whenever possible, Auth0 recommends using [Apple Universal Links](https://developer.apple.com/documentation/xcode/allowing-apps-and-websites-to-link-to-your-content) and [Android App Links](https://developer.android.com/training/app-links) for your callback and logout URLs. Custom URL schemes can be subject to [client impersonation attacks](https://datatracker.ietf.org/doc/html/rfc8252#section-8.6).
-> 
-> To configure Universal Links for iOS, refer to Auth0's guide: [Enable Universal Links Support in Apple Xcode](https://auth0.com/docs/get-started/applications/enable-universal-links-support-in-apple-xcode).
-> 
-> To configure App Links for Android, refer to Auth0's guide: [Enable Android App Links Support](https://auth0.com/docs/get-started/applications/enable-android-app-links-support).
+> Whenever possible, Auth0 recommends using [Android App Links](https://developer.android.com/training/app-links) and [Apple Universal Links](https://developer.apple.com/documentation/xcode/allowing-apps-and-websites-to-link-to-your-content) for your callback and logout URLs. Custom URL schemes can be subject to [client impersonation attacks](https://datatracker.ietf.org/doc/html/rfc8252#section-8.6).
+>
+> 💡 If your Android app is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
 
 #### Android
 
 ##### Custom Scheme
 
 ```text
-{YOUR_APP_PACKAGE_NAME}.auth0://{AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
+{YOUR_APP_PACKAGE_NAME}.auth0://{YOUR_AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
 ```
 
 ##### App Link (Recommended):
+
 ```text
-https://{YOUR_CUSTOM_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
+https://{YOUR_AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
 ```
 
-> Replace {YOUR_APP_PACKAGE_NAME}, {AUTH0_DOMAIN}, and {YOUR_CUSTOM_DOMAIN} with your actual application package name, Auth0 domain, and custom domain respectively. Ensure that {YOUR_APP_PACKAGE_NAME} is all lowercase.
+> Replace {YOUR_APP_PACKAGE_NAME} and {YOUR_AUTH0_DOMAIN} with your actual application package name and Auth0 domain. Ensure that {YOUR_APP_PACKAGE_NAME} is all lowercase.
 
 To enable App Links, set the `auth0Scheme` to `https` in your `build.gradle` file.
 
@@ -244,29 +241,82 @@ android {
     }
 }
 ```
+
 This configuration ensures that your app uses https for the callback URL scheme, which is required for Android App Links.
+
+#### Enable Android App Links Support
+
+[Android App Links](https://developer.android.com/training/app-links) allow an application to designate itself as the default handler of a given type of link. For example, clicking a URL in an email would open the link in the designated application. This guide will show you how to enable Android App links support for your Auth0-registered application using Auth0's Dashboard.
+
+1.  Go to [Auth0 Dashboard > Applications > Applications](https://manage.auth0.com/#/applications), and select the name of the application to view.
+
+2.  Scroll to the bottom of the Settings page, and select **Show Advanced Settings**.
+3.  Select Device Settings, provide the [App Package Name and](https://developer.android.com/studio/build/application-id) the SHA256 fingerprints of your app’s signing certificate for your Android application, and select Save Changes.
+    ![android-app-link](assets/android-app-link.png)
+
+> You can use the following command to generate the fingerprint using the Java keytool in your terminal: `keytool -list -v -keystore my-release-key.keystore`
+
+To learn more about signing certificates, see Android's [Sign Your App](https://developer.android.com/studio/publish/app-signing.html) developer documentation.
 
 #### iOS
 
 ##### Custom Scheme
+
 ```text
-{PRODUCT_BUNDLE_IDENTIFIER}.auth0://{AUTH0_DOMAIN}/ios/{PRODUCT_BUNDLE_IDENTIFIER}/callback
+{PRODUCT_BUNDLE_IDENTIFIER}.auth0://{YOUR_AUTH0_DOMAIN}/ios/{PRODUCT_BUNDLE_IDENTIFIER}/callback
 ```
+
 ##### Universal Link (Recommended):
+
 ```text
-https://{YOUR_CUSTOM_DOMAIN}/ios/{PRODUCT_BUNDLE_IDENTIFIER}/callback
+https://{YOUR_AUTH0_DOMAIN}/ios/{PRODUCT_BUNDLE_IDENTIFIER}/callback
 ```
 
-> Replace `{PRODUCT_BUNDLE_IDENTIFIER}`, `{AUTH0_DOMAIN}`, and `{YOUR_CUSTOM_DOMAIN}` with your actual product bundle identifier, Auth0 domain, and custom domain respectively. Ensure that {PRODUCT_BUNDLE_IDENTIFIER} is all lowercase.
+> Replace `{PRODUCT_BUNDLE_IDENTIFIER}` and `{YOUR_AUTH0_DOMAIN}` with your actual product bundle identifier and Auth0 domain. Ensure that {PRODUCT_BUNDLE_IDENTIFIER} is all lowercase.
 
-To enable Universal Links, add the Associated Domains capability in your Xcode project and include your Auth0 domain as follows:
+#### Configure an associated domain for iOS
+
+> [!IMPORTANT]
+> This step requires a paid Apple Developer account. It is needed to use Universal Links as callback and logout URLs.
+> Skip this step to use a custom URL scheme instead.
+
+##### Configure the Team ID and bundle identifier
+
+Scroll to the end of the settings page of your Auth0 application and open **Advanced Settings > Device Settings**. In the **iOS** section, set **Team ID** to your [Apple Team ID](https://developer.apple.com/help/account/manage-your-team/locate-your-team-id/), and **App ID** to your app's bundle identifier.
+
+![Screenshot of the iOS section inside the Auth0 application settings page](https://github.com/auth0/Auth0.swift/assets/5055789/7eb5f6a2-7cc7-4c70-acf3-633fd72dc506)
+
+This will add your app to your Auth0 tenant's `apple-app-site-association` file.
+
+##### Add the associated domain capability
+
+In Xcode, go to the **Signing and Capabilities** [tab](https://developer.apple.com/documentation/xcode/adding-capabilities-to-your-app#Add-a-capability) of your app's target settings, and press the **+ Capability** button. Then select **Associated Domains**.
+
+![Screenshot of the capabilities library inside Xcode](https://github.com/auth0/Auth0.swift/assets/5055789/3f7b0a70-c36c-46bf-9441-29f98724204a)
+
+Next, add the following [entry](https://developer.apple.com/documentation/xcode/configuring-an-associated-domain#Define-a-service-and-its-associated-domain) under **Associated Domains**:
+
 ```text
-webcredentials:{YOUR_AUTH0_DOMAIN}
+webcredentials:YOUR_AUTH0_DOMAIN
 ```
-This configuration allows your iOS app to handle Universal Links properly.
+
+<details>
+  <summary>Example</summary>
+
+If your Auth0 Domain were `example.us.auth0.com`, then this value would be:
+
+```text
+webcredentials:example.us.auth0.com
+```
+
+</details>
+
+If you have a [custom domain](https://auth0.com/docs/customize/custom-domains), replace `YOUR_AUTH0_DOMAIN` with your custom domain.
+
+> [!NOTE]
+> For the associated domain to work, your app must be signed with your team certificate **even when building for the iOS simulator**. Make sure you are using the Apple Team whose Team ID is configured in the settings page of your Auth0 application.
 
 Refer to the example of [Using custom scheme for web authentication redirection](https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES.md#using-custom-scheme-for-web-authentication-redirection)
-
 
 ## Next Steps
 
