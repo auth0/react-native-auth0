@@ -28,7 +28,7 @@ We're excited to announce the release of react-native-auth0 `v4.0.0`! Please not
 
 ### Requirements
 
-This SDK targets apps that are using React Native SDK version `0.65.0` and up. If you're using an older React Native version, see the compatibility matrix below.
+This SDK targets apps that are using React Native SDK version `0.76.0` and up. If you're using an older React Native version, see the compatibility matrix below.
 
 ### Platform compatibility
 

@@ -19,6 +19,10 @@
 
 RCT_EXPORT_MODULE();
 
+RCT_EXPORT_METHOD(getBundleIdentifier:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    resolve([[NSBundle mainBundle] bundleIdentifier]);
+}
+
 RCT_EXPORT_METHOD(hasValidAuth0InstanceWithConfiguration:(NSString *)clientId domain:(NSString *)domain resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
     BOOL valid = [self checkHasValidNativeBridgeInstance:clientId domain:domain];
