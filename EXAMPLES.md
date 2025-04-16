@@ -8,6 +8,7 @@
   - [Login using MFA with One Time Password code](#login-using-mfa-with-one-time-password-code)
   - [Login with Passwordless](#login-with-passwordless)
   - [Create user in database connection](#create-user-in-database-connection)
+  - [Using HTTPS callback URLs](#using-https-callback-urls)
 - [Management API (Users)](#management-api-users)
   - [Patch user with user_metadata](#patch-user-with-user_metadata)
   - [Get full user profile](#get-full-user-profile)
@@ -15,7 +16,10 @@
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
 - [Bot Protection](#bot-protection)
-- [Domain Switching](#domain-switching)
+  - [Domain Switching](#domain-switching)
+    - [Android](#android)
+    - [iOS](#ios)
+    - [Expo](#expo)
 
 ## Authentication API
 
@@ -70,7 +74,9 @@ auth0.auth
 Custom Schemes can be used for redirecting to the React Native application after web authentication:
 
 ```js
-authorize({}, { customScheme: 'auth0' }).then(console.log).catch(console.error);
+authorize({}, { customScheme: 'YOUR_AUTH0_DOMAIN' })
+  .then(console.log)
+  .catch(console.error);
 ```
 
 ### Login using MFA with One Time Password code
@@ -152,6 +158,17 @@ auth0.auth
   })
   .then(console.log)
   .catch(console.error);
+```
+
+### Using HTTPS callback URLs
+
+HTTPS callback URLs provide enhanced security compared to custom URL schemes. They work with Android App Links and iOS Universal Links to prevent URL scheme hijacking:
+
+```js
+auth0.webAuth
+  .authorize({ scope: 'openid profile email' }, { customScheme: 'https' })
+  .then((credentials) => console.log(credentials))
+  .catch((error) => console.log(error));
 ```
 
 ## Management API (Users)
