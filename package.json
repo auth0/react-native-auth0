@@ -1,7 +1,7 @@
 {
   "name": "react-native-auth0",
   "title": "React Native Auth0",
-  "version": "4.4.0",
+  "version": "4.5.0",
   "description": "React Native toolkit for Auth0 API",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
@@ -117,8 +117,9 @@
     "react-native-svg-transformer": "^1.5.0",
     "release-it": "^15.0.0",
     "semver": "^6.3.0",
-    "typedoc": "^0.27.7",
-    "typedoc-plugin-missing-exports": "^3.1.0",
+    "typedoc": "^0.28.2",
+    "typedoc-plugin-markdown": "^4.6.2",
+    "typedoc-plugin-missing-exports": "^4.0.0",
     "typescript": "5.7.3"
   },
   "dependencies": {
