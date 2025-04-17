@@ -1,4 +1,4 @@
-import {convertUser} from '../userConversion';
+import { convertUser } from '../userConversion';
 
 describe('user conversion', () => {
   test('conversion happens properly', () => {

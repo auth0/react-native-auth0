@@ -1,5 +1,13 @@
 # Change Log
 
+## [v5.0.0-beta.0](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.0) (2025-04-17)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.5.0...v5.0.0-beta.0)
+
+**⚠️ BREAKING CHANGES**
+
+- BREAKING CHANGE: feat: Support Turbo Modules [\#1101](https://github.com/auth0/react-native-auth0/pull/1101) ([guabu](https://github.com/guabu))
+
 ## [v4.5.0](https://github.com/auth0/react-native-auth0/tree/v4.5.0) (2025-04-17)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.4.0...v4.5.0)
