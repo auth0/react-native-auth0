@@ -1,13 +1,13 @@
-import {apply} from '../whitelist';
-import {deepEqual} from '../deepEqual';
+import { apply } from '../whitelist';
+import { deepEqual } from '../deepEqual';
 import faker from 'faker';
 
 describe('whitelist', () => {
   const rules = {
     parameters: {
-      state: {required: true},
-      nonce: {required: false},
-      clientId: {required: false, toName: 'client_id'},
+      state: { required: true },
+      nonce: { required: false },
+      clientId: { required: false, toName: 'client_id' },
       realm: {},
     },
     aliases: {
@@ -32,7 +32,7 @@ describe('whitelist', () => {
   });
 
   it('should fail if required key is not found', () => {
-    const value = {state: faker.random.uuid()};
+    const value = { state: faker.random.uuid() };
     expect(() => apply(rules, {})).toThrowErrorMatchingSnapshot();
   });
 
@@ -50,7 +50,7 @@ describe('whitelist', () => {
       state,
       initialState: faker.random.uuid(),
     };
-    expect(apply(rules, value)).toMatchObject({state});
+    expect(apply(rules, value)).toMatchObject({ state });
   });
 
   it('should keep non declared keys', () => {
@@ -59,7 +59,7 @@ describe('whitelist', () => {
       state,
       initialState: faker.random.uuid(),
     };
-    const allowNonDeclared = {whitelist: false, ...rules};
+    const allowNonDeclared = { whitelist: false, ...rules };
     expect(apply(allowNonDeclared, value)).toMatchObject(value);
   });
 
@@ -67,7 +67,7 @@ describe('whitelist', () => {
     const value = {
       state: faker.random.uuid(),
     };
-    expect(apply(rules, value)).toMatchObject({state: value.state});
+    expect(apply(rules, value)).toMatchObject({ state: value.state });
   });
 
   it('should use mapped name if available', () => {
@@ -89,12 +89,12 @@ describe('test deep equals', () => {
     const obj1 = {
       name: 'John',
       age: 30,
-      address: {city: 'New York', state: 'NY'},
+      address: { city: 'New York', state: 'NY' },
     };
     const obj2 = {
       name: 'John',
       age: 30,
-      address: {city: 'New York', state: 'NY'},
+      address: { city: 'New York', state: 'NY' },
     };
     expect(deepEqual(obj1, obj2)).toBe(true);
   });
@@ -103,12 +103,12 @@ describe('test deep equals', () => {
     const obj1 = {
       name: 'John',
       age: 30,
-      address: {city: 'New York', state: 'NY'},
+      address: { city: 'New York', state: 'NY' },
     };
     const obj2 = {
       name: 'Jane',
       age: 25,
-      address: {city: 'Boston', state: 'MA'},
+      address: { city: 'Boston', state: 'MA' },
     };
     expect(deepEqual(obj1, obj2)).toBe(false);
   });
@@ -117,32 +117,32 @@ describe('test deep equals', () => {
     const obj1 = {
       name: 'John',
       age: 30,
-      address: {city: 'New York', state: 'NY'},
+      address: { city: 'New York', state: 'NY' },
     };
     const obj2 = {
       name: 'John',
       age: 30,
-      address: {city: 'Boston', state: 'MA'},
+      address: { city: 'Boston', state: 'MA' },
     };
     expect(deepEqual(obj1, obj2)).toBe(false);
   });
 
   test('returns false for objects with different numbers of properties', () => {
-    const obj1 = {name: 'John', age: 30};
+    const obj1 = { name: 'John', age: 30 };
     const obj2 = {
       name: 'John',
       age: 30,
-      address: {city: 'New York', state: 'NY'},
+      address: { city: 'New York', state: 'NY' },
     };
     expect(deepEqual(obj1, obj2)).toBe(false);
   });
 
   test('returns false for objects with null values', () => {
-    const obj1 = {name: 'John', age: 30, address: null};
+    const obj1 = { name: 'John', age: 30, address: null };
     const obj2 = {
       name: 'John',
       age: 30,
-      address: {city: 'New York', state: 'NY'},
+      address: { city: 'New York', state: 'NY' },
     };
     expect(deepEqual(obj1, obj2)).toBe(false);
   });

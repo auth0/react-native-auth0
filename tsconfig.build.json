@@ -1,4 +1,11 @@
 {
   "extends": "./tsconfig",
-  "exclude": ["example", "lib", "docs", "scripts", "babel.config.js", "jest.environment.js"]
+  "exclude": [
+    "example",
+    "lib",
+    "docs",
+    "scripts",
+    "babel.config.js",
+    "jest.environment.js"
+  ]
 }
