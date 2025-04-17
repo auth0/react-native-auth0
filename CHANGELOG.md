@@ -1,5 +1,26 @@
 # Change Log
 
+## [v4.5.0](https://github.com/auth0/react-native-auth0/tree/v4.5.0) (2025-04-17)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.4.0...v4.5.0)
+
+**Added**
+
+- Update dependencies and enhance webAuth methods to support HTTPS [\#1125](https://github.com/auth0/react-native-auth0/pull/1125) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: add optional timeout prop to Auth0Provider for authentication requests [\#1124](https://github.com/auth0/react-native-auth0/pull/1124) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- Updated Readme recommending App links [\#1094](https://github.com/auth0/react-native-auth0/pull/1094) ([pmathew92](https://github.com/pmathew92))
+
+**Fixed**
+
+- Added deviceCredentialFallback default value [\#1098](https://github.com/auth0/react-native-auth0/pull/1098) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Security**
+
+- fix: TypeDoc configuration and update dependencies [\#1139](https://github.com/auth0/react-native-auth0/pull/1139) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- React Native Bob Builder config update for expo [\#1137](https://github.com/auth0/react-native-auth0/pull/1137) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- Dependency version upgrades [\#1113](https://github.com/auth0/react-native-auth0/pull/1113) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- Dependency and config update as per react-native-builder-bob [\#1097](https://github.com/auth0/react-native-auth0/pull/1097) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v4.4.0](https://github.com/auth0/react-native-auth0/tree/v4.4.0) (2025-02-19)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.3.0...v4.4.0)
