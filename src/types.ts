@@ -119,7 +119,7 @@ export interface WebAuthorizeOptions {
    */
   ephemeralSession?: boolean;
   /**
-   * **Android only:** Custom scheme to build the callback URL with.
+   * Custom scheme to build the callback URL with.
    */
   customScheme?: string;
   /**
