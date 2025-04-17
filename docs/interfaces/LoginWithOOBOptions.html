@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html class="default" lang="en">
+<!doctype html>
+<html class="default" lang="en" data-base="../">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
@@ -12,6 +12,11 @@
     <script async src="../assets/icons.js" id="tsd-icons-script"></script>
     <script async src="../assets/search.js" id="tsd-search-script"></script>
     <script async src="../assets/navigation.js" id="tsd-nav-script"></script>
+    <script
+      async
+      src="../assets/hierarchy.js"
+      id="tsd-hierarchy-script"
+    ></script>
   </head>
   <body>
     <script>
@@ -20,46 +25,66 @@
       document.body.style.display = 'none';
       setTimeout(
         () =>
-          app ? app.showPage() : document.body.style.removeProperty('display'),
+          window.app
+            ? app.showPage()
+            : document.body.style.removeProperty('display'),
         500
       );
     </script>
     <header class="tsd-page-toolbar">
       <div class="tsd-toolbar-contents container">
-        <div class="table-cell" id="tsd-search" data-base="..">
-          <div class="field">
-            <label
-              for="tsd-search-field"
-              class="tsd-widget tsd-toolbar-icon search no-caption"
-              ><svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <use href="../assets/icons.svg#icon-search"></use></svg></label
-            ><input type="text" id="tsd-search-field" aria-label="Search" />
+        <a href="../index.html" class="title">react-native-auth0</a>
+        <div id="tsd-toolbar-links"></div>
+        <button id="tsd-search-trigger" class="tsd-widget" aria-label="Search">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            aria-hidden="true"
+          >
+            <use href="../assets/icons.svg#icon-search"></use>
+          </svg>
+        </button>
+        <dialog id="tsd-search" aria-label="Search">
+          <input
+            role="combobox"
+            id="tsd-search-input"
+            aria-controls="tsd-search-results"
+            aria-autocomplete="list"
+            aria-expanded="true"
+            autocapitalize="off"
+            autocomplete="off"
+            placeholder="Search the docs"
+            maxlength="100"
+          />
+          <ul role="listbox" id="tsd-search-results"></ul>
+          <div id="tsd-search-status" aria-live="polite" aria-atomic="true">
+            <div>Preparing search index...</div>
           </div>
-          <div class="field"><div id="tsd-toolbar-links"></div></div>
-          <ul class="results">
-            <li class="state loading">Preparing search index...</li>
-            <li class="state failure">The search index is not available</li>
-          </ul>
-          <a href="../index.html" class="title">react-native-auth0</a>
-        </div>
-        <div class="table-cell" id="tsd-widgets">
-          <a
-            href="#"
-            class="tsd-widget tsd-toolbar-icon menu no-caption"
-            data-toggle="menu"
-            aria-label="Menu"
-            ><svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <use href="../assets/icons.svg#icon-menu"></use></svg
-          ></a>
-        </div>
+        </dialog>
+        <a
+          href="#"
+          class="tsd-widget menu"
+          id="tsd-toolbar-menu-trigger"
+          data-toggle="menu"
+          aria-label="Menu"
+          ><svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            aria-hidden="true"
+          >
+            <use href="../assets/icons.svg#icon-menu"></use></svg
+        ></a>
       </div>
     </header>
     <div class="container container-main">
       <div class="col-content">
         <div class="tsd-page-title">
-          <ul class="tsd-breadcrumb">
-            <li><a href="../modules.html">react-native-auth0</a></li>
-            <li><a href="LoginWithOOBOptions.html">LoginWithOOBOptions</a></li>
+          <ul class="tsd-breadcrumb" aria-label="Breadcrumb">
+            <li><a href="" aria-current="page">LoginWithOOBOptions</a></li>
           </ul>
           <h1>Interface LoginWithOOBOptions</h1>
         </div>
@@ -70,51 +95,59 @@
           <div class="tsd-comment tsd-typography"></div>
         </section>
         <div class="tsd-signature">
-          <span class="tsd-signature-keyword">interface </span
-          ><span class="tsd-kind-interface">LoginWithOOBOptions</span>
-          <span class="tsd-signature-symbol">{ </span><br /><span>    </span
-          ><a
+          <span class="tsd-signature-keyword">interface</span>
+          <span class="tsd-kind-interface">LoginWithOOBOptions</span>
+          <span class="tsd-signature-symbol">{</span><br />    <a
             class="tsd-kind-property"
-            href="LoginWithOOBOptions.html#bindingCode"
+            href="#bindingcode"
             >bindingCode</a
-          ><span class="tsd-signature-symbol">?: </span
-          ><span class="tsd-signature-type">string</span
-          ><span class="tsd-signature-symbol">; </span><br /><span>    </span
-          ><a class="tsd-kind-property" href="LoginWithOOBOptions.html#mfaToken"
+          ><span class="tsd-signature-symbol">?:</span>
+          <span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">;</span><br />    <a
+            class="tsd-kind-property"
+            href="#mfatoken"
             >mfaToken</a
-          ><span class="tsd-signature-symbol">: </span
-          ><span class="tsd-signature-type">string</span
-          ><span class="tsd-signature-symbol">; </span><br /><span>    </span
-          ><a class="tsd-kind-property" href="LoginWithOOBOptions.html#oobCode"
+          ><span class="tsd-signature-symbol">:</span>
+          <span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">;</span><br />    <a
+            class="tsd-kind-property"
+            href="#oobcode"
             >oobCode</a
-          ><span class="tsd-signature-symbol">: </span
-          ><span class="tsd-signature-type">string</span
-          ><span class="tsd-signature-symbol">; </span><br /><span>    </span
-          >[<span class="tsd-kind-index-signature">key</span>:
-          <span class="tsd-signature-type">string</span>]<span
+          ><span class="tsd-signature-symbol">:</span>
+          <span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">;</span><br />    <span
             class="tsd-signature-symbol"
-            >: </span
-          ><span class="tsd-signature-type">any</span
-          ><span class="tsd-signature-symbol">; </span><br /><span
+            >[</span
+          ><span class="tsd-kind-index-signature">key</span
+          ><span class="tsd-signature-symbol">:</span>
+          <span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">]:</span>
+          <span class="tsd-signature-type">any</span
+          ><span class="tsd-signature-symbol">;</span><br /><span
             class="tsd-signature-symbol"
             >}</span
           >
         </div>
         <section class="tsd-panel">
           <h4 class="tsd-before-signature">Indexable</h4>
-          <div class="tsd-signature">
-            <span class="tsd-signature-symbol">[</span>key:
-            <span class="tsd-signature-type">string</span
-            ><span class="tsd-signature-symbol">]: </span
-            ><span class="tsd-signature-type">any</span>
-          </div>
+          <ul class="tsd-signatures">
+            <li class="tsd-index-signature">
+              <div class="tsd-signature">
+                <span class="tsd-signature-symbol">[</span
+                ><span class="tsd-kind-parameter">key</span>:
+                <span class="tsd-signature-type">string</span
+                ><span class="tsd-signature-symbol">]:</span>
+                <span class="tsd-signature-type">any</span>
+              </div>
+            </li>
+          </ul>
         </section>
         <aside class="tsd-sources">
           <ul>
             <li>
               Defined in
               <a
-                href="https://github.com/auth0/react-native-auth0/blob/42fef5e5fe3cd3b4bbdcbed42f7054fd4b6f8cc6/src/types.ts#L444"
+                href="https://github.com/auth0/react-native-auth0/blob/b84fdfca691e1a1d168cd2f3d02d45097f7b2189/src/types.ts#L444"
                 >types.ts:444</a
               >
             </li>
@@ -122,42 +155,47 @@
         </aside>
         <section class="tsd-panel-group tsd-index-group">
           <section class="tsd-panel tsd-index-panel">
-            <details class="tsd-index-content tsd-index-accordion" open>
+            <details class="tsd-index-content tsd-accordion" open>
               <summary class="tsd-accordion-summary tsd-index-summary">
-                <h5
-                  class="tsd-index-heading uppercase"
-                  role="button"
-                  aria-expanded="false"
-                  tabindex="0"
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  aria-hidden="true"
                 >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <use href="../assets/icons.svg#icon-chevronSmall"></use>
-                  </svg>
-                  Index
-                </h5>
+                  <use href="../assets/icons.svg#icon-chevronSmall"></use>
+                </svg>
+                <h5 class="tsd-index-heading uppercase">Index</h5>
               </summary>
               <div class="tsd-accordion-details">
                 <section class="tsd-index-section">
                   <h3 class="tsd-index-heading">Properties</h3>
                   <div class="tsd-index-list">
-                    <a
-                      href="LoginWithOOBOptions.html#bindingCode"
-                      class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <a href="#bindingcode" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
                         <use href="../assets/icons.svg#icon-1024"></use></svg
                       ><span>binding<wbr />Code?</span></a
                     >
-                    <a
-                      href="LoginWithOOBOptions.html#mfaToken"
-                      class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <a href="#mfatoken" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
                         <use href="../assets/icons.svg#icon-1024"></use></svg
                       ><span>mfa<wbr />Token</span></a
                     >
-                    <a
-                      href="LoginWithOOBOptions.html#oobCode"
-                      class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <a href="#oobcode" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
                         <use href="../assets/icons.svg#icon-1024"></use></svg
                       ><span>oob<wbr />Code</span></a
                     >
@@ -167,231 +205,215 @@
             </details>
           </section>
         </section>
-        <section class="tsd-panel-group tsd-member-group">
-          <h2>Properties</h2>
-          <section class="tsd-panel tsd-member">
-            <a id="bindingCode" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <code class="tsd-tag ts-flagOptional">Optional</code>
-              <span>binding<wbr />Code</span
-              ><a
-                href="#bindingCode"
-                aria-label="Permalink"
-                class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <div class="tsd-signature">
-              <span class="tsd-kind-property">binding<wbr />Code</span
-              ><span class="tsd-signature-symbol">?:</span>
-              <span class="tsd-signature-type">string</span>
-            </div>
-            <div class="tsd-comment tsd-typography">
-              <p>
-                The code used to bind the side channel (used to deliver the
-                challenge) with the main channel you are using to authenticate.
-                This is usually an OTP-like code delivered as part of the
-                challenge message.
-              </p>
-            </div>
-            <div class="tsd-comment tsd-typography"></div>
-            <aside class="tsd-sources">
-              <ul>
-                <li>
-                  Defined in
-                  <a
-                    href="https://github.com/auth0/react-native-auth0/blob/42fef5e5fe3cd3b4bbdcbed42f7054fd4b6f8cc6/src/types.ts#L458"
-                    >types.ts:458</a
-                  >
-                </li>
-              </ul>
-            </aside>
+        <details class="tsd-panel-group tsd-member-group tsd-accordion" open>
+          <summary class="tsd-accordion-summary" data-key="section-Properties">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <use href="../assets/icons.svg#icon-chevronDown"></use>
+            </svg>
+            <h2>Properties</h2>
+          </summary>
+          <section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="bindingcode">
+                <code class="tsd-tag">Optional</code
+                ><span>binding<wbr />Code</span
+                ><a
+                  href="#bindingcode"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">bindingCode</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-signature-type">string</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>
+                  The code used to bind the side channel (used to deliver the
+                  challenge) with the main channel you are using to
+                  authenticate. This is usually an OTP-like code delivered as
+                  part of the challenge message.
+                </p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/b84fdfca691e1a1d168cd2f3d02d45097f7b2189/src/types.ts#L458"
+                      >types.ts:458</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="mfatoken">
+                <span>mfa<wbr />Token</span
+                ><a
+                  href="#mfatoken"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">mfaToken</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">string</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>The token received in the previous login response</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/b84fdfca691e1a1d168cd2f3d02d45097f7b2189/src/types.ts#L448"
+                      >types.ts:448</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="oobcode">
+                <span>oob<wbr />Code</span
+                ><a
+                  href="#oobcode"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">oobCode</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">string</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>The out of band code received in the challenge response.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/b84fdfca691e1a1d168cd2f3d02d45097f7b2189/src/types.ts#L452"
+                      >types.ts:452</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
           </section>
-          <section class="tsd-panel tsd-member">
-            <a id="mfaToken" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <span>mfa<wbr />Token</span
-              ><a
-                href="#mfaToken"
-                aria-label="Permalink"
-                class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <div class="tsd-signature">
-              <span class="tsd-kind-property">mfa<wbr />Token</span
-              ><span class="tsd-signature-symbol">:</span>
-              <span class="tsd-signature-type">string</span>
-            </div>
-            <div class="tsd-comment tsd-typography">
-              <p>The token received in the previous login response</p>
-            </div>
-            <div class="tsd-comment tsd-typography"></div>
-            <aside class="tsd-sources">
-              <ul>
-                <li>
-                  Defined in
-                  <a
-                    href="https://github.com/auth0/react-native-auth0/blob/42fef5e5fe3cd3b4bbdcbed42f7054fd4b6f8cc6/src/types.ts#L448"
-                    >types.ts:448</a
-                  >
-                </li>
-              </ul>
-            </aside>
-          </section>
-          <section class="tsd-panel tsd-member">
-            <a id="oobCode" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <span>oob<wbr />Code</span
-              ><a href="#oobCode" aria-label="Permalink" class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <div class="tsd-signature">
-              <span class="tsd-kind-property">oob<wbr />Code</span
-              ><span class="tsd-signature-symbol">:</span>
-              <span class="tsd-signature-type">string</span>
-            </div>
-            <div class="tsd-comment tsd-typography">
-              <p>The out of band code received in the challenge response.</p>
-            </div>
-            <div class="tsd-comment tsd-typography"></div>
-            <aside class="tsd-sources">
-              <ul>
-                <li>
-                  Defined in
-                  <a
-                    href="https://github.com/auth0/react-native-auth0/blob/42fef5e5fe3cd3b4bbdcbed42f7054fd4b6f8cc6/src/types.ts#L452"
-                    >types.ts:452</a
-                  >
-                </li>
-              </ul>
-            </aside>
-          </section>
-        </section>
+        </details>
       </div>
       <div class="col-sidebar">
         <div class="page-menu">
           <div class="tsd-navigation settings">
-            <details class="tsd-index-accordion">
+            <details class="tsd-accordion">
               <summary class="tsd-accordion-summary">
-                <h3>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <use href="../assets/icons.svg#icon-chevronDown"></use></svg
-                  >Settings
-                </h3>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <use href="../assets/icons.svg#icon-chevronDown"></use>
+                </svg>
+                <h3>Settings</h3>
               </summary>
               <div class="tsd-accordion-details">
                 <div class="tsd-filter-visibility">
-                  <h4 class="uppercase">Member Visibility</h4>
-                  <form>
-                    <ul id="tsd-filter-options">
-                      <li class="tsd-filter-item">
-                        <label class="tsd-filter-input"
-                          ><input
-                            type="checkbox"
-                            id="tsd-filter-protected"
-                            name="protected"
-                          /><svg
-                            width="32"
-                            height="32"
-                            viewBox="0 0 32 32"
-                            aria-hidden="true"
-                          >
-                            <rect
-                              class="tsd-checkbox-background"
-                              width="30"
-                              height="30"
-                              x="1"
-                              y="1"
-                              rx="6"
-                              fill="none"
-                            ></rect>
-                            <path
-                              class="tsd-checkbox-checkmark"
-                              d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
-                              stroke="none"
-                              stroke-width="3.5"
-                              stroke-linejoin="round"
-                              fill="none"
-                            ></path></svg
-                          ><span>Protected</span></label
+                  <span class="settings-label">Member Visibility</span>
+                  <ul id="tsd-filter-options">
+                    <li class="tsd-filter-item">
+                      <label class="tsd-filter-input"
+                        ><input
+                          type="checkbox"
+                          id="tsd-filter-protected"
+                          name="protected"
+                        /><svg
+                          width="32"
+                          height="32"
+                          viewBox="0 0 32 32"
+                          aria-hidden="true"
                         >
-                      </li>
-                      <li class="tsd-filter-item">
-                        <label class="tsd-filter-input"
-                          ><input
-                            type="checkbox"
-                            id="tsd-filter-private"
-                            name="private"
-                          /><svg
-                            width="32"
-                            height="32"
-                            viewBox="0 0 32 32"
-                            aria-hidden="true"
-                          >
-                            <rect
-                              class="tsd-checkbox-background"
-                              width="30"
-                              height="30"
-                              x="1"
-                              y="1"
-                              rx="6"
-                              fill="none"
-                            ></rect>
-                            <path
-                              class="tsd-checkbox-checkmark"
-                              d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
-                              stroke="none"
-                              stroke-width="3.5"
-                              stroke-linejoin="round"
-                              fill="none"
-                            ></path></svg
-                          ><span>Private</span></label
+                          <rect
+                            class="tsd-checkbox-background"
+                            width="30"
+                            height="30"
+                            x="1"
+                            y="1"
+                            rx="6"
+                            fill="none"
+                          ></rect>
+                          <path
+                            class="tsd-checkbox-checkmark"
+                            d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
+                            stroke="none"
+                            stroke-width="3.5"
+                            stroke-linejoin="round"
+                            fill="none"
+                          ></path></svg
+                        ><span>Protected</span></label
+                      >
+                    </li>
+                    <li class="tsd-filter-item">
+                      <label class="tsd-filter-input"
+                        ><input
+                          type="checkbox"
+                          id="tsd-filter-inherited"
+                          name="inherited"
+                          checked
+                        /><svg
+                          width="32"
+                          height="32"
+                          viewBox="0 0 32 32"
+                          aria-hidden="true"
                         >
-                      </li>
-                      <li class="tsd-filter-item">
-                        <label class="tsd-filter-input"
-                          ><input
-                            type="checkbox"
-                            id="tsd-filter-inherited"
-                            name="inherited"
-                            checked
-                          /><svg
-                            width="32"
-                            height="32"
-                            viewBox="0 0 32 32"
-                            aria-hidden="true"
-                          >
-                            <rect
-                              class="tsd-checkbox-background"
-                              width="30"
-                              height="30"
-                              x="1"
-                              y="1"
-                              rx="6"
-                              fill="none"
-                            ></rect>
-                            <path
-                              class="tsd-checkbox-checkmark"
-                              d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
-                              stroke="none"
-                              stroke-width="3.5"
-                              stroke-linejoin="round"
-                              fill="none"
-                            ></path></svg
-                          ><span>Inherited</span></label
-                        >
-                      </li>
-                    </ul>
-                  </form>
+                          <rect
+                            class="tsd-checkbox-background"
+                            width="30"
+                            height="30"
+                            x="1"
+                            y="1"
+                            rx="6"
+                            fill="none"
+                          ></rect>
+                          <path
+                            class="tsd-checkbox-checkmark"
+                            d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
+                            stroke="none"
+                            stroke-width="3.5"
+                            stroke-linejoin="round"
+                            fill="none"
+                          ></path></svg
+                        ><span>Inherited</span></label
+                      >
+                    </li>
+                  </ul>
                 </div>
                 <div class="tsd-theme-toggle">
-                  <h4 class="uppercase">Theme</h4>
-                  <select id="tsd-theme">
+                  <label class="settings-label" for="tsd-theme">Theme</label
+                  ><select id="tsd-theme">
                     <option value="os">OS</option>
                     <option value="light">Light</option>
                     <option value="dark">Dark</option>
@@ -400,43 +422,70 @@
               </div>
             </details>
           </div>
-          <details open class="tsd-index-accordion tsd-page-navigation">
+          <details open class="tsd-accordion tsd-page-navigation">
             <summary class="tsd-accordion-summary">
-              <h3>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <use href="../assets/icons.svg#icon-chevronDown"></use></svg
-                >On This Page
-              </h3>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <use href="../assets/icons.svg#icon-chevronDown"></use>
+              </svg>
+              <h3>On This Page</h3>
             </summary>
             <div class="tsd-accordion-details">
-              <a href="#bindingCode" class=""
-                ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-1024"></use></svg
-                ><span>binding<wbr />Code</span></a
-              ><a href="#mfaToken" class=""
-                ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-1024"></use></svg
-                ><span>mfa<wbr />Token</span></a
-              ><a href="#oobCode" class=""
-                ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-1024"></use></svg
-                ><span>oob<wbr />Code</span></a
-              >
+              <details open class="tsd-accordion tsd-page-navigation-section">
+                <summary
+                  class="tsd-accordion-summary"
+                  data-key="section-Properties"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <use href="../assets/icons.svg#icon-chevronDown"></use></svg
+                  >Properties
+                </summary>
+                <div>
+                  <a href="#bindingcode"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>binding<wbr />Code</span></a
+                  ><a href="#mfatoken"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>mfa<wbr />Token</span></a
+                  ><a href="#oobcode"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>oob<wbr />Code</span></a
+                  >
+                </div>
+              </details>
             </div>
           </details>
         </div>
         <div class="site-menu">
           <nav class="tsd-navigation">
-            <a href="../modules.html"
-              ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                <use href="../assets/icons.svg#icon-1"></use></svg
-              ><span>react-native-auth0</span></a
-            >
-            <ul
-              class="tsd-small-nested-navigation"
-              id="tsd-nav-container"
-              data-base=".."
-            >
+            <a href="../modules.html">react-native-auth0</a>
+            <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
               <li>Loading...</li>
             </ul>
           </nav>

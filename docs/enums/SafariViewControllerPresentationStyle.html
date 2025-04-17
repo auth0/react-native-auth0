@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html class="default" lang="en">
+<!doctype html>
+<html class="default" lang="en" data-base="../">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
@@ -12,6 +12,11 @@
     <script async src="../assets/icons.js" id="tsd-icons-script"></script>
     <script async src="../assets/search.js" id="tsd-search-script"></script>
     <script async src="../assets/navigation.js" id="tsd-nav-script"></script>
+    <script
+      async
+      src="../assets/hierarchy.js"
+      id="tsd-hierarchy-script"
+    ></script>
   </head>
   <body>
     <script>
@@ -20,47 +25,67 @@
       document.body.style.display = 'none';
       setTimeout(
         () =>
-          app ? app.showPage() : document.body.style.removeProperty('display'),
+          window.app
+            ? app.showPage()
+            : document.body.style.removeProperty('display'),
         500
       );
     </script>
     <header class="tsd-page-toolbar">
       <div class="tsd-toolbar-contents container">
-        <div class="table-cell" id="tsd-search" data-base="..">
-          <div class="field">
-            <label
-              for="tsd-search-field"
-              class="tsd-widget tsd-toolbar-icon search no-caption"
-              ><svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <use href="../assets/icons.svg#icon-search"></use></svg></label
-            ><input type="text" id="tsd-search-field" aria-label="Search" />
+        <a href="../index.html" class="title">react-native-auth0</a>
+        <div id="tsd-toolbar-links"></div>
+        <button id="tsd-search-trigger" class="tsd-widget" aria-label="Search">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            aria-hidden="true"
+          >
+            <use href="../assets/icons.svg#icon-search"></use>
+          </svg>
+        </button>
+        <dialog id="tsd-search" aria-label="Search">
+          <input
+            role="combobox"
+            id="tsd-search-input"
+            aria-controls="tsd-search-results"
+            aria-autocomplete="list"
+            aria-expanded="true"
+            autocapitalize="off"
+            autocomplete="off"
+            placeholder="Search the docs"
+            maxlength="100"
+          />
+          <ul role="listbox" id="tsd-search-results"></ul>
+          <div id="tsd-search-status" aria-live="polite" aria-atomic="true">
+            <div>Preparing search index...</div>
           </div>
-          <div class="field"><div id="tsd-toolbar-links"></div></div>
-          <ul class="results">
-            <li class="state loading">Preparing search index...</li>
-            <li class="state failure">The search index is not available</li>
-          </ul>
-          <a href="../index.html" class="title">react-native-auth0</a>
-        </div>
-        <div class="table-cell" id="tsd-widgets">
-          <a
-            href="#"
-            class="tsd-widget tsd-toolbar-icon menu no-caption"
-            data-toggle="menu"
-            aria-label="Menu"
-            ><svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <use href="../assets/icons.svg#icon-menu"></use></svg
-          ></a>
-        </div>
+        </dialog>
+        <a
+          href="#"
+          class="tsd-widget menu"
+          id="tsd-toolbar-menu-trigger"
+          data-toggle="menu"
+          aria-label="Menu"
+          ><svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            aria-hidden="true"
+          >
+            <use href="../assets/icons.svg#icon-menu"></use></svg
+        ></a>
       </div>
     </header>
     <div class="container container-main">
       <div class="col-content">
         <div class="tsd-page-title">
-          <ul class="tsd-breadcrumb">
-            <li><a href="../modules.html">react-native-auth0</a></li>
+          <ul class="tsd-breadcrumb" aria-label="Breadcrumb">
             <li>
-              <a href="SafariViewControllerPresentationStyle.html"
+              <a href="" aria-current="page"
                 >SafariViewControllerPresentationStyle</a
               >
             </li>
@@ -72,11 +97,13 @@
             <p>
               Presentation styles for when using SFSafariViewController on iOS.
               For the full description of what each option does, please see
-              <a
+              &lt;a href=&quot;<a
                 href="https://developer.apple.com/documentation/uikit/uimodalpresentationstyle"
                 >https://developer.apple.com/documentation/uikit/uimodalpresentationstyle</a
-              >
-              for more details
+              >&quot;&gt;<a
+                href="https://developer.apple.com/documentation/uikit/uimodalpresentationstyle&amp;lt;/a&amp;gt"
+                >https://developer.apple.com/documentation/uikit/uimodalpresentationstyle&amp;lt;/a&amp;gt</a
+              >; for more details
             </p>
           </div>
           <div class="tsd-comment tsd-typography"></div>
@@ -86,7 +113,7 @@
             <li>
               Defined in
               <a
-                href="https://github.com/auth0/react-native-auth0/blob/42fef5e5fe3cd3b4bbdcbed42f7054fd4b6f8cc6/src/types.ts#L601"
+                href="https://github.com/auth0/react-native-auth0/blob/b84fdfca691e1a1d168cd2f3d02d45097f7b2189/src/types.ts#L601"
                 >types.ts:601</a
               >
             </li>
@@ -94,91 +121,110 @@
         </aside>
         <section class="tsd-panel-group tsd-index-group">
           <section class="tsd-panel tsd-index-panel">
-            <details class="tsd-index-content tsd-index-accordion" open>
+            <details class="tsd-index-content tsd-accordion" open>
               <summary class="tsd-accordion-summary tsd-index-summary">
-                <h5
-                  class="tsd-index-heading uppercase"
-                  role="button"
-                  aria-expanded="false"
-                  tabindex="0"
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  aria-hidden="true"
                 >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <use href="../assets/icons.svg#icon-chevronSmall"></use>
-                  </svg>
-                  Index
-                </h5>
+                  <use href="../assets/icons.svg#icon-chevronSmall"></use>
+                </svg>
+                <h5 class="tsd-index-heading uppercase">Index</h5>
               </summary>
               <div class="tsd-accordion-details">
                 <section class="tsd-index-section">
                   <h3 class="tsd-index-heading">Enumeration Members</h3>
                   <div class="tsd-index-list">
-                    <a
-                      href="SafariViewControllerPresentationStyle.html#automatic"
-                      class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <a href="#automatic" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Enumeration Member"
+                      >
                         <use href="../assets/icons.svg#icon-16"></use></svg
                       ><span>automatic</span></a
                     >
-                    <a
-                      href="SafariViewControllerPresentationStyle.html#currentContext"
-                      class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <a href="#currentcontext" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Enumeration Member"
+                      >
                         <use href="../assets/icons.svg#icon-16"></use></svg
                       ><span>current<wbr />Context</span></a
                     >
-                    <a
-                      href="SafariViewControllerPresentationStyle.html#custom"
-                      class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <a href="#custom" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Enumeration Member"
+                      >
                         <use href="../assets/icons.svg#icon-16"></use></svg
                       ><span>custom</span></a
                     >
-                    <a
-                      href="SafariViewControllerPresentationStyle.html#formSheet"
-                      class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <a href="#formsheet" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Enumeration Member"
+                      >
                         <use href="../assets/icons.svg#icon-16"></use></svg
                       ><span>form<wbr />Sheet</span></a
                     >
-                    <a
-                      href="SafariViewControllerPresentationStyle.html#fullScreen"
-                      class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <a href="#fullscreen" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Enumeration Member"
+                      >
                         <use href="../assets/icons.svg#icon-16"></use></svg
                       ><span>full<wbr />Screen</span></a
                     >
-                    <a
-                      href="SafariViewControllerPresentationStyle.html#none"
-                      class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <a href="#none" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Enumeration Member"
+                      >
                         <use href="../assets/icons.svg#icon-16"></use></svg
                       ><span>none</span></a
                     >
-                    <a
-                      href="SafariViewControllerPresentationStyle.html#overCurrentContext"
-                      class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <a href="#overcurrentcontext" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Enumeration Member"
+                      >
                         <use href="../assets/icons.svg#icon-16"></use></svg
                       ><span>over<wbr />Current<wbr />Context</span></a
                     >
-                    <a
-                      href="SafariViewControllerPresentationStyle.html#overFullScreen"
-                      class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <a href="#overfullscreen" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Enumeration Member"
+                      >
                         <use href="../assets/icons.svg#icon-16"></use></svg
                       ><span>over<wbr />Full<wbr />Screen</span></a
                     >
-                    <a
-                      href="SafariViewControllerPresentationStyle.html#pageSheet"
-                      class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <a href="#pagesheet" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Enumeration Member"
+                      >
                         <use href="../assets/icons.svg#icon-16"></use></svg
                       ><span>page<wbr />Sheet</span></a
                     >
-                    <a
-                      href="SafariViewControllerPresentationStyle.html#popover"
-                      class="tsd-index-link"
-                      ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+                    <a href="#popover" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Enumeration Member"
+                      >
                         <use href="../assets/icons.svg#icon-16"></use></svg
                       ><span>popover</span></a
                     >
@@ -188,412 +234,393 @@
             </details>
           </section>
         </section>
-        <section class="tsd-panel-group tsd-member-group">
-          <h2>Enumeration Members</h2>
-          <section class="tsd-panel tsd-member">
-            <a id="automatic" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <span>automatic</span
-              ><a
-                href="#automatic"
-                aria-label="Permalink"
-                class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <div class="tsd-signature">
-              <span class="tsd-kind-enum-member">automatic</span
-              ><span class="tsd-signature-symbol">:</span>
-              <span class="tsd-signature-type">-2</span>
-            </div>
-            <aside class="tsd-sources">
-              <ul>
-                <li>
-                  Defined in
-                  <a
-                    href="https://github.com/auth0/react-native-auth0/blob/42fef5e5fe3cd3b4bbdcbed42f7054fd4b6f8cc6/src/types.ts#L602"
-                    >types.ts:602</a
-                  >
-                </li>
-              </ul>
-            </aside>
+        <details class="tsd-panel-group tsd-member-group tsd-accordion" open>
+          <summary
+            class="tsd-accordion-summary"
+            data-key="section-Enumeration Members"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <use href="../assets/icons.svg#icon-chevronDown"></use>
+            </svg>
+            <h2>Enumeration Members</h2>
+          </summary>
+          <section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="automatic">
+                <span>automatic</span
+                ><a
+                  href="#automatic"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-enum-member">automatic</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">-2</span>
+              </div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/b84fdfca691e1a1d168cd2f3d02d45097f7b2189/src/types.ts#L602"
+                      >types.ts:602</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="currentcontext">
+                <span>current<wbr />Context</span
+                ><a
+                  href="#currentcontext"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-enum-member">currentContext</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">3</span>
+              </div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/b84fdfca691e1a1d168cd2f3d02d45097f7b2189/src/types.ts#L607"
+                      >types.ts:607</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="custom">
+                <span>custom</span
+                ><a
+                  href="#custom"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-enum-member">custom</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">4</span>
+              </div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/b84fdfca691e1a1d168cd2f3d02d45097f7b2189/src/types.ts#L608"
+                      >types.ts:608</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="formsheet">
+                <span>form<wbr />Sheet</span
+                ><a
+                  href="#formsheet"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-enum-member">formSheet</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">2</span>
+              </div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/b84fdfca691e1a1d168cd2f3d02d45097f7b2189/src/types.ts#L606"
+                      >types.ts:606</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="fullscreen">
+                <span>full<wbr />Screen</span
+                ><a
+                  href="#fullscreen"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-enum-member">fullScreen</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">0</span>
+              </div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/b84fdfca691e1a1d168cd2f3d02d45097f7b2189/src/types.ts#L604"
+                      >types.ts:604</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="none">
+                <span>none</span
+                ><a href="#none" aria-label="Permalink" class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-enum-member">none</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">-1</span>
+              </div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/b84fdfca691e1a1d168cd2f3d02d45097f7b2189/src/types.ts#L603"
+                      >types.ts:603</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="overcurrentcontext">
+                <span>over<wbr />Current<wbr />Context</span
+                ><a
+                  href="#overcurrentcontext"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-enum-member">overCurrentContext</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">6</span>
+              </div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/b84fdfca691e1a1d168cd2f3d02d45097f7b2189/src/types.ts#L610"
+                      >types.ts:610</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="overfullscreen">
+                <span>over<wbr />Full<wbr />Screen</span
+                ><a
+                  href="#overfullscreen"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-enum-member">overFullScreen</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">5</span>
+              </div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/b84fdfca691e1a1d168cd2f3d02d45097f7b2189/src/types.ts#L609"
+                      >types.ts:609</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="pagesheet">
+                <span>page<wbr />Sheet</span
+                ><a
+                  href="#pagesheet"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-enum-member">pageSheet</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">1</span>
+              </div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/b84fdfca691e1a1d168cd2f3d02d45097f7b2189/src/types.ts#L605"
+                      >types.ts:605</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="popover">
+                <span>popover</span
+                ><a
+                  href="#popover"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-enum-member">popover</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">7</span>
+              </div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/b84fdfca691e1a1d168cd2f3d02d45097f7b2189/src/types.ts#L611"
+                      >types.ts:611</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
           </section>
-          <section class="tsd-panel tsd-member">
-            <a id="currentContext" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <span>current<wbr />Context</span
-              ><a
-                href="#currentContext"
-                aria-label="Permalink"
-                class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <div class="tsd-signature">
-              <span class="tsd-kind-enum-member">current<wbr />Context</span
-              ><span class="tsd-signature-symbol">:</span>
-              <span class="tsd-signature-type">3</span>
-            </div>
-            <aside class="tsd-sources">
-              <ul>
-                <li>
-                  Defined in
-                  <a
-                    href="https://github.com/auth0/react-native-auth0/blob/42fef5e5fe3cd3b4bbdcbed42f7054fd4b6f8cc6/src/types.ts#L607"
-                    >types.ts:607</a
-                  >
-                </li>
-              </ul>
-            </aside>
-          </section>
-          <section class="tsd-panel tsd-member">
-            <a id="custom" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <span>custom</span
-              ><a href="#custom" aria-label="Permalink" class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <div class="tsd-signature">
-              <span class="tsd-kind-enum-member">custom</span
-              ><span class="tsd-signature-symbol">:</span>
-              <span class="tsd-signature-type">4</span>
-            </div>
-            <aside class="tsd-sources">
-              <ul>
-                <li>
-                  Defined in
-                  <a
-                    href="https://github.com/auth0/react-native-auth0/blob/42fef5e5fe3cd3b4bbdcbed42f7054fd4b6f8cc6/src/types.ts#L608"
-                    >types.ts:608</a
-                  >
-                </li>
-              </ul>
-            </aside>
-          </section>
-          <section class="tsd-panel tsd-member">
-            <a id="formSheet" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <span>form<wbr />Sheet</span
-              ><a
-                href="#formSheet"
-                aria-label="Permalink"
-                class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <div class="tsd-signature">
-              <span class="tsd-kind-enum-member">form<wbr />Sheet</span
-              ><span class="tsd-signature-symbol">:</span>
-              <span class="tsd-signature-type">2</span>
-            </div>
-            <aside class="tsd-sources">
-              <ul>
-                <li>
-                  Defined in
-                  <a
-                    href="https://github.com/auth0/react-native-auth0/blob/42fef5e5fe3cd3b4bbdcbed42f7054fd4b6f8cc6/src/types.ts#L606"
-                    >types.ts:606</a
-                  >
-                </li>
-              </ul>
-            </aside>
-          </section>
-          <section class="tsd-panel tsd-member">
-            <a id="fullScreen" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <span>full<wbr />Screen</span
-              ><a
-                href="#fullScreen"
-                aria-label="Permalink"
-                class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <div class="tsd-signature">
-              <span class="tsd-kind-enum-member">full<wbr />Screen</span
-              ><span class="tsd-signature-symbol">:</span>
-              <span class="tsd-signature-type">0</span>
-            </div>
-            <aside class="tsd-sources">
-              <ul>
-                <li>
-                  Defined in
-                  <a
-                    href="https://github.com/auth0/react-native-auth0/blob/42fef5e5fe3cd3b4bbdcbed42f7054fd4b6f8cc6/src/types.ts#L604"
-                    >types.ts:604</a
-                  >
-                </li>
-              </ul>
-            </aside>
-          </section>
-          <section class="tsd-panel tsd-member">
-            <a id="none" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <span>none</span
-              ><a href="#none" aria-label="Permalink" class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <div class="tsd-signature">
-              <span class="tsd-kind-enum-member">none</span
-              ><span class="tsd-signature-symbol">:</span>
-              <span class="tsd-signature-type">-1</span>
-            </div>
-            <aside class="tsd-sources">
-              <ul>
-                <li>
-                  Defined in
-                  <a
-                    href="https://github.com/auth0/react-native-auth0/blob/42fef5e5fe3cd3b4bbdcbed42f7054fd4b6f8cc6/src/types.ts#L603"
-                    >types.ts:603</a
-                  >
-                </li>
-              </ul>
-            </aside>
-          </section>
-          <section class="tsd-panel tsd-member">
-            <a id="overCurrentContext" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <span>over<wbr />Current<wbr />Context</span
-              ><a
-                href="#overCurrentContext"
-                aria-label="Permalink"
-                class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <div class="tsd-signature">
-              <span class="tsd-kind-enum-member"
-                >over<wbr />Current<wbr />Context</span
-              ><span class="tsd-signature-symbol">:</span>
-              <span class="tsd-signature-type">6</span>
-            </div>
-            <aside class="tsd-sources">
-              <ul>
-                <li>
-                  Defined in
-                  <a
-                    href="https://github.com/auth0/react-native-auth0/blob/42fef5e5fe3cd3b4bbdcbed42f7054fd4b6f8cc6/src/types.ts#L610"
-                    >types.ts:610</a
-                  >
-                </li>
-              </ul>
-            </aside>
-          </section>
-          <section class="tsd-panel tsd-member">
-            <a id="overFullScreen" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <span>over<wbr />Full<wbr />Screen</span
-              ><a
-                href="#overFullScreen"
-                aria-label="Permalink"
-                class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <div class="tsd-signature">
-              <span class="tsd-kind-enum-member"
-                >over<wbr />Full<wbr />Screen</span
-              ><span class="tsd-signature-symbol">:</span>
-              <span class="tsd-signature-type">5</span>
-            </div>
-            <aside class="tsd-sources">
-              <ul>
-                <li>
-                  Defined in
-                  <a
-                    href="https://github.com/auth0/react-native-auth0/blob/42fef5e5fe3cd3b4bbdcbed42f7054fd4b6f8cc6/src/types.ts#L609"
-                    >types.ts:609</a
-                  >
-                </li>
-              </ul>
-            </aside>
-          </section>
-          <section class="tsd-panel tsd-member">
-            <a id="pageSheet" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <span>page<wbr />Sheet</span
-              ><a
-                href="#pageSheet"
-                aria-label="Permalink"
-                class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <div class="tsd-signature">
-              <span class="tsd-kind-enum-member">page<wbr />Sheet</span
-              ><span class="tsd-signature-symbol">:</span>
-              <span class="tsd-signature-type">1</span>
-            </div>
-            <aside class="tsd-sources">
-              <ul>
-                <li>
-                  Defined in
-                  <a
-                    href="https://github.com/auth0/react-native-auth0/blob/42fef5e5fe3cd3b4bbdcbed42f7054fd4b6f8cc6/src/types.ts#L605"
-                    >types.ts:605</a
-                  >
-                </li>
-              </ul>
-            </aside>
-          </section>
-          <section class="tsd-panel tsd-member">
-            <a id="popover" class="tsd-anchor"></a>
-            <h3 class="tsd-anchor-link">
-              <span>popover</span
-              ><a href="#popover" aria-label="Permalink" class="tsd-anchor-icon"
-                ><svg viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-anchor"></use></svg
-              ></a>
-            </h3>
-            <div class="tsd-signature">
-              <span class="tsd-kind-enum-member">popover</span
-              ><span class="tsd-signature-symbol">:</span>
-              <span class="tsd-signature-type">7</span>
-            </div>
-            <aside class="tsd-sources">
-              <ul>
-                <li>
-                  Defined in
-                  <a
-                    href="https://github.com/auth0/react-native-auth0/blob/42fef5e5fe3cd3b4bbdcbed42f7054fd4b6f8cc6/src/types.ts#L611"
-                    >types.ts:611</a
-                  >
-                </li>
-              </ul>
-            </aside>
-          </section>
-        </section>
+        </details>
       </div>
       <div class="col-sidebar">
         <div class="page-menu">
           <div class="tsd-navigation settings">
-            <details class="tsd-index-accordion">
+            <details class="tsd-accordion">
               <summary class="tsd-accordion-summary">
-                <h3>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <use href="../assets/icons.svg#icon-chevronDown"></use></svg
-                  >Settings
-                </h3>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <use href="../assets/icons.svg#icon-chevronDown"></use>
+                </svg>
+                <h3>Settings</h3>
               </summary>
               <div class="tsd-accordion-details">
                 <div class="tsd-filter-visibility">
-                  <h4 class="uppercase">Member Visibility</h4>
-                  <form>
-                    <ul id="tsd-filter-options">
-                      <li class="tsd-filter-item">
-                        <label class="tsd-filter-input"
-                          ><input
-                            type="checkbox"
-                            id="tsd-filter-protected"
-                            name="protected"
-                          /><svg
-                            width="32"
-                            height="32"
-                            viewBox="0 0 32 32"
-                            aria-hidden="true"
-                          >
-                            <rect
-                              class="tsd-checkbox-background"
-                              width="30"
-                              height="30"
-                              x="1"
-                              y="1"
-                              rx="6"
-                              fill="none"
-                            ></rect>
-                            <path
-                              class="tsd-checkbox-checkmark"
-                              d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
-                              stroke="none"
-                              stroke-width="3.5"
-                              stroke-linejoin="round"
-                              fill="none"
-                            ></path></svg
-                          ><span>Protected</span></label
+                  <span class="settings-label">Member Visibility</span>
+                  <ul id="tsd-filter-options">
+                    <li class="tsd-filter-item">
+                      <label class="tsd-filter-input"
+                        ><input
+                          type="checkbox"
+                          id="tsd-filter-protected"
+                          name="protected"
+                        /><svg
+                          width="32"
+                          height="32"
+                          viewBox="0 0 32 32"
+                          aria-hidden="true"
                         >
-                      </li>
-                      <li class="tsd-filter-item">
-                        <label class="tsd-filter-input"
-                          ><input
-                            type="checkbox"
-                            id="tsd-filter-private"
-                            name="private"
-                          /><svg
-                            width="32"
-                            height="32"
-                            viewBox="0 0 32 32"
-                            aria-hidden="true"
-                          >
-                            <rect
-                              class="tsd-checkbox-background"
-                              width="30"
-                              height="30"
-                              x="1"
-                              y="1"
-                              rx="6"
-                              fill="none"
-                            ></rect>
-                            <path
-                              class="tsd-checkbox-checkmark"
-                              d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
-                              stroke="none"
-                              stroke-width="3.5"
-                              stroke-linejoin="round"
-                              fill="none"
-                            ></path></svg
-                          ><span>Private</span></label
+                          <rect
+                            class="tsd-checkbox-background"
+                            width="30"
+                            height="30"
+                            x="1"
+                            y="1"
+                            rx="6"
+                            fill="none"
+                          ></rect>
+                          <path
+                            class="tsd-checkbox-checkmark"
+                            d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
+                            stroke="none"
+                            stroke-width="3.5"
+                            stroke-linejoin="round"
+                            fill="none"
+                          ></path></svg
+                        ><span>Protected</span></label
+                      >
+                    </li>
+                    <li class="tsd-filter-item">
+                      <label class="tsd-filter-input"
+                        ><input
+                          type="checkbox"
+                          id="tsd-filter-inherited"
+                          name="inherited"
+                          checked
+                        /><svg
+                          width="32"
+                          height="32"
+                          viewBox="0 0 32 32"
+                          aria-hidden="true"
                         >
-                      </li>
-                      <li class="tsd-filter-item">
-                        <label class="tsd-filter-input"
-                          ><input
-                            type="checkbox"
-                            id="tsd-filter-inherited"
-                            name="inherited"
-                            checked
-                          /><svg
-                            width="32"
-                            height="32"
-                            viewBox="0 0 32 32"
-                            aria-hidden="true"
-                          >
-                            <rect
-                              class="tsd-checkbox-background"
-                              width="30"
-                              height="30"
-                              x="1"
-                              y="1"
-                              rx="6"
-                              fill="none"
-                            ></rect>
-                            <path
-                              class="tsd-checkbox-checkmark"
-                              d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
-                              stroke="none"
-                              stroke-width="3.5"
-                              stroke-linejoin="round"
-                              fill="none"
-                            ></path></svg
-                          ><span>Inherited</span></label
-                        >
-                      </li>
-                    </ul>
-                  </form>
+                          <rect
+                            class="tsd-checkbox-background"
+                            width="30"
+                            height="30"
+                            x="1"
+                            y="1"
+                            rx="6"
+                            fill="none"
+                          ></rect>
+                          <path
+                            class="tsd-checkbox-checkmark"
+                            d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
+                            stroke="none"
+                            stroke-width="3.5"
+                            stroke-linejoin="round"
+                            fill="none"
+                          ></path></svg
+                        ><span>Inherited</span></label
+                      >
+                    </li>
+                  </ul>
                 </div>
                 <div class="tsd-theme-toggle">
-                  <h4 class="uppercase">Theme</h4>
-                  <select id="tsd-theme">
+                  <label class="settings-label" for="tsd-theme">Theme</label
+                  ><select id="tsd-theme">
                     <option value="os">OS</option>
                     <option value="light">Light</option>
                     <option value="dark">Dark</option>
@@ -602,71 +629,126 @@
               </div>
             </details>
           </div>
-          <details open class="tsd-index-accordion tsd-page-navigation">
+          <details open class="tsd-accordion tsd-page-navigation">
             <summary class="tsd-accordion-summary">
-              <h3>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <use href="../assets/icons.svg#icon-chevronDown"></use></svg
-                >On This Page
-              </h3>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <use href="../assets/icons.svg#icon-chevronDown"></use>
+              </svg>
+              <h3>On This Page</h3>
             </summary>
             <div class="tsd-accordion-details">
-              <a href="#automatic" class=""
-                ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-16"></use></svg
-                ><span>automatic</span></a
-              ><a href="#currentContext" class=""
-                ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-16"></use></svg
-                ><span>current<wbr />Context</span></a
-              ><a href="#custom" class=""
-                ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-16"></use></svg
-                ><span>custom</span></a
-              ><a href="#formSheet" class=""
-                ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-16"></use></svg
-                ><span>form<wbr />Sheet</span></a
-              ><a href="#fullScreen" class=""
-                ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-16"></use></svg
-                ><span>full<wbr />Screen</span></a
-              ><a href="#none" class=""
-                ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-16"></use></svg
-                ><span>none</span></a
-              ><a href="#overCurrentContext" class=""
-                ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-16"></use></svg
-                ><span>over<wbr />Current<wbr />Context</span></a
-              ><a href="#overFullScreen" class=""
-                ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-16"></use></svg
-                ><span>over<wbr />Full<wbr />Screen</span></a
-              ><a href="#pageSheet" class=""
-                ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-16"></use></svg
-                ><span>page<wbr />Sheet</span></a
-              ><a href="#popover" class=""
-                ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                  <use href="../assets/icons.svg#icon-16"></use></svg
-                ><span>popover</span></a
-              >
+              <details open class="tsd-accordion tsd-page-navigation-section">
+                <summary
+                  class="tsd-accordion-summary"
+                  data-key="section-Enumeration Members"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <use href="../assets/icons.svg#icon-chevronDown"></use></svg
+                  >Enumeration Members
+                </summary>
+                <div>
+                  <a href="#automatic"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Enumeration Member"
+                    >
+                      <use href="../assets/icons.svg#icon-16"></use></svg
+                    ><span>automatic</span></a
+                  ><a href="#currentcontext"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Enumeration Member"
+                    >
+                      <use href="../assets/icons.svg#icon-16"></use></svg
+                    ><span>current<wbr />Context</span></a
+                  ><a href="#custom"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Enumeration Member"
+                    >
+                      <use href="../assets/icons.svg#icon-16"></use></svg
+                    ><span>custom</span></a
+                  ><a href="#formsheet"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Enumeration Member"
+                    >
+                      <use href="../assets/icons.svg#icon-16"></use></svg
+                    ><span>form<wbr />Sheet</span></a
+                  ><a href="#fullscreen"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Enumeration Member"
+                    >
+                      <use href="../assets/icons.svg#icon-16"></use></svg
+                    ><span>full<wbr />Screen</span></a
+                  ><a href="#none"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Enumeration Member"
+                    >
+                      <use href="../assets/icons.svg#icon-16"></use></svg
+                    ><span>none</span></a
+                  ><a href="#overcurrentcontext"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Enumeration Member"
+                    >
+                      <use href="../assets/icons.svg#icon-16"></use></svg
+                    ><span>over<wbr />Current<wbr />Context</span></a
+                  ><a href="#overfullscreen"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Enumeration Member"
+                    >
+                      <use href="../assets/icons.svg#icon-16"></use></svg
+                    ><span>over<wbr />Full<wbr />Screen</span></a
+                  ><a href="#pagesheet"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Enumeration Member"
+                    >
+                      <use href="../assets/icons.svg#icon-16"></use></svg
+                    ><span>page<wbr />Sheet</span></a
+                  ><a href="#popover"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Enumeration Member"
+                    >
+                      <use href="../assets/icons.svg#icon-16"></use></svg
+                    ><span>popover</span></a
+                  >
+                </div>
+              </details>
             </div>
           </details>
         </div>
         <div class="site-menu">
           <nav class="tsd-navigation">
-            <a href="../modules.html"
-              ><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-                <use href="../assets/icons.svg#icon-1"></use></svg
-              ><span>react-native-auth0</span></a
-            >
-            <ul
-              class="tsd-small-nested-navigation"
-              id="tsd-nav-container"
-              data-base=".."
-            >
+            <a href="../modules.html">react-native-auth0</a>
+            <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
               <li>Loading...</li>
             </ul>
           </nav>

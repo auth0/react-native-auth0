@@ -49,6 +49,8 @@ class Agent {
         );
         let redirectUri =
           options.redirectUrl ?? this.callbackUri(parameters.domain, scheme);
+
+        // The native modules will now check if scheme.startsWith("https") internally
         let credentials = await A0Auth0.webAuth(
           scheme,
           redirectUri,
@@ -113,6 +115,8 @@ class Agent {
     );
     let redirectUri =
       options.returnToUrl ?? this.callbackUri(parameters.domain, scheme);
+
+    // The native modules will now check if scheme.startsWith("https") internally
     await _ensureNativeModuleIsInitializedWithConfiguration(
       NativeModules.A0Auth0,
       parameters.clientId,
