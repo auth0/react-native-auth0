@@ -1,7 +1,6 @@
 import { useEffect, useReducer, useMemo, useCallback } from 'react';
 import type { PropsWithChildren } from 'react';
-import jwtDecode from 'jwt-decode';
-import PropTypes from 'prop-types';
+import { jwtDecode } from 'jwt-decode';
 import Auth0Context from './auth0-context';
 import Auth0 from '../auth0';
 import reducer from './reducer';
@@ -440,12 +439,6 @@ const Auth0Provider = ({
       {children}
     </Auth0Context.Provider>
   );
-};
-
-Auth0Provider.propTypes = {
-  domain: PropTypes.string.isRequired,
-  clientId: PropTypes.string.isRequired,
-  children: PropTypes.element.isRequired,
 };
 
 export default Auth0Provider;
