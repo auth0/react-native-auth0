@@ -48,6 +48,12 @@ describe('client', () => {
     it('should fail with no domain', () => {
       expect(() => new Client()).toThrowErrorMatchingSnapshot();
     });
+
+    it('should store acceptLanguage option if provided', () => {
+      const lang = 'fr-CA';
+      const client = new Client({ baseUrl, acceptLanguage: lang });
+      expect(client.acceptLanguage).toEqual(lang);
+    });
   });
 
   describe('requests', () => {
@@ -216,6 +222,74 @@ describe('client', () => {
         expect.assertions(1);
         await expect(client.get('/method', query)).rejects.toMatchSnapshot();
       });
+    });
+  });
+
+  describe('Accept-Language Header', () => {
+    const path = '/test-endpoint';
+    const mockResponse = { status: 200, body: { success: true } };
+    const defaultClient = new Client({
+        baseUrl,
+        telemetry: {name: 'react-native-auth0', version: '1.0.0'},
+        token: 'a.bearer.token',
+    });
+    beforeEach(fetchMock.restore);
+    it('should NOT set Accept-Language header if option is not provided', async () => {
+      fetchMock.getOnce(`https://${domain}${path}`, mockResponse);
+      await defaultClient.get(path);
+
+      const requestOptions = fetchMock.lastOptions();
+      const headers = requestOptions.headers;
+      expect(headers.get('Accept-Language')).toBeNull();
+    });
+
+    it('should set Accept-Language header if option IS provided', async () => {
+      const lang = 'es-ES,es;q=0.9';
+      const clientWithLang = new Client({
+        baseUrl,
+        telemetry: { name: 'react-native-auth0', version: '1.0.0' },
+        token: 'a.bearer.token',
+        acceptLanguage: lang, // Provide the option
+      });
+
+      fetchMock.getOnce(`https://${domain}${path}`, mockResponse);
+      await clientWithLang.get(path);
+
+      const requestOptions = fetchMock.lastOptions();
+      const headers = requestOptions.headers;
+      expect(headers.get('Accept-Language')).toEqual(lang);
+    });
+
+    it('should set Accept-Language header for POST requests if option is provided', async () => {
+      const lang = 'fr';
+      const clientWithLang = new Client({
+        baseUrl,
+        acceptLanguage: lang,
+      });
+      const body = { data: 'test' };
+
+      fetchMock.postOnce(`https://${domain}${path}`, mockResponse);
+      await clientWithLang.post(path, body);
+
+      const requestOptions = fetchMock.lastOptions();
+      const headers = requestOptions.headers;
+      expect(headers.get('Accept-Language')).toEqual(lang);
+    });
+
+     it('should set Accept-Language header for PATCH requests if option is provided', async () => {
+      const lang = 'de-DE';
+      const clientWithLang = new Client({
+        baseUrl,
+        acceptLanguage: lang,
+      });
+      const body = { data: 'update' };
+
+      fetchMock.patchOnce(`https://${domain}${path}`, mockResponse);
+      await clientWithLang.patch(path, body);
+
+      const requestOptions = fetchMock.lastOptions();
+      const headers = requestOptions.headers;
+      expect(headers.get('Accept-Language')).toEqual(lang);
     });
   });
 
