@@ -56,12 +56,21 @@ const finalizeScopeParam = (inputScopes?: string) => {
   return Array.from(scopeSet).join(' ');
 };
 
+interface Auth0ProviderProps {
+  domain: string;
+  clientId: string;
+  localAuthenticationOptions?: LocalAuthenticationOptions;
+  timeout?: number;
+  acceptLanguage?: string;
+}
+
 /**
  * Provides the Auth0Context to its child components.
  * @param {String} domain Your Auth0 domain
  * @param {String} clientId Your Auth0 client ID
  * @param {LocalAuthenticationOptions} localAuthenticationOptions The local auth options
  * @param {number} timeout - Optional timeout in milliseconds for authentication requests.
+ * @param {string} [acceptLanguage] Optional language tag (e.g., "en-US", "fr") to be sent in the Accept-Language header for all requests.
  * @param {React.ReactNode} children - The child components to render within the provider.
  *
  * @example
@@ -76,16 +85,12 @@ const Auth0Provider = ({
   clientId,
   localAuthenticationOptions,
   timeout,
+  acceptLanguage,
   children,
-}: PropsWithChildren<{
-  domain: string;
-  clientId: string;
-  localAuthenticationOptions?: LocalAuthenticationOptions;
-  timeout?: number;
-}>) => {
+}: PropsWithChildren<Auth0ProviderProps>) => {
   const client = useMemo(
-    () => new Auth0({ domain, clientId, localAuthenticationOptions, timeout }),
-    [domain, clientId, localAuthenticationOptions, timeout]
+    () => new Auth0({ domain, clientId, localAuthenticationOptions, timeout, acceptLanguage }),
+    [domain, clientId, localAuthenticationOptions, timeout, acceptLanguage]
   );
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -446,6 +451,9 @@ Auth0Provider.propTypes = {
   domain: PropTypes.string.isRequired,
   clientId: PropTypes.string.isRequired,
   children: PropTypes.element.isRequired,
+  acceptLanguage: PropTypes.string,
+  localAuthenticationOptions: PropTypes.object,
+  timeout: PropTypes.number
 };
 
 export default Auth0Provider;

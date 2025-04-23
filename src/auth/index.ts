@@ -57,6 +57,15 @@ function convertTimestampInCredentials(
   return { ...credentials, expiresAt };
 }
 
+interface AuthOptions {
+  baseUrl: string;
+  clientId: string;
+  telemetry?: Telemetry;
+  token?: string;
+  timeout?: number;
+  acceptLanguage?: string; // Added acceptLanguage property
+}
+
 /**
  * Class for interfacing with the Auth0 Authentication API endpoints.
  *
@@ -76,13 +85,7 @@ class Auth {
   /**
    * @ignore
    */
-  constructor(options: {
-    baseUrl: string;
-    clientId: string;
-    telemetry?: Telemetry;
-    token?: string;
-    timeout?: number;
-  }) {
+  constructor(options: AuthOptions) {
     this.client = new Client(options);
     this.domain = this.client.domain;
 

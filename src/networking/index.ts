@@ -13,23 +13,27 @@ class Client {
   public domain: string;
   private bearer?: string;
   private timeout: number;
+  private acceptLanguage?: string;
 
   constructor(options: {
     baseUrl: string;
     telemetry?: Telemetry;
     token?: string;
     timeout?: number;
+    acceptLanguage?: string;
   }) {
     const {
       baseUrl,
       telemetry = {},
       token,
       timeout = 10000,
+      acceptLanguage,
     }: {
       baseUrl: string;
       telemetry?: Telemetry;
       token?: string;
       timeout?: number;
+      acceptLanguage?: string;
     } = options;
     if (!baseUrl) {
       throw new Error('Missing Auth0 domain');
@@ -51,6 +55,7 @@ class Client {
     }
 
     this.timeout = timeout;
+    this.acceptLanguage = acceptLanguage;
   }
 
   post<TData = unknown, TBody = unknown>(path: string, body: TBody) {
@@ -88,6 +93,10 @@ class Client {
     headers.set('Accept', 'application/json');
     headers.set('Content-Type', 'application/json');
     headers.set('Auth0-Client', this._encodedTelemetry());
+
+    if (this.acceptLanguage) {
+      headers.set('Accept-Language', this.acceptLanguage);
+    }
 
     const options: RequestInit = {
       method,

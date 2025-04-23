@@ -29,6 +29,14 @@ const attributes = [
   'family_name',
 ];
 
+interface UsersClientOptions {
+  baseUrl: string;
+  telemetry?: Telemetry;
+  token?: string;
+  timeout?: number;
+  acceptLanguage?: string;
+}
+
 /**
  * Auth0 Management API User endpoints
  *
@@ -42,12 +50,7 @@ class Users {
   /**
    * @ignore
    */
-  constructor(options: {
-    baseUrl: string;
-    telemetry?: Telemetry;
-    token?: string;
-    timeout?: number;
-  }) {
+  constructor(options: UsersClientOptions) {
     this.client = new Client(options);
     if (!options.token) {
       throw new Error('Missing token in parameters');
