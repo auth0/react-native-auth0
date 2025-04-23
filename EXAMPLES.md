@@ -1,5 +1,7 @@
 # Examples using react-native-auth0
 
+- [SDK Configuration](#sdk-configuration)
+  - [Setting the Accept-Language Header](#setting-the-accept-language-header)
 - [Authentication API](#authentication-api)
   - [Login with Password Realm Grant](#login-with-password-realm-grant)
   - [Get user information using user's access_token](#get-user-information-using-users-access_token)
@@ -20,6 +22,59 @@
     - [Android](#android)
     - [iOS](#ios)
     - [Expo](#expo)
+
+## SDK Configuration
+
+This section covers examples related to configuring the behavior of the Auth0 SDK itself.
+
+### Setting the Accept-Language Header
+
+You can configure the SDK to automatically send the `Accept-Language` HTTP header with all outgoing requests. This is useful if you want to signal your preferred language(s) to Auth0, which might influence the language used in error messages or other localized content returned by Auth0 APIs.
+
+
+Provide the `acceptLanguage` option during initialization. The value should be a string conforming to the standard `Accept-Language` header format (e.g., `en-US`, `fr-CA,fr;q=0.9`).
+
+**Using the `Auth0` class:**
+
+```js
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+  // Set preferred language(s)
+  acceptLanguage: 'es-ES,es;q=0.9'
+});
+
+// All subsequent API calls made using this auth0 instance
+// (e.g., auth0.auth.passwordlessWithSMS())
+// will include the 'Accept-Language: es-ES,es;q=0.9' header.
+```
+
+**Using the Auth0Provider hook:**
+
+```js
+import { Auth0Provider } from 'react-native-auth0';
+
+const App = () => {
+  return (
+    <Auth0Provider
+      domain="YOUR_AUTH0_DOMAIN"
+      clientId="YOUR_AUTH0_CLIENT_ID"
+      // Set preferred language(s)
+      acceptLanguage="de-DE"
+    >
+      {/* YOUR APP */}
+    </Auth0Provider>
+  );
+};
+
+export default App;
+
+// All subsequent API calls made via the useAuth0() hook derived
+// from this provider will include the 'Accept-Language: de-DE' header.
+    
+```
 
 ## Authentication API
 
