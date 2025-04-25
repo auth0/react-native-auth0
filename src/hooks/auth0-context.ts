@@ -18,6 +18,7 @@ import type {
   ExchangeNativeSocialOptions,
   RevokeOptions,
   ResetPasswordOptions,
+  CreateUserOptions,
 } from '../types';
 import BaseError from '../utils/baseError';
 
@@ -138,6 +139,11 @@ export interface Auth0ContextInterface<TUser extends User = User>
    *Request an email with instructions to change password of a user {@link Auth#resetPassword}
    */
   resetPassword: (parameters: ResetPasswordOptions) => Promise<void>;
+
+  /**
+   *Creates a new user with the given email and password {@link Auth#createUser}
+   */
+  createUser: (parameters: CreateUserOptions) => Promise<Partial<User>>;
 }
 
 export interface AuthState<TUser extends User = User> {
@@ -181,6 +187,7 @@ const initialContext = {
   authorizeWithExchangeNativeSocial: stub,
   revokeRefreshToken: stub,
   resetPassword: stub,
+  createUser: stub,
 };
 
 const Auth0Context = createContext<Auth0ContextInterface>(initialContext);

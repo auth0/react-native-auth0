@@ -25,6 +25,7 @@ import type {
   ExchangeNativeSocialOptions,
   RevokeOptions,
   ResetPasswordOptions,
+  CreateUserOptions,
 } from '../types';
 import type { CustomJwtPayload } from '../internal-types';
 import { convertUser } from '../utils/userConversion';
@@ -386,6 +387,19 @@ const Auth0Provider = ({
     }
   }, [client]);
 
+  const createUser = useCallback(
+    async (parameters: CreateUserOptions) => {
+      try {
+        const user = await client.auth.createUser(parameters);
+        return user;
+      } catch (error) {
+        dispatch({ type: 'ERROR', error: error as BaseError });
+        throw error;
+      }
+    },
+    [client]
+  );
+
   const contextValue = useMemo(
     () => ({
       ...state,
@@ -407,6 +421,7 @@ const Auth0Provider = ({
       authorizeWithExchangeNativeSocial,
       revokeRefreshToken,
       resetPassword,
+      createUser,
     }),
     [
       state,
@@ -428,6 +443,7 @@ const Auth0Provider = ({
       authorizeWithExchangeNativeSocial,
       revokeRefreshToken,
       resetPassword,
+      createUser,
     ]
   );
 

@@ -30,6 +30,7 @@ import type { Auth0ContextInterface } from './auth0-context';
  *   authorizeWithPasswordRealm,
  *   authorizeWithExchangeNativeSocial,
  *   revokeRefreshToken
+ *   createUser
  * } = useAuth0();
  * ```
  *
