@@ -37,7 +37,7 @@
     "release": "release-it",
     "bootstrap": "cd example && npm ci",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build && expo-module clean",
-    "prepare": "bob build",
+    "prepare": "bob build && rm -rf lib/*/package.json",
     "example:android": "cd example && npm run android",
     "example:ios": "cd example && npm run ios"
   },

@@ -346,6 +346,26 @@ const App = () => {
 export default App;
 ```
 
+You can also pass custom headers that will be included in all API requests:
+
+```js
+import { Auth0Provider } from 'react-native-auth0';
+
+const App = () => {
+  return (
+    <Auth0Provider 
+      domain="YOUR_AUTH0_DOMAIN" 
+      clientId="YOUR_AUTH0_CLIENT_ID"
+      headers={{ 'X-Custom-Header': 'custom-value' }}
+    >
+      {/* YOUR APP */}
+    </Auth0Provider>
+  );
+};
+
+export default App;
+```
+
 <details>
   <summary>Using the `Auth0` class</summary>
 
@@ -360,6 +380,19 @@ const auth0 = new Auth0({
 });
 ```
 
+You can also pass custom headers that will be included in all API requests:
+
+```js
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+  headers: {
+    'X-Custom-Header': 'custom-value',
+  }
+});
+```
 </details>
 
 Then import the hook into a component where you want to get access to the properties and methods for integrating with Auth0:
