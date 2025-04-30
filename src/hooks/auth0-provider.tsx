@@ -5,6 +5,7 @@ import Auth0Context from './auth0-context';
 import Auth0 from '../auth0';
 import reducer from './reducer';
 import type {
+  Auth0Options,
   ClearSessionOptions,
   ClearSessionParameters,
   Credentials,
@@ -26,7 +27,6 @@ import type {
 } from '../types';
 import type { CustomJwtPayload } from '../internal-types';
 import { convertUser } from '../utils/userConversion';
-import type { LocalAuthenticationOptions } from '../credentials-manager/localAuthenticationOptions';
 import type BaseError from '../utils/baseError';
 
 const initialState = {
@@ -75,15 +75,18 @@ const Auth0Provider = ({
   clientId,
   localAuthenticationOptions,
   timeout,
+  headers,
   children,
-}: PropsWithChildren<{
-  domain: string;
-  clientId: string;
-  localAuthenticationOptions?: LocalAuthenticationOptions;
-  timeout?: number;
-}>) => {
+}: PropsWithChildren<Auth0Options>) => {
   const client = useMemo(
-    () => new Auth0({ domain, clientId, localAuthenticationOptions, timeout }),
+    () =>
+      new Auth0({
+        domain,
+        clientId,
+        localAuthenticationOptions,
+        timeout,
+        headers,
+      }),
     [domain, clientId, localAuthenticationOptions, timeout]
   );
   const [state, dispatch] = useReducer(reducer, initialState);

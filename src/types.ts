@@ -1,3 +1,6 @@
+import { LocalAuthenticationOptions } from './credentials-manager/localAuthenticationOptions';
+import { Telemetry } from './networking/telemetry';
+
 export type Credentials = {
   /**
    * A token in JWT format that has user claims
@@ -191,12 +194,20 @@ export interface ClearSessionOptions {
 export interface GetUserOptions {
   id: string;
   [key: string]: any;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
 }
 
 export interface PatchUserOptions {
   id: string;
   metadata: object;
   [key: string]: any;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
 }
 
 /**
@@ -289,7 +300,41 @@ export interface ExchangeNativeSocialOptions {
    * The scopes requested for the issued tokens. e.g. `openid profile`
    */
   scope?: string;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
   [key: string]: any;
+}
+
+/**
+ * Options for configuring the Auth0 client.
+ */
+export interface Auth0Options {
+  /**
+   * The Auth0 domain for your tenant.
+   */
+  domain: string;
+  /**
+   * The client identifier of your application.
+   */
+  clientId: string;
+  /**
+   * Telemetry information to include in requests.
+   */
+  telemetry?: Telemetry;
+  /**
+   * The timeout in milliseconds for network requests.
+   */
+  timeout?: number;
+  /**
+   * Options for configuring local authentication.
+   */
+  localAuthenticationOptions?: LocalAuthenticationOptions;
+  /**
+   * (Optional) Custom headers to include in requests.
+   */
+  headers?: Record<string, string>;
 }
 
 /**
@@ -316,6 +361,10 @@ export interface PasswordRealmOptions {
    * The scopes requested for the issued tokens. e.g. `openid profile`
    */
   scope?: string;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
   [key: string]: any;
 }
 
@@ -331,6 +380,10 @@ export interface RefreshTokenOptions {
    * The scopes requested for the issued tokens. e.g. `openid profile`
    */
   scope?: string;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
   [key: string]: any;
 }
 
@@ -350,6 +403,10 @@ export interface PasswordlessWithEmailOptions {
    * Optional parameters, used when strategy is 'linḱ'
    */
   authParams?: object;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
   [key: string]: any;
 }
 
@@ -369,6 +426,10 @@ export interface PasswordlessWithSMSOptions {
    * Optional passwordless parameters
    */
   authParams?: object;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
   [key: string]: any;
 }
 
@@ -392,6 +453,10 @@ export interface LoginWithEmailOptions {
    * The scopes to request
    */
   scope?: string;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
   [key: string]: any;
 }
 
@@ -415,6 +480,10 @@ export interface LoginWithSMSOptions {
    * Optional scopes to request
    */
   scope?: string;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
   [key: string]: any;
 }
 
@@ -435,6 +504,10 @@ export interface LoginWithOTPOptions {
    * The API audience
    */
   audience?: string;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
   [key: string]: any;
 }
 
@@ -456,6 +529,10 @@ export interface LoginWithOOBOptions {
    * delivered as part of the challenge message.
    */
   bindingCode?: string;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
   [key: string]: any;
 }
 
@@ -471,6 +548,10 @@ export interface LoginWithRecoveryCodeOptions {
    * The recovery code provided by the end-user.
    */
   recoveryCode: string;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
   [key: string]: any;
 }
 
@@ -492,6 +573,10 @@ export interface MultifactorChallengeOptions {
    * The ID of the authenticator to challenge.
    */
   authenticatorId?: string;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
   [key: string]: any;
 }
 
@@ -503,6 +588,10 @@ export interface RevokeOptions {
    * The user's issued refresh token
    */
   refreshToken: string;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
   [key: string]: any;
 }
 
@@ -514,6 +603,10 @@ export interface UserInfoOptions {
    * The user's access token
    */
   token: string;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
 }
 
 /**
@@ -528,6 +621,10 @@ export interface ResetPasswordOptions {
    * The name of the database connection of the user
    */
   connection: string;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
   [key: string]: any;
 }
 
@@ -575,6 +672,10 @@ export interface CreateUserOptions {
    * Additional information that will be stored in `user_metadata`
    */
   metadata?: object;
+  /**
+   * (Optional) Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
   [key: string]: any;
 }
 

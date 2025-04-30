@@ -1216,3 +1216,50 @@ describe('The useAuth0 hook', () => {
     ).toHaveBeenCalledWith(100);
   });
 });
+
+describe('The Auth0Provider component', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+    mockAuth0.credentialsManager.hasValidCredentials.mockResolvedValue(false);
+  });
+
+  it('should pass custom headers to Auth0 client when provided', () => {
+    // Save the original mock implementation
+    const originalMockImplementation =
+      require('../../auth0').mockImplementation;
+
+    // Override the mock for this specific test
+    const mockAuth0Constructor = require('../../auth0');
+    mockAuth0Constructor.mockImplementation((options) => {
+      // Capture the options passed to the Auth0 constructor
+      mockAuth0Constructor.mockOptions = options;
+      // Return the standard mockAuth0 object
+      return mockAuth0;
+    });
+
+    const customHeaders = { 'X-Custom-Header': 'custom-value' };
+
+    const customHeadersWrapper = ({ children }) => (
+      <Auth0Provider
+        domain="DOMAIN"
+        clientId="CLIENT ID"
+        headers={customHeaders}
+      >
+        {children}
+      </Auth0Provider>
+    );
+
+    renderHook(() => useAuth0(), { wrapper: customHeadersWrapper });
+
+    // Verify headers were passed correctly
+    expect(mockAuth0Constructor.mockOptions).toEqual(
+      expect.objectContaining({
+        headers: customHeaders,
+      })
+    );
+
+    // Restore the original mock implementation
+    mockAuth0Constructor.mockImplementation(originalMockImplementation);
+  });
+});

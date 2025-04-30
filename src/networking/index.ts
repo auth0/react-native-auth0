@@ -13,23 +13,27 @@ class Client {
   public domain: string;
   private bearer?: string;
   private timeout: number;
+  private globalHeaders: Record<string, string>;
 
   constructor(options: {
     baseUrl: string;
     telemetry?: Telemetry;
     token?: string;
     timeout?: number;
+    headers?: Record<string, string>;
   }) {
     const {
       baseUrl,
       telemetry = {},
       token,
       timeout = 10000,
+      headers = {},
     }: {
       baseUrl: string;
       telemetry?: Telemetry;
       token?: string;
       timeout?: number;
+      headers?: Record<string, string>;
     } = options;
     if (!baseUrl) {
       throw new Error('Missing Auth0 domain');
@@ -51,18 +55,36 @@ class Client {
     }
 
     this.timeout = timeout;
+    this.globalHeaders = headers;
   }
 
-  post<TData = unknown, TBody = unknown>(path: string, body: TBody) {
-    return this.request<TData, TBody>('POST', this.url(path), body);
+  post<TData = unknown, TBody = unknown>(
+    path: string,
+    body: TBody,
+    headers?: Record<string, string>
+  ) {
+    return this.request<TData, TBody>('POST', this.url(path), body, headers);
   }
 
-  patch<TData = unknown, TBody = unknown>(path: string, body: TBody) {
-    return this.request<TData, TBody>('PATCH', this.url(path), body);
+  patch<TData = unknown, TBody = unknown>(
+    path: string,
+    body: TBody,
+    headers?: Record<string, string>
+  ) {
+    return this.request<TData, TBody>('PATCH', this.url(path), body, headers);
   }
 
-  get<TData = unknown>(path: string, query?: unknown) {
-    return this.request<TData>('GET', this.url(path, query));
+  get<TData = unknown>(
+    path: string,
+    query?: unknown,
+    headers?: Record<string, string>
+  ) {
+    return this.request<TData>(
+      'GET',
+      this.url(path, query),
+      undefined,
+      headers
+    );
   }
 
   url(path: string, query?: any, includeTelemetry: boolean = false) {
@@ -81,22 +103,36 @@ class Client {
   request<TData, TBody = unknown>(
     method: 'GET' | 'POST' | 'PATCH',
     url: string,
-    body?: TBody
+    body?: TBody,
+    requestHeaders?: Record<string, string>
   ): Promise<Auth0Response<TData>> {
     const headers = new Headers();
 
+    // Set default headers first
     headers.set('Accept', 'application/json');
     headers.set('Content-Type', 'application/json');
     headers.set('Auth0-Client', this._encodedTelemetry());
+
+    if (this.bearer) {
+      headers.set('Authorization', this.bearer);
+    }
+
+    // Combine global headers with request-specific headers
+    const finalHeaders = { ...this.globalHeaders, ...requestHeaders };
+
+    // Apply custom headers, but don't override headers that are already set
+    for (const key in finalHeaders) {
+      if (Object.prototype.hasOwnProperty.call(finalHeaders, key)) {
+        if (finalHeaders[key] !== undefined && !headers.has(key)) {
+          headers.set(key, finalHeaders[key] as string);
+        }
+      }
+    }
 
     const options: RequestInit = {
       method,
       headers,
     };
-
-    if (this.bearer) {
-      headers.set('Authorization', this.bearer);
-    }
     if (body) {
       options.body = JSON.stringify(body);
     }

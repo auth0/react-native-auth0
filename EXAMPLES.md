@@ -9,6 +9,10 @@
   - [Login with Passwordless](#login-with-passwordless)
   - [Create user in database connection](#create-user-in-database-connection)
   - [Using HTTPS callback URLs](#using-https-callback-urls)
+  - [Using Custom Headers](#using-custom-headers)
+    - [Set global headers during initialization](#set-global-headers-during-initialization)
+    - [Using custom headers with Auth0Provider component](#using-custom-headers-with-auth0provider-component)
+    - [Set request-specific headers](#set-request-specific-headers)
 - [Management API (Users)](#management-api-users)
   - [Patch user with user_metadata](#patch-user-with-user_metadata)
   - [Get full user profile](#get-full-user-profile)
@@ -169,6 +173,66 @@ auth0.webAuth
   .authorize({ scope: 'openid profile email' }, { customScheme: 'https' })
   .then((credentials) => console.log(credentials))
   .catch((error) => console.log(error));
+```
+
+### Using Custom Headers
+
+You can set custom headers to be included in all requests to the Auth0 API. This can be useful for implementing custom security requirements, logging, or tracking.
+
+#### Set global headers during initialization
+
+Global headers are included in all requests made by the SDK:
+
+```js
+// Set global headers during Auth0 initialization
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+  headers: {
+    'Accept-Language': 'fr-CA',
+    'X-Tracking-Id': 'user-tracking-id-123',
+  },
+});
+```
+
+#### Using custom headers with Auth0Provider component
+
+If you're using the hooks-based approach with Auth0Provider, you can provide headers during initialization:
+
+```jsx
+import { Auth0Provider } from 'react-native-auth0';
+
+// In your app component
+<Auth0Provider
+  domain={'YOUR_AUTH0_DOMAIN'}
+  clientId={'YOUR_CLIENT_ID'}
+  headers={{
+    'Accept-Language': 'fr-CA',
+    'X-App-Version': '1.2.3',
+  }}
+>
+  <App />
+</Auth0Provider>;
+```
+
+#### Set request-specific headers
+
+You can also provide headers for specific API calls, which will override global headers with the same name:
+
+```js
+// For specific authentication requests
+auth0.auth
+  .passwordRealm({
+    username: 'info@auth0.com',
+    password: 'password',
+    realm: 'myconnection',
+    headers: {
+      'X-Custom-Header': 'request-specific-value',
+      'X-Request-ID': 'unique-request-id-456',
+    },
+  })
+  .then(console.log)
+  .catch(console.error);
 ```
 
 ## Management API (Users)

@@ -1,10 +1,9 @@
 import Auth from './auth';
 import CredentialsManager from './credentials-manager';
 import Users from './management/users';
-import type { Telemetry } from './networking/telemetry';
 import WebAuth from './webauth';
-import type { LocalAuthenticationOptions } from './credentials-manager/localAuthenticationOptions';
 import addDefaultLocalAuthOptions from './utils/addDefaultLocalAuthOptions';
+import { Auth0Options } from './types';
 
 /**
  * Auth0 for React Native client
@@ -13,8 +12,8 @@ class Auth0 {
   public auth: Auth;
   public webAuth: WebAuth;
   public credentialsManager: CredentialsManager;
-  private options;
-
+  private options: Auth0Options;
+  private globalHeaders?: Record<string, string>;
   /**
    * Creates an instance of Auth0.
    * @param {Object} options Your Auth0 application information
@@ -25,19 +24,12 @@ class Auth0 {
    * @param {String} options.timeout Timeout to be set for requests.
    * @param {LocalAuthenticationOptions} options.localAuthenticationOptions The options for configuring the display of local authentication prompt, authentication level (Android only) and evaluation policy (iOS only).
    */
-  constructor(options: {
-    domain: string;
-    clientId: string;
-    telemetry?: Telemetry;
-    token?: string;
-    timeout?: number;
-    localAuthenticationOptions?: LocalAuthenticationOptions;
-  }) {
-    const { domain, clientId, ...extras } = options;
+  constructor(options: Auth0Options) {
+    const { domain, clientId, headers, ...extras } = options;
     const localAuthenticationOptions = options.localAuthenticationOptions
       ? addDefaultLocalAuthOptions(options.localAuthenticationOptions)
       : undefined;
-    this.auth = new Auth({ baseUrl: domain, clientId, ...extras });
+    this.auth = new Auth({ baseUrl: domain, clientId, headers, ...extras });
     this.webAuth = new WebAuth(this.auth, localAuthenticationOptions);
     this.credentialsManager = new CredentialsManager(
       domain,
@@ -45,6 +37,7 @@ class Auth0 {
       localAuthenticationOptions
     );
     this.options = options;
+    this.globalHeaders = headers;
   }
 
   /**
@@ -54,7 +47,12 @@ class Auth0 {
    */
   users(token: string) {
     const { domain, ...extras } = this.options;
-    return new Users({ baseUrl: domain, ...extras, token });
+    return new Users({
+      baseUrl: domain,
+      ...extras,
+      token,
+      headers: this.globalHeaders,
+    });
   }
 }
 
