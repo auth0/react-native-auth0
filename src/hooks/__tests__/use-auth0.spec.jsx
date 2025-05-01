@@ -1000,12 +1000,19 @@ describe('The useAuth0 hook', () => {
     );
     mockAuth0.credentialsManager.clearCredentials.mockResolvedValue();
 
-    result.current.clearCredentials();
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(result.current.error).toBe(errorToThrow);
-    result.current.clearCredentials();
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(result.current.error).toBeNull();
+    // First call will fail and set an error
+    await act(async () => {
+      await result.current.clearCredentials();
+    });
+
+    await waitFor(() => expect(result.current.error).toBe(errorToThrow));
+
+    // Second call should succeed and clear the error
+    await act(async () => {
+      await result.current.clearCredentials();
+    });
+
+    await waitFor(() => expect(result.current.error).toBeNull());
   });
 
   it('sets the error property when an error is raised in authorize', async () => {
@@ -1126,8 +1133,17 @@ describe('The useAuth0 hook', () => {
     mockAuth0.credentialsManager.getCredentials.mockResolvedValue(
       updatedMockCredentialsWithIdToken
     );
-    result.current.getCredentials();
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    // Use act to handle the state update
+    await act(async () => {
+      await result.current.getCredentials();
+    });
+
+    // Now wait for the user to be updated before checking
+    await waitFor(() =>
+      expect(result.current.user?.name).toBe('Different User')
+    );
+
     expect(result.current.user).toMatchObject({
       name: 'Different User',
       familyName: 'User',
