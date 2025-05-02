@@ -964,6 +964,13 @@
 </code><button type="button">Copy</button></pre>
 
           <p>
+            You can also pass custom headers that will be included in all API
+            requests:
+          </p>
+          <pre><code class="js"><span class="hl-6">import</span><span class="hl-1"> { </span><span class="hl-2">Auth0Provider</span><span class="hl-1"> } </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">App</span><span class="hl-1"> = () =&amp;</span><span class="hl-2">gt</span><span class="hl-1">; {</span><br/><span class="hl-1">  </span><span class="hl-6">return</span><span class="hl-1"> (</span><br/><span class="hl-1">    &amp;</span><span class="hl-2">lt</span><span class="hl-1">;</span><span class="hl-2">Auth0Provider</span><span class="hl-1"> </span><br/><span class="hl-1">      </span><span class="hl-2">domain</span><span class="hl-1">=</span><span class="hl-3">&quot;YOUR_AUTH0_DOMAIN&quot;</span><span class="hl-1"> </span><br/><span class="hl-1">      </span><span class="hl-2">clientId</span><span class="hl-1">=</span><span class="hl-3">&quot;YOUR_AUTH0_CLIENT_ID&quot;</span><br/><span class="hl-1">      </span><span class="hl-2">headers</span><span class="hl-1">={{ </span><span class="hl-3">&#39;X-Custom-Header&#39;</span><span class="hl-1">: </span><span class="hl-3">&#39;custom-value&#39;</span><span class="hl-1"> }}</span><br/><span class="hl-1">    &amp;</span><span class="hl-2">gt</span><span class="hl-1">;</span><br/><span class="hl-1">      {</span><span class="hl-9">/* YOUR APP */</span><span class="hl-1">}</span><br/><span class="hl-1">    &amp;</span><span class="hl-2">lt</span><span class="hl-1">;/</span><span class="hl-2">Auth0Provider</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-6">export</span><span class="hl-1"> </span><span class="hl-6">default</span><span class="hl-1"> </span><span class="hl-2">App</span><span class="hl-1">;</span>
+</code><button type="button">Copy</button></pre>
+
+          <p>
             &lt;details&gt; &lt;summary&gt;Using the
             <code>Auth0</code> class&lt;/summary&gt;
           </p>
@@ -972,6 +979,13 @@
             <code>Auth0</code> class:
           </p>
           <pre><code class="js"><span class="hl-6">import</span><span class="hl-1"> </span><span class="hl-2">Auth0</span><span class="hl-1"> </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">auth0</span><span class="hl-1"> = </span><span class="hl-7">new</span><span class="hl-1"> </span><span class="hl-10">Auth0</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-2">domain:</span><span class="hl-1"> </span><span class="hl-3">&#39;YOUR_AUTH0_DOMAIN&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">clientId:</span><span class="hl-1"> </span><span class="hl-3">&#39;YOUR_AUTH0_CLIENT_ID&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">});</span>
+</code><button type="button">Copy</button></pre>
+
+          <p>
+            You can also pass custom headers that will be included in all API
+            requests:
+          </p>
+          <pre><code class="js"><span class="hl-6">import</span><span class="hl-1"> </span><span class="hl-2">Auth0</span><span class="hl-1"> </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">auth0</span><span class="hl-1"> = </span><span class="hl-7">new</span><span class="hl-1"> </span><span class="hl-10">Auth0</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-2">domain:</span><span class="hl-1"> </span><span class="hl-3">&#39;YOUR_AUTH0_DOMAIN&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">clientId:</span><span class="hl-1"> </span><span class="hl-3">&#39;YOUR_AUTH0_CLIENT_ID&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">headers:</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-3">&#39;X-Custom-Header&#39;</span><span class="hl-2">:</span><span class="hl-1"> </span><span class="hl-3">&#39;custom-value&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">});</span>
 </code><button type="button">Copy</button></pre>
 
           <p>&lt;/details&gt;</p>
