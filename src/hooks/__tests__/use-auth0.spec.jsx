@@ -67,6 +67,7 @@ const mockAuth0 = {
     passwordRealm: jest.fn().mockResolvedValue(mockCredentials),
     exchangeNativeSocial: jest.fn().mockResolvedValue(mockCredentials),
     revoke: jest.fn().mockResolvedValue(mockCredentials),
+    createUser: jest.fn(),
   },
   credentialsManager: {
     getCredentials: jest.fn().mockResolvedValue(mockCredentials),
@@ -112,6 +113,11 @@ describe('The useAuth0 hook', () => {
     });
 
     expect(result.current.cancelWebAuth()).toBeDefined();
+  });
+
+  it('defines createUser', () => {
+    const { result } = renderHook(() => useAuth0());
+    expect(result.current.createUser).toBeDefined();
   });
 
   it('isLoading is true until initialization finishes', async () => {
@@ -1214,6 +1220,57 @@ describe('The useAuth0 hook', () => {
     expect(
       mockAuth0.credentialsManager.hasValidCredentials
     ).toHaveBeenCalledWith(100);
+  });
+
+  it('throws an error when createUser is called without a wrapper', () => {
+    const { result } = renderHook(() => useAuth0());
+    expect(() =>
+      result.current.createUser({
+        email: 'foo@bar.com',
+        password: 'pass',
+        connection: 'Username-Password-Authentication',
+      })
+    ).toThrowError(/no provider was set/i);
+  });
+
+  it('can create a user', async () => {
+    const mockUser = { email: 'foo@bar.com', user_id: 'user123' };
+    mockAuth0.auth.createUser = jest.fn().mockResolvedValue(mockUser);
+    const { result } = renderHook(() => useAuth0(), { wrapper });
+    let user;
+    await act(async () => {
+      user = await result.current.createUser({
+        email: 'foo@bar.com',
+        password: 'pass',
+        connection: 'Username-Password-Authentication',
+      });
+    });
+    expect(mockAuth0.auth.createUser).toHaveBeenCalledWith({
+      email: 'foo@bar.com',
+      password: 'pass',
+      connection: 'Username-Password-Authentication',
+    });
+    expect(user).toEqual(mockUser);
+  });
+
+  it('sets the error property when an error is raised in createUser', async () => {
+    const errorToThrow = new Error('Create user error');
+    mockAuth0.auth.createUser = jest.fn().mockRejectedValue(errorToThrow);
+    const { result } = renderHook(() => useAuth0(), { wrapper });
+    let thrown;
+    await act(async () => {
+      try {
+        await result.current.createUser({
+          email: 'foo@bar.com',
+          password: 'pass',
+          connection: 'Username-Password-Authentication',
+        });
+      } catch (e) {
+        thrown = e;
+      }
+    });
+    expect(result.current.error).toBe(errorToThrow);
+    expect(thrown).toBe(errorToThrow);
   });
 });
 
