@@ -108,36 +108,38 @@ const withAndroidAuth0Manifest: ConfigPlugin<Auth0PluginConfig[]> = (
 
 export const addAuth0AppDelegateCode = (src: string): string => {
   let tempSrc = src;
-  // Tests to see if the RCTLinkingManager has already been added
-  if (
-    !/\[RCTLinkingManager.*application:.*openURL:.*options:.*\]/.test(tempSrc)
-  ) {
+
+  // Check if this is a Swift app delegate file by looking for Swift syntax patterns
+  // rather than relying on import statements that may change
+  const isSwift =
+    src.includes('class AppDelegate: ExpoAppDelegate') ||
+    (src.includes('@UIApplicationMain') && src.includes('class AppDelegate'));
+
+  if (!isSwift) {
+    // For non-Swift files, return unchanged since we're only supporting Swift app delegates
+    return tempSrc;
+  }
+
+  // Swift handling for Expo 53+
+  // Add URL handling method if it doesn't exist
+  if (!src.includes('RCTLinkingManager.application')) {
     tempSrc = mergeContents({
       src: tempSrc,
       newSrc: [
-        '- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url',
-        '            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options',
-        '{',
-        '  return [RCTLinkingManager application:app openURL:url options:options];',
-        '}',
+        '  // Handle URL schemes for Auth0 authentication',
+        '  override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {',
+        '    return RCTLinkingManager.application(app, open: url, options: options)',
+        '  }',
       ].join('\n'),
-      tag: 'react-native-auth0-linking',
-      anchor: /@end/,
+      tag: 'react-native-auth0-linking-swift',
+      anchor: /override func sourceURL\(for bridge: RCTBridge\)/,
       comment: '//',
-      offset: 0,
+      offset: -1,
     }).contents;
   }
-  // Checks to see if RCTLinkingManager hasn't been imported
-  if (!/RCTLinkingManager\.h/.test(tempSrc)) {
-    tempSrc = mergeContents({
-      src: tempSrc,
-      newSrc: `#import <React/RCTLinkingManager.h>`,
-      anchor: /#import <React\/RCTBridge\.h>/,
-      offset: 1,
-      tag: 'react-native-auth0-import',
-      comment: '//',
-    }).contents;
-  }
+
+  // In expo 53+ by default RCTLinkingManager is available
+
   return tempSrc;
 };
 

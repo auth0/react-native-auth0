@@ -5,8 +5,9 @@ import {
   addAuth0AppDelegateCode,
   addIOSAuth0ConfigInInfoPList,
 } from '../withAuth0';
-import appDelegateFixtureWithLinking from './fixtures/appdelegate-withlinking';
-import appDelegateFixtureWithoutLinking from './fixtures/appdelegate-withoutlinking';
+// Import Swift AppDelegate fixtures for Expo 53+
+import swiftAppDelegateFixtureWithLinking from './fixtures/swiftappdelegate-withlinking';
+import swiftAppDelegateFixtureWithoutLinking from './fixtures/swiftappdelegate-withoutlinking';
 import type { ModConfig } from '@expo/config-plugins';
 
 const getConfig = () => {
@@ -50,17 +51,15 @@ const getConfig = () => {
 };
 
 describe(addAuth0AppDelegateCode, () => {
-  it(`does not modify the AppDelegate`, () => {
+  it(`does not modify Swift AppDelegate when linking is already present`, () => {
     expect(
-      addAuth0AppDelegateCode(appDelegateFixtureWithLinking)
+      addAuth0AppDelegateCode(swiftAppDelegateFixtureWithLinking)
     ).toMatchSnapshot();
   });
-});
 
-describe(addAuth0AppDelegateCode, () => {
-  it(`modifies the AppDelegate`, () => {
+  it(`modifies Swift AppDelegate to add linking`, () => {
     expect(
-      addAuth0AppDelegateCode(appDelegateFixtureWithoutLinking)
+      addAuth0AppDelegateCode(swiftAppDelegateFixtureWithoutLinking)
     ).toMatchSnapshot();
   });
 });
