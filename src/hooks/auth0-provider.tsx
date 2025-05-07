@@ -87,7 +87,7 @@ const Auth0Provider = ({
         timeout,
         headers,
       }),
-    [domain, clientId, localAuthenticationOptions, timeout]
+    [domain, clientId, localAuthenticationOptions, timeout, headers]
   );
   const [state, dispatch] = useReducer(reducer, initialState);
 

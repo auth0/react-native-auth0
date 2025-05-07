@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.homepage     = package['repository']['baseUrl']
   s.license      = package['license']
   s.authors      = package['author']
-  s.platforms    = { :ios => '13.0' }
+  s.platforms    = { :ios => min_ios_version_supported }
   s.source       = { :git => 'https://github.com/auth0/react-native-auth0.git', :tag => "v#{s.version}" }
 
   s.source_files = 'ios/**/*.{h,m,mm,swift}'

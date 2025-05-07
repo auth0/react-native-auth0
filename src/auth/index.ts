@@ -49,11 +49,11 @@ function responseHandler<TRawResult = unknown, TResult = unknown>(
 function convertTimestampInCredentials(
   rawCredentials: RawCredentials
 ): Credentials {
-  let expiresAt = convertExpiresInToExpiresAt(rawCredentials.expiresIn);
+  const { expiresIn, ...credentials } = rawCredentials;
+  let expiresAt = convertExpiresInToExpiresAt(expiresIn);
   if (!expiresAt) {
     throw Error('invalid expiry value found');
   }
-  const { expiresIn, ...credentials } = rawCredentials;
   return { ...credentials, expiresAt };
 }
 
