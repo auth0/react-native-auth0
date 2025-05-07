@@ -370,6 +370,12 @@ class AppDelegate: RCTAppDelegate {
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
+// @generated begin react-native-auth0-linking-swift - expo prebuild (DO NOT MODIFY) sync-ba380858111cdf18a4962daf3f391b02f6c9b25a
+  // Handle URL schemes for Auth0 authentication
+  override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    return RCTLinkingManager.application(app, open: url, options: options)
+  }
+// @generated end react-native-auth0-linking-swift
 
   override func sourceURL(for bridge: RCTBridge) -> URL? {
     self.bundleURL()

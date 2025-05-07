@@ -106,18 +106,21 @@ const withAndroidAuth0Manifest: ConfigPlugin<Auth0PluginConfig[]> = (
   });
 };
 
-export const addAuth0AppDelegateCode = (src: string): string => {
+export const addAuth0AppDelegateCode = (
+  src: string,
+  language: string
+): string => {
   let tempSrc = src;
 
   // Check if this is a Swift app delegate file by looking for Swift syntax patterns
   // rather than relying on import statements that may change
-  const isSwift =
-    src.includes('class AppDelegate: ExpoAppDelegate') ||
-    (src.includes('@UIApplicationMain') && src.includes('class AppDelegate'));
+  const isSwift = language === 'swift';
 
   if (!isSwift) {
-    // For non-Swift files, return unchanged since we're only supporting Swift app delegates
-    return tempSrc;
+    // Throw error for non-Swift files, since we're only supporting Swift app delegates (RN 78+)
+    throw new Error(
+      'This plugin only supports expo 53 or greater. If you are using older version 4.x'
+    );
   }
 
   // Swift handling for Expo 53+
@@ -146,7 +149,8 @@ export const addAuth0AppDelegateCode = (src: string): string => {
 const withIOSAuth0AppDelegate: ConfigPlugin<Auth0PluginConfig[]> = (config) => {
   return withAppDelegate(config, (config) => {
     const src = config.modResults.contents;
-    config.modResults.contents = addAuth0AppDelegateCode(src);
+    const language = config.modResults.language;
+    config.modResults.contents = addAuth0AppDelegateCode(src, language);
     return config;
   });
 };

@@ -53,13 +53,13 @@ const getConfig = () => {
 describe(addAuth0AppDelegateCode, () => {
   it(`does not modify Swift AppDelegate when linking is already present`, () => {
     expect(
-      addAuth0AppDelegateCode(swiftAppDelegateFixtureWithLinking)
+      addAuth0AppDelegateCode(swiftAppDelegateFixtureWithLinking, 'swift')
     ).toMatchSnapshot();
   });
 
   it(`modifies Swift AppDelegate to add linking`, () => {
     expect(
-      addAuth0AppDelegateCode(swiftAppDelegateFixtureWithoutLinking)
+      addAuth0AppDelegateCode(swiftAppDelegateFixtureWithoutLinking, 'swift')
     ).toMatchSnapshot();
   });
 });
