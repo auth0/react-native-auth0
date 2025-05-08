@@ -17,24 +17,15 @@ jobs:
     name: Run JS tests
     runs-on: ubuntu-latest
 
-    env:
-      node: 'lts/*'
-
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
-      - name: Setup Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: ${{ env.node }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
+      - name: Setup
+        uses: ./.github/actions/setup
 
       - name: Run tests
-        run: npm run test:ci
+        run: yarn test:ci
 
       - name: Upload coverage report
         uses: codecov/codecov-action@ad3126e916f78f00edff4ed0317cf185271ccc2d

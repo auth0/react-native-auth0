@@ -1,8 +1,6 @@
 name: Publish release to npm
 
 inputs:
-  node-version:
-    required: true
   npm-token:
     required: true
   version:
@@ -19,21 +17,13 @@ runs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ inputs.node-version }}
-        cache: 'npm'
-        registry-url: 'https://registry.npmjs.org'
-
-    - name: Install dependencies
-      shell: bash
-      run: npm ci --include=dev
+    - name: Setup
+      uses: ./.github/actions/setup
 
     - name: Build package
       if: inputs.require-build == 'true'
       shell: bash
-      run: npm run build
+      run: yarn build
 
     - name: Publish release to NPM
       shell: bash
