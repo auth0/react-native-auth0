@@ -48,6 +48,14 @@ example/ios/Pods
 # Ruby
 example/vendor/
 
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
 # node.js
 #
 node_modules/
