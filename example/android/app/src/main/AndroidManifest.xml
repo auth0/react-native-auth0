@@ -1,5 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -22,24 +22,5 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
-    <activity
-      android:name="com.auth0.android.provider.RedirectActivity" tools:node="replace"
-      android:exported="true">
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-
-        <data
-          android:host="auth0-domain"
-          android:pathPrefix="/android/${applicationId}/callback"
-          android:scheme="${applicationId}.auth0" />
-        <data
-          android:host="auth0-domain"
-          android:pathPrefix="/android/${applicationId}/callback"
-          android:scheme="${applicationId}.auth0" />
-      </intent-filter>
-    </activity>
     </application>
 </manifest>

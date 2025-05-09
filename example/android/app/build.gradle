@@ -80,6 +80,7 @@ android {
     namespace "com.auth0example"
     defaultConfig {
         applicationId "com.auth0example"
+        manifestPlaceholders = [auth0Domain: "dev-481o0jxuhhma72l4.us.auth0.com", auth0Scheme: "${applicationId}.auth0"]
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
