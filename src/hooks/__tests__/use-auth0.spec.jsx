@@ -1000,12 +1000,19 @@ describe('The useAuth0 hook', () => {
     );
     mockAuth0.credentialsManager.clearCredentials.mockResolvedValue();
 
-    result.current.clearCredentials();
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(result.current.error).toBe(errorToThrow);
-    result.current.clearCredentials();
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(result.current.error).toBeNull();
+    // First call will fail and set an error
+    await act(async () => {
+      await result.current.clearCredentials();
+    });
+
+    await waitFor(() => expect(result.current.error).toBe(errorToThrow));
+
+    // Second call should succeed and clear the error
+    await act(async () => {
+      await result.current.clearCredentials();
+    });
+
+    await waitFor(() => expect(result.current.error).toBeNull());
   });
 
   it('sets the error property when an error is raised in authorize', async () => {
@@ -1126,8 +1133,17 @@ describe('The useAuth0 hook', () => {
     mockAuth0.credentialsManager.getCredentials.mockResolvedValue(
       updatedMockCredentialsWithIdToken
     );
-    result.current.getCredentials();
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    // Use act to handle the state update
+    await act(async () => {
+      await result.current.getCredentials();
+    });
+
+    // Now wait for the user to be updated before checking
+    await waitFor(() =>
+      expect(result.current.user?.name).toBe('Different User')
+    );
+
     expect(result.current.user).toMatchObject({
       name: 'Different User',
       familyName: 'User',
@@ -1223,11 +1239,12 @@ describe('The Auth0Provider component', () => {
     jest.resetAllMocks();
     mockAuth0.credentialsManager.hasValidCredentials.mockResolvedValue(false);
   });
-  
+
   it('should pass custom headers to Auth0 client when provided', () => {
     // Save the original mock implementation
-    const originalMockImplementation = require('../../auth0').mockImplementation;
-    
+    const originalMockImplementation =
+      require('../../auth0').mockImplementation;
+
     // Override the mock for this specific test
     const mockAuth0Constructor = require('../../auth0');
     mockAuth0Constructor.mockImplementation((options) => {
@@ -1238,11 +1255,11 @@ describe('The Auth0Provider component', () => {
     });
 
     const customHeaders = { 'X-Custom-Header': 'custom-value' };
-    
+
     const customHeadersWrapper = ({ children }) => (
-      <Auth0Provider 
-        domain="DOMAIN" 
-        clientId="CLIENT ID" 
+      <Auth0Provider
+        domain="DOMAIN"
+        clientId="CLIENT ID"
         headers={customHeaders}
       >
         {children}
@@ -1250,14 +1267,14 @@ describe('The Auth0Provider component', () => {
     );
 
     renderHook(() => useAuth0(), { wrapper: customHeadersWrapper });
-    
+
     // Verify headers were passed correctly
     expect(mockAuth0Constructor.mockOptions).toEqual(
       expect.objectContaining({
-        headers: customHeaders
+        headers: customHeaders,
       })
     );
-    
+
     // Restore the original mock implementation
     mockAuth0Constructor.mockImplementation(originalMockImplementation);
   });

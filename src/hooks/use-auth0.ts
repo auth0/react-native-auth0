@@ -35,6 +35,6 @@ import type { Auth0ContextInterface } from './auth0-context';
  *
  * Refer to {@link Auth0ContextInterface} on how to use the above methods.
  */
-const useAuth0 = () => useContext(Auth0Context);
+const useAuth0 = (): Auth0ContextInterface => useContext(Auth0Context);
 
 export default useAuth0;

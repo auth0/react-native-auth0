@@ -1,28 +1,30 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
-    "target": "ES2017",
-    "lib": ["DOM", "ES2017"],
-    "jsx": "react-native",
-    "moduleResolution": "Node",
-
-    "allowJs": false,
-    "strict": true,
-    "declaration": true,
-    "sourceMap": true,
-    "stripInternal": true,
-    "skipLibCheck": true,
-
+    "rootDir": ".",
+    "paths": {
+      "react-native-auth0": ["./src/index"]
+    },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
-    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react-jsx",
+    "lib": ["ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
     "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": false,
+    "noImplicitReturns": true,
+    "noImplicitUseStrict": false,
+    "noStrictGenericChecks": false,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ESNext",
+    "verbatimModuleSyntax": true
   },
-  "include": ["src"],
-  "exclude": ["example", "node_modules"]
+  "exclude": ["example", "node_modules", "lib", "docs", "**/__tests__/**"]
 }

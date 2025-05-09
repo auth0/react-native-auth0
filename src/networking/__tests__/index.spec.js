@@ -47,7 +47,7 @@ describe('client', () => {
 
     it('should accept global headers', () => {
       const headers = { 'X-Custom-Header': 'custom-value' };
-      const client = new Client({baseUrl, headers});
+      const client = new Client({ baseUrl, headers });
       expect(client.globalHeaders).toEqual(headers);
     });
 
@@ -229,9 +229,9 @@ describe('client', () => {
     const globalHeaders = { 'X-Global-Header': 'global-value' };
     const client = new Client({
       baseUrl,
-      telemetry: {name: 'react-native-auth0', version: '1.0.0'},
+      telemetry: { name: 'react-native-auth0', version: '1.0.0' },
       token: 'a.bearer.token',
-      headers: globalHeaders
+      headers: globalHeaders,
     });
 
     const response = {
@@ -253,22 +253,24 @@ describe('client', () => {
       expect(fetchOptions.headers.get('X-Global-Header')).toBe('global-value');
     });
 
-    it('should allow request-specific headers that don\'t conflict with default headers', async () => {
+    it("should allow request-specific headers that don't conflict with default headers", async () => {
       fetchMock.postOnce('https://samples.auth0.com/method', response);
       expect.assertions(1);
-      const requestHeaders = { 
-        'X-Request-Header': 'request-value'
+      const requestHeaders = {
+        'X-Request-Header': 'request-value',
       };
       await client.post('/method', {}, requestHeaders);
       const [_, fetchOptions] = fetchMock.lastCall();
-      expect(fetchOptions.headers.get('X-Request-Header')).toBe('request-value');
+      expect(fetchOptions.headers.get('X-Request-Header')).toBe(
+        'request-value'
+      );
     });
-    
+
     it('should not override default headers with custom headers', async () => {
       fetchMock.postOnce('https://samples.auth0.com/method', response);
       expect.assertions(1);
-      const requestHeaders = { 
-        'Content-Type': 'text/plain' // This should not override the default
+      const requestHeaders = {
+        'Content-Type': 'text/plain', // This should not override the default
       };
       await client.post('/method', {}, requestHeaders);
       const [_, fetchOptions] = fetchMock.lastCall();

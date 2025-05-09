@@ -49,11 +49,11 @@ function responseHandler<TRawResult = unknown, TResult = unknown>(
 function convertTimestampInCredentials(
   rawCredentials: RawCredentials
 ): Credentials {
-  let expiresAt = convertExpiresInToExpiresAt(rawCredentials.expiresIn);
+  const { expiresIn, ...credentials } = rawCredentials;
+  let expiresAt = convertExpiresInToExpiresAt(expiresIn);
   if (!expiresAt) {
     throw Error('invalid expiry value found');
   }
-  const { expiresIn, ...credentials } = rawCredentials;
   return { ...credentials, expiresAt };
 }
 
@@ -160,11 +160,15 @@ class Auth {
       payloadParams
     );
     return this.client
-      .post<CredentialsResponse>('/oauth/token', {
-        ...payload,
-        client_id: this.clientId,
-        grant_type: 'authorization_code',
-      }, headers)
+      .post<CredentialsResponse>(
+        '/oauth/token',
+        {
+          ...payload,
+          client_id: this.clientId,
+          grant_type: 'authorization_code',
+        },
+        headers
+      )
       .then((response) =>
         convertTimestampInCredentials(
           responseHandler<CredentialsResponse, RawCredentials>(response)
@@ -195,11 +199,15 @@ class Auth {
       payloadParams
     );
     return this.client
-      .post<CredentialsResponse>('/oauth/token', {
-        ...payload,
-        client_id: this.clientId,
-        grant_type: 'urn:ietf:params:oauth:grant-type:token-exchange',
-      }, headers)
+      .post<CredentialsResponse>(
+        '/oauth/token',
+        {
+          ...payload,
+          client_id: this.clientId,
+          grant_type: 'urn:ietf:params:oauth:grant-type:token-exchange',
+        },
+        headers
+      )
       .then((response) => {
         return convertTimestampInCredentials(
           responseHandler<CredentialsResponse, RawCredentials>(response)
@@ -216,11 +224,15 @@ class Auth {
   passwordRealm(parameters: PasswordRealmOptions): Promise<Credentials> {
     const { headers, ...payloadParams } = parameters || {};
     return this.client
-      .post<CredentialsResponse>('/oauth/token', {
-        ...payloadParams,
-        client_id: this.clientId,
-        grant_type: 'http://auth0.com/oauth/grant-type/password-realm',
-      }, headers)
+      .post<CredentialsResponse>(
+        '/oauth/token',
+        {
+          ...payloadParams,
+          client_id: this.clientId,
+          grant_type: 'http://auth0.com/oauth/grant-type/password-realm',
+        },
+        headers
+      )
       .then((response) =>
         convertTimestampInCredentials(
           responseHandler<CredentialsResponse, RawCredentials>(response)
@@ -247,11 +259,15 @@ class Auth {
       payloadParams
     );
     return this.client
-      .post<CredentialsResponse>('/oauth/token', {
-        ...payload,
-        client_id: this.clientId,
-        grant_type: 'refresh_token',
-      }, headers)
+      .post<CredentialsResponse>(
+        '/oauth/token',
+        {
+          ...payload,
+          client_id: this.clientId,
+          grant_type: 'refresh_token',
+        },
+        headers
+      )
       .then((response) =>
         convertTimestampInCredentials(
           responseHandler<CredentialsResponse, RawCredentials>(response)
@@ -269,11 +285,15 @@ class Auth {
   ): Promise<void> {
     const { headers, ...payloadParams } = parameters || {};
     return this.client
-      .post<void>('/passwordless/start', {
-        ...payloadParams,
-        connection: 'email',
-        client_id: this.clientId,
-      }, headers)
+      .post<void>(
+        '/passwordless/start',
+        {
+          ...payloadParams,
+          connection: 'email',
+          client_id: this.clientId,
+        },
+        headers
+      )
       .then((response) => responseHandler<void, void>(response));
   }
 
@@ -296,11 +316,15 @@ class Auth {
       payloadParams
     );
     return this.client
-      .post<void>('/passwordless/start', {
-        ...payload,
-        connection: 'sms',
-        client_id: this.clientId,
-      }, headers)
+      .post<void>(
+        '/passwordless/start',
+        {
+          ...payload,
+          connection: 'sms',
+          client_id: this.clientId,
+        },
+        headers
+      )
       .then((response) => responseHandler<void, void>(response));
   }
 
@@ -324,12 +348,16 @@ class Auth {
       payloadParams
     );
     return this.client
-      .post<CredentialsResponse>('/oauth/token', {
-        ...payload,
-        client_id: this.clientId,
-        realm: 'email',
-        grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
-      }, headers)
+      .post<CredentialsResponse>(
+        '/oauth/token',
+        {
+          ...payload,
+          client_id: this.clientId,
+          realm: 'email',
+          grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
+        },
+        headers
+      )
       .then((response) =>
         convertTimestampInCredentials(
           responseHandler<CredentialsResponse, RawCredentials>(response)
@@ -357,12 +385,16 @@ class Auth {
       payloadParams
     );
     return this.client
-      .post<CredentialsResponse>('/oauth/token', {
-        ...payload,
-        client_id: this.clientId,
-        realm: 'sms',
-        grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
-      }, headers)
+      .post<CredentialsResponse>(
+        '/oauth/token',
+        {
+          ...payload,
+          client_id: this.clientId,
+          realm: 'sms',
+          grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
+        },
+        headers
+      )
       .then((response) =>
         convertTimestampInCredentials(
           responseHandler<CredentialsResponse, RawCredentials>(response)
@@ -392,11 +424,15 @@ class Auth {
       payloadParams
     );
     return this.client
-      .post<CredentialsResponse>('/oauth/token', {
-        ...payload,
-        client_id: this.clientId,
-        grant_type: 'http://auth0.com/oauth/grant-type/mfa-otp',
-      }, headers)
+      .post<CredentialsResponse>(
+        '/oauth/token',
+        {
+          ...payload,
+          client_id: this.clientId,
+          grant_type: 'http://auth0.com/oauth/grant-type/mfa-otp',
+        },
+        headers
+      )
       .then((response) =>
         convertTimestampInCredentials(
           responseHandler<CredentialsResponse, RawCredentials>(response)
@@ -428,11 +464,15 @@ class Auth {
     );
 
     return this.client
-      .post<CredentialsResponse>('/oauth/token', {
-        ...payload,
-        client_id: this.clientId,
-        grant_type: 'http://auth0.com/oauth/grant-type/mfa-oob',
-      }, headers)
+      .post<CredentialsResponse>(
+        '/oauth/token',
+        {
+          ...payload,
+          client_id: this.clientId,
+          grant_type: 'http://auth0.com/oauth/grant-type/mfa-oob',
+        },
+        headers
+      )
       .then((response) =>
         convertTimestampInCredentials(
           responseHandler<CredentialsResponse, RawCredentials>(response)
@@ -464,11 +504,15 @@ class Auth {
     );
 
     return this.client
-      .post<CredentialsResponse>('/oauth/token', {
-        ...payload,
-        client_id: this.clientId,
-        grant_type: 'http://auth0.com/oauth/grant-type/mfa-recovery-code',
-      }, headers)
+      .post<CredentialsResponse>(
+        '/oauth/token',
+        {
+          ...payload,
+          client_id: this.clientId,
+          grant_type: 'http://auth0.com/oauth/grant-type/mfa-recovery-code',
+        },
+        headers
+      )
       .then((response) =>
         convertTimestampInCredentials(
           responseHandler<CredentialsResponse, RawCredentials>(response)
@@ -498,10 +542,14 @@ class Auth {
       payloadParams
     );
     return this.client
-      .post<RawMultifactorChallengeResponse>('/mfa/challenge', {
-        ...payload,
-        client_id: this.clientId,
-      }, headers)
+      .post<RawMultifactorChallengeResponse>(
+        '/mfa/challenge',
+        {
+          ...payload,
+          client_id: this.clientId,
+        },
+        headers
+      )
       .then((response) =>
         responseHandler<
           RawMultifactorChallengeResponse,
@@ -524,10 +572,14 @@ class Auth {
       payloadParams
     );
     return this.client
-      .post<void>('/oauth/revoke', {
-        ...payload,
-        client_id: this.clientId,
-      }, headers)
+      .post<void>(
+        '/oauth/revoke',
+        {
+          ...payload,
+          client_id: this.clientId,
+        },
+        headers
+      )
       .then((response) => {
         if (response.ok) {
           return;
@@ -567,12 +619,14 @@ class Auth {
       'address',
       'updated_at',
     ];
-    return client.get<RawUser>('/userinfo', undefined, headers).then((response) =>
-      responseHandler<RawUser, User>(response, {
-        attributes: claims,
-        whitelist: true,
-      })
-    );
+    return client
+      .get<RawUser>('/userinfo', undefined, headers)
+      .then((response) =>
+        responseHandler<RawUser, User>(response, {
+          attributes: claims,
+          whitelist: true,
+        })
+      );
   }
 
   /**
@@ -581,10 +635,14 @@ class Auth {
   resetPassword(parameters: ResetPasswordOptions): Promise<void> {
     const { headers, ...payloadParams } = parameters || {};
     return this.client
-      .post<void>('/dbconnections/change_password', {
-        ...payloadParams,
-        client_id: this.clientId,
-      }, headers)
+      .post<void>(
+        '/dbconnections/change_password',
+        {
+          ...payloadParams,
+          client_id: this.clientId,
+        },
+        headers
+      )
       .then((response) => {
         if (response.ok) {
           return;
@@ -619,10 +677,14 @@ class Auth {
     );
 
     return this.client
-      .post<Partial<RawUser>>('/dbconnections/signup', {
-        ...payload,
-        client_id: this.clientId,
-      }, headers)
+      .post<Partial<RawUser>>(
+        '/dbconnections/signup',
+        {
+          ...payload,
+          client_id: this.clientId,
+        },
+        headers
+      )
       .then((response) => {
         if (response.ok && response.json) {
           return toCamelCase<Partial<User>>(response.json);

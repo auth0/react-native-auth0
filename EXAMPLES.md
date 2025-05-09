@@ -190,11 +190,10 @@ const auth0 = new Auth0({
   clientId: 'YOUR_AUTH0_CLIENT_ID',
   headers: {
     'Accept-Language': 'fr-CA',
-    'X-Tracking-Id': 'user-tracking-id-123'
-  }
+    'X-Tracking-Id': 'user-tracking-id-123',
+  },
 });
 ```
-
 
 #### Using custom headers with Auth0Provider component
 
@@ -209,13 +208,12 @@ import { Auth0Provider } from 'react-native-auth0';
   clientId={'YOUR_CLIENT_ID'}
   headers={{
     'Accept-Language': 'fr-CA',
-    'X-App-Version': '1.2.3'
+    'X-App-Version': '1.2.3',
   }}
 >
   <App />
-</Auth0Provider>
+</Auth0Provider>;
 ```
-
 
 #### Set request-specific headers
 
@@ -223,17 +221,18 @@ You can also provide headers for specific API calls, which will override global 
 
 ```js
 // For specific authentication requests
-auth0.auth.passwordRealm({
-  username: 'info@auth0.com',
-  password: 'password',
-  realm: 'myconnection',
-  headers: {
-    'X-Custom-Header': 'request-specific-value',
-    'X-Request-ID': 'unique-request-id-456'
-  }
-})
-.then(console.log)
-.catch(console.error);
+auth0.auth
+  .passwordRealm({
+    username: 'info@auth0.com',
+    password: 'password',
+    realm: 'myconnection',
+    headers: {
+      'X-Custom-Header': 'request-specific-value',
+      'X-Request-ID': 'unique-request-id-456',
+    },
+  })
+  .then(console.log)
+  .catch(console.error);
 ```
 
 ## Management API (Users)
