@@ -1,5 +1,9 @@
 {
   "extends": "./tsconfig",
+  "compilerOptions": {
+    "outDir": "lib",
+    "declaration": true
+  },
   "exclude": [
     "example",
     "lib",

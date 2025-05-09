@@ -3,16 +3,11 @@
   "title": "React Native Auth0",
   "version": "5.0.0-beta.0",
   "description": "React Native toolkit for Auth0 API",
-  "main": "./lib/module/index.js",
-  "types": "./lib/typescript/index.d.ts",
-  "exports": {
-    ".": {
-      "source": "./src/index.tsx",
-      "types": "./lib/typescript/index.d.ts",
-      "default": "./lib/module/index.js"
-    },
-    "./package.json": "./package.json"
-  },
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
+  "types": "lib/typescript/src/index.d.ts",
+  "react-native": "src/index.ts",
+  "source": "src/index.ts",
   "files": [
     "src",
     "lib",
@@ -43,7 +38,7 @@
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "release": "release-it",
     "bootstrap": "cd example && npm ci",
-    "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build && expo-module clean",
+    "clean": "del-cli lib out android/build example/android/build example/android/app/build example/ios/build",
     "prepare": "husky && bob build && rm -rf lib/*/package.json",
     "example:android": "cd example && npm run android",
     "example:ios": "cd example && npm run ios",
@@ -186,18 +181,9 @@
     "source": "src",
     "output": "lib",
     "targets": [
-      [
-        "module",
-        {
-          "esm": true
-        }
-      ],
-      [
-        "typescript",
-        {
-          "project": "tsconfig.build.json"
-        }
-      ]
+      "commonjs",
+      "module",
+      "typescript"
     ]
   },
   "codegenConfig": {

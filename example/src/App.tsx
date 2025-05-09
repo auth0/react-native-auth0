@@ -6,17 +6,21 @@
  * @flow strict-local
  */
 
-import React from 'react';
 import { Alert, Button, StyleSheet, Text, View } from 'react-native';
 import {
   useAuth0,
   Auth0Provider,
-  LocalAuthenticationOptions,
+  type LocalAuthenticationOptions,
   LocalAuthenticationLevel,
   LocalAuthenticationStrategy,
 } from 'react-native-auth0';
+
 import config from './auth0-configuration';
-import { NavigationProp, NavigationContainer } from '@react-navigation/native';
+
+import {
+  type NavigationProp,
+  NavigationContainer,
+} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
