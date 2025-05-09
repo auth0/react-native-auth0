@@ -85,7 +85,7 @@
     "@react-native/js-polyfills": "^0.77.0",
     "@react-native/metro-babel-transformer": "^0.77.0",
     "@react-native/metro-config": "^0.77.0",
-    "@release-it/conventional-changelog": "^5.0.0",
+    "@release-it/conventional-changelog": "^10.0.1",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.1",
     "@tsconfig/react-native": "^2.0.2",
@@ -114,10 +114,11 @@
     "prettier": "^3.0.3",
     "pretty-quick": "^4.1.1",
     "react": "18.3.1",
+    "react-dom": "18.3.1",
     "react-native": "0.77.1",
     "react-native-builder-bob": "^0.40.6",
     "react-native-svg-transformer": "^1.5.0",
-    "release-it": "^15.0.0",
+    "release-it": "^18.0.0",
     "semver": "^6.3.0",
     "typedoc": "^0.28.2",
     "typedoc-plugin-missing-exports": "^4.0.0",
@@ -162,7 +163,10 @@
     },
     "plugins": {
       "@release-it/conventional-changelog": {
-        "preset": "angular"
+        "preset": {
+          "name": "angular"
+        },
+        "infile": "CHANGELOG.md"
       }
     }
   },
