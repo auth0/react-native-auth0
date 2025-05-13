@@ -3,9 +3,6 @@ name: Create npm and GitHub Release
 on:
   workflow_call:
     inputs:
-      require-build:
-        default: 'true'
-        type: string
       release-directory:
         default: './'
         type: string
@@ -60,7 +57,6 @@ jobs:
       # Publish the release to our package manager
       - uses: ./.github/actions/npm-publish
         with:
-          require-build: ${{ inputs.require-build }}
           version: ${{ steps.get_version.outputs.version }}
           npm-token: ${{ secrets.npm-token }}
           release-directory: ${{ inputs.release-directory }}
