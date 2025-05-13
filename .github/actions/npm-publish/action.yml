@@ -5,8 +5,6 @@ inputs:
     required: true
   version:
     required: true
-  require-build:
-    default: true
   release-directory:
     default: './'
 
@@ -21,9 +19,8 @@ runs:
       uses: ./.github/actions/setup
 
     - name: Build package
-      if: inputs.require-build == 'true'
       shell: bash
-      run: yarn build
+      run: yarn ci
 
     - name: Publish release to NPM
       shell: bash
