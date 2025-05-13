@@ -1,5 +1,17 @@
 # Change Log
 
+## [v5.0.0-beta.1](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.1) (2025-05-13)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0-beta.0...v5.0.0-beta.1)
+
+**Added**
+
+- Upgrade SDK to React Native 0.79.2 and Add Support for Expo SDK 53 [\#1147](https://github.com/auth0/react-native-auth0/pull/1147) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Changed**
+
+- docs: Update setup guide for ios and platform compatibility in README.md [\#1170](https://github.com/auth0/react-native-auth0/pull/1170) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v4.6.0](https://github.com/auth0/react-native-auth0/tree/v4.6.0) (2025-05-02)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.5.0...v4.6.0)
