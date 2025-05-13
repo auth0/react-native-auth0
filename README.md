@@ -28,7 +28,11 @@ We're excited to announce the release of react-native-auth0 `v4.0.0`! Please not
 
 ### Requirements
 
-This SDK targets apps that are using React Native SDK version `0.76.0` and up. If you're using an older React Native version, see the compatibility matrix below.
+This SDK targets apps that are using React Native SDK version `0.78.0` and up. If you're using an older React Native version, see the compatibility matrix below.
+
+This SDK fully supports React Native New Architecture and Expo 53+.
+
+> ⚠️ **Warning**: If you are using Expo version less than 53, you need to use react-native-auth0 version 4.x or earlier. Version 5.x supports Expo 53 and above.
 
 ### Platform compatibility
 
@@ -36,13 +40,13 @@ The following shows platform minimums for running projects with this SDK:
 
 | Platform | Minimum version |
 | -------- | :-------------: |
-| iOS      |      13.0       |
-| Android  |       34        |
+| iOS      |      14.0       |
+| Android  |       35        |
 
-Our SDK requires a minimum iOS deployment target of 13.0. In your project's ios/Podfile, ensure your platform target is set to 13.0.
+Our SDK requires a minimum iOS deployment target of 14.0. In your project's ios/Podfile, ensure your platform target is set to 14.0.
 
 ```
-platform :ios, '13.0'
+platform :ios, '14.0'
 ```
 
 ### Installation
@@ -123,6 +127,8 @@ Re-declare the activity manually with `tools:node="remove"` in your app's Androi
 
 Inside the `ios` folder find the file `AppDelegate.[swift|m]` add the following to it:
 
+For Objective-C:
+
 ```objc
 #import <React/RCTLinkingManager.h>
 
@@ -130,6 +136,14 @@ Inside the `ios` folder find the file `AppDelegate.[swift|m]` add the following 
             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
   return [RCTLinkingManager application:app openURL:url options:options];
+}
+```
+
+For Swift:
+
+```swift
+func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+  return RCTLinkingManager.application(app, open: url, options: options)
 }
 ```
 
