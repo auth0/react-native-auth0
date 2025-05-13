@@ -1,5 +1,17 @@
 # Change Log
 
+## [v4.6.0](https://github.com/auth0/react-native-auth0/tree/v4.6.0) (2025-05-02)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.5.0...v4.6.0)
+
+**Added**
+
+- feat: Add support for custom headers [\#1155](https://github.com/auth0/react-native-auth0/pull/1155) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Fixed**
+
+- fix: Update prepare script to clean up package.json files [\#1157](https://github.com/auth0/react-native-auth0/pull/1157) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.0.0-beta.0](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.0) (2025-04-17)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.5.0...v5.0.0-beta.0)

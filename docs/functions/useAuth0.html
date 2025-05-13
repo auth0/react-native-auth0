@@ -99,12 +99,6 @@
                   href="../interfaces/Types.Auth0ContextInterface.html"
                   class="tsd-signature-type tsd-kind-interface"
                   >Auth0ContextInterface</a
-                ><span class="tsd-signature-symbol">&lt;</span
-                ><a
-                  href="../types/User.html"
-                  class="tsd-signature-type tsd-kind-type-alias"
-                  >User</a
-                ><span class="tsd-signature-symbol">&gt;</span
                 ><a
                   href="#useauth0"
                   aria-label="Permalink"
@@ -126,21 +120,19 @@
                     href="../interfaces/Types.Auth0ContextInterface.html"
                     class="tsd-signature-type tsd-kind-interface"
                     >Auth0ContextInterface</a
-                  ><span class="tsd-signature-symbol">&lt;</span
-                  ><a
-                    href="../types/User.html"
-                    class="tsd-signature-type tsd-kind-type-alias"
-                    >User</a
-                  ><span class="tsd-signature-symbol">&gt;</span>
+                  >
                 </h4>
                 <p>The useAuth0 hook interface</p>
-                <pre><code class="ts"><span class="hl-7">const</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-9">// State</span><br/><span class="hl-1">  </span><span class="hl-8">error</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">user</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">isLoading</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-9">// Methods</span><br/><span class="hl-1">  </span><span class="hl-8">authorize</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">sendSMSCode</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">authorizeWithSMS</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">sendEmailCode</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">authorizeWithEmail</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">sendMultifactorChallenge</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">authorizeWithOOB</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">authorizeWithOTP</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">authorizeWithRecoveryCode</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">hasValidCredentials</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">clearSession</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">getCredentials</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">clearCredentials</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">requireLocalAuthentication</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">authorizeWithPasswordRealm</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">authorizeWithExchangeNativeSocial</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">revokeRefreshToken</span><br/><span class="hl-1">} = </span><span class="hl-10">useAuth0</span><span class="hl-1">();</span>
+                <pre><code class="ts"><span class="hl-7">const</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-12">// State</span><br/><span class="hl-1">  </span><span class="hl-14">error</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">user</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">isLoading</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-12">// Methods</span><br/><span class="hl-1">  </span><span class="hl-14">authorize</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">sendSMSCode</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">authorizeWithSMS</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">sendEmailCode</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">authorizeWithEmail</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">sendMultifactorChallenge</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">authorizeWithOOB</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">authorizeWithOTP</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">authorizeWithRecoveryCode</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">hasValidCredentials</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">clearSession</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">getCredentials</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">clearCredentials</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">requireLocalAuthentication</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">authorizeWithPasswordRealm</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">authorizeWithExchangeNativeSocial</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">revokeRefreshToken</span><br/><span class="hl-1">} = </span><span class="hl-8">useAuth0</span><span class="hl-1">();</span>
 </code><button type="button">Copy</button></pre>
 
                 <p>
-                  Refer to &lt;a
-                  href=&quot;../interfaces/Types.Auth0ContextInterface.html&quot;
-                  class=&quot;tsd-kind-interface&quot;&gt;Auth0ContextInterface&lt;/a&gt;
+                  Refer to
+                  <a
+                    href="../interfaces/Types.Auth0ContextInterface.html"
+                    class="tsd-kind-interface"
+                    >Auth0ContextInterface</a
+                  >
                   on how to use the above methods.
                 </p>
                 <div class="tsd-comment tsd-typography"></div>
@@ -149,7 +141,7 @@
                     <li>
                       Defined in
                       <a
-                        href="https://github.com/auth0/react-native-auth0/blob/d64f194a7d2bdf42a5475e5785384f4c7695abbf/src/hooks/use-auth0.ts#L38"
+                        href="https://github.com/auth0/react-native-auth0/blob/0d226bc266d192bdec21bff665e68dd1e24b94fd/src/hooks/use-auth0.ts#L38"
                         >hooks/use-auth0.ts:38</a
                       >
                     </li>
