@@ -67,7 +67,7 @@
   },
   "peerDependencies": {
     "expo": ">=48.0.0",
-    "react": "^16.11.0 || ^17 || ^18",
+    "react": "^16.11.0 || ^17 || ^18 || ^19",
     "react-native": ">=0.65.0 <1.0.x"
   },
   "peerDependenciesMeta": {
