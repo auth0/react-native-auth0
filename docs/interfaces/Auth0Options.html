@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
-    <title>ClearSessionParameters | react-native-auth0</title>
+    <title>Auth0Options | react-native-auth0</title>
     <meta name="description" content="Documentation for react-native-auth0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="../assets/style.css" />
@@ -84,31 +84,66 @@
       <div class="col-content">
         <div class="tsd-page-title">
           <ul class="tsd-breadcrumb" aria-label="Breadcrumb">
-            <li><a href="" aria-current="page">ClearSessionParameters</a></li>
+            <li><a href="" aria-current="page">Auth0Options</a></li>
           </ul>
-          <h1>Interface ClearSessionParameters</h1>
+          <h1>Interface Auth0Options</h1>
         </div>
         <section class="tsd-panel tsd-comment">
           <div class="tsd-comment tsd-typography">
-            <p>Parameters for sending to the Auth0 logout endpoint.</p>
+            <p>Options for configuring the Auth0 client.</p>
           </div>
           <div class="tsd-comment tsd-typography"></div>
         </section>
         <div class="tsd-signature">
           <span class="tsd-signature-keyword">interface</span>
-          <span class="tsd-kind-interface">ClearSessionParameters</span>
+          <span class="tsd-kind-interface">Auth0Options</span>
           <span class="tsd-signature-symbol">{</span><br />    <a
             class="tsd-kind-property"
-            href="#federated"
-            >federated</a
-          ><span class="tsd-signature-symbol">?:</span>
-          <span class="tsd-signature-type">boolean</span
+            href="#clientid"
+            >clientId</a
+          ><span class="tsd-signature-symbol">:</span>
+          <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <a
             class="tsd-kind-property"
-            href="#returntourl"
-            >returnToUrl</a
-          ><span class="tsd-signature-symbol">?:</span>
+            href="#domain"
+            >domain</a
+          ><span class="tsd-signature-symbol">:</span>
           <span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">;</span><br />    <a
+            class="tsd-kind-property"
+            href="#headers"
+            >headers</a
+          ><span class="tsd-signature-symbol">?:</span>
+          <span class="tsd-signature-type">Record</span
+          ><span class="tsd-signature-symbol">&lt;</span
+          ><span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">,</span>
+          <span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">&gt;</span
+          ><span class="tsd-signature-symbol">;</span><br />    <a
+            class="tsd-kind-property"
+            href="#localauthenticationoptions"
+            >localAuthenticationOptions</a
+          ><span class="tsd-signature-symbol">?:</span>
+          <a
+            href="LocalAuthenticationOptions.html"
+            class="tsd-signature-type tsd-kind-interface"
+            >LocalAuthenticationOptions</a
+          ><span class="tsd-signature-symbol">;</span><br />    <a
+            class="tsd-kind-property"
+            href="#telemetry"
+            >telemetry</a
+          ><span class="tsd-signature-symbol">?:</span>
+          <a
+            href="../types/Types.Telemetry.html"
+            class="tsd-signature-type tsd-kind-type-alias"
+            >Telemetry</a
+          ><span class="tsd-signature-symbol">;</span><br />    <a
+            class="tsd-kind-property"
+            href="#timeout"
+            >timeout</a
+          ><span class="tsd-signature-symbol">?:</span>
+          <span class="tsd-signature-type">number</span
           ><span class="tsd-signature-symbol">;</span><br /><span
             class="tsd-signature-symbol"
             >}</span
@@ -119,8 +154,8 @@
             <li>
               Defined in
               <a
-                href="https://github.com/auth0/react-native-auth0/blob/0d226bc266d192bdec21bff665e68dd1e24b94fd/src/types.ts#L159"
-                >types.ts:159</a
+                href="https://github.com/auth0/react-native-auth0/blob/0d226bc266d192bdec21bff665e68dd1e24b94fd/src/types.ts#L313"
+                >types.ts:313</a
               >
             </li>
           </ul>
@@ -144,23 +179,59 @@
                 <section class="tsd-index-section">
                   <h3 class="tsd-index-heading">Properties</h3>
                   <div class="tsd-index-list">
-                    <a href="#federated" class="tsd-index-link"
+                    <a href="#clientid" class="tsd-index-link"
                       ><svg
                         class="tsd-kind-icon"
                         viewBox="0 0 24 24"
                         aria-label="Property"
                       >
                         <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>federated?</span></a
+                      ><span>client<wbr />Id</span></a
                     >
-                    <a href="#returntourl" class="tsd-index-link"
+                    <a href="#domain" class="tsd-index-link"
                       ><svg
                         class="tsd-kind-icon"
                         viewBox="0 0 24 24"
                         aria-label="Property"
                       >
                         <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>return<wbr />To<wbr />Url?</span></a
+                      ><span>domain</span></a
+                    >
+                    <a href="#headers" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>headers?</span></a
+                    >
+                    <a href="#localauthenticationoptions" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>local<wbr />Authentication<wbr />Options?</span></a
+                    >
+                    <a href="#telemetry" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>telemetry?</span></a
+                    >
+                    <a href="#timeout" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>timeout?</span></a
                     >
                   </div>
                 </section>
@@ -183,10 +254,10 @@
           </summary>
           <section>
             <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="federated">
-                <code class="tsd-tag">Optional</code><span>federated</span
+              <h3 class="tsd-anchor-link" id="clientid">
+                <span>client<wbr />Id</span
                 ><a
-                  href="#federated"
+                  href="#clientid"
                   aria-label="Permalink"
                   class="tsd-anchor-icon"
                   ><svg viewBox="0 0 24 24" aria-hidden="true">
@@ -194,97 +265,12 @@
                 ></a>
               </h3>
               <div class="tsd-signature">
-                <span class="tsd-kind-property">federated</span
-                ><span class="tsd-signature-symbol">?:</span>
-                <span class="tsd-signature-type">boolean</span>
-              </div>
-              <div class="tsd-comment tsd-typography">
-                <p>
-                  If <code>true</code>, the user will be signed out of any
-                  connected identity providers in addition to their Auth0
-                  session.
-                </p>
-              </div>
-              <div class="tsd-comment tsd-typography">
-                <div class="tsd-tag-default">
-                  <h4 class="tsd-anchor-link" id="default">
-                    Default<a
-                      href="#default"
-                      aria-label="Permalink"
-                      class="tsd-anchor-icon"
-                      ><svg viewBox="0 0 24 24" aria-hidden="true">
-                        <use href="../assets/icons.svg#icon-anchor"></use></svg
-                    ></a>
-                  </h4>
-                  <p><code>false</code></p>
-                </div>
-                <div class="tsd-tag-see">
-                  <h4 class="tsd-anchor-link" id="see">
-                    See<a
-                      href="#see"
-                      aria-label="Permalink"
-                      class="tsd-anchor-icon"
-                      ><svg viewBox="0 0 24 24" aria-hidden="true">
-                        <use href="../assets/icons.svg#icon-anchor"></use></svg
-                    ></a>
-                  </h4>
-                  <p>
-                    <a
-                      href="https://auth0.com/docs/authenticate/login/logout/log-users-out-of-idps"
-                      >https://auth0.com/docs/authenticate/login/logout/log-users-out-of-idps</a
-                    >
-                  </p>
-                </div>
-              </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/0d226bc266d192bdec21bff665e68dd1e24b94fd/src/types.ts#L165"
-                      >types.ts:165</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="returntourl">
-                <code class="tsd-tag">Optional</code
-                ><span>return<wbr />To<wbr />Url</span
-                ><a
-                  href="#returntourl"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">returnToUrl</span
-                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-kind-property">clientId</span
+                ><span class="tsd-signature-symbol">:</span>
                 <span class="tsd-signature-type">string</span>
               </div>
               <div class="tsd-comment tsd-typography">
-                <p>
-                  Specify a custom redirect URL to be used. Normally, you
-                  wouldn't need to call this method manually as the default
-                  value is autogenerated for you.
-                </p>
-                <p>
-                  If you are using this, ensure a proper redirect URL is
-                  constructed in the following format Android:
-                  {YOUR_APP_PACKAGE_NAME}.auth0://{AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
-                  iOS:
-                  {PRODUCT_BUNDLE_IDENTIFIER}.auth0://{AUTH0_DOMAIN}/ios/{PRODUCT_BUNDLE_IDENTIFIER}/callback
-                </p>
-                <p>
-                  If you have <code>useLegacyCallbackUrl</code> set to true then
-                  the redirect URL should in the format Android:
-                  {YOUR_APP_PACKAGE_NAME}://{AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
-                  iOS:
-                  {PRODUCT_BUNDLE_IDENTIFIER}://{AUTH0_DOMAIN}/ios/{PRODUCT_BUNDLE_IDENTIFIER}/callback
-                </p>
+                <p>The client identifier of your application.</p>
               </div>
               <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
@@ -292,8 +278,182 @@
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/0d226bc266d192bdec21bff665e68dd1e24b94fd/src/types.ts#L177"
-                      >types.ts:177</a
+                      href="https://github.com/auth0/react-native-auth0/blob/0d226bc266d192bdec21bff665e68dd1e24b94fd/src/types.ts#L321"
+                      >types.ts:321</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="domain">
+                <span>domain</span
+                ><a
+                  href="#domain"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">domain</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">string</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>The Auth0 domain for your tenant.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/0d226bc266d192bdec21bff665e68dd1e24b94fd/src/types.ts#L317"
+                      >types.ts:317</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="headers">
+                <code class="tsd-tag">Optional</code><span>headers</span
+                ><a
+                  href="#headers"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">headers</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-signature-type">Record</span
+                ><span class="tsd-signature-symbol">&lt;</span
+                ><span class="tsd-signature-type">string</span
+                ><span class="tsd-signature-symbol">,</span>
+                <span class="tsd-signature-type">string</span
+                ><span class="tsd-signature-symbol">&gt;</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>(Optional) Custom headers to include in requests.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/0d226bc266d192bdec21bff665e68dd1e24b94fd/src/types.ts#L337"
+                      >types.ts:337</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="localauthenticationoptions">
+                <code class="tsd-tag">Optional</code
+                ><span>local<wbr />Authentication<wbr />Options</span
+                ><a
+                  href="#localauthenticationoptions"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">localAuthenticationOptions</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <a
+                  href="LocalAuthenticationOptions.html"
+                  class="tsd-signature-type tsd-kind-interface"
+                  >LocalAuthenticationOptions</a
+                >
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>Options for configuring local authentication.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/0d226bc266d192bdec21bff665e68dd1e24b94fd/src/types.ts#L333"
+                      >types.ts:333</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="telemetry">
+                <code class="tsd-tag">Optional</code><span>telemetry</span
+                ><a
+                  href="#telemetry"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">telemetry</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <a
+                  href="../types/Types.Telemetry.html"
+                  class="tsd-signature-type tsd-kind-type-alias"
+                  >Telemetry</a
+                >
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>Telemetry information to include in requests.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/0d226bc266d192bdec21bff665e68dd1e24b94fd/src/types.ts#L325"
+                      >types.ts:325</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="timeout">
+                <code class="tsd-tag">Optional</code><span>timeout</span
+                ><a
+                  href="#timeout"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">timeout</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-signature-type">number</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>The timeout in milliseconds for network requests.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/0d226bc266d192bdec21bff665e68dd1e24b94fd/src/types.ts#L329"
+                      >types.ts:329</a
                     >
                   </li>
                 </ul>
@@ -430,22 +590,54 @@
                   >Properties
                 </summary>
                 <div>
-                  <a href="#federated"
+                  <a href="#clientid"
                     ><svg
                       class="tsd-kind-icon"
                       viewBox="0 0 24 24"
                       aria-label="Property"
                     >
                       <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>federated</span></a
-                  ><a href="#returntourl"
+                    ><span>client<wbr />Id</span></a
+                  ><a href="#domain"
                     ><svg
                       class="tsd-kind-icon"
                       viewBox="0 0 24 24"
                       aria-label="Property"
                     >
                       <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>return<wbr />To<wbr />Url</span></a
+                    ><span>domain</span></a
+                  ><a href="#headers"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>headers</span></a
+                  ><a href="#localauthenticationoptions"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>local<wbr />Authentication<wbr />Options</span></a
+                  ><a href="#telemetry"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>telemetry</span></a
+                  ><a href="#timeout"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>timeout</span></a
                   >
                 </div>
               </details>
