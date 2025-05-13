@@ -1,6 +1,6 @@
 import { apply } from '../whitelist';
 import { deepEqual } from '../deepEqual';
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 
 describe('whitelist', () => {
   const rules = {
@@ -18,10 +18,10 @@ describe('whitelist', () => {
 
   it('should keep declared values', () => {
     const value = {
-      state: faker.random.uuid(),
-      nonce: faker.random.uuid(),
-      clientId: faker.random.uuid(),
-      connection: faker.random.word(),
+      state: faker.string.uuid(),
+      nonce: faker.string.uuid(),
+      clientId: faker.string.uuid(),
+      connection: faker.string.alpha(),
     };
     expect(apply(rules, value)).toMatchObject({
       state: value.state,
@@ -32,32 +32,32 @@ describe('whitelist', () => {
   });
 
   it('should fail if required key is not found', () => {
-    const value = { state: faker.random.uuid() };
+    const value = { state: faker.string.uuid() };
     expect(() => apply(rules, {})).toThrowErrorMatchingSnapshot();
   });
 
   it('should handle multiple parameters', () => {
     const value = {
-      state: faker.random.uuid(),
-      nonce: faker.random.uuid(),
+      state: faker.string.uuid(),
+      nonce: faker.string.uuid(),
     };
     expect(apply(rules, value)).toMatchObject(value);
   });
 
   it('should remove non declared keys by default', () => {
-    const state = faker.random.uuid();
+    const state = faker.string.uuid();
     const value = {
       state,
-      initialState: faker.random.uuid(),
+      initialState: faker.string.uuid(),
     };
     expect(apply(rules, value)).toMatchObject({ state });
   });
 
   it('should keep non declared keys', () => {
-    const state = faker.random.uuid();
+    const state = faker.string.uuid();
     const value = {
       state,
-      initialState: faker.random.uuid(),
+      initialState: faker.string.uuid(),
     };
     const allowNonDeclared = { whitelist: false, ...rules };
     expect(apply(allowNonDeclared, value)).toMatchObject(value);
@@ -65,14 +65,14 @@ describe('whitelist', () => {
 
   it('should consider parameters as optional by default', () => {
     const value = {
-      state: faker.random.uuid(),
+      state: faker.string.uuid(),
     };
     expect(apply(rules, value)).toMatchObject({ state: value.state });
   });
 
   it('should use mapped name if available', () => {
-    const state = faker.random.uuid();
-    const clientId = faker.random.uuid();
+    const state = faker.string.uuid();
+    const clientId = faker.string.uuid();
     const value = {
       state,
       clientId,

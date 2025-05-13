@@ -66,9 +66,13 @@ class Users {
    * @memberof Users
    */
   getUser(parameters: GetUserOptions): Promise<User> {
-    const { id, headers } = parameters || {}; 
+    const { id, headers } = parameters || {};
     return this.client
-      .get<RawUser>(`/api/v2/users/${encodeURIComponent(id)}`, undefined, headers)
+      .get<RawUser>(
+        `/api/v2/users/${encodeURIComponent(id)}`,
+        undefined,
+        headers
+      )
       .then((response) =>
         responseHandler<RawUser, User>(response, {
           attributes,
@@ -90,11 +94,15 @@ class Users {
    * @memberof Users
    */
   patchUser(parameters: PatchUserOptions): Promise<User> {
-    const { id, headers } = parameters || {}; 
+    const { id, headers } = parameters || {};
     return this.client
-      .patch<RawUser>(`/api/v2/users/${encodeURIComponent(id)}`, {
-        user_metadata: parameters.metadata,
-      }, headers)
+      .patch<RawUser>(
+        `/api/v2/users/${encodeURIComponent(id)}`,
+        {
+          user_metadata: parameters.metadata,
+        },
+        headers
+      )
       .then((response) =>
         responseHandler<RawUser, User>(response, {
           attributes,

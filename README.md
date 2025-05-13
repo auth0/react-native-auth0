@@ -353,8 +353,8 @@ import { Auth0Provider } from 'react-native-auth0';
 
 const App = () => {
   return (
-    <Auth0Provider 
-      domain="YOUR_AUTH0_DOMAIN" 
+    <Auth0Provider
+      domain="YOUR_AUTH0_DOMAIN"
       clientId="YOUR_AUTH0_CLIENT_ID"
       headers={{ 'X-Custom-Header': 'custom-value' }}
     >
@@ -390,9 +390,10 @@ const auth0 = new Auth0({
   clientId: 'YOUR_AUTH0_CLIENT_ID',
   headers: {
     'X-Custom-Header': 'custom-value',
-  }
+  },
 });
 ```
+
 </details>
 
 Then import the hook into a component where you want to get access to the properties and methods for integrating with Auth0:

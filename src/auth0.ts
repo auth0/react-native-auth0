@@ -3,7 +3,7 @@ import CredentialsManager from './credentials-manager';
 import Users from './management/users';
 import WebAuth from './webauth';
 import addDefaultLocalAuthOptions from './utils/addDefaultLocalAuthOptions';
-import { Auth0Options } from './types';
+import type { Auth0Options } from './types';
 
 /**
  * Auth0 for React Native client
@@ -37,7 +37,7 @@ class Auth0 {
       localAuthenticationOptions
     );
     this.options = options;
-    this.globalHeaders = headers
+    this.globalHeaders = headers;
   }
 
   /**
@@ -47,7 +47,12 @@ class Auth0 {
    */
   users(token: string) {
     const { domain, ...extras } = this.options;
-    return new Users({ baseUrl: domain, ...extras, token, headers: this.globalHeaders });
+    return new Users({
+      baseUrl: domain,
+      ...extras,
+      token,
+      headers: this.globalHeaders,
+    });
   }
 }
 
