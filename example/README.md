@@ -5,11 +5,11 @@ The Example application can be used for development purpose of the SDK. To integ
 To run the example application inside the repository, follow these steps:
 
 1. Open a terminal or command prompt.
-2. Run `npm run bootstrap` to set up the project.
-3. Run `npm run prepare` to build the project.
+2. Run `yarn bootstrap` to set up the project.
+3. Run `yarn ci` to build the project.
 4. To run the application:
-   For Android, run `npm run example:android`.
-   For iOS, run `npm run example:ios`.
+   For Android, run `yarn example:android`.
+   For iOS, run `yarn example:ios`.
 
 The application will be built and launched on the specified platform, allowing you to interact with it.
 
