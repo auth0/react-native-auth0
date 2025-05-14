@@ -22,6 +22,14 @@ runs:
       shell: bash
       run: yarn ci
 
+    - name: Verify npm token
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.npm-token }}" ]; then
+          echo "Error: npm-token is not provided."
+          exit 1
+        fi
+
     - name: Publish release to NPM
       shell: bash
       working-directory: ${{ inputs.release-directory }}
