@@ -535,7 +535,7 @@ The `Auth0` class constructor now accepts a new parameter, which is an instance 
 ```tsx
 import Auth0 from 'react-native-auth0';
 const localAuthOptions: LocalAuthenticationOptions = {
-  title: 'Authenticate to retreive your credentials',
+  title: 'Authenticate to retrieve your credentials',
   subtitle: 'Please authenticate to continue',
   description: 'We need to authenticate you to retrieve your credentials',
   cancelTitle: 'Cancel',
@@ -559,7 +559,7 @@ const auth0 = new Auth0({
 import { Auth0Provider } from 'react-native-auth0';
 
 const localAuthOptions: LocalAuthenticationOptions = {
-  title: 'Authenticate to retreive your credentials',
+  title: 'Authenticate to retrieve your credentials',
   subtitle: 'Please authenticate to continue',
   description: 'We need to authenticate you to retrieve your credentials',
   cancelTitle: 'Cancel',
