@@ -42,7 +42,7 @@ describe('auth', () => {
     jest.useFakeTimers().setSystemTime(new Date('2023-01-01'));
   });
 
-  beforeEach(fetchMock.restore);
+  beforeEach(() => fetchMock.restore());
 
   describe('constructor', () => {
     it('should build with domain', () => {
@@ -57,7 +57,7 @@ describe('auth', () => {
     it('should fail without domain', () => {
       expect(() => new Auth({ clientId })).toThrowErrorMatchingSnapshot();
     });
-    
+
     it('should accept custom headers', () => {
       const headers = { 'X-Custom-Header': 'custom-value' };
       const auth = new Auth({ baseUrl, clientId, headers });
@@ -1061,22 +1061,22 @@ describe('auth', () => {
   });
 
   describe('method-specific custom headers', () => {
-    it('should accept and use custom headers in passwordRealm that don\'t conflict with defaults', async () => {
+    it("should accept and use custom headers in passwordRealm that don't conflict with defaults", async () => {
       fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
       const customHeaders = { 'X-Custom-Header': 'custom-value' };
-      
+
       await auth.passwordRealm({
         username: 'info@auth0.com',
         password: 'secret pass',
         realm: 'Username-Password-Authentication',
-        headers: customHeaders
+        headers: customHeaders,
       });
-      
+
       const [_, fetchOptions] = fetchMock.lastCall();
       expect(fetchOptions.headers.get('X-Custom-Header')).toBe('custom-value');
     });
-    
-    it('should accept and use custom headers in userInfo that don\'t conflict with defaults', async () => {
+
+    it("should accept and use custom headers in userInfo that don't conflict with defaults", async () => {
       const success = {
         status: 200,
         body: { sub: 'auth0|1029837475' },
@@ -1084,25 +1084,25 @@ describe('auth', () => {
       };
       fetchMock.getOnce('https://samples.auth0.com/userinfo', success);
       const customHeaders = { 'X-Custom-Header': 'custom-value' };
-      
-      await auth.userInfo({ 
+
+      await auth.userInfo({
         token: 'an access token of a user',
-        headers: customHeaders
+        headers: customHeaders,
       });
-      
+
       const [_, fetchOptions] = fetchMock.lastCall();
       expect(fetchOptions.headers.get('X-Custom-Header')).toBe('custom-value');
     });
-    
-    it('should accept and use custom headers in refreshToken that don\'t conflict with defaults', async () => {
+
+    it("should accept and use custom headers in refreshToken that don't conflict with defaults", async () => {
       fetchMock.postOnce('https://samples.auth0.com/oauth/token', tokens);
       const customHeaders = { 'X-Custom-Header': 'custom-value' };
-      
+
       await auth.refreshToken({
         refreshToken: 'a refresh token of a user',
-        headers: customHeaders
+        headers: customHeaders,
       });
-      
+
       const [_, fetchOptions] = fetchMock.lastCall();
       expect(fetchOptions.headers.get('X-Custom-Header')).toBe('custom-value');
     });

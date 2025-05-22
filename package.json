@@ -101,7 +101,7 @@
     "eslint-plugin-prettier": "^5.0.1",
     "expo": "^52.0.40",
     "faker": "^4.1.0",
-    "fetch-mock": "^7.3.9",
+    "fetch-mock": "^9.1.0",
     "husky": "^4.2.5",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.5.0",
