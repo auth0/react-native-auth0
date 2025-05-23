@@ -107,7 +107,7 @@
     "jest-environment-jsdom": "^29.5.0",
     "metro-config": "^0.81.0",
     "metro-react-native-babel-preset": "^0.77.0",
-    "metro-runtime": "^0.81.0",
+    "metro-runtime": "^0.82.4",
     "minami": "^1.2.3",
     "node-fetch": "^2.6.7",
     "pod-install": "^0.3.4",
