@@ -516,6 +516,7 @@ The credentials will be automatically renewed using the [refresh token](https://
 const credentials = await auth0.credentialsManager.getCredentials();
 ```
 
+
 > 💡 You do not need to call credentialsManager.saveCredentials() afterward. The Credentials Manager automatically persists the renewed credentials.
 
 #### Requiring Authentication before obtaining Credentials
