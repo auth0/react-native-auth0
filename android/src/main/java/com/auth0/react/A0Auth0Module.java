@@ -85,8 +85,9 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public String getBundleIdentifier() {
-        return reactContext.getApplicationInfo().packageName;
+    public void getBundleIdentifier(Promise promise) {
+        String packageName = reactContext.getApplicationInfo().packageName;
+        promise.resolve(packageName);
     }
 
     @ReactMethod
