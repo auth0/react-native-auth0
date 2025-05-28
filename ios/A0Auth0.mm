@@ -2,7 +2,20 @@
 
 #import <React/RCTUtils.h>
 
-#import "A0Auth0-Swift.h"
+/**
+ * This preprocessor directive resolves the static linking issue by ensuring
+ * the correct import of the Swift header file generated for the A0Auth0 module.
+ * It checks for the presence of the header file in different locations:
+ * 1. If the header is available in the framework's module path (<A0Auth0/A0Auth0-Swift.h>),
+ *    it imports it from there.
+ * 2. As a fallback, it imports the header from the local path to ensure compatibility.
+ */
+#if __has_include(<A0Auth0/A0Auth0-Swift.h>)
+    #import <A0Auth0/A0Auth0-Swift.h>
+#else
+    #import "A0Auth0-Swift.h"
+#endif
+
 #define ERROR_CANCELLED @{@"error": @"a0.session.user_cancelled",@"error_description": @"User cancelled the Auth"}
 #define ERROR_FAILED_TO_LOAD @{@"error": @"a0.session.failed_load",@"error_description": @"Failed to load url"}
 
