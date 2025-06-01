@@ -108,5 +108,13 @@ module.exports = {
     port: 3000,
     historyApiFallback: true,
     hot: true,
+    client: {
+      webSocketTransport: 'ws',
+      overlay: {
+        errors: true,
+        warnings: false,
+      },
+    },
+    webSocketServer: 'ws',
   },
 };
