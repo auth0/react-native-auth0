@@ -75,15 +75,20 @@
     "registry": "https://registry.npmjs.org/"
   },
   "peerDependencies": {
+    "@auth0/auth0-react": ">=2.3.0",
     "react": ">=19.0.0",
     "react-native": ">=0.78.0"
   },
   "peerDependenciesMeta": {
+    "@auth0/auth0-react": {
+      "optional": true
+    },
     "expo": {
       "optional": true
     }
   },
   "devDependencies": {
+    "@auth0/auth0-react": "^2.3.0",
     "@commitlint/config-conventional": "^17.0.2",
     "@eslint/compat": "^1.2.7",
     "@eslint/eslintrc": "^3.3.0",

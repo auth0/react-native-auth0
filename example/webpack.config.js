@@ -86,7 +86,7 @@ module.exports = {
     // If you're working on a multi-platform React Native app, web-specific
     // module implementations should be written in files using the extension
     // `.web.js`.
-    extensions: ['.web.js', '.js', '.ts', '.tsx'],
+    extensions: ['.web.tsx', '.web.ts', '.web.js', '.tsx', '.ts', '.js'],
   },
   module: {
     rules: [

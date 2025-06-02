@@ -1,8 +1,9 @@
 const config = {
-  clientId: 'your-client-id',
-  domain: 'your-domain',
-  clientIdSecondScreen: 'your-client-id',
-  domainSecondScreen: 'your-domain',
+  clientId: 'fCDXwUdNfjyzILRkqcKftrEX3lUqQX2m',
+  domain: 'subhankarmaiti.jp.auth0.com',
+  clientIdSecondScreen: 'fCDXwUdNfjyzILRkqcKftrEX3lUqQX2m',
+  domainSecondScreen: 'subhankarmaiti.jp.auth0.com',
+  audience: 'https://todo-api.example.com',
 };
 
 export default config;

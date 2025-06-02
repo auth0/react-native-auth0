@@ -1,9 +1,9 @@
-import Auth from './auth';
-import CredentialsManager from './credentials-manager';
-import Users from './management/users';
-import WebAuth from './webauth';
-import addDefaultLocalAuthOptions from './utils/addDefaultLocalAuthOptions';
-import type { Auth0Options } from './types';
+import Auth from '../auth';
+import CredentialsManager from '../credentials-manager';
+import Users from '../management/users';
+import WebAuth from '../webauth';
+import addDefaultLocalAuthOptions from '../utils/addDefaultLocalAuthOptions';
+import type { Auth0Options } from '../types';
 
 /**
  * Auth0 for React Native client

@@ -3,6 +3,7 @@ interface Auth0Configuration {
   clientId: string;
   domainSecondScreen: string;
   clientIdSecondScreen: string;
+  audience: string;
 }
 
 declare const config: Auth0Configuration;
