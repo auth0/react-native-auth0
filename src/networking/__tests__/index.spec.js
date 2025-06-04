@@ -1,7 +1,7 @@
 import Client from '..';
-import {defaults} from '../telemetry';
+import { defaults } from '../telemetry';
 import fetchMock from 'fetch-mock';
-import {TimeoutError} from '../../utils/fetchWithTimeout';
+import { TimeoutError } from '../../utils/fetchWithTimeout';
 
 jest.useFakeTimers();
 
@@ -11,26 +11,26 @@ describe('client', () => {
 
   describe('constructor', () => {
     it('should accept only baseUrl', () => {
-      const client = new Client({baseUrl});
+      const client = new Client({ baseUrl });
       expect(client.baseUrl).toEqual(baseUrl);
       expect(client.telemetry).toMatchObject(defaults);
     });
 
     it('should accept only domain', () => {
-      const client = new Client({baseUrl: domain});
+      const client = new Client({ baseUrl: domain });
       expect(client.baseUrl).toEqual(baseUrl);
       expect(client.telemetry).toMatchObject(defaults);
     });
 
     it('should accept only http baseUrl', () => {
-      const client = new Client({baseUrl: 'http://insecure.com'});
+      const client = new Client({ baseUrl: 'http://insecure.com' });
       expect(client.baseUrl).toEqual('http://insecure.com');
       expect(client.telemetry).toMatchObject(defaults);
     });
 
     it('should allow to customize telemetry', () => {
-      const custom = {name: 'react-native-lock', version: '1.0.0-rc.1'};
-      const client = new Client({baseUrl, telemetry: custom});
+      const custom = { name: 'react-native-lock', version: '1.0.0-rc.1' };
+      const client = new Client({ baseUrl, telemetry: custom });
       expect(client.telemetry).toMatchObject({
         ...custom,
         env: {
@@ -41,13 +41,13 @@ describe('client', () => {
 
     it('should allow to specify a bearer token', () => {
       const token = 'a.bearer.token';
-      const client = new Client({baseUrl, token});
+      const client = new Client({ baseUrl, token });
       expect(client.bearer).toEqual('Bearer a.bearer.token');
     });
 
     it('should accept global headers', () => {
       const headers = { 'X-Custom-Header': 'custom-value' };
-      const client = new Client({baseUrl, headers});
+      const client = new Client({ baseUrl, headers });
       expect(client.globalHeaders).toEqual(headers);
     });
 
@@ -59,11 +59,11 @@ describe('client', () => {
   describe('requests', () => {
     const client = new Client({
       baseUrl,
-      telemetry: {name: 'react-native-auth0', version: '1.0.0'},
+      telemetry: { name: 'react-native-auth0', version: '1.0.0' },
       token: 'a.bearer.token',
     });
 
-    beforeEach(fetchMock.restore);
+    beforeEach(() => fetchMock.restore());
 
     describe('POST json', () => {
       const body = {
@@ -100,7 +100,7 @@ describe('client', () => {
       });
 
       it('should handle no response', async () => {
-        fetchMock.postOnce('https://samples.auth0.com/method', {status: 201});
+        fetchMock.postOnce('https://samples.auth0.com/method', { status: 201 });
         expect.assertions(1);
         await expect(client.post('/method', body)).resolves.toMatchSnapshot();
       });
@@ -182,7 +182,7 @@ describe('client', () => {
       it('should build proper request with query', async () => {
         fetchMock.getOnce(
           'https://samples.auth0.com/method?string=value&number=10',
-          response,
+          response
         );
         expect.assertions(1);
         await client.get('/method', query);
@@ -199,7 +199,7 @@ describe('client', () => {
       it('should return json on success', async () => {
         fetchMock.getOnce(
           'https://samples.auth0.com/method?string=value&number=10',
-          response,
+          response
         );
         expect.assertions(1);
         await expect(client.get('/method', query)).resolves.toMatchSnapshot();
@@ -208,7 +208,7 @@ describe('client', () => {
       it('should handle no response', async () => {
         fetchMock.getOnce(
           'https://samples.auth0.com/method?string=value&number=10',
-          {status: 201},
+          { status: 201 }
         );
         expect.assertions(1);
         await expect(client.get('/method', query)).resolves.toMatchSnapshot();
@@ -217,7 +217,7 @@ describe('client', () => {
       it('should handle request error', async () => {
         fetchMock.getOnce(
           'https://samples.auth0.com/method?string=value&number=10',
-          {throws: new Error('pawned!')},
+          { throws: new Error('pawned!') }
         );
         expect.assertions(1);
         await expect(client.get('/method', query)).rejects.toMatchSnapshot();
@@ -229,9 +229,9 @@ describe('client', () => {
     const globalHeaders = { 'X-Global-Header': 'global-value' };
     const client = new Client({
       baseUrl,
-      telemetry: {name: 'react-native-auth0', version: '1.0.0'},
+      telemetry: { name: 'react-native-auth0', version: '1.0.0' },
       token: 'a.bearer.token',
-      headers: globalHeaders
+      headers: globalHeaders,
     });
 
     const response = {
@@ -243,7 +243,7 @@ describe('client', () => {
       },
     };
 
-    beforeEach(fetchMock.restore);
+    beforeEach(() => fetchMock.restore());
 
     it('should include global headers in request', async () => {
       fetchMock.postOnce('https://samples.auth0.com/method', response);
@@ -253,22 +253,24 @@ describe('client', () => {
       expect(fetchOptions.headers.get('X-Global-Header')).toBe('global-value');
     });
 
-    it('should allow request-specific headers that don\'t conflict with default headers', async () => {
+    it("should allow request-specific headers that don't conflict with default headers", async () => {
       fetchMock.postOnce('https://samples.auth0.com/method', response);
       expect.assertions(1);
-      const requestHeaders = { 
-        'X-Request-Header': 'request-value'
+      const requestHeaders = {
+        'X-Request-Header': 'request-value',
       };
       await client.post('/method', {}, requestHeaders);
       const [_, fetchOptions] = fetchMock.lastCall();
-      expect(fetchOptions.headers.get('X-Request-Header')).toBe('request-value');
+      expect(fetchOptions.headers.get('X-Request-Header')).toBe(
+        'request-value'
+      );
     });
-    
+
     it('should not override default headers with custom headers', async () => {
       fetchMock.postOnce('https://samples.auth0.com/method', response);
       expect.assertions(1);
-      const requestHeaders = { 
-        'Content-Type': 'text/plain' // This should not override the default
+      const requestHeaders = {
+        'Content-Type': 'text/plain', // This should not override the default
       };
       await client.post('/method', {}, requestHeaders);
       const [_, fetchOptions] = fetchMock.lastCall();
@@ -279,7 +281,7 @@ describe('client', () => {
   describe('url', () => {
     const client = new Client({
       baseUrl,
-      telemetry: {name: 'react-native-auth0', version: '1.0.0'},
+      telemetry: { name: 'react-native-auth0', version: '1.0.0' },
       token: 'a.bearer.token',
     });
 
@@ -293,7 +295,7 @@ describe('client', () => {
 
     it('should build url with query', () => {
       expect(
-        client.url('/authorize', {client_id: 'A_CLIENT_ID'}, true),
+        client.url('/authorize', { client_id: 'A_CLIENT_ID' }, true)
       ).toMatchSnapshot();
     });
   });
@@ -301,7 +303,7 @@ describe('client', () => {
   describe('timeout', () => {
     const client = new Client({
       baseUrl,
-      telemetry: {name: 'react-native-auth0', version: '1.0.0'},
+      telemetry: { name: 'react-native-auth0', version: '1.0.0' },
       token: 'a.bearer.token',
       timeout: 2,
     });
@@ -322,7 +324,7 @@ describe('client', () => {
       fetchMock.restore();
 
       fetchMock.mock('https://samples.auth0.com/method', () => {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
           responseTimerId = setTimeout(() => {
             resolve(response);
           }, 2000);
