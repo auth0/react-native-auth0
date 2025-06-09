@@ -664,6 +664,32 @@ _Note_ : We have platform agnostic error codes available only for `CredentialsMa
 | `NO_NETWORK`          | `NO_NETWORK`                                                                                                                                                                                                                                                                                                                                     |                                 |
 | `API_ERROR`           | `API_ERROR`                                                                                                                                                                                                                                                                                                                                      |                                 |
 
+## Troubleshooting
+
+### Swift 6 Compatibility Issues on iOS
+
+If your main application project is configured to use Swift 6, and you encounter build errors related to Swift version incompatibilities with `react-native-auth0` or its dependencies (like `Auth0.swift`, `JWTDecode`, `SimpleKeychain`), you can ensure these specific pods are compiled with Swift 5.
+
+While `react-native-auth0` (from v5.0.0-beta.1 onwards) and its direct Swift dependencies are configured to use Swift 5, your project's build settings might try to override this. To enforce Swift 5 for these pods:
+
+**Recommended: Podfile `post_install` Hook**
+
+Add the following `post_install` hook to your application's `ios/Podfile`. This is generally the most robust way to manage build settings for dependencies:
+
+```ruby
+# In your application's ios/Podfile
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    # Target the react-native-auth0 pod and its Swift dependencies
+    if ['Auth0', 'A0Auth0', 'JWTDecode', 'SimpleKeychain'].include?(target.name)
+      target.build_configurations.each do |config|
+        config.build_settings['SWIFT_VERSION'] = '5.0'
+      end
+    end
+  end
+end
+```
+
 ## Feedback
 
 ### Contributing
