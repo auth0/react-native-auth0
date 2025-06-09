@@ -4,10 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import com.auth0.android.Auth0;
-import com.auth0.android.authentication.AuthenticationAPIClient;
 import com.auth0.android.authentication.AuthenticationException;
 import com.auth0.android.authentication.storage.CredentialsManagerException;
 import com.auth0.android.authentication.storage.LocalAuthenticationOptions;
@@ -18,7 +18,6 @@ import com.auth0.android.result.Credentials;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -27,8 +26,9 @@ import java.net.URL;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-public class A0Auth0Module extends ReactContextBaseJavaModule implements ActivityEventListener {
+public class A0Auth0Module extends A0Auth0Spec implements ActivityEventListener {
 
     private final Map<CredentialsManagerException, String> ERROR_CODE_MAP = new HashMap<>() {{
         put(CredentialsManagerException.Companion.getINVALID_CREDENTIALS(), "INVALID_CREDENTIALS");
@@ -83,6 +83,70 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
         this.reactContext = reactContext;
         this.reactContext.addActivityEventListener(this);
     }
+
+    @ReactMethod
+    @Override
+    public void webAuth(String scheme, String redirectUri, @Nullable String state, @Nullable String nonce, @Nullable String audience, @Nullable String scope, @Nullable String connection, @Nullable Double maxAge, @Nullable String organization, @Nullable String invitationUrl, @Nullable Double leeway, @Nullable Boolean ephemeralSession, @Nullable Double safariViewControllerPresentationStyle, @Nullable ReadableMap additionalParameters, Promise promise) {
+        this.webAuthPromise = promise;
+        Map<String, String> cleanedParameters = new HashMap<>();
+        assert additionalParameters != null;
+        for (Map.Entry<String, Object> entry : additionalParameters.toHashMap().entrySet()) {
+            if (entry.getValue() != null) {
+                cleanedParameters.put(entry.getKey(), entry.getValue().toString());
+            }
+        }
+        WebAuthProvider.Builder builder = WebAuthProvider.login(this.auth0)
+                .withScheme(scheme);
+        if (state != null) {
+            builder.withState(state);
+        }
+        if (nonce != null) {
+            builder.withNonce(nonce);
+        }
+        if (audience != null) {
+            builder.withAudience(audience);
+        }
+        if (scope != null) {
+            builder.withScope(scope);
+        }
+        if (connection != null) {
+            builder.withConnection(connection);
+        }
+        assert maxAge != null;
+        if (maxAge.intValue() != 0) {
+            builder.withMaxAge(maxAge.intValue());
+        }
+        if (organization != null) {
+            builder.withOrganization(organization);
+        }
+        if (invitationUrl != null) {
+            builder.withInvitationUrl(invitationUrl);
+        }
+        assert leeway != null;
+        if (leeway.intValue() != 0) {
+            builder.withIdTokenVerificationLeeway(leeway.intValue());
+        }
+        if (redirectUri != null) {
+            builder.withRedirectUri(redirectUri);
+        }
+        builder.withParameters(cleanedParameters);
+        builder.start(Objects.requireNonNull(reactContext.getCurrentActivity()),
+                new com.auth0.android.callback.Callback<Credentials, AuthenticationException>() {
+                    @Override
+                    public void onSuccess(Credentials result) {
+                        ReadableMap map = CredentialsParser.toMap(result);
+                        promise.resolve(map);
+                        webAuthPromise = null;
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull AuthenticationException error) {
+                        handleError(error, promise);
+                        webAuthPromise = null;
+                    }
+                });
+    }
+
 
     @ReactMethod
     public void getBundleIdentifier(Promise promise) {
@@ -207,69 +271,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
     @NonNull
     @Override
     public String getName() {
-        return "A0Auth0";
-    }
-
-    @ReactMethod
-    public void webAuth(String scheme, String redirectUri, String state, String nonce, String audience, String scope,
-                        String connection, int maxAge, String organization, String invitationUrl, int leeway,
-                        boolean ephemeralSession, int safariViewControllerPresentationStyle, ReadableMap additionalParameters,
-                        Promise promise) {
-        this.webAuthPromise = promise;
-        Map<String, String> cleanedParameters = new HashMap<>();
-        for (Map.Entry<String, Object> entry : additionalParameters.toHashMap().entrySet()) {
-            if (entry.getValue() != null) {
-                cleanedParameters.put(entry.getKey(), entry.getValue().toString());
-            }
-        }
-        WebAuthProvider.Builder builder = WebAuthProvider.login(this.auth0)
-                .withScheme(scheme);
-        if (state != null) {
-            builder.withState(state);
-        }
-        if (nonce != null) {
-            builder.withNonce(nonce);
-        }
-        if (audience != null) {
-            builder.withAudience(audience);
-        }
-        if (scope != null) {
-            builder.withScope(scope);
-        }
-        if (connection != null) {
-            builder.withConnection(connection);
-        }
-        if (maxAge != 0) {
-            builder.withMaxAge(maxAge);
-        }
-        if (organization != null) {
-            builder.withOrganization(organization);
-        }
-        if (invitationUrl != null) {
-            builder.withInvitationUrl(invitationUrl);
-        }
-        if (leeway != 0) {
-            builder.withIdTokenVerificationLeeway(leeway);
-        }
-        if (redirectUri != null) {
-            builder.withRedirectUri(redirectUri);
-        }
-        builder.withParameters(cleanedParameters);
-        builder.start(reactContext.getCurrentActivity(),
-                new com.auth0.android.callback.Callback<Credentials, AuthenticationException>() {
-                    @Override
-                    public void onSuccess(Credentials result) {
-                        ReadableMap map = CredentialsParser.toMap(result);
-                        promise.resolve(map);
-                        webAuthPromise = null;
-                    }
-
-            @Override
-            public void onFailure(@NonNull AuthenticationException error) {
-                handleError(error, promise);
-                webAuthPromise = null;
-            }
-        });
+        return NAME;
     }
 
     @ReactMethod
@@ -282,7 +284,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
         if (redirectUri != null) {
             builder.withReturnToUrl(redirectUri);
         }
-        builder.start(reactContext.getCurrentActivity(),
+        builder.start(Objects.requireNonNull(reactContext.getCurrentActivity()),
                 new com.auth0.android.callback.Callback<Void, AuthenticationException>() {
                     @Override
                     public void onSuccess(Void credentials) {
@@ -294,6 +296,18 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
                         handleError(e, promise);
                     }
                 });
+    }
+
+    @Override
+    public void resumeWebAuth(String url, Promise promise) {
+        // dummy function implementation, as this is only needed in iOS
+        promise.resolve(true);
+    }
+
+    @Override
+    public void cancelWebAuth(Promise promise) {
+        // dummy function implementation, as this is only needed in iOS
+        promise.resolve(true);
     }
 
     private void handleError(AuthenticationException error, Promise promise) {
@@ -313,7 +327,7 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
             promise.reject("a0.session.invalid_idtoken", "Error validating ID Token", error);
             return;
         }
-        String separator = error.getMessage().endsWith(".") ? "" : ".";
+        String separator = Objects.requireNonNull(error.getMessage()).endsWith(".") ? "" : ".";
         promise.reject(error.getCode(), error.getMessage() + separator + " CAUSE: " + error.getDescription(), error);
     }
 
@@ -330,4 +344,6 @@ public class A0Auth0Module extends ReactContextBaseJavaModule implements Activit
             webAuthPromise = null;
         }
     }
+
+    public static final String NAME = "A0Auth0";
 }

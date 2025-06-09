@@ -14,9 +14,21 @@ buildscript {
     }
 }
 
+def reactNativeArchitectures() {
+  def value = rootProject.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
+def isNewArchitectureEnabled() {
+  return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
-apply plugin: "com.facebook.react"
+
+if (isNewArchitectureEnabled()) {
+  apply plugin: "com.facebook.react"
+}
 
 // Matches values in recent template from React Native 0.62
 // https://github.com/facebook/react-native/blob/0.62-stable/template/android/build.gradle#L5-L8
@@ -28,16 +40,24 @@ def DEFAULT_TARGET_SDK_VERSION = 34
 android {
   compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
   buildToolsVersion safeExtGet('buildToolsVersion', DEFAULT_BUILD_TOOLS_VERSION)
-  namespace 'com.auth0.react'
+  if (project.android.hasProperty("namespace")) {
+        namespace 'com.auth0.react'
 
+        buildFeatures {
+            buildConfig true
+        }
+        sourceSets {
+            main {
+                manifest.srcFile "src/main/AndroidManifestNew.xml"
+            }
+        }
+    }
   defaultConfig {
     minSdkVersion safeExtGet('minSdkVersion', DEFAULT_MIN_SDK_VERSION)
     targetSdkVersion safeExtGet('targetSdkVersion', DEFAULT_TARGET_SDK_VERSION)
+    buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString())
     versionCode 1
     versionName "1.0"
-  }
-  buildFeatures {
-    buildConfig true
   }
   lintOptions {
     abortOnError false
@@ -49,10 +69,16 @@ android {
 
   sourceSets {
     main {
-      java.srcDirs += [
-        "generated/java",
-        "generated/jni"
-      ]
+      if (isNewArchitectureEnabled()) {
+        java.srcDirs += [
+          "src/main/newarch",
+          // Codegen specs
+          "generated/java",
+          "generated/jni"
+        ]
+      } else {
+        java.srcDirs += ["src/main/oldarch"]
+      }
     }
   }
 }
@@ -143,8 +169,10 @@ afterEvaluate { project ->
     }
 }
 
-react {
-  jsRootDir = file("../src/")
-  libraryName = "A0Auth0"
-  codegenJavaPackageName = "com.auth0.react"
+if (isNewArchitectureEnabled()) {
+  react {
+    jsRootDir = file("../src/")
+    libraryName = "A0Auth0"
+    codegenJavaPackageName = "com.auth0.react"
+  }
 }
