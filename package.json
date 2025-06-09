@@ -43,7 +43,8 @@
     "prepare": "husky && bob build && rm -rf lib/*/package.json",
     "example:android": "cd example && npm run android",
     "example:ios": "cd example && npm run ios",
-    "precommit": "pretty-quick --staged"
+    "precommit": "pretty-quick --staged",
+    "preinstall": "node scripts/ensure-yarn.js"
   },
   "keywords": [
     "react-native",
