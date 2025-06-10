@@ -32,50 +32,87 @@
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(getBundleIdentifier:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(getBundleIdentifier:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
     resolve([[NSBundle mainBundle] bundleIdentifier]);
 }
 
-RCT_EXPORT_METHOD(hasValidAuth0InstanceWithConfiguration:(NSString *)clientId domain:(NSString *)domain resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(hasValidAuth0InstanceWithConfiguration:(nonnull NSString *)clientId domain:(nonnull NSString *)domain resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
     BOOL valid = [self checkHasValidNativeBridgeInstance:clientId domain:domain];
     resolve(@(valid));
 }
 
 
-RCT_EXPORT_METHOD(initializeAuth0WithConfiguration:(NSString *)clientId domain:(NSString *)domain localAuthenticationOptions:(NSDictionary*) options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(initializeAuth0WithConfiguration:(nonnull NSString *)clientId domain:(nonnull NSString *)domain localAuthenticationOptions:(JS::NativeA0Auth0::LocalAuthenticationOptions &)localAuthenticationOptions resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
+    NSMutableDictionary *options = [[NSMutableDictionary alloc] init];
+    
+    if (localAuthenticationOptions.title()) {
+        options[@"title"] = localAuthenticationOptions.title();
+    }
+    if (localAuthenticationOptions.subtitle()) {
+        options[@"subtitle"] = localAuthenticationOptions.subtitle();
+    }
+    if (localAuthenticationOptions.description()) {
+        options[@"description"] = localAuthenticationOptions.description();
+    }
+    if (localAuthenticationOptions.cancelTitle()) {
+        options[@"cancelTitle"] = localAuthenticationOptions.cancelTitle();
+    }
+    if (localAuthenticationOptions.evaluationPolicy()) {
+        options[@"evaluationPolicy"] = @((NSInteger)localAuthenticationOptions.evaluationPolicy().value());
+    }
+    if (localAuthenticationOptions.fallbackTitle()) {
+        options[@"fallbackTitle"] = localAuthenticationOptions.fallbackTitle();
+    }
+    if (localAuthenticationOptions.authenticationLevel()) {
+        options[@"authenticationLevel"] = @((NSInteger)localAuthenticationOptions.authenticationLevel().value());
+    }
+    if (localAuthenticationOptions.deviceCredentialFallback()) {
+        options[@"deviceCredentialFallback"] = @((NSInteger)localAuthenticationOptions.deviceCredentialFallback().value());
+    }
     [self tryAndInitializeNativeBridge:clientId domain:domain withLocalAuthenticationOptions:options resolver:resolve rejecter:reject];
 }
 
-RCT_EXPORT_METHOD(saveCredentials:(NSDictionary *)credentials resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    [self.nativeBridge saveCredentialsWithCredentialsDict:credentials resolve:resolve reject:reject];
+RCT_EXPORT_METHOD(saveCredentials:(JS::NativeA0Auth0::Credentials &)credentials resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
+    NSMutableDictionary *credentialsDict = [NSMutableDictionary dictionary];
+    
+    credentialsDict[@"idToken"] = credentials.idToken();
+    credentialsDict[@"accessToken"] = credentials.accessToken();
+    credentialsDict[@"tokenType"] = credentials.tokenType();
+    credentialsDict[@"expiresAt"] = @(credentials.expiresAt());
+    if (credentials.refreshToken()) {
+        credentialsDict[@"refreshToken"] = credentials.refreshToken();
+    } 
+    if (credentials.scope()) {
+        credentialsDict[@"scope"] = credentials.scope();
+    } 
+    [self.nativeBridge saveCredentialsWithCredentialsDict:credentialsDict resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(getCredentials:(NSString *)scope minTTL:(NSInteger)minTTL parameters:(NSDictionary *)parameters forceRefresh:(BOOL)forceRefresh resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(getCredentials:(NSString * _Nullable)scope minTTL:(double)minTTL parameters:(nonnull NSDictionary *)parameters forceRefresh:(BOOL)forceRefresh resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
     [self.nativeBridge getCredentialsWithScope:scope minTTL:minTTL parameters:parameters forceRefresh:forceRefresh resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(hasValidCredentials:(NSInteger)minTTL resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(hasValidCredentials:(double)minTTL resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
     [self.nativeBridge hasValidCredentialsWithMinTTL:minTTL resolve:resolve];
 }
 
-RCT_EXPORT_METHOD(clearCredentials:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(clearCredentials:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
     [self.nativeBridge clearCredentialsWithResolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(webAuth:(NSString *)scheme redirectUri:(NSString *)redirectUri state:(NSString *)state nonce:(NSString *)nonce audience:(NSString *)audience scope:(NSString *)scope connection:(NSString *)connection maxAge:(NSInteger)maxAge organization:(NSString *)organization invitationUrl:(NSString *)invitationUrl  leeway:(NSInteger)leeway ephemeralSession:(BOOL)ephemeralSession safariViewControllerPresentationStyle:(NSInteger)safariViewControllerPresentationStyle additionalParameters:(NSDictionary *)additionalParameters resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    [self.nativeBridge webAuthWithScheme:scheme state:state redirectUri:redirectUri nonce:nonce audience:audience scope:scope connection:connection maxAge:maxAge organization:organization invitationUrl:invitationUrl leeway:leeway ephemeralSession:ephemeralSession safariViewControllerPresentationStyle:safariViewControllerPresentationStyle additionalParameters:additionalParameters resolve:resolve reject:reject];
+RCT_EXPORT_METHOD(webAuth:(nonnull NSString *)scheme redirectUri:(nonnull NSString *)redirectUri state:(nonnull NSString *)state nonce:(nonnull NSString *)nonce audience:(nonnull NSString *)audience scope:(nonnull NSString *)scope connection:(nonnull NSString *)connection maxAge:(nonnull NSNumber *)maxAge organization:(nonnull NSString *)organization invitationUrl:(nonnull NSString *)invitationUrl leeway:(nonnull NSNumber *)leeway ephemeralSession:(nonnull NSNumber *)ephemeralSession safariViewControllerPresentationStyle:(nonnull NSNumber *)safariViewControllerPresentationStyle additionalParameters:(nonnull NSDictionary *)additionalParameters resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge webAuthWithScheme:scheme state:state redirectUri:redirectUri nonce:nonce audience:audience scope:scope connection:connection maxAge:[maxAge integerValue] organization:organization invitationUrl:invitationUrl leeway:[leeway integerValue] ephemeralSession:[ephemeralSession boolValue] safariViewControllerPresentationStyle:[safariViewControllerPresentationStyle integerValue] additionalParameters:additionalParameters resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(webAuthLogout:(NSString *)scheme federated:(BOOL)federated redirectUri:(NSString *)redirectUri resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(webAuthLogout:(nonnull NSString *)scheme federated:(BOOL)federated redirectUri:(nonnull NSString *)redirectUri resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
     [self.nativeBridge webAuthLogoutWithScheme:scheme federated:federated redirectUri:redirectUri resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(resumeWebAuth:(NSString *)url resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(resumeWebAuth:(nonnull NSString *)url resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
     [self.nativeBridge resumeWebAuthWithUrl:url resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(cancelWebAuth:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(cancelWebAuth:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
     [self.nativeBridge cancelWebAuthWithResolve:resolve reject:reject];
 }
 
@@ -86,6 +123,14 @@ RCT_EXPORT_METHOD(cancelWebAuth:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
 + (BOOL)requiresMainQueueSetup {
     return YES;
 }
+
+#ifdef RCT_NEW_ARCH_ENABLED
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params { 
+    return std::make_shared<facebook::react::NativeA0Auth0SpecJSI>(params);
+}
+
+#endif
 
 #pragma mark - Internal methods
 

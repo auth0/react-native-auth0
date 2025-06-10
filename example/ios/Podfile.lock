@@ -1,14 +1,31 @@
 PODS:
   - A0Auth0 (5.0.0-beta.1):
     - Auth0 (= 2.10)
+    - DoubleConversion
+    - glog
+    - hermes-engine
     - JWTDecode (= 3.2.0)
-    - RCT-Folly
+    - RCT-Folly (= 2024.11.18.00)
     - RCTRequired
     - RCTTypeSafety
-    - React-Codegen
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - SimpleKeychain (= 1.2.0)
+    - Yoga
   - Auth0 (2.10.0):
     - JWTDecode (= 3.2.0)
     - SimpleKeychain (= 1.2.0)
@@ -61,7 +78,6 @@ PODS:
     - React-RCTText (= 0.79.2)
     - React-RCTVibration (= 0.79.2)
   - React-callinvoker (0.79.2)
-  - React-Codegen (0.1.0)
   - React-Core (0.79.2):
     - glog
     - hermes-engine
@@ -1880,7 +1896,6 @@ SPEC REPOS:
   trunk:
     - Auth0
     - JWTDecode
-    - React-Codegen
     - SimpleKeychain
     - SocketRocket
 
@@ -2034,7 +2049,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  A0Auth0: 779f007d4734e6e534b5ffa3f647716eaca560ab
+  A0Auth0: 035c2bfabf657942257d3eb5cd6ce5e50ff4bda9
   Auth0: 2876d0c36857422eda9cb580a6cc896c7d14cb36
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
@@ -2050,7 +2065,6 @@ SPEC CHECKSUMS:
   RCTTypeSafety: 659ae318c09de0477fd27bbc9e140071c7ea5c93
   React: c2d3aa44c49bb34e4dfd49d3ee92da5ebacc1c1c
   React-callinvoker: 1bdfb7549b5af266d85757193b5069f60659ef9d
-  React-Codegen: 4b8b4817cea7a54b83851d4c1f91f79aa73de30a
   React-Core: 10597593fdbae06f0089881e025a172e51d4a769
   React-CoreModules: 6907b255529dd46895cf687daa67b24484a612c2
   React-cxxreact: a9f5b8180d6955bc3f6a3fcd657c4d9b4d95c1f6
