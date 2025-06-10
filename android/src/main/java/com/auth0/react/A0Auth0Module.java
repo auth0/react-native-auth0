@@ -89,10 +89,12 @@ public class A0Auth0Module extends A0Auth0Spec implements ActivityEventListener 
     public void webAuth(String scheme, String redirectUri, @Nullable String state, @Nullable String nonce, @Nullable String audience, @Nullable String scope, @Nullable String connection, @Nullable Double maxAge, @Nullable String organization, @Nullable String invitationUrl, @Nullable Double leeway, @Nullable Boolean ephemeralSession, @Nullable Double safariViewControllerPresentationStyle, @Nullable ReadableMap additionalParameters, Promise promise) {
         this.webAuthPromise = promise;
         Map<String, String> cleanedParameters = new HashMap<>();
-        assert additionalParameters != null;
-        for (Map.Entry<String, Object> entry : additionalParameters.toHashMap().entrySet()) {
-            if (entry.getValue() != null) {
-                cleanedParameters.put(entry.getKey(), entry.getValue().toString());
+        
+        if(additionalParameters != null) {
+            for (Map.Entry<String, Object> entry : additionalParameters.toHashMap().entrySet()) {
+                if (entry.getValue() != null) {
+                    cleanedParameters.put(entry.getKey(), entry.getValue().toString());
+                }
             }
         }
         WebAuthProvider.Builder builder = WebAuthProvider.login(this.auth0)
@@ -112,8 +114,7 @@ public class A0Auth0Module extends A0Auth0Spec implements ActivityEventListener 
         if (connection != null) {
             builder.withConnection(connection);
         }
-        assert maxAge != null;
-        if (maxAge.intValue() != 0) {
+        if (maxAge != null && maxAge.intValue() != 0) {
             builder.withMaxAge(maxAge.intValue());
         }
         if (organization != null) {
@@ -122,8 +123,7 @@ public class A0Auth0Module extends A0Auth0Spec implements ActivityEventListener 
         if (invitationUrl != null) {
             builder.withInvitationUrl(invitationUrl);
         }
-        assert leeway != null;
-        if (leeway.intValue() != 0) {
+        if (leeway != null && leeway.intValue() != 0) {
             builder.withIdTokenVerificationLeeway(leeway.intValue());
         }
         if (redirectUri != null) {
@@ -284,7 +284,7 @@ public class A0Auth0Module extends A0Auth0Spec implements ActivityEventListener 
         if (redirectUri != null) {
             builder.withReturnToUrl(redirectUri);
         }
-        builder.start(Objects.requireNonNull(reactContext.getCurrentActivity()),
+        builder.start(reactContext.getCurrentActivity(),
                 new com.auth0.android.callback.Callback<Void, AuthenticationException>() {
                     @Override
                     public void onSuccess(Void credentials) {
