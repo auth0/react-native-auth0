@@ -42,6 +42,8 @@ RCT_EXPORT_METHOD(hasValidAuth0InstanceWithConfiguration:(nonnull NSString *)cli
 }
 
 
+#ifdef RCT_NEW_ARCH_ENABLED
+
 RCT_EXPORT_METHOD(initializeAuth0WithConfiguration:(nonnull NSString *)clientId domain:(nonnull NSString *)domain localAuthenticationOptions:(JS::NativeA0Auth0::LocalAuthenticationOptions &)localAuthenticationOptions resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
     NSMutableDictionary *options = [[NSMutableDictionary alloc] init];
     
@@ -87,6 +89,16 @@ RCT_EXPORT_METHOD(saveCredentials:(JS::NativeA0Auth0::Credentials &)credentials 
     } 
     [self.nativeBridge saveCredentialsWithCredentialsDict:credentialsDict resolve:resolve reject:reject];
 }
+
+#else
+RCT_EXPORT_METHOD(initializeAuth0WithConfiguration:(NSString *)clientId domain:(NSString *)domain localAuthenticationOptions:(NSDictionary*) options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self tryAndInitializeNativeBridge:clientId domain:domain withLocalAuthenticationOptions:options resolver:resolve rejecter:reject];
+}
+
+RCT_EXPORT_METHOD(saveCredentials:(NSDictionary *)credentials resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge saveCredentialsWithCredentialsDict:credentials resolve:resolve reject:reject];
+}
+#endif
 
 RCT_EXPORT_METHOD(getCredentials:(NSString * _Nullable)scope minTTL:(double)minTTL parameters:(nonnull NSDictionary *)parameters forceRefresh:(BOOL)forceRefresh resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
     [self.nativeBridge getCredentialsWithScope:scope minTTL:minTTL parameters:parameters forceRefresh:forceRefresh resolve:resolve reject:reject];
