@@ -40,18 +40,8 @@ def DEFAULT_TARGET_SDK_VERSION = 34
 android {
   compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
   buildToolsVersion safeExtGet('buildToolsVersion', DEFAULT_BUILD_TOOLS_VERSION)
-  if (project.android.hasProperty("namespace")) {
-        namespace 'com.auth0.react'
+  namespace 'com.auth0.react'
 
-        buildFeatures {
-            buildConfig true
-        }
-        sourceSets {
-            main {
-                manifest.srcFile "src/main/AndroidManifestNew.xml"
-            }
-        }
-    }
   defaultConfig {
     minSdkVersion safeExtGet('minSdkVersion', DEFAULT_MIN_SDK_VERSION)
     targetSdkVersion safeExtGet('targetSdkVersion', DEFAULT_TARGET_SDK_VERSION)
@@ -61,6 +51,9 @@ android {
   }
   lintOptions {
     abortOnError false
+  }
+  buildFeatures {
+    buildConfig true
   }
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -72,9 +65,6 @@ android {
       if (isNewArchitectureEnabled()) {
         java.srcDirs += [
           "src/main/newarch",
-          // Codegen specs
-          "generated/java",
-          "generated/jni"
         ]
       } else {
         java.srcDirs += ["src/main/oldarch"]
