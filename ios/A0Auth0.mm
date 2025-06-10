@@ -90,6 +90,10 @@ RCT_EXPORT_METHOD(saveCredentials:(JS::NativeA0Auth0::Credentials &)credentials 
     [self.nativeBridge saveCredentialsWithCredentialsDict:credentialsDict resolve:resolve reject:reject];
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params { 
+    return std::make_shared<facebook::react::NativeA0Auth0SpecJSI>(params);
+}
+
 #else
 RCT_EXPORT_METHOD(initializeAuth0WithConfiguration:(NSString *)clientId domain:(NSString *)domain localAuthenticationOptions:(NSDictionary*) options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     [self tryAndInitializeNativeBridge:clientId domain:domain withLocalAuthenticationOptions:options resolver:resolve rejecter:reject];
@@ -135,14 +139,6 @@ RCT_EXPORT_METHOD(cancelWebAuth:(nonnull RCTPromiseResolveBlock)resolve reject:(
 + (BOOL)requiresMainQueueSetup {
     return YES;
 }
-
-#ifdef RCT_NEW_ARCH_ENABLED
-
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params { 
-    return std::make_shared<facebook::react::NativeA0Auth0SpecJSI>(params);
-}
-
-#endif
 
 #pragma mark - Internal methods
 
