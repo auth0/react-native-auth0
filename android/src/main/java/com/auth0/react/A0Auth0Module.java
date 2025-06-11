@@ -327,7 +327,7 @@ public class A0Auth0Module extends A0Auth0Spec implements ActivityEventListener 
             promise.reject("a0.session.invalid_idtoken", "Error validating ID Token", error);
             return;
         }
-        String separator = Objects.requireNonNull(error.getMessage()).endsWith(".") ? "" : ".";
+        String separator = error.getMessage().endsWith(".") ? "" : ".";
         promise.reject(error.getCode(), error.getMessage() + separator + " CAUSE: " + error.getDescription(), error);
     }
 
