@@ -130,7 +130,7 @@ public class A0Auth0Module extends A0Auth0Spec implements ActivityEventListener 
             builder.withRedirectUri(redirectUri);
         }
         builder.withParameters(cleanedParameters);
-        builder.start(Objects.requireNonNull(reactContext.getCurrentActivity()),
+        builder.start(reactContext.getCurrentActivity(),
                 new com.auth0.android.callback.Callback<Credentials, AuthenticationException>() {
                     @Override
                     public void onSuccess(Credentials result) {
