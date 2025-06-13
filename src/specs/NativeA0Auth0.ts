@@ -50,16 +50,6 @@ export interface Spec extends TurboModule {
   clearCredentials(): Promise<void>;
 
   /**
-   * Enable local authentication
-   */
-  enableLocalAuthentication(
-    title: string,
-    cancelTitle: string,
-    fallbackTitle: string,
-    evaluationPolicy: number
-  ): void;
-
-  /**
    * Start web authentication
    */
   webAuth(

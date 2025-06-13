@@ -6,7 +6,6 @@ const A0Auth0 = {
   getCredentials: jest.fn(() => Promise.resolve()),
   hasValidCredentials: jest.fn(() => Promise.resolve(false)),
   clearCredentials: jest.fn(() => Promise.resolve(true)),
-  enableLocalAuthentication: jest.fn(() => Promise.resolve()),
   getBundleIdentifier: jest.fn(() => Promise.resolve('com.my.app')),
   webAuth: jest.fn(() =>
     Promise.resolve({
