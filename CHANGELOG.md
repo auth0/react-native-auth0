@@ -1,5 +1,18 @@
 # Change Log
 
+## [v5.0.0-beta.2](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.2) (2025-06-13)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0-beta.1...v5.0.0-beta.2)
+
+**Added**
+
+- Ensure Swift 5 compilation for SDK pods to improve Swift 6 compatibility [\#1203](https://github.com/auth0/react-native-auth0/pull/1203) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Fixed**
+
+- Fixed iOS Build Issues with Static Frameworks [\#1195](https://github.com/auth0/react-native-auth0/pull/1195) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- Fix: getBundleIdentifier Implementation [\#1194](https://github.com/auth0/react-native-auth0/pull/1194) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.0.0-beta.1](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.1) (2025-05-13)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0-beta.0...v5.0.0-beta.1)
