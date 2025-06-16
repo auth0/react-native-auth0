@@ -1,5 +1,5 @@
-import type { TurboModule } from 'react-native';
-import { TurboModuleRegistry } from 'react-native';
+import { TurboModuleRegistry, type TurboModule } from 'react-native';
+import type { Int32 } from 'react-native/Libraries/Types/CodegenTypes';
 
 export interface Spec extends TurboModule {
   /**
@@ -21,20 +21,22 @@ export interface Spec extends TurboModule {
   initializeAuth0WithConfiguration(
     clientId: string,
     domain: string,
-    localAuthenticationOptions?: LocalAuthenticationOptions
+    localAuthenticationOptions?: { [key: string]: string | Int32 | boolean }
   ): Promise<void>;
 
   /**
    * Save credentials
    */
-  saveCredentials(credentials: Credentials): Promise<void>;
+  saveCredentials(credentials: {
+    [key: string]: string | Int32;
+  }): Promise<void>;
 
   /**
    * Get credentials with the given scope
    */
   getCredentials(
     scope: string | undefined,
-    minTTL: number,
+    minTTL: Int32,
     parameters: Object,
     forceRefresh: boolean
   ): Promise<Credentials>;
@@ -42,7 +44,7 @@ export interface Spec extends TurboModule {
   /**
    * Check if there are valid credentials
    */
-  hasValidCredentials(minTTL: number): Promise<boolean>;
+  hasValidCredentials(minTTL: Int32): Promise<boolean>;
 
   /**
    * Clear credentials
@@ -60,12 +62,12 @@ export interface Spec extends TurboModule {
     audience?: string,
     scope?: string,
     connection?: string,
-    maxAge?: number,
+    maxAge?: Int32,
     organization?: string,
     invitationUrl?: string,
-    leeway?: number,
+    leeway?: Int32,
     ephemeralSession?: boolean,
-    safariViewControllerPresentationStyle?: number,
+    safariViewControllerPresentationStyle?: Int32,
     additionalParameters?: { [key: string]: string }
   ): Promise<CredentialsResponse>;
 
@@ -95,13 +97,13 @@ interface CredentialsResponse {
   id_token: string;
   access_token: string;
   token_type: string;
-  expires_in: number;
+  expires_in: Int32;
   refresh_token?: string;
   scope?: string;
   [key: string]: any;
 }
 
-interface LocalAuthenticationOptions {
+export interface LocalAuthenticationOptions {
   /**
    * The title of the authentication prompt. **Applicable for both Android and iOS**.
    */
@@ -121,7 +123,7 @@ interface LocalAuthenticationOptions {
   /**
    * The evaluation policy to use when prompting the user for authentication. Defaults to LocalAuthenticationStrategy.deviceOwnerWithBiometrics. **Applicable for iOS only.**
    */
-  evaluationPolicy?: number;
+  evaluationPolicy?: Int32;
   /**
    * The fallback button title of the authentication prompt. **Applicable for iOS only.**
    */
@@ -129,7 +131,7 @@ interface LocalAuthenticationOptions {
   /**
    * The authentication level to use when prompting the user for authentication. Defaults to LocalAuthenticationLevel.strong. **Applicable for Android only.**
    */
-  authenticationLevel?: number;
+  authenticationLevel?: Int32;
   /**
    * Should the user be given the option to authenticate with their device PIN, pattern, or password instead of a biometric. **Applicable for Android only.**
    */
@@ -152,7 +154,7 @@ interface Credentials {
   /**
    * Used to denote when the token will expire, as a UNIX timestamp
    */
-  expiresAt: number;
+  expiresAt: Int32;
   /**
    * The token used to refresh the access token
    */

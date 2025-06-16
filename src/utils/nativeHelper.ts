@@ -16,7 +16,7 @@ export async function _ensureNativeModuleIsInitializedWithConfiguration(
     await nativeModule.initializeAuth0WithConfiguration(
       clientId,
       domain,
-      localAuthenticationOptions
+      localAuthenticationOptions ? { ...localAuthenticationOptions } : undefined
     );
   }
 }

@@ -1,5 +1,5 @@
 PODS:
-  - A0Auth0 (5.0.0-beta.1):
+  - A0Auth0 (5.0.0-beta.2):
     - Auth0 (= 2.10)
     - DoubleConversion
     - glog
@@ -2049,7 +2049,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  A0Auth0: 035c2bfabf657942257d3eb5cd6ce5e50ff4bda9
+  A0Auth0: 6b64eb955d9bf2d80bd147ae26c9ac9c69e66d97
   Auth0: 2876d0c36857422eda9cb580a6cc896c7d14cb36
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
@@ -2129,4 +2129,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 4d5858eb0b119123f92cbe4189a696908bcef7aa
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2
