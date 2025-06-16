@@ -24,6 +24,10 @@
       {
         "pattern": "```swift",
         "replace": "```text"
+      },
+      {
+        "pattern": "```ruby",
+        "replace": "```text"
       }
     ]
   },

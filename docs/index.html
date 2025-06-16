@@ -129,9 +129,12 @@
             >
             • ❓ <a href="#feedback">Feedback</a>
           </p>
-          <h3 id="⚠️-important-migration-notice-v400" class="tsd-anchor-link">
-            ⚠️ Important Migration Notice: v4.0.0<a
-              href="#⚠️-important-migration-notice-v400"
+          <h3
+            id="⚠️-important-migration-notice-v400-and-v500beta"
+            class="tsd-anchor-link"
+          >
+            ⚠️ Important Migration Notice: v4.0.0 and v5.0.0beta<a
+              href="#⚠️-important-migration-notice-v400-and-v500beta"
               aria-label="Permalink"
               class="tsd-anchor-icon"
               ><svg viewBox="0 0 24 24" aria-hidden="true">
@@ -140,14 +143,27 @@
           </h3>
           <p>
             We're excited to announce the release of react-native-auth0
-            <code>v4.0.0</code>! Please note that this update includes breaking
-            changes that require your attention. To ensure a smooth transition,
-            please review our 👉
+            <code>v4.0.0</code> and the beta release of <code>v5.0.0</code>!
+          </p>
+          <p>
+            <strong>For v4.0.0 users:</strong> Please note that this update
+            includes breaking changes that require your attention. To ensure a
+            smooth transition, please review our 👉
             <a
               href="https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md"
               >Migration Guide</a
             >
             👈 for detailed instructions on updating your integration.
+          </p>
+          <p>
+            <strong>For v5.0.0beta users:</strong> This beta version requires
+            React 19 and React Native 0.78.0 or higher. If you're using Expo,
+            this version requires Expo 53 or higher. See the 👉
+            <a
+              href="https://github.com/auth0/react-native-auth0/blob/beta/MIGRATION_GUIDE.md"
+              >Migration Guide</a
+            >
+            👈 for compatibility requirements and upgrade instructions.
           </p>
           <h2 id="documentation" class="tsd-anchor-link">
             Documentation<a
@@ -1508,6 +1524,59 @@
               </tr>
             </tbody>
           </table>
+          <h2 id="troubleshooting" class="tsd-anchor-link">
+            Troubleshooting<a
+              href="#troubleshooting"
+              aria-label="Permalink"
+              class="tsd-anchor-icon"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <use href="assets/icons.svg#icon-anchor"></use></svg
+            ></a>
+          </h2>
+          <h3 id="swift-6-compatibility-issues-on-ios" class="tsd-anchor-link">
+            Swift 6 Compatibility Issues on iOS<a
+              href="#swift-6-compatibility-issues-on-ios"
+              aria-label="Permalink"
+              class="tsd-anchor-icon"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <use href="assets/icons.svg#icon-anchor"></use></svg
+            ></a>
+          </h3>
+          <p>
+            If your main application project is configured to use Swift 6, and
+            you encounter build errors related to Swift version
+            incompatibilities with <code>react-native-auth0</code> or its
+            dependencies (like <code>Auth0.swift</code>, <code>JWTDecode</code>,
+            <code>SimpleKeychain</code>), you can ensure these specific pods are
+            compiled with Swift 5.
+          </p>
+          <p>
+            While <code>react-native-auth0</code> (from v5.0.0-beta.1 onwards)
+            and its direct Swift dependencies are configured to use Swift 5,
+            your project's build settings might try to override this. To enforce
+            Swift 5 for these pods:
+          </p>
+          <p>
+            <strong>Recommended: Podfile <code>post_install</code> Hook</strong>
+          </p>
+          <p>
+            Add the following <code>post_install</code> hook to your
+            application's <code>ios/Podfile</code>. This is generally the most
+            robust way to manage build settings for dependencies:
+          </p>
+          <pre><code class="text"># In your application&#39;s ios/Podfile
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    # Target the react-native-auth0 pod and its Swift dependencies
+    if [&#39;Auth0&#39;, &#39;A0Auth0&#39;, &#39;JWTDecode&#39;, &#39;SimpleKeychain&#39;].include?(target.name)
+      target.build_configurations.each do |config|
+        config.build_settings[&#39;SWIFT_VERSION&#39;] = &#39;5.0&#39;
+      end
+    end
+  end
+end
+</code><button type="button">Copy</button></pre>
+
           <h2 id="feedback" class="tsd-anchor-link">
             Feedback<a
               href="#feedback"
@@ -1732,10 +1801,10 @@
             <div class="tsd-accordion-details">
               <ul>
                 <li>
-                  <a href="#⚠️-important-migration-notice-v400"
+                  <a href="#⚠️-important-migration-notice-v400-and-v500beta"
                     ><span
                       >⚠️ <wbr />Important <wbr />Migration <wbr />Notice:
-                      v4.0.0</span
+                      v4.0.0 and v5.0.0beta</span
                     ></a
                   >
                 </li>
@@ -1942,6 +2011,16 @@
                       >
                     </li>
                   </ul>
+                </li>
+              </ul>
+              <a href="#troubleshooting"><span>Troubleshooting</span></a>
+              <ul>
+                <li>
+                  <a href="#swift-6-compatibility-issues-on-ios"
+                    ><span
+                      >Swift 6 <wbr />Compatibility <wbr />Issues on i<wbr />OS</span
+                    ></a
+                  >
                 </li>
               </ul>
               <a href="#feedback"><span>Feedback</span></a>
