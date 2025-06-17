@@ -21,7 +21,9 @@ export interface Spec extends TurboModule {
   initializeAuth0WithConfiguration(
     clientId: string,
     domain: string,
-    localAuthenticationOptions?: { [key: string]: string | Int32 | boolean }
+    localAuthenticationOptions:
+      | { [key: string]: string | Int32 | boolean }
+      | undefined
   ): Promise<void>;
 
   /**
@@ -57,18 +59,18 @@ export interface Spec extends TurboModule {
   webAuth(
     scheme: string,
     redirectUri: string,
-    state?: string,
-    nonce?: string,
-    audience?: string,
-    scope?: string,
-    connection?: string,
-    maxAge?: Int32,
-    organization?: string,
-    invitationUrl?: string,
-    leeway?: Int32,
-    ephemeralSession?: boolean,
-    safariViewControllerPresentationStyle?: Int32,
-    additionalParameters?: { [key: string]: string }
+    state: string | undefined,
+    nonce: string | undefined,
+    audience: string | undefined,
+    scope: string | undefined,
+    connection: string | undefined,
+    maxAge: Int32 | undefined,
+    organization: string | undefined,
+    invitationUrl: string | undefined,
+    leeway: Int32 | undefined,
+    ephemeralSession: boolean | undefined,
+    safariViewControllerPresentationStyle: Int32 | undefined,
+    additionalParameters: { [key: string]: string } | undefined
   ): Promise<CredentialsResponse>;
 
   /**
@@ -98,8 +100,8 @@ interface CredentialsResponse {
   access_token: string;
   token_type: string;
   expires_in: Int32;
-  refresh_token?: string;
-  scope?: string;
+  refresh_token: string | undefined;
+  scope: string | undefined;
   [key: string]: any;
 }
 
@@ -111,31 +113,31 @@ export interface LocalAuthenticationOptions {
   /**
    * The subtitle of the authentication prompt. **Applicable for Android only.**
    */
-  subtitle?: string;
+  subtitle: string | undefined;
   /**
    * The description of the authentication prompt. **Applicable for Android only.**
    */
-  description?: string;
+  description: string | undefined;
   /**
    * The cancel button title of the authentication prompt. **Applicable for both Android and iOS.**
    */
-  cancelTitle?: string;
+  cancelTitle: string | undefined;
   /**
    * The evaluation policy to use when prompting the user for authentication. Defaults to LocalAuthenticationStrategy.deviceOwnerWithBiometrics. **Applicable for iOS only.**
    */
-  evaluationPolicy?: Int32;
+  evaluationPolicy: Int32 | undefined;
   /**
    * The fallback button title of the authentication prompt. **Applicable for iOS only.**
    */
-  fallbackTitle?: string;
+  fallbackTitle: string | undefined;
   /**
    * The authentication level to use when prompting the user for authentication. Defaults to LocalAuthenticationLevel.strong. **Applicable for Android only.**
    */
-  authenticationLevel?: Int32;
+  authenticationLevel: Int32 | undefined;
   /**
    * Should the user be given the option to authenticate with their device PIN, pattern, or password instead of a biometric. **Applicable for Android only.**
    */
-  deviceCredentialFallback?: boolean;
+  deviceCredentialFallback: boolean | undefined;
 }
 
 interface Credentials {
@@ -158,9 +160,9 @@ interface Credentials {
   /**
    * The token used to refresh the access token
    */
-  refreshToken?: string;
+  refreshToken: string | undefined;
   /**
    * Represents the scope of the current token
    */
-  scope?: string;
+  scope: string | undefined;
 }
