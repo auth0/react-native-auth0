@@ -206,12 +206,6 @@ public class NativeBridge: NSObject {
         resolve(credentialsManager.clear())
     }
     
-    @objc public func enableLocalAuthentication(title: String?, cancelTitle: String?, fallbackTitle: String?, evaluationPolicy: Int) {
-        let titleValue = title ?? "Please authenticate to continue"
-        let policyValue = self.convert(policyInt: evaluationPolicy)
-        self.credentialsManager.enableBiometrics(withTitle: titleValue, cancelTitle: cancelTitle, fallbackTitle: fallbackTitle, evaluationPolicy: policyValue)
-    }
-    
     @objc public func getClientId() -> String {
         return clientId
     }

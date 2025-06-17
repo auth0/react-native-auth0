@@ -1,22 +1,45 @@
 package com.auth0.react;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import androidx.annotation.NonNull;
 
-import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
+import com.facebook.react.module.model.ReactModuleInfo;
 
-public class A0Auth0Package implements ReactPackage {
+import java.util.HashMap;
+import java.util.Map;
+
+public class A0Auth0Package extends TurboReactPackage {
     @Override
-    public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        return Arrays.<NativeModule>asList(new A0Auth0Module(reactContext));
+    public NativeModule getModule(String name, ReactApplicationContext reactContext) {
+        if (name.equals(A0Auth0Module.NAME)) {
+            return new A0Auth0Module(reactContext);
+        } else {
+            return null;
+        }
     }
 
+    @NonNull
     @Override
-    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-        return Collections.emptyList();
+    public ReactModuleInfoProvider getReactModuleInfoProvider() {
+        return () -> {
+            Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
+            boolean isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
+            moduleInfos.put(
+                A0Auth0Module.NAME,
+                new ReactModuleInfo(
+                    A0Auth0Module.NAME,
+                    A0Auth0Module.NAME,
+                    false,  // canOverrideExistingModule
+                    false,  // needsEagerInit
+                    true,   // hasConstants
+                    false,  // isCxxModule
+                    isTurboModule // isTurboModule
+                )
+            );
+            return moduleInfos;
+        };
     }
 }
