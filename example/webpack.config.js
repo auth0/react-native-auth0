@@ -18,7 +18,6 @@ const babelLoaderConfiguration = {
     path.resolve(__dirname, 'node_modules/@react-navigation'),
     path.resolve(__dirname, 'node_modules/react-native-safe-area-context'),
     path.resolve(__dirname, 'node_modules/react-native-screens'),
-    path.resolve(__dirname, 'node_modules/react-native-paper'),
     path.resolve(__dirname, 'node_modules/react-native-vector-icons'),
   ],
   use: {

@@ -21,9 +21,9 @@ import {
   type NavigationProp,
   NavigationContainer,
 } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const { authorize, clearSession, user, getCredentials, error } = useAuth0();
