@@ -1,5 +1,13 @@
 # Change Log
 
+## [v5.0.0-beta.3](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.3) (2025-06-23)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0-beta.2...v5.0.0-beta.3)
+
+**Fixed**
+
+- Fix: Turbo Module & New Architecture Support! [\#1204](https://github.com/auth0/react-native-auth0/pull/1204) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.0.0-beta.2](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.2) (2025-06-13)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0-beta.1...v5.0.0-beta.2)
