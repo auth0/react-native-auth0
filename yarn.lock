@@ -4957,6 +4957,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "Auth0Example@workspace:example"
   dependencies:
+    "@auth0/auth0-spa-js": ^2.2.0
     "@babel/core": ^7.25.2
     "@babel/preset-env": ^7.25.3
     "@babel/runtime": ^7.25.0

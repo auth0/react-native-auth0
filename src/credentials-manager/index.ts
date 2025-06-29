@@ -4,6 +4,7 @@ import { _ensureNativeModuleIsInitializedWithConfiguration } from '../utils/nati
 import type { LocalAuthenticationOptions } from './localAuthenticationOptions';
 import A0Auth0 from '../specs/NativeA0Auth0';
 import type { NativeModuleError } from '../internal-types';
+import type Auth from '../auth';
 
 class CredentialsManager {
   private domain;
@@ -14,12 +15,11 @@ class CredentialsManager {
    * @ignore
    */
   constructor(
-    domain: string,
-    clientId: string,
+    auth: Auth,
     localAuthenticationOptions?: LocalAuthenticationOptions
   ) {
-    this.domain = domain;
-    this.clientId = clientId;
+    this.domain = auth.domain;
+    this.clientId = auth.clientId;
     this.localAuthenticationOptions = localAuthenticationOptions;
   }
 
