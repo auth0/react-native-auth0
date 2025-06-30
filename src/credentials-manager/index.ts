@@ -1,14 +1,13 @@
-import { NativeModules } from 'react-native';
 import CredentialsManagerError from './credentialsManagerError';
 import type { Credentials } from '../types';
-import type { Auth0Module, NativeModuleError } from '../internal-types';
 import { _ensureNativeModuleIsInitializedWithConfiguration } from '../utils/nativeHelper';
 import type { LocalAuthenticationOptions } from './localAuthenticationOptions';
+import A0Auth0 from '../specs/NativeA0Auth0';
+import type { NativeModuleError } from '../internal-types';
 
 class CredentialsManager {
   private domain;
   private clientId;
-  private Auth0Module: Auth0Module;
   private localAuthenticationOptions?: LocalAuthenticationOptions;
 
   /**
@@ -22,7 +21,6 @@ class CredentialsManager {
     this.domain = domain;
     this.clientId = clientId;
     this.localAuthenticationOptions = localAuthenticationOptions;
-    this.Auth0Module = NativeModules.A0Auth0;
   }
 
   /**
@@ -42,12 +40,12 @@ class CredentialsManager {
     });
     try {
       await _ensureNativeModuleIsInitializedWithConfiguration(
-        this.Auth0Module,
+        A0Auth0,
         this.clientId,
         this.domain,
         this.localAuthenticationOptions
       );
-      return await this.Auth0Module.saveCredentials(credentials);
+      return await A0Auth0.saveCredentials(credentials);
     } catch (e) {
       const json = {
         error: 'a0.credential_manager.invalid',
@@ -75,13 +73,13 @@ class CredentialsManager {
   ): Promise<Credentials> {
     try {
       await _ensureNativeModuleIsInitializedWithConfiguration(
-        this.Auth0Module,
+        A0Auth0,
         this.clientId,
         this.domain,
         this.localAuthenticationOptions
       );
       return new Promise<Credentials>((resolve, reject) => {
-        this.Auth0Module.getCredentials(scope, minTtl, parameters, forceRefresh)
+        A0Auth0.getCredentials(scope, minTtl, parameters, forceRefresh)
           .then(resolve)
           .catch((e: NativeModuleError) => {
             const json = {
@@ -109,12 +107,12 @@ class CredentialsManager {
    */
   async hasValidCredentials(minTtl = 0): Promise<boolean> {
     await _ensureNativeModuleIsInitializedWithConfiguration(
-      this.Auth0Module,
+      A0Auth0,
       this.clientId,
       this.domain,
       this.localAuthenticationOptions
     );
-    return await this.Auth0Module.hasValidCredentials(minTtl);
+    return await A0Auth0.hasValidCredentials(minTtl);
   }
 
   /**
@@ -122,12 +120,12 @@ class CredentialsManager {
    */
   async clearCredentials(): Promise<void> {
     await _ensureNativeModuleIsInitializedWithConfiguration(
-      this.Auth0Module,
+      A0Auth0,
       this.clientId,
       this.domain,
       this.localAuthenticationOptions
     );
-    return this.Auth0Module.clearCredentials();
+    return A0Auth0.clearCredentials();
   }
 }
 

@@ -56,9 +56,9 @@ class WebAuth {
   ): Promise<Credentials> {
     const { clientId, domain, agent } = this;
     let presentationStyle = options.useSFSafariViewController
-      ? (options.useSFSafariViewController as { presentationStyle: number })
+      ? ((options.useSFSafariViewController as { presentationStyle: number })
           ?.presentationStyle ??
-        SafariViewControllerPresentationStyle.fullScreen
+        SafariViewControllerPresentationStyle.fullScreen)
       : undefined;
     return agent.login(
       { clientId, domain },

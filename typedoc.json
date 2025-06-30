@@ -6,12 +6,28 @@
   "replaceText": {
     "replacements": [
       {
-        "pattern": "<",
-        "replace": "&lt;"
+        "pattern": "```objective-c",
+        "replace": "```text"
       },
       {
-        "pattern": ">",
-        "replace": "&gt;"
+        "pattern": "```objc",
+        "replace": "```text"
+      },
+      {
+        "pattern": "```groovy",
+        "replace": "```text"
+      },
+      {
+        "pattern": "```xml",
+        "replace": "```text"
+      },
+      {
+        "pattern": "```swift",
+        "replace": "```text"
+      },
+      {
+        "pattern": "```ruby",
+        "replace": "```text"
       }
     ]
   },

@@ -1,5 +1,71 @@
 # Migration Guide
 
+## Upgrading from v4 -> v5
+
+### Compatibility Requirements
+
+- **React**: v5 requires React 19 or higher
+- **React Native**: v5 requires React Native 0.78.0 or higher
+- **Expo**: v5 requires Expo 53 or higher
+
+### Breaking Changes
+
+- **Platform Compatibility**: The minimum iOS deployment target is now 14.0. Update your iOS/Podfile with:
+
+  ```
+  platform :ios, '14.0'
+  ```
+
+- **Android Requirements**: Android SDK API level 35 or higher is now required
+
+### Migration Steps
+
+#### For Regular React Native Projects
+
+1. First, ensure your project uses React 19 and React Native 0.78.0 or higher:
+
+   ```bash
+   npm install react@^19.0.0
+   npm install react-native@^0.78.0
+   ```
+
+2. Update the react-native-auth0 package:
+
+   ```bash
+   npm install react-native-auth0@beta
+   ```
+
+3. Update your iOS minimum deployment target in your Podfile:
+
+   ```ruby
+   platform :ios, '14.0'
+   ```
+
+4. Install the updated pods:
+   ```bash
+   cd ios && pod install && cd ..
+   ```
+
+#### For Expo Projects
+
+1. Update to Expo 53 or higher:
+
+   ```bash
+   npx expo upgrade
+   ```
+
+2. Update the react-native-auth0 package:
+
+   ```bash
+   npm install react-native-auth0@beta
+   ```
+
+3. Rebuild your app:
+   ```bash
+   npx expo prebuild --clean
+   ```
+   Note: This will reset any manual changes to your native code.
+
 ## Upgrading from v3 -> v4
 
 - **If your project is built with Expo:**

@@ -1,4 +1,15 @@
 {
   "extends": "./tsconfig",
-  "exclude": ["example", "lib", "docs", "scripts", "babel.config.js", "jest.environment.js"]
+  "compilerOptions": {
+    "outDir": "lib",
+    "declaration": true
+  },
+  "exclude": [
+    "example",
+    "lib",
+    "docs",
+    "scripts",
+    "babel.config.js",
+    "jest.environment.js"
+  ]
 }

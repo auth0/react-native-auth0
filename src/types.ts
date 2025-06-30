@@ -1,5 +1,5 @@
-import { LocalAuthenticationOptions } from "./credentials-manager/localAuthenticationOptions";
-import { Telemetry } from "./networking/telemetry";
+import type { LocalAuthenticationOptions } from './credentials-manager/localAuthenticationOptions';
+import type { Telemetry } from './networking/telemetry';
 
 export type Credentials = {
   /**

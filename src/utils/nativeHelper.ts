@@ -1,9 +1,9 @@
+import type { Spec } from '../specs/NativeA0Auth0';
 import type { LocalAuthenticationOptions } from '../credentials-manager/localAuthenticationOptions';
-import type { Auth0Module } from '../internal-types';
 
 //private
 export async function _ensureNativeModuleIsInitializedWithConfiguration(
-  nativeModule: Auth0Module,
+  nativeModule: Spec,
   clientId: string,
   domain: string,
   localAuthenticationOptions?: LocalAuthenticationOptions
@@ -16,7 +16,7 @@ export async function _ensureNativeModuleIsInitializedWithConfiguration(
     await nativeModule.initializeAuth0WithConfiguration(
       clientId,
       domain,
-      localAuthenticationOptions
+      localAuthenticationOptions ? { ...localAuthenticationOptions } : undefined
     );
   }
 }

@@ -9,10 +9,13 @@
 
 📚 [Documentation](#documentation) • 🚀 [Getting Started](#getting-started) • ⏭️ [Next Steps](#next-steps) • ❓ [FAQs](https://github.com/auth0/react-native-auth0/blob/master/FAQ.md) • ❓ [Feedback](#feedback)
 
-### ⚠️ Important Migration Notice: v4.0.0
+### ⚠️ Important Migration Notice: v4.0.0 and v5.0.0beta
 
-We're excited to announce the release of react-native-auth0 `v4.0.0`! Please note that this update includes breaking changes that require your attention. To ensure a smooth transition, please review our
-👉 [Migration Guide](https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md) 👈 for detailed instructions on updating your integration.
+We're excited to announce the release of react-native-auth0 `v4.0.0` and the beta release of `v5.0.0`!
+
+**For v4.0.0 users:** Please note that this update includes breaking changes that require your attention. To ensure a smooth transition, please review our 👉 [Migration Guide](https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md) 👈 for detailed instructions on updating your integration.
+
+**For v5.0.0beta users:** This beta version requires React 19 and React Native 0.78.0 or higher. If you're using Expo, this version requires Expo 53 or higher. See the 👉 [Migration Guide](https://github.com/auth0/react-native-auth0/blob/beta/MIGRATION_GUIDE.md) 👈 for compatibility requirements and upgrade instructions.
 
 ## Documentation
 
@@ -28,7 +31,11 @@ We're excited to announce the release of react-native-auth0 `v4.0.0`! Please not
 
 ### Requirements
 
-This SDK targets apps that are using React Native SDK version `0.65.0` and up. If you're using an older React Native version, see the compatibility matrix below.
+This SDK targets apps that are using React Native SDK version `0.78.0` and up. If you're using an older React Native version, see the compatibility matrix below.
+
+This SDK fully supports React Native New Architecture and Expo 53+.
+
+> ⚠️ **Warning**: If you are using Expo version less than 53, you need to use react-native-auth0 version 4.x or earlier. Version 5.x supports Expo 53 and above.
 
 ### Platform compatibility
 
@@ -36,13 +43,13 @@ The following shows platform minimums for running projects with this SDK:
 
 | Platform | Minimum version |
 | -------- | :-------------: |
-| iOS      |      13.0       |
-| Android  |       34        |
+| iOS      |      14.0       |
+| Android  |       35        |
 
-Our SDK requires a minimum iOS deployment target of 13.0. In your project's ios/Podfile, ensure your platform target is set to 13.0.
+Our SDK requires a minimum iOS deployment target of 14.0. In your project's ios/Podfile, ensure your platform target is set to 14.0.
 
 ```
-platform :ios, '13.0'
+platform :ios, '14.0'
 ```
 
 ### Installation
@@ -123,6 +130,8 @@ Re-declare the activity manually with `tools:node="remove"` in your app's Androi
 
 Inside the `ios` folder find the file `AppDelegate.[swift|m]` add the following to it:
 
+For Objective-C:
+
 ```objc
 #import <React/RCTLinkingManager.h>
 
@@ -130,6 +139,14 @@ Inside the `ios` folder find the file `AppDelegate.[swift|m]` add the following 
             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
   return [RCTLinkingManager application:app openURL:url options:options];
+}
+```
+
+For Swift:
+
+```swift
+func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+  return RCTLinkingManager.application(app, open: url, options: options)
 }
 ```
 
@@ -353,8 +370,8 @@ import { Auth0Provider } from 'react-native-auth0';
 
 const App = () => {
   return (
-    <Auth0Provider 
-      domain="YOUR_AUTH0_DOMAIN" 
+    <Auth0Provider
+      domain="YOUR_AUTH0_DOMAIN"
       clientId="YOUR_AUTH0_CLIENT_ID"
       headers={{ 'X-Custom-Header': 'custom-value' }}
     >
@@ -390,9 +407,10 @@ const auth0 = new Auth0({
   clientId: 'YOUR_AUTH0_CLIENT_ID',
   headers: {
     'X-Custom-Header': 'custom-value',
-  }
+  },
 });
 ```
+
 </details>
 
 Then import the hook into a component where you want to get access to the properties and methods for integrating with Auth0:
@@ -645,6 +663,32 @@ _Note_ : We have platform agnostic error codes available only for `CredentialsMa
 | `BIOMETRICS_FAILED`   | OneOf <br>`BIOMETRIC_NO_ACTIVITY`,`BIOMETRIC_ERROR_STATUS_UNKNOWN`,`BIOMETRIC_ERROR_UNSUPPORTED`,<br>`BIOMETRIC_ERROR_HW_UNAVAILABLE`,`BIOMETRIC_ERROR_NONE_ENROLLED`,`BIOMETRIC_ERROR_NO_HARDWARE`,<br>`BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED`,`BIOMETRIC_AUTHENTICATION_CHECK_FAILED`,<br>`BIOMETRIC_ERROR_DEVICE_CREDENTIAL_NOT_AVAILABLE` | `biometricsFailed`              |
 | `NO_NETWORK`          | `NO_NETWORK`                                                                                                                                                                                                                                                                                                                                     |                                 |
 | `API_ERROR`           | `API_ERROR`                                                                                                                                                                                                                                                                                                                                      |                                 |
+
+## Troubleshooting
+
+### Swift 6 Compatibility Issues on iOS
+
+If your main application project is configured to use Swift 6, and you encounter build errors related to Swift version incompatibilities with `react-native-auth0` or its dependencies (like `Auth0.swift`, `JWTDecode`, `SimpleKeychain`), you can ensure these specific pods are compiled with Swift 5.
+
+While `react-native-auth0` (from v5.0.0-beta.1 onwards) and its direct Swift dependencies are configured to use Swift 5, your project's build settings might try to override this. To enforce Swift 5 for these pods:
+
+**Recommended: Podfile `post_install` Hook**
+
+Add the following `post_install` hook to your application's `ios/Podfile`. This is generally the most robust way to manage build settings for dependencies:
+
+```ruby
+# In your application's ios/Podfile
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    # Target the react-native-auth0 pod and its Swift dependencies
+    if ['Auth0', 'A0Auth0', 'JWTDecode', 'SimpleKeychain'].include?(target.name)
+      target.build_configurations.each do |config|
+        config.build_settings['SWIFT_VERSION'] = '5.0'
+      end
+    end
+  end
+end
+```
 
 ## Feedback
 

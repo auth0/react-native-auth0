@@ -1,6 +1,9 @@
 import CredentialsManager from '../index';
 import CredentialsManagerError from '../credentialsManagerError';
-import { Platform } from 'react-native';
+import A0Auth0 from '../../specs/NativeA0Auth0';
+
+// Mock the native module
+jest.mock('../../specs/NativeA0Auth0');
 
 describe('credentials manager tests', () => {
   const credentialsManager = new CredentialsManager(
@@ -8,20 +11,26 @@ describe('credentials manager tests', () => {
     'abc123'
   );
 
-  credentialsManager.Auth0Module.hasValidAuth0InstanceWithConfiguration = () =>
-    Promise.resolve(true);
-  credentialsManager.Auth0Module.saveCredentials = () => {};
-  credentialsManager.Auth0Module.getCredentials = () => {};
-  credentialsManager.Auth0Module.hasValidCredentials = () => {};
-  credentialsManager.Auth0Module.clearCredentials = () => {};
-  credentialsManager.Auth0Module.enableLocalAuthentication = () => {};
-
   const validToken = {
     idToken: '1234',
     accessToken: '1234',
     tokenType: 'Bearer',
     expiresAt: 1691603391,
   };
+
+  beforeEach(() => {
+    // Reset all mocks before each test
+    jest.clearAllMocks();
+
+    // Set default implementation for native module functions
+    A0Auth0.hasValidAuth0InstanceWithConfiguration = jest.fn(() =>
+      Promise.resolve(true)
+    );
+    A0Auth0.saveCredentials = jest.fn(() => Promise.resolve(true));
+    A0Auth0.getCredentials = jest.fn(() => Promise.resolve());
+    A0Auth0.hasValidCredentials = jest.fn(() => Promise.resolve(false));
+    A0Auth0.clearCredentials = jest.fn(() => Promise.resolve(true));
+  });
 
   describe('test saving credentials', () => {
     it('throws when access token is empty', async () => {
@@ -65,108 +74,75 @@ describe('credentials manager tests', () => {
     });
 
     it('proper error is thrown for exception', async () => {
-      const newNativeModule = jest
-        .spyOn(
-          credentialsManager.Auth0Module,
-          'hasValidAuth0InstanceWithConfiguration'
-        )
-        .mockImplementation(() => {
-          throw Error('123123');
-        });
+      A0Auth0.hasValidAuth0InstanceWithConfiguration = jest.fn(() => {
+        throw Error('123123');
+      });
       await expect(
         credentialsManager.saveCredentials(validToken)
       ).rejects.toThrow();
-      newNativeModule.mockRestore();
     });
 
     it('succeeds for proper token', async () => {
-      const newNativeModule = jest
-        .spyOn(credentialsManager.Auth0Module, 'saveCredentials')
-        .mockImplementation(() => Promise.resolve(true));
+      A0Auth0.saveCredentials = jest.fn(() => Promise.resolve(true));
       await expect(
         credentialsManager.saveCredentials(validToken)
       ).resolves.toEqual(true);
-      newNativeModule.mockRestore();
     });
   });
 
   describe('test getting credentials', () => {
     it('proper error is thrown for exception', async () => {
-      const newNativeModule = jest
-        .spyOn(credentialsManager.Auth0Module, 'getCredentials')
-        .mockImplementation(() => {
-          throw Error('123123');
-        });
+      A0Auth0.getCredentials = jest.fn(() => {
+        throw Error('123123');
+      });
       await expect(credentialsManager.getCredentials()).rejects.toThrow();
-      newNativeModule.mockRestore();
     });
 
     it('succeedsfully returns credentials', async () => {
-      const newNativeModule = jest
-        .spyOn(credentialsManager.Auth0Module, 'getCredentials')
-        .mockImplementation(() => Promise.resolve(validToken));
+      A0Auth0.getCredentials = jest.fn(() => Promise.resolve(validToken));
       await expect(credentialsManager.getCredentials()).resolves.toEqual(
         validToken
       );
-      newNativeModule.mockRestore();
     });
 
     it('passes along the forceRefresh parameter', async () => {
-      const newNativeModule = jest
-        .spyOn(credentialsManager.Auth0Module, 'getCredentials')
-        .mockImplementation(() => Promise.resolve(validToken));
+      A0Auth0.getCredentials = jest.fn(() => Promise.resolve(validToken));
 
       await credentialsManager.getCredentials(null, 0, {}, true);
 
-      expect(
-        credentialsManager.Auth0Module.getCredentials
-      ).toHaveBeenCalledWith(null, 0, {}, true);
-
-      newNativeModule.mockRestore();
+      expect(A0Auth0.getCredentials).toHaveBeenCalledWith(null, 0, {}, true);
     });
   });
 
   describe('test hasValidCredentials', () => {
     it('returns false', async () => {
-      const newNativeModule = jest
-        .spyOn(credentialsManager.Auth0Module, 'hasValidCredentials')
-        .mockImplementation(() => Promise.resolve(true));
+      A0Auth0.hasValidCredentials = jest.fn(() => Promise.resolve(true));
       await expect(credentialsManager.hasValidCredentials()).resolves.toEqual(
         true
       );
-      newNativeModule.mockRestore();
     });
 
     it('returns true', async () => {
-      const newNativeModule = jest
-        .spyOn(credentialsManager.Auth0Module, 'hasValidCredentials')
-        .mockImplementation(() => Promise.resolve(true));
+      A0Auth0.hasValidCredentials = jest.fn(() => Promise.resolve(true));
       await expect(credentialsManager.hasValidCredentials()).resolves.toEqual(
         true
       );
-      newNativeModule.mockRestore();
     });
   });
 
   describe('test clearing credentials', () => {
     it('returns false', async () => {
-      const newNativeModule = jest
-        .spyOn(credentialsManager.Auth0Module, 'clearCredentials')
-        .mockImplementation(() => Promise.resolve(true));
+      A0Auth0.clearCredentials = jest.fn(() => Promise.resolve(true));
       await expect(credentialsManager.clearCredentials()).resolves.toEqual(
         true
       );
-      newNativeModule.mockRestore();
     });
 
     it('returns true', async () => {
-      const newNativeModule = jest
-        .spyOn(credentialsManager.Auth0Module, 'clearCredentials')
-        .mockImplementation(() => Promise.resolve(true));
+      A0Auth0.clearCredentials = jest.fn(() => Promise.resolve(true));
       await expect(credentialsManager.clearCredentials()).resolves.toEqual(
         true
       );
-      newNativeModule.mockRestore();
     });
   });
 

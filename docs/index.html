@@ -129,9 +129,12 @@
             >
             • ❓ <a href="#feedback">Feedback</a>
           </p>
-          <h3 id="⚠️-important-migration-notice-v400" class="tsd-anchor-link">
-            ⚠️ Important Migration Notice: v4.0.0<a
-              href="#⚠️-important-migration-notice-v400"
+          <h3
+            id="⚠️-important-migration-notice-v400-and-v500beta"
+            class="tsd-anchor-link"
+          >
+            ⚠️ Important Migration Notice: v4.0.0 and v5.0.0beta<a
+              href="#⚠️-important-migration-notice-v400-and-v500beta"
               aria-label="Permalink"
               class="tsd-anchor-icon"
               ><svg viewBox="0 0 24 24" aria-hidden="true">
@@ -140,14 +143,27 @@
           </h3>
           <p>
             We're excited to announce the release of react-native-auth0
-            <code>v4.0.0</code>! Please note that this update includes breaking
-            changes that require your attention. To ensure a smooth transition,
-            please review our 👉
+            <code>v4.0.0</code> and the beta release of <code>v5.0.0</code>!
+          </p>
+          <p>
+            <strong>For v4.0.0 users:</strong> Please note that this update
+            includes breaking changes that require your attention. To ensure a
+            smooth transition, please review our 👉
             <a
               href="https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md"
               >Migration Guide</a
             >
             👈 for detailed instructions on updating your integration.
+          </p>
+          <p>
+            <strong>For v5.0.0beta users:</strong> This beta version requires
+            React 19 and React Native 0.78.0 or higher. If you're using Expo,
+            this version requires Expo 53 or higher. See the 👉
+            <a
+              href="https://github.com/auth0/react-native-auth0/blob/beta/MIGRATION_GUIDE.md"
+              >Migration Guide</a
+            >
+            👈 for compatibility requirements and upgrade instructions.
           </p>
           <h2 id="documentation" class="tsd-anchor-link">
             Documentation<a
@@ -221,9 +237,19 @@
           </h3>
           <p>
             This SDK targets apps that are using React Native SDK version
-            <code>0.65.0</code> and up. If you're using an older React Native
+            <code>0.78.0</code> and up. If you're using an older React Native
             version, see the compatibility matrix below.
           </p>
+          <p>
+            This SDK fully supports React Native New Architecture and Expo 53+.
+          </p>
+          <blockquote>
+            <p>
+              ⚠️ <strong>Warning</strong>: If you are using Expo version less
+              than 53, you need to use react-native-auth0 version 4.x or
+              earlier. Version 5.x supports Expo 53 and above.
+            </p>
+          </blockquote>
           <h3 id="platform-compatibility" class="tsd-anchor-link">
             Platform compatibility<a
               href="#platform-compatibility"
@@ -247,19 +273,19 @@
             <tbody>
               <tr>
                 <td>iOS</td>
-                <td style="text-align: center">13.0</td>
+                <td style="text-align: center">14.0</td>
               </tr>
               <tr>
                 <td>Android</td>
-                <td style="text-align: center">34</td>
+                <td style="text-align: center">35</td>
               </tr>
             </tbody>
           </table>
           <p>
-            Our SDK requires a minimum iOS deployment target of 13.0. In your
-            project's ios/Podfile, ensure your platform target is set to 13.0.
+            Our SDK requires a minimum iOS deployment target of 14.0. In your
+            project's ios/Podfile, ensure your platform target is set to 14.0.
           </p>
-          <pre><code><span class="hl-0">platform</span><span class="hl-1"> :</span><span class="hl-2">ios</span><span class="hl-1">, </span><span class="hl-3">&#39;13.0&#39;</span>
+          <pre><code><span class="hl-0">platform</span><span class="hl-1"> :</span><span class="hl-2">ios</span><span class="hl-1">, </span><span class="hl-3">&#39;14.0&#39;</span>
 </code><button>Copy</button></pre>
 
           <h3 id="installation" class="tsd-anchor-link">
@@ -318,28 +344,30 @@
                 <use href="assets/icons.svg#icon-anchor"></use></svg
             ></a>
           </h4>
-          <p>
-            &gt; Before version 2.9.0, this SDK required you to add an intent
-            filter to the Activity on which you're going to receive the
-            authentication result, and to use the <code>singleTask</code>
-            <strong>launchMode</strong> in that activity. To migrate your app to
-            version 2.9.0+, <strong>remove both</strong> and continue with the
-            instructions below. &gt; You can also check out a sample migration
-            diff
-            <a
-              href="https://github.com/auth0-samples/auth0-react-native-sample/commit/69f79c83ceed40f44b239bbd16e79ecaa70ef70a"
-              >here</a
-            >.
-          </p>
+          <blockquote>
+            <p>
+              Before version 2.9.0, this SDK required you to add an intent
+              filter to the Activity on which you're going to receive the
+              authentication result, and to use the <code>singleTask</code>
+              <strong>launchMode</strong> in that activity. To migrate your app
+              to version 2.9.0+, <strong>remove both</strong> and continue with
+              the instructions below. You can also check out a sample migration
+              diff
+              <a
+                href="https://github.com/auth0-samples/auth0-react-native-sample/commit/69f79c83ceed40f44b239bbd16e79ecaa70ef70a"
+                >here</a
+              >.
+            </p>
+          </blockquote>
           <p>
             Open your app's <code>build.gradle</code> file (typically at
             <code>android/app/build.gradle</code>) and add the following
             manifest placeholders:
           </p>
-          <pre><code class="groovy">android {
+          <pre><code class="text">android {
     defaultConfig {
         // Add the next line
-        manifestPlaceholders = [auth0Domain: "YOUR_AUTH0_DOMAIN", auth0Scheme: "${applicationId}.auth0"]
+        manifestPlaceholders = [auth0Domain: &quot;YOUR_AUTH0_DOMAIN&quot;, auth0Scheme: &quot;${applicationId}.auth0&quot;]
     }
     ...
 }
@@ -350,9 +378,9 @@
             domain value. So if you have <code>samples.us.auth0.com</code> as
             your Auth0 domain you would have a configuration like the following:
           </p>
-          <pre><code class="groovy">android {
+          <pre><code class="text">android {
     defaultConfig {
-        manifestPlaceholders = [auth0Domain: "samples.us.auth0.com", auth0Scheme: "${applicationId}.auth0"]
+        manifestPlaceholders = [auth0Domain: &quot;samples.us.auth0.com&quot;, auth0Scheme: &quot;${applicationId}.auth0&quot;]
     }
     ...
 }
@@ -365,14 +393,16 @@
             <code>build.gradle</code> file. You can also check it at the top of
             your <code>AndroidManifest.xml</code> file.
           </p>
-          <p>
-            &gt; Note that if your Android application is using
-            <a
-              href="https://developer.android.com/studio/build/build-variants#product-flavors"
-              >product flavors</a
-            >, you might need to specify different manifest placeholders for
-            each flavor.
-          </p>
+          <blockquote>
+            <p>
+              Note that if your Android application is using
+              <a
+                href="https://developer.android.com/studio/build/build-variants#product-flavors"
+                >product flavors</a
+              >, you might need to specify different manifest placeholders for
+              each flavor.
+            </p>
+          </blockquote>
           <p>
             If you use a value other than <code>applicationId</code> in
             <code>auth0Scheme</code> you will also need to pass it as the
@@ -383,12 +413,15 @@
             Take note of this value as you'll be requiring it to define the
             callback URLs below.
           </p>
-          <p>
-            &gt; For more info please read the
-            <a href="https://facebook.github.io/react-native/docs/linking.html"
-              >React Native docs</a
-            >.
-          </p>
+          <blockquote>
+            <p>
+              For more info please read the
+              <a
+                href="https://facebook.github.io/react-native/docs/linking.html"
+                >React Native docs</a
+              >.
+            </p>
+          </blockquote>
           <h5
             id="skipping-the-web-authentication-setup"
             class="tsd-anchor-link"
@@ -416,13 +449,13 @@
             removed from the final APK by using the same process. A complete
             snippet to achieve this is:
           </p>
-          <pre><code class="xml">&lt;activity
-    android:name="com.auth0.android.provider.AuthenticationActivity"
-    tools:node="remove"/&gt;
+          <pre><code class="text">&lt;activity
+    android:name=&quot;com.auth0.android.provider.AuthenticationActivity&quot;
+    tools:node=&quot;remove&quot;/&gt;
 &lt;!-- Optional: Remove RedirectActivity --&gt;
 &lt;activity
-    android:name="com.auth0.android.provider.RedirectActivity"
-    tools:node="remove"/&gt;
+    android:name=&quot;com.auth0.android.provider.RedirectActivity&quot;
+    tools:node=&quot;remove&quot;/&gt;
 </code><button type="button">Copy</button></pre>
 
           <h4 id="ios" class="tsd-anchor-link">
@@ -435,7 +468,8 @@
             Inside the <code>ios</code> folder find the file
             <code>AppDelegate.[swift|m]</code> add the following to it:
           </p>
-          <pre><code class="objc">#import &lt;React/RCTLinkingManager.h&gt;
+          <p>For Objective-C:</p>
+          <pre><code class="text">#import &lt;React/RCTLinkingManager.h&gt;
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url
             options:(NSDictionary&lt;UIApplicationOpenURLOptionsKey, id&gt; *)options
@@ -444,12 +478,18 @@
 }
 </code><button type="button">Copy</button></pre>
 
+          <p>For Swift:</p>
+          <pre><code class="text">func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -&gt; Bool {
+  return RCTLinkingManager.application(app, open: url, options: options)
+}
+</code><button type="button">Copy</button></pre>
+
           <p>
             Inside the <code>ios</code> folder open the
             <code>Info.plist</code> and locate the value for
             <code>CFBundleIdentifier</code>, e.g.
           </p>
-          <pre><code class="xml">&lt;key&gt;CFBundleIdentifier&lt;/key&gt;
+          <pre><code class="text">&lt;key&gt;CFBundleIdentifier&lt;/key&gt;
 &lt;string&gt;$(PRODUCT_BUNDLE_IDENTIFIER)&lt;/string&gt;
 </code><button type="button">Copy</button></pre>
 
@@ -458,7 +498,7 @@
             <code>CFBundleIdentifier</code> as the value for
             <code>CFBundleURLSchemes</code>:
           </p>
-          <pre><code class="xml">&lt;key&gt;CFBundleURLTypes&lt;/key&gt;
+          <pre><code class="text">&lt;key&gt;CFBundleURLTypes&lt;/key&gt;
 &lt;array&gt;
     &lt;dict&gt;
         &lt;key&gt;CFBundleTypeRole&lt;/key&gt;
@@ -511,23 +551,28 @@
             <code>customScheme</code> option parameter of the
             <code>authorize</code> and <code>clearSession</code> methods.
           </p>
-          <p>
-            &gt; For more info please read the
-            <a href="https://facebook.github.io/react-native/docs/linking.html"
-              >React Native docs</a
-            >.
-          </p>
+          <blockquote>
+            <p>
+              For more info please read the
+              <a
+                href="https://facebook.github.io/react-native/docs/linking.html"
+                >React Native docs</a
+              >.
+            </p>
+          </blockquote>
           <h4 id="expo" class="tsd-anchor-link">
             Expo<a href="#expo" aria-label="Permalink" class="tsd-anchor-icon"
               ><svg viewBox="0 0 24 24" aria-hidden="true">
                 <use href="assets/icons.svg#icon-anchor"></use></svg
             ></a>
           </h4>
-          <p>
-            &gt; :warning: This SDK is not compatible with &quot;Expo Go&quot;
-            app because of custom native code. It is compatible with Custom Dev
-            Client and EAS builds
-          </p>
+          <blockquote>
+            <p>
+              :warning: This SDK is not compatible with &quot;Expo Go&quot; app
+              because of custom native code. It is compatible with Custom Dev
+              Client and EAS builds
+            </p>
+          </blockquote>
           <p>
             To use the SDK with Expo, configure the app at build time by
             providing the <code>domain</code> and the
@@ -540,14 +585,16 @@
           <pre><code class="json"><span class="hl-1">{</span><br/><span class="hl-1">  </span><span class="hl-4">&quot;expo&quot;</span><span class="hl-1">: {</span><br/><span class="hl-1">    </span><span class="hl-5">...</span><br/><span class="hl-1">    </span><span class="hl-4">&quot;plugins&quot;</span><span class="hl-1">: [</span><br/><span class="hl-1">      [</span><br/><span class="hl-1">        </span><span class="hl-3">&quot;react-native-auth0&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">        {</span><br/><span class="hl-1">          </span><span class="hl-4">&quot;domain&quot;</span><span class="hl-1">: </span><span class="hl-3">&quot;YOUR_AUTH0_DOMAIN&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">          </span><span class="hl-4">&quot;customScheme&quot;</span><span class="hl-1">: </span><span class="hl-3">&quot;YOUR_CUSTOM_SCHEME&quot;</span><br/><span class="hl-1">        }</span><br/><span class="hl-1">      ]</span><br/><span class="hl-1">    ]</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">}</span>
 </code><button type="button">Copy</button></pre>
 
-          <p>
-            &gt; :info: If you want to switch between multiple domains in your
-            app, refer
-            <a
-              href="https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES.md#domain-switching"
-              >here</a
-            >
-          </p>
+          <blockquote>
+            <p>
+              :info: If you want to switch between multiple domains in your app,
+              refer
+              <a
+                href="https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES.md#domain-switching"
+                >here</a
+              >
+            </p>
+          </blockquote>
           <table>
             <thead>
               <tr>
@@ -621,27 +668,44 @@
             If in addition you plan to use the log out method, you must also add
             these URLs to the <strong>Allowed Logout URLs</strong>.
           </p>
-          <p>
-            &gt; [!NOTE] &gt; Whenever possible, Auth0 recommends using
-            <a href="https://developer.android.com/training/app-links"
-              >Android App Links</a
-            >
-            and
-            <a
-              href="https://developer.apple.com/documentation/xcode/allowing-apps-and-websites-to-link-to-your-content"
-              >Apple Universal Links</a
-            >
-            for your callback and logout URLs. Custom URL schemes can be subject
-            to
-            <a href="https://datatracker.ietf.org/doc/html/rfc8252#section-8.6"
-              >client impersonation attacks</a
-            >. &gt; &gt; 💡 If your Android app is using
-            <a
-              href="https://developer.android.com/studio/build/build-variants#product-flavors"
-              >product flavors</a
-            >, you might need to specify different manifest placeholders for
-            each flavor.
-          </p>
+          <div class="tsd-alert tsd-alert-note">
+            <div class="tsd-alert-title">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                aria-hidden="true"
+              >
+                <use href="assets/icons.svg#icon-alertNote"></use></svg
+              ><span>Note</span>
+            </div>
+            <p>
+              Whenever possible, Auth0 recommends using
+              <a href="https://developer.android.com/training/app-links"
+                >Android App Links</a
+              >
+              and
+              <a
+                href="https://developer.apple.com/documentation/xcode/allowing-apps-and-websites-to-link-to-your-content"
+                >Apple Universal Links</a
+              >
+              for your callback and logout URLs. Custom URL schemes can be
+              subject to
+              <a
+                href="https://datatracker.ietf.org/doc/html/rfc8252#section-8.6"
+                >client impersonation attacks</a
+              >.
+            </p>
+            <p>
+              💡 If your Android app is using
+              <a
+                href="https://developer.android.com/studio/build/build-variants#product-flavors"
+                >product flavors</a
+              >, you might need to specify different manifest placeholders for
+              each flavor.
+            </p>
+          </div>
           <h4 id="android-1" class="tsd-anchor-link">
             Android<a
               href="#android-1"
@@ -675,11 +739,13 @@
           <pre><code class="text">https://{YOUR_AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
 </code><button type="button">Copy</button></pre>
 
-          <p>
-            &gt; Replace {YOUR_APP_PACKAGE_NAME} and {YOUR_AUTH0_DOMAIN} with
-            your actual application package name and Auth0 domain. Ensure that
-            {YOUR_APP_PACKAGE_NAME} is all lowercase.
-          </p>
+          <blockquote>
+            <p>
+              Replace {YOUR_APP_PACKAGE_NAME} and {YOUR_AUTH0_DOMAIN} with your
+              actual application package name and Auth0 domain. Ensure that
+              {YOUR_APP_PACKAGE_NAME} is all lowercase.
+            </p>
+          </blockquote>
           <p>
             To enable App Links, set the <code>auth0Scheme</code> to
             <code>https</code> in your <code>build.gradle</code> file.
@@ -742,11 +808,13 @@
               </p>
             </li>
           </ol>
-          <p>
-            &gt; You can use the following command to generate the fingerprint
-            using the Java keytool in your terminal:
-            <code>keytool -list -v -keystore my-release-key.keystore</code>
-          </p>
+          <blockquote>
+            <p>
+              You can use the following command to generate the fingerprint
+              using the Java keytool in your terminal:
+              <code>keytool -list -v -keystore my-release-key.keystore</code>
+            </p>
+          </blockquote>
           <p>
             To learn more about signing certificates, see Android's
             <a
@@ -785,12 +853,14 @@
           <pre><code class="text">https://{YOUR_AUTH0_DOMAIN}/ios/{PRODUCT_BUNDLE_IDENTIFIER}/callback
 </code><button type="button">Copy</button></pre>
 
-          <p>
-            &gt; Replace <code>{PRODUCT_BUNDLE_IDENTIFIER}</code> and
-            <code>{YOUR_AUTH0_DOMAIN}</code> with your actual product bundle
-            identifier and Auth0 domain. Ensure that {PRODUCT_BUNDLE_IDENTIFIER}
-            is all lowercase.
-          </p>
+          <blockquote>
+            <p>
+              Replace <code>{PRODUCT_BUNDLE_IDENTIFIER}</code> and
+              <code>{YOUR_AUTH0_DOMAIN}</code> with your actual product bundle
+              identifier and Auth0 domain. Ensure that
+              {PRODUCT_BUNDLE_IDENTIFIER} is all lowercase.
+            </p>
+          </blockquote>
           <h4
             id="configure-an-associated-domain-for-ios"
             class="tsd-anchor-link"
@@ -803,11 +873,23 @@
                 <use href="assets/icons.svg#icon-anchor"></use></svg
             ></a>
           </h4>
-          <p>
-            &gt; [!IMPORTANT] &gt; This step requires a paid Apple Developer
-            account. It is needed to use Universal Links as callback and logout
-            URLs. &gt; Skip this step to use a custom URL scheme instead.
-          </p>
+          <div class="tsd-alert tsd-alert-important">
+            <div class="tsd-alert-title">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                aria-hidden="true"
+              >
+                <use href="assets/icons.svg#icon-alertImportant"></use></svg
+              ><span>Important</span>
+            </div>
+            <p>
+              This step requires a paid Apple Developer account. It is needed to
+              use Universal Links as callback and logout URLs. Skip this step to
+              use a custom URL scheme instead.
+            </p>
+          </div>
           <h5
             id="configure-the-team-id-and-bundle-identifier"
             class="tsd-anchor-link"
@@ -875,28 +957,41 @@
           <pre><code class="text">webcredentials:YOUR_AUTH0_DOMAIN
 </code><button type="button">Copy</button></pre>
 
-          <p>&lt;details&gt; &lt;summary&gt;Example&lt;/summary&gt;</p>
-          <p>
-            If your Auth0 Domain were <code>example.us.auth0.com</code>, then
-            this value would be:
-          </p>
-          <pre><code class="text">webcredentials:example.us.auth0.com
+          <details>
+            <summary>Example</summary>
+            <p>
+              If your Auth0 Domain were <code>example.us.auth0.com</code>, then
+              this value would be:
+            </p>
+            <pre><code class="text">webcredentials:example.us.auth0.com
 </code><button type="button">Copy</button></pre>
-
-          <p>&lt;/details&gt;</p>
+          </details>
           <p>
             If you have a <a
               href="https://auth0.com/docs/customize/custom-domains"
               >custom domain</a
             >, replace <code>YOUR_AUTH0_DOMAIN</code> with your custom domain.
           </p>
-          <p>
-            &gt; [!NOTE] &gt; For the associated domain to work, your app must
-            be signed with your team certificate
-            <strong>even when building for the iOS simulator</strong>. Make sure
-            you are using the Apple Team whose Team ID is configured in the
-            settings page of your Auth0 application.
-          </p>
+          <div class="tsd-alert tsd-alert-note">
+            <div class="tsd-alert-title">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                aria-hidden="true"
+              >
+                <use href="assets/icons.svg#icon-alertNote"></use></svg
+              ><span>Note</span>
+            </div>
+            <p>
+              For the associated domain to work, your app must be signed with
+              your team certificate
+              <strong>even when building for the iOS simulator</strong>. Make
+              sure you are using the Apple Team whose Team ID is configured in
+              the settings page of your Auth0 application.
+            </p>
+          </div>
           <p>
             Refer to the example of
             <a
@@ -913,17 +1008,19 @@
                 <use href="assets/icons.svg#icon-anchor"></use></svg
             ></a>
           </h2>
-          <p>
-            &gt; This SDK is OIDC compliant. To ensure OIDC compliant responses
-            from the Auth0 servers enable the
-            <strong>OIDC Conformant</strong> switch in your Auth0 dashboard
-            under <code>Application / Settings / Advanced OAuth</code>. For more
-            information please check
-            <a
-              href="https://auth0.com/docs/api-auth/intro#how-to-use-the-new-flows"
-              >this documentation</a
-            >.
-          </p>
+          <blockquote>
+            <p>
+              This SDK is OIDC compliant. To ensure OIDC compliant responses
+              from the Auth0 servers enable the
+              <strong>OIDC Conformant</strong> switch in your Auth0 dashboard
+              under <code>Application / Settings / Advanced OAuth</code>. For
+              more information please check
+              <a
+                href="https://auth0.com/docs/api-auth/intro#how-to-use-the-new-flows"
+                >this documentation</a
+              >.
+            </p>
+          </blockquote>
           <h3 id="web-authentication" class="tsd-anchor-link">
             Web Authentication<a
               href="#web-authentication"
@@ -960,35 +1057,32 @@
             <code>clientId</code> values as given to you when setting up your
             Auth0 app in the dashboard:
           </p>
-          <pre><code class="js"><span class="hl-6">import</span><span class="hl-1"> { </span><span class="hl-2">Auth0Provider</span><span class="hl-1"> } </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">App</span><span class="hl-1"> = () =&amp;</span><span class="hl-2">gt</span><span class="hl-1">; {</span><br/><span class="hl-1">  </span><span class="hl-6">return</span><span class="hl-1"> (</span><br/><span class="hl-1">    &amp;</span><span class="hl-2">lt</span><span class="hl-1">;</span><span class="hl-2">Auth0Provider</span><span class="hl-1"> </span><span class="hl-2">domain</span><span class="hl-1">=</span><span class="hl-3">&quot;YOUR_AUTH0_DOMAIN&quot;</span><span class="hl-1"> </span><span class="hl-2">clientId</span><span class="hl-1">=</span><span class="hl-3">&quot;YOUR_AUTH0_CLIENT_ID&quot;</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;</span><br/><span class="hl-1">      {</span><span class="hl-9">/* YOUR APP */</span><span class="hl-1">}</span><br/><span class="hl-1">    &amp;</span><span class="hl-2">lt</span><span class="hl-1">;/</span><span class="hl-2">Auth0Provider</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-6">export</span><span class="hl-1"> </span><span class="hl-6">default</span><span class="hl-1"> </span><span class="hl-2">App</span><span class="hl-1">;</span>
+          <pre><code class="js"><span class="hl-6">import</span><span class="hl-1"> { </span><span class="hl-2">Auth0Provider</span><span class="hl-1"> } </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">App</span><span class="hl-1"> = () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-6">return</span><span class="hl-1"> (</span><br/><span class="hl-1">    </span><span class="hl-9">&lt;</span><span class="hl-10">Auth0Provider</span><span class="hl-1"> </span><span class="hl-11">domain</span><span class="hl-1">=</span><span class="hl-3">&quot;YOUR_AUTH0_DOMAIN&quot;</span><span class="hl-1"> </span><span class="hl-11">clientId</span><span class="hl-1">=</span><span class="hl-3">&quot;YOUR_AUTH0_CLIENT_ID&quot;</span><span class="hl-9">&gt;</span><br/><span class="hl-1">      </span><span class="hl-7">{</span><span class="hl-12">/* YOUR APP */</span><span class="hl-7">}</span><br/><span class="hl-1">    </span><span class="hl-9">&lt;/</span><span class="hl-10">Auth0Provider</span><span class="hl-9">&gt;</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-6">export</span><span class="hl-1"> </span><span class="hl-6">default</span><span class="hl-1"> </span><span class="hl-2">App</span><span class="hl-1">;</span>
 </code><button type="button">Copy</button></pre>
 
           <p>
             You can also pass custom headers that will be included in all API
             requests:
           </p>
-          <pre><code class="js"><span class="hl-6">import</span><span class="hl-1"> { </span><span class="hl-2">Auth0Provider</span><span class="hl-1"> } </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">App</span><span class="hl-1"> = () =&amp;</span><span class="hl-2">gt</span><span class="hl-1">; {</span><br/><span class="hl-1">  </span><span class="hl-6">return</span><span class="hl-1"> (</span><br/><span class="hl-1">    &amp;</span><span class="hl-2">lt</span><span class="hl-1">;</span><span class="hl-2">Auth0Provider</span><span class="hl-1"> </span><br/><span class="hl-1">      </span><span class="hl-2">domain</span><span class="hl-1">=</span><span class="hl-3">&quot;YOUR_AUTH0_DOMAIN&quot;</span><span class="hl-1"> </span><br/><span class="hl-1">      </span><span class="hl-2">clientId</span><span class="hl-1">=</span><span class="hl-3">&quot;YOUR_AUTH0_CLIENT_ID&quot;</span><br/><span class="hl-1">      </span><span class="hl-2">headers</span><span class="hl-1">={{ </span><span class="hl-3">&#39;X-Custom-Header&#39;</span><span class="hl-1">: </span><span class="hl-3">&#39;custom-value&#39;</span><span class="hl-1"> }}</span><br/><span class="hl-1">    &amp;</span><span class="hl-2">gt</span><span class="hl-1">;</span><br/><span class="hl-1">      {</span><span class="hl-9">/* YOUR APP */</span><span class="hl-1">}</span><br/><span class="hl-1">    &amp;</span><span class="hl-2">lt</span><span class="hl-1">;/</span><span class="hl-2">Auth0Provider</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-6">export</span><span class="hl-1"> </span><span class="hl-6">default</span><span class="hl-1"> </span><span class="hl-2">App</span><span class="hl-1">;</span>
+          <pre><code class="js"><span class="hl-6">import</span><span class="hl-1"> { </span><span class="hl-2">Auth0Provider</span><span class="hl-1"> } </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">App</span><span class="hl-1"> = () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-6">return</span><span class="hl-1"> (</span><br/><span class="hl-1">    </span><span class="hl-9">&lt;</span><span class="hl-10">Auth0Provider</span><br/><span class="hl-1">      </span><span class="hl-11">domain</span><span class="hl-1">=</span><span class="hl-3">&quot;YOUR_AUTH0_DOMAIN&quot;</span><br/><span class="hl-1">      </span><span class="hl-11">clientId</span><span class="hl-1">=</span><span class="hl-3">&quot;YOUR_AUTH0_CLIENT_ID&quot;</span><br/><span class="hl-1">      </span><span class="hl-11">headers</span><span class="hl-1">=</span><span class="hl-7">{</span><span class="hl-13">{ </span><span class="hl-3">&#39;X-Custom-Header&#39;</span><span class="hl-2">:</span><span class="hl-13"> </span><span class="hl-3">&#39;custom-value&#39;</span><span class="hl-13"> }</span><span class="hl-7">}</span><br/><span class="hl-1">    </span><span class="hl-9">&gt;</span><br/><span class="hl-1">      </span><span class="hl-7">{</span><span class="hl-12">/* YOUR APP */</span><span class="hl-7">}</span><br/><span class="hl-1">    </span><span class="hl-9">&lt;/</span><span class="hl-10">Auth0Provider</span><span class="hl-9">&gt;</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-6">export</span><span class="hl-1"> </span><span class="hl-6">default</span><span class="hl-1"> </span><span class="hl-2">App</span><span class="hl-1">;</span>
 </code><button type="button">Copy</button></pre>
 
-          <p>
-            &lt;details&gt; &lt;summary&gt;Using the
-            <code>Auth0</code> class&lt;/summary&gt;
-          </p>
-          <p>
-            If you're not using React Hooks, you can simply instantiate the
-            <code>Auth0</code> class:
-          </p>
-          <pre><code class="js"><span class="hl-6">import</span><span class="hl-1"> </span><span class="hl-2">Auth0</span><span class="hl-1"> </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">auth0</span><span class="hl-1"> = </span><span class="hl-7">new</span><span class="hl-1"> </span><span class="hl-10">Auth0</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-2">domain:</span><span class="hl-1"> </span><span class="hl-3">&#39;YOUR_AUTH0_DOMAIN&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">clientId:</span><span class="hl-1"> </span><span class="hl-3">&#39;YOUR_AUTH0_CLIENT_ID&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">});</span>
+          <details>
+            <summary>Using the `Auth0` class</summary>
+            <p>
+              If you're not using React Hooks, you can simply instantiate the
+              <code>Auth0</code> class:
+            </p>
+            <pre><code class="js"><span class="hl-6">import</span><span class="hl-1"> </span><span class="hl-2">Auth0</span><span class="hl-1"> </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">auth0</span><span class="hl-1"> = </span><span class="hl-7">new</span><span class="hl-1"> </span><span class="hl-8">Auth0</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-2">domain:</span><span class="hl-1"> </span><span class="hl-3">&#39;YOUR_AUTH0_DOMAIN&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">clientId:</span><span class="hl-1"> </span><span class="hl-3">&#39;YOUR_AUTH0_CLIENT_ID&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">});</span>
 </code><button type="button">Copy</button></pre>
 
-          <p>
-            You can also pass custom headers that will be included in all API
-            requests:
-          </p>
-          <pre><code class="js"><span class="hl-6">import</span><span class="hl-1"> </span><span class="hl-2">Auth0</span><span class="hl-1"> </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">auth0</span><span class="hl-1"> = </span><span class="hl-7">new</span><span class="hl-1"> </span><span class="hl-10">Auth0</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-2">domain:</span><span class="hl-1"> </span><span class="hl-3">&#39;YOUR_AUTH0_DOMAIN&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">clientId:</span><span class="hl-1"> </span><span class="hl-3">&#39;YOUR_AUTH0_CLIENT_ID&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">headers:</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-3">&#39;X-Custom-Header&#39;</span><span class="hl-2">:</span><span class="hl-1"> </span><span class="hl-3">&#39;custom-value&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">});</span>
+            <p>
+              You can also pass custom headers that will be included in all API
+              requests:
+            </p>
+            <pre><code class="js"><span class="hl-6">import</span><span class="hl-1"> </span><span class="hl-2">Auth0</span><span class="hl-1"> </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">auth0</span><span class="hl-1"> = </span><span class="hl-7">new</span><span class="hl-1"> </span><span class="hl-8">Auth0</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-2">domain:</span><span class="hl-1"> </span><span class="hl-3">&#39;YOUR_AUTH0_DOMAIN&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">clientId:</span><span class="hl-1"> </span><span class="hl-3">&#39;YOUR_AUTH0_CLIENT_ID&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">headers:</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-3">&#39;X-Custom-Header&#39;</span><span class="hl-2">:</span><span class="hl-1"> </span><span class="hl-3">&#39;custom-value&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">});</span>
 </code><button type="button">Copy</button></pre>
-
-          <p>&lt;/details&gt;</p>
+          </details>
           <p>
             Then import the hook into a component where you want to get access
             to the properties and methods for integrating with Auth0:
@@ -1026,23 +1120,22 @@
               The <code>error</code> property is populated if any error occurs.
             </li>
           </ul>
-          <pre><code class="js"><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">Component</span><span class="hl-1"> = () =&amp;</span><span class="hl-2">gt</span><span class="hl-1">; {</span><br/><span class="hl-1">  </span><span class="hl-7">const</span><span class="hl-1"> { </span><span class="hl-8">authorize</span><span class="hl-1">, </span><span class="hl-8">user</span><span class="hl-1">, </span><span class="hl-8">isLoading</span><span class="hl-1">, </span><span class="hl-8">error</span><span class="hl-1"> } = </span><span class="hl-10">useAuth0</span><span class="hl-1">();</span><br/><br/><span class="hl-1">  </span><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">login</span><span class="hl-1"> = </span><span class="hl-10">async</span><span class="hl-1"> () =&amp;</span><span class="hl-2">gt</span><span class="hl-1">; {</span><br/><span class="hl-1">    </span><span class="hl-6">await</span><span class="hl-1"> </span><span class="hl-10">authorize</span><span class="hl-1">();</span><br/><span class="hl-1">  };</span><br/><br/><span class="hl-1">  </span><span class="hl-6">if</span><span class="hl-1"> (</span><span class="hl-2">isLoading</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-6">return</span><span class="hl-1"> (</span><br/><span class="hl-1">      &amp;</span><span class="hl-2">lt</span><span class="hl-1">;</span><span class="hl-2">View</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;</span><br/><span class="hl-1">        &amp;</span><span class="hl-2">lt</span><span class="hl-1">;</span><span class="hl-2">Text</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;</span><span class="hl-8">SDK</span><span class="hl-1"> </span><span class="hl-2">is</span><span class="hl-1"> </span><span class="hl-2">Loading</span><span class="hl-1">&amp;</span><span class="hl-2">lt</span><span class="hl-1">;/</span><span class="hl-2">Text</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;</span><br/><span class="hl-1">      &amp;</span><span class="hl-2">lt</span><span class="hl-1">;/</span><span class="hl-2">View</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;</span><br/><span class="hl-1">    );</span><br/><span class="hl-1">  }</span><br/><br/><span class="hl-1">  </span><span class="hl-6">return</span><span class="hl-1"> (</span><br/><span class="hl-1">    &amp;</span><span class="hl-2">lt</span><span class="hl-1">;</span><span class="hl-2">View</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;</span><br/><span class="hl-1">      {!</span><span class="hl-2">user</span><span class="hl-1"> &amp;&amp; &amp;</span><span class="hl-2">lt</span><span class="hl-1">;</span><span class="hl-2">Button</span><span class="hl-1"> </span><span class="hl-2">onPress</span><span class="hl-1">={</span><span class="hl-2">login</span><span class="hl-1">} </span><span class="hl-2">title</span><span class="hl-1">=</span><span class="hl-3">&quot;Log in&quot;</span><span class="hl-1"> /&amp;</span><span class="hl-2">gt</span><span class="hl-1">;}</span><br/><span class="hl-1">      {</span><span class="hl-2">user</span><span class="hl-1"> &amp;&amp; &amp;</span><span class="hl-2">lt</span><span class="hl-1">;</span><span class="hl-2">Text</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;</span><span class="hl-2">Logged</span><span class="hl-1"> </span><span class="hl-2">in</span><span class="hl-1"> </span><span class="hl-2">as</span><span class="hl-1"> {</span><span class="hl-2">user</span><span class="hl-1">.</span><span class="hl-2">name</span><span class="hl-1">}&amp;</span><span class="hl-2">lt</span><span class="hl-1">;/</span><span class="hl-2">Text</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;}</span><br/><span class="hl-1">      {</span><span class="hl-2">error</span><span class="hl-1"> &amp;&amp; &amp;</span><span class="hl-2">lt</span><span class="hl-1">;</span><span class="hl-2">Text</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;{</span><span class="hl-2">error</span><span class="hl-1">.</span><span class="hl-2">message</span><span class="hl-1">}&amp;</span><span class="hl-2">lt</span><span class="hl-1">;/</span><span class="hl-2">Text</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;}</span><br/><span class="hl-1">    &amp;</span><span class="hl-2">lt</span><span class="hl-1">;/</span><span class="hl-2">View</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span>
+          <pre><code class="js"><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">Component</span><span class="hl-1"> = () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">const</span><span class="hl-1"> { </span><span class="hl-14">authorize</span><span class="hl-1">, </span><span class="hl-14">user</span><span class="hl-1">, </span><span class="hl-14">isLoading</span><span class="hl-1">, </span><span class="hl-14">error</span><span class="hl-1"> } = </span><span class="hl-8">useAuth0</span><span class="hl-1">();</span><br/><br/><span class="hl-1">  </span><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">login</span><span class="hl-1"> = </span><span class="hl-7">async</span><span class="hl-1"> () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-6">await</span><span class="hl-1"> </span><span class="hl-8">authorize</span><span class="hl-1">();</span><br/><span class="hl-1">  };</span><br/><br/><span class="hl-1">  </span><span class="hl-6">if</span><span class="hl-1"> (</span><span class="hl-2">isLoading</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-6">return</span><span class="hl-1"> (</span><br/><span class="hl-1">      </span><span class="hl-9">&lt;</span><span class="hl-10">View</span><span class="hl-9">&gt;</span><br/><span class="hl-1">        </span><span class="hl-9">&lt;</span><span class="hl-10">Text</span><span class="hl-9">&gt;</span><span class="hl-1">SDK is Loading</span><span class="hl-9">&lt;/</span><span class="hl-10">Text</span><span class="hl-9">&gt;</span><br/><span class="hl-1">      </span><span class="hl-9">&lt;/</span><span class="hl-10">View</span><span class="hl-9">&gt;</span><br/><span class="hl-1">    );</span><br/><span class="hl-1">  }</span><br/><br/><span class="hl-1">  </span><span class="hl-6">return</span><span class="hl-1"> (</span><br/><span class="hl-1">    </span><span class="hl-9">&lt;</span><span class="hl-10">View</span><span class="hl-9">&gt;</span><br/><span class="hl-1">      </span><span class="hl-7">{</span><span class="hl-1">!</span><span class="hl-2">user</span><span class="hl-13"> </span><span class="hl-1">&amp;&amp;</span><span class="hl-13"> </span><span class="hl-9">&lt;</span><span class="hl-10">Button</span><span class="hl-13"> </span><span class="hl-11">onPress</span><span class="hl-1">=</span><span class="hl-7">{</span><span class="hl-2">login</span><span class="hl-7">}</span><span class="hl-13"> </span><span class="hl-11">title</span><span class="hl-1">=</span><span class="hl-3">&quot;Log in&quot;</span><span class="hl-13"> </span><span class="hl-9">/&gt;</span><span class="hl-7">}</span><br/><span class="hl-1">      </span><span class="hl-7">{</span><span class="hl-2">user</span><span class="hl-13"> </span><span class="hl-1">&amp;&amp;</span><span class="hl-13"> </span><span class="hl-9">&lt;</span><span class="hl-10">Text</span><span class="hl-9">&gt;</span><span class="hl-13">Logged in as </span><span class="hl-7">{</span><span class="hl-2">user</span><span class="hl-13">.</span><span class="hl-2">name</span><span class="hl-7">}</span><span class="hl-9">&lt;/</span><span class="hl-10">Text</span><span class="hl-9">&gt;</span><span class="hl-7">}</span><br/><span class="hl-1">      </span><span class="hl-7">{</span><span class="hl-2">error</span><span class="hl-13"> </span><span class="hl-1">&amp;&amp;</span><span class="hl-13"> </span><span class="hl-9">&lt;</span><span class="hl-10">Text</span><span class="hl-9">&gt;</span><span class="hl-7">{</span><span class="hl-2">error</span><span class="hl-13">.</span><span class="hl-2">message</span><span class="hl-7">}</span><span class="hl-9">&lt;/</span><span class="hl-10">Text</span><span class="hl-9">&gt;</span><span class="hl-7">}</span><br/><span class="hl-1">    </span><span class="hl-9">&lt;/</span><span class="hl-10">View</span><span class="hl-9">&gt;</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span>
 </code><button type="button">Copy</button></pre>
 
-          <p>
-            &lt;details&gt; &lt;summary&gt;Using the
-            <code>Auth0</code> class&lt;/summary&gt;
-          </p>
-          <pre><code class="js"><span class="hl-2">auth0</span><span class="hl-1">.</span><span class="hl-2">webAuth</span><br/><span class="hl-1">  .</span><span class="hl-10">authorize</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-10">then</span><span class="hl-1">(</span><span class="hl-2">credentials</span><span class="hl-1"> =&amp;</span><span class="hl-2">gt</span><span class="hl-1">; </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-10">log</span><span class="hl-1">(</span><span class="hl-2">credentials</span><span class="hl-1">))</span><br/><span class="hl-1">  .</span><span class="hl-10">catch</span><span class="hl-1">(</span><span class="hl-2">error</span><span class="hl-1"> =&amp;</span><span class="hl-2">gt</span><span class="hl-1">; </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-10">log</span><span class="hl-1">(</span><span class="hl-2">error</span><span class="hl-1">));</span>
+          <details>
+            <summary>Using the `Auth0` class</summary>
+            <pre><code class="js"><span class="hl-2">auth0</span><span class="hl-1">.</span><span class="hl-2">webAuth</span><br/><span class="hl-1">  .</span><span class="hl-8">authorize</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-8">then</span><span class="hl-1">(</span><span class="hl-2">credentials</span><span class="hl-1"> </span><span class="hl-7">=&gt;</span><span class="hl-1"> </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-8">log</span><span class="hl-1">(</span><span class="hl-2">credentials</span><span class="hl-1">))</span><br/><span class="hl-1">  .</span><span class="hl-8">catch</span><span class="hl-1">(</span><span class="hl-2">error</span><span class="hl-1"> </span><span class="hl-7">=&gt;</span><span class="hl-1"> </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-8">log</span><span class="hl-1">(</span><span class="hl-2">error</span><span class="hl-1">));</span>
 </code><button type="button">Copy</button></pre>
-
-          <p>&lt;/details&gt;</p>
-          <p>
-            &gt; Web Authentication flows require a Browser application
-            installed on the device. When no Browser is available, an error of
-            type <code>a0.browser_not_available</code> will be raised via the
-            provided callback.
-          </p>
+          </details>
+          <blockquote>
+            <p>
+              Web Authentication flows require a Browser application installed
+              on the device. When no Browser is available, an error of type
+              <code>a0.browser_not_available</code> will be raised via the
+              provided callback.
+            </p>
+          </blockquote>
           <h5 id="sso-alert-box-ios" class="tsd-anchor-link">
             SSO Alert Box (iOS)<a
               href="#sso-alert-box-ios"
@@ -1058,13 +1151,15 @@
             the alert box that pops up <strong>by default</strong> when using
             Web Auth on iOS.
           </p>
-          <p>
-            &gt; See also
-            <a href="https://developer.okta.com/blog/2022/01/13/mobile-sso"
-              >this blog post</a
-            >
-            for a detailed overview of Single Sign-On (SSO) on iOS.
-          </p>
+          <blockquote>
+            <p>
+              See also
+              <a href="https://developer.okta.com/blog/2022/01/13/mobile-sso"
+                >this blog post</a
+              >
+              for a detailed overview of Single Sign-On (SSO) on iOS.
+            </p>
+          </blockquote>
           <h4 id="logout" class="tsd-anchor-link">
             Logout<a
               href="#logout"
@@ -1078,17 +1173,14 @@
             Log the user out by using the <code>clearSession</code> method from
             the <code>useAuth0</code> hook.
           </p>
-          <pre><code class="js"><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">Component</span><span class="hl-1"> = () =&amp;</span><span class="hl-2">gt</span><span class="hl-1">; {</span><br/><span class="hl-1">  </span><span class="hl-7">const</span><span class="hl-1"> { </span><span class="hl-8">clearSession</span><span class="hl-1">, </span><span class="hl-8">user</span><span class="hl-1"> } = </span><span class="hl-10">useAuth0</span><span class="hl-1">();</span><br/><br/><span class="hl-1">  </span><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">logout</span><span class="hl-1"> = </span><span class="hl-10">async</span><span class="hl-1"> () =&amp;</span><span class="hl-2">gt</span><span class="hl-1">; {</span><br/><span class="hl-1">    </span><span class="hl-6">await</span><span class="hl-1"> </span><span class="hl-10">clearSession</span><span class="hl-1">();</span><br/><span class="hl-1">  };</span><br/><br/><span class="hl-1">  </span><span class="hl-6">return</span><span class="hl-1"> &amp;</span><span class="hl-2">lt</span><span class="hl-1">;</span><span class="hl-2">View</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;{</span><span class="hl-2">user</span><span class="hl-1"> &amp;&amp; &amp;</span><span class="hl-2">lt</span><span class="hl-1">;</span><span class="hl-2">Button</span><span class="hl-1"> </span><span class="hl-2">onPress</span><span class="hl-1">={</span><span class="hl-2">logout</span><span class="hl-1">} </span><span class="hl-2">title</span><span class="hl-1">=</span><span class="hl-3">&quot;Log out&quot;</span><span class="hl-1"> /&amp;</span><span class="hl-2">gt</span><span class="hl-1">;}&amp;</span><span class="hl-2">lt</span><span class="hl-1">;/</span><span class="hl-2">View</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;;</span><br/><span class="hl-1">};</span>
+          <pre><code class="js"><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">Component</span><span class="hl-1"> = () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">const</span><span class="hl-1"> { </span><span class="hl-14">clearSession</span><span class="hl-1">, </span><span class="hl-14">user</span><span class="hl-1"> } = </span><span class="hl-8">useAuth0</span><span class="hl-1">();</span><br/><br/><span class="hl-1">  </span><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">logout</span><span class="hl-1"> = </span><span class="hl-7">async</span><span class="hl-1"> () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-6">await</span><span class="hl-1"> </span><span class="hl-8">clearSession</span><span class="hl-1">();</span><br/><span class="hl-1">  };</span><br/><br/><span class="hl-1">  </span><span class="hl-6">return</span><span class="hl-1"> </span><span class="hl-9">&lt;</span><span class="hl-10">View</span><span class="hl-9">&gt;</span><span class="hl-7">{</span><span class="hl-2">user</span><span class="hl-13"> </span><span class="hl-1">&amp;&amp;</span><span class="hl-13"> </span><span class="hl-9">&lt;</span><span class="hl-10">Button</span><span class="hl-13"> </span><span class="hl-11">onPress</span><span class="hl-1">=</span><span class="hl-7">{</span><span class="hl-2">logout</span><span class="hl-7">}</span><span class="hl-13"> </span><span class="hl-11">title</span><span class="hl-1">=</span><span class="hl-3">&quot;Log out&quot;</span><span class="hl-13"> </span><span class="hl-9">/&gt;</span><span class="hl-7">}</span><span class="hl-9">&lt;/</span><span class="hl-10">View</span><span class="hl-9">&gt;</span><span class="hl-1">;</span><br/><span class="hl-1">};</span>
 </code><button type="button">Copy</button></pre>
 
-          <p>
-            &lt;details&gt; &lt;summary&gt;Using the
-            <code>Auth0</code> class&lt;/summary&gt;
-          </p>
-          <pre><code class="js"><span class="hl-2">auth0</span><span class="hl-1">.</span><span class="hl-2">webAuth</span><span class="hl-1">.</span><span class="hl-10">clearSession</span><span class="hl-1">().</span><span class="hl-10">catch</span><span class="hl-1">((</span><span class="hl-2">error</span><span class="hl-1">) =&amp;</span><span class="hl-2">gt</span><span class="hl-1">; </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-10">log</span><span class="hl-1">(</span><span class="hl-2">error</span><span class="hl-1">));</span>
+          <details>
+            <summary>Using the `Auth0` class</summary>
+            <pre><code class="js"><span class="hl-2">auth0</span><span class="hl-1">.</span><span class="hl-2">webAuth</span><span class="hl-1">.</span><span class="hl-8">clearSession</span><span class="hl-1">().</span><span class="hl-8">catch</span><span class="hl-1">((</span><span class="hl-2">error</span><span class="hl-1">) </span><span class="hl-7">=&gt;</span><span class="hl-1"> </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-8">log</span><span class="hl-1">(</span><span class="hl-2">error</span><span class="hl-1">));</span>
 </code><button type="button">Copy</button></pre>
-
-          <p>&lt;/details&gt;</p>
+          </details>
           <h3 id="credentials-manager" class="tsd-anchor-link">
             Credentials Manager<a
               href="#credentials-manager"
@@ -1126,11 +1218,14 @@
             <code>credentialsManager</code> property for you to interact with
             using the API below.
           </p>
-          <p>
-            &gt; 💡 If you're using Web Auth (<code>authorize</code>) through
-            Hooks, you do not need to manually store the credentials after login
-            and delete them after logout; the SDK does this automatically.
-          </p>
+          <blockquote>
+            <p>
+              💡 If you're using Web Auth (<code>authorize</code>) through
+              Hooks, you do not need to manually store the credentials after
+              login and delete them after logout; the SDK does this
+              automatically.
+            </p>
+          </blockquote>
           <h4 id="check-for-stored-credentials" class="tsd-anchor-link">
             Check for stored credentials<a
               href="#check-for-stored-credentials"
@@ -1145,7 +1240,7 @@
             exist, you can retrieve them and redirect the users to the app's
             main flow without any additional login steps.
           </p>
-          <pre><code class="js"><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">isLoggedIn</span><span class="hl-1"> = </span><span class="hl-6">await</span><span class="hl-1"> </span><span class="hl-2">auth0</span><span class="hl-1">.</span><span class="hl-2">credentialsManager</span><span class="hl-1">.</span><span class="hl-10">hasValidCredentials</span><span class="hl-1">();</span><br/><br/><span class="hl-6">if</span><span class="hl-1"> (</span><span class="hl-2">isLoggedIn</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-9">// Retrieve credentials and redirect to the main flow</span><br/><span class="hl-1">} </span><span class="hl-6">else</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-9">// Redirect to the login page</span><br/><span class="hl-1">}</span>
+          <pre><code class="js"><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">isLoggedIn</span><span class="hl-1"> = </span><span class="hl-6">await</span><span class="hl-1"> </span><span class="hl-2">auth0</span><span class="hl-1">.</span><span class="hl-2">credentialsManager</span><span class="hl-1">.</span><span class="hl-8">hasValidCredentials</span><span class="hl-1">();</span><br/><br/><span class="hl-6">if</span><span class="hl-1"> (</span><span class="hl-2">isLoggedIn</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-12">// Retrieve credentials and redirect to the main flow</span><br/><span class="hl-1">} </span><span class="hl-6">else</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-12">// Redirect to the login page</span><br/><span class="hl-1">}</span>
 </code><button type="button">Copy</button></pre>
 
           <h4 id="retrieve-stored-credentials" class="tsd-anchor-link">
@@ -1164,14 +1259,16 @@
             >, if the access token has expired.
             <strong>This method is thread safe</strong>.
           </p>
-          <pre><code class="js"><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">credentials</span><span class="hl-1"> = </span><span class="hl-6">await</span><span class="hl-1"> </span><span class="hl-2">auth0</span><span class="hl-1">.</span><span class="hl-2">credentialsManager</span><span class="hl-1">.</span><span class="hl-10">getCredentials</span><span class="hl-1">();</span>
+          <pre><code class="js"><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">credentials</span><span class="hl-1"> = </span><span class="hl-6">await</span><span class="hl-1"> </span><span class="hl-2">auth0</span><span class="hl-1">.</span><span class="hl-2">credentialsManager</span><span class="hl-1">.</span><span class="hl-8">getCredentials</span><span class="hl-1">();</span>
 </code><button type="button">Copy</button></pre>
 
-          <p>
-            &gt; 💡 You do not need to call credentialsManager.saveCredentials()
-            afterward. The Credentials Manager automatically persists the
-            renewed credentials.
-          </p>
+          <blockquote>
+            <p>
+              💡 You do not need to call credentialsManager.saveCredentials()
+              afterward. The Credentials Manager automatically persists the
+              renewed credentials.
+            </p>
+          </blockquote>
           <h4
             id="requiring-authentication-before-obtaining-credentials"
             class="tsd-anchor-link"
@@ -1184,17 +1281,21 @@
                 <use href="assets/icons.svg#icon-anchor"></use></svg
             ></a>
           </h4>
-          <p>
-            &gt; :warning: The <code>requireLocalAuthentication</code> method is
-            no longer available as part of the
-            <code>CredentialsManager</code> class or the
-            <code>useAuth0</code> Hook from v4 of the SDK.
-          </p>
-          <p>
-            &gt; ℹ️ You need to use at least version <code>0.59.0</code> of
-            React Native, as it uses <code>FragmentActivity</code> as the base
-            activity, which is required for biometric authentication to work.
-          </p>
+          <blockquote>
+            <p>
+              :warning: The <code>requireLocalAuthentication</code> method is no
+              longer available as part of the
+              <code>CredentialsManager</code> class or the
+              <code>useAuth0</code> Hook from v4 of the SDK.
+            </p>
+          </blockquote>
+          <blockquote>
+            <p>
+              ℹ️ You need to use at least version <code>0.59.0</code> of React
+              Native, as it uses <code>FragmentActivity</code> as the base
+              activity, which is required for biometric authentication to work.
+            </p>
+          </blockquote>
           <p>
             You can enable an additional level of user authentication before
             retrieving credentials using the local authentication supported by
@@ -1214,7 +1315,7 @@
             authentication before obtaining credentials, as shown in the code
             snippet below:
           </p>
-          <pre><code class="tsx"><span class="hl-6">import</span><span class="hl-1"> </span><span class="hl-2">Auth0</span><span class="hl-1"> </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">localAuthOptions</span><span class="hl-1">: </span><span class="hl-11">LocalAuthenticationOptions</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-2">title:</span><span class="hl-1"> </span><span class="hl-3">&#39;Authenticate to retreive your credentials&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">subtitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Please authenticate to continue&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">description:</span><span class="hl-1"> </span><span class="hl-3">&#39;We need to authenticate you to retrieve your credentials&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">cancelTitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Cancel&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">evaluationPolicy:</span><span class="hl-1"> </span><span class="hl-2">LocalAuthenticationStrategy</span><span class="hl-1">.</span><span class="hl-2">deviceOwnerWithBiometrics</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">fallbackTitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Use Passcode&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">authenticationLevel:</span><span class="hl-1"> </span><span class="hl-2">LocalAuthenticationLevel</span><span class="hl-1">.</span><span class="hl-2">strong</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">deviceCredentialFallback:</span><span class="hl-1"> </span><span class="hl-7">true</span><span class="hl-1">,</span><br/><span class="hl-1">};</span><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">auth0</span><span class="hl-1"> = </span><span class="hl-7">new</span><span class="hl-1"> </span><span class="hl-10">Auth0</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-2">domain:</span><span class="hl-1"> </span><span class="hl-2">config</span><span class="hl-1">.</span><span class="hl-2">domain</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">clientId:</span><span class="hl-1"> </span><span class="hl-2">config</span><span class="hl-1">.</span><span class="hl-2">clientId</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">localAuthenticationOptions:</span><span class="hl-1"> </span><span class="hl-2">localAuthOptions</span><span class="hl-1">,</span><br/><span class="hl-1">});</span>
+          <pre><code class="tsx"><span class="hl-6">import</span><span class="hl-1"> </span><span class="hl-2">Auth0</span><span class="hl-1"> </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">localAuthOptions</span><span class="hl-1">: </span><span class="hl-10">LocalAuthenticationOptions</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-2">title:</span><span class="hl-1"> </span><span class="hl-3">&#39;Authenticate to retreive your credentials&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">subtitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Please authenticate to continue&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">description:</span><span class="hl-1"> </span><span class="hl-3">&#39;We need to authenticate you to retrieve your credentials&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">cancelTitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Cancel&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">evaluationPolicy:</span><span class="hl-1"> </span><span class="hl-2">LocalAuthenticationStrategy</span><span class="hl-1">.</span><span class="hl-2">deviceOwnerWithBiometrics</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">fallbackTitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Use Passcode&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">authenticationLevel:</span><span class="hl-1"> </span><span class="hl-2">LocalAuthenticationLevel</span><span class="hl-1">.</span><span class="hl-2">strong</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">deviceCredentialFallback:</span><span class="hl-1"> </span><span class="hl-7">true</span><span class="hl-1">,</span><br/><span class="hl-1">};</span><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">auth0</span><span class="hl-1"> = </span><span class="hl-7">new</span><span class="hl-1"> </span><span class="hl-8">Auth0</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-2">domain:</span><span class="hl-1"> </span><span class="hl-2">config</span><span class="hl-1">.</span><span class="hl-2">domain</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">clientId:</span><span class="hl-1"> </span><span class="hl-2">config</span><span class="hl-1">.</span><span class="hl-2">clientId</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">localAuthenticationOptions:</span><span class="hl-1"> </span><span class="hl-2">localAuthOptions</span><span class="hl-1">,</span><br/><span class="hl-1">});</span>
 </code><button type="button">Copy</button></pre>
 
           <p><strong>Using Hooks (Auth0Provider):</strong></p>
@@ -1224,7 +1325,7 @@
             needs to be passed to enable authentication before obtaining
             credentials, as shown in the code snippet below:
           </p>
-          <pre><code class="tsx"><span class="hl-6">import</span><span class="hl-1"> { </span><span class="hl-2">Auth0Provider</span><span class="hl-1"> } </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">localAuthOptions</span><span class="hl-1">: </span><span class="hl-11">LocalAuthenticationOptions</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-2">title:</span><span class="hl-1"> </span><span class="hl-3">&#39;Authenticate to retreive your credentials&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">subtitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Please authenticate to continue&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">description:</span><span class="hl-1"> </span><span class="hl-3">&#39;We need to authenticate you to retrieve your credentials&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">cancelTitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Cancel&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">evaluationPolicy:</span><span class="hl-1"> </span><span class="hl-2">LocalAuthenticationStrategy</span><span class="hl-1">.</span><span class="hl-2">deviceOwnerWithBiometrics</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">fallbackTitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Use Passcode&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">authenticationLevel:</span><span class="hl-1"> </span><span class="hl-2">LocalAuthenticationLevel</span><span class="hl-1">.</span><span class="hl-2">strong</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">deviceCredentialFallback:</span><span class="hl-1"> </span><span class="hl-7">true</span><span class="hl-1">,</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">App</span><span class="hl-1"> = () =&amp;</span><span class="hl-2">gt</span><span class="hl-1">; {</span><br/><span class="hl-1">  </span><span class="hl-6">return</span><span class="hl-1"> (</span><br/><span class="hl-1">    &amp;</span><span class="hl-2">lt</span><span class="hl-1">;</span><span class="hl-2">Auth0Provider</span><br/><span class="hl-1">      </span><span class="hl-2">domain</span><span class="hl-1">={config.</span><span class="hl-2">domain</span><span class="hl-1">}</span><br/><span class="hl-1">      </span><span class="hl-2">clientId</span><span class="hl-1">={config.</span><span class="hl-2">clientId</span><span class="hl-1">}</span><br/><span class="hl-1">      </span><span class="hl-2">localAuthenticationOptions</span><span class="hl-1">={</span><span class="hl-2">localAuthOptions</span><span class="hl-1">}</span><br/><span class="hl-1">    &amp;</span><span class="hl-2">gt</span><span class="hl-1">;</span><br/><span class="hl-1">      {</span><span class="hl-9">/* YOUR APP */</span><span class="hl-1">}</span><br/><span class="hl-1">    &amp;</span><span class="hl-2">lt</span><span class="hl-1">;/</span><span class="hl-2">Auth0Provider</span><span class="hl-1">&amp;</span><span class="hl-2">gt</span><span class="hl-1">;</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-6">export</span><span class="hl-1"> </span><span class="hl-6">default</span><span class="hl-1"> </span><span class="hl-2">App</span><span class="hl-1">;</span>
+          <pre><code class="tsx"><span class="hl-6">import</span><span class="hl-1"> { </span><span class="hl-2">Auth0Provider</span><span class="hl-1"> } </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">localAuthOptions</span><span class="hl-1">: </span><span class="hl-10">LocalAuthenticationOptions</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-2">title:</span><span class="hl-1"> </span><span class="hl-3">&#39;Authenticate to retreive your credentials&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">subtitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Please authenticate to continue&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">description:</span><span class="hl-1"> </span><span class="hl-3">&#39;We need to authenticate you to retrieve your credentials&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">cancelTitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Cancel&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">evaluationPolicy:</span><span class="hl-1"> </span><span class="hl-2">LocalAuthenticationStrategy</span><span class="hl-1">.</span><span class="hl-2">deviceOwnerWithBiometrics</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">fallbackTitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Use Passcode&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">authenticationLevel:</span><span class="hl-1"> </span><span class="hl-2">LocalAuthenticationLevel</span><span class="hl-1">.</span><span class="hl-2">strong</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">deviceCredentialFallback:</span><span class="hl-1"> </span><span class="hl-7">true</span><span class="hl-1">,</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">App</span><span class="hl-1"> = () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-6">return</span><span class="hl-1"> (</span><br/><span class="hl-1">    </span><span class="hl-9">&lt;</span><span class="hl-10">Auth0Provider</span><br/><span class="hl-1">      </span><span class="hl-11">domain</span><span class="hl-1">=</span><span class="hl-7">{</span><span class="hl-2">config</span><span class="hl-13">.</span><span class="hl-2">domain</span><span class="hl-7">}</span><br/><span class="hl-1">      </span><span class="hl-11">clientId</span><span class="hl-1">=</span><span class="hl-7">{</span><span class="hl-2">config</span><span class="hl-13">.</span><span class="hl-2">clientId</span><span class="hl-7">}</span><br/><span class="hl-1">      </span><span class="hl-11">localAuthenticationOptions</span><span class="hl-1">=</span><span class="hl-7">{</span><span class="hl-2">localAuthOptions</span><span class="hl-7">}</span><br/><span class="hl-1">    </span><span class="hl-9">&gt;</span><br/><span class="hl-1">      </span><span class="hl-7">{</span><span class="hl-12">/* YOUR APP */</span><span class="hl-7">}</span><br/><span class="hl-1">    </span><span class="hl-9">&lt;/</span><span class="hl-10">Auth0Provider</span><span class="hl-9">&gt;</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-6">export</span><span class="hl-1"> </span><span class="hl-6">default</span><span class="hl-1"> </span><span class="hl-2">App</span><span class="hl-1">;</span>
 </code><button type="button">Copy</button></pre>
 
           <p>
@@ -1309,10 +1410,12 @@
               </tr>
             </tbody>
           </table>
-          <p>
-            &gt; :warning: You need a real device to test Local Authentication
-            for iOS. Local Authentication is not available in simulators.
-          </p>
+          <blockquote>
+            <p>
+              :warning: You need a real device to test Local Authentication for
+              iOS. Local Authentication is not available in simulators.
+            </p>
+          </blockquote>
           <h4 id="credentials-manager-errors" class="tsd-anchor-link">
             Credentials Manager errors<a
               href="#credentials-manager-errors"
@@ -1327,14 +1430,14 @@
             <code>CredentialsManagerError</code> exceptions. You can find more
             information in the details property of the exception.
           </p>
-          <pre><code class="js"><span class="hl-6">try</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">credentials</span><span class="hl-1"> = </span><span class="hl-6">await</span><span class="hl-1"> </span><span class="hl-2">auth0</span><span class="hl-1">.</span><span class="hl-2">credentialsManager</span><span class="hl-1">.</span><span class="hl-10">getCredentials</span><span class="hl-1">();</span><br/><span class="hl-1">} </span><span class="hl-6">catch</span><span class="hl-1"> (</span><span class="hl-2">error</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-10">log</span><span class="hl-1">(</span><span class="hl-2">error</span><span class="hl-1">);</span><br/><span class="hl-1">}</span>
+          <pre><code class="js"><span class="hl-6">try</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">credentials</span><span class="hl-1"> = </span><span class="hl-6">await</span><span class="hl-1"> </span><span class="hl-2">auth0</span><span class="hl-1">.</span><span class="hl-2">credentialsManager</span><span class="hl-1">.</span><span class="hl-8">getCredentials</span><span class="hl-1">();</span><br/><span class="hl-1">} </span><span class="hl-6">catch</span><span class="hl-1"> (</span><span class="hl-2">error</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-8">log</span><span class="hl-1">(</span><span class="hl-2">error</span><span class="hl-1">);</span><br/><span class="hl-1">}</span>
 </code><button type="button">Copy</button></pre>
 
           <p><strong>Platform agnostic errors:</strong></p>
           <p>
             You can access the platform agnostic generic error codes as below :
           </p>
-          <pre><code class="js"><span class="hl-6">try</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">credentials</span><span class="hl-1"> = </span><span class="hl-6">await</span><span class="hl-1"> </span><span class="hl-2">auth0</span><span class="hl-1">.</span><span class="hl-2">credentialsManager</span><span class="hl-1">.</span><span class="hl-10">getCredentials</span><span class="hl-1">();</span><br/><span class="hl-1">} </span><span class="hl-6">catch</span><span class="hl-1"> (</span><span class="hl-2">error</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-10">log</span><span class="hl-1">(</span><span class="hl-2">e</span><span class="hl-1">.</span><span class="hl-2">type</span><span class="hl-1">);</span><br/><span class="hl-1">}</span>
+          <pre><code class="js"><span class="hl-6">try</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">credentials</span><span class="hl-1"> = </span><span class="hl-6">await</span><span class="hl-1"> </span><span class="hl-2">auth0</span><span class="hl-1">.</span><span class="hl-2">credentialsManager</span><span class="hl-1">.</span><span class="hl-8">getCredentials</span><span class="hl-1">();</span><br/><span class="hl-1">} </span><span class="hl-6">catch</span><span class="hl-1"> (</span><span class="hl-2">error</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-8">log</span><span class="hl-1">(</span><span class="hl-2">e</span><span class="hl-1">.</span><span class="hl-2">type</span><span class="hl-1">);</span><br/><span class="hl-1">}</span>
 </code><button type="button">Copy</button></pre>
 
           <p>
@@ -1398,8 +1501,12 @@
               <tr>
                 <td><code>BIOMETRICS_FAILED</code></td>
                 <td>
-                  OneOf
-                  &lt;br&gt;<code>BIOMETRIC_NO_ACTIVITY</code>,<code>BIOMETRIC_ERROR_STATUS_UNKNOWN</code>,<code>BIOMETRIC_ERROR_UNSUPPORTED</code>,&lt;br&gt;<code>BIOMETRIC_ERROR_HW_UNAVAILABLE</code>,<code>BIOMETRIC_ERROR_NONE_ENROLLED</code>,<code>BIOMETRIC_ERROR_NO_HARDWARE</code>,&lt;br&gt;<code>BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED</code>,<code>BIOMETRIC_AUTHENTICATION_CHECK_FAILED</code>,&lt;br&gt;<code
+                  OneOf <br /><code>BIOMETRIC_NO_ACTIVITY</code
+                  >,<code>BIOMETRIC_ERROR_STATUS_UNKNOWN</code>,<code>BIOMETRIC_ERROR_UNSUPPORTED</code>,<br /><code
+                    >BIOMETRIC_ERROR_HW_UNAVAILABLE</code
+                  >,<code>BIOMETRIC_ERROR_NONE_ENROLLED</code>,<code>BIOMETRIC_ERROR_NO_HARDWARE</code>,<br /><code
+                    >BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED</code
+                  >,<code>BIOMETRIC_AUTHENTICATION_CHECK_FAILED</code>,<br /><code
                     >BIOMETRIC_ERROR_DEVICE_CREDENTIAL_NOT_AVAILABLE</code
                   >
                 </td>
@@ -1417,6 +1524,59 @@
               </tr>
             </tbody>
           </table>
+          <h2 id="troubleshooting" class="tsd-anchor-link">
+            Troubleshooting<a
+              href="#troubleshooting"
+              aria-label="Permalink"
+              class="tsd-anchor-icon"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <use href="assets/icons.svg#icon-anchor"></use></svg
+            ></a>
+          </h2>
+          <h3 id="swift-6-compatibility-issues-on-ios" class="tsd-anchor-link">
+            Swift 6 Compatibility Issues on iOS<a
+              href="#swift-6-compatibility-issues-on-ios"
+              aria-label="Permalink"
+              class="tsd-anchor-icon"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <use href="assets/icons.svg#icon-anchor"></use></svg
+            ></a>
+          </h3>
+          <p>
+            If your main application project is configured to use Swift 6, and
+            you encounter build errors related to Swift version
+            incompatibilities with <code>react-native-auth0</code> or its
+            dependencies (like <code>Auth0.swift</code>, <code>JWTDecode</code>,
+            <code>SimpleKeychain</code>), you can ensure these specific pods are
+            compiled with Swift 5.
+          </p>
+          <p>
+            While <code>react-native-auth0</code> (from v5.0.0-beta.1 onwards)
+            and its direct Swift dependencies are configured to use Swift 5,
+            your project's build settings might try to override this. To enforce
+            Swift 5 for these pods:
+          </p>
+          <p>
+            <strong>Recommended: Podfile <code>post_install</code> Hook</strong>
+          </p>
+          <p>
+            Add the following <code>post_install</code> hook to your
+            application's <code>ios/Podfile</code>. This is generally the most
+            robust way to manage build settings for dependencies:
+          </p>
+          <pre><code class="text"># In your application&#39;s ios/Podfile
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    # Target the react-native-auth0 pod and its Swift dependencies
+    if [&#39;Auth0&#39;, &#39;A0Auth0&#39;, &#39;JWTDecode&#39;, &#39;SimpleKeychain&#39;].include?(target.name)
+      target.build_configurations.each do |config|
+        config.build_settings[&#39;SWIFT_VERSION&#39;] = &#39;5.0&#39;
+      end
+    end
+  end
+end
+</code><button type="button">Copy</button></pre>
+
           <h2 id="feedback" class="tsd-anchor-link">
             Feedback<a
               href="#feedback"
@@ -1487,32 +1647,44 @@
             details the procedure for disclosing security issues.
           </p>
           <hr />
-          <p>
-            &lt;p align=&quot;center&quot;&gt; &lt;picture&gt; &lt;source
-            media=&quot;(prefers-color-scheme: light)&quot; srcset=&quot;<a
-              href="https://cdn.auth0.com/website/sdks/logos/auth0_light_mode.png"
-              >https://cdn.auth0.com/website/sdks/logos/auth0_light_mode.png</a
-            >&quot; width=&quot;150&quot;&gt; &lt;source
-            media=&quot;(prefers-color-scheme: dark)&quot; srcset=&quot;<a
-              href="https://cdn.auth0.com/website/sdks/logos/auth0_dark_mode.png"
-              >https://cdn.auth0.com/website/sdks/logos/auth0_dark_mode.png</a
-            >&quot; width=&quot;150&quot;&gt; &lt;img alt=&quot;Auth0 Logo&quot;
-            src=&quot;<a
-              href="https://cdn.auth0.com/website/sdks/logos/auth0_light_mode.png"
-              >https://cdn.auth0.com/website/sdks/logos/auth0_light_mode.png</a
-            >&quot; width=&quot;150&quot;&gt; &lt;/picture&gt; &lt;/p&gt; &lt;p
-            align=&quot;center&quot;&gt;Auth0 is an easy to implement, adaptable
-            authentication and authorization platform. To learn more checkout
-            &lt;a href=&quot;<a href="https://auth0.com/why-auth0"
-              >https://auth0.com/why-auth0</a
-            >&quot;&gt;Why Auth0?&lt;/a&gt;&lt;/p&gt; &lt;p
-            align=&quot;center&quot;&gt; This project is licensed under the MIT
-            license. See the &lt;a href=&quot;<a
-              href="https://github.com/auth0/react-native-auth0/blob/master/LICENSE"
-              >https://github.com/auth0/react-native-auth0/blob/master/LICENSE</a
-            >&quot;&gt; LICENSE&lt;/a&gt; file for more info.&lt;/p&gt;
+          <p align="center">
+            <picture>
+              <source
+                media="(prefers-color-scheme: light)"
+                srcset="
+                  https://cdn.auth0.com/website/sdks/logos/auth0_light_mode.png
+                "
+                width="150"
+              />
+              <source
+                media="(prefers-color-scheme: dark)"
+                srcset="
+                  https://cdn.auth0.com/website/sdks/logos/auth0_dark_mode.png
+                "
+                width="150"
+              />
+              <img
+                alt="Auth0 Logo"
+                src="https://cdn.auth0.com/website/sdks/logos/auth0_light_mode.png"
+                width="150"
+              />
+            </picture>
           </p>
-          <p>&lt;!-- Variables --&gt;</p>
+          <p align="center">
+            Auth0 is an easy to implement, adaptable authentication and
+            authorization platform. To learn more checkout
+            <a href="https://auth0.com/why-auth0">Why Auth0?</a>
+          </p>
+          <p align="center">
+            This project is licensed under the MIT license. See the
+            <a
+              href="https://github.com/auth0/react-native-auth0/blob/master/LICENSE"
+            >
+              LICENSE</a
+            >
+            file for more info.
+          </p>
+          <!-- Variables -->
         </div>
       </div>
       <div class="col-sidebar">
@@ -1629,10 +1801,10 @@
             <div class="tsd-accordion-details">
               <ul>
                 <li>
-                  <a href="#⚠️-important-migration-notice-v400"
+                  <a href="#⚠️-important-migration-notice-v400-and-v500beta"
                     ><span
                       >⚠️ <wbr />Important <wbr />Migration <wbr />Notice:
-                      v4.0.0</span
+                      v4.0.0 and v5.0.0beta</span
                     ></a
                   >
                 </li>
@@ -1663,7 +1835,7 @@
                 </li>
                 <li>
                   <a href="#configure-the-sdk"
-                    ><span>Configure the SDK</span></a
+                    ><span>Configure the <wbr />SDK</span></a
                   >
                 </li>
                 <li>
@@ -1684,7 +1856,9 @@
                       </ul>
                     </li>
                     <li>
-                      <a href="#ios"><span>iOS</span></a>
+                      <a href="#ios"
+                        ><span>i<wbr />OS</span></a
+                      >
                     </li>
                     <li>
                       <a href="#expo"><span>Expo</span></a>
@@ -1692,7 +1866,9 @@
                   </ul>
                 </li>
                 <li>
-                  <a href="#callback-urls"><span>Callback URL(s)</span></a>
+                  <a href="#callback-urls"
+                    ><span>Callback <wbr />URL(s)</span></a
+                  >
                 </li>
                 <li>
                   <ul>
@@ -1724,7 +1900,9 @@
                       >
                     </li>
                     <li>
-                      <a href="#ios-1"><span>iOS</span></a>
+                      <a href="#ios-1"
+                        ><span>i<wbr />OS</span></a
+                      >
                     </li>
                     <li>
                       <ul>
@@ -1744,7 +1922,9 @@
                     </li>
                     <li>
                       <a href="#configure-an-associated-domain-for-ios"
-                        ><span>Configure an associated domain for iOS</span></a
+                        ><span
+                          >Configure an associated domain for i<wbr />OS</span
+                        ></a
                       >
                     </li>
                     <li>
@@ -1752,7 +1932,7 @@
                         <li>
                           <a href="#configure-the-team-id-and-bundle-identifier"
                             ><span
-                              >Configure the <wbr />Team ID and bundle
+                              >Configure the <wbr />Team <wbr />ID and bundle
                               identifier</span
                             ></a
                           >
@@ -1787,7 +1967,9 @@
                       <ul>
                         <li>
                           <a href="#sso-alert-box-ios"
-                            ><span>SSO <wbr />Alert <wbr />Box (iOS)</span></a
+                            ><span
+                              >SSO <wbr />Alert <wbr />Box (i<wbr />OS)</span
+                            ></a
                           >
                         </li>
                       </ul>
@@ -1829,6 +2011,16 @@
                       >
                     </li>
                   </ul>
+                </li>
+              </ul>
+              <a href="#troubleshooting"><span>Troubleshooting</span></a>
+              <ul>
+                <li>
+                  <a href="#swift-6-compatibility-issues-on-ios"
+                    ><span
+                      >Swift 6 <wbr />Compatibility <wbr />Issues on i<wbr />OS</span
+                    ></a
+                  >
                 </li>
               </ul>
               <a href="#feedback"><span>Feedback</span></a>

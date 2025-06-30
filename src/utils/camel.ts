@@ -22,7 +22,7 @@ export function toCamelCase<TResult>(object: any, options: any = {}) {
     return object;
   }
 
-  const {attributes = [], whitelist = false, rootOnly = false} = options;
+  const { attributes = [], whitelist = false, rootOnly = false } = options;
 
   return Object.keys(object).reduce(function (p: any, key) {
     const inList = attributes.indexOf(key) !== -1;
