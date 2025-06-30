@@ -121,7 +121,7 @@
     "pretty-quick": "^4.1.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-native": "0.79.2",
+    "react-native": "0.80.0",
     "react-native-builder-bob": "^0.40.10",
     "release-it": "^18.0.0",
     "semver": "^7.7.1",
