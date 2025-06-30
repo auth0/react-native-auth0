@@ -1,6 +1,7 @@
 import * as nativeUtils from '../../utils/nativeHelper';
 import Agent from '../agent';
-import { NativeModules, Platform, Linking } from 'react-native';
+import { Platform, Linking } from 'react-native';
+import A0Auth0 from '../../specs/NativeA0Auth0';
 
 const localAuthenticationOptions = {
   title: 'Authenticate With Your Biometrics',
@@ -8,23 +9,14 @@ const localAuthenticationOptions = {
   authenticationLevel: 0,
 };
 
+// Mock the native module
+jest.mock('../../specs/NativeA0Auth0');
+
 jest.mock('react-native', () => {
-  // Require the original module to not be mocked...
   return {
     __esModule: true, // Use it when dealing with esModules
     Linking: {
       addEventListener: jest.fn(),
-    },
-    NativeModules: {
-      A0Auth0: {
-        webAuth: () => {},
-        webAuthLogout: () => {},
-        cancelWebAuth: () => {},
-        resumeWebAuth: () => {},
-        hasValidAuth0Instance: () => {},
-        initializeAuth0: () => {},
-        bundleIdentifier: 'com.my.app',
-      },
     },
     Platform: {
       OS: 'ios',
@@ -35,31 +27,30 @@ jest.mock('react-native', () => {
 describe('Agent', () => {
   const agent = new Agent();
 
-  afterEach(() => {
+  beforeEach(() => {
+    // Reset all mocks before each test
     jest.clearAllMocks();
+
+    // Set default implementation for native module functions
+    A0Auth0.hasValidAuth0InstanceWithConfiguration = jest.fn(() =>
+      Promise.resolve(true)
+    );
+    A0Auth0.initializeAuth0WithConfiguration = jest.fn(() => Promise.resolve());
+    A0Auth0.getBundleIdentifier = jest.fn(() => Promise.resolve('com.my.app'));
+    A0Auth0.webAuth = jest.fn(() => Promise.resolve(true));
+    A0Auth0.webAuthLogout = jest.fn(() => Promise.resolve(true));
+    A0Auth0.cancelWebAuth = jest.fn(() => Promise.resolve(true));
+    A0Auth0.resumeWebAuth = jest.fn(() => Promise.resolve(true));
   });
 
   describe('login', () => {
-    it('should fail if native module is not linked', async () => {
-      const replacedProperty = jest.replaceProperty(
-        NativeModules,
-        'A0Auth0',
-        undefined
-      );
-      expect.assertions(1);
-      await expect(agent.login()).rejects.toMatchSnapshot();
-      replacedProperty.restore();
-    });
-
     it('should ensure module is initialized', async () => {
       let domain = 'test.com';
       let clientId = 'client id value';
       const mock = jest
         .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementation(() => Promise.resolve(true));
-      jest
-        .spyOn(NativeModules.A0Auth0, 'webAuth')
-        .mockImplementation(() => Promise.resolve(true));
+
       agent.login(
         {
           clientId: clientId,
@@ -69,7 +60,7 @@ describe('Agent', () => {
         localAuthenticationOptions
       );
       expect(mock).toBeCalledWith(
-        NativeModules.A0Auth0,
+        A0Auth0,
         clientId,
         domain,
         localAuthenticationOptions
@@ -82,9 +73,7 @@ describe('Agent', () => {
       const mock = jest
         .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementation(() => Promise.resolve(true));
-      const mockLogin = jest
-        .spyOn(NativeModules.A0Auth0, 'webAuth')
-        .mockImplementation(() => Promise.resolve(true));
+
       await agent.login(
         {
           clientId: clientId,
@@ -108,12 +97,12 @@ describe('Agent', () => {
         localAuthenticationOptions
       );
       expect(mock).toBeCalledWith(
-        NativeModules.A0Auth0,
+        A0Auth0,
         clientId,
         domain,
         localAuthenticationOptions
       );
-      expect(mockLogin).toBeCalledWith(
+      expect(A0Auth0.webAuth).toBeCalledWith(
         'test',
         'test://test.com/ios/com.my.app/callback',
         'state',
@@ -137,9 +126,7 @@ describe('Agent', () => {
       const mock = jest
         .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementation(() => Promise.resolve(true));
-      const mockLogin = jest
-        .spyOn(NativeModules.A0Auth0, 'webAuth')
-        .mockImplementation(() => Promise.resolve(true));
+
       await agent.login(
         {
           clientId: clientId,
@@ -151,12 +138,12 @@ describe('Agent', () => {
         localAuthenticationOptions
       );
       expect(mock).toBeCalledWith(
-        NativeModules.A0Auth0,
+        A0Auth0,
         clientId,
         domain,
         localAuthenticationOptions
       );
-      expect(mockLogin).toBeCalledWith(
+      expect(A0Auth0.webAuth).toBeCalledWith(
         'com.my.app.auth0',
         'redirect://redirect.com',
         undefined,
@@ -176,24 +163,14 @@ describe('Agent', () => {
   });
 
   describe('logout', () => {
-    it('should fail if native module is not linked', async () => {
-      const replacedProperty = jest.replaceProperty(
-        NativeModules,
-        'A0Auth0',
-        undefined
-      );
-      expect.assertions(1);
-      await expect(agent.logout()).rejects.toMatchSnapshot();
-      replacedProperty.restore();
-    });
-
     it('should ensure module is initialized', async () => {
       let domain = 'test.com';
       let clientId = 'client id value';
       const mock = jest
         .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementation(() => Promise.resolve(true));
-      agent.logout(
+
+      await agent.logout(
         {
           clientId: clientId,
           domain: domain,
@@ -201,8 +178,8 @@ describe('Agent', () => {
         { customScheme: 'test' },
         localAuthenticationOptions
       );
-      expect(mock).toBeCalledWith(
-        NativeModules.A0Auth0,
+      expect(mock).toHaveBeenCalledWith(
+        A0Auth0,
         clientId,
         domain,
         localAuthenticationOptions
@@ -215,9 +192,7 @@ describe('Agent', () => {
       const mock = jest
         .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementation(() => Promise.resolve(true));
-      const mockLogin = jest
-        .spyOn(NativeModules.A0Auth0, 'webAuthLogout')
-        .mockImplementation(() => Promise.resolve(true));
+
       await agent.logout(
         {
           clientId: clientId,
@@ -230,12 +205,12 @@ describe('Agent', () => {
         localAuthenticationOptions
       );
       expect(mock).toBeCalledWith(
-        NativeModules.A0Auth0,
+        A0Auth0,
         clientId,
         domain,
         localAuthenticationOptions
       );
-      expect(mockLogin).toBeCalledWith(
+      expect(A0Auth0.webAuthLogout).toBeCalledWith(
         'test',
         true,
         'test://test.com/ios/com.my.app/callback'
@@ -248,9 +223,7 @@ describe('Agent', () => {
       const mock = jest
         .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementation(() => Promise.resolve(true));
-      const mockLogin = jest
-        .spyOn(NativeModules.A0Auth0, 'webAuthLogout')
-        .mockImplementation(() => Promise.resolve(true));
+
       await agent.logout(
         {
           clientId: clientId,
@@ -262,12 +235,12 @@ describe('Agent', () => {
         localAuthenticationOptions
       );
       expect(mock).toBeCalledWith(
-        NativeModules.A0Auth0,
+        A0Auth0,
         clientId,
         domain,
         localAuthenticationOptions
       );
-      expect(mockLogin).toBeCalledWith(
+      expect(A0Auth0.webAuthLogout).toBeCalledWith(
         'com.my.app.auth0',
         false,
         'redirect://redirect.com'
@@ -292,7 +265,7 @@ describe('Agent', () => {
       );
 
       expect(mock).toBeCalledWith(
-        NativeModules.A0Auth0,
+        A0Auth0,
         clientId,
         domain,
         localAuthenticationOptions
@@ -305,9 +278,7 @@ describe('Agent', () => {
       const mock = jest
         .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementation(() => Promise.resolve(true));
-      const mockCancelWebAuth = jest
-        .spyOn(NativeModules.A0Auth0, 'cancelWebAuth')
-        .mockImplementation(() => Promise.resolve(true));
+
       await agent.cancelWebAuth(
         {
           clientId: clientId,
@@ -316,43 +287,47 @@ describe('Agent', () => {
         localAuthenticationOptions
       );
       expect(mock).toBeCalledWith(
-        NativeModules.A0Auth0,
+        A0Auth0,
         clientId,
         domain,
         localAuthenticationOptions
       );
-      expect(mockCancelWebAuth).toHaveBeenCalled();
+      expect(A0Auth0.cancelWebAuth).toHaveBeenCalled();
     });
   });
 
   describe('getScheme', () => {
     it('should return custom scheme', async () => {
-      await expect(agent.getScheme(false, 'custom')).toEqual('custom');
+      expect(await agent.getScheme(false, 'custom')).toEqual('custom');
     });
 
     it('should return custom scheme even if legacy behaviour set to true', async () => {
-      await expect(agent.getScheme(true, 'custom')).toEqual('custom');
+      expect(await agent.getScheme(true, 'custom')).toEqual('custom');
     });
 
     it('should return bundle identifier', async () => {
-      NativeModules.A0Auth0.bundleIdentifier = 'com.test';
-      await expect(agent.getScheme()).toEqual('com.test.auth0');
+      A0Auth0.getBundleIdentifier = jest.fn(() => Promise.resolve('com.test'));
+      await expect(agent.getScheme()).resolves.toEqual('com.test.auth0');
+      expect(A0Auth0.getBundleIdentifier).toHaveBeenCalled();
     });
 
     it('should return bundle identifier lower cased', async () => {
-      NativeModules.A0Auth0.bundleIdentifier = 'com.Test';
-      await expect(agent.getScheme()).toEqual('com.test.auth0');
+      A0Auth0.getBundleIdentifier = jest.fn(() => Promise.resolve('com.Test'));
+      await expect(agent.getScheme()).resolves.toEqual('com.test.auth0');
+      expect(A0Auth0.getBundleIdentifier).toHaveBeenCalled();
     });
 
     it('should return legacy scheme', async () => {
-      NativeModules.A0Auth0.bundleIdentifier = 'com.Test';
-      await expect(agent.getScheme(true)).toEqual('com.test');
+      A0Auth0.getBundleIdentifier = jest.fn(() => Promise.resolve('com.Test'));
+      await expect(agent.getScheme(true)).resolves.toEqual('com.test');
+      expect(A0Auth0.getBundleIdentifier).toHaveBeenCalled();
     });
   });
 
   describe('callbackUri', () => {
     it('should return callback uri with given domain and scheme', async () => {
-      await expect(agent.callbackUri('domain', 'scheme')).toEqual(
+      A0Auth0.getBundleIdentifier = jest.fn(() => Promise.resolve('com.test'));
+      await expect(agent.callbackUri('domain', 'scheme')).resolves.toEqual(
         'scheme://domain/ios/com.test/callback'
       );
     });
@@ -399,20 +374,18 @@ describe('Agent', () => {
         .spyOn(nativeUtils, '_ensureNativeModuleIsInitializedWithConfiguration')
         .mockImplementationOnce(() => {});
 
-      jest.spyOn(NativeModules.A0Auth0, 'webAuth').mockImplementation(() => {
+      A0Auth0.webAuth = jest.fn(() => {
         mockEventListener.mock.calls[0][1]({ url: 'https://callback.url.com' });
-        Promise.resolve(true);
+        return Promise.resolve(true);
       });
 
-      jest
-        .spyOn(NativeModules.A0Auth0, 'resumeWebAuth')
-        .mockImplementation(() => Promise.resolve(true));
+      A0Auth0.resumeWebAuth = jest.fn(() => Promise.resolve(true));
 
       await agent.login({}, { safariViewControllerPresentationStyle: 0 });
       expect(Linking.addEventListener).toHaveBeenCalledTimes(1);
-      expect(NativeModules.A0Auth0.resumeWebAuth).toHaveBeenCalledTimes(1);
+      expect(A0Auth0.resumeWebAuth).toHaveBeenCalledTimes(1);
       expect(mockEventListener.mock.calls[0][0]).toEqual('url');
-      expect(NativeModules.A0Auth0.resumeWebAuth).toHaveBeenCalledWith(
+      expect(A0Auth0.resumeWebAuth).toHaveBeenCalledWith(
         'https://callback.url.com'
       );
       expect(mockSubscription.remove).toHaveBeenCalledTimes(1);

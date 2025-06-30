@@ -27,12 +27,12 @@ function makeTimeout(timeoutMs: number) {
 export function fetchWithTimeout(
   url: string,
   options: RequestInit,
-  timeoutMs: number,
+  timeoutMs: number
 ): Promise<Response> {
   const {
     promise: timeoutPromise,
     timerId,
-  }: {promise: Promise<unknown>; timerId: any} = makeTimeout(timeoutMs);
+  }: { promise: Promise<unknown>; timerId: any } = makeTimeout(timeoutMs);
   const abortController = new AbortController();
 
   return Promise.race([

@@ -9,15 +9,16 @@ Pod::Spec.new do |s|
   s.homepage     = package['repository']['baseUrl']
   s.license      = package['license']
   s.authors      = package['author']
-  s.platforms    = { :ios => '13.0' }
+  s.platforms    = { :ios => min_ios_version_supported }
+  s.swift_version = '5.0'
   s.source       = { :git => 'https://github.com/auth0/react-native-auth0.git', :tag => "v#{s.version}" }
 
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
-  s.pod_target_xcconfig = { 'HEADER_SEARCH_PATHS' => "'${PODS_CONFIGURATION_BUILD_DIR}/#{s.name}/#{s.name}.framework/Headers'" }
   s.requires_arc = true
 
-  s.dependency 'React-Core'
   s.dependency 'Auth0', '2.10'
   s.dependency 'JWTDecode', '3.2.0'
   s.dependency 'SimpleKeychain', '1.2.0'
+  
+  install_modules_dependencies(s)
 end

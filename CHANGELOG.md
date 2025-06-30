@@ -1,13 +1,57 @@
 # Change Log
 
+## [v5.0.0-beta.3](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.3) (2025-06-23)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0-beta.2...v5.0.0-beta.3)
+
+**Fixed**
+
+- Fix: Turbo Module & New Architecture Support! [\#1204](https://github.com/auth0/react-native-auth0/pull/1204) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+## [v5.0.0-beta.2](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.2) (2025-06-13)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0-beta.1...v5.0.0-beta.2)
+
+**Added**
+
+- Ensure Swift 5 compilation for SDK pods to improve Swift 6 compatibility [\#1203](https://github.com/auth0/react-native-auth0/pull/1203) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Fixed**
+
+- Fixed iOS Build Issues with Static Frameworks [\#1195](https://github.com/auth0/react-native-auth0/pull/1195) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- Fix: getBundleIdentifier Implementation [\#1194](https://github.com/auth0/react-native-auth0/pull/1194) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+## [v5.0.0-beta.1](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.1) (2025-05-13)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0-beta.0...v5.0.0-beta.1)
+
+**Added**
+
+- Upgrade SDK to React Native 0.79.2 and Add Support for Expo SDK 53 [\#1147](https://github.com/auth0/react-native-auth0/pull/1147) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Changed**
+
+- docs: Update setup guide for ios and platform compatibility in README.md [\#1170](https://github.com/auth0/react-native-auth0/pull/1170) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v4.6.0](https://github.com/auth0/react-native-auth0/tree/v4.6.0) (2025-05-02)
+
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.5.0...v4.6.0)
 
 **Added**
+
 - feat: Add support for custom headers [\#1155](https://github.com/auth0/react-native-auth0/pull/1155) ([subhankarmaiti](https://github.com/subhankarmaiti))
 
 **Fixed**
+
 - fix: Update prepare script to clean up package.json files [\#1157](https://github.com/auth0/react-native-auth0/pull/1157) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+## [v5.0.0-beta.0](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.0) (2025-04-17)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.5.0...v5.0.0-beta.0)
+
+**⚠️ BREAKING CHANGES**
+
+- BREAKING CHANGE: feat: Support Turbo Modules [\#1101](https://github.com/auth0/react-native-auth0/pull/1101) ([guabu](https://github.com/guabu))
 
 ## [v4.5.0](https://github.com/auth0/react-native-auth0/tree/v4.5.0) (2025-04-17)
 

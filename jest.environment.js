@@ -1,5 +1,5 @@
 import JSDOMEnvironment from 'jest-environment-jsdom';
-import fetch, {Headers, Request, Response} from 'node-fetch';
+import fetch, { Headers, Request, Response } from 'node-fetch';
 
 /**
  * Custom Jest Environment based on JSDOMEnvironment to support TextEncoder and TextDecoder.

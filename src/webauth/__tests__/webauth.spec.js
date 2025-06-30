@@ -1,10 +1,9 @@
 jest.mock('react-native');
 import Auth from '../../auth';
 import WebAuth from '../index';
-import { NativeModules } from 'react-native';
-import { URL } from 'url';
 
-const A0Auth0 = NativeModules.A0Auth0;
+// Mock the native module
+jest.mock('../../specs/NativeA0Auth0');
 
 describe('WebAuth', () => {
   const clientId = 'abc123';

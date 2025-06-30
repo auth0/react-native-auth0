@@ -33,7 +33,7 @@ class Client {
       telemetry?: Telemetry;
       token?: string;
       timeout?: number;
-      headers?: Record<string, string>
+      headers?: Record<string, string>;
     } = options;
     if (!baseUrl) {
       throw new Error('Missing Auth0 domain');
@@ -58,16 +58,33 @@ class Client {
     this.globalHeaders = headers;
   }
 
-  post<TData = unknown, TBody = unknown>(path: string, body: TBody, headers?: Record<string, string>) {
+  post<TData = unknown, TBody = unknown>(
+    path: string,
+    body: TBody,
+    headers?: Record<string, string>
+  ) {
     return this.request<TData, TBody>('POST', this.url(path), body, headers);
   }
 
-  patch<TData = unknown, TBody = unknown>(path: string, body: TBody, headers?: Record<string, string>) {
+  patch<TData = unknown, TBody = unknown>(
+    path: string,
+    body: TBody,
+    headers?: Record<string, string>
+  ) {
     return this.request<TData, TBody>('PATCH', this.url(path), body, headers);
   }
 
-  get<TData = unknown>(path: string, query?: unknown, headers?: Record<string, string>) {
-    return this.request<TData>('GET', this.url(path, query), undefined, headers);
+  get<TData = unknown>(
+    path: string,
+    query?: unknown,
+    headers?: Record<string, string>
+  ) {
+    return this.request<TData>(
+      'GET',
+      this.url(path, query),
+      undefined,
+      headers
+    );
   }
 
   url(path: string, query?: any, includeTelemetry: boolean = false) {
