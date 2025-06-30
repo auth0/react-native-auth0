@@ -27,7 +27,7 @@
     "@react-native-community/cli": "18.0.0",
     "@react-native-community/cli-platform-android": "18.0.0",
     "@react-native-community/cli-platform-ios": "18.0.0",
-    "@react-native/babel-preset": "0.79.2",
+    "@react-native/babel-preset": "0.80.0",
     "@react-native/metro-config": "0.79.2",
     "@react-native/typescript-config": "0.79.2",
     "@types/react": "^19.1.3",
