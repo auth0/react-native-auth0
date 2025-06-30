@@ -3,11 +3,16 @@
   "title": "React Native Auth0",
   "version": "5.0.0-beta.3",
   "description": "React Native toolkit for Auth0 API",
-  "main": "lib/commonjs/index.js",
-  "module": "lib/module/index.js",
-  "types": "lib/typescript/src/index.d.ts",
-  "react-native": "src/index.ts",
-  "source": "src/index.ts",
+  "main": "./lib/module/index.js",
+  "types": "./lib/typescript/src/index.d.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./lib/typescript/src/index.d.ts",
+      "default": "./lib/module/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "src",
     "lib",
@@ -40,7 +45,7 @@
     "bootstrap": "cd example && npm ci",
     "ci": "yarn install --immutable && yarn prepare",
     "clean": "del-cli lib out android/build example/android/build example/android/app/build example/ios/build",
-    "prepare": "husky && bob build && rm -rf lib/*/package.json",
+    "prepare": "husky && bob build",
     "example:android": "cd example && npm run android",
     "example:ios": "cd example && npm run ios",
     "precommit": "pretty-quick --staged"
@@ -70,15 +75,20 @@
     "registry": "https://registry.npmjs.org/"
   },
   "peerDependencies": {
+    "@auth0/auth0-spa-js": ">=2.2.0",
     "react": ">=19.0.0",
     "react-native": ">=0.78.0"
   },
   "peerDependenciesMeta": {
+    "@auth0/auth0-spa-js": {
+      "optional": true
+    },
     "expo": {
       "optional": true
     }
   },
   "devDependencies": {
+    "@auth0/auth0-spa-js": "^2.2.0",
     "@commitlint/config-conventional": "^17.0.2",
     "@eslint/compat": "^1.2.7",
     "@eslint/eslintrc": "^3.3.0",
@@ -185,8 +195,12 @@
     "source": "src",
     "output": "lib",
     "targets": [
-      "commonjs",
-      "module",
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
       "typescript"
     ]
   },

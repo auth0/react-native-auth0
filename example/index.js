@@ -3,3 +3,9 @@ import App from './src/App';
 import { name as appName } from './app.json';
 
 AppRegistry.registerComponent(appName, () => App);
+
+// This is the entry point for the React Native web application.
+if (typeof document !== 'undefined') {
+  const rootTag = document.getElementById('root');
+  AppRegistry.runApplication(appName, { rootTag });
+}
