@@ -42,13 +42,14 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "release": "release-it",
-    "bootstrap": "cd example && npm ci",
     "ci": "yarn install --immutable && yarn prepare",
     "clean": "del-cli lib out android/build example/android/build example/android/app/build example/ios/build",
-    "prepare": "husky && bob build",
+    "build": "bob build",
+    "prepare": "husky && yarn build",
     "example:android": "cd example && npm run android",
     "example:ios": "cd example && npm run ios",
-    "precommit": "pretty-quick --staged"
+    "precommit": "pretty-quick --staged",
+    "prepush": "yarn build"
   },
   "keywords": [
     "react-native",
