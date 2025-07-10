@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.2.0",
+    "@react-navigation/bottom-tabs": "^7.4.2",
     "@react-navigation/native": "^7.1.13",
     "@react-navigation/stack": "^7.3.6",
     "react": "19.0.0",
