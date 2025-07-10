@@ -44,7 +44,7 @@
     "release": "release-it",
     "ci": "yarn install --immutable && yarn prepare",
     "clean": "del-cli lib out android/build example/android/build example/android/app/build example/ios/build",
-    "build": "bob build",
+    "build": "yarn lint && bob build",
     "prepare": "husky && yarn build",
     "example:android": "cd example && npm run android",
     "example:ios": "cd example && npm run ios",
@@ -158,6 +158,9 @@
       "<rootDir>/example/node_modules",
       "<rootDir>/lib/",
       "<rootDir>/node_modules/(?!fetch-mock)/"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!(react-native|@react-native|react-native-.*)/)"
     ]
   },
   "commitlint": {
