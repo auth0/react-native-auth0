@@ -1,9 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`timestamp conversion test convertExpiresInToExpiresAt should handle null 1`] = `null`;
-
-exports[`timestamp conversion test convertExpiresInToExpiresAt should handle undefined 1`] = `null`;
-
-exports[`timestamp conversion test convertExpiresInToExpiresAt should handle zero 1`] = `1672531200`;
-
-exports[`timestamp conversion test convertExpiresInToExpiresAt should successfully convert 1`] = `1672617600`;
