@@ -2,9 +2,7 @@ import { fetchWithTimeout, TimeoutError } from '../utils/fetchWithTimeout';
 import { toUrlQueryParams } from '../utils';
 import { AuthError } from '../models';
 import base64 from 'base-64';
-import pkg from '../../../package.json';
-
-const telemetry = { name: 'react-native-auth0', version: pkg.version };
+import { telemetry } from '../utils/telemetry';
 
 export interface HttpClientOptions {
   baseUrl: string;
