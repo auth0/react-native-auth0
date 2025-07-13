@@ -129,12 +129,20 @@ export interface NativeClearSessionOptions {
 // ========= Web-Specific Options =========
 
 /**
- * Extends the core Auth0Options with web-specific configuration.
+ * Extends the core Auth0Options with web-specific configuration
+ * that is passed down to `@auth0/auth0-spa-js`.
  * @platform web
+ * @see https://auth0.github.io/auth0-spa-js/interfaces/Auth0ClientOptions.html
  */
 export interface WebAuth0Options extends Auth0Options {
+  /** How and where to cache session data. Defaults to `memory`. */
   cacheLocation?: 'memory' | 'localstorage';
+  /** Enables the use of refresh tokens for silent authentication. */
   useRefreshTokens?: boolean;
+  /** A custom audience for the `getTokenSilently` call. */
+  audience?: string;
+  /** A custom scope for the `getTokenSilently` call. */
+  scope?: string;
 }
 
 /**

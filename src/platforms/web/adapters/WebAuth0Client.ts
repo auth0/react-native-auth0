@@ -1,4 +1,8 @@
-import { Auth0Client, type Auth0ClientOptions } from '@auth0/auth0-spa-js';
+import {
+  Auth0Client,
+  type Auth0ClientOptions,
+  type LogoutOptions,
+} from '@auth0/auth0-spa-js';
 import type { IAuth0Client, IUsersClient } from '../../../core/interfaces';
 import type { WebAuth0Options } from '../../../types/platform-specific';
 import { WebWebAuthProvider } from './WebWebAuthProvider';
@@ -8,102 +12,116 @@ import {
   ManagementApiOrchestrator,
 } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
+import { AuthError } from '../../../core/models';
+
+let spaClient: Auth0Client | null = null;
+let redirectHandled = false;
 
 /**
- * The concrete implementation of IAuth0Client for the Web platform (React Native Web).
+ * Factory function to get a singleton instance of Auth0Client.
+ * This ensures that the client is only created once and reused.
  *
- * This class instantiates the `auth0-spa-js` client and all the necessary
- * web-specific adapters that use it to fulfill their contracts. It also handles
- * the initial redirect callback flow.
+ * @param options - The Auth0ClientOptions to configure the client.
+ * @returns An instance of Auth0Client.
  */
+const getSpaClient = (options: Auth0ClientOptions): Auth0Client => {
+  if (spaClient) {
+    return spaClient;
+  }
+  spaClient = new Auth0Client(options);
+  return spaClient;
+};
+
 export class WebAuth0Client implements IAuth0Client {
   readonly webAuth: WebWebAuthProvider;
   readonly credentialsManager: WebCredentialsManager;
   readonly auth: AuthenticationOrchestrator;
 
-  private readonly client: Auth0Client;
   private readonly httpClient: HttpClient;
+  public readonly client: Auth0Client;
+
+  private logoutInProgress = false;
 
   constructor(options: WebAuth0Options) {
     const baseUrl = `https://${options.domain}`;
 
-    // 1. Create the HttpClient.
     this.httpClient = new HttpClient({
       baseUrl: baseUrl,
       timeout: options.timeout,
       headers: options.headers,
     });
 
-    // 2. Instantiate the AuthenticationOrchestrator.
     this.auth = new AuthenticationOrchestrator({
       clientId: options.clientId,
       httpClient: this.httpClient,
     });
 
-    const { clientId, domain, ...otherOptions } = options;
     const clientOptions: Auth0ClientOptions = {
-      clientId: clientId,
-      domain: domain,
-      cacheLocation: otherOptions.cacheLocation ?? 'memory',
-      useRefreshTokens: otherOptions.useRefreshTokens ?? true,
+      domain: options.domain,
+      clientId: options.clientId,
+      cacheLocation: options.cacheLocation ?? 'memory',
+      useRefreshTokens: options.useRefreshTokens ?? true,
       authorizationParams: {
-        // A default redirect_uri is required by spa-js.
-        // This can be overridden in the `authorize` call.
         redirect_uri:
           typeof window !== 'undefined' ? window.location.origin : '',
+        ...options,
       },
-      ...otherOptions, // Pass through any other spa-js compatible options.
     };
 
-    this.client = new Auth0Client(clientOptions);
+    // Use the singleton factory to get the spa-js client instance.
+    const client = getSpaClient(clientOptions);
+    this.client = client;
 
-    // Automatically handle the redirect from Auth0 when the app loads.
-    // This is a fire-and-forget operation. The hooks layer will update the
-    // UI once the user state is resolved.
-    this.handleRedirect();
+    this.handleRedirect(client);
 
-    // Instantiate our adapters with the configured spa-js client.
-    this.webAuth = new WebWebAuthProvider(this.client);
-    this.credentialsManager = new WebCredentialsManager(this.client);
+    this.webAuth = new WebWebAuthProvider(this);
+    this.credentialsManager = new WebCredentialsManager(this);
   }
 
-  /**
-   * Creates a client for interacting with the Auth0 Management API's user endpoints.
-   *
-   * @param token An access token with the required permissions for the management operations.
-   * @returns An `IUsersClient` instance configured with the provided token.
-   */
   users(token: string): IUsersClient {
-    // Re-use the same HttpClient, but the orchestrator will add its own auth header.
     return new ManagementApiOrchestrator({
       token: token,
       httpClient: this.httpClient,
     });
   }
 
-  /**
-   * Private method to handle the redirect from Auth0 after a login attempt.
-   * This should only run once when the application loads.
-   */
-  private async handleRedirect(): Promise<void> {
+  public async logout(options?: LogoutOptions): Promise<void> {
+    // If a logout process has already started, do nothing.
+    if (this.logoutInProgress) {
+      return;
+    }
+    this.logoutInProgress = true;
+
+    try {
+      await this.client.logout(options);
+    } catch (e: any) {
+      // Reset the flag on error so a retry is possible.
+      this.logoutInProgress = false;
+      throw new AuthError(
+        e.error ?? 'LogoutFailed',
+        e.error_description ?? e.message,
+        { json: e }
+      );
+    }
+  }
+
+  private async handleRedirect(client: Auth0Client): Promise<void> {
+    if (redirectHandled) {
+      return;
+    }
+
     if (
       typeof window !== 'undefined' &&
       window.location.search.includes('code=') &&
       window.location.search.includes('state=')
     ) {
+      redirectHandled = true; // Mark as handled to prevent re-running
+
       try {
-        // This method processes the code and state, exchanges them for tokens,
-        // and caches the result.
-        await this.client.handleRedirectCallback();
+        await client.handleRedirectCallback();
       } catch (e) {
-        // Errors during handleRedirectCallback are often informational
-        // (e.g., user is already logged in). We can log them but
-        // shouldn't crash the app. The developer can get the error
-        // state from the useAuth0 hook if needed.
         console.error('Error during handleRedirectCallback:', e);
       } finally {
-        // Clean the URL to remove the code and state parameters,
-        // preventing the logic from running again on a page refresh.
         window.history.replaceState(
           {},
           document.title,
