@@ -2,69 +2,159 @@
 
 ## Upgrading from v4 -> v5
 
-### Compatibility Requirements
+Version 5.0 of `react-native-auth0` is a significant update featuring a complete architectural overhaul. This new foundation improves performance, maintainability, and provides a more consistent API across all platforms.
 
-- **React**: v5 requires React 19 or higher
-- **React Native**: v5 requires React Native 0.78.0 or higher
-- **Expo**: v5 requires Expo 53 or higher
+Upgrading from v4.x requires addressing several breaking changes. Please follow this guide carefully.
 
-### Breaking Changes
+## 1. Compatibility & Installation
 
-- **Platform Compatibility**: The minimum iOS deployment target is now 14.0. Update your iOS/Podfile with:
+Before updating the library, ensure your project meets the new minimum requirements.
 
-  ```
-  platform :ios, '14.0'
-  ```
+### Environment Requirements
 
-- **Android Requirements**: Android SDK API level 35 or higher is now required
+- **React:** `19.0.0` or higher
+- **React Native:** `0.78.0` or higher
+- **Expo:** SDK `53` or higher
+- **iOS:** Deployment Target `14.0`
+- **Android:** Target SDK `35` or higher
 
-### Migration Steps
+### Updating Your Project
 
-#### For Regular React Native Projects
+#### For Standard React Native Projects:
 
-1. First, ensure your project uses React 19 and React Native 0.78.0 or higher:
+1.  **Upgrade React Native:**
+    ```bash
+    npm install react@^19.0.0 react-native@^0.78.0
+    ```
+2.  **Update this Library:**
+    ```bash
+    npm install react-native-auth0@beta
+    ```
+3.  **Update iOS Target:** In your `ios/Podfile`, set the platform version:
+    ```ruby
+    platform :ios, '14.0'
+    ```
+4.  **Install Pods:**
+    ```bash
+    cd ios && pod install && cd ..
+    ```
 
-   ```bash
-   npm install react@^19.0.0
-   npm install react-native@^0.78.0
-   ```
+#### For Expo Projects:
 
-2. Update the react-native-auth0 package:
+1.  **Upgrade Expo SDK:**
+    ```bash
+    npx expo upgrade
+    ```
+2.  **Update this Library:**
+    ```bash
+    npm install react-native-auth0@beta
+    ```
+3.  **Rebuild Native Code:**
+    ```bash
+    npx expo prebuild --clean
+    ```
+    > **Warning:** This will overwrite any manual changes in your `ios` and `android` directories.
 
-   ```bash
-   npm install react-native-auth0@beta
-   ```
+## 2. Breaking API Changes
 
-3. Update your iOS minimum deployment target in your Podfile:
+The following API changes require code modifications in your application.
 
-   ```ruby
-   platform :ios, '14.0'
-   ```
+### Change #1: User Profile Properties are now `camelCase`
 
-4. Install the updated pods:
-   ```bash
-   cd ios && pod install && cd ..
-   ```
+To align with modern JavaScript standards, all properties on the `user` object are now `camelCase`.
 
-#### For Expo Projects
+**✅ Action Required:** Update all references to `user` properties.
 
-1. Update to Expo 53 or higher:
+| Before (snake_case)   | After (camelCase)    |
+| :-------------------- | :------------------- |
+| `user.given_name`     | `user.givenName`     |
+| `user.family_name`    | `user.familyName`    |
+| `user.email_verified` | `user.emailVerified` |
+| `user.phone_number`   | `user.phoneNumber`   |
+| ...and so on.         |                      |
 
-   ```bash
-   npx expo upgrade
-   ```
+### Change #2: Credentials Object uses `expiresAt`
 
-2. Update the react-native-auth0 package:
+The `Credentials` object no longer includes `expiresIn` (a duration). It now provides `expiresAt`, an absolute **UNIX timestamp** (in seconds), making expiration checks simpler and less error-prone.
 
-   ```bash
-   npm install react-native-auth0@beta
-   ```
+**✅ Action Required:** Replace all logic using `expiresIn` with `expiresAt`.
 
-3. Rebuild your app:
-   ```bash
-   npx expo prebuild --clean
-   ```
-   Note: This will reset any manual changes to your native code.
+**Before:**
+
+```javascript
+const expiresAt = Date.now() / 1000 + credentials.expiresIn;
+if (isExpired(expiresAt)) {
+  // ...
+}
+```
+
+**After:**
+
+```javascript
+// Direct comparison is now possible
+if (credentials.expiresAt < Date.now() / 1000) {
+  // ...
+}
+
+// Or, use the new helper method (if you have an instance of the Credentials model):
+if (credentials.isExpired()) {
+  // ...
+}
+```
+
+### Change #3: Standardized `AuthError` Object
+
+All errors thrown by the library are now instances of a single, consistent `AuthError` class. This replaces multiple error types like `CredentialsManagerError`.
+
+**✅ Action Required:** Update your `try...catch` blocks to handle the new unified error object.
+
+**Before:**
+
+```javascript
+catch (e) {
+  // Inconsistent properties like e.error, e.error_description
+  console.error(e.message);
+}
+```
+
+**After:**
+
+```javascript
+import { AuthError } from 'react-native-auth0';
+
+catch (e) {
+  if (e instanceof AuthError) {
+    // Consistent properties are now available
+    console.error(e.name, e.message); // e.g., 'invalid_grant', 'The refresh token is invalid.'
+  }
+}
+```
+
+### Change #4: Updated `authorize` and `clearSession` Signatures
+
+For improved clarity, SDK-specific options (like `ephemeralSession`) have been moved into a separate, second `options` object.
+
+**✅ Action Required:** Restructure calls to `authorize` and `clearSession`.
+
+**Before:**
+
+```javascript
+// Mixed parameters and options
+await authorize({
+  scope: 'openid profile',
+  ephemeralSession: true,
+});
+```
+
+**After:**
+
+```javascript
+// Parameters and options are now separate arguments
+await authorize(
+  { scope: 'openid profile' }, // 1. OIDC / Auth0 Parameters
+  { ephemeralSession: true } // 2. SDK-Specific Options
+);
+```
 
 ## Upgrading from v3 -> v4
 
