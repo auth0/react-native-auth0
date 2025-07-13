@@ -43,7 +43,6 @@ export interface Auth0ContextInterface extends AuthState {
   /**
    * Clears the user's session and logs them out.
    * @param parameters The parameters to send to the `/v2/logout` endpoint.
-   * @param options Platform-specific options to customize the logout experience.
    * @returns A promise that resolves when the session has been cleared.
    * @throws {AuthError} If the logout fails.
    */

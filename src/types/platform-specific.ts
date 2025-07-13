@@ -3,7 +3,8 @@ import type { Auth0Options } from './common';
 // ========= Native Enums =========
 
 /**
- * @platform ios
+ * @remarks
+ * **Platform specific:** iOS only.
  * Presentation styles for the web-based login screen on iOS.
  * @see https://developer.apple.com/documentation/uikit/uimodalpresentationstyle
  */
@@ -21,7 +22,8 @@ export enum SafariViewControllerPresentationStyle {
 }
 
 /**
- * @platform android
+ * @remarks
+ * **Platform specific:** Android only.
  * The level of local authentication required to access credentials on Android.
  */
 export enum LocalAuthenticationLevel {
@@ -31,7 +33,8 @@ export enum LocalAuthenticationLevel {
 }
 
 /**
- * @platform ios
+ * @remarks
+ * **Platform specific:** iOS only.
  * The evaluation policy to use when accessing credentials on iOS.
  */
 export enum LocalAuthenticationStrategy {
@@ -42,7 +45,8 @@ export enum LocalAuthenticationStrategy {
 // ========= Native-Specific Options =========
 
 /**
- * @platform native
+ * @remarks
+ * **Platform specific:** Native only (iOS/Android).
  * Options for configuring local authentication (e.g., biometrics or device PIN).
  */
 export interface LocalAuthenticationOptions {
@@ -56,7 +60,8 @@ export interface LocalAuthenticationOptions {
 
 /**
  * Extends the core Auth0Options with native-specific configuration.
- * @platform native
+ * @remarks
+ * **Platform specific:** Native only (iOS/Android).
  */
 export interface NativeAuth0Options extends Auth0Options {
   localAuthenticationOptions?: LocalAuthenticationOptions;
@@ -64,7 +69,8 @@ export interface NativeAuth0Options extends Auth0Options {
 
 /**
  * Options specific to the `authorize` method on Native platforms.
- * @platform native
+ * @remarks
+ * **Platform specific:** Native only (iOS/Android).
  */
 export interface NativeAuthorizeOptions {
   /**
@@ -111,7 +117,8 @@ export interface NativeAuthorizeOptions {
 
 /**
  * Options specific to the `clearSession` method on Native platforms.
- * @platform native
+ * @remarks
+ * **Platform specific:** Native only (iOS/Android).
  */
 export interface NativeClearSessionOptions {
   /**
@@ -131,7 +138,8 @@ export interface NativeClearSessionOptions {
 /**
  * Extends the core Auth0Options with web-specific configuration
  * that is passed down to `@auth0/auth0-spa-js`.
- * @platform web
+ * @remarks
+ * **Platform specific:** Web only.
  * @see https://auth0.github.io/auth0-spa-js/interfaces/Auth0ClientOptions.html
  */
 export interface WebAuth0Options extends Auth0Options {
@@ -148,13 +156,15 @@ export interface WebAuth0Options extends Auth0Options {
 /**
  * Options specific to the `authorize` method on the Web platform.
  * (Currently a placeholder, can be extended later).
- * @platform web
+ * @remarks
+ * **Platform specific:** Web only.
  */
 export interface WebAuthorizeOptions {}
 
 /**
  * Options specific to the `clearSession` method on the Web platform.
  * (Currently a placeholder, can be extended later).
- * @platform web
+ * @remarks
+ * **Platform specific:** Web only.
  */
 export interface WebClearSessionOptions {}

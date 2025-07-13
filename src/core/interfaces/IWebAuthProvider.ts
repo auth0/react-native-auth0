@@ -48,10 +48,8 @@ export interface IWebAuthProvider {
    * Cancels an ongoing web authentication transaction.
    *
    * @remarks
-   * This is primarily used on iOS to handle scenarios where the user manually
+   * **Platform specific:** This is primarily used on iOS to handle scenarios where the user manually
    * dismisses the login modal. On other platforms, it may be a no-op.
-   * Cancels an ongoing web authentication transaction.
-   * @platform ios
    *
    * @returns A promise that resolves when the operation is complete.
    */
