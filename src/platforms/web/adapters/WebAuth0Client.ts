@@ -74,8 +74,8 @@ export class WebAuth0Client implements IAuth0Client {
 
     this.handleRedirect(client);
 
-    this.webAuth = new WebWebAuthProvider(this);
-    this.credentialsManager = new WebCredentialsManager(this);
+    this.webAuth = new WebWebAuthProvider(this.client);
+    this.credentialsManager = new WebCredentialsManager(this.client);
   }
 
   users(token: string): IUsersClient {

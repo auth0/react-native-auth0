@@ -4,10 +4,10 @@ import {
   AuthError,
   Credentials as CredentialsModel,
 } from '../../../core/models';
-import type { WebAuth0Client } from './WebAuth0Client';
+import type { Auth0Client } from '@auth0/auth0-spa-js';
 
 export class WebCredentialsManager implements ICredentialsManager {
-  constructor(private parent: WebAuth0Client) {}
+  constructor(private client: Auth0Client) {}
 
   async saveCredentials(_credentials: Credentials): Promise<void> {
     console.warn(
@@ -23,13 +23,13 @@ export class WebCredentialsManager implements ICredentialsManager {
     forceRefresh?: boolean
   ): Promise<Credentials> {
     try {
-      const tokenResponse = await this.parent.client.getTokenSilently({
+      const tokenResponse = await this.client.getTokenSilently({
         cacheMode: forceRefresh ? 'off' : 'on',
         authorizationParams: { ...parameters, scope },
         detailedResponse: true,
       });
 
-      const claims = await this.parent.client.getIdTokenClaims();
+      const claims = await this.client.getIdTokenClaims();
       if (!claims || !claims.exp) {
         throw new AuthError(
           'IdTokenMissing',
@@ -61,10 +61,10 @@ export class WebCredentialsManager implements ICredentialsManager {
   }
 
   async hasValidCredentials(): Promise<boolean> {
-    return this.parent.client.isAuthenticated();
+    return this.client.isAuthenticated();
   }
 
   async clearCredentials(): Promise<void> {
-    await this.parent.client.logout({ openUrl: false });
+    await this.client.logout({ openUrl: false });
   }
 }

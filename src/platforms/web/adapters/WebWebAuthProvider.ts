@@ -6,20 +6,21 @@ import type {
 } from '../../../types';
 import { AuthError } from '../../../core/models';
 import { finalizeScope } from '../../../core/utils';
-import type { WebAuth0Client } from './WebAuth0Client';
+import type { Auth0Client } from '@auth0/auth0-spa-js';
 
 export class WebWebAuthProvider implements IWebAuthProvider {
-  constructor(private parent: WebAuth0Client) {}
+  constructor(private client: Auth0Client) {}
 
   async authorize(
     parameters: WebAuthorizeParameters = {}
   ): Promise<Credentials> {
     const finalScope = finalizeScope(parameters.scope);
-    await this.parent.client.loginWithRedirect({
+    const { redirectUrl, ...restParams } = parameters;
+    await this.client.loginWithRedirect({
       authorizationParams: {
-        ...parameters,
+        ...restParams,
         scope: finalScope,
-        redirect_uri: parameters.redirectUrl,
+        redirect_uri: redirectUrl,
       },
     });
 
@@ -32,7 +33,7 @@ export class WebWebAuthProvider implements IWebAuthProvider {
 
   async clearSession(parameters: ClearSessionParameters = {}): Promise<void> {
     try {
-      await this.parent.client.logout({
+      await this.client.logout({
         logoutParams: {
           federated: parameters.federated,
           returnTo: parameters.returnToUrl,
