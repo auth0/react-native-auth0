@@ -118,7 +118,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         redirectUri?.let { builder.withRedirectUri(it) }
         
         builder.withParameters(cleanedParameters)
-        builder.start(reactContext.currentActivity,
+        builder.start(reactContext.currentActivity as Activity,
             object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
                 override fun onSuccess(result: Credentials) {
                     val map = CredentialsParser.toMap(result)
@@ -149,7 +149,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         auth0 = Auth0.getInstance(clientId, domain)
         
         localAuthenticationOptions?.let { options ->
-            val activity = currentActivity
+            val activity = reactContext.currentActivity
             if (activity is FragmentActivity) {
                 try {
                     val localAuthOptions = LocalAuthenticationOptionsParser.fromMap(options)
@@ -199,16 +199,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             return
         }
         
-        val currentDomain: String
-        try {
-            val domainUrl = URL(auth0!!.domainUrl.toString())
-            currentDomain = domainUrl.host
-        } catch (e: MalformedURLException) {
-            promise.reject(INVALID_DOMAIN_URL_ERROR_CODE, "Invalid domain URL", e)
-            return
-        }
-        
-        promise.resolve(auth0!!.clientId == clientId && currentDomain == domain)
+        promise.resolve(auth0!!.clientId == clientId && auth0!!.domain == domain)
     }
 
     @ReactMethod
