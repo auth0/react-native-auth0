@@ -45,6 +45,26 @@ export const Auth0Provider = ({
 
   useEffect(() => {
     const initialize = async () => {
+      const hasRedirectParams =
+        typeof window !== 'undefined' &&
+        (window?.location?.search?.includes('code=') ||
+          window?.location?.search?.includes('error=')) &&
+        window?.location?.search?.includes('state=');
+      if (hasRedirectParams) {
+        try {
+          // If it does, handle the redirect. This will exchange the code for tokens.
+          await client.webAuth.handleRedirectCallback();
+          // Clean the URL
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+          );
+        } catch (e) {
+          // If the redirect fails, dispatch an error.
+          dispatch({ type: 'ERROR', error: e as AuthError });
+        }
+      }
       try {
         const credentials = await client.credentialsManager.getCredentials();
         const user = credentials

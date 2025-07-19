@@ -72,8 +72,6 @@ export class WebAuth0Client implements IAuth0Client {
     const client = getSpaClient(clientOptions);
     this.client = client;
 
-    this.handleRedirect(client);
-
     this.webAuth = new WebWebAuthProvider(this.client);
     this.credentialsManager = new WebCredentialsManager(this.client);
   }
@@ -102,32 +100,6 @@ export class WebAuth0Client implements IAuth0Client {
         e.error_description ?? e.message,
         { json: e }
       );
-    }
-  }
-
-  private async handleRedirect(client: Auth0Client): Promise<void> {
-    if (redirectHandled) {
-      return;
-    }
-
-    if (
-      typeof window !== 'undefined' &&
-      window.location.search.includes('code=') &&
-      window.location.search.includes('state=')
-    ) {
-      redirectHandled = true; // Mark as handled to prevent re-running
-
-      try {
-        await client.handleRedirectCallback();
-      } catch (e) {
-        console.error('Error during handleRedirectCallback:', e);
-      } finally {
-        window.history.replaceState(
-          {},
-          document.title,
-          window.location.pathname
-        );
-      }
     }
   }
 }
