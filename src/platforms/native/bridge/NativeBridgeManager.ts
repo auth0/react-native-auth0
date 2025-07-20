@@ -126,15 +126,16 @@ export class NativeBridgeManager implements INativeBridge {
   async getCredentials(
     scope?: string,
     minTtl?: number,
+    parameters?: Record<string, any>,
     forceRefresh?: boolean
   ): Promise<Credentials> {
     // Assuming the native side can take an empty object for parameters.
-    const parameters = {};
+    const params = parameters ?? {};
     return this.a0_call(
       Auth0NativeModule.getCredentials,
       scope,
       minTtl ?? 0,
-      parameters,
+      params,
       forceRefresh ?? false
     );
   }

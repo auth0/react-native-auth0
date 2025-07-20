@@ -90,6 +90,7 @@ export interface INativeBridge {
   getCredentials(
     scope?: string,
     minTtl?: number,
+    parameters?: object,
     forceRefresh?: boolean
   ): Promise<Credentials>;
 

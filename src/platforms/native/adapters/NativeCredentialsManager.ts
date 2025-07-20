@@ -17,13 +17,10 @@ export class NativeCredentialsManager implements ICredentialsManager {
   getCredentials(
     scope?: string,
     minTtl?: number,
-    // Note: _parameters is not used here as the native side handles additional
-    // parameters internally during the refresh flow. We accept it for
-    // interface compliance.
-    _parameters?: Record<string, any>,
+    parameters?: Record<string, any>,
     forceRefresh?: boolean
   ): Promise<Credentials> {
-    return this.bridge.getCredentials(scope, minTtl, forceRefresh);
+    return this.bridge.getCredentials(scope, minTtl, parameters, forceRefresh);
   }
 
   hasValidCredentials(minTtl?: number): Promise<boolean> {
