@@ -31,9 +31,9 @@ export class WebWebAuthProvider implements IWebAuthProvider {
     return new Promise(() => {});
   }
 
-  async handleRedirectCallback(url?: string): Promise<RedirectLoginResult> {
+  async handleRedirectCallback(url?: string): Promise<void> {
     try {
-      return await this.client.handleRedirectCallback(url);
+      await this.client.handleRedirectCallback(url);
     } catch (e: any) {
       throw new AuthError(
         e.error ?? 'RedirectCallbackError',

@@ -14,24 +14,6 @@ import {
 import { HttpClient } from '../../../core/services/HttpClient';
 import { AuthError } from '../../../core/models';
 
-let spaClient: Auth0Client | null = null;
-let redirectHandled = false;
-
-/**
- * Factory function to get a singleton instance of Auth0Client.
- * This ensures that the client is only created once and reused.
- *
- * @param options - The Auth0ClientOptions to configure the client.
- * @returns An instance of Auth0Client.
- */
-const getSpaClient = (options: Auth0ClientOptions): Auth0Client => {
-  if (spaClient) {
-    return spaClient;
-  }
-  spaClient = new Auth0Client(options);
-  return spaClient;
-};
-
 export class WebAuth0Client implements IAuth0Client {
   readonly webAuth: WebWebAuthProvider;
   readonly credentialsManager: WebCredentialsManager;
@@ -39,8 +21,32 @@ export class WebAuth0Client implements IAuth0Client {
 
   private readonly httpClient: HttpClient;
   public readonly client: Auth0Client;
+  private static spaClient: Auth0Client | null = null;
 
   private logoutInProgress = false;
+
+  /**
+   * Factory method to get a singleton instance of Auth0Client.
+   * This ensures that the client is only created once and reused.
+   *
+   * @param options - The Auth0ClientOptions to configure the client.
+   * @returns An instance of Auth0Client.
+   */
+  private static getSpaClient(options: Auth0ClientOptions): Auth0Client {
+    if (WebAuth0Client.spaClient) {
+      return WebAuth0Client.spaClient;
+    }
+    WebAuth0Client.spaClient = new Auth0Client(options);
+    return WebAuth0Client.spaClient;
+  }
+
+  /**
+   * Reset the singleton instance. Used for testing purposes.
+   * @internal
+   */
+  public static resetSpaClientSingleton(): void {
+    WebAuth0Client.spaClient = null;
+  }
 
   constructor(options: WebAuth0Options) {
     const baseUrl = `https://${options.domain}`;
@@ -69,7 +75,7 @@ export class WebAuth0Client implements IAuth0Client {
     };
 
     // Use the singleton factory to get the spa-js client instance.
-    const client = getSpaClient(clientOptions);
+    const client = WebAuth0Client.getSpaClient(clientOptions);
     this.client = client;
 
     this.webAuth = new WebWebAuthProvider(this.client);

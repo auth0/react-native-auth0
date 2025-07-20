@@ -209,7 +209,7 @@ class ClassApp extends React.Component<{}, ClassAppState> {
         token: credentials.accessToken,
       });
       this.setState({ user, result: credentials, isLoading: false });
-    } catch (e) {
+    } catch {
       this.setState({ user: null, isLoading: false });
     }
   };

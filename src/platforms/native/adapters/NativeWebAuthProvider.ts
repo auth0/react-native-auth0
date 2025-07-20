@@ -11,6 +11,9 @@ import type {
 } from '../../../types/platform-specific';
 import type { INativeBridge } from '../bridge';
 import { finalizeScope } from '../../../core/utils';
+import { AuthError } from '../../../core/models';
+
+const webAuthNotSupported = 'This Method is only available in web platform.';
 
 /**
  * A native platform-specific implementation of the IWebAuthProvider.
@@ -21,6 +24,9 @@ export class NativeWebAuthProvider implements IWebAuthProvider {
     private bridge: INativeBridge,
     private domain: string
   ) {}
+  handleRedirectCallback(): Promise<void> {
+    throw new AuthError('NotImplemented', webAuthNotSupported);
+  }
 
   async authorize(
     parameters: WebAuthorizeParameters = {},
