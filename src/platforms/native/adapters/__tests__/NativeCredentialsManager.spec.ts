@@ -69,6 +69,7 @@ describe('NativeCredentialsManager', () => {
       expect(mockBridge.getCredentials).toHaveBeenCalledWith(
         scope,
         minTtl,
+        undefined,
         forceRefresh
       );
     });
@@ -79,6 +80,7 @@ describe('NativeCredentialsManager', () => {
       // Note: The orchestrator provides defaults, but we test the adapter's pass-through behavior.
       // Our adapter doesn't set defaults, it just passes what it receives.
       expect(mockBridge.getCredentials).toHaveBeenCalledWith(
+        undefined,
         undefined,
         undefined,
         undefined

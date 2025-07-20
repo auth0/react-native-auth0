@@ -142,7 +142,7 @@ describe('NativeBridgeManager', () => {
       const minTtl = 300;
       const forceRefresh = true;
 
-      await bridge.getCredentials(scope, minTtl, forceRefresh);
+      await bridge.getCredentials(scope, minTtl, {}, forceRefresh);
 
       expect(MockedAuth0NativeModule.getCredentials).toHaveBeenCalledWith(
         scope,
