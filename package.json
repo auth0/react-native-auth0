@@ -36,6 +36,7 @@
     "docs": "typedoc",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "lint:fix": "eslint \"**/*.{js,ts,tsx}\" --fix",
     "release": "release-it",
     "ci": "yarn install --immutable && yarn prepare",
     "clean": "del-cli lib out android/build example/android/build example/android/app/build example/ios/build",
