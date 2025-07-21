@@ -120,7 +120,9 @@ additionalParameters:(NSDictionary * _Nullable)additionalParameters
     NSInteger maxAgeValue = maxAge != nil ? [maxAge integerValue] : 0;
     NSInteger leewayValue = leeway != nil ? [leeway integerValue] : 0;
     NSInteger safariStyleValue = safariViewControllerPresentationStyle != nil ? [safariViewControllerPresentationStyle integerValue] : 0;
-    [self.nativeBridge webAuthWithScheme:scheme state:state redirectUri:redirectUri nonce:nonce audience:audience scope:scope connection:connection maxAge:maxAgeValue organization:organization invitationUrl:invitationUrl leeway:leewayValue ephemeralSession:ephemeralSession safariViewControllerPresentationStyle:safariStyleValue additionalParameters:additionalParameters resolve:resolve reject:reject];
+    BOOL ephemeralSessionBool = [ephemeralSession boolValue];
+    
+    [self.nativeBridge webAuthWithScheme:scheme state:state redirectUri:redirectUri nonce:nonce audience:audience scope:scope connection:connection maxAge:maxAgeValue organization:organization invitationUrl:invitationUrl leeway:leewayValue ephemeralSession:ephemeralSessionBool safariViewControllerPresentationStyle:safariStyleValue additionalParameters:additionalParameters resolve:resolve reject:reject];
 }
 
 

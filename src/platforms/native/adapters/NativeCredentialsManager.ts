@@ -1,4 +1,6 @@
 import type { ICredentialsManager } from '../../../core/interfaces';
+import type { AuthError } from '../../../core/models';
+import { CredentialsManagerError } from '../../../core/models/CredentialsManagerError';
 import type { Credentials } from '../../../types';
 import type { INativeBridge } from '../bridge';
 
@@ -10,27 +12,35 @@ import type { INativeBridge } from '../bridge';
 export class NativeCredentialsManager implements ICredentialsManager {
   constructor(private bridge: INativeBridge) {}
 
+  private async handleError<T>(promise: Promise<T>): Promise<T> {
+    try {
+      return await promise;
+    } catch (e) {
+      // Assume the bridge only throws AuthError.
+      throw new CredentialsManagerError(e as AuthError);
+    }
+  }
+
   saveCredentials(credentials: Credentials): Promise<void> {
-    return this.bridge.saveCredentials(credentials);
+    return this.handleError(this.bridge.saveCredentials(credentials));
   }
 
   getCredentials(
     scope?: string,
     minTtl?: number,
-    // Note: _parameters is not used here as the native side handles additional
-    // parameters internally during the refresh flow. We accept it for
-    // interface compliance.
-    _parameters?: Record<string, any>,
+    parameters?: Record<string, any>,
     forceRefresh?: boolean
   ): Promise<Credentials> {
-    return this.bridge.getCredentials(scope, minTtl, forceRefresh);
+    return this.handleError(
+      this.bridge.getCredentials(scope, minTtl, parameters, forceRefresh)
+    );
   }
 
   hasValidCredentials(minTtl?: number): Promise<boolean> {
-    return this.bridge.hasValidCredentials(minTtl);
+    return this.handleError(this.bridge.hasValidCredentials(minTtl));
   }
 
   clearCredentials(): Promise<void> {
-    return this.bridge.clearCredentials();
+    return this.handleError(this.bridge.clearCredentials());
   }
 }

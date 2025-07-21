@@ -44,6 +44,8 @@ describe('WebWebAuthProvider', () => {
         connection: 'Username-Password-Authentication',
         redirectUrl: 'https://app.com/callback',
         scope: 'openid profile read:data',
+        state: 'custom-state',
+        nonce: 'custom-nonce',
       };
 
       // Re-configure the mock scope utility for this specific test
@@ -58,16 +60,27 @@ describe('WebWebAuthProvider', () => {
           connection: parameters.connection,
           scope: 'openid profile read:data',
           redirect_uri: parameters.redirectUrl,
+          state: parameters.state,
+          nonce: parameters.nonce,
         },
       });
     });
 
-    it('should throw an error to interrupt the app flow, as it redirects', async () => {
-      // This confirms the promise doesn't resolve with credentials, which is correct behavior for a redirect.
-      // It should hang until Jest times it out, but we can check if it throws our specific Redirecting error.
-      // In your latest implementation, it just returns a hanging promise. Let's test that it doesn't resolve or reject quickly.
-      const authorizePromise = provider.authorize({});
+    it('should handle empty parameters by using defaults', () => {
+      mockFinalizeScope.mockReturnValue('openid profile email');
 
+      provider.authorize({});
+
+      expect(mockSpaClient.loginWithRedirect).toHaveBeenCalledWith({
+        authorizationParams: {
+          scope: 'openid profile email',
+          redirect_uri: undefined,
+        },
+      });
+    });
+
+    it('should return a never-resolving promise to simulate redirect behavior', async () => {
+      const authorizePromise = provider.authorize({});
       const timeout = new Promise((resolve) => setTimeout(resolve, 100));
 
       // We expect the test to finish (due to timeout) before the authorizePromise resolves.
@@ -75,6 +88,85 @@ describe('WebWebAuthProvider', () => {
       await expect(
         Promise.race([authorizePromise, timeout])
       ).resolves.toBeUndefined();
+    });
+  });
+
+  describe('handleRedirectCallback', () => {
+    it('should call the client handleRedirectCallback method with provided URL', async () => {
+      const expectedResult = {
+        appState: { returnTo: '/dashboard' },
+        user: { sub: 'auth0|123', name: 'Test User' },
+      };
+      mockSpaClient.handleRedirectCallback.mockResolvedValue(expectedResult);
+
+      await provider.handleRedirectCallback(
+        'https://app.com/callback?code=123'
+      );
+
+      expect(mockSpaClient.handleRedirectCallback).toHaveBeenCalledWith(
+        'https://app.com/callback?code=123'
+      );
+    });
+
+    it('should call the client handleRedirectCallback method without URL when none provided', async () => {
+      const expectedResult = {
+        appState: { returnTo: '/dashboard' },
+        user: { sub: 'auth0|123', name: 'Test User' },
+      };
+      mockSpaClient.handleRedirectCallback.mockResolvedValue(expectedResult);
+
+      await provider.handleRedirectCallback();
+
+      expect(mockSpaClient.handleRedirectCallback).toHaveBeenCalledWith(
+        undefined
+      );
+    });
+
+    it('should throw AuthError when handleRedirectCallback fails', async () => {
+      const callbackError = {
+        error: 'invalid_request',
+        error_description: 'Invalid authorization code',
+      };
+      mockSpaClient.handleRedirectCallback.mockRejectedValue(callbackError);
+
+      await expect(provider.handleRedirectCallback()).rejects.toThrow(
+        AuthError
+      );
+      await expect(provider.handleRedirectCallback()).rejects.toMatchObject({
+        name: 'invalid_request',
+        message: 'Invalid authorization code',
+      });
+    });
+
+    it('should handle errors without error_description by using the message', async () => {
+      const callbackError = {
+        error: 'callback_error',
+        message: 'Something went wrong during callback',
+      };
+      mockSpaClient.handleRedirectCallback.mockRejectedValue(callbackError);
+
+      await expect(provider.handleRedirectCallback()).rejects.toThrow(
+        AuthError
+      );
+      await expect(provider.handleRedirectCallback()).rejects.toMatchObject({
+        name: 'callback_error',
+        message: 'Something went wrong during callback',
+      });
+    });
+
+    it('should handle errors without error or error_description by using defaults', async () => {
+      const callbackError = {
+        message: 'Unknown callback error',
+      };
+      mockSpaClient.handleRedirectCallback.mockRejectedValue(callbackError);
+
+      await expect(provider.handleRedirectCallback()).rejects.toThrow(
+        AuthError
+      );
+      await expect(provider.handleRedirectCallback()).rejects.toMatchObject({
+        name: 'RedirectCallbackError',
+        message: 'Unknown callback error',
+      });
     });
   });
 
@@ -96,6 +188,28 @@ describe('WebWebAuthProvider', () => {
       });
     });
 
+    it('should handle empty parameters by using defaults', async () => {
+      await provider.clearSession({});
+
+      expect(mockSpaClient.logout).toHaveBeenCalledWith({
+        logoutParams: {
+          returnTo: undefined,
+          federated: undefined,
+        },
+      });
+    });
+
+    it('should handle undefined parameters', async () => {
+      await provider.clearSession();
+
+      expect(mockSpaClient.logout).toHaveBeenCalledWith({
+        logoutParams: {
+          returnTo: undefined,
+          federated: undefined,
+        },
+      });
+    });
+
     it('should throw an AuthError if the client logout fails', async () => {
       const logoutError = {
         error: 'logout_failed',
@@ -106,6 +220,34 @@ describe('WebWebAuthProvider', () => {
       await expect(provider.clearSession()).rejects.toThrow(AuthError);
       await expect(provider.clearSession()).rejects.toMatchObject({
         name: 'logout_failed',
+        message: 'Could not log out',
+      });
+    });
+
+    it('should handle logout errors without error_description by using the message', async () => {
+      const logoutError = {
+        error: 'logout_error',
+        message: 'Logout operation failed',
+      };
+      mockSpaClient.logout.mockRejectedValue(logoutError);
+
+      await expect(provider.clearSession()).rejects.toThrow(AuthError);
+      await expect(provider.clearSession()).rejects.toMatchObject({
+        name: 'logout_error',
+        message: 'Logout operation failed',
+      });
+    });
+
+    it('should handle logout errors without error or error_description by using defaults', async () => {
+      const logoutError = {
+        message: 'Unknown logout error',
+      };
+      mockSpaClient.logout.mockRejectedValue(logoutError);
+
+      await expect(provider.clearSession()).rejects.toThrow(AuthError);
+      await expect(provider.clearSession()).rejects.toMatchObject({
+        name: 'LogoutFailed',
+        message: 'Unknown logout error',
       });
     });
   });

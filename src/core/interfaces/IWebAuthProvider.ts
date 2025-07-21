@@ -33,6 +33,15 @@ export interface IWebAuthProvider {
   ): Promise<Credentials>;
 
   /**
+   * Handles the redirect callback after authentication.
+   *
+   * @remarks
+   * **Platform specific:** This method is only available in the context of a web application.
+   * @returns A promise that resolves when the redirect callback has been processed.
+   */
+  handleRedirectCallback(): Promise<void>;
+
+  /**
    * Clears the user's session, including any cookies stored in the browser.
    *
    * @param parameters The parameters to send to the `/v2/logout` endpoint.

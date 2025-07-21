@@ -87,6 +87,7 @@ const createMockClient = () => {
       authorize: jest.fn().mockResolvedValue(mockCredentials),
       clearSession: jest.fn().mockResolvedValue(undefined),
       cancelWebAuth: jest.fn().mockResolvedValue(undefined),
+      handleRedirectCallback: jest.fn().mockResolvedValue(undefined),
     },
     credentialsManager: {
       hasValidCredentials: jest.fn().mockResolvedValue(false),
@@ -112,6 +113,7 @@ const createMockClient = () => {
       refreshToken: jest.fn(),
       revoke: jest.fn(),
       userInfo: jest.fn(),
+      passwordRealm: jest.fn(),
     },
     users: jest.fn(),
   };
@@ -185,21 +187,45 @@ describe('Auth0Provider', () => {
     MockAuth0User.fromIdToken.mockReturnValue(mockUser as any);
   });
 
-  it('should render a loading state initially', () => {
-    render(
-      <Auth0Provider domain="test.com" clientId="123">
-        <TestConsumer />
-      </Auth0Provider>
+  it('should render a loading state initially', async () => {
+    // Make getCredentials return a promise that we can control
+    let resolveCredentials: (value: any) => void;
+    const credentialsPromise = new Promise((resolve) => {
+      resolveCredentials = resolve;
+    });
+    mockClientInstance.credentialsManager.getCredentials.mockReturnValue(
+      credentialsPromise
     );
+
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
+    // Should show loading state initially
     expect(screen.getByTestId('loading')).toBeDefined();
+
+    // Resolve the credentials promise
+    await act(async () => {
+      resolveCredentials!(null);
+    });
+
+    // Now it should show the "not logged in" state
+    await waitFor(() => expect(screen.queryByTestId('loading')).toBeNull());
   });
 
   it('should initialize with no user if no valid credentials exist', async () => {
-    render(
-      <Auth0Provider domain="test.com" clientId="123">
-        <TestConsumer />
-      </Auth0Provider>
-    );
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
     await waitFor(() => expect(screen.queryByTestId('loading')).toBeNull());
     expect(
       mockClientInstance.credentialsManager.getCredentials
@@ -216,11 +242,13 @@ describe('Auth0Provider', () => {
       expiresAt: Date.now() / 1000 + 3600,
     } as any);
 
-    render(
-      <Auth0Provider domain="test.com" clientId="123">
-        <TestConsumer />
-      </Auth0Provider>
-    );
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId('user-status')).toHaveTextContent(
@@ -232,11 +260,14 @@ describe('Auth0Provider', () => {
   });
 
   it('should update the state correctly after a successful authorize call', async () => {
-    render(
-      <Auth0Provider domain="test.com" clientId="123">
-        <TestConsumer />
-      </Auth0Provider>
-    );
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
     await waitFor(() =>
       expect(screen.getByTestId('user-status')).toHaveTextContent(
         'Not logged in'
@@ -268,11 +299,14 @@ describe('Auth0Provider', () => {
       expiresAt: Date.now() / 1000 + 3600,
     } as any);
 
-    render(
-      <Auth0Provider domain="test.com" clientId="123">
-        <TestConsumer />
-      </Auth0Provider>
-    );
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
     await waitFor(() =>
       expect(screen.getByTestId('user-status')).toHaveTextContent(
         'Logged in as: Test User'
@@ -302,11 +336,14 @@ describe('Auth0Provider', () => {
     };
     mockClientInstance.webAuth.authorize.mockRejectedValueOnce(loginError);
 
-    render(
-      <Auth0Provider domain="test.com" clientId="123">
-        <TestConsumer />
-      </Auth0Provider>
-    );
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
     await waitFor(() =>
       expect(screen.getByTestId('user-status')).toHaveTextContent(
         'Not logged in'
@@ -334,11 +371,14 @@ describe('Auth0Provider', () => {
   });
 
   it('should call createUser but not change the login state', async () => {
-    render(
-      <Auth0Provider domain="test.com" clientId="123">
-        <TestConsumer />
-      </Auth0Provider>
-    );
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
     await waitFor(() =>
       expect(screen.getByTestId('user-status')).toHaveTextContent(
         'Not logged in'
@@ -358,11 +398,14 @@ describe('Auth0Provider', () => {
   });
 
   it('should call resetPassword and not change the login state', async () => {
-    render(
-      <Auth0Provider domain="test.com" clientId="123">
-        <TestConsumer />
-      </Auth0Provider>
-    );
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
     await waitFor(() =>
       expect(screen.getByTestId('user-status')).toHaveTextContent(
         'Not logged in'
