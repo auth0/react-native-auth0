@@ -73,36 +73,7 @@ To align with modern JavaScript standards, all properties on the `user` object a
 | `user.phone_number`   | `user.phoneNumber`   |
 | ...and so on.         |                      |
 
-### Change #2: Credentials Object uses `expiresAt`
-
-The `Credentials` object no longer includes `expiresIn` (a duration). It now provides `expiresAt`, an absolute **UNIX timestamp** (in seconds), making expiration checks simpler and less error-prone.
-
-**✅ Action Required:** Replace all logic using `expiresIn` with `expiresAt`.
-
-**Before:**
-
-```javascript
-const expiresAt = Date.now() / 1000 + credentials.expiresIn;
-if (isExpired(expiresAt)) {
-  // ...
-}
-```
-
-**After:**
-
-```javascript
-// Direct comparison is now possible
-if (credentials.expiresAt < Date.now() / 1000) {
-  // ...
-}
-
-// Or, use the new helper method (if you have an instance of the Credentials model):
-if (credentials.isExpired()) {
-  // ...
-}
-```
-
-### Change #3: Standardized `AuthError` Object
+### Change #2: Standardized `AuthError` Object
 
 All errors thrown by the library are now instances of a single, consistent `AuthError` class. This replaces multiple error types like `CredentialsManagerError`.
 

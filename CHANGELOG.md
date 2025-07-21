@@ -4,13 +4,16 @@
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0-beta.3...v5.0.0-beta.4)
 
+**💡 Major Refactor**: Version 5.0 features a complete architectural overhaul for improved performance, maintainability, and multi-platform extensibility. Check the [Migration Guide](https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md) for detailed upgrade instructions.
+
 **⚠️ BREAKING CHANGES**
 
 - feat: architectural refactor for multi-platform extensibility [\#1233](https://github.com/auth0/react-native-auth0/pull/1233) ([subhankarmaiti](https://github.com/subhankarmaiti))
 
 **Added**
 
-- Update README.md [\#1183](https://github.com/auth0/react-native-auth0/pull/1183) ([tinchomengo](https://github.com/tinchomengo))
+- Fix Documentation Typo: 'retreive' → 'retrieve' [\#1183](https://github.com/auth0/react-native-auth0/pull/1183) ([tinchomengo](https://github.com/tinchomengo))
+- feat: added react native web support [\#1233](https://github.com/auth0/react-native-auth0/pull/1233) ([subhankarmaiti](https://github.com/subhankarmaiti))
 
 **Changed**
 
