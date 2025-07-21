@@ -101,6 +101,35 @@ catch (e) {
 }
 ```
 
+### Change #3: Platform-Specific API Availability
+
+With the introduction of **React Native Web support**, some methods are only available on native platforms for security reasons. Direct authentication grants that handle user credentials (like passwords or OTP codes) are **not supported in the browser** and will throw a `NotImplemented` error.
+
+**✅ Action Required:** If you are building for the web, ensure all authentication flows are initiated via the redirect-based `authorize()` method. Review the platform support table in the [README](README.md#features-and-platform-support) for a full list of platform-specific methods.
+
+### Change #4: `authorize()` Behavior on Web
+
+On React Native Web, the `authorize()` method now triggers a **full-page redirect** to Auth0. As a result, the promise returned by `authorize()` will **not resolve** in the browser. Your application must be structured to handle the user state upon reloading after the redirect.
+
+**✅ Action Required:** Review the new **[FAQ entry](#faq-authorize-web)** for guidance on how to correctly handle the post-login flow on the web. The `Auth0Provider` and `useAuth0` hook are designed to manage this flow automatically.
+
+### Change #5: New Peer Dependency for Web Support
+
+To support the web platform, the library now has an **optional peer dependency** on `@auth0/auth0-spa-js`.
+
+**✅ Action Required:** If you are using `react-native-auth0` in a React Native Web project, you **must** install this package. Native-only projects can ignore this.
+
+```bash
+npm install @auth0/auth0-spa-js
+```
+
+### Recommended Reading
+
+After migrating, we highly recommend reviewing the updated **[FAQ](FAQ.md)** for detailed explanations on:
+
+- How to handle the `authorize()` redirect flow on the web.
+- The importance of the `offline_access` scope for keeping users logged in.
+
 ## Upgrading from v3 -> v4
 
 - **If your project is built with Expo:**
