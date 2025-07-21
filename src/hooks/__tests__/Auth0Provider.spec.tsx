@@ -1,0 +1,425 @@
+import React from 'react';
+import {
+  render,
+  screen,
+  act,
+  waitFor,
+  fireEvent,
+} from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { Auth0Provider, useAuth0 } from '..';
+import Auth0 from '../../index';
+import { Auth0User } from '../../core/models';
+
+// Mock TurboModuleRegistry first
+jest.mock('react-native/Libraries/TurboModule/TurboModuleRegistry', () => ({
+  getEnforcing: jest.fn(() => ({
+    hasValidInstance: jest.fn().mockResolvedValue(true),
+    initialize: jest.fn().mockResolvedValue(undefined),
+    authorize: jest.fn(),
+    clearSession: jest.fn(),
+    getCredentials: jest.fn(),
+    saveCredentials: jest.fn(),
+    hasValidCredentials: jest.fn(),
+    clearCredentials: jest.fn(),
+    getBundleIdentifier: jest.fn().mockResolvedValue('com.test.app'),
+    cancelWebAuth: jest.fn(),
+    resumeWebAuth: jest.fn(),
+  })),
+}));
+
+// Mock React Native components for testing
+jest.mock('react-native', () => ({
+  Text: ({ children, testID }: any) => (
+    <span data-testid={testID}>{children}</span>
+  ),
+  View: ({ children, testID }: any) => (
+    <div data-testid={testID}>{children}</div>
+  ),
+  Button: ({ title, onPress, testID }: any) => (
+    <button data-testid={testID} onClick={onPress}>
+      {title}
+    </button>
+  ),
+  Platform: { OS: 'ios' },
+  Linking: {
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+  },
+  TurboModuleRegistry: {
+    getEnforcing: jest.fn(() => ({
+      hasValidInstance: jest.fn().mockResolvedValue(true),
+      initialize: jest.fn().mockResolvedValue(undefined),
+      authorize: jest.fn(),
+      clearSession: jest.fn(),
+      getCredentials: jest.fn(),
+      saveCredentials: jest.fn(),
+      hasValidCredentials: jest.fn(),
+      clearCredentials: jest.fn(),
+      getBundleIdentifier: jest.fn().mockResolvedValue('com.test.app'),
+      cancelWebAuth: jest.fn(),
+      resumeWebAuth: jest.fn(),
+    })),
+  },
+}));
+
+// 1. Mock the top-level Auth0 facade
+jest.mock('../../index');
+const MockAuth0 = Auth0 as jest.MockedClass<typeof Auth0>;
+
+// Mock the Auth0User model's factory method
+jest.mock('../../core/models/Auth0User');
+const MockAuth0User = Auth0User as jest.MockedClass<typeof Auth0User>;
+
+// 2. A more complete mock client factory
+const createMockClient = () => {
+  const mockCredentials = {
+    idToken: 'a.b.c', // Content doesn't matter since fromIdToken is mocked
+    accessToken: 'access-token-123',
+    tokenType: 'Bearer',
+    expiresAt: Date.now() / 1000 + 3600,
+  };
+
+  const mockNewUser = { name: 'New User', sub: 'new|123' };
+
+  return {
+    webAuth: {
+      authorize: jest.fn().mockResolvedValue(mockCredentials),
+      clearSession: jest.fn().mockResolvedValue(undefined),
+      cancelWebAuth: jest.fn().mockResolvedValue(undefined),
+      handleRedirectCallback: jest.fn().mockResolvedValue(undefined),
+    },
+    credentialsManager: {
+      hasValidCredentials: jest.fn().mockResolvedValue(false),
+      getCredentials: jest.fn().mockResolvedValue(null),
+      clearCredentials: jest.fn().mockResolvedValue(undefined),
+      saveCredentials: jest.fn().mockResolvedValue(undefined),
+    },
+    auth: {
+      loginWithPasswordRealm: jest.fn().mockResolvedValue(mockCredentials),
+      createUser: jest.fn().mockResolvedValue(mockNewUser),
+      resetPassword: jest.fn().mockResolvedValue(undefined),
+      // Add other auth methods as stubs
+      exchange: jest.fn(),
+      exchangeNativeSocial: jest.fn(),
+      loginWithEmail: jest.fn(),
+      loginWithOTP: jest.fn(),
+      loginWithOOB: jest.fn(),
+      loginWithRecoveryCode: jest.fn(),
+      loginWithSMS: jest.fn(),
+      multifactorChallenge: jest.fn(),
+      passwordlessWithEmail: jest.fn(),
+      passwordlessWithSMS: jest.fn(),
+      refreshToken: jest.fn(),
+      revoke: jest.fn(),
+      userInfo: jest.fn(),
+      passwordRealm: jest.fn(),
+    },
+    users: jest.fn(),
+  };
+};
+
+// Import React Native components after mocking
+const { Text, View, Button } = require('react-native');
+
+// 3. A more comprehensive consumer component
+const TestConsumer = () => {
+  const {
+    user,
+    error,
+    isLoading,
+    authorize,
+    clearSession,
+    createUser,
+    resetPassword,
+  } = useAuth0();
+
+  if (isLoading) {
+    return <Text testID="loading">Loading...</Text>;
+  }
+
+  if (error) {
+    return <Text testID="error">Error: {error.message}</Text>;
+  }
+
+  return (
+    <View testID="main">
+      {user ? (
+        <Text testID="user-status">Logged in as: {user.name}</Text>
+      ) : (
+        <Text testID="user-status">Not logged in</Text>
+      )}
+      <Button
+        title="Log In"
+        onPress={() => authorize().catch(() => {})} // Catch the error to prevent unhandled rejection
+        testID="login-button"
+      />
+      <Button
+        title="Log Out"
+        onPress={() => clearSession()}
+        testID="logout-button"
+      />
+      <Button
+        title="Create User"
+        onPress={() =>
+          createUser({ email: 'a', password: 'b', connection: 'c' })
+        }
+        testID="create-user-button"
+      />
+      <Button
+        title="Reset Password"
+        onPress={() => resetPassword({ email: 'a', connection: 'c' })}
+        testID="reset-password-button"
+      />
+    </View>
+  );
+};
+
+describe('Auth0Provider', () => {
+  let mockClientInstance: ReturnType<typeof createMockClient>;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockClientInstance = createMockClient();
+    MockAuth0.mockImplementation(() => mockClientInstance as any);
+    // Mock the user returned by the fromIdToken static method
+    const mockUser = { name: 'Test User', sub: 'auth0|12345' };
+    MockAuth0User.fromIdToken.mockReturnValue(mockUser as any);
+  });
+
+  it('should render a loading state initially', async () => {
+    // Make getCredentials return a promise that we can control
+    let resolveCredentials: (value: any) => void;
+    const credentialsPromise = new Promise((resolve) => {
+      resolveCredentials = resolve;
+    });
+    mockClientInstance.credentialsManager.getCredentials.mockReturnValue(
+      credentialsPromise
+    );
+
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
+    // Should show loading state initially
+    expect(screen.getByTestId('loading')).toBeDefined();
+
+    // Resolve the credentials promise
+    await act(async () => {
+      resolveCredentials!(null);
+    });
+
+    // Now it should show the "not logged in" state
+    await waitFor(() => expect(screen.queryByTestId('loading')).toBeNull());
+  });
+
+  it('should initialize with no user if no valid credentials exist', async () => {
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
+    await waitFor(() => expect(screen.queryByTestId('loading')).toBeNull());
+    expect(
+      mockClientInstance.credentialsManager.getCredentials
+    ).toHaveBeenCalled();
+    expect(screen.getByTestId('user-status')).toHaveTextContent(
+      'Not logged in'
+    );
+  });
+
+  it('should initialize with a user if valid credentials exist', async () => {
+    mockClientInstance.credentialsManager.getCredentials.mockResolvedValueOnce({
+      idToken: 'a.b.c',
+      accessToken: 'valid-token',
+      expiresAt: Date.now() / 1000 + 3600,
+    } as any);
+
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('user-status')).toHaveTextContent(
+        'Logged in as: Test User'
+      );
+    });
+    // Ensure fromIdToken was called with the correct ID token
+    expect(MockAuth0User.fromIdToken).toHaveBeenCalledWith('a.b.c');
+  });
+
+  it('should update the state correctly after a successful authorize call', async () => {
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('user-status')).toHaveTextContent(
+        'Not logged in'
+      )
+    );
+
+    const loginButton = screen.getByTestId('login-button');
+    await act(async () => {
+      fireEvent.click(loginButton);
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('user-status')).toHaveTextContent(
+        'Logged in as: Test User'
+      )
+    );
+    expect(mockClientInstance.webAuth.authorize).toHaveBeenCalled();
+    expect(
+      mockClientInstance.credentialsManager.saveCredentials
+    ).toHaveBeenCalled();
+  });
+
+  it('should update the state correctly after a clearSession call', async () => {
+    // Start with a logged-in state
+    mockClientInstance.credentialsManager.getCredentials.mockResolvedValueOnce({
+      idToken: 'a.b.c',
+      accessToken: 'access-token-123',
+      tokenType: 'Bearer',
+      expiresAt: Date.now() / 1000 + 3600,
+    } as any);
+
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('user-status')).toHaveTextContent(
+        'Logged in as: Test User'
+      )
+    );
+
+    const logoutButton = screen.getByTestId('logout-button');
+    await act(async () => {
+      fireEvent.click(logoutButton);
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('user-status')).toHaveTextContent(
+        'Not logged in'
+      )
+    );
+    expect(mockClientInstance.webAuth.clearSession).toHaveBeenCalled();
+  });
+
+  it('should update the error state if authorize fails', async () => {
+    // Create a mock error object that looks like an AuthError
+    const loginError = {
+      name: 'login_failed',
+      message: 'User cancelled login.',
+      code: 'login_failed',
+      status: 400,
+    };
+    mockClientInstance.webAuth.authorize.mockRejectedValueOnce(loginError);
+
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('user-status')).toHaveTextContent(
+        'Not logged in'
+      )
+    );
+
+    const loginButton = screen.getByTestId('login-button');
+
+    // Click the button and catch the error to prevent unhandled rejection
+    await act(async () => {
+      fireEvent.click(loginButton);
+      // Wait a bit for the async operation to complete
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    // Wait for the error state to be updated in the provider
+    await waitFor(
+      () => {
+        expect(screen.getByTestId('error')).toHaveTextContent(
+          'Error: User cancelled login.'
+        );
+      },
+      { timeout: 5000 }
+    );
+  });
+
+  it('should call createUser but not change the login state', async () => {
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('user-status')).toHaveTextContent(
+        'Not logged in'
+      )
+    );
+
+    const createButton = screen.getByTestId('create-user-button');
+    await act(async () => {
+      fireEvent.click(createButton);
+    });
+
+    expect(mockClientInstance.auth.createUser).toHaveBeenCalled();
+    // The user should still be "Not logged in" because createUser doesn't log the user in.
+    expect(screen.getByTestId('user-status')).toHaveTextContent(
+      'Not logged in'
+    );
+  });
+
+  it('should call resetPassword and not change the login state', async () => {
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('user-status')).toHaveTextContent(
+        'Not logged in'
+      )
+    );
+
+    const resetButton = screen.getByTestId('reset-password-button');
+    await act(async () => {
+      fireEvent.click(resetButton);
+    });
+
+    expect(mockClientInstance.auth.resetPassword).toHaveBeenCalled();
+    expect(screen.getByTestId('user-status')).toHaveTextContent(
+      'Not logged in'
+    );
+  });
+});

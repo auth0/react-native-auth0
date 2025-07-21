@@ -36,14 +36,17 @@
     "docs": "typedoc",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "lint:fix": "eslint \"**/*.{js,ts,tsx}\" --fix",
     "release": "release-it",
-    "bootstrap": "cd example && npm ci",
     "ci": "yarn install --immutable && yarn prepare",
     "clean": "del-cli lib out android/build example/android/build example/android/app/build example/ios/build",
-    "prepare": "husky && bob build && rm -rf lib/*/package.json",
+    "prebuild": "node scripts/replace-telemetry-version.js",
+    "build": "yarn lint && yarn prebuild && bob build",
+    "prepare": "husky && yarn build",
     "example:android": "cd example && npm run android",
     "example:ios": "cd example && npm run ios",
-    "precommit": "pretty-quick --staged"
+    "precommit": "pretty-quick --staged",
+    "prepush": "yarn build"
   },
   "keywords": [
     "react-native",
@@ -70,15 +73,20 @@
     "registry": "https://registry.npmjs.org/"
   },
   "peerDependencies": {
+    "@auth0/auth0-spa-js": ">=2.2.0",
     "react": ">=19.0.0",
     "react-native": ">=0.78.0"
   },
   "peerDependenciesMeta": {
+    "@auth0/auth0-spa-js": {
+      "optional": true
+    },
     "expo": {
       "optional": true
     }
   },
   "devDependencies": {
+    "@auth0/auth0-spa-js": "^2.2.0",
     "@commitlint/config-conventional": "^17.0.2",
     "@eslint/compat": "^1.2.7",
     "@eslint/eslintrc": "^3.3.0",
@@ -147,6 +155,9 @@
       "<rootDir>/example/node_modules",
       "<rootDir>/lib/",
       "<rootDir>/node_modules/(?!fetch-mock)/"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!(react-native|@react-native|react-native-.*)/)"
     ]
   },
   "commitlint": {

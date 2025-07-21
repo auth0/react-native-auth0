@@ -1,37 +1,81 @@
 {
   "entryPoints": ["src/index.ts"],
   "out": "out",
-  "jsDocCompatibility": false,
+  "name": "React Native Auth0",
+  "readme": "README.md",
+  "theme": "default",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true,
+  "sort": ["source-order"],
+  "kindSortOrder": [
+    "Project",
+    "Module",
+    "Namespace",
+    "Enum",
+    "Class",
+    "Interface",
+    "TypeAlias",
+    "Constructor",
+    "Property",
+    "Method",
+    "Function",
+    "Accessor",
+    "Variable"
+  ],
   "plugin": ["typedoc-plugin-missing-exports", "typedoc-plugin-replace-text"],
   "replaceText": {
     "replacements": [
-      {
-        "pattern": "```objective-c",
-        "replace": "```text"
-      },
-      {
-        "pattern": "```objc",
-        "replace": "```text"
-      },
-      {
-        "pattern": "```groovy",
-        "replace": "```text"
-      },
-      {
-        "pattern": "```xml",
-        "replace": "```text"
-      },
-      {
-        "pattern": "```swift",
-        "replace": "```text"
-      },
-      {
-        "pattern": "```ruby",
-        "replace": "```text"
-      }
+      { "pattern": "```objective-c", "replace": "```text" },
+      { "pattern": "```objc", "replace": "```text" },
+      { "pattern": "```groovy", "replace": "```text" },
+      { "pattern": "```xml", "replace": "```text" },
+      { "pattern": "```swift", "replace": "```text" },
+      { "pattern": "```ruby", "replace": "```text" },
+      { "pattern": "```javascript", "replace": "```text" }
     ]
   },
-  "exclude": ["./src/internal-types.ts", "./src/webauth/agent.ts"],
-  "excludeExternals": true,
-  "internalModule": "Types"
+  "githubPages": false,
+  "hideGenerator": true,
+  "searchInComments": true,
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "notDocumented": false
+  },
+  "treatWarningsAsErrors": false,
+  "blockTags": [
+    "@example",
+    "@deprecated",
+    "@throws",
+    "@since",
+    "@see",
+    "@remarks",
+    "@param",
+    "@returns",
+    "@default"
+  ],
+  "modifierTags": [
+    "@public",
+    "@private",
+    "@protected",
+    "@internal",
+    "@override",
+    "@readonly"
+  ],
+  "categorizeByGroup": true,
+  "groupOrder": [
+    "Core Interfaces",
+    "Platform-Specific Types",
+    "Factory Functions",
+    "Utility Functions",
+    "React Hooks",
+    "*"
+  ],
+  "navigationLinks": {
+    "GitHub": "https://github.com/auth0/react-native-auth0",
+    "NPM": "https://npmjs.com/package/react-native-auth0",
+    "Auth0 Docs": "https://auth0.com/docs"
+  }
 }

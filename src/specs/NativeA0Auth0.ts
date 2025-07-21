@@ -1,6 +1,6 @@
 import { TurboModuleRegistry, type TurboModule } from 'react-native';
 import type { Int32 } from 'react-native/Libraries/Types/CodegenTypes';
-
+import type { Credentials } from '../types';
 export interface Spec extends TurboModule {
   /**
    * Get the bundle identifier
@@ -71,7 +71,7 @@ export interface Spec extends TurboModule {
     ephemeralSession: boolean | undefined,
     safariViewControllerPresentationStyle: Int32 | undefined,
     additionalParameters: { [key: string]: string } | undefined
-  ): Promise<CredentialsResponse>;
+  ): Promise<Credentials>;
 
   /**
    * Logout from web authentication
@@ -94,16 +94,6 @@ export interface Spec extends TurboModule {
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('A0Auth0');
-
-interface CredentialsResponse {
-  id_token: string;
-  access_token: string;
-  token_type: string;
-  expires_in: Int32;
-  refresh_token: string | undefined;
-  scope: string | undefined;
-  [key: string]: any;
-}
 
 export interface LocalAuthenticationOptions {
   /**
@@ -138,31 +128,4 @@ export interface LocalAuthenticationOptions {
    * Should the user be given the option to authenticate with their device PIN, pattern, or password instead of a biometric. **Applicable for Android only.**
    */
   deviceCredentialFallback: boolean | undefined;
-}
-
-interface Credentials {
-  /**
-   * A token in JWT format that has user claims
-   */
-  idToken: string;
-  /**
-   * The token used to make API calls
-   */
-  accessToken: string;
-  /**
-   * The type of the token, e.g.: Bearer
-   */
-  tokenType: string;
-  /**
-   * Used to denote when the token will expire, as a UNIX timestamp
-   */
-  expiresAt: Int32;
-  /**
-   * The token used to refresh the access token
-   */
-  refreshToken: string | undefined;
-  /**
-   * Represents the scope of the current token
-   */
-  scope: string | undefined;
 }

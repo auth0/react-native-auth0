@@ -664,6 +664,32 @@ _Note_ : We have platform agnostic error codes available only for `CredentialsMa
 | `NO_NETWORK`          | `NO_NETWORK`                                                                                                                                                                                                                                                                                                                                     |                                 |
 | `API_ERROR`           | `API_ERROR`                                                                                                                                                                                                                                                                                                                                      |                                 |
 
+## Features and Platform Support
+
+This library provides a unified API across Native (iOS/Android) and Web platforms. However, due to security models and underlying technology, not all features are available on every platform.
+
+| Feature / Method Category                  | Native (iOS/Android) | Web (Browser) | Notes & Rationale                                                                                                                                                        |
+| ------------------------------------------ | :------------------: | :-----------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Web Authentication**                     |                      |               | ---                                                                                                                                                                      |
+| `webAuth.authorize()`                      |          ✅          |      ✅       | **Primary login method.** Uses `ASWebAuthenticationSession`/`Custom Tabs` on Native and `loginWithRedirect` on Web.                                                      |
+| `webAuth.clearSession()`                   |          ✅          |      ✅       | **Primary logout method.** Clears the session cookie on the server via a browser redirect.                                                                               |
+| `webAuth.handleRedirectCallback()`         |          ❌          |      ✅       | **Web-only.** Manually processes the callback from Auth0. Handled automatically when using the `Auth0Provider` hook.                                                     |
+| **Credential Management**                  |                      |               | ---                                                                                                                                                                      |
+| `credentialsManager.getCredentials()`      |          ✅          |      ✅       | Retrieves stored tokens. On Native, it uses the secure Keychain/Keystore. On Web, it uses the `@auth0/auth0-spa-js` cache and `getTokenSilently`.                        |
+| `credentialsManager.hasValidCredentials()` |          ✅          |      ✅       | Checks for a valid local session.                                                                                                                                        |
+| `credentialsManager.saveCredentials()`     |          ✅          |      ❌       | **Native-only.** Manually saving credentials is required on Native. On Web, this is handled automatically by the underlying SPA SDK and is a no-op.                      |
+| `credentialsManager.clearCredentials()`    |          ✅          |      ✅       | Clears locally stored tokens. On Web, this performs a "local-only" logout.                                                                                               |
+| **Direct Authentication Grants**           |                      |               | ---                                                                                                                                                                      |
+| `auth.passwordRealm()`                     |          ✅          |      ❌       | **Not supported on Web for security reasons.** The Resource Owner Password Grant exposes credentials to the browser and is not recommended for Single Page Applications. |
+| `auth.passwordless...()`                   |          ✅          |      ❌       | **Not supported on Web.** Passwordless flows on the web should be configured via Universal Login and initiated with `webAuth.authorize()`.                               |
+| `auth.loginWith...()` (OTP/SMS etc)        |          ✅          |      ❌       | **Not supported on Web.** These direct grant flows are not secure for public clients like browsers.                                                                      |
+| **Token & User Management**                |                      |               | ---                                                                                                                                                                      |
+| `auth.refreshToken()`                      |          ✅          |      ❌       | **Not supported on Web.** Token refresh is handled automatically by `getCredentials()` via `getTokenSilently()` on the web.                                              |
+| `auth.userInfo()`                          |          ✅          |      ✅       | Fetches the user's profile from the `/userinfo` endpoint using an access token.                                                                                          |
+| `auth.createUser()`                        |          ✅          |      ✅       | Calls the `/dbconnections/signup` endpoint. Works on both platforms.                                                                                                     |
+| `auth.resetPassword()`                     |          ✅          |      ✅       | Calls the `/dbconnections/change_password` endpoint. Works on both platforms.                                                                                            |
+| `users(token).patchUser()`                 |          ✅          |      ✅       | Calls the Management API. Works on any platform with a valid token, but use with caution in the browser.                                                                 |
+
 ## Troubleshooting
 
 ### Swift 6 Compatibility Issues on iOS
@@ -698,7 +724,7 @@ We appreciate feedback and contribution to this repo! Before you get started, pl
 
 - [Auth0's general contribution guidelines](https://github.com/auth0/open-source-template/blob/master/GENERAL-CONTRIBUTING.md)
 - [Auth0's code of conduct guidelines](https://github.com/auth0/open-source-template/blob/master/CODE-OF-CONDUCT.md)
-- [This repo's development guide](DEVELOPMENT.md)
+- [This repo's development guide](CONTRIBUTING.md)
 
 ### Raise an issue
 
