@@ -59,7 +59,7 @@ export class HttpClient {
     return this.request(url, 'PATCH', body, headers);
   }
 
-  private buildUrl(path: string, query?: Record<string, any>): string {
+  public buildUrl(path: string, query?: Record<string, any>): string {
     let url = `${this.baseUrl}${path}`;
     if (query) {
       const queryString = toUrlQueryParams(query);

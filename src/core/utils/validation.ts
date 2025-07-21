@@ -52,3 +52,29 @@ export function validateAuth0Options(options: Auth0Options): void {
     );
   }
 }
+
+/**
+ * Validates that a given parameters object contains all specified required keys.
+ *
+ * @param params The object to validate.
+ * @param requiredKeys An array of keys that must be present in the params object.
+ * @throws {AuthError} If any of the required keys are missing.
+ */
+export function validateParameters(
+  params: Record<string, unknown>,
+  requiredKeys: string[]
+): void {
+  const missingKeys = requiredKeys.filter(
+    (key) => params[key] === null || params[key] === undefined
+  );
+
+  if (missingKeys.length > 0) {
+    throw new AuthError(
+      'MissingParameters',
+      `The following parameters are required but were not provided: ${missingKeys.join(
+        ', '
+      )}`,
+      { code: 'missing_parameters' }
+    );
+  }
+}
