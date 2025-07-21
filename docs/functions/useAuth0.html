@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
-    <title>useAuth0 | react-native-auth0</title>
-    <meta name="description" content="Documentation for react-native-auth0" />
+    <title>useAuth0 | React Native Auth0 - v5.0.0-beta.4</title>
+    <meta name="description" content="Documentation for React Native Auth0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="../assets/style.css" />
     <link rel="stylesheet" href="../assets/highlight.css" />
@@ -33,8 +33,14 @@
     </script>
     <header class="tsd-page-toolbar">
       <div class="tsd-toolbar-contents container">
-        <a href="../index.html" class="title">react-native-auth0</a>
-        <div id="tsd-toolbar-links"></div>
+        <a href="../index.html" class="title"
+          >React Native Auth0 - v5.0.0-beta.4</a
+        >
+        <div id="tsd-toolbar-links">
+          <a href="https://github.com/auth0/react-native-auth0">GitHub</a
+          ><a href="https://npmjs.com/package/react-native-auth0">NPM</a
+          ><a href="https://auth0.com/docs">Auth0 Docs</a>
+        </div>
         <button id="tsd-search-trigger" class="tsd-widget" aria-label="Search">
           <svg
             width="16"
@@ -96,7 +102,7 @@
                 ><span class="tsd-signature-symbol">()</span
                 ><span class="tsd-signature-symbol">:</span>
                 <a
-                  href="../interfaces/Types.Auth0ContextInterface.html"
+                  href="../interfaces/_internal_.Auth0ContextInterface.html"
                   class="tsd-signature-type tsd-kind-interface"
                   >Auth0ContextInterface</a
                 ><a
@@ -110,39 +116,50 @@
               <div class="tsd-description">
                 <div class="tsd-comment tsd-typography">
                   <p>
-                    Use the <code>useAuth0</code> in your function components to
-                    access authentication state and methods.
+                    The primary hook for interacting with the Auth0 SDK in a
+                    React component.
+                  </p>
+                  <p>
+                    It provides access to the authentication state
+                    (<code>user</code>, <code>error</code>,
+                    <code>isLoading</code>) and methods for performing
+                    authentication (<code>authorize</code>,
+                    <code>clearSession</code>, etc.).
                   </p>
                 </div>
                 <h4 class="tsd-returns-title">
                   Returns
                   <a
-                    href="../interfaces/Types.Auth0ContextInterface.html"
+                    href="../interfaces/_internal_.Auth0ContextInterface.html"
                     class="tsd-signature-type tsd-kind-interface"
                     >Auth0ContextInterface</a
                   >
                 </h4>
-                <p>The useAuth0 hook interface</p>
-                <pre><code class="ts"><span class="hl-7">const</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-12">// State</span><br/><span class="hl-1">  </span><span class="hl-14">error</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">user</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">isLoading</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-12">// Methods</span><br/><span class="hl-1">  </span><span class="hl-14">authorize</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">sendSMSCode</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">authorizeWithSMS</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">sendEmailCode</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">authorizeWithEmail</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">sendMultifactorChallenge</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">authorizeWithOOB</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">authorizeWithOTP</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">authorizeWithRecoveryCode</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">hasValidCredentials</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">clearSession</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">getCredentials</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">clearCredentials</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">requireLocalAuthentication</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">authorizeWithPasswordRealm</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">authorizeWithExchangeNativeSocial</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-14">revokeRefreshToken</span><br/><span class="hl-1">} = </span><span class="hl-8">useAuth0</span><span class="hl-1">();</span>
-</code><button type="button">Copy</button></pre>
-
-                <p>
-                  Refer to
-                  <a
-                    href="../interfaces/Types.Auth0ContextInterface.html"
-                    class="tsd-kind-interface"
-                    >Auth0ContextInterface</a
-                  >
-                  on how to use the above methods.
-                </p>
-                <div class="tsd-comment tsd-typography"></div>
+                <p>The current authentication state and methods.</p>
+                <div class="tsd-comment tsd-typography">
+                  <div class="tsd-tag-example">
+                    <h4 class="tsd-anchor-link" id="example">
+                      Example<a
+                        href="#example"
+                        aria-label="Permalink"
+                        class="tsd-anchor-icon"
+                        ><svg viewBox="0 0 24 24" aria-hidden="true">
+                          <use
+                            href="../assets/icons.svg#icon-anchor"
+                          ></use></svg
+                      ></a>
+                    </h4>
+                    <pre><code><span class="hl-7">const</span><span class="hl-1"> { </span><span class="hl-14">user</span><span class="hl-1">, </span><span class="hl-14">authorize</span><span class="hl-1">, </span><span class="hl-14">clearSession</span><span class="hl-1">, </span><span class="hl-14">isLoading</span><span class="hl-1"> } = </span><span class="hl-8">useAuth0</span><span class="hl-1">();</span>
+</code><button>Copy</button></pre>
+                  </div>
+                </div>
                 <aside class="tsd-sources">
                   <ul>
                     <li>
                       Defined in
                       <a
-                        href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/hooks/use-auth0.ts#L38"
-                        >hooks/use-auth0.ts:38</a
+                        href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/hooks/useAuth0.ts#L17"
+                        >hooks/useAuth0.ts:17</a
                       >
                     </li>
                   </ul>
@@ -172,38 +189,6 @@
                 <div class="tsd-filter-visibility">
                   <span class="settings-label">Member Visibility</span>
                   <ul id="tsd-filter-options">
-                    <li class="tsd-filter-item">
-                      <label class="tsd-filter-input"
-                        ><input
-                          type="checkbox"
-                          id="tsd-filter-protected"
-                          name="protected"
-                        /><svg
-                          width="32"
-                          height="32"
-                          viewBox="0 0 32 32"
-                          aria-hidden="true"
-                        >
-                          <rect
-                            class="tsd-checkbox-background"
-                            width="30"
-                            height="30"
-                            x="1"
-                            y="1"
-                            rx="6"
-                            fill="none"
-                          ></rect>
-                          <path
-                            class="tsd-checkbox-checkmark"
-                            d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
-                            stroke="none"
-                            stroke-width="3.5"
-                            stroke-linejoin="round"
-                            fill="none"
-                          ></path></svg
-                        ><span>Protected</span></label
-                      >
-                    </li>
                     <li class="tsd-filter-item">
                       <label class="tsd-filter-input"
                         ><input
@@ -252,8 +237,21 @@
           </div>
         </div>
         <div class="site-menu">
+          <nav id="tsd-sidebar-links" class="tsd-navigation">
+            <a
+              href="https://github.com/auth0/react-native-auth0"
+              class="tsd-nav-link"
+              >GitHub</a
+            ><a
+              href="https://npmjs.com/package/react-native-auth0"
+              class="tsd-nav-link"
+              >NPM</a
+            ><a href="https://auth0.com/docs" class="tsd-nav-link"
+              >Auth0 Docs</a
+            >
+          </nav>
           <nav class="tsd-navigation">
-            <a href="../modules.html">react-native-auth0</a>
+            <a href="../modules.html">React Native Auth0 - v5.0.0-beta.4</a>
             <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
               <li>Loading...</li>
             </ul>
@@ -261,12 +259,7 @@
         </div>
       </div>
     </div>
-    <footer>
-      <p class="tsd-generator">
-        Generated using
-        <a href="https://typedoc.org/" target="_blank">TypeDoc</a>
-      </p>
-    </footer>
+    <footer></footer>
     <div class="overlay"></div>
   </body>
 </html>

@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
-    <title>User | react-native-auth0</title>
-    <meta name="description" content="Documentation for react-native-auth0" />
+    <title>User | React Native Auth0 - v5.0.0-beta.4</title>
+    <meta name="description" content="Documentation for React Native Auth0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="../assets/style.css" />
     <link rel="stylesheet" href="../assets/highlight.css" />
@@ -33,8 +33,14 @@
     </script>
     <header class="tsd-page-toolbar">
       <div class="tsd-toolbar-contents container">
-        <a href="../index.html" class="title">react-native-auth0</a>
-        <div id="tsd-toolbar-links"></div>
+        <a href="../index.html" class="title"
+          >React Native Auth0 - v5.0.0-beta.4</a
+        >
+        <div id="tsd-toolbar-links">
+          <a href="https://github.com/auth0/react-native-auth0">GitHub</a
+          ><a href="https://npmjs.com/package/react-native-auth0">NPM</a
+          ><a href="https://auth0.com/docs">Auth0 Docs</a>
+        </div>
         <button id="tsd-search-trigger" class="tsd-widget" aria-label="Search">
           <svg
             width="16"
@@ -88,44 +94,45 @@
           </ul>
           <h1>Type Alias User</h1>
         </div>
+        <section class="tsd-panel tsd-comment">
+          <div class="tsd-comment tsd-typography">
+            <p>
+              Represents the standard profile information of an authenticated
+              user, typically decoded from the ID token.
+            </p>
+          </div>
+          <div class="tsd-comment tsd-typography">
+            <div class="tsd-tag-remarks">
+              <h4 class="tsd-anchor-link" id="remarks">
+                Remarks<a
+                  href="#remarks"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h4>
+              <p>
+                Claims are mapped to camelCase for consistency within the
+                JavaScript/TypeScript ecosystem.
+              </p>
+            </div>
+          </div>
+        </section>
         <div class="tsd-signature">
           <span class="tsd-signature-keyword">type</span>
           <span class="tsd-kind-type-alias">User</span>
           <span class="tsd-signature-symbol">=</span>
           <span class="tsd-signature-symbol">{</span><br />    <a
             class="tsd-kind-property"
-            href="#address"
-            >address</a
-          ><span class="tsd-signature-symbol">?:</span>
+            href="#sub"
+            >sub</a
+          ><span class="tsd-signature-symbol">:</span>
           <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <a
             class="tsd-kind-property"
-            href="#birthdate"
-            >birthdate</a
-          ><span class="tsd-signature-symbol">?:</span>
-          <span class="tsd-signature-type">string</span
-          ><span class="tsd-signature-symbol">;</span><br />    <a
-            class="tsd-kind-property"
-            href="#email"
-            >email</a
-          ><span class="tsd-signature-symbol">?:</span>
-          <span class="tsd-signature-type">string</span
-          ><span class="tsd-signature-symbol">;</span><br />    <a
-            class="tsd-kind-property"
-            href="#emailverified"
-            >emailVerified</a
-          ><span class="tsd-signature-symbol">?:</span>
-          <span class="tsd-signature-type">boolean</span
-          ><span class="tsd-signature-symbol">;</span><br />    <a
-            class="tsd-kind-property"
-            href="#familyname"
-            >familyName</a
-          ><span class="tsd-signature-symbol">?:</span>
-          <span class="tsd-signature-type">string</span
-          ><span class="tsd-signature-symbol">;</span><br />    <a
-            class="tsd-kind-property"
-            href="#gender"
-            >gender</a
+            href="#name"
+            >name</a
           ><span class="tsd-signature-symbol">?:</span>
           <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <a
@@ -136,8 +143,8 @@
           <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <a
             class="tsd-kind-property"
-            href="#locale"
-            >locale</a
+            href="#familyname"
+            >familyName</a
           ><span class="tsd-signature-symbol">?:</span>
           <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <a
@@ -148,32 +155,8 @@
           <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <a
             class="tsd-kind-property"
-            href="#name"
-            >name</a
-          ><span class="tsd-signature-symbol">?:</span>
-          <span class="tsd-signature-type">string</span
-          ><span class="tsd-signature-symbol">;</span><br />    <a
-            class="tsd-kind-property"
             href="#nickname"
             >nickname</a
-          ><span class="tsd-signature-symbol">?:</span>
-          <span class="tsd-signature-type">string</span
-          ><span class="tsd-signature-symbol">;</span><br />    <a
-            class="tsd-kind-property"
-            href="#phonenumber"
-            >phoneNumber</a
-          ><span class="tsd-signature-symbol">?:</span>
-          <span class="tsd-signature-type">string</span
-          ><span class="tsd-signature-symbol">;</span><br />    <a
-            class="tsd-kind-property"
-            href="#phonenumberverified"
-            >phoneNumberVerified</a
-          ><span class="tsd-signature-symbol">?:</span>
-          <span class="tsd-signature-type">boolean</span
-          ><span class="tsd-signature-symbol">;</span><br />    <a
-            class="tsd-kind-property"
-            href="#picture"
-            >picture</a
           ><span class="tsd-signature-symbol">?:</span>
           <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <a
@@ -190,14 +173,8 @@
           <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <a
             class="tsd-kind-property"
-            href="#sub"
-            >sub</a
-          ><span class="tsd-signature-symbol">?:</span>
-          <span class="tsd-signature-type">string</span
-          ><span class="tsd-signature-symbol">;</span><br />    <a
-            class="tsd-kind-property"
-            href="#updatedat"
-            >updatedAt</a
+            href="#picture"
+            >picture</a
           ><span class="tsd-signature-symbol">?:</span>
           <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <a
@@ -208,8 +185,62 @@
           <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <a
             class="tsd-kind-property"
+            href="#email"
+            >email</a
+          ><span class="tsd-signature-symbol">?:</span>
+          <span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">;</span><br />    <a
+            class="tsd-kind-property"
+            href="#emailverified"
+            >emailVerified</a
+          ><span class="tsd-signature-symbol">?:</span>
+          <span class="tsd-signature-type">boolean</span
+          ><span class="tsd-signature-symbol">;</span><br />    <a
+            class="tsd-kind-property"
+            href="#gender"
+            >gender</a
+          ><span class="tsd-signature-symbol">?:</span>
+          <span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">;</span><br />    <a
+            class="tsd-kind-property"
+            href="#birthdate"
+            >birthdate</a
+          ><span class="tsd-signature-symbol">?:</span>
+          <span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">;</span><br />    <a
+            class="tsd-kind-property"
             href="#zoneinfo"
             >zoneinfo</a
+          ><span class="tsd-signature-symbol">?:</span>
+          <span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">;</span><br />    <a
+            class="tsd-kind-property"
+            href="#locale"
+            >locale</a
+          ><span class="tsd-signature-symbol">?:</span>
+          <span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">;</span><br />    <a
+            class="tsd-kind-property"
+            href="#phonenumber"
+            >phoneNumber</a
+          ><span class="tsd-signature-symbol">?:</span>
+          <span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">;</span><br />    <a
+            class="tsd-kind-property"
+            href="#phonenumberverified"
+            >phoneNumberVerified</a
+          ><span class="tsd-signature-symbol">?:</span>
+          <span class="tsd-signature-type">boolean</span
+          ><span class="tsd-signature-symbol">;</span><br />    <a
+            class="tsd-kind-property"
+            href="#address"
+            >address</a
+          ><span class="tsd-signature-symbol">?:</span>
+          <span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">;</span><br />    <a
+            class="tsd-kind-property"
+            href="#updatedat"
+            >updatedAt</a
           ><span class="tsd-signature-symbol">?:</span>
           <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <span
@@ -236,6 +267,13 @@
                 ><span class="tsd-signature-symbol">]:</span>
                 <span class="tsd-signature-type">any</span>
               </div>
+              <div class="tsd-comment tsd-typography">
+                <p>
+                  Allows for additional, non-standard claims in the user
+                  profile.
+                </p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
             </li>
           </ul>
         </section>
@@ -244,8 +282,8 @@
             <li>
               Defined in
               <a
-                href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L32"
-                >types.ts:32</a
+                href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L42"
+                >types/common.ts:42</a
               >
             </li>
           </ul>
@@ -269,86 +307,14 @@
                 <section class="tsd-index-section">
                   <h3 class="tsd-index-heading">Properties</h3>
                   <div class="tsd-index-list">
-                    <a href="#address" class="tsd-index-link"
+                    <a href="#sub" class="tsd-index-link"
                       ><svg
                         class="tsd-kind-icon"
                         viewBox="0 0 24 24"
                         aria-label="Property"
                       >
                         <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>address?</span></a
-                    >
-                    <a href="#birthdate" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>birthdate?</span></a
-                    >
-                    <a href="#email" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>email?</span></a
-                    >
-                    <a href="#emailverified" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>email<wbr />Verified?</span></a
-                    >
-                    <a href="#familyname" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>family<wbr />Name?</span></a
-                    >
-                    <a href="#gender" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>gender?</span></a
-                    >
-                    <a href="#givenname" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>given<wbr />Name?</span></a
-                    >
-                    <a href="#locale" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>locale?</span></a
-                    >
-                    <a href="#middlename" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>middle<wbr />Name?</span></a
+                      ><span>sub</span></a
                     >
                     <a href="#name" class="tsd-index-link"
                       ><svg
@@ -359,6 +325,33 @@
                         <use href="../assets/icons.svg#icon-1024"></use></svg
                       ><span>name?</span></a
                     >
+                    <a href="#givenname" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>given<wbr />Name?</span></a
+                    >
+                    <a href="#familyname" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>family<wbr />Name?</span></a
+                    >
+                    <a href="#middlename" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>middle<wbr />Name?</span></a
+                    >
                     <a href="#nickname" class="tsd-index-link"
                       ><svg
                         class="tsd-kind-icon"
@@ -367,33 +360,6 @@
                       >
                         <use href="../assets/icons.svg#icon-1024"></use></svg
                       ><span>nickname?</span></a
-                    >
-                    <a href="#phonenumber" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>phone<wbr />Number?</span></a
-                    >
-                    <a href="#phonenumberverified" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>phone<wbr />Number<wbr />Verified?</span></a
-                    >
-                    <a href="#picture" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>picture?</span></a
                     >
                     <a href="#preferredusername" class="tsd-index-link"
                       ><svg
@@ -413,23 +379,14 @@
                         <use href="../assets/icons.svg#icon-1024"></use></svg
                       ><span>profile?</span></a
                     >
-                    <a href="#sub" class="tsd-index-link"
+                    <a href="#picture" class="tsd-index-link"
                       ><svg
                         class="tsd-kind-icon"
                         viewBox="0 0 24 24"
                         aria-label="Property"
                       >
                         <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>sub?</span></a
-                    >
-                    <a href="#updatedat" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>updated<wbr />At?</span></a
+                      ><span>picture?</span></a
                     >
                     <a href="#website" class="tsd-index-link"
                       ><svg
@@ -440,6 +397,42 @@
                         <use href="../assets/icons.svg#icon-1024"></use></svg
                       ><span>website?</span></a
                     >
+                    <a href="#email" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>email?</span></a
+                    >
+                    <a href="#emailverified" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>email<wbr />Verified?</span></a
+                    >
+                    <a href="#gender" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>gender?</span></a
+                    >
+                    <a href="#birthdate" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>birthdate?</span></a
+                    >
                     <a href="#zoneinfo" class="tsd-index-link"
                       ><svg
                         class="tsd-kind-icon"
@@ -448,6 +441,51 @@
                       >
                         <use href="../assets/icons.svg#icon-1024"></use></svg
                       ><span>zoneinfo?</span></a
+                    >
+                    <a href="#locale" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>locale?</span></a
+                    >
+                    <a href="#phonenumber" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>phone<wbr />Number?</span></a
+                    >
+                    <a href="#phonenumberverified" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>phone<wbr />Number<wbr />Verified?</span></a
+                    >
+                    <a href="#address" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>address?</span></a
+                    >
+                    <a href="#updatedat" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>updated<wbr />At?</span></a
                     >
                   </div>
                 </section>
@@ -470,167 +508,58 @@
           </summary>
           <section>
             <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="address">
-                <code class="tsd-tag">Optional</code><span>address</span
-                ><a
-                  href="#address"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
+              <h3 class="tsd-anchor-link" id="sub">
+                <span>sub</span
+                ><a href="#sub" aria-label="Permalink" class="tsd-anchor-icon"
                   ><svg viewBox="0 0 24 24" aria-hidden="true">
                     <use href="../assets/icons.svg#icon-anchor"></use></svg
                 ></a>
               </h3>
               <div class="tsd-signature">
-                <span class="tsd-kind-property">address</span
-                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-kind-property">sub</span
+                ><span class="tsd-signature-symbol">:</span>
                 <span class="tsd-signature-type">string</span>
               </div>
+              <div class="tsd-comment tsd-typography">
+                <p>The user's unique identifier (subject claim).</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L50"
-                      >types.ts:50</a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L44"
+                      >types/common.ts:44</a
                     >
                   </li>
                 </ul>
               </aside>
             </section>
             <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="birthdate">
-                <code class="tsd-tag">Optional</code><span>birthdate</span
-                ><a
-                  href="#birthdate"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
+              <h3 class="tsd-anchor-link" id="name">
+                <code class="tsd-tag">Optional</code><span>name</span
+                ><a href="#name" aria-label="Permalink" class="tsd-anchor-icon"
                   ><svg viewBox="0 0 24 24" aria-hidden="true">
                     <use href="../assets/icons.svg#icon-anchor"></use></svg
                 ></a>
               </h3>
               <div class="tsd-signature">
-                <span class="tsd-kind-property">birthdate</span
+                <span class="tsd-kind-property">name</span
                 ><span class="tsd-signature-symbol">?:</span>
                 <span class="tsd-signature-type">string</span>
               </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L45"
-                      >types.ts:45</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="email">
-                <code class="tsd-tag">Optional</code><span>email</span
-                ><a href="#email" aria-label="Permalink" class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">email</span
-                ><span class="tsd-signature-symbol">?:</span>
-                <span class="tsd-signature-type">string</span>
+              <div class="tsd-comment tsd-typography">
+                <p>The user's full name.</p>
               </div>
+              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L42"
-                      >types.ts:42</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="emailverified">
-                <code class="tsd-tag">Optional</code
-                ><span>email<wbr />Verified</span
-                ><a
-                  href="#emailverified"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">emailVerified</span
-                ><span class="tsd-signature-symbol">?:</span>
-                <span class="tsd-signature-type">boolean</span>
-              </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L43"
-                      >types.ts:43</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="familyname">
-                <code class="tsd-tag">Optional</code
-                ><span>family<wbr />Name</span
-                ><a
-                  href="#familyname"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">familyName</span
-                ><span class="tsd-signature-symbol">?:</span>
-                <span class="tsd-signature-type">string</span>
-              </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L35"
-                      >types.ts:35</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="gender">
-                <code class="tsd-tag">Optional</code><span>gender</span
-                ><a
-                  href="#gender"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">gender</span
-                ><span class="tsd-signature-symbol">?:</span>
-                <span class="tsd-signature-type">string</span>
-              </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L44"
-                      >types.ts:44</a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L46"
+                      >types/common.ts:46</a
                     >
                   </li>
                 </ul>
@@ -653,23 +582,28 @@
                 ><span class="tsd-signature-symbol">?:</span>
                 <span class="tsd-signature-type">string</span>
               </div>
+              <div class="tsd-comment tsd-typography">
+                <p>The user's given name or first name.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L34"
-                      >types.ts:34</a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L48"
+                      >types/common.ts:48</a
                     >
                   </li>
                 </ul>
               </aside>
             </section>
             <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="locale">
-                <code class="tsd-tag">Optional</code><span>locale</span
+              <h3 class="tsd-anchor-link" id="familyname">
+                <code class="tsd-tag">Optional</code
+                ><span>family<wbr />Name</span
                 ><a
-                  href="#locale"
+                  href="#familyname"
                   aria-label="Permalink"
                   class="tsd-anchor-icon"
                   ><svg viewBox="0 0 24 24" aria-hidden="true">
@@ -677,17 +611,21 @@
                 ></a>
               </h3>
               <div class="tsd-signature">
-                <span class="tsd-kind-property">locale</span
+                <span class="tsd-kind-property">familyName</span
                 ><span class="tsd-signature-symbol">?:</span>
                 <span class="tsd-signature-type">string</span>
               </div>
+              <div class="tsd-comment tsd-typography">
+                <p>The user's family name or last name.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L47"
-                      >types.ts:47</a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L50"
+                      >types/common.ts:50</a
                     >
                   </li>
                 </ul>
@@ -710,38 +648,17 @@
                 ><span class="tsd-signature-symbol">?:</span>
                 <span class="tsd-signature-type">string</span>
               </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L36"
-                      >types.ts:36</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="name">
-                <code class="tsd-tag">Optional</code><span>name</span
-                ><a href="#name" aria-label="Permalink" class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">name</span
-                ><span class="tsd-signature-symbol">?:</span>
-                <span class="tsd-signature-type">string</span>
+              <div class="tsd-comment tsd-typography">
+                <p>The user's middle name.</p>
               </div>
+              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L33"
-                      >types.ts:33</a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L52"
+                      >types/common.ts:52</a
                     >
                   </li>
                 </ul>
@@ -763,99 +680,17 @@
                 ><span class="tsd-signature-symbol">?:</span>
                 <span class="tsd-signature-type">string</span>
               </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L37"
-                      >types.ts:37</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="phonenumber">
-                <code class="tsd-tag">Optional</code
-                ><span>phone<wbr />Number</span
-                ><a
-                  href="#phonenumber"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">phoneNumber</span
-                ><span class="tsd-signature-symbol">?:</span>
-                <span class="tsd-signature-type">string</span>
+              <div class="tsd-comment tsd-typography">
+                <p>The user's nickname.</p>
               </div>
+              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L48"
-                      >types.ts:48</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="phonenumberverified">
-                <code class="tsd-tag">Optional</code
-                ><span>phone<wbr />Number<wbr />Verified</span
-                ><a
-                  href="#phonenumberverified"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">phoneNumberVerified</span
-                ><span class="tsd-signature-symbol">?:</span>
-                <span class="tsd-signature-type">boolean</span>
-              </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L49"
-                      >types.ts:49</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="picture">
-                <code class="tsd-tag">Optional</code><span>picture</span
-                ><a
-                  href="#picture"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">picture</span
-                ><span class="tsd-signature-symbol">?:</span>
-                <span class="tsd-signature-type">string</span>
-              </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L40"
-                      >types.ts:40</a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L54"
+                      >types/common.ts:54</a
                     >
                   </li>
                 </ul>
@@ -878,13 +713,17 @@
                 ><span class="tsd-signature-symbol">?:</span>
                 <span class="tsd-signature-type">string</span>
               </div>
+              <div class="tsd-comment tsd-typography">
+                <p>The user's preferred username.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L38"
-                      >types.ts:38</a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L56"
+                      >types/common.ts:56</a
                     >
                   </li>
                 </ul>
@@ -906,38 +745,380 @@
                 ><span class="tsd-signature-symbol">?:</span>
                 <span class="tsd-signature-type">string</span>
               </div>
+              <div class="tsd-comment tsd-typography">
+                <p>URL of the user's profile page.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L39"
-                      >types.ts:39</a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L58"
+                      >types/common.ts:58</a
                     >
                   </li>
                 </ul>
               </aside>
             </section>
             <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="sub">
-                <code class="tsd-tag">Optional</code><span>sub</span
-                ><a href="#sub" aria-label="Permalink" class="tsd-anchor-icon"
+              <h3 class="tsd-anchor-link" id="picture">
+                <code class="tsd-tag">Optional</code><span>picture</span
+                ><a
+                  href="#picture"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
                   ><svg viewBox="0 0 24 24" aria-hidden="true">
                     <use href="../assets/icons.svg#icon-anchor"></use></svg
                 ></a>
               </h3>
               <div class="tsd-signature">
-                <span class="tsd-kind-property">sub</span
+                <span class="tsd-kind-property">picture</span
                 ><span class="tsd-signature-symbol">?:</span>
                 <span class="tsd-signature-type">string</span>
               </div>
+              <div class="tsd-comment tsd-typography">
+                <p>URL of the user's profile picture.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L52"
-                      >types.ts:52</a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L60"
+                      >types/common.ts:60</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="website">
+                <code class="tsd-tag">Optional</code><span>website</span
+                ><a
+                  href="#website"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">website</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-signature-type">string</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>URL of the user's website.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L62"
+                      >types/common.ts:62</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="email">
+                <code class="tsd-tag">Optional</code><span>email</span
+                ><a href="#email" aria-label="Permalink" class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">email</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-signature-type">string</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>The user's primary email address.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L64"
+                      >types/common.ts:64</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="emailverified">
+                <code class="tsd-tag">Optional</code
+                ><span>email<wbr />Verified</span
+                ><a
+                  href="#emailverified"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">emailVerified</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-signature-type">boolean</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>
+                  <code>true</code> if the user's email address has been
+                  verified, <code>false</code> otherwise.
+                </p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L66"
+                      >types/common.ts:66</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="gender">
+                <code class="tsd-tag">Optional</code><span>gender</span
+                ><a
+                  href="#gender"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">gender</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-signature-type">string</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>The user's gender.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L68"
+                      >types/common.ts:68</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="birthdate">
+                <code class="tsd-tag">Optional</code><span>birthdate</span
+                ><a
+                  href="#birthdate"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">birthdate</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-signature-type">string</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>
+                  The user's birthdate, represented as a
+                  <code>YYYY-MM-DD</code> string.
+                </p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L70"
+                      >types/common.ts:70</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="zoneinfo">
+                <code class="tsd-tag">Optional</code><span>zoneinfo</span
+                ><a
+                  href="#zoneinfo"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">zoneinfo</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-signature-type">string</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>
+                  The user's time zone, e.g., &quot;America/Los_Angeles&quot;.
+                </p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L72"
+                      >types/common.ts:72</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="locale">
+                <code class="tsd-tag">Optional</code><span>locale</span
+                ><a
+                  href="#locale"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">locale</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-signature-type">string</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>The user's locale, e.g., &quot;en-US&quot;.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L74"
+                      >types/common.ts:74</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="phonenumber">
+                <code class="tsd-tag">Optional</code
+                ><span>phone<wbr />Number</span
+                ><a
+                  href="#phonenumber"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">phoneNumber</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-signature-type">string</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>The user's phone number.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L76"
+                      >types/common.ts:76</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="phonenumberverified">
+                <code class="tsd-tag">Optional</code
+                ><span>phone<wbr />Number<wbr />Verified</span
+                ><a
+                  href="#phonenumberverified"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">phoneNumberVerified</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-signature-type">boolean</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>
+                  <code>true</code> if the user's phone number has been
+                  verified, <code>false</code> otherwise.
+                </p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L78"
+                      >types/common.ts:78</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="address">
+                <code class="tsd-tag">Optional</code><span>address</span
+                ><a
+                  href="#address"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">address</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-signature-type">string</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>The user's postal address.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L80"
+                      >types/common.ts:80</a
                     >
                   </li>
                 </ul>
@@ -960,69 +1141,17 @@
                 ><span class="tsd-signature-symbol">?:</span>
                 <span class="tsd-signature-type">string</span>
               </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L51"
-                      >types.ts:51</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="website">
-                <code class="tsd-tag">Optional</code><span>website</span
-                ><a
-                  href="#website"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">website</span
-                ><span class="tsd-signature-symbol">?:</span>
-                <span class="tsd-signature-type">string</span>
+              <div class="tsd-comment tsd-typography">
+                <p>The timestamp when the user's profile was last updated.</p>
               </div>
+              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L41"
-                      >types.ts:41</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="zoneinfo">
-                <code class="tsd-tag">Optional</code><span>zoneinfo</span
-                ><a
-                  href="#zoneinfo"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">zoneinfo</span
-                ><span class="tsd-signature-symbol">?:</span>
-                <span class="tsd-signature-type">string</span>
-              </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L46"
-                      >types.ts:46</a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/common.ts#L82"
+                      >types/common.ts:82</a
                     >
                   </li>
                 </ul>
@@ -1051,38 +1180,6 @@
                 <div class="tsd-filter-visibility">
                   <span class="settings-label">Member Visibility</span>
                   <ul id="tsd-filter-options">
-                    <li class="tsd-filter-item">
-                      <label class="tsd-filter-input"
-                        ><input
-                          type="checkbox"
-                          id="tsd-filter-protected"
-                          name="protected"
-                        /><svg
-                          width="32"
-                          height="32"
-                          viewBox="0 0 32 32"
-                          aria-hidden="true"
-                        >
-                          <rect
-                            class="tsd-checkbox-background"
-                            width="30"
-                            height="30"
-                            x="1"
-                            y="1"
-                            rx="6"
-                            fill="none"
-                          ></rect>
-                          <path
-                            class="tsd-checkbox-checkmark"
-                            d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
-                            stroke="none"
-                            stroke-width="3.5"
-                            stroke-linejoin="round"
-                            fill="none"
-                          ></path></svg
-                        ><span>Protected</span></label
-                      >
-                    </li>
                     <li class="tsd-filter-item">
                       <label class="tsd-filter-input"
                         ><input
@@ -1159,78 +1256,14 @@
                   >Properties
                 </summary>
                 <div>
-                  <a href="#address"
+                  <a href="#sub"
                     ><svg
                       class="tsd-kind-icon"
                       viewBox="0 0 24 24"
                       aria-label="Property"
                     >
                       <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>address</span></a
-                  ><a href="#birthdate"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>birthdate</span></a
-                  ><a href="#email"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>email</span></a
-                  ><a href="#emailverified"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>email<wbr />Verified</span></a
-                  ><a href="#familyname"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>family<wbr />Name</span></a
-                  ><a href="#gender"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>gender</span></a
-                  ><a href="#givenname"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>given<wbr />Name</span></a
-                  ><a href="#locale"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>locale</span></a
-                  ><a href="#middlename"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>middle<wbr />Name</span></a
+                    ><span>sub</span></a
                   ><a href="#name"
                     ><svg
                       class="tsd-kind-icon"
@@ -1239,6 +1272,30 @@
                     >
                       <use href="../assets/icons.svg#icon-1024"></use></svg
                     ><span>name</span></a
+                  ><a href="#givenname"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>given<wbr />Name</span></a
+                  ><a href="#familyname"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>family<wbr />Name</span></a
+                  ><a href="#middlename"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>middle<wbr />Name</span></a
                   ><a href="#nickname"
                     ><svg
                       class="tsd-kind-icon"
@@ -1247,30 +1304,6 @@
                     >
                       <use href="../assets/icons.svg#icon-1024"></use></svg
                     ><span>nickname</span></a
-                  ><a href="#phonenumber"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>phone<wbr />Number</span></a
-                  ><a href="#phonenumberverified"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>phone<wbr />Number<wbr />Verified</span></a
-                  ><a href="#picture"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>picture</span></a
                   ><a href="#preferredusername"
                     ><svg
                       class="tsd-kind-icon"
@@ -1287,22 +1320,14 @@
                     >
                       <use href="../assets/icons.svg#icon-1024"></use></svg
                     ><span>profile</span></a
-                  ><a href="#sub"
+                  ><a href="#picture"
                     ><svg
                       class="tsd-kind-icon"
                       viewBox="0 0 24 24"
                       aria-label="Property"
                     >
                       <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>sub</span></a
-                  ><a href="#updatedat"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>updated<wbr />At</span></a
+                    ><span>picture</span></a
                   ><a href="#website"
                     ><svg
                       class="tsd-kind-icon"
@@ -1311,6 +1336,38 @@
                     >
                       <use href="../assets/icons.svg#icon-1024"></use></svg
                     ><span>website</span></a
+                  ><a href="#email"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>email</span></a
+                  ><a href="#emailverified"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>email<wbr />Verified</span></a
+                  ><a href="#gender"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>gender</span></a
+                  ><a href="#birthdate"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>birthdate</span></a
                   ><a href="#zoneinfo"
                     ><svg
                       class="tsd-kind-icon"
@@ -1319,6 +1376,46 @@
                     >
                       <use href="../assets/icons.svg#icon-1024"></use></svg
                     ><span>zoneinfo</span></a
+                  ><a href="#locale"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>locale</span></a
+                  ><a href="#phonenumber"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>phone<wbr />Number</span></a
+                  ><a href="#phonenumberverified"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>phone<wbr />Number<wbr />Verified</span></a
+                  ><a href="#address"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>address</span></a
+                  ><a href="#updatedat"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>updated<wbr />At</span></a
                   >
                 </div>
               </details>
@@ -1326,8 +1423,21 @@
           </details>
         </div>
         <div class="site-menu">
+          <nav id="tsd-sidebar-links" class="tsd-navigation">
+            <a
+              href="https://github.com/auth0/react-native-auth0"
+              class="tsd-nav-link"
+              >GitHub</a
+            ><a
+              href="https://npmjs.com/package/react-native-auth0"
+              class="tsd-nav-link"
+              >NPM</a
+            ><a href="https://auth0.com/docs" class="tsd-nav-link"
+              >Auth0 Docs</a
+            >
+          </nav>
           <nav class="tsd-navigation">
-            <a href="../modules.html">react-native-auth0</a>
+            <a href="../modules.html">React Native Auth0 - v5.0.0-beta.4</a>
             <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
               <li>Loading...</li>
             </ul>
@@ -1335,12 +1445,7 @@
         </div>
       </div>
     </div>
-    <footer>
-      <p class="tsd-generator">
-        Generated using
-        <a href="https://typedoc.org/" target="_blank">TypeDoc</a>
-      </p>
-    </footer>
+    <footer></footer>
     <div class="overlay"></div>
   </body>
 </html>

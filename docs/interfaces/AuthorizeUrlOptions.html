@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
-    <title>AuthorizeUrlOptions | react-native-auth0</title>
-    <meta name="description" content="Documentation for react-native-auth0" />
+    <title>AuthorizeUrlOptions | React Native Auth0 - v5.0.0-beta.4</title>
+    <meta name="description" content="Documentation for React Native Auth0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="../assets/style.css" />
     <link rel="stylesheet" href="../assets/highlight.css" />
@@ -33,8 +33,14 @@
     </script>
     <header class="tsd-page-toolbar">
       <div class="tsd-toolbar-contents container">
-        <a href="../index.html" class="title">react-native-auth0</a>
-        <div id="tsd-toolbar-links"></div>
+        <a href="../index.html" class="title"
+          >React Native Auth0 - v5.0.0-beta.4</a
+        >
+        <div id="tsd-toolbar-links">
+          <a href="https://github.com/auth0/react-native-auth0">GitHub</a
+          ><a href="https://npmjs.com/package/react-native-auth0">NPM</a
+          ><a href="https://auth0.com/docs">Auth0 Docs</a>
+        </div>
         <button id="tsd-search-trigger" class="tsd-widget" aria-label="Search">
           <svg
             width="16"
@@ -90,7 +96,10 @@
         </div>
         <section class="tsd-panel tsd-comment">
           <div class="tsd-comment tsd-typography">
-            <p>Options for building a URL for <code>/authorize</code></p>
+            <p>
+              Parameters for building a URL for the
+              <code>/authorize</code> endpoint.
+            </p>
           </div>
           <div class="tsd-comment tsd-typography"></div>
         </section>
@@ -99,10 +108,15 @@
           <span class="tsd-kind-interface">AuthorizeUrlOptions</span>
           <span class="tsd-signature-symbol">{</span><br />    <a
             class="tsd-kind-property"
-            href="#redirecturi"
-            >redirectUri</a
-          ><span class="tsd-signature-symbol">:</span>
-          <span class="tsd-signature-type">object</span
+            href="#headers"
+            >headers</a
+          ><span class="tsd-signature-symbol">?:</span>
+          <span class="tsd-signature-type">Record</span
+          ><span class="tsd-signature-symbol">&lt;</span
+          ><span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">,</span>
+          <span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">&gt;</span
           ><span class="tsd-signature-symbol">;</span><br />    <a
             class="tsd-kind-property"
             href="#responsetype"
@@ -111,10 +125,16 @@
           <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <a
             class="tsd-kind-property"
+            href="#redirecturi"
+            >redirectUri</a
+          ><span class="tsd-signature-symbol">:</span>
+          <span class="tsd-signature-type">string</span
+          ><span class="tsd-signature-symbol">;</span><br />    <a
+            class="tsd-kind-property"
             href="#state"
             >state</a
           ><span class="tsd-signature-symbol">:</span>
-          <span class="tsd-signature-type">object</span
+          <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <span
             class="tsd-signature-symbol"
             >[</span
@@ -128,6 +148,27 @@
             >}</span
           >
         </div>
+        <section class="tsd-panel tsd-hierarchy" data-refl="74">
+          <h4>
+            Hierarchy (<a href="../hierarchy.html#AuthorizeUrlOptions"
+              >View Summary</a
+            >)
+          </h4>
+          <ul class="tsd-hierarchy">
+            <li class="tsd-hierarchy-item">
+              <a
+                href="_internal_.RequestOptions.html"
+                class="tsd-signature-type tsd-kind-interface"
+                >RequestOptions</a
+              >
+              <ul class="tsd-hierarchy">
+                <li class="tsd-hierarchy-item">
+                  <span class="tsd-hierarchy-target">AuthorizeUrlOptions</span>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </section>
         <section class="tsd-panel">
           <h4 class="tsd-before-signature">Indexable</h4>
           <ul class="tsd-signatures">
@@ -139,10 +180,6 @@
                 ><span class="tsd-signature-symbol">]:</span>
                 <span class="tsd-signature-type">any</span>
               </div>
-              <div class="tsd-comment tsd-typography">
-                <p>Custom parameters to send to <code>/authorize</code></p>
-              </div>
-              <div class="tsd-comment tsd-typography"></div>
             </li>
           </ul>
         </section>
@@ -151,8 +188,8 @@
             <li>
               Defined in
               <a
-                href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L216"
-                >types.ts:216</a
+                href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/parameters.ts#L11"
+                >types/parameters.ts:11</a
               >
             </li>
           </ul>
@@ -176,14 +213,14 @@
                 <section class="tsd-index-section">
                   <h3 class="tsd-index-heading">Properties</h3>
                   <div class="tsd-index-list">
-                    <a href="#redirecturi" class="tsd-index-link"
+                    <a href="#headers" class="tsd-index-link tsd-is-inherited"
                       ><svg
                         class="tsd-kind-icon"
                         viewBox="0 0 24 24"
                         aria-label="Property"
                       >
                         <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>redirect<wbr />Uri</span></a
+                      ><span>headers?</span></a
                     >
                     <a href="#responsetype" class="tsd-index-link"
                       ><svg
@@ -193,6 +230,15 @@
                       >
                         <use href="../assets/icons.svg#icon-1024"></use></svg
                       ><span>response<wbr />Type</span></a
+                    >
+                    <a href="#redirecturi" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>redirect<wbr />Uri</span></a
                     >
                     <a href="#state" class="tsd-index-link"
                       ><svg
@@ -223,11 +269,11 @@
             <h2>Properties</h2>
           </summary>
           <section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="redirecturi">
-                <span>redirect<wbr />Uri</span
+            <section class="tsd-panel tsd-member tsd-is-inherited">
+              <h3 class="tsd-anchor-link" id="headers">
+                <code class="tsd-tag">Optional</code><span>headers</span
                 ><a
-                  href="#redirecturi"
+                  href="#headers"
                   aria-label="Permalink"
                   class="tsd-anchor-icon"
                   ><svg viewBox="0 0 24 24" aria-hidden="true">
@@ -235,24 +281,33 @@
                 ></a>
               </h3>
               <div class="tsd-signature">
-                <span class="tsd-kind-property">redirectUri</span
-                ><span class="tsd-signature-symbol">:</span>
-                <span class="tsd-signature-type">object</span>
+                <span class="tsd-kind-property">headers</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-signature-type">Record</span
+                ><span class="tsd-signature-symbol">&lt;</span
+                ><span class="tsd-signature-type">string</span
+                ><span class="tsd-signature-symbol">,</span>
+                <span class="tsd-signature-type">string</span
+                ><span class="tsd-signature-symbol">&gt;</span>
               </div>
               <div class="tsd-comment tsd-typography">
-                <p>
-                  Where the authorization server will redirect back after
-                  success or failure.
-                </p>
+                <p>Optional custom headers to be included in the request.</p>
               </div>
               <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
+                <p>
+                  Inherited from
+                  <a href="_internal_.RequestOptions.html">RequestOptions</a>.<a
+                    href="_internal_.RequestOptions.html#headers"
+                    >headers</a
+                  >
+                </p>
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L224"
-                      >types.ts:224</a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/parameters.ts#L4"
+                      >types/parameters.ts:4</a
                     >
                   </li>
                 </ul>
@@ -274,17 +329,41 @@
                 ><span class="tsd-signature-symbol">:</span>
                 <span class="tsd-signature-type">string</span>
               </div>
-              <div class="tsd-comment tsd-typography">
-                <p>The response_type value</p>
-              </div>
-              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L220"
-                      >types.ts:220</a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/parameters.ts#L12"
+                      >types/parameters.ts:12</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="redirecturi">
+                <span>redirect<wbr />Uri</span
+                ><a
+                  href="#redirecturi"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">redirectUri</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">string</span>
+              </div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/parameters.ts#L13"
+                      >types/parameters.ts:13</a
                     >
                   </li>
                 </ul>
@@ -301,19 +380,15 @@
               <div class="tsd-signature">
                 <span class="tsd-kind-property">state</span
                 ><span class="tsd-signature-symbol">:</span>
-                <span class="tsd-signature-type">object</span>
+                <span class="tsd-signature-type">string</span>
               </div>
-              <div class="tsd-comment tsd-typography">
-                <p>Random string to prevent CSRF attacks.</p>
-              </div>
-              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/types.ts#L228"
-                      >types.ts:228</a
+                      href="https://github.com/auth0/react-native-auth0/blob/6887b5b2d2c14c0b4df294cc1d075b18a6c3a957/src/types/parameters.ts#L14"
+                      >types/parameters.ts:14</a
                     >
                   </li>
                 </ul>
@@ -342,38 +417,6 @@
                 <div class="tsd-filter-visibility">
                   <span class="settings-label">Member Visibility</span>
                   <ul id="tsd-filter-options">
-                    <li class="tsd-filter-item">
-                      <label class="tsd-filter-input"
-                        ><input
-                          type="checkbox"
-                          id="tsd-filter-protected"
-                          name="protected"
-                        /><svg
-                          width="32"
-                          height="32"
-                          viewBox="0 0 32 32"
-                          aria-hidden="true"
-                        >
-                          <rect
-                            class="tsd-checkbox-background"
-                            width="30"
-                            height="30"
-                            x="1"
-                            y="1"
-                            rx="6"
-                            fill="none"
-                          ></rect>
-                          <path
-                            class="tsd-checkbox-checkmark"
-                            d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
-                            stroke="none"
-                            stroke-width="3.5"
-                            stroke-linejoin="round"
-                            fill="none"
-                          ></path></svg
-                        ><span>Protected</span></label
-                      >
-                    </li>
                     <li class="tsd-filter-item">
                       <label class="tsd-filter-input"
                         ><input
@@ -450,14 +493,14 @@
                   >Properties
                 </summary>
                 <div>
-                  <a href="#redirecturi"
+                  <a href="#headers" class="tsd-is-inherited"
                     ><svg
                       class="tsd-kind-icon"
                       viewBox="0 0 24 24"
                       aria-label="Property"
                     >
                       <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>redirect<wbr />Uri</span></a
+                    ><span>headers</span></a
                   ><a href="#responsetype"
                     ><svg
                       class="tsd-kind-icon"
@@ -466,6 +509,14 @@
                     >
                       <use href="../assets/icons.svg#icon-1024"></use></svg
                     ><span>response<wbr />Type</span></a
+                  ><a href="#redirecturi"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>redirect<wbr />Uri</span></a
                   ><a href="#state"
                     ><svg
                       class="tsd-kind-icon"
@@ -481,8 +532,21 @@
           </details>
         </div>
         <div class="site-menu">
+          <nav id="tsd-sidebar-links" class="tsd-navigation">
+            <a
+              href="https://github.com/auth0/react-native-auth0"
+              class="tsd-nav-link"
+              >GitHub</a
+            ><a
+              href="https://npmjs.com/package/react-native-auth0"
+              class="tsd-nav-link"
+              >NPM</a
+            ><a href="https://auth0.com/docs" class="tsd-nav-link"
+              >Auth0 Docs</a
+            >
+          </nav>
           <nav class="tsd-navigation">
-            <a href="../modules.html">react-native-auth0</a>
+            <a href="../modules.html">React Native Auth0 - v5.0.0-beta.4</a>
             <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
               <li>Loading...</li>
             </ul>
@@ -490,12 +554,7 @@
         </div>
       </div>
     </div>
-    <footer>
-      <p class="tsd-generator">
-        Generated using
-        <a href="https://typedoc.org/" target="_blank">TypeDoc</a>
-      </p>
-    </footer>
+    <footer></footer>
     <div class="overlay"></div>
   </body>
 </html>

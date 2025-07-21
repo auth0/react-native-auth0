@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
-    <title>react-native-auth0</title>
-    <meta name="description" content="Documentation for react-native-auth0" />
+    <title>React Native Auth0 - v5.0.0-beta.4</title>
+    <meta name="description" content="Documentation for React Native Auth0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="assets/style.css" />
     <link rel="stylesheet" href="assets/highlight.css" />
@@ -29,8 +29,14 @@
     </script>
     <header class="tsd-page-toolbar">
       <div class="tsd-toolbar-contents container">
-        <a href="index.html" class="title">react-native-auth0</a>
-        <div id="tsd-toolbar-links"></div>
+        <a href="index.html" class="title"
+          >React Native Auth0 - v5.0.0-beta.4</a
+        >
+        <div id="tsd-toolbar-links">
+          <a href="https://github.com/auth0/react-native-auth0">GitHub</a
+          ><a href="https://npmjs.com/package/react-native-auth0">NPM</a
+          ><a href="https://auth0.com/docs">Auth0 Docs</a>
+        </div>
         <button id="tsd-search-trigger" class="tsd-widget" aria-label="Search">
           <svg
             width="16"
@@ -78,11 +84,50 @@
     </header>
     <div class="container container-main">
       <div class="col-content">
-        <div class="tsd-page-title"><h1>react-native-auth0</h1></div>
+        <div class="tsd-page-title">
+          <h1>React Native Auth0 - v5.0.0-beta.4</h1>
+        </div>
         <h2>Hierarchy Summary</h2>
         <ul class="tsd-full-hierarchy">
-          <li data-refl="487" id="Types.AuthState">
-            <a href="interfaces/Types.AuthState.html"
+          <li data-refl="45" id="Auth0Options">
+            <a href="interfaces/Auth0Options.html"
+              ><svg
+                class="tsd-kind-icon"
+                viewBox="0 0 24 24"
+                aria-label="Interface"
+              >
+                <use href="assets/icons.svg#icon-256"></use></svg
+              >Auth0Options</a
+            >
+            <ul>
+              <li data-refl="239" id="NativeAuth0Options">
+                <a href="interfaces/NativeAuth0Options.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >NativeAuth0Options</a
+                >
+              </li>
+              <li data-refl="256" id="WebAuth0Options">
+                <a href="interfaces/WebAuth0Options.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >WebAuth0Options</a
+                >
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <ul class="tsd-full-hierarchy">
+          <li data-refl="458" id="<internal>.AuthState">
+            <a href="interfaces/_internal_.AuthState.html"
               ><svg
                 class="tsd-kind-icon"
                 viewBox="0 0 24 24"
@@ -92,8 +137,8 @@
               >AuthState</a
             >
             <ul>
-              <li data-refl="280" id="Types.Auth0ContextInterface">
-                <a href="interfaces/Types.Auth0ContextInterface.html"
+              <li data-refl="305" id="<internal>.Auth0ContextInterface">
+                <a href="interfaces/_internal_.Auth0ContextInterface.html"
                   ><svg
                     class="tsd-kind-icon"
                     viewBox="0 0 24 24"
@@ -107,26 +152,213 @@
           </li>
         </ul>
         <ul class="tsd-full-hierarchy">
-          <li data-refl="273" id="Types.BaseError">
-            <a href="classes/Types.BaseError.html"
+          <li data-refl="301" id="<internal>.RequestOptions">
+            <a href="interfaces/_internal_.RequestOptions.html"
               ><svg
                 class="tsd-kind-icon"
                 viewBox="0 0 24 24"
-                aria-label="Class"
+                aria-label="Interface"
               >
-                <use href="assets/icons.svg#icon-128"></use></svg
-              >BaseError</a
+                <use href="assets/icons.svg#icon-256"></use></svg
+              >RequestOptions</a
             >
             <ul>
-              <li data-refl="229" id="TimeoutError">
-                <a href="classes/TimeoutError.html"
+              <li data-refl="74" id="AuthorizeUrlOptions">
+                <a href="interfaces/AuthorizeUrlOptions.html"
                   ><svg
                     class="tsd-kind-icon"
                     viewBox="0 0 24 24"
-                    aria-label="Class"
+                    aria-label="Interface"
                   >
-                    <use href="assets/icons.svg#icon-128"></use></svg
-                  >TimeoutError</a
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >AuthorizeUrlOptions</a
+                >
+              </li>
+              <li data-refl="81" id="LogoutUrlOptions">
+                <a href="interfaces/LogoutUrlOptions.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >LogoutUrlOptions</a
+                >
+              </li>
+              <li data-refl="105" id="ExchangeParameters">
+                <a href="interfaces/ExchangeParameters.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >ExchangeParameters</a
+                >
+              </li>
+              <li data-refl="112" id="ExchangeNativeSocialParameters">
+                <a href="interfaces/ExchangeNativeSocialParameters.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >ExchangeNativeSocialParameters</a
+                >
+              </li>
+              <li data-refl="121" id="PasswordRealmParameters">
+                <a href="interfaces/PasswordRealmParameters.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >PasswordRealmParameters</a
+                >
+              </li>
+              <li data-refl="130" id="RefreshTokenParameters">
+                <a href="interfaces/RefreshTokenParameters.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >RefreshTokenParameters</a
+                >
+              </li>
+              <li data-refl="136" id="RevokeOptions">
+                <a href="interfaces/RevokeOptions.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >RevokeOptions</a
+                >
+              </li>
+              <li data-refl="141" id="PasswordlessEmailParameters">
+                <a href="interfaces/PasswordlessEmailParameters.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >PasswordlessEmailParameters</a
+                >
+              </li>
+              <li data-refl="148" id="PasswordlessSmsParameters">
+                <a href="interfaces/PasswordlessSmsParameters.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >PasswordlessSmsParameters</a
+                >
+              </li>
+              <li data-refl="155" id="LoginEmailParameters">
+                <a href="interfaces/LoginEmailParameters.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >LoginEmailParameters</a
+                >
+              </li>
+              <li data-refl="163" id="LoginSmsParameters">
+                <a href="interfaces/LoginSmsParameters.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >LoginSmsParameters</a
+                >
+              </li>
+              <li data-refl="171" id="LoginOtpParameters">
+                <a href="interfaces/LoginOtpParameters.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >LoginOtpParameters</a
+                >
+              </li>
+              <li data-refl="178" id="LoginOobParameters">
+                <a href="interfaces/LoginOobParameters.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >LoginOobParameters</a
+                >
+              </li>
+              <li data-refl="185" id="LoginRecoveryCodeParameters">
+                <a href="interfaces/LoginRecoveryCodeParameters.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >LoginRecoveryCodeParameters</a
+                >
+              </li>
+              <li data-refl="191" id="MfaChallengeParameters">
+                <a href="interfaces/MfaChallengeParameters.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >MfaChallengeParameters</a
+                >
+              </li>
+              <li data-refl="198" id="UserInfoParameters">
+                <a href="interfaces/UserInfoParameters.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >UserInfoParameters</a
+                >
+              </li>
+              <li data-refl="203" id="ResetPasswordParameters">
+                <a href="interfaces/ResetPasswordParameters.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >ResetPasswordParameters</a
+                >
+              </li>
+              <li data-refl="209" id="CreateUserParameters">
+                <a href="interfaces/CreateUserParameters.html"
+                  ><svg
+                    class="tsd-kind-icon"
+                    viewBox="0 0 24 24"
+                    aria-label="Interface"
+                  >
+                    <use href="assets/icons.svg#icon-256"></use></svg
+                  >CreateUserParameters</a
                 >
               </li>
             </ul>
@@ -153,38 +385,6 @@
                 <div class="tsd-filter-visibility">
                   <span class="settings-label">Member Visibility</span>
                   <ul id="tsd-filter-options">
-                    <li class="tsd-filter-item">
-                      <label class="tsd-filter-input"
-                        ><input
-                          type="checkbox"
-                          id="tsd-filter-protected"
-                          name="protected"
-                        /><svg
-                          width="32"
-                          height="32"
-                          viewBox="0 0 32 32"
-                          aria-hidden="true"
-                        >
-                          <rect
-                            class="tsd-checkbox-background"
-                            width="30"
-                            height="30"
-                            x="1"
-                            y="1"
-                            rx="6"
-                            fill="none"
-                          ></rect>
-                          <path
-                            class="tsd-checkbox-checkmark"
-                            d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
-                            stroke="none"
-                            stroke-width="3.5"
-                            stroke-linejoin="round"
-                            fill="none"
-                          ></path></svg
-                        ><span>Protected</span></label
-                      >
-                    </li>
                     <li class="tsd-filter-item">
                       <label class="tsd-filter-input"
                         ><input
@@ -233,8 +433,21 @@
           </div>
         </div>
         <div class="site-menu">
+          <nav id="tsd-sidebar-links" class="tsd-navigation">
+            <a
+              href="https://github.com/auth0/react-native-auth0"
+              class="tsd-nav-link"
+              >GitHub</a
+            ><a
+              href="https://npmjs.com/package/react-native-auth0"
+              class="tsd-nav-link"
+              >NPM</a
+            ><a href="https://auth0.com/docs" class="tsd-nav-link"
+              >Auth0 Docs</a
+            >
+          </nav>
           <nav class="tsd-navigation">
-            <a href="modules.html">react-native-auth0</a>
+            <a href="modules.html">React Native Auth0 - v5.0.0-beta.4</a>
             <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
               <li>Loading...</li>
             </ul>
@@ -242,12 +455,7 @@
         </div>
       </div>
     </div>
-    <footer>
-      <p class="tsd-generator">
-        Generated using
-        <a href="https://typedoc.org/" target="_blank">TypeDoc</a>
-      </p>
-    </footer>
+    <footer></footer>
     <div class="overlay"></div>
   </body>
 </html>

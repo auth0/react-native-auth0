@@ -1,5 +1,29 @@
 # Change Log
 
+## [v5.0.0-beta.4](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.4) (2025-07-21)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0-beta.3...v5.0.0-beta.4)
+
+**⚠️ BREAKING CHANGES**
+
+- feat: architectural refactor for multi-platform extensibility [\#1233](https://github.com/auth0/react-native-auth0/pull/1233) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Added**
+
+- Update README.md [\#1183](https://github.com/auth0/react-native-auth0/pull/1183) ([tinchomengo](https://github.com/tinchomengo))
+
+**Changed**
+
+- feat(deps): Upgrade React Native to 0.80.1 [\#1237](https://github.com/auth0/react-native-auth0/pull/1237) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Fixed**
+
+- fix(iOS): Fix ephemeralSession parameter type conversion in webAuth [\#1238](https://github.com/auth0/react-native-auth0/pull/1238) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Security**
+
+- chore: pin prettier-related packages to prevent malicious package installation [\#1241](https://github.com/auth0/react-native-auth0/pull/1241) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.0.0-beta.3](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.3) (2025-06-23)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0-beta.2...v5.0.0-beta.3)
