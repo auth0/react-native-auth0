@@ -23,8 +23,10 @@ We're excited to announce the release of react-native-auth0 `v4.0.0` and the bet
 - [Expo Quickstart](https://auth0.com/docs/quickstart/native/react-native-expo/interactive)
 - [Sample App](https://github.com/auth0-samples/auth0-react-native-sample/tree/master/00-Login-Hooks)
 - [Expo Sample App](https://github.com/auth0-samples/auth0-react-native-sample/tree/master/00-Login-Expo)
+- [React Native Web Setup](https://github.com/auth0/react-native-auth0/blob/master/REACT_NATIVE_WEB_SETUP.md)
 - [FAQs](https://github.com/auth0/react-native-auth0/blob/master/FAQ.md)
 - [Examples](https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES.md)
+- [Examples for Web](https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES-WEB.md)
 - [Docs Site](https://auth0.github.io/react-native-auth0/)
 
 ## Getting Started
