@@ -130,32 +130,6 @@ catch (e) {
 }
 ```
 
-### Change #4: Updated `authorize` and `clearSession` Signatures
-
-For improved clarity, SDK-specific options (like `ephemeralSession`) have been moved into a separate, second `options` object.
-
-**✅ Action Required:** Restructure calls to `authorize` and `clearSession`.
-
-**Before:**
-
-```javascript
-// Mixed parameters and options
-await authorize({
-  scope: 'openid profile',
-  ephemeralSession: true,
-});
-```
-
-**After:**
-
-```javascript
-// Parameters and options are now separate arguments
-await authorize(
-  { scope: 'openid profile' }, // 1. OIDC / Auth0 Parameters
-  { ephemeralSession: true } // 2. SDK-Specific Options
-);
-```
-
 ## Upgrading from v3 -> v4
 
 - **If your project is built with Expo:**
