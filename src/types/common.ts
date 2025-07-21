@@ -1,3 +1,5 @@
+import type { LocalAuthenticationOptions } from './platform-specific';
+
 export type NativeCredentialsResponse = {
   id_token: string;
   access_token: string;
@@ -91,6 +93,7 @@ export type User = {
 export interface Auth0Options {
   /** Your Auth0 application's domain. e.g., 'your-tenant.us.auth0.com' */
   domain: string;
+  LocalAuthenticationOptions?: LocalAuthenticationOptions;
   /** Your Auth0 application's client ID. */
   clientId: string;
   timeout?: number;
