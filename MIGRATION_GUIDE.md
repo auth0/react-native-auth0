@@ -123,6 +123,44 @@ To support the web platform, the library now has an **optional peer dependency**
 npm install @auth0/auth0-spa-js
 ```
 
+### Change #6: Hook Methods Now Throw Error
+
+Previously, all hook-related methods such as `getCredentials()`, `saveCredentials()`, etc., did not throw error directly. Instead, any issues were silently handled and surfaced via the error property in `useAuth0()`:
+
+```javascript
+const { error } = useAuth0();
+// error would be populated if getCredentials failed
+```
+
+**What's Changed:**
+
+These methods now throw error directly to the caller. You must handle them explicitly using try...catch blocks.
+
+**✅ Action Required:** Update your code to handle error for each function call individually.
+
+**Before:**
+
+```javascript
+const { getCredentials, error } = useAuth0();
+---
+await getCredentials();
+// Check error manually later
+```
+
+**After:**
+
+```javascript
+const { getCredentials, error } = useAuth0();
+
+try {
+  await getCredentials();
+} catch (e) {
+  console.error(e);
+}
+```
+
+All thrown errors are instances of the new standardized AuthError class described in Change #2.
+
 ### Recommended Reading
 
 After migrating, we highly recommend reviewing the updated **[FAQ](FAQ.md)** for detailed explanations on:
