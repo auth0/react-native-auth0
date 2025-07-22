@@ -24,11 +24,11 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
     companion object {
         const val NAME = "A0Auth0"
+        const val UNKNOWN_ERROR_RESULT_CODE = 1405
         private const val CREDENTIAL_MANAGER_ERROR_CODE = "a0.invalid_state.credential_manager_exception"
         private const val INVALID_DOMAIN_URL_ERROR_CODE = "a0.invalid_domain_url"
         private const val BIOMETRICS_AUTHENTICATION_ERROR_CODE = "a0.invalid_options_biometrics_authentication"
         private const val LOCAL_AUTH_REQUEST_CODE = 150
-        const val UNKNOWN_ERROR_RESULT_CODE = 1405
     }
 
     private val errorCodeMap = mapOf(
@@ -106,16 +106,18 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
         val builder = WebAuthProvider.login(auth0!!).withScheme(scheme)
         
-        state?.let { builder.withState(it) }
-        nonce?.let { builder.withNonce(it) }
-        audience?.let { builder.withAudience(it) }
-        scope?.let { builder.withScope(it) }
-        connection?.let { builder.withConnection(it) }
-        maxAge?.let { if (it.toInt() != 0) builder.withMaxAge(it.toInt()) }
-        organization?.let { builder.withOrganization(it) }
-        invitationUrl?.let { builder.withInvitationUrl(it) }
-        leeway?.let { if (it.toInt() != 0) builder.withIdTokenVerificationLeeway(it.toInt()) }
-        redirectUri?.let { builder.withRedirectUri(it) }
+        builder.apply {
+            state?.let { withState(it) }
+            nonce?.let { withNonce(it) }
+            audience?.let { withAudience(it) }
+            scope?.let { withScope(it) }
+            connection?.let { withConnection(it) }
+            maxAge?.let { if (it.toInt() != 0) withMaxAge(it.toInt()) }
+            organization?.let { withOrganization(it) }
+            invitationUrl?.let { withInvitationUrl(it) }
+            leeway?.let { if (it.toInt() != 0) withIdTokenVerificationLeeway(it.toInt()) }
+            redirectUri?.let { withRedirectUri(it) }
+        }
         
         builder.withParameters(cleanedParameters)
         builder.start(reactContext.currentActivity as Activity,
@@ -184,14 +186,6 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         promise.resolve(true)
     }
 
-    private fun getSecureCredentialsManagerWithoutBiometrics(): SecureCredentialsManager {
-        return SecureCredentialsManager(
-            reactContext,
-            auth0!!,
-            SharedPreferencesStorage(reactContext)
-        )
-    }
-
     @ReactMethod
     override fun hasValidAuth0InstanceWithConfiguration(clientId: String, domain: String, promise: Promise) {
         if (auth0 == null) {
@@ -236,10 +230,6 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         }
     }
 
-    private fun deduceErrorCode(e: CredentialsManagerException): String {
-        return errorCodeMap[e] ?: CREDENTIAL_MANAGER_ERROR_CODE
-    }
-
     @ReactMethod
     override fun saveCredentials(credentials: ReadableMap, promise: Promise) {
         try {
@@ -262,7 +252,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         promise.resolve(secureCredentialsManager.hasValidCredentials(minTtl.toLong()))
     }
 
-    override fun getConstants(): Map<String, Any> {
+    override fun getConstants(): Map<String, String> {
         return mapOf("bundleIdentifier" to reactContext.applicationInfo.packageName)
     }
 
@@ -290,6 +280,20 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             })
     }
 
+    override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
+        // No-op
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        webAuthPromise?.let { promise ->
+            promise.reject(
+                "a0.session.browser_terminated",
+                "The browser window was closed by a new instance of the application"
+            )
+            webAuthPromise = null
+        }
+    }
+
     override fun resumeWebAuth(url: String, promise: Promise) {
         // dummy function implementation, as this is only needed in iOS
         promise.resolve(true)
@@ -298,6 +302,18 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     override fun cancelWebAuth(promise: Promise) {
         // dummy function implementation, as this is only needed in iOS
         promise.resolve(true)
+    }
+
+    private fun getSecureCredentialsManagerWithoutBiometrics(): SecureCredentialsManager {
+        return SecureCredentialsManager(
+            reactContext,
+            auth0!!,
+            SharedPreferencesStorage(reactContext)
+        )
+    }
+
+    private fun deduceErrorCode(e: CredentialsManagerException): String {
+        return errorCodeMap[e] ?: CREDENTIAL_MANAGER_ERROR_CODE
     }
 
     private fun handleError(error: AuthenticationException, promise: Promise) {
@@ -326,19 +342,5 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             "${error.message}$separator CAUSE: ${error.getDescription()}",
             error
         )
-    }
-
-    override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
-        // No-op
-    }
-
-    override fun onNewIntent(intent: Intent) {
-        webAuthPromise?.let { promise ->
-            promise.reject(
-                "a0.session.browser_terminated",
-                "The browser window was closed by a new instance of the application"
-            )
-            webAuthPromise = null
-        }
     }
 }
