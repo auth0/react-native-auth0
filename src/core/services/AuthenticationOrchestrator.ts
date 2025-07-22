@@ -20,12 +20,15 @@ import type {
   ResetPasswordParameters,
   CreateUserParameters,
   NativeCredentialsResponse,
+  AuthorizeUrlParameters,
+  LogoutUrlParameters,
 } from '../../types';
 import {
   Credentials as CredentialsModel,
   Auth0User,
   AuthError,
 } from '../models';
+import { validateParameters } from '../utils/validation';
 import { HttpClient } from './HttpClient';
 import { deepCamelCase } from '../utils';
 
@@ -45,7 +48,35 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
     this.client = options.httpClient;
   }
 
+  authorizeUrl(parameters: AuthorizeUrlParameters): string {
+    validateParameters(parameters, ['responseType', 'redirectUri', 'state']);
+
+    const query = {
+      ...parameters,
+      client_id: this.clientId,
+      redirect_uri: parameters.redirectUri,
+    };
+
+    return this.client.buildUrl('/authorize', query);
+  }
+
+  logoutUrl(parameters: LogoutUrlParameters = {}): string {
+    const { returnToUrl, ...restParams } = parameters;
+
+    const query = {
+      ...restParams,
+      client_id: this.clientId,
+    };
+
+    if (returnToUrl) {
+      query.returnTo = returnToUrl;
+    }
+
+    return this.client.buildUrl('/v2/logout', query);
+  }
+
   async exchange(parameters: ExchangeParameters): Promise<Credentials> {
+    validateParameters(parameters, ['code', 'verifier', 'redirectUri']);
     const { headers, ...payload } = parameters;
     const body = {
       grant_type: 'authorization_code',
@@ -67,6 +98,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
   async exchangeNativeSocial(
     parameters: ExchangeNativeSocialParameters
   ): Promise<Credentials> {
+    validateParameters(parameters, ['subjectToken', 'subjectTokenType']);
     const { headers, ...payload } = parameters;
     const body = {
       grant_type: 'urn:ietf:params:oauth:grant-type:token-exchange',
@@ -90,6 +122,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
   async passwordRealm(
     parameters: PasswordRealmParameters
   ): Promise<Credentials> {
+    validateParameters(parameters, ['username', 'password', 'realm']);
     const { headers, ...payload } = parameters;
     const body = {
       grant_type: 'http://auth0.com/oauth/grant-type/password-realm',
@@ -111,6 +144,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
   }
 
   async refreshToken(parameters: RefreshTokenParameters): Promise<Credentials> {
+    validateParameters(parameters, ['refreshToken']);
     const { headers, ...payload } = parameters;
     const body = {
       grant_type: 'refresh_token',
@@ -131,6 +165,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
   async passwordlessWithEmail(
     parameters: PasswordlessEmailParameters
   ): Promise<void> {
+    validateParameters(parameters, ['email']);
     const { headers, ...payload } = parameters;
     const body = {
       client_id: this.clientId,
@@ -150,6 +185,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
   async passwordlessWithSMS(
     parameters: PasswordlessSmsParameters
   ): Promise<void> {
+    validateParameters(parameters, ['phoneNumber']);
     const { headers, ...payload } = parameters;
     const body = {
       client_id: this.clientId,
@@ -167,6 +203,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
   }
 
   async loginWithEmail(parameters: LoginEmailParameters): Promise<Credentials> {
+    validateParameters(parameters, ['email', 'code']);
     const { headers, ...payload } = parameters;
     const body = {
       grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
@@ -188,6 +225,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
   }
 
   async loginWithSMS(parameters: LoginSmsParameters): Promise<Credentials> {
+    validateParameters(parameters, ['phoneNumber', 'code']);
     const { headers, ...payload } = parameters;
     const body = {
       grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
@@ -209,6 +247,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
   }
 
   async loginWithOTP(parameters: LoginOtpParameters): Promise<Credentials> {
+    validateParameters(parameters, ['mfaToken', 'otp']);
     const { headers, ...payload } = parameters;
     const body = {
       grant_type: 'http://auth0.com/oauth/grant-type/mfa-otp',
@@ -227,6 +266,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
   }
 
   async loginWithOOB(parameters: LoginOobParameters): Promise<Credentials> {
+    validateParameters(parameters, ['mfaToken', 'oobCode']);
     const { headers, ...payload } = parameters;
     const body = {
       grant_type: 'http://auth0.com/oauth/grant-type/mfa-oob',
@@ -248,6 +288,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
   async loginWithRecoveryCode(
     parameters: LoginRecoveryCodeParameters
   ): Promise<Credentials> {
+    validateParameters(parameters, ['mfaToken', 'recoveryCode']);
     const { headers, ...payload } = parameters;
     const body = {
       grant_type: 'http://auth0.com/oauth/grant-type/mfa-recovery-code',
@@ -268,6 +309,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
   async multifactorChallenge(
     parameters: MfaChallengeParameters
   ): Promise<MfaChallengeResponse> {
+    validateParameters(parameters, ['mfaToken']);
     const { headers, ...payload } = parameters;
     const body = {
       client_id: this.clientId,
@@ -286,6 +328,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
   }
 
   async revoke(parameters: RevokeOptions): Promise<void> {
+    validateParameters(parameters, ['refreshToken']);
     const { headers, ...payload } = parameters;
     const body = {
       client_id: this.clientId,
@@ -329,6 +372,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
   }
 
   async createUser(parameters: CreateUserParameters): Promise<Partial<User>> {
+    validateParameters(parameters, ['email', 'password', 'connection']);
     const { headers, metadata, ...payload } = parameters;
     const body = {
       client_id: this.clientId,

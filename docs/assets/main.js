@@ -184,10 +184,10 @@ window.translations = {
           return e === t.Set.complete
             ? t.Set.complete
             : e === t.Set.empty
-              ? this
-              : new t.Set(
-                  Object.keys(this.elements).concat(Object.keys(e.elements))
-                );
+            ? this
+            : new t.Set(
+                Object.keys(this.elements).concat(Object.keys(e.elements))
+              );
         }),
         (t.idf = function (e, n) {
           var r = 0;
@@ -385,8 +385,8 @@ window.translations = {
               a < c
                 ? (l += 2)
                 : a > c
-                  ? (d += 2)
-                  : a == c && ((n += r[l + 1] * i[d + 1]), (l += 2), (d += 2));
+                ? (d += 2)
+                : a == c && ((n += r[l + 1] * i[d + 1]), (l += 2), (d += 2));
           return n;
         }),
         (t.Vector.prototype.similarity = function (e) {
@@ -496,8 +496,8 @@ window.translations = {
                   E.test(u)
                     ? (u = u + 'e')
                     : Q.test(u)
-                      ? ((h = L), (u = u.replace(h, '')))
-                      : H.test(u) && (u = u + 'e'));
+                    ? ((h = L), (u = u.replace(h, '')))
+                    : H.test(u) && (u = u + 'e'));
             }
             if (((h = N), h.test(u))) {
               var b = h.exec(u);
@@ -1667,8 +1667,8 @@ window.translations = {
           typeof define == 'function' && define.amd
             ? define(n)
             : typeof me == 'object'
-              ? (ge.exports = n())
-              : (e.lunr = n());
+            ? (ge.exports = n())
+            : (e.lunr = n());
         })(this, function () {
           return t;
         });
@@ -2093,7 +2093,11 @@ window.translations = {
     let o = Math.min(10, s.length);
     for (let a = 0; a < o; a++) {
       let c = r.data.rows[Number(s[a].ref)],
-        d = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="tsd-kind-icon" aria-label="${window.translations[`kind_${c.kind}`].replaceAll('"', '&quot;')}"><use href="#icon-${c.icon || c.kind}"></use></svg>`,
+        d = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="tsd-kind-icon" aria-label="${window.translations[
+          `kind_${c.kind}`
+        ].replaceAll('"', '&quot;')}"><use href="#icon-${
+          c.icon || c.kind
+        }"></use></svg>`,
         f = Ce(c.name, i);
       globalThis.DEBUG_SEARCH_WEIGHTS &&
         (f += ` (score: ${s[a].score.toFixed(2)})`),
@@ -2293,7 +2297,10 @@ window.translations = {
           r.addEventListener('click', () => {
             location.assign(r.href);
           });
-        let i = `tsd-accordion-${n.dataset.key ?? n.textContent.trim().replace(/\s+/g, '-').toLowerCase()}`,
+        let i = `tsd-accordion-${
+            n.dataset.key ??
+            n.textContent.trim().replace(/\s+/g, '-').toLowerCase()
+          }`,
           s;
         if (ue.has(i)) s = ue.get(i);
         else {
@@ -2363,7 +2370,9 @@ window.translations = {
         t.kind)
       ) {
         let i = window.translations[`kind_${t.kind}`].replaceAll('"', '&quot;');
-        r.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="tsd-kind-icon" aria-label="${i}"><use href="#icon-${t.icon || t.kind}"></use></svg>`;
+        r.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="tsd-kind-icon" aria-label="${i}"><use href="#icon-${
+          t.icon || t.kind
+        }"></use></svg>`;
       }
       r.appendChild(Fe(t.text, document.createElement('span')));
     } else {

@@ -8,14 +8,14 @@ interface RequestOptions {
 // ========= URL Builder Parameters =========
 
 /** Parameters for building a URL for the `/authorize` endpoint. */
-export interface AuthorizeUrlOptions extends RequestOptions {
+export interface AuthorizeUrlParameters extends RequestOptions {
   responseType: string;
   redirectUri: string;
   state: string;
 }
 
 /** Parameters for building a URL for the `/v2/logout` endpoint. */
-export interface LogoutUrlOptions extends RequestOptions {
+export interface LogoutUrlParameters extends RequestOptions {
   federated?: boolean;
   clientId?: string;
   returnTo?: string;

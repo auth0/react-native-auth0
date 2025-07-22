@@ -56,6 +56,8 @@ export interface LocalAuthenticationOptions {
   cancelTitle?: string;
   evaluationPolicy?: LocalAuthenticationStrategy;
   authenticationLevel?: LocalAuthenticationLevel;
+  fallbackTitle?: string;
+  deviceCredentialFallback?: boolean;
 }
 
 /**

@@ -73,36 +73,7 @@ To align with modern JavaScript standards, all properties on the `user` object a
 | `user.phone_number`   | `user.phoneNumber`   |
 | ...and so on.         |                      |
 
-### Change #2: Credentials Object uses `expiresAt`
-
-The `Credentials` object no longer includes `expiresIn` (a duration). It now provides `expiresAt`, an absolute **UNIX timestamp** (in seconds), making expiration checks simpler and less error-prone.
-
-**✅ Action Required:** Replace all logic using `expiresIn` with `expiresAt`.
-
-**Before:**
-
-```javascript
-const expiresAt = Date.now() / 1000 + credentials.expiresIn;
-if (isExpired(expiresAt)) {
-  // ...
-}
-```
-
-**After:**
-
-```javascript
-// Direct comparison is now possible
-if (credentials.expiresAt < Date.now() / 1000) {
-  // ...
-}
-
-// Or, use the new helper method (if you have an instance of the Credentials model):
-if (credentials.isExpired()) {
-  // ...
-}
-```
-
-### Change #3: Standardized `AuthError` Object
+### Change #2: Standardized `AuthError` Object
 
 All errors thrown by the library are now instances of a single, consistent `AuthError` class. This replaces multiple error types like `CredentialsManagerError`.
 
@@ -130,31 +101,72 @@ catch (e) {
 }
 ```
 
-### Change #4: Updated `authorize` and `clearSession` Signatures
+### Change #3: Platform-Specific API Availability
 
-For improved clarity, SDK-specific options (like `ephemeralSession`) have been moved into a separate, second `options` object.
+With the introduction of **React Native Web support**, some methods are only available on native platforms for security reasons. Direct authentication grants that handle user credentials (like passwords or OTP codes) are **not supported in the browser** and will throw a `NotImplemented` error.
 
-**✅ Action Required:** Restructure calls to `authorize` and `clearSession`.
+**✅ Action Required:** If you are building for the web, ensure all authentication flows are initiated via the redirect-based `authorize()` method. Review the platform support table in the [README](README.md#features-and-platform-support) for a full list of platform-specific methods.
+
+### Change #4: `authorize()` Behavior on Web
+
+On React Native Web, the `authorize()` method now triggers a **full-page redirect** to Auth0. As a result, the promise returned by `authorize()` will **not resolve** in the browser. Your application must be structured to handle the user state upon reloading after the redirect.
+
+**✅ Action Required:** Review the new **[FAQ entry](#faq-authorize-web)** for guidance on how to correctly handle the post-login flow on the web. The `Auth0Provider` and `useAuth0` hook are designed to manage this flow automatically.
+
+### Change #5: New Peer Dependency for Web Support
+
+To support the web platform, the library now has an **optional peer dependency** on `@auth0/auth0-spa-js`.
+
+**✅ Action Required:** If you are using `react-native-auth0` in a React Native Web project, you **must** install this package. Native-only projects can ignore this.
+
+```bash
+npm install @auth0/auth0-spa-js
+```
+
+### Change #6: Hook Methods Now Throw Error
+
+Previously, all hook-related methods such as `getCredentials()`, `saveCredentials()`, etc., did not throw error directly. Instead, any issues were silently handled and surfaced via the error property in `useAuth0()`:
+
+```javascript
+const { error } = useAuth0();
+// error would be populated if getCredentials failed
+```
+
+**What's Changed:**
+
+These methods now throw error directly to the caller. You must handle them explicitly using try...catch blocks.
+
+**✅ Action Required:** Update your code to handle error for each function call individually.
 
 **Before:**
 
 ```javascript
-// Mixed parameters and options
-await authorize({
-  scope: 'openid profile',
-  ephemeralSession: true,
-});
+const { getCredentials, error } = useAuth0();
+---
+await getCredentials();
+// Check error manually later
 ```
 
 **After:**
 
 ```javascript
-// Parameters and options are now separate arguments
-await authorize(
-  { scope: 'openid profile' }, // 1. OIDC / Auth0 Parameters
-  { ephemeralSession: true } // 2. SDK-Specific Options
-);
+const { getCredentials, error } = useAuth0();
+
+try {
+  await getCredentials();
+} catch (e) {
+  console.error(e);
+}
 ```
+
+All thrown errors are instances of the new standardized AuthError class described in Change #2.
+
+### Recommended Reading
+
+After migrating, we highly recommend reviewing the updated **[FAQ](FAQ.md)** for detailed explanations on:
+
+- How to handle the `authorize()` redirect flow on the web.
+- The importance of the `offline_access` scope for keeping users logged in.
 
 ## Upgrading from v3 -> v4
 
