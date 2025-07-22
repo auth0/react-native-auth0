@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
-    <title>react-native-auth0</title>
-    <meta name="description" content="Documentation for react-native-auth0" />
+    <title>React Native Auth0 - v5.0.0-beta.4</title>
+    <meta name="description" content="Documentation for React Native Auth0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="assets/style.css" />
     <link rel="stylesheet" href="assets/highlight.css" />
@@ -29,8 +29,14 @@
     </script>
     <header class="tsd-page-toolbar">
       <div class="tsd-toolbar-contents container">
-        <a href="index.html" class="title">react-native-auth0</a>
-        <div id="tsd-toolbar-links"></div>
+        <a href="index.html" class="title"
+          >React Native Auth0 - v5.0.0-beta.4</a
+        >
+        <div id="tsd-toolbar-links">
+          <a href="https://github.com/auth0/react-native-auth0">GitHub</a
+          ><a href="https://npmjs.com/package/react-native-auth0">NPM</a
+          ><a href="https://auth0.com/docs">Auth0 Docs</a>
+        </div>
         <button id="tsd-search-trigger" class="tsd-widget" aria-label="Search">
           <svg
             width="16"
@@ -78,7 +84,9 @@
     </header>
     <div class="container container-main">
       <div class="col-content">
-        <div class="tsd-page-title"><h1>react-native-auth0</h1></div>
+        <div class="tsd-page-title">
+          <h1>React Native Auth0 - v5.0.0-beta.4</h1>
+        </div>
         <div class="tsd-panel tsd-typography">
           <p>
             <img
@@ -1315,7 +1323,7 @@
             authentication before obtaining credentials, as shown in the code
             snippet below:
           </p>
-          <pre><code class="tsx"><span class="hl-6">import</span><span class="hl-1"> </span><span class="hl-2">Auth0</span><span class="hl-1"> </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">localAuthOptions</span><span class="hl-1">: </span><span class="hl-10">LocalAuthenticationOptions</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-2">title:</span><span class="hl-1"> </span><span class="hl-3">&#39;Authenticate to retreive your credentials&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">subtitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Please authenticate to continue&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">description:</span><span class="hl-1"> </span><span class="hl-3">&#39;We need to authenticate you to retrieve your credentials&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">cancelTitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Cancel&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">evaluationPolicy:</span><span class="hl-1"> </span><span class="hl-2">LocalAuthenticationStrategy</span><span class="hl-1">.</span><span class="hl-2">deviceOwnerWithBiometrics</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">fallbackTitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Use Passcode&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">authenticationLevel:</span><span class="hl-1"> </span><span class="hl-2">LocalAuthenticationLevel</span><span class="hl-1">.</span><span class="hl-2">strong</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">deviceCredentialFallback:</span><span class="hl-1"> </span><span class="hl-7">true</span><span class="hl-1">,</span><br/><span class="hl-1">};</span><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">auth0</span><span class="hl-1"> = </span><span class="hl-7">new</span><span class="hl-1"> </span><span class="hl-8">Auth0</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-2">domain:</span><span class="hl-1"> </span><span class="hl-2">config</span><span class="hl-1">.</span><span class="hl-2">domain</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">clientId:</span><span class="hl-1"> </span><span class="hl-2">config</span><span class="hl-1">.</span><span class="hl-2">clientId</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">localAuthenticationOptions:</span><span class="hl-1"> </span><span class="hl-2">localAuthOptions</span><span class="hl-1">,</span><br/><span class="hl-1">});</span>
+          <pre><code class="tsx"><span class="hl-6">import</span><span class="hl-1"> </span><span class="hl-2">Auth0</span><span class="hl-1"> </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">localAuthOptions</span><span class="hl-1">: </span><span class="hl-10">LocalAuthenticationOptions</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-2">title:</span><span class="hl-1"> </span><span class="hl-3">&#39;Authenticate to retrieve your credentials&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">subtitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Please authenticate to continue&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">description:</span><span class="hl-1"> </span><span class="hl-3">&#39;We need to authenticate you to retrieve your credentials&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">cancelTitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Cancel&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">evaluationPolicy:</span><span class="hl-1"> </span><span class="hl-2">LocalAuthenticationStrategy</span><span class="hl-1">.</span><span class="hl-2">deviceOwnerWithBiometrics</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">fallbackTitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Use Passcode&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">authenticationLevel:</span><span class="hl-1"> </span><span class="hl-2">LocalAuthenticationLevel</span><span class="hl-1">.</span><span class="hl-2">strong</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">deviceCredentialFallback:</span><span class="hl-1"> </span><span class="hl-7">true</span><span class="hl-1">,</span><br/><span class="hl-1">};</span><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">auth0</span><span class="hl-1"> = </span><span class="hl-7">new</span><span class="hl-1"> </span><span class="hl-8">Auth0</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-2">domain:</span><span class="hl-1"> </span><span class="hl-2">config</span><span class="hl-1">.</span><span class="hl-2">domain</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">clientId:</span><span class="hl-1"> </span><span class="hl-2">config</span><span class="hl-1">.</span><span class="hl-2">clientId</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">localAuthenticationOptions:</span><span class="hl-1"> </span><span class="hl-2">localAuthOptions</span><span class="hl-1">,</span><br/><span class="hl-1">});</span>
 </code><button type="button">Copy</button></pre>
 
           <p><strong>Using Hooks (Auth0Provider):</strong></p>
@@ -1325,7 +1333,7 @@
             needs to be passed to enable authentication before obtaining
             credentials, as shown in the code snippet below:
           </p>
-          <pre><code class="tsx"><span class="hl-6">import</span><span class="hl-1"> { </span><span class="hl-2">Auth0Provider</span><span class="hl-1"> } </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">localAuthOptions</span><span class="hl-1">: </span><span class="hl-10">LocalAuthenticationOptions</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-2">title:</span><span class="hl-1"> </span><span class="hl-3">&#39;Authenticate to retreive your credentials&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">subtitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Please authenticate to continue&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">description:</span><span class="hl-1"> </span><span class="hl-3">&#39;We need to authenticate you to retrieve your credentials&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">cancelTitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Cancel&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">evaluationPolicy:</span><span class="hl-1"> </span><span class="hl-2">LocalAuthenticationStrategy</span><span class="hl-1">.</span><span class="hl-2">deviceOwnerWithBiometrics</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">fallbackTitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Use Passcode&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">authenticationLevel:</span><span class="hl-1"> </span><span class="hl-2">LocalAuthenticationLevel</span><span class="hl-1">.</span><span class="hl-2">strong</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">deviceCredentialFallback:</span><span class="hl-1"> </span><span class="hl-7">true</span><span class="hl-1">,</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">App</span><span class="hl-1"> = () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-6">return</span><span class="hl-1"> (</span><br/><span class="hl-1">    </span><span class="hl-9">&lt;</span><span class="hl-10">Auth0Provider</span><br/><span class="hl-1">      </span><span class="hl-11">domain</span><span class="hl-1">=</span><span class="hl-7">{</span><span class="hl-2">config</span><span class="hl-13">.</span><span class="hl-2">domain</span><span class="hl-7">}</span><br/><span class="hl-1">      </span><span class="hl-11">clientId</span><span class="hl-1">=</span><span class="hl-7">{</span><span class="hl-2">config</span><span class="hl-13">.</span><span class="hl-2">clientId</span><span class="hl-7">}</span><br/><span class="hl-1">      </span><span class="hl-11">localAuthenticationOptions</span><span class="hl-1">=</span><span class="hl-7">{</span><span class="hl-2">localAuthOptions</span><span class="hl-7">}</span><br/><span class="hl-1">    </span><span class="hl-9">&gt;</span><br/><span class="hl-1">      </span><span class="hl-7">{</span><span class="hl-12">/* YOUR APP */</span><span class="hl-7">}</span><br/><span class="hl-1">    </span><span class="hl-9">&lt;/</span><span class="hl-10">Auth0Provider</span><span class="hl-9">&gt;</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-6">export</span><span class="hl-1"> </span><span class="hl-6">default</span><span class="hl-1"> </span><span class="hl-2">App</span><span class="hl-1">;</span>
+          <pre><code class="tsx"><span class="hl-6">import</span><span class="hl-1"> { </span><span class="hl-2">Auth0Provider</span><span class="hl-1"> } </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">localAuthOptions</span><span class="hl-1">: </span><span class="hl-10">LocalAuthenticationOptions</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-2">title:</span><span class="hl-1"> </span><span class="hl-3">&#39;Authenticate to retrieve your credentials&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">subtitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Please authenticate to continue&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">description:</span><span class="hl-1"> </span><span class="hl-3">&#39;We need to authenticate you to retrieve your credentials&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">cancelTitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Cancel&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">evaluationPolicy:</span><span class="hl-1"> </span><span class="hl-2">LocalAuthenticationStrategy</span><span class="hl-1">.</span><span class="hl-2">deviceOwnerWithBiometrics</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">fallbackTitle:</span><span class="hl-1"> </span><span class="hl-3">&#39;Use Passcode&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">authenticationLevel:</span><span class="hl-1"> </span><span class="hl-2">LocalAuthenticationLevel</span><span class="hl-1">.</span><span class="hl-2">strong</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">deviceCredentialFallback:</span><span class="hl-1"> </span><span class="hl-7">true</span><span class="hl-1">,</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-8">App</span><span class="hl-1"> = () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-6">return</span><span class="hl-1"> (</span><br/><span class="hl-1">    </span><span class="hl-9">&lt;</span><span class="hl-10">Auth0Provider</span><br/><span class="hl-1">      </span><span class="hl-11">domain</span><span class="hl-1">=</span><span class="hl-7">{</span><span class="hl-2">config</span><span class="hl-13">.</span><span class="hl-2">domain</span><span class="hl-7">}</span><br/><span class="hl-1">      </span><span class="hl-11">clientId</span><span class="hl-1">=</span><span class="hl-7">{</span><span class="hl-2">config</span><span class="hl-13">.</span><span class="hl-2">clientId</span><span class="hl-7">}</span><br/><span class="hl-1">      </span><span class="hl-11">localAuthenticationOptions</span><span class="hl-1">=</span><span class="hl-7">{</span><span class="hl-2">localAuthOptions</span><span class="hl-7">}</span><br/><span class="hl-1">    </span><span class="hl-9">&gt;</span><br/><span class="hl-1">      </span><span class="hl-7">{</span><span class="hl-12">/* YOUR APP */</span><span class="hl-7">}</span><br/><span class="hl-1">    </span><span class="hl-9">&lt;/</span><span class="hl-10">Auth0Provider</span><span class="hl-9">&gt;</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-6">export</span><span class="hl-1"> </span><span class="hl-6">default</span><span class="hl-1"> </span><span class="hl-2">App</span><span class="hl-1">;</span>
 </code><button type="button">Copy</button></pre>
 
           <p>
@@ -1524,6 +1532,199 @@
               </tr>
             </tbody>
           </table>
+          <h2 id="features-and-platform-support" class="tsd-anchor-link">
+            Features and Platform Support<a
+              href="#features-and-platform-support"
+              aria-label="Permalink"
+              class="tsd-anchor-icon"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <use href="assets/icons.svg#icon-anchor"></use></svg
+            ></a>
+          </h2>
+          <p>
+            This library provides a unified API across Native (iOS/Android) and
+            Web platforms. However, due to security models and underlying
+            technology, not all features are available on every platform.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Feature / Method Category</th>
+                <th style="text-align: center">Native (iOS/Android)</th>
+                <th style="text-align: center">Web (Browser)</th>
+                <th>Notes &amp; Rationale</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Web Authentication</strong></td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center"></td>
+                <td>---</td>
+              </tr>
+              <tr>
+                <td><code>webAuth.authorize()</code></td>
+                <td style="text-align: center">✅</td>
+                <td style="text-align: center">✅</td>
+                <td>
+                  <strong>Primary login method.</strong> Uses
+                  <code>ASWebAuthenticationSession</code>/<code
+                    >Custom Tabs</code
+                  >
+                  on Native and <code>loginWithRedirect</code> on Web.
+                </td>
+              </tr>
+              <tr>
+                <td><code>webAuth.clearSession()</code></td>
+                <td style="text-align: center">✅</td>
+                <td style="text-align: center">✅</td>
+                <td>
+                  <strong>Primary logout method.</strong> Clears the session
+                  cookie on the server via a browser redirect.
+                </td>
+              </tr>
+              <tr>
+                <td><code>webAuth.handleRedirectCallback()</code></td>
+                <td style="text-align: center">❌</td>
+                <td style="text-align: center">✅</td>
+                <td>
+                  <strong>Web-only.</strong> Manually processes the callback
+                  from Auth0. Handled automatically when using the
+                  <code>Auth0Provider</code> hook.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Credential Management</strong></td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center"></td>
+                <td>---</td>
+              </tr>
+              <tr>
+                <td><code>credentialsManager.getCredentials()</code></td>
+                <td style="text-align: center">✅</td>
+                <td style="text-align: center">✅</td>
+                <td>
+                  Retrieves stored tokens. On Native, it uses the secure
+                  Keychain/Keystore. On Web, it uses the
+                  <code>@auth0/auth0-spa-js</code> cache and
+                  <code>getTokenSilently</code>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>credentialsManager.hasValidCredentials()</code></td>
+                <td style="text-align: center">✅</td>
+                <td style="text-align: center">✅</td>
+                <td>Checks for a valid local session.</td>
+              </tr>
+              <tr>
+                <td><code>credentialsManager.saveCredentials()</code></td>
+                <td style="text-align: center">✅</td>
+                <td style="text-align: center">❌</td>
+                <td>
+                  <strong>Native-only.</strong> Manually saving credentials is
+                  required on Native. On Web, this is handled automatically by
+                  the underlying SPA SDK and is a no-op.
+                </td>
+              </tr>
+              <tr>
+                <td><code>credentialsManager.clearCredentials()</code></td>
+                <td style="text-align: center">✅</td>
+                <td style="text-align: center">✅</td>
+                <td>
+                  Clears locally stored tokens. On Web, this performs a
+                  &quot;local-only&quot; logout.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Direct Authentication Grants</strong></td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center"></td>
+                <td>---</td>
+              </tr>
+              <tr>
+                <td><code>auth.passwordRealm()</code></td>
+                <td style="text-align: center">✅</td>
+                <td style="text-align: center">❌</td>
+                <td>
+                  <strong>Not supported on Web for security reasons.</strong>
+                  The Resource Owner Password Grant exposes credentials to the
+                  browser and is not recommended for Single Page Applications.
+                </td>
+              </tr>
+              <tr>
+                <td><code>auth.passwordless...()</code></td>
+                <td style="text-align: center">✅</td>
+                <td style="text-align: center">❌</td>
+                <td>
+                  <strong>Not supported on Web.</strong> Passwordless flows on
+                  the web should be configured via Universal Login and initiated
+                  with <code>webAuth.authorize()</code>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>auth.loginWith...()</code> (OTP/SMS etc)</td>
+                <td style="text-align: center">✅</td>
+                <td style="text-align: center">❌</td>
+                <td>
+                  <strong>Not supported on Web.</strong> These direct grant
+                  flows are not secure for public clients like browsers.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Token &amp; User Management</strong></td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center"></td>
+                <td>---</td>
+              </tr>
+              <tr>
+                <td><code>auth.refreshToken()</code></td>
+                <td style="text-align: center">✅</td>
+                <td style="text-align: center">❌</td>
+                <td>
+                  <strong>Not supported on Web.</strong> Token refresh is
+                  handled automatically by <code>getCredentials()</code> via
+                  <code>getTokenSilently()</code> on the web.
+                </td>
+              </tr>
+              <tr>
+                <td><code>auth.userInfo()</code></td>
+                <td style="text-align: center">✅</td>
+                <td style="text-align: center">✅</td>
+                <td>
+                  Fetches the user's profile from the
+                  <code>/userinfo</code> endpoint using an access token.
+                </td>
+              </tr>
+              <tr>
+                <td><code>auth.createUser()</code></td>
+                <td style="text-align: center">✅</td>
+                <td style="text-align: center">✅</td>
+                <td>
+                  Calls the <code>/dbconnections/signup</code> endpoint. Works
+                  on both platforms.
+                </td>
+              </tr>
+              <tr>
+                <td><code>auth.resetPassword()</code></td>
+                <td style="text-align: center">✅</td>
+                <td style="text-align: center">✅</td>
+                <td>
+                  Calls the
+                  <code>/dbconnections/change_password</code> endpoint. Works on
+                  both platforms.
+                </td>
+              </tr>
+              <tr>
+                <td><code>users(token).patchUser()</code></td>
+                <td style="text-align: center">✅</td>
+                <td style="text-align: center">✅</td>
+                <td>
+                  Calls the Management API. Works on any platform with a valid
+                  token, but use with caution in the browser.
+                </td>
+              </tr>
+            </tbody>
+          </table>
           <h2 id="troubleshooting" class="tsd-anchor-link">
             Troubleshooting<a
               href="#troubleshooting"
@@ -1612,7 +1813,9 @@ end
                 >Auth0's code of conduct guidelines</a
               >
             </li>
-            <li><a href="DEVELOPMENT.md">This repo's development guide</a></li>
+            <li>
+              <a href="media/CONTRIBUTING.md">This repo's development guide</a>
+            </li>
           </ul>
           <h3 id="raise-an-issue" class="tsd-anchor-link">
             Raise an issue<a
@@ -1707,38 +1910,6 @@ end
                 <div class="tsd-filter-visibility">
                   <span class="settings-label">Member Visibility</span>
                   <ul id="tsd-filter-options">
-                    <li class="tsd-filter-item">
-                      <label class="tsd-filter-input"
-                        ><input
-                          type="checkbox"
-                          id="tsd-filter-protected"
-                          name="protected"
-                        /><svg
-                          width="32"
-                          height="32"
-                          viewBox="0 0 32 32"
-                          aria-hidden="true"
-                        >
-                          <rect
-                            class="tsd-checkbox-background"
-                            width="30"
-                            height="30"
-                            x="1"
-                            y="1"
-                            rx="6"
-                            fill="none"
-                          ></rect>
-                          <path
-                            class="tsd-checkbox-checkmark"
-                            d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
-                            stroke="none"
-                            stroke-width="3.5"
-                            stroke-linejoin="round"
-                            fill="none"
-                          ></path></svg
-                        ><span>Protected</span></label
-                      >
-                    </li>
                     <li class="tsd-filter-item">
                       <label class="tsd-filter-input"
                         ><input
@@ -2013,7 +2184,9 @@ end
                   </ul>
                 </li>
               </ul>
-              <a href="#troubleshooting"><span>Troubleshooting</span></a>
+              <a href="#features-and-platform-support"
+                ><span>Features and <wbr />Platform <wbr />Support</span></a
+              ><a href="#troubleshooting"><span>Troubleshooting</span></a>
               <ul>
                 <li>
                   <a href="#swift-6-compatibility-issues-on-ios"
@@ -2041,8 +2214,21 @@ end
           </details>
         </div>
         <div class="site-menu">
+          <nav id="tsd-sidebar-links" class="tsd-navigation">
+            <a
+              href="https://github.com/auth0/react-native-auth0"
+              class="tsd-nav-link"
+              >GitHub</a
+            ><a
+              href="https://npmjs.com/package/react-native-auth0"
+              class="tsd-nav-link"
+              >NPM</a
+            ><a href="https://auth0.com/docs" class="tsd-nav-link"
+              >Auth0 Docs</a
+            >
+          </nav>
           <nav class="tsd-navigation">
-            <a href="modules.html">react-native-auth0</a>
+            <a href="modules.html">React Native Auth0 - v5.0.0-beta.4</a>
             <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
               <li>Loading...</li>
             </ul>
@@ -2050,12 +2236,7 @@ end
         </div>
       </div>
     </div>
-    <footer>
-      <p class="tsd-generator">
-        Generated using
-        <a href="https://typedoc.org/" target="_blank">TypeDoc</a>
-      </p>
-    </footer>
+    <footer></footer>
     <div class="overlay"></div>
   </body>
 </html>

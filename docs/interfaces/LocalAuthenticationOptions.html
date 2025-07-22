@@ -3,8 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
-    <title>LocalAuthenticationOptions | react-native-auth0</title>
-    <meta name="description" content="Documentation for react-native-auth0" />
+    <title>
+      LocalAuthenticationOptions | React Native Auth0 - v5.0.0-beta.4
+    </title>
+    <meta name="description" content="Documentation for React Native Auth0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="../assets/style.css" />
     <link rel="stylesheet" href="../assets/highlight.css" />
@@ -33,8 +35,14 @@
     </script>
     <header class="tsd-page-toolbar">
       <div class="tsd-toolbar-contents container">
-        <a href="../index.html" class="title">react-native-auth0</a>
-        <div id="tsd-toolbar-links"></div>
+        <a href="../index.html" class="title"
+          >React Native Auth0 - v5.0.0-beta.4</a
+        >
+        <div id="tsd-toolbar-links">
+          <a href="https://github.com/auth0/react-native-auth0">GitHub</a
+          ><a href="https://npmjs.com/package/react-native-auth0">NPM</a
+          ><a href="https://auth0.com/docs">Auth0 Docs</a>
+        </div>
         <button id="tsd-search-trigger" class="tsd-widget" aria-label="Search">
           <svg
             width="16"
@@ -92,30 +100,37 @@
         </div>
         <section class="tsd-panel tsd-comment">
           <div class="tsd-comment tsd-typography">
-            <p>
-              The options for configuring the display of local authentication
-              prompt, authentication level (Android only) and evaluation policy
-              (iOS only).
-            </p>
+            <div class="tsd-tag-remarks">
+              <h4 class="tsd-anchor-link" id="remarks">
+                Remarks<a
+                  href="#remarks"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h4>
+              <p>
+                <strong>Platform specific:</strong> Native only (iOS/Android).
+                Options for configuring local authentication (e.g., biometrics
+                or device PIN).
+              </p>
+            </div>
           </div>
-          <div class="tsd-comment tsd-typography"></div>
         </section>
         <div class="tsd-signature">
           <span class="tsd-signature-keyword">interface</span>
           <span class="tsd-kind-interface">LocalAuthenticationOptions</span>
           <span class="tsd-signature-symbol">{</span><br />    <a
             class="tsd-kind-property"
-            href="#authenticationlevel"
-            >authenticationLevel</a
-          ><span class="tsd-signature-symbol">?:</span>
-          <a
-            href="../enums/LocalAuthenticationLevel.html"
-            class="tsd-signature-type tsd-kind-enum"
-            >LocalAuthenticationLevel</a
+            href="#title"
+            >title</a
+          ><span class="tsd-signature-symbol">:</span>
+          <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <a
             class="tsd-kind-property"
-            href="#canceltitle"
-            >cancelTitle</a
+            href="#subtitle"
+            >subtitle</a
           ><span class="tsd-signature-symbol">?:</span>
           <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <a
@@ -126,10 +141,10 @@
           <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <a
             class="tsd-kind-property"
-            href="#devicecredentialfallback"
-            >deviceCredentialFallback</a
+            href="#canceltitle"
+            >cancelTitle</a
           ><span class="tsd-signature-symbol">?:</span>
-          <span class="tsd-signature-type">boolean</span
+          <span class="tsd-signature-type">string</span
           ><span class="tsd-signature-symbol">;</span><br />    <a
             class="tsd-kind-property"
             href="#evaluationpolicy"
@@ -141,22 +156,13 @@
             >LocalAuthenticationStrategy</a
           ><span class="tsd-signature-symbol">;</span><br />    <a
             class="tsd-kind-property"
-            href="#fallbacktitle"
-            >fallbackTitle</a
+            href="#authenticationlevel"
+            >authenticationLevel</a
           ><span class="tsd-signature-symbol">?:</span>
-          <span class="tsd-signature-type">string</span
-          ><span class="tsd-signature-symbol">;</span><br />    <a
-            class="tsd-kind-property"
-            href="#subtitle"
-            >subtitle</a
-          ><span class="tsd-signature-symbol">?:</span>
-          <span class="tsd-signature-type">string</span
-          ><span class="tsd-signature-symbol">;</span><br />    <a
-            class="tsd-kind-property"
-            href="#title"
-            >title</a
-          ><span class="tsd-signature-symbol">:</span>
-          <span class="tsd-signature-type">string</span
+          <a
+            href="../enums/LocalAuthenticationLevel.html"
+            class="tsd-signature-type tsd-kind-enum"
+            >LocalAuthenticationLevel</a
           ><span class="tsd-signature-symbol">;</span><br /><span
             class="tsd-signature-symbol"
             >}</span
@@ -167,8 +173,8 @@
             <li>
               Defined in
               <a
-                href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/credentials-manager/localAuthenticationOptions.ts#L8"
-                >credentials-manager/localAuthenticationOptions.ts:8</a
+                href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/types/platform-specific.ts#L52"
+                >types/platform-specific.ts:52</a
               >
             </li>
           </ul>
@@ -192,59 +198,14 @@
                 <section class="tsd-index-section">
                   <h3 class="tsd-index-heading">Properties</h3>
                   <div class="tsd-index-list">
-                    <a href="#authenticationlevel" class="tsd-index-link"
+                    <a href="#title" class="tsd-index-link"
                       ><svg
                         class="tsd-kind-icon"
                         viewBox="0 0 24 24"
                         aria-label="Property"
                       >
                         <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>authentication<wbr />Level?</span></a
-                    >
-                    <a href="#canceltitle" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>cancel<wbr />Title?</span></a
-                    >
-                    <a href="#description" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>description?</span></a
-                    >
-                    <a href="#devicecredentialfallback" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>device<wbr />Credential<wbr />Fallback?</span></a
-                    >
-                    <a href="#evaluationpolicy" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>evaluation<wbr />Policy?</span></a
-                    >
-                    <a href="#fallbacktitle" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>fallback<wbr />Title?</span></a
+                      ><span>title</span></a
                     >
                     <a href="#subtitle" class="tsd-index-link"
                       ><svg
@@ -255,14 +216,41 @@
                         <use href="../assets/icons.svg#icon-1024"></use></svg
                       ><span>subtitle?</span></a
                     >
-                    <a href="#title" class="tsd-index-link"
+                    <a href="#description" class="tsd-index-link"
                       ><svg
                         class="tsd-kind-icon"
                         viewBox="0 0 24 24"
                         aria-label="Property"
                       >
                         <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>title</span></a
+                      ><span>description?</span></a
+                    >
+                    <a href="#canceltitle" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>cancel<wbr />Title?</span></a
+                    >
+                    <a href="#evaluationpolicy" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>evaluation<wbr />Policy?</span></a
+                    >
+                    <a href="#authenticationlevel" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>authentication<wbr />Level?</span></a
                     >
                   </div>
                 </section>
@@ -285,11 +273,35 @@
           </summary>
           <section>
             <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="authenticationlevel">
-                <code class="tsd-tag">Optional</code
-                ><span>authentication<wbr />Level</span
+              <h3 class="tsd-anchor-link" id="title">
+                <span>title</span
+                ><a href="#title" aria-label="Permalink" class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">title</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">string</span>
+              </div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/types/platform-specific.ts#L53"
+                      >types/platform-specific.ts:53</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="subtitle">
+                <code class="tsd-tag">Optional</code><span>subtitle</span
                 ><a
-                  href="#authenticationlevel"
+                  href="#subtitle"
                   aria-label="Permalink"
                   class="tsd-anchor-icon"
                   ><svg viewBox="0 0 24 24" aria-hidden="true">
@@ -297,29 +309,45 @@
                 ></a>
               </h3>
               <div class="tsd-signature">
-                <span class="tsd-kind-property">authenticationLevel</span
+                <span class="tsd-kind-property">subtitle</span
                 ><span class="tsd-signature-symbol">?:</span>
-                <a
-                  href="../enums/LocalAuthenticationLevel.html"
-                  class="tsd-signature-type tsd-kind-enum"
-                  >LocalAuthenticationLevel</a
-                >
+                <span class="tsd-signature-type">string</span>
               </div>
-              <div class="tsd-comment tsd-typography">
-                <p>
-                  The authentication level to use when prompting the user for
-                  authentication. Defaults to LocalAuthenticationLevel.strong.
-                  <strong>Applicable for Android only.</strong>
-                </p>
-              </div>
-              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/credentials-manager/localAuthenticationOptions.ts#L36"
-                      >credentials-manager/localAuthenticationOptions.ts:36</a
+                      href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/types/platform-specific.ts#L54"
+                      >types/platform-specific.ts:54</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="description">
+                <code class="tsd-tag">Optional</code><span>description</span
+                ><a
+                  href="#description"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">description</span
+                ><span class="tsd-signature-symbol">?:</span>
+                <span class="tsd-signature-type">string</span>
+              </div>
+              <aside class="tsd-sources">
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/types/platform-specific.ts#L55"
+                      >types/platform-specific.ts:55</a
                     >
                   </li>
                 </ul>
@@ -342,92 +370,13 @@
                 ><span class="tsd-signature-symbol">?:</span>
                 <span class="tsd-signature-type">string</span>
               </div>
-              <div class="tsd-comment tsd-typography">
-                <p>
-                  The cancel button title of the authentication prompt.
-                  <strong>Applicable for both Android and iOS.</strong>
-                </p>
-              </div>
-              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/credentials-manager/localAuthenticationOptions.ts#L24"
-                      >credentials-manager/localAuthenticationOptions.ts:24</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="description">
-                <code class="tsd-tag">Optional</code><span>description</span
-                ><a
-                  href="#description"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">description</span
-                ><span class="tsd-signature-symbol">?:</span>
-                <span class="tsd-signature-type">string</span>
-              </div>
-              <div class="tsd-comment tsd-typography">
-                <p>
-                  The description of the authentication prompt.
-                  <strong>Applicable for Android only.</strong>
-                </p>
-              </div>
-              <div class="tsd-comment tsd-typography"></div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/credentials-manager/localAuthenticationOptions.ts#L20"
-                      >credentials-manager/localAuthenticationOptions.ts:20</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="devicecredentialfallback">
-                <code class="tsd-tag">Optional</code
-                ><span>device<wbr />Credential<wbr />Fallback</span
-                ><a
-                  href="#devicecredentialfallback"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">deviceCredentialFallback</span
-                ><span class="tsd-signature-symbol">?:</span>
-                <span class="tsd-signature-type">boolean</span>
-              </div>
-              <div class="tsd-comment tsd-typography">
-                <p>
-                  Should the user be given the option to authenticate with their
-                  device PIN, pattern, or password instead of a biometric.
-                  <strong>Applicable for Android only.</strong>
-                </p>
-              </div>
-              <div class="tsd-comment tsd-typography"></div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/credentials-manager/localAuthenticationOptions.ts#L40"
-                      >credentials-manager/localAuthenticationOptions.ts:40</a
+                      href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/types/platform-specific.ts#L56"
+                      >types/platform-specific.ts:56</a
                     >
                   </li>
                 </ul>
@@ -454,33 +403,24 @@
                   >LocalAuthenticationStrategy</a
                 >
               </div>
-              <div class="tsd-comment tsd-typography">
-                <p>
-                  The evaluation policy to use when prompting the user for
-                  authentication. Defaults to
-                  LocalAuthenticationStrategy.deviceOwnerWithBiometrics.
-                  <strong>Applicable for iOS only.</strong>
-                </p>
-              </div>
-              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/credentials-manager/localAuthenticationOptions.ts#L28"
-                      >credentials-manager/localAuthenticationOptions.ts:28</a
+                      href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/types/platform-specific.ts#L57"
+                      >types/platform-specific.ts:57</a
                     >
                   </li>
                 </ul>
               </aside>
             </section>
             <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="fallbacktitle">
+              <h3 class="tsd-anchor-link" id="authenticationlevel">
                 <code class="tsd-tag">Optional</code
-                ><span>fallback<wbr />Title</span
+                ><span>authentication<wbr />Level</span
                 ><a
-                  href="#fallbacktitle"
+                  href="#authenticationlevel"
                   aria-label="Permalink"
                   class="tsd-anchor-icon"
                   ><svg viewBox="0 0 24 24" aria-hidden="true">
@@ -488,91 +428,21 @@
                 ></a>
               </h3>
               <div class="tsd-signature">
-                <span class="tsd-kind-property">fallbackTitle</span
+                <span class="tsd-kind-property">authenticationLevel</span
                 ><span class="tsd-signature-symbol">?:</span>
-                <span class="tsd-signature-type">string</span>
+                <a
+                  href="../enums/LocalAuthenticationLevel.html"
+                  class="tsd-signature-type tsd-kind-enum"
+                  >LocalAuthenticationLevel</a
+                >
               </div>
-              <div class="tsd-comment tsd-typography">
-                <p>
-                  The fallback button title of the authentication prompt.
-                  <strong>Applicable for iOS only.</strong>
-                </p>
-              </div>
-              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/credentials-manager/localAuthenticationOptions.ts#L32"
-                      >credentials-manager/localAuthenticationOptions.ts:32</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="subtitle">
-                <code class="tsd-tag">Optional</code><span>subtitle</span
-                ><a
-                  href="#subtitle"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">subtitle</span
-                ><span class="tsd-signature-symbol">?:</span>
-                <span class="tsd-signature-type">string</span>
-              </div>
-              <div class="tsd-comment tsd-typography">
-                <p>
-                  The subtitle of the authentication prompt.
-                  <strong>Applicable for Android only.</strong>
-                </p>
-              </div>
-              <div class="tsd-comment tsd-typography"></div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/credentials-manager/localAuthenticationOptions.ts#L16"
-                      >credentials-manager/localAuthenticationOptions.ts:16</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="title">
-                <span>title</span
-                ><a href="#title" aria-label="Permalink" class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">title</span
-                ><span class="tsd-signature-symbol">:</span>
-                <span class="tsd-signature-type">string</span>
-              </div>
-              <div class="tsd-comment tsd-typography">
-                <p>
-                  The title of the authentication prompt.
-                  <strong>Applicable for both Android and iOS</strong>.
-                </p>
-              </div>
-              <div class="tsd-comment tsd-typography"></div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/credentials-manager/localAuthenticationOptions.ts#L12"
-                      >credentials-manager/localAuthenticationOptions.ts:12</a
+                      href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/types/platform-specific.ts#L58"
+                      >types/platform-specific.ts:58</a
                     >
                   </li>
                 </ul>
@@ -601,38 +471,6 @@
                 <div class="tsd-filter-visibility">
                   <span class="settings-label">Member Visibility</span>
                   <ul id="tsd-filter-options">
-                    <li class="tsd-filter-item">
-                      <label class="tsd-filter-input"
-                        ><input
-                          type="checkbox"
-                          id="tsd-filter-protected"
-                          name="protected"
-                        /><svg
-                          width="32"
-                          height="32"
-                          viewBox="0 0 32 32"
-                          aria-hidden="true"
-                        >
-                          <rect
-                            class="tsd-checkbox-background"
-                            width="30"
-                            height="30"
-                            x="1"
-                            y="1"
-                            rx="6"
-                            fill="none"
-                          ></rect>
-                          <path
-                            class="tsd-checkbox-checkmark"
-                            d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
-                            stroke="none"
-                            stroke-width="3.5"
-                            stroke-linejoin="round"
-                            fill="none"
-                          ></path></svg
-                        ><span>Protected</span></label
-                      >
-                    </li>
                     <li class="tsd-filter-item">
                       <label class="tsd-filter-input"
                         ><input
@@ -709,54 +547,14 @@
                   >Properties
                 </summary>
                 <div>
-                  <a href="#authenticationlevel"
+                  <a href="#title"
                     ><svg
                       class="tsd-kind-icon"
                       viewBox="0 0 24 24"
                       aria-label="Property"
                     >
                       <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>authentication<wbr />Level</span></a
-                  ><a href="#canceltitle"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>cancel<wbr />Title</span></a
-                  ><a href="#description"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>description</span></a
-                  ><a href="#devicecredentialfallback"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>device<wbr />Credential<wbr />Fallback</span></a
-                  ><a href="#evaluationpolicy"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>evaluation<wbr />Policy</span></a
-                  ><a href="#fallbacktitle"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>fallback<wbr />Title</span></a
+                    ><span>title</span></a
                   ><a href="#subtitle"
                     ><svg
                       class="tsd-kind-icon"
@@ -765,14 +563,38 @@
                     >
                       <use href="../assets/icons.svg#icon-1024"></use></svg
                     ><span>subtitle</span></a
-                  ><a href="#title"
+                  ><a href="#description"
                     ><svg
                       class="tsd-kind-icon"
                       viewBox="0 0 24 24"
                       aria-label="Property"
                     >
                       <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>title</span></a
+                    ><span>description</span></a
+                  ><a href="#canceltitle"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>cancel<wbr />Title</span></a
+                  ><a href="#evaluationpolicy"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>evaluation<wbr />Policy</span></a
+                  ><a href="#authenticationlevel"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>authentication<wbr />Level</span></a
                   >
                 </div>
               </details>
@@ -780,8 +602,21 @@
           </details>
         </div>
         <div class="site-menu">
+          <nav id="tsd-sidebar-links" class="tsd-navigation">
+            <a
+              href="https://github.com/auth0/react-native-auth0"
+              class="tsd-nav-link"
+              >GitHub</a
+            ><a
+              href="https://npmjs.com/package/react-native-auth0"
+              class="tsd-nav-link"
+              >NPM</a
+            ><a href="https://auth0.com/docs" class="tsd-nav-link"
+              >Auth0 Docs</a
+            >
+          </nav>
           <nav class="tsd-navigation">
-            <a href="../modules.html">react-native-auth0</a>
+            <a href="../modules.html">React Native Auth0 - v5.0.0-beta.4</a>
             <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
               <li>Loading...</li>
             </ul>
@@ -789,12 +624,7 @@
         </div>
       </div>
     </div>
-    <footer>
-      <p class="tsd-generator">
-        Generated using
-        <a href="https://typedoc.org/" target="_blank">TypeDoc</a>
-      </p>
-    </footer>
+    <footer></footer>
     <div class="overlay"></div>
   </body>
 </html>

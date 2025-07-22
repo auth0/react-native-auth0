@@ -2,69 +2,171 @@
 
 ## Upgrading from v4 -> v5
 
-### Compatibility Requirements
+Version 5.0 of `react-native-auth0` is a significant update featuring a complete architectural overhaul. This new foundation improves performance, maintainability, and provides a more consistent API across all platforms.
 
-- **React**: v5 requires React 19 or higher
-- **React Native**: v5 requires React Native 0.78.0 or higher
-- **Expo**: v5 requires Expo 53 or higher
+Upgrading from v4.x requires addressing several breaking changes. Please follow this guide carefully.
 
-### Breaking Changes
+## 1. Compatibility & Installation
 
-- **Platform Compatibility**: The minimum iOS deployment target is now 14.0. Update your iOS/Podfile with:
+Before updating the library, ensure your project meets the new minimum requirements.
 
-  ```
-  platform :ios, '14.0'
-  ```
+### Environment Requirements
 
-- **Android Requirements**: Android SDK API level 35 or higher is now required
+- **React:** `19.0.0` or higher
+- **React Native:** `0.78.0` or higher
+- **Expo:** SDK `53` or higher
+- **iOS:** Deployment Target `14.0`
+- **Android:** Target SDK `35` or higher
 
-### Migration Steps
+### Updating Your Project
 
-#### For Regular React Native Projects
+#### For Standard React Native Projects:
 
-1. First, ensure your project uses React 19 and React Native 0.78.0 or higher:
+1.  **Upgrade React Native:**
+    ```bash
+    npm install react@^19.0.0 react-native@^0.78.0
+    ```
+2.  **Update this Library:**
+    ```bash
+    npm install react-native-auth0@beta
+    ```
+3.  **Update iOS Target:** In your `ios/Podfile`, set the platform version:
+    ```ruby
+    platform :ios, '14.0'
+    ```
+4.  **Install Pods:**
+    ```bash
+    cd ios && pod install && cd ..
+    ```
 
-   ```bash
-   npm install react@^19.0.0
-   npm install react-native@^0.78.0
-   ```
+#### For Expo Projects:
 
-2. Update the react-native-auth0 package:
+1.  **Upgrade Expo SDK:**
+    ```bash
+    npx expo upgrade
+    ```
+2.  **Update this Library:**
+    ```bash
+    npm install react-native-auth0@beta
+    ```
+3.  **Rebuild Native Code:**
+    ```bash
+    npx expo prebuild --clean
+    ```
+    > **Warning:** This will overwrite any manual changes in your `ios` and `android` directories.
 
-   ```bash
-   npm install react-native-auth0@beta
-   ```
+## 2. Breaking API Changes
 
-3. Update your iOS minimum deployment target in your Podfile:
+The following API changes require code modifications in your application.
 
-   ```ruby
-   platform :ios, '14.0'
-   ```
+### Change #1: User Profile Properties are now `camelCase`
 
-4. Install the updated pods:
-   ```bash
-   cd ios && pod install && cd ..
-   ```
+To align with modern JavaScript standards, all properties on the `user` object are now `camelCase`.
 
-#### For Expo Projects
+**✅ Action Required:** Update all references to `user` properties.
 
-1. Update to Expo 53 or higher:
+| Before (snake_case)   | After (camelCase)    |
+| :-------------------- | :------------------- |
+| `user.given_name`     | `user.givenName`     |
+| `user.family_name`    | `user.familyName`    |
+| `user.email_verified` | `user.emailVerified` |
+| `user.phone_number`   | `user.phoneNumber`   |
+| ...and so on.         |                      |
 
-   ```bash
-   npx expo upgrade
-   ```
+### Change #2: Standardized `AuthError` Object
 
-2. Update the react-native-auth0 package:
+All errors thrown by the library are now instances of a single, consistent `AuthError` class. This replaces multiple error types like `CredentialsManagerError`.
 
-   ```bash
-   npm install react-native-auth0@beta
-   ```
+**✅ Action Required:** Update your `try...catch` blocks to handle the new unified error object.
 
-3. Rebuild your app:
-   ```bash
-   npx expo prebuild --clean
-   ```
-   Note: This will reset any manual changes to your native code.
+**Before:**
+
+```javascript
+catch (e) {
+  // Inconsistent properties like e.error, e.error_description
+  console.error(e.message);
+}
+```
+
+**After:**
+
+```javascript
+import { AuthError } from 'react-native-auth0';
+
+catch (e) {
+  if (e instanceof AuthError) {
+    // Consistent properties are now available
+    console.error(e.name, e.message); // e.g., 'invalid_grant', 'The refresh token is invalid.'
+  }
+}
+```
+
+### Change #3: Platform-Specific API Availability
+
+With the introduction of **React Native Web support**, some methods are only available on native platforms for security reasons. Direct authentication grants that handle user credentials (like passwords or OTP codes) are **not supported in the browser** and will throw a `NotImplemented` error.
+
+**✅ Action Required:** If you are building for the web, ensure all authentication flows are initiated via the redirect-based `authorize()` method. Review the platform support table in the [README](README.md#features-and-platform-support) for a full list of platform-specific methods.
+
+### Change #4: `authorize()` Behavior on Web
+
+On React Native Web, the `authorize()` method now triggers a **full-page redirect** to Auth0. As a result, the promise returned by `authorize()` will **not resolve** in the browser. Your application must be structured to handle the user state upon reloading after the redirect.
+
+**✅ Action Required:** Review the new **[FAQ entry](#faq-authorize-web)** for guidance on how to correctly handle the post-login flow on the web. The `Auth0Provider` and `useAuth0` hook are designed to manage this flow automatically.
+
+### Change #5: New Peer Dependency for Web Support
+
+To support the web platform, the library now has an **optional peer dependency** on `@auth0/auth0-spa-js`.
+
+**✅ Action Required:** If you are using `react-native-auth0` in a React Native Web project, you **must** install this package. Native-only projects can ignore this.
+
+```bash
+npm install @auth0/auth0-spa-js
+```
+
+### Change #6: Hook Methods Now Throw Error
+
+Previously, all hook-related methods such as `getCredentials()`, `saveCredentials()`, etc., did not throw error directly. Instead, any issues were silently handled and surfaced via the error property in `useAuth0()`:
+
+```javascript
+const { error } = useAuth0();
+// error would be populated if getCredentials failed
+```
+
+**What's Changed:**
+
+These methods now throw error directly to the caller. You must handle them explicitly using try...catch blocks.
+
+**✅ Action Required:** Update your code to handle error for each function call individually.
+
+**Before:**
+
+```javascript
+const { getCredentials, error } = useAuth0();
+---
+await getCredentials();
+// Check error manually later
+```
+
+**After:**
+
+```javascript
+const { getCredentials, error } = useAuth0();
+
+try {
+  await getCredentials();
+} catch (e) {
+  console.error(e);
+}
+```
+
+All thrown errors are instances of the new standardized AuthError class described in Change #2.
+
+### Recommended Reading
+
+After migrating, we highly recommend reviewing the updated **[FAQ](FAQ.md)** for detailed explanations on:
+
+- How to handle the `authorize()` redirect flow on the web.
+- The importance of the `offline_access` scope for keeping users logged in.
 
 ## Upgrading from v3 -> v4
 

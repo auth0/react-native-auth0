@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
-    <title>default | react-native-auth0</title>
-    <meta name="description" content="Documentation for react-native-auth0" />
+    <title>default | React Native Auth0 - v5.0.0-beta.4</title>
+    <meta name="description" content="Documentation for React Native Auth0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="../assets/style.css" />
     <link rel="stylesheet" href="../assets/highlight.css" />
@@ -33,8 +33,14 @@
     </script>
     <header class="tsd-page-toolbar">
       <div class="tsd-toolbar-contents container">
-        <a href="../index.html" class="title">react-native-auth0</a>
-        <div id="tsd-toolbar-links"></div>
+        <a href="../index.html" class="title"
+          >React Native Auth0 - v5.0.0-beta.4</a
+        >
+        <div id="tsd-toolbar-links">
+          <a href="https://github.com/auth0/react-native-auth0">GitHub</a
+          ><a href="https://npmjs.com/package/react-native-auth0">NPM</a
+          ><a href="https://auth0.com/docs">Auth0 Docs</a>
+        </div>
         <button id="tsd-search-trigger" class="tsd-widget" aria-label="Search">
           <svg
             width="16"
@@ -90,17 +96,35 @@
         </div>
         <section class="tsd-panel tsd-comment">
           <div class="tsd-comment tsd-typography">
-            <p>Auth0 for React Native client</p>
+            <p>The main Auth0 client class.</p>
+            <p>
+              This class acts as a facade, creating and delegating to a
+              platform-specific client instance (Native or Web) under the hood.
+            </p>
           </div>
-          <div class="tsd-comment tsd-typography"></div>
+          <div class="tsd-comment tsd-typography">
+            <div class="tsd-tag-example">
+              <h4 class="tsd-anchor-link" id="example">
+                Example<a
+                  href="#example"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h4>
+              <pre><code><span class="hl-6">import</span><span class="hl-1"> </span><span class="hl-2">Auth0</span><span class="hl-1"> </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-3">&#39;react-native-auth0&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">auth0</span><span class="hl-1"> = </span><span class="hl-7">new</span><span class="hl-1"> </span><span class="hl-8">Auth0</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-2">domain:</span><span class="hl-1"> </span><span class="hl-3">&#39;YOUR_AUTH0_DOMAIN&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">clientId:</span><span class="hl-1"> </span><span class="hl-3">&#39;YOUR_AUTH0_CLIENT_ID&#39;</span><br/><span class="hl-1">});</span>
+</code><button>Copy</button></pre>
+            </div>
+          </div>
         </section>
         <aside class="tsd-sources">
           <ul>
             <li>
               Defined in
               <a
-                href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/auth0.ts#L11"
-                >auth0.ts:11</a
+                href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/index.ts#L31"
+                >index.ts:31</a
               >
             </li>
           </ul>
@@ -122,6 +146,38 @@
               </summary>
               <div class="tsd-accordion-details">
                 <section class="tsd-index-section">
+                  <h3 class="tsd-index-heading">Accessors</h3>
+                  <div class="tsd-index-list">
+                    <a href="#webauth" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Accessor"
+                      >
+                        <use href="../assets/icons.svg#icon-262144"></use></svg
+                      ><span>web<wbr />Auth</span></a
+                    >
+                    <a href="#credentialsmanager" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Accessor"
+                      >
+                        <use href="../assets/icons.svg#icon-262144"></use></svg
+                      ><span>credentials<wbr />Manager</span></a
+                    >
+                    <a href="#auth" class="tsd-index-link"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Accessor"
+                      >
+                        <use href="../assets/icons.svg#icon-262144"></use></svg
+                      ><span>auth</span></a
+                    >
+                  </div>
+                </section>
+                <section class="tsd-index-section">
                   <h3 class="tsd-index-heading">Constructors</h3>
                   <div class="tsd-index-list">
                     <a href="#constructor" class="tsd-index-link"
@@ -132,38 +188,6 @@
                       >
                         <use href="../assets/icons.svg#icon-512"></use></svg
                       ><span>constructor</span></a
-                    >
-                  </div>
-                </section>
-                <section class="tsd-index-section">
-                  <h3 class="tsd-index-heading">Properties</h3>
-                  <div class="tsd-index-list">
-                    <a href="#auth" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>auth</span></a
-                    >
-                    <a href="#credentialsmanager" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>credentials<wbr />Manager</span></a
-                    >
-                    <a href="#webauth" class="tsd-index-link"
-                      ><svg
-                        class="tsd-kind-icon"
-                        viewBox="0 0 24 24"
-                        aria-label="Property"
-                      >
-                        <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>web<wbr />Auth</span></a
                     >
                   </div>
                 </section>
@@ -185,6 +209,231 @@
             </details>
           </section>
         </section>
+        <details class="tsd-panel-group tsd-member-group tsd-accordion" open>
+          <summary class="tsd-accordion-summary" data-key="section-Accessors">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <use href="../assets/icons.svg#icon-chevronDown"></use>
+            </svg>
+            <h2>Accessors</h2>
+          </summary>
+          <section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="webauth">
+                <span>web<wbr />Auth</span
+                ><a
+                  href="#webauth"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <ul class="tsd-signatures">
+                <li>
+                  <div class="tsd-signature" id="webauthwebauth">
+                    <span class="tsd-signature-keyword">get</span>
+                    <span class="tsd-kind-get-signature">webAuth</span
+                    ><span class="tsd-signature-symbol">()</span
+                    ><span class="tsd-signature-symbol">:</span>
+                    <a
+                      href="../interfaces/_internal_.IWebAuthProvider.html"
+                      class="tsd-signature-type tsd-kind-interface"
+                      >IWebAuthProvider</a
+                    >
+                  </div>
+                  <div class="tsd-description">
+                    <div class="tsd-comment tsd-typography">
+                      <p>
+                        Provides access to the web-based authentication methods.
+                      </p>
+                    </div>
+                    <h4 class="tsd-returns-title">
+                      Returns
+                      <a
+                        href="../interfaces/_internal_.IWebAuthProvider.html"
+                        class="tsd-signature-type tsd-kind-interface"
+                        >IWebAuthProvider</a
+                      >
+                    </h4>
+                    <div class="tsd-comment tsd-typography">
+                      <div class="tsd-tag-see">
+                        <h4 class="tsd-anchor-link" id="see">
+                          See<a
+                            href="#see"
+                            aria-label="Permalink"
+                            class="tsd-anchor-icon"
+                            ><svg viewBox="0 0 24 24" aria-hidden="true">
+                              <use
+                                href="../assets/icons.svg#icon-anchor"
+                              ></use></svg
+                          ></a>
+                        </h4>
+                        <p>IWebAuthProvider</p>
+                      </div>
+                    </div>
+                    <aside class="tsd-sources">
+                      <ul>
+                        <li>
+                          Defined in
+                          <a
+                            href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/index.ts#L48"
+                            >index.ts:48</a
+                          >
+                        </li>
+                      </ul>
+                    </aside>
+                  </div>
+                </li>
+              </ul>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="credentialsmanager">
+                <span>credentials<wbr />Manager</span
+                ><a
+                  href="#credentialsmanager"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <ul class="tsd-signatures">
+                <li>
+                  <div
+                    class="tsd-signature"
+                    id="credentialsmanagercredentialsmanager"
+                  >
+                    <span class="tsd-signature-keyword">get</span>
+                    <span class="tsd-kind-get-signature"
+                      >credentialsManager</span
+                    ><span class="tsd-signature-symbol">()</span
+                    ><span class="tsd-signature-symbol">:</span>
+                    <a
+                      href="../interfaces/_internal_.ICredentialsManager.html"
+                      class="tsd-signature-type tsd-kind-interface"
+                      >ICredentialsManager</a
+                    >
+                  </div>
+                  <div class="tsd-description">
+                    <div class="tsd-comment tsd-typography">
+                      <p>
+                        Provides access to the credentials management methods.
+                      </p>
+                    </div>
+                    <h4 class="tsd-returns-title">
+                      Returns
+                      <a
+                        href="../interfaces/_internal_.ICredentialsManager.html"
+                        class="tsd-signature-type tsd-kind-interface"
+                        >ICredentialsManager</a
+                      >
+                    </h4>
+                    <div class="tsd-comment tsd-typography">
+                      <div class="tsd-tag-see">
+                        <h4 class="tsd-anchor-link" id="see-1">
+                          See<a
+                            href="#see-1"
+                            aria-label="Permalink"
+                            class="tsd-anchor-icon"
+                            ><svg viewBox="0 0 24 24" aria-hidden="true">
+                              <use
+                                href="../assets/icons.svg#icon-anchor"
+                              ></use></svg
+                          ></a>
+                        </h4>
+                        <p>ICredentialsManager</p>
+                      </div>
+                    </div>
+                    <aside class="tsd-sources">
+                      <ul>
+                        <li>
+                          Defined in
+                          <a
+                            href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/index.ts#L56"
+                            >index.ts:56</a
+                          >
+                        </li>
+                      </ul>
+                    </aside>
+                  </div>
+                </li>
+              </ul>
+            </section>
+            <section class="tsd-panel tsd-member">
+              <h3 class="tsd-anchor-link" id="auth">
+                <span>auth</span
+                ><a href="#auth" aria-label="Permalink" class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <ul class="tsd-signatures">
+                <li>
+                  <div class="tsd-signature" id="authauth">
+                    <span class="tsd-signature-keyword">get</span>
+                    <span class="tsd-kind-get-signature">auth</span
+                    ><span class="tsd-signature-symbol">()</span
+                    ><span class="tsd-signature-symbol">:</span>
+                    <a
+                      href="../interfaces/_internal_.IAuthenticationProvider.html"
+                      class="tsd-signature-type tsd-kind-interface"
+                      >IAuthenticationProvider</a
+                    >
+                  </div>
+                  <div class="tsd-description">
+                    <div class="tsd-comment tsd-typography">
+                      <p>
+                        Provides access to direct authentication methods (e.g.,
+                        password-realm).
+                      </p>
+                    </div>
+                    <h4 class="tsd-returns-title">
+                      Returns
+                      <a
+                        href="../interfaces/_internal_.IAuthenticationProvider.html"
+                        class="tsd-signature-type tsd-kind-interface"
+                        >IAuthenticationProvider</a
+                      >
+                    </h4>
+                    <div class="tsd-comment tsd-typography">
+                      <div class="tsd-tag-see">
+                        <h4 class="tsd-anchor-link" id="see-2">
+                          See<a
+                            href="#see-2"
+                            aria-label="Permalink"
+                            class="tsd-anchor-icon"
+                            ><svg viewBox="0 0 24 24" aria-hidden="true">
+                              <use
+                                href="../assets/icons.svg#icon-anchor"
+                              ></use></svg
+                          ></a>
+                        </h4>
+                        <p>IAuthenticationProvider</p>
+                      </div>
+                    </div>
+                    <aside class="tsd-sources">
+                      <ul>
+                        <li>
+                          Defined in
+                          <a
+                            href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/index.ts#L64"
+                            >index.ts:64</a
+                          >
+                        </li>
+                      </ul>
+                    </aside>
+                  </div>
+                </li>
+              </ul>
+            </section>
+          </section>
+        </details>
         <details class="tsd-panel-group tsd-member-group tsd-accordion" open>
           <summary
             class="tsd-accordion-summary"
@@ -242,7 +491,7 @@
                   </div>
                   <div class="tsd-description">
                     <div class="tsd-comment tsd-typography">
-                      <p>Creates an instance of Auth0.</p>
+                      <p>Creates an instance of the Auth0 client.</p>
                     </div>
                     <div class="tsd-parameters">
                       <h4 class="tsd-parameters-title">Parameters</h4>
@@ -257,110 +506,9 @@
                             ></span
                           >
                           <div class="tsd-comment tsd-typography">
-                            <p>Your Auth0 application information</p>
+                            <p>Configuration options for the client.</p>
                           </div>
                           <div class="tsd-comment tsd-typography"></div>
-                          <div class="tsd-comment tsd-typography">
-                            <p>Options for configuring the Auth0 client.</p>
-                          </div>
-                          <ul class="tsd-parameters">
-                            <li class="tsd-parameter">
-                              <h5 id="clientid">
-                                <span class="tsd-kind-property">clientId</span
-                                ><span class="tsd-signature-symbol">: </span
-                                ><span class="tsd-signature-type">string</span>
-                              </h5>
-                              <div class="tsd-comment tsd-typography">
-                                <p>
-                                  The client identifier of your application.
-                                </p>
-                              </div>
-                              <div class="tsd-comment tsd-typography"></div>
-                            </li>
-                            <li class="tsd-parameter">
-                              <h5 id="domain">
-                                <span class="tsd-kind-property">domain</span
-                                ><span class="tsd-signature-symbol">: </span
-                                ><span class="tsd-signature-type">string</span>
-                              </h5>
-                              <div class="tsd-comment tsd-typography">
-                                <p>The Auth0 domain for your tenant.</p>
-                              </div>
-                              <div class="tsd-comment tsd-typography"></div>
-                            </li>
-                            <li class="tsd-parameter">
-                              <h5 id="headers">
-                                <code class="tsd-tag">Optional</code
-                                ><span class="tsd-kind-property">headers</span
-                                ><span class="tsd-signature-symbol">?: </span
-                                ><span class="tsd-signature-type">Record</span
-                                ><span class="tsd-signature-symbol">&lt;</span
-                                ><span class="tsd-signature-type">string</span
-                                ><span class="tsd-signature-symbol">,</span>
-                                <span class="tsd-signature-type">string</span
-                                ><span class="tsd-signature-symbol">&gt;</span>
-                              </h5>
-                              <div class="tsd-comment tsd-typography">
-                                <p>
-                                  (Optional) Custom headers to include in
-                                  requests.
-                                </p>
-                              </div>
-                              <div class="tsd-comment tsd-typography"></div>
-                            </li>
-                            <li class="tsd-parameter">
-                              <h5 id="localauthenticationoptions">
-                                <code class="tsd-tag">Optional</code
-                                ><span class="tsd-kind-property"
-                                  >localAuthenticationOptions</span
-                                ><span class="tsd-signature-symbol">?: </span
-                                ><a
-                                  href="../interfaces/LocalAuthenticationOptions.html"
-                                  class="tsd-signature-type tsd-kind-interface"
-                                  >LocalAuthenticationOptions</a
-                                >
-                              </h5>
-                              <div class="tsd-comment tsd-typography">
-                                <p>
-                                  Options for configuring local authentication.
-                                </p>
-                              </div>
-                              <div class="tsd-comment tsd-typography"></div>
-                            </li>
-                            <li class="tsd-parameter">
-                              <h5 id="telemetry">
-                                <code class="tsd-tag">Optional</code
-                                ><span class="tsd-kind-property">telemetry</span
-                                ><span class="tsd-signature-symbol">?: </span
-                                ><a
-                                  href="../types/Types.Telemetry.html"
-                                  class="tsd-signature-type tsd-kind-type-alias"
-                                  >Telemetry</a
-                                >
-                              </h5>
-                              <div class="tsd-comment tsd-typography">
-                                <p>
-                                  Telemetry information to include in requests.
-                                </p>
-                              </div>
-                              <div class="tsd-comment tsd-typography"></div>
-                            </li>
-                            <li class="tsd-parameter">
-                              <h5 id="timeout">
-                                <code class="tsd-tag">Optional</code
-                                ><span class="tsd-kind-property">timeout</span
-                                ><span class="tsd-signature-symbol">?: </span
-                                ><span class="tsd-signature-type">number</span>
-                              </h5>
-                              <div class="tsd-comment tsd-typography">
-                                <p>
-                                  The timeout in milliseconds for network
-                                  requests.
-                                </p>
-                              </div>
-                              <div class="tsd-comment tsd-typography"></div>
-                            </li>
-                          </ul>
                         </li>
                       </ul>
                     </div>
@@ -376,8 +524,8 @@
                         <li>
                           Defined in
                           <a
-                            href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/auth0.ts#L27"
-                            >auth0.ts:27</a
+                            href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/index.ts#L38"
+                            >index.ts:38</a
                           >
                         </li>
                       </ul>
@@ -385,115 +533,6 @@
                   </div>
                 </li>
               </ul>
-            </section>
-          </section>
-        </details>
-        <details class="tsd-panel-group tsd-member-group tsd-accordion" open>
-          <summary class="tsd-accordion-summary" data-key="section-Properties">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              aria-hidden="true"
-            >
-              <use href="../assets/icons.svg#icon-chevronDown"></use>
-            </svg>
-            <h2>Properties</h2>
-          </summary>
-          <section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="auth">
-                <span>auth</span
-                ><a href="#auth" aria-label="Permalink" class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">auth</span
-                ><span class="tsd-signature-symbol">:</span>
-                <a
-                  href="Types.Auth.html"
-                  class="tsd-signature-type tsd-kind-class"
-                  >Auth</a
-                >
-              </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/auth0.ts#L12"
-                      >auth0.ts:12</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="credentialsmanager">
-                <span>credentials<wbr />Manager</span
-                ><a
-                  href="#credentialsmanager"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">credentialsManager</span
-                ><span class="tsd-signature-symbol">:</span>
-                <a
-                  href="Types.CredentialsManager.html"
-                  class="tsd-signature-type tsd-kind-class"
-                  >CredentialsManager</a
-                >
-              </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/auth0.ts#L14"
-                      >auth0.ts:14</a
-                    >
-                  </li>
-                </ul>
-              </aside>
-            </section>
-            <section class="tsd-panel tsd-member">
-              <h3 class="tsd-anchor-link" id="webauth">
-                <span>web<wbr />Auth</span
-                ><a
-                  href="#webauth"
-                  aria-label="Permalink"
-                  class="tsd-anchor-icon"
-                  ><svg viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="../assets/icons.svg#icon-anchor"></use></svg
-                ></a>
-              </h3>
-              <div class="tsd-signature">
-                <span class="tsd-kind-property">webAuth</span
-                ><span class="tsd-signature-symbol">:</span>
-                <a
-                  href="Types.WebAuth.html"
-                  class="tsd-signature-type tsd-kind-class"
-                  >WebAuth</a
-                >
-              </div>
-              <aside class="tsd-sources">
-                <ul>
-                  <li>
-                    Defined in
-                    <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/auth0.ts#L13"
-                      >auth0.ts:13</a
-                    >
-                  </li>
-                </ul>
-              </aside>
             </section>
           </section>
         </details>
@@ -530,9 +569,9 @@
                     ><span class="tsd-signature-symbol">)</span
                     ><span class="tsd-signature-symbol">:</span>
                     <a
-                      href="Types.Users.html"
-                      class="tsd-signature-type tsd-kind-class"
-                      >Users</a
+                      href="../interfaces/_internal_.IUsersClient.html"
+                      class="tsd-signature-type tsd-kind-interface"
+                      >IUsersClient</a
                     ><a
                       href="#users-1"
                       aria-label="Permalink"
@@ -543,7 +582,10 @@
                   </div>
                   <div class="tsd-description">
                     <div class="tsd-comment tsd-typography">
-                      <p>Creates a Users API client</p>
+                      <p>
+                        Provides access to the Management API (e.g., for user
+                        patching).
+                      </p>
                     </div>
                     <div class="tsd-parameters">
                       <h4 class="tsd-parameters-title">Parameters</h4>
@@ -553,19 +595,15 @@
                             ><span class="tsd-kind-parameter">token</span>:
                             <span class="tsd-signature-type">string</span></span
                           >
-                          <div class="tsd-comment tsd-typography">
-                            <p>for Management API</p>
-                          </div>
-                          <div class="tsd-comment tsd-typography"></div>
                         </li>
                       </ul>
                     </div>
                     <h4 class="tsd-returns-title">
                       Returns
                       <a
-                        href="Types.Users.html"
-                        class="tsd-signature-type tsd-kind-class"
-                        >Users</a
+                        href="../interfaces/_internal_.IUsersClient.html"
+                        class="tsd-signature-type tsd-kind-interface"
+                        >IUsersClient</a
                       >
                     </h4>
                     <div class="tsd-comment tsd-typography"></div>
@@ -574,8 +612,8 @@
                         <li>
                           Defined in
                           <a
-                            href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/auth0.ts#L48"
-                            >auth0.ts:48</a
+                            href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/index.ts#L71"
+                            >index.ts:71</a
                           >
                         </li>
                       </ul>
@@ -607,38 +645,6 @@
                 <div class="tsd-filter-visibility">
                   <span class="settings-label">Member Visibility</span>
                   <ul id="tsd-filter-options">
-                    <li class="tsd-filter-item">
-                      <label class="tsd-filter-input"
-                        ><input
-                          type="checkbox"
-                          id="tsd-filter-protected"
-                          name="protected"
-                        /><svg
-                          width="32"
-                          height="32"
-                          viewBox="0 0 32 32"
-                          aria-hidden="true"
-                        >
-                          <rect
-                            class="tsd-checkbox-background"
-                            width="30"
-                            height="30"
-                            x="1"
-                            y="1"
-                            rx="6"
-                            fill="none"
-                          ></rect>
-                          <path
-                            class="tsd-checkbox-checkmark"
-                            d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
-                            stroke="none"
-                            stroke-width="3.5"
-                            stroke-linejoin="round"
-                            fill="none"
-                          ></path></svg
-                        ><span>Protected</span></label
-                      >
-                    </li>
                     <li class="tsd-filter-item">
                       <label class="tsd-filter-input"
                         ><input
@@ -702,6 +708,49 @@
               <details open class="tsd-accordion tsd-page-navigation-section">
                 <summary
                   class="tsd-accordion-summary"
+                  data-key="section-Accessors"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <use href="../assets/icons.svg#icon-chevronDown"></use></svg
+                  >Accessors
+                </summary>
+                <div>
+                  <a href="#webauth"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Accessor"
+                    >
+                      <use href="../assets/icons.svg#icon-262144"></use></svg
+                    ><span>web<wbr />Auth</span></a
+                  ><a href="#credentialsmanager"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Accessor"
+                    >
+                      <use href="../assets/icons.svg#icon-262144"></use></svg
+                    ><span>credentials<wbr />Manager</span></a
+                  ><a href="#auth"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Accessor"
+                    >
+                      <use href="../assets/icons.svg#icon-262144"></use></svg
+                    ><span>auth</span></a
+                  >
+                </div>
+              </details>
+              <details open class="tsd-accordion tsd-page-navigation-section">
+                <summary
+                  class="tsd-accordion-summary"
                   data-key="section-Constructors"
                 >
                   <svg
@@ -723,49 +772,6 @@
                     >
                       <use href="../assets/icons.svg#icon-512"></use></svg
                     ><span>constructor</span></a
-                  >
-                </div>
-              </details>
-              <details open class="tsd-accordion tsd-page-navigation-section">
-                <summary
-                  class="tsd-accordion-summary"
-                  data-key="section-Properties"
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    aria-hidden="true"
-                  >
-                    <use href="../assets/icons.svg#icon-chevronDown"></use></svg
-                  >Properties
-                </summary>
-                <div>
-                  <a href="#auth"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>auth</span></a
-                  ><a href="#credentialsmanager"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>credentials<wbr />Manager</span></a
-                  ><a href="#webauth"
-                    ><svg
-                      class="tsd-kind-icon"
-                      viewBox="0 0 24 24"
-                      aria-label="Property"
-                    >
-                      <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>web<wbr />Auth</span></a
                   >
                 </div>
               </details>
@@ -800,8 +806,21 @@
           </details>
         </div>
         <div class="site-menu">
+          <nav id="tsd-sidebar-links" class="tsd-navigation">
+            <a
+              href="https://github.com/auth0/react-native-auth0"
+              class="tsd-nav-link"
+              >GitHub</a
+            ><a
+              href="https://npmjs.com/package/react-native-auth0"
+              class="tsd-nav-link"
+              >NPM</a
+            ><a href="https://auth0.com/docs" class="tsd-nav-link"
+              >Auth0 Docs</a
+            >
+          </nav>
           <nav class="tsd-navigation">
-            <a href="../modules.html">react-native-auth0</a>
+            <a href="../modules.html">React Native Auth0 - v5.0.0-beta.4</a>
             <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
               <li>Loading...</li>
             </ul>
@@ -809,12 +828,7 @@
         </div>
       </div>
     </div>
-    <footer>
-      <p class="tsd-generator">
-        Generated using
-        <a href="https://typedoc.org/" target="_blank">TypeDoc</a>
-      </p>
-    </footer>
+    <footer></footer>
     <div class="overlay"></div>
   </body>
 </html>

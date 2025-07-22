@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
-    <title>TimeoutError | react-native-auth0</title>
-    <meta name="description" content="Documentation for react-native-auth0" />
+    <title>TimeoutError | React Native Auth0 - v5.0.0-beta.4</title>
+    <meta name="description" content="Documentation for React Native Auth0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="../assets/style.css" />
     <link rel="stylesheet" href="../assets/highlight.css" />
@@ -33,8 +33,14 @@
     </script>
     <header class="tsd-page-toolbar">
       <div class="tsd-toolbar-contents container">
-        <a href="../index.html" class="title">react-native-auth0</a>
-        <div id="tsd-toolbar-links"></div>
+        <a href="../index.html" class="title"
+          >React Native Auth0 - v5.0.0-beta.4</a
+        >
+        <div id="tsd-toolbar-links">
+          <a href="https://github.com/auth0/react-native-auth0">GitHub</a
+          ><a href="https://npmjs.com/package/react-native-auth0">NPM</a
+          ><a href="https://auth0.com/docs">Auth0 Docs</a>
+        </div>
         <button id="tsd-search-trigger" class="tsd-widget" aria-label="Search">
           <svg
             width="16"
@@ -88,7 +94,18 @@
           </ul>
           <h1>Class TimeoutError</h1>
         </div>
-        <section class="tsd-panel tsd-hierarchy" data-refl="229">
+        <section class="tsd-panel tsd-comment">
+          <div class="tsd-comment tsd-typography">
+            <p>Represents a generic authentication or API error from Auth0.</p>
+            <p>
+              This class provides a structured way to handle errors, with
+              consistent access to status codes, error codes, and response
+              bodies.
+            </p>
+          </div>
+          <div class="tsd-comment tsd-typography"></div>
+        </section>
+        <section class="tsd-panel tsd-hierarchy" data-refl="267">
           <h4>
             Hierarchy (<a href="../hierarchy.html#TimeoutError">View Summary</a
             >)
@@ -96,9 +113,9 @@
           <ul class="tsd-hierarchy">
             <li class="tsd-hierarchy-item">
               <a
-                href="Types.BaseError.html"
+                href="_internal_.AuthError.html"
                 class="tsd-signature-type tsd-kind-class"
-                >BaseError</a
+                >AuthError</a
               >
               <ul class="tsd-hierarchy">
                 <li class="tsd-hierarchy-item">
@@ -113,8 +130,8 @@
             <li>
               Defined in
               <a
-                href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/utils/fetchWithTimeout.ts#L3"
-                >utils/fetchWithTimeout.ts:3</a
+                href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/core/utils/fetchWithTimeout.ts#L3"
+                >core/utils/fetchWithTimeout.ts:3</a
               >
             </li>
           </ul>
@@ -150,16 +167,50 @@
                   </div>
                 </section>
                 <section class="tsd-index-section">
+                  <h3 class="tsd-index-heading">Methods</h3>
+                  <div class="tsd-index-list">
+                    <a
+                      href="#fromresponse"
+                      class="tsd-index-link tsd-is-inherited"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Method"
+                      >
+                        <use href="../assets/icons.svg#icon-2048"></use></svg
+                      ><span>from<wbr />Response</span></a
+                    >
+                  </div>
+                </section>
+                <section class="tsd-index-section">
                   <h3 class="tsd-index-heading">Properties</h3>
                   <div class="tsd-index-list">
-                    <a href="#type" class="tsd-index-link tsd-is-inherited"
+                    <a href="#status" class="tsd-index-link tsd-is-inherited"
                       ><svg
                         class="tsd-kind-icon"
                         viewBox="0 0 24 24"
                         aria-label="Property"
                       >
                         <use href="../assets/icons.svg#icon-1024"></use></svg
-                      ><span>type</span></a
+                      ><span>status</span></a
+                    >
+                    <a href="#code" class="tsd-index-link tsd-is-inherited"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>code</span></a
+                    >
+                    <a href="#json" class="tsd-index-link tsd-is-inherited"
+                      ><svg
+                        class="tsd-kind-icon"
+                        viewBox="0 0 24 24"
+                        aria-label="Property"
+                      >
+                        <use href="../assets/icons.svg#icon-1024"></use></svg
+                      ><span>json</span></a
                     >
                   </div>
                 </section>
@@ -205,7 +256,7 @@
                     <span class="tsd-kind-constructor-signature"
                       >TimeoutError</span
                     ><span class="tsd-signature-symbol">(</span
-                    ><span class="tsd-kind-parameter">msg</span
+                    ><span class="tsd-kind-parameter">message</span
                     ><span class="tsd-signature-symbol">:</span>
                     <span class="tsd-signature-type">string</span
                     ><span class="tsd-signature-symbol">)</span
@@ -226,7 +277,7 @@
                       <ul class="tsd-parameter-list">
                         <li>
                           <span
-                            ><span class="tsd-kind-parameter">msg</span>:
+                            ><span class="tsd-kind-parameter">message</span>:
                             <span class="tsd-signature-type">string</span></span
                           >
                         </li>
@@ -241,8 +292,8 @@
                     <aside class="tsd-sources">
                       <p>
                         Overrides
-                        <a href="Types.BaseError.html">BaseError</a>.<a
-                          href="Types.BaseError.html#constructor"
+                        <a href="_internal_.AuthError.html">AuthError</a>.<a
+                          href="_internal_.AuthError.html#constructor"
                           >constructor</a
                         >
                       </p>
@@ -250,8 +301,135 @@
                         <li>
                           Defined in
                           <a
-                            href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/utils/fetchWithTimeout.ts#L4"
-                            >utils/fetchWithTimeout.ts:4</a
+                            href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/core/utils/fetchWithTimeout.ts#L4"
+                            >core/utils/fetchWithTimeout.ts:4</a
+                          >
+                        </li>
+                      </ul>
+                    </aside>
+                  </div>
+                </li>
+              </ul>
+            </section>
+          </section>
+        </details>
+        <details class="tsd-panel-group tsd-member-group tsd-accordion" open>
+          <summary class="tsd-accordion-summary" data-key="section-Methods">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <use href="../assets/icons.svg#icon-chevronDown"></use>
+            </svg>
+            <h2>Methods</h2>
+          </summary>
+          <section>
+            <section class="tsd-panel tsd-member tsd-is-inherited">
+              <h3 class="tsd-anchor-link" id="fromresponse">
+                <code class="tsd-tag">Static</code
+                ><span>from<wbr />Response</span
+                ><a
+                  href="#fromresponse"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <ul class="tsd-signatures tsd-is-inherited">
+                <li class="tsd-is-inherited">
+                  <div
+                    class="tsd-signature tsd-anchor-link"
+                    id="fromresponse-1"
+                  >
+                    <span class="tsd-kind-call-signature">fromResponse</span
+                    ><span class="tsd-signature-symbol">(</span
+                    ><span class="tsd-kind-parameter">response</span
+                    ><span class="tsd-signature-symbol">:</span>
+                    <span class="tsd-signature-type">Response</span
+                    ><span class="tsd-signature-symbol">,</span>
+                    <span class="tsd-kind-parameter">body</span
+                    ><span class="tsd-signature-symbol">:</span>
+                    <span class="tsd-signature-type">any</span
+                    ><span class="tsd-signature-symbol">)</span
+                    ><span class="tsd-signature-symbol">:</span>
+                    <a
+                      href="_internal_.AuthError.html"
+                      class="tsd-signature-type tsd-kind-class"
+                      >AuthError</a
+                    ><a
+                      href="#fromresponse-1"
+                      aria-label="Permalink"
+                      class="tsd-anchor-icon"
+                      ><svg viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="../assets/icons.svg#icon-anchor"></use></svg
+                    ></a>
+                  </div>
+                  <div class="tsd-description">
+                    <div class="tsd-comment tsd-typography">
+                      <p>
+                        A static factory method to create an AuthError from a
+                        fetch Response object. This is a utility that platform
+                        adapters can use for consistency.
+                      </p>
+                    </div>
+                    <div class="tsd-parameters">
+                      <h4 class="tsd-parameters-title">Parameters</h4>
+                      <ul class="tsd-parameter-list">
+                        <li>
+                          <span
+                            ><span class="tsd-kind-parameter">response</span>:
+                            <span class="tsd-signature-type"
+                              >Response</span
+                            ></span
+                          >
+                          <div class="tsd-comment tsd-typography">
+                            <p>The fetch Response object.</p>
+                          </div>
+                          <div class="tsd-comment tsd-typography"></div>
+                        </li>
+                        <li>
+                          <span
+                            ><span class="tsd-kind-parameter">body</span>:
+                            <span class="tsd-signature-type">any</span></span
+                          >
+                          <div class="tsd-comment tsd-typography">
+                            <p>
+                              The parsed body of the response (can be JSON or
+                              text).
+                            </p>
+                          </div>
+                          <div class="tsd-comment tsd-typography"></div>
+                        </li>
+                      </ul>
+                    </div>
+                    <h4 class="tsd-returns-title">
+                      Returns
+                      <a
+                        href="_internal_.AuthError.html"
+                        class="tsd-signature-type tsd-kind-class"
+                        >AuthError</a
+                      >
+                    </h4>
+                    <p>A new AuthError instance.</p>
+                    <div class="tsd-comment tsd-typography"></div>
+                    <aside class="tsd-sources">
+                      <p>
+                        Inherited from
+                        <a href="_internal_.AuthError.html">AuthError</a>.<a
+                          href="_internal_.AuthError.html#fromresponse"
+                          >fromResponse</a
+                        >
+                      </p>
+                      <ul>
+                        <li>
+                          Defined in
+                          <a
+                            href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/core/models/AuthError.ts#L51"
+                            >core/models/AuthError.ts:51</a
                           >
                         </li>
                       </ul>
@@ -277,31 +455,114 @@
           </summary>
           <section>
             <section class="tsd-panel tsd-member tsd-is-inherited">
-              <h3 class="tsd-anchor-link" id="type">
-                <span>type</span
-                ><a href="#type" aria-label="Permalink" class="tsd-anchor-icon"
+              <h3 class="tsd-anchor-link" id="status">
+                <code class="tsd-tag">Readonly</code><span>status</span
+                ><a
+                  href="#status"
+                  aria-label="Permalink"
+                  class="tsd-anchor-icon"
                   ><svg viewBox="0 0 24 24" aria-hidden="true">
                     <use href="../assets/icons.svg#icon-anchor"></use></svg
                 ></a>
               </h3>
               <div class="tsd-signature">
-                <span class="tsd-kind-property">type</span
+                <span class="tsd-kind-property">status</span
                 ><span class="tsd-signature-symbol">:</span>
-                <span class="tsd-signature-type">string</span>
+                <span class="tsd-signature-type">number</span>
               </div>
+              <div class="tsd-comment tsd-typography">
+                <p>The HTTP status code of the error response, if available.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
               <aside class="tsd-sources">
                 <p>
-                  Inherited from <a href="Types.BaseError.html">BaseError</a>.<a
-                    href="Types.BaseError.html#type"
-                    >type</a
+                  Inherited from
+                  <a href="_internal_.AuthError.html">AuthError</a>.<a
+                    href="_internal_.AuthError.html#status"
+                    >status</a
                   >
                 </p>
                 <ul>
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/auth0/react-native-auth0/blob/8c2f04193f5913507b7092f84039500747bca864/src/utils/baseError.ts#L2"
-                      >utils/baseError.ts:2</a
+                      href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/core/models/AuthError.ts#L9"
+                      >core/models/AuthError.ts:9</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member tsd-is-inherited">
+              <h3 class="tsd-anchor-link" id="code">
+                <code class="tsd-tag">Readonly</code><span>code</span
+                ><a href="#code" aria-label="Permalink" class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">code</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">string</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>
+                  The error code returned by Auth0 (e.g., 'invalid_grant'), if
+                  available.
+                </p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <p>
+                  Inherited from
+                  <a href="_internal_.AuthError.html">AuthError</a>.<a
+                    href="_internal_.AuthError.html#code"
+                    >code</a
+                  >
+                </p>
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/core/models/AuthError.ts#L11"
+                      >core/models/AuthError.ts:11</a
+                    >
+                  </li>
+                </ul>
+              </aside>
+            </section>
+            <section class="tsd-panel tsd-member tsd-is-inherited">
+              <h3 class="tsd-anchor-link" id="json">
+                <code class="tsd-tag">Readonly</code><span>json</span
+                ><a href="#json" aria-label="Permalink" class="tsd-anchor-icon"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="../assets/icons.svg#icon-anchor"></use></svg
+                ></a>
+              </h3>
+              <div class="tsd-signature">
+                <span class="tsd-kind-property">json</span
+                ><span class="tsd-signature-symbol">:</span>
+                <span class="tsd-signature-type">unknown</span>
+              </div>
+              <div class="tsd-comment tsd-typography">
+                <p>The full JSON response body of the error, if available.</p>
+              </div>
+              <div class="tsd-comment tsd-typography"></div>
+              <aside class="tsd-sources">
+                <p>
+                  Inherited from
+                  <a href="_internal_.AuthError.html">AuthError</a>.<a
+                    href="_internal_.AuthError.html#json"
+                    >json</a
+                  >
+                </p>
+                <ul>
+                  <li>
+                    Defined in
+                    <a
+                      href="https://github.com/auth0/react-native-auth0/blob/50775c6768b96affcb37c40b213e70fd176c47bd/src/core/models/AuthError.ts#L13"
+                      >core/models/AuthError.ts:13</a
                     >
                   </li>
                 </ul>
@@ -330,38 +591,6 @@
                 <div class="tsd-filter-visibility">
                   <span class="settings-label">Member Visibility</span>
                   <ul id="tsd-filter-options">
-                    <li class="tsd-filter-item">
-                      <label class="tsd-filter-input"
-                        ><input
-                          type="checkbox"
-                          id="tsd-filter-protected"
-                          name="protected"
-                        /><svg
-                          width="32"
-                          height="32"
-                          viewBox="0 0 32 32"
-                          aria-hidden="true"
-                        >
-                          <rect
-                            class="tsd-checkbox-background"
-                            width="30"
-                            height="30"
-                            x="1"
-                            y="1"
-                            rx="6"
-                            fill="none"
-                          ></rect>
-                          <path
-                            class="tsd-checkbox-checkmark"
-                            d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25"
-                            stroke="none"
-                            stroke-width="3.5"
-                            stroke-linejoin="round"
-                            fill="none"
-                          ></path></svg
-                        ><span>Protected</span></label
-                      >
-                    </li>
                     <li class="tsd-filter-item">
                       <label class="tsd-filter-input"
                         ><input
@@ -452,6 +681,33 @@
               <details open class="tsd-accordion tsd-page-navigation-section">
                 <summary
                   class="tsd-accordion-summary"
+                  data-key="section-Methods"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <use href="../assets/icons.svg#icon-chevronDown"></use></svg
+                  >Methods
+                </summary>
+                <div>
+                  <a href="#fromresponse" class="tsd-is-inherited"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Method"
+                    >
+                      <use href="../assets/icons.svg#icon-2048"></use></svg
+                    ><span>from<wbr />Response</span></a
+                  >
+                </div>
+              </details>
+              <details open class="tsd-accordion tsd-page-navigation-section">
+                <summary
+                  class="tsd-accordion-summary"
                   data-key="section-Properties"
                 >
                   <svg
@@ -465,14 +721,30 @@
                   >Properties
                 </summary>
                 <div>
-                  <a href="#type" class="tsd-is-inherited"
+                  <a href="#status" class="tsd-is-inherited"
                     ><svg
                       class="tsd-kind-icon"
                       viewBox="0 0 24 24"
                       aria-label="Property"
                     >
                       <use href="../assets/icons.svg#icon-1024"></use></svg
-                    ><span>type</span></a
+                    ><span>status</span></a
+                  ><a href="#code" class="tsd-is-inherited"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>code</span></a
+                  ><a href="#json" class="tsd-is-inherited"
+                    ><svg
+                      class="tsd-kind-icon"
+                      viewBox="0 0 24 24"
+                      aria-label="Property"
+                    >
+                      <use href="../assets/icons.svg#icon-1024"></use></svg
+                    ><span>json</span></a
                   >
                 </div>
               </details>
@@ -480,8 +752,21 @@
           </details>
         </div>
         <div class="site-menu">
+          <nav id="tsd-sidebar-links" class="tsd-navigation">
+            <a
+              href="https://github.com/auth0/react-native-auth0"
+              class="tsd-nav-link"
+              >GitHub</a
+            ><a
+              href="https://npmjs.com/package/react-native-auth0"
+              class="tsd-nav-link"
+              >NPM</a
+            ><a href="https://auth0.com/docs" class="tsd-nav-link"
+              >Auth0 Docs</a
+            >
+          </nav>
           <nav class="tsd-navigation">
-            <a href="../modules.html">react-native-auth0</a>
+            <a href="../modules.html">React Native Auth0 - v5.0.0-beta.4</a>
             <ul class="tsd-small-nested-navigation" id="tsd-nav-container">
               <li>Loading...</li>
             </ul>
@@ -489,12 +774,7 @@
         </div>
       </div>
     </div>
-    <footer>
-      <p class="tsd-generator">
-        Generated using
-        <a href="https://typedoc.org/" target="_blank">TypeDoc</a>
-      </p>
-    </footer>
+    <footer></footer>
     <div class="overlay"></div>
   </body>
 </html>
