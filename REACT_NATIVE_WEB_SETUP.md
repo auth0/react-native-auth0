@@ -33,6 +33,26 @@ yarn add @auth0/auth0-spa-js
 
 Once React Native Web and Auth0 SPA JS are installed, you can use React Native Auth0 exactly as you would in a native React Native app. The library will automatically detect the web platform and use the appropriate implementation.
 
+---
+
+## 🔁 Web Callback and Logout URL Setup
+
+When running on Web—especially with **Expo** or custom Webpack servers—you must configure **callback** and **logout URLs** in your [Auth0 Application settings](https://manage.auth0.com/#/applications):
+
+### ✅ For local development (Expo or Metro)
+
+Add the following URLs:
+
+* **Allowed Callback URLs**:
+  `http://localhost:8081`
+
+* **Allowed Logout URLs**:
+  `http://localhost:8081`
+
+> ⚠️ If you've customized your Webpack Dev Server port (e.g., `3000`), replace `8081` accordingly.
+
+---
+
 ## Example Usage
 
 ```jsx

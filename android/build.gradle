@@ -1,17 +1,18 @@
 buildscript {
-    ext.safeExtGet = {prop, fallback ->
-        rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-    }
-    repositories {
-        google()
-        mavenCentral()
-    }
+  ext.getExtOrDefault = {name ->
+    return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['A0Auth0_' + name]
+  }
 
-    dependencies {
-        // Matches recent template from React Native (0.67)
-        // https://github.com/facebook/react-native/blob/0.67-stable/template/android/build.gradle#L16
-        classpath("com.android.tools.build:gradle:${safeExtGet('gradlePluginVersion', '4.2.2')}")
-    }
+  repositories {
+    google()
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath "com.android.tools.build:gradle:8.7.2"
+    // noinspection DifferentKotlinGradleVersion
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${getExtOrDefault('kotlinVersion')}"
+  }
 }
 
 def reactNativeArchitectures() {
@@ -23,38 +24,45 @@ def isNewArchitectureEnabled() {
   return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
 }
 
-apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
 
 if (isNewArchitectureEnabled()) {
   apply plugin: "com.facebook.react"
 }
 
-// Matches values in recent template from React Native 0.62
-// https://github.com/facebook/react-native/blob/0.62-stable/template/android/build.gradle#L5-L8
-def DEFAULT_COMPILE_SDK_VERSION = 34
-def DEFAULT_BUILD_TOOLS_VERSION = "28.0.3"
-def DEFAULT_MIN_SDK_VERSION = 16
-def DEFAULT_TARGET_SDK_VERSION = 34
+def getExtOrIntegerDefault(name) {
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["A0Auth0_" + name]).toInteger()
+}
 
 android {
-  compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
-  buildToolsVersion safeExtGet('buildToolsVersion', DEFAULT_BUILD_TOOLS_VERSION)
-  namespace 'com.auth0.react'
+  namespace "com.auth0.react"
+
+  compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
 
   defaultConfig {
-    minSdkVersion safeExtGet('minSdkVersion', DEFAULT_MIN_SDK_VERSION)
-    targetSdkVersion safeExtGet('targetSdkVersion', DEFAULT_TARGET_SDK_VERSION)
+    minSdkVersion getExtOrIntegerDefault("minSdkVersion")
+    targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
     buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString())
     versionCode 1
     versionName "1.0"
   }
-  lintOptions {
-    abortOnError false
-  }
+
   buildFeatures {
     buildConfig true
   }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+    }
+  }
+
+  lintOptions {
+    disable "GradleCompatible"
+    abortOnError false
+  }
+
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
@@ -74,89 +82,21 @@ android {
 }
 
 repositories {
-    maven {
-        // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-        // Matches recent template from React Native 0.62
-        // https://github.com/facebook/react-native/blob/0.62-stable/template/android/build.gradle#L27
-        url "$projectDir/../node_modules/react-native/android"
-    }
-    mavenCentral()
+  mavenCentral()
+  google()
+  maven {
+    // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+    url "$projectDir/../node_modules/react-native/android"
+  }
 }
+
+def kotlin_version = getExtOrDefault("kotlinVersion")
 
 dependencies {
-    implementation "com.facebook.react:react-native:${safeExtGet('reactnativeVersion', '+')}"
-    implementation "androidx.browser:browser:1.2.0"
-    implementation 'com.auth0.android:auth0:3.2.1'
-}
-
-def configureReactNativePom(def pom) {
-    def packageJson = new groovy.json.JsonSlurper().parseText(file('../package.json').text)
-
-    pom.project {
-        name packageJson.title
-        artifactId packageJson.name
-        version = packageJson.version
-        group = "com.auth0.react"
-        description packageJson.description
-        url packageJson.repository.baseUrl
-
-        licenses {
-            license {
-                name packageJson.license
-                url packageJson.repository.baseUrl + '/blob/master/' + packageJson.licenseFilename
-                distribution 'repo'
-            }
-        }
-
-        developers {
-            developer {
-                id packageJson.author.username
-                name packageJson.author.name
-            }
-        }
-    }
-}
-
-afterEvaluate { project ->
-
-    task androidJavadoc(type: Javadoc) {
-        source = android.sourceSets.main.java.srcDirs
-        classpath += files(android.bootClasspath)
-        include '**/*.java'
-    }
-
-    task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
-        archiveClassifier = 'javadoc'
-        from androidJavadoc.destinationDir
-    }
-
-    task androidSourcesJar(type: Jar) {
-        archiveClassifier = 'sources'
-        from android.sourceSets.main.java.srcDirs
-        include '**/*.java'
-    }
-
-    android.libraryVariants.all { variant ->
-        def name = variant.name.capitalize()
-        def javaCompileTask = variant.javaCompileProvider.get()
-
-        task "jar${name}"(type: Jar, dependsOn: javaCompileTask) {
-            from javaCompileTask.destinationDir
-        }
-    }
-
-    artifacts {
-        archives androidSourcesJar
-        archives androidJavadocJar
-    }
-
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                artifact androidSourcesJar
-            }
-        }
-    }
+  implementation "com.facebook.react:react-android"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  implementation "androidx.browser:browser:1.2.0"
+  implementation 'com.auth0.android:auth0:3.2.1'
 }
 
 if (isNewArchitectureEnabled()) {
