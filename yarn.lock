@@ -8128,14 +8128,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:10.1.5":
-  version: 10.1.5
-  resolution: "eslint-config-prettier@npm:10.1.5"
+"eslint-config-prettier@npm:10.1.8":
+  version: 10.1.8
+  resolution: "eslint-config-prettier@npm:10.1.8"
   peerDependencies:
     eslint: ">=7.0.0"
   bin:
     eslint-config-prettier: bin/cli.js
-  checksum: 6d8eb41c716fc2b073bfd9daede0c87c4c2b29055f15c94618eec00a19c5499024ddb89902d6793b5ac9102075e4739d7cc2d4d58c7e7ed4cc2dcf79e3fbcacc
+  checksum: 9140e19f78f0dbc888b160bb72b85f8043bada7b12a548faa56cea0ba74f8ef16653250ffd014d85d9a376a88c4941c96a3cdc9d39a07eb3def6967166635bd8
   languageName: node
   linkType: hard
 
@@ -14565,7 +14565,7 @@ __metadata:
     commitlint: ^17.0.2
     del-cli: ^5.1.0
     eslint: ^9.22.0
-    eslint-config-prettier: 10.1.5
+    eslint-config-prettier: 10.1.8
     eslint-plugin-ft-flow: ^3.0.11
     eslint-plugin-jest: ^28.11.0
     eslint-plugin-prettier: 5.5.1

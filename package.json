@@ -108,7 +108,7 @@
     "commitlint": "^17.0.2",
     "del-cli": "^5.1.0",
     "eslint": "^9.22.0",
-    "eslint-config-prettier": "10.1.5",
+    "eslint-config-prettier": "10.1.8",
     "eslint-plugin-ft-flow": "^3.0.11",
     "eslint-plugin-jest": "^28.11.0",
     "eslint-plugin-prettier": "5.5.1",
