@@ -3252,6 +3252,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/cli-config-android@npm:19.1.1":
+  version: 19.1.1
+  resolution: "@react-native-community/cli-config-android@npm:19.1.1"
+  dependencies:
+    "@react-native-community/cli-tools": 19.1.1
+    chalk: ^4.1.2
+    fast-glob: ^3.3.2
+    fast-xml-parser: ^4.4.1
+  checksum: 365ed1f8a93ae7ffb9a9cb6b9e9b29a5285bbda4d3f4f9152b68a139093877e83327eca32855cef716e498ea6077f3f7c651cf9f2a0dfa7db6d9fa2915494dd6
+  languageName: node
+  linkType: hard
+
 "@react-native-community/cli-config-apple@npm:19.0.0":
   version: 19.0.0
   resolution: "@react-native-community/cli-config-apple@npm:19.0.0"
@@ -3314,6 +3326,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/cli-platform-android@npm:19.1.1":
+  version: 19.1.1
+  resolution: "@react-native-community/cli-platform-android@npm:19.1.1"
+  dependencies:
+    "@react-native-community/cli-config-android": 19.1.1
+    "@react-native-community/cli-tools": 19.1.1
+    chalk: ^4.1.2
+    execa: ^5.0.0
+    logkitty: ^0.7.1
+  checksum: 2f67efd939316adf65c072c693fad0e18f6f5d3c569d1bfcf07b924fae51d8c1dae23863e495ca2006ee2d04bb80f5c7b9d430c1a06baadaa8f5f285cd3b7a7b
+  languageName: node
+  linkType: hard
+
 "@react-native-community/cli-platform-apple@npm:19.0.0":
   version: 19.0.0
   resolution: "@react-native-community/cli-platform-apple@npm:19.0.0"
@@ -3369,6 +3394,24 @@ __metadata:
     prompts: ^2.4.2
     semver: ^7.5.2
   checksum: bfc2b3b22d0d542d0fb7148d7c87240fa9b1e8ba393d40c4cb296748400619f0989f21f3ee0358eaf0c53e258cbf9576ef829d79cbae37ac50f4a257116a19f7
+  languageName: node
+  linkType: hard
+
+"@react-native-community/cli-tools@npm:19.1.1":
+  version: 19.1.1
+  resolution: "@react-native-community/cli-tools@npm:19.1.1"
+  dependencies:
+    "@vscode/sudo-prompt": ^9.0.0
+    appdirsjs: ^1.2.4
+    chalk: ^4.1.2
+    execa: ^5.0.0
+    find-up: ^5.0.0
+    launch-editor: ^2.9.1
+    mime: ^2.4.1
+    ora: ^5.4.1
+    prompts: ^2.4.2
+    semver: ^7.5.2
+  checksum: cf53fa3e0ce5eb02455b0237bb50b6b071ae1ffeeaffd1920a2562e1f572a75d41a6d0bae45ea639280017ff592cbb96f50b561a1f85a170f1c109580956c8f7
   languageName: node
   linkType: hard
 
@@ -5107,7 +5150,7 @@ __metadata:
     "@babel/preset-env": ^7.25.3
     "@babel/runtime": ^7.25.0
     "@react-native-community/cli": 19.0.0
-    "@react-native-community/cli-platform-android": 19.0.0
+    "@react-native-community/cli-platform-android": 19.1.1
     "@react-native-community/cli-platform-ios": 19.0.0
     "@react-native/babel-preset": 0.80.1
     "@react-native/metro-config": 0.80.1
