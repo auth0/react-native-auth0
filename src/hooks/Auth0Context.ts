@@ -57,6 +57,15 @@ export interface Auth0ContextInterface extends AuthState {
   getCredentials(scope?: string, minTtl?: number): Promise<Credentials>;
 
   /**
+   * Clears the user's credentials without clearing their web session and logs them out.
+   *
+   * @remarks
+   * **Platform specific:** This method is only available in the context of a Android/iOS application.
+   * @returns A promise that resolves when the credentials have been cleared.
+   */
+  clearCredentials: () => Promise<void>;
+
+  /**
    * Checks if a valid, non-expired set of credentials exists in storage.
    * This is a quick, local check and does not perform a network request.
    *
@@ -190,6 +199,7 @@ const initialContext: Auth0ContextInterface = {
   authorize: stub,
   clearSession: stub,
   getCredentials: stub,
+  clearCredentials: stub,
   hasValidCredentials: stub,
   loginWithPasswordRealm: stub,
   cancelWebAuth: stub,
