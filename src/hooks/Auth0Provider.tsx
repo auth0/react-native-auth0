@@ -10,7 +10,6 @@ import type {
   WebAuthorizeParameters,
   ClearSessionParameters,
   CreateUserParameters,
-  ExchangeParameters,
   PasswordlessEmailParameters,
   LoginEmailParameters,
   PasswordlessSmsParameters,
@@ -200,12 +199,6 @@ export const Auth0Provider = ({
     [client, voidFlow]
   );
 
-  const authorizeWithExchange = useCallback(
-    (parameters: ExchangeParameters) =>
-      loginFlow(client.auth.exchange(parameters)),
-    [client, loginFlow]
-  );
-
   const authorizeWithExchangeNativeSocial = useCallback(
     (parameters: ExchangeNativeSocialParameters) =>
       loginFlow(client.auth.exchangeNativeSocial(parameters)),
@@ -285,7 +278,6 @@ export const Auth0Provider = ({
       loginWithPasswordRealm,
       createUser,
       resetPassword,
-      authorizeWithExchange,
       authorizeWithExchangeNativeSocial,
       sendEmailCode,
       authorizeWithEmail,
@@ -307,7 +299,6 @@ export const Auth0Provider = ({
       loginWithPasswordRealm,
       createUser,
       resetPassword,
-      authorizeWithExchange,
       authorizeWithExchangeNativeSocial,
       sendEmailCode,
       authorizeWithEmail,

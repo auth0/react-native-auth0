@@ -83,26 +83,6 @@ describe('UnimplementedWebAuthenticationProvider', () => {
     });
   });
 
-  describe('exchange', () => {
-    it('should reject with NotImplemented error', async () => {
-      const parameters = {
-        code: 'auth_code_123',
-        verifier: 'code_verifier_123',
-        redirectUri: 'https://app.com/callback',
-      };
-
-      await expect(
-        UnimplementedWebAuthenticationProvider.exchange(parameters)
-      ).rejects.toThrow(AuthError);
-      await expect(
-        UnimplementedWebAuthenticationProvider.exchange(parameters)
-      ).rejects.toMatchObject({
-        name: 'NotImplemented',
-        message: webAuthNotSupported,
-      });
-    });
-  });
-
   describe('exchangeNativeSocial', () => {
     it('should reject with NotImplemented error', async () => {
       const parameters = {
@@ -322,7 +302,6 @@ describe('UnimplementedWebAuthenticationProvider', () => {
       expect(typeof provider.refreshToken).toBe('function');
       expect(typeof provider.userInfo).toBe('function');
       expect(typeof provider.revoke).toBe('function');
-      expect(typeof provider.exchange).toBe('function');
       expect(typeof provider.exchangeNativeSocial).toBe('function');
       expect(typeof provider.passwordlessWithEmail).toBe('function');
       expect(typeof provider.passwordlessWithSMS).toBe('function');

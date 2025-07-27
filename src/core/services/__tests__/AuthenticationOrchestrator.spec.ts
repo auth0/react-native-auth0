@@ -485,30 +485,6 @@ describe('AuthenticationOrchestrator', () => {
   });
 
   describe('token exchange', () => {
-    it('code exchange should send correct payload', async () => {
-      mockHttpClientInstance.post.mockResolvedValueOnce({
-        json: tokensResponse,
-        response: new Response(null, { status: 200 }),
-      });
-      await orchestrator.exchange({
-        code: 'code123',
-        verifier: 'verifier456',
-        redirectUri: 'https://app/callback',
-      });
-
-      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
-        '/oauth/token',
-        expect.objectContaining({
-          grant_type: 'authorization_code',
-          client_id: clientId,
-          code_verifier: 'verifier456',
-          code: 'code123',
-          redirect_uri: 'https://app/callback',
-        }),
-        undefined
-      );
-    });
-
     it('native social exchange should send correct payload', async () => {
       mockHttpClientInstance.post.mockResolvedValueOnce({
         json: tokensResponse,

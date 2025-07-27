@@ -94,13 +94,6 @@ export interface ClearSessionParameters {
 
 // ========= OAuth/OIDC Token Flow Parameters =========
 
-/** Parameters for exchanging a code for tokens (PKCE Flow). */
-export interface ExchangeParameters extends RequestOptions {
-  code: string;
-  verifier: string;
-  redirectUri: string;
-}
-
 /** Parameters for exchanging a native social provider's token for Auth0 tokens. */
 export interface ExchangeNativeSocialParameters extends RequestOptions {
   subjectToken: string;

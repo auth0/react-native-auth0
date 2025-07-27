@@ -30,8 +30,6 @@ export const UnimplementedWebAuthenticationProvider: IAuthenticationProvider = {
     ),
 
   // Stubs for newly added methods
-  exchange: () =>
-    Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
   exchangeNativeSocial: () =>
     Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
   passwordlessWithEmail: () =>

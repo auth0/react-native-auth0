@@ -6,7 +6,6 @@ import type {
   RefreshTokenParameters,
   UserInfoParameters,
   RevokeOptions,
-  ExchangeParameters,
   ExchangeNativeSocialParameters,
   PasswordlessEmailParameters,
   PasswordlessSmsParameters,
@@ -29,7 +28,6 @@ export interface IAuthenticationProvider {
   refreshToken(parameters: RefreshTokenParameters): Promise<Credentials>;
   userInfo(parameters: UserInfoParameters): Promise<User>;
   revoke(parameters: RevokeOptions): Promise<void>;
-  exchange(parameters: ExchangeParameters): Promise<Credentials>;
   passwordlessWithEmail(parameters: PasswordlessEmailParameters): Promise<void>;
   passwordlessWithSMS(parameters: PasswordlessSmsParameters): Promise<void>;
   loginWithEmail(parameters: LoginEmailParameters): Promise<Credentials>;

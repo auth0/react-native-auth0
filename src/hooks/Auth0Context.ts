@@ -5,7 +5,6 @@ import type {
   WebAuthorizeParameters,
   ClearSessionParameters,
   PasswordRealmParameters,
-  ExchangeParameters,
   CreateUserParameters,
   PasswordlessEmailParameters,
   LoginEmailParameters,
@@ -98,15 +97,6 @@ export interface Auth0ContextInterface extends AuthState {
    * @throws {AuthError} If the reset fails.
    */
   resetPassword(parameters: ResetPasswordParameters): Promise<void>;
-
-  /**
-   * Exchanges an authorization code for tokens.
-   * This is useful in advanced scenarios where you manage the code flow manually.
-   * @param parameters The parameters containing the authorization code and verifier.
-   * @returns A promise that resolves with the user's credentials.
-   * @throws {AuthError} If the exchange fails.
-   */
-  authorizeWithExchange(parameters: ExchangeParameters): Promise<Credentials>;
 
   /**
    * Exchanges an authorization code for native social tokens.
@@ -203,7 +193,6 @@ const initialContext: Auth0ContextInterface = {
   hasValidCredentials: stub,
   loginWithPasswordRealm: stub,
   cancelWebAuth: stub,
-  authorizeWithExchange: stub,
   createUser: stub,
   authorizeWithRecoveryCode: stub,
   authorizeWithExchangeNativeSocial: stub,
