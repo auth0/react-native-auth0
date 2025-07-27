@@ -6,6 +6,7 @@ import type {
   NativeClearSessionOptions,
 } from '../../../types';
 import {
+  SafariViewControllerPresentationStyle,
   type LocalAuthenticationOptions,
   type NativeAuthorizeOptions,
 } from '../../../types/platform-specific';
@@ -71,16 +72,11 @@ export class NativeBridgeManager implements INativeBridge {
     parameters: WebAuthorizeParameters,
     options: NativeAuthorizeOptions
   ): Promise<Credentials> {
-    let presentationStyle: number | undefined;
-    if (options.useSFSafariViewController === true) {
-      // If just `true`, default to a safe style like `fullScreen` (value 1 from our enum)
-      presentationStyle = 1;
-    } else if (typeof options.useSFSafariViewController === 'object') {
-      presentationStyle = options.useSFSafariViewController.presentationStyle;
-    } else {
-      // If false or undefined, pass undefined to the native layer.
-      presentationStyle = undefined;
-    }
+    let presentationStyle = options.useSFSafariViewController
+      ? (options.useSFSafariViewController as { presentationStyle: number })
+          ?.presentationStyle ??
+        SafariViewControllerPresentationStyle.fullScreen
+      : undefined;
     const scheme =
       parameters.redirectUrl?.split('://')[0] ?? options.customScheme;
     const credential = await this.a0_call(
@@ -97,7 +93,7 @@ export class NativeBridgeManager implements INativeBridge {
       parameters.invitationUrl,
       options.leeway ?? 0,
       options.ephemeralSession ?? false,
-      presentationStyle,
+      presentationStyle ?? 99,
       parameters.additionalParameters ?? {}
     );
     return new CredentialsModel(credential);
