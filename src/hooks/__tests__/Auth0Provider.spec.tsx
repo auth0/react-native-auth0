@@ -130,6 +130,7 @@ const TestConsumer = () => {
     isLoading,
     authorize,
     clearSession,
+    clearCredentials,
     createUser,
     resetPassword,
   } = useAuth0();
@@ -158,6 +159,11 @@ const TestConsumer = () => {
         title="Log Out"
         onPress={() => clearSession()}
         testID="logout-button"
+      />
+      <Button
+        title="Clear Credentials"
+        onPress={() => clearCredentials()}
+        testID="clear-credentials-button"
       />
       <Button
         title="Create User"
@@ -324,6 +330,46 @@ describe('Auth0Provider', () => {
       )
     );
     expect(mockClientInstance.webAuth.clearSession).toHaveBeenCalled();
+  });
+
+  it('should update the state correctly after a clearCredentials call', async () => {
+    // Start with a logged-in state
+    mockClientInstance.credentialsManager.getCredentials.mockResolvedValueOnce({
+      idToken: 'a.b.c',
+      accessToken: 'access-token-123',
+      tokenType: 'Bearer',
+      expiresAt: Date.now() / 1000 + 3600,
+    } as any);
+
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('user-status')).toHaveTextContent(
+        'Logged in as: Test User'
+      )
+    );
+
+    const clearCredentialsButton = screen.getByTestId(
+      'clear-credentials-button'
+    );
+    await act(async () => {
+      fireEvent.click(clearCredentialsButton);
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('user-status')).toHaveTextContent(
+        'Not logged in'
+      )
+    );
+    expect(
+      mockClientInstance.credentialsManager.clearCredentials
+    ).toHaveBeenCalled();
   });
 
   it('should update the error state if authorize fails', async () => {

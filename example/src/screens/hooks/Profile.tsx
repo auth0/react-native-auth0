@@ -16,6 +16,7 @@ const ProfileScreen = () => {
   const {
     user,
     clearSession,
+    clearCredentials,
     getCredentials,
     hasValidCredentials,
     revokeRefreshToken,
@@ -41,6 +42,28 @@ const ProfileScreen = () => {
         [{ text: 'OK' }]
       );
       setApiError(e as Error);
+    }
+  };
+
+  const onClearCredentials = async () => {
+    try {
+      await clearCredentials();
+      // Clear any local state
+      setCredentials(null);
+      setApiResult({ success: 'Credentials cleared locally' });
+      setApiError(null);
+      Alert.alert(
+        'Success',
+        'Credentials have been cleared from local storage.'
+      );
+    } catch (e) {
+      console.log('Clear credentials error: ', e);
+      setApiError(e as Error);
+      Alert.alert(
+        'Error',
+        `Failed to clear credentials: ${e.message || 'Unknown error'}`,
+        [{ text: 'OK' }]
+      );
     }
   };
 
@@ -101,6 +124,12 @@ const ProfileScreen = () => {
         />
         <View style={styles.spacer} />
         <Button
+          onPress={onClearCredentials}
+          title="Clear Credentials"
+          style={styles.clearCredentialsButton}
+        />
+        <View style={styles.spacer} />
+        <Button
           onPress={onLogout}
           title="Log Out"
           style={styles.logoutButton}
@@ -121,6 +150,9 @@ const styles = StyleSheet.create({
   },
   spacer: {
     height: 16,
+  },
+  clearCredentialsButton: {
+    backgroundColor: '#FF9800',
   },
   logoutButton: {
     backgroundColor: '#424242',

@@ -170,6 +170,17 @@ export const Auth0Provider = ({
     [client]
   );
 
+  const clearCredentials = useCallback(async (): Promise<void> => {
+    try {
+      await client.credentialsManager.clearCredentials();
+      dispatch({ type: 'LOGOUT_COMPLETE' });
+    } catch (e) {
+      const error = e as AuthError;
+      dispatch({ type: 'ERROR', error });
+      throw error;
+    }
+  }, [client]);
+
   const cancelWebAuth = useCallback(
     () => voidFlow(client.webAuth.cancelWebAuth()),
     [client, voidFlow]
@@ -281,6 +292,7 @@ export const Auth0Provider = ({
       clearSession,
       getCredentials,
       hasValidCredentials,
+      clearCredentials,
       cancelWebAuth,
       loginWithPasswordRealm,
       createUser,
@@ -303,6 +315,7 @@ export const Auth0Provider = ({
       clearSession,
       getCredentials,
       hasValidCredentials,
+      clearCredentials,
       cancelWebAuth,
       loginWithPasswordRealm,
       createUser,
