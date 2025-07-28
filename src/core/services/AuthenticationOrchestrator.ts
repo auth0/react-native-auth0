@@ -7,6 +7,7 @@ import type {
   RefreshTokenParameters,
   UserInfoParameters,
   RevokeOptions,
+  ExchangeParameters,
   ExchangeNativeSocialParameters,
   PasswordlessEmailParameters,
   PasswordlessSmsParameters,
@@ -72,6 +73,26 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
     }
 
     return this.client.buildUrl('/v2/logout', query);
+  }
+
+  async exchange(parameters: ExchangeParameters): Promise<Credentials> {
+    validateParameters(parameters, ['code', 'verifier', 'redirectUri']);
+    const { headers, ...payload } = parameters;
+    const body = {
+      grant_type: 'authorization_code',
+      client_id: this.clientId,
+      code_verifier: payload.verifier,
+      code: payload.code,
+      redirect_uri: payload.redirectUri,
+    };
+    const { json, response } =
+      await this.client.post<NativeCredentialsResponse>(
+        '/oauth/token',
+        body,
+        headers
+      );
+    if (!response.ok) throw AuthError.fromResponse(response, json);
+    return CredentialsModel.fromResponse(json);
   }
 
   async exchangeNativeSocial(
