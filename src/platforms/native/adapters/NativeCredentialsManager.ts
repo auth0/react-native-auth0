@@ -1,7 +1,10 @@
 import type { ICredentialsManager } from '../../../core/interfaces';
-import type { AuthError } from '../../../core/models';
+import { ApiCredentials, type AuthError } from '../../../core/models';
 import { CredentialsManagerError } from '../../../core/models/CredentialsManagerError';
-import type { Credentials } from '../../../types';
+import type {
+  ApiCredentials as IApiCredentials,
+  Credentials,
+} from '../../../types';
 import type { INativeBridge } from '../bridge';
 
 /**
@@ -42,5 +45,21 @@ export class NativeCredentialsManager implements ICredentialsManager {
 
   clearCredentials(): Promise<void> {
     return this.handleError(this.bridge.clearCredentials());
+  }
+
+  async getApiCredentials(
+    audience: string,
+    scope?: string,
+    parameters?: Record<string, any>
+  ): Promise<ApiCredentials> {
+    const nativeCredentials = await this.handleError(
+      this.bridge.getApiCredentials(audience, scope, 0, parameters)
+    );
+    // Convert plain object from native to class instance
+    return new ApiCredentials(nativeCredentials as IApiCredentials);
+  }
+
+  clearApiCredentials(audience: string): Promise<void> {
+    return this.handleError(this.bridge.clearApiCredentials(audience));
   }
 }

@@ -1,5 +1,6 @@
 import type { INativeBridge } from './INativeBridge';
 import type {
+  ApiCredentials,
   Credentials,
   WebAuthorizeParameters,
   ClearSessionParameters,
@@ -135,6 +136,26 @@ export class NativeBridgeManager implements INativeBridge {
       params,
       forceRefresh ?? false
     );
+  }
+
+  getApiCredentials(
+    audience: string,
+    scope?: string,
+    minTtl?: number,
+    parameters?: Record<string, any>
+  ): Promise<ApiCredentials> {
+    const params = parameters ?? {};
+    return this.a0_call(
+      Auth0NativeModule.getApiCredentials,
+      audience,
+      scope,
+      minTtl ?? 0,
+      params
+    );
+  }
+
+  clearApiCredentials(audience: string): Promise<void> {
+    return this.a0_call(Auth0NativeModule.clearApiCredentials, audience);
   }
 
   async hasValidCredentials(minTtl?: number): Promise<boolean> {

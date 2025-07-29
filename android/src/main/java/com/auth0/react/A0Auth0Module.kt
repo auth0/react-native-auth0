@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.FragmentActivity
 import com.auth0.android.Auth0
+import com.auth0.android.result.APICredentials
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.authentication.storage.CredentialsManagerException
 import com.auth0.android.authentication.storage.LocalAuthenticationOptions
@@ -17,8 +18,6 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
-import java.net.MalformedURLException
-import java.net.URL
 
 class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0Spec(reactContext), ActivityEventListener {
 
@@ -252,6 +251,46 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         promise.resolve(secureCredentialsManager.hasValidCredentials(minTtl.toLong()))
     }
 
+    @ReactMethod
+    override fun getApiCredentials(
+        audience: String,
+        scope: String?,
+        minTtl: Double,
+        parameters: ReadableMap,
+        promise: Promise
+    ) {
+        val cleanedParameters = mutableMapOf<String, String>()
+        parameters.toHashMap().forEach { (key, value) ->
+            value?.let { cleanedParameters[key] = it.toString() }
+        }
+
+        UiThreadUtil.runOnUiThread {
+            secureCredentialsManager.getApiCredentials(
+                audience,
+                scope,
+                minTtl.toInt(),
+                cleanedParameters,
+                emptyMap(), // headers not supported from JS yet
+                object : com.auth0.android.callback.Callback<APICredentials, CredentialsManagerException> {
+                    override fun onSuccess(credentials: APICredentials) {
+                        val map = ApiCredentialsParser.toMap(credentials)
+                        promise.resolve(map)
+                    }
+
+                    override fun onFailure(e: CredentialsManagerException) {
+                        val errorCode = deduceErrorCode(e)
+                        promise.reject(errorCode, e.message, e)
+                    }
+                }
+            )
+        }
+    }
+
+    @ReactMethod
+    override fun clearApiCredentials(audience: String, promise: Promise) {
+        secureCredentialsManager.clearApiCredentials(audience)
+        promise.resolve(true)
+    }
     override fun getConstants(): Map<String, String> {
         return mapOf("bundleIdentifier" to reactContext.applicationInfo.packageName)
     }

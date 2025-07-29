@@ -1,4 +1,5 @@
 import type { Credentials } from '../../types';
+import { ApiCredentials } from '../models';
 
 /**
  * Defines the contract for securely managing user credentials on the device.
@@ -48,4 +49,26 @@ export interface ICredentialsManager {
    * @returns A promise that resolves when the credentials have been cleared.
    */
   clearCredentials(): Promise<void>;
+
+  /**
+   * Retrieves API-specific credentials.
+   *
+   * @remarks
+   * This method obtains an access token for a specific API (audience). If a valid
+   * token is already cached, it's returned. Otherwise, it uses the refresh token
+   * to get a new one.
+   *
+   * @param audience The identifier of the API for which to get credentials.
+   * @param scope The scopes to request for the new access token.
+   * @param parameters Additional parameters to send during the token refresh request.
+   * @returns A promise that resolves with the API credentials.
+   */
+  getApiCredentials(
+    audience: string,
+    scope?: string,
+    parameters?: Record<string, any>
+  ): Promise<ApiCredentials>;
+
+  /** Removes cached credentials for a specific audience. */
+  clearApiCredentials(audience: string): Promise<void>;
 }

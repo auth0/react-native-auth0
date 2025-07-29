@@ -20,6 +20,7 @@ public class NativeBridge: NSObject {
     static let scopeKey = "scope";
     static let refreshTokenKey = "refreshToken";
     static let typeKey = "type";
+    static let audienceKey = "audience";
     static let tokenTypeKey = "tokenType";
     static let dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     
@@ -206,6 +207,24 @@ public class NativeBridge: NSObject {
         resolve(credentialsManager.clear())
     }
     
+    @objc public func getApiCredentials(audience: String, scope: String?, minTTL: Int, parameters: [String: Any], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        credentialsManager.apiCredentials(forAudience: audience, scope: scope, minTTL: minTTL, parameters: parameters) { result in
+            switch result {
+            case .success(let credentials):
+                resolve(credentials.asDictionary())
+            case .failure(let error):
+                reject(error.reactNativeErrorCode(), error.errorDescription, error)
+            }
+        }
+    }
+
+    
+    @objc public func clearApiCredentials(audience: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        // The clear(forAudience:) method returns a boolean indicating success.
+        // We can resolve the promise with this boolean value.
+        resolve(credentialsManager.clear(forAudience: audience))
+    }
+    
     @objc public func getClientId() -> String {
         return clientId
     }
@@ -232,6 +251,17 @@ extension Credentials {
             NativeBridge.refreshTokenKey: self.refreshToken as Any,
             NativeBridge.expiresAtKey: floor(self.expiresIn.timeIntervalSince1970),
             NativeBridge.scopeKey: self.scope as Any
+        ]
+    }
+}
+
+extension APICredentials {
+    func asDictionary() -> [String: Any] {
+        return [
+            NativeBridge.accessTokenKey: self.accessToken,
+            NativeBridge.tokenTypeKey: self.tokenType,
+            NativeBridge.expiresAtKey: floor(self.expiresIn.timeIntervalSince1970),
+            NativeBridge.scopeKey: self.scope
         ]
     }
 }

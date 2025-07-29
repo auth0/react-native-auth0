@@ -135,6 +135,10 @@ export interface RefreshTokenParameters extends RequestOptions {
    * The scopes requested for the issued tokens. e.g. `openid profile`
    */
   scope?: string;
+  /**
+   * The intended API identifier that will be the consumer for the issued access token.
+   */
+  audience?: string;
 }
 
 /** Parameters for revoking a refresh token. */
