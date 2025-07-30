@@ -23,8 +23,8 @@ public class NativeBridge: NSObject {
     static let tokenTypeKey = "tokenType";
     static let dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     
-    static let credentialsManagerErrorCode = "a0.invalid_state.credential_manager_exception"
-    static let biometricsAuthenticationErrorCode = "a0.invalid_options_biometrics_authentication"
+    static let credentialsManagerErrorCode = "CREDENTIAL_MANAGER_ERROR"
+    static let biometricsAuthenticationErrorCode = "BIOMETRICS_CONFIGURATION_ERROR"
     
     var credentialsManager: CredentialsManager
     var clientId: String
@@ -170,7 +170,11 @@ public class NativeBridge: NSObject {
                 scope: scope,
                 recoveryCode: nil
             )
-            resolve(credentialsManager.store(credentials: credentials))
+            if (credentialsManager.store(credentials: credentials)) {
+                resolve(true)
+            } else {
+                reject("STORE_FAILED", "Failed to store credentials in the Keychain.", nil)
+            }
         } else {
             reject(NativeBridge.credentialsManagerErrorCode, "Incomplete information provided for credentials - 'expiresIn' not found", NSError.init(domain: NativeBridge.credentialsManagerErrorCode, code: -99999, userInfo: nil));
         }
@@ -276,7 +280,7 @@ extension CredentialsManagerError {
                 code = "REVOKE_FAILED"
             } 
             case .largeMinTTL: code = "LARGE_MIN_TTL"
-            default: code = "UNKNOWN"
+            default: code = NativeBridge.credentialsManagerErrorCode
         }
         return code
     }
