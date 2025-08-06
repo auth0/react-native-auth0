@@ -65,6 +65,7 @@ export class WebAuth0Client implements IAuth0Client {
     const clientOptions: Auth0ClientOptions = {
       domain: options.domain,
       clientId: options.clientId,
+      useMrrt: options.useMrrt,
       cacheLocation: options.cacheLocation ?? 'memory',
       useRefreshTokens: options.useRefreshTokens ?? true,
       authorizationParams: {

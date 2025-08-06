@@ -153,6 +153,12 @@ export interface WebAuth0Options extends Auth0Options {
   audience?: string;
   /** A custom scope for the `getTokenSilently` call. */
   scope?: string;
+  /**
+   * **Web only:** Enables the use of Multi-Resource Refresh Tokens (MRRT).
+   * This is a web-specific feature that allows the use of MRRTs for silent authentication.
+   * @default false
+   */
+  useMrrt?: boolean;
 }
 
 /**
