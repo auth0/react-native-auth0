@@ -1,0 +1,47 @@
+name: Publish release to npm
+
+inputs:
+  npm-token:
+    required: true
+  version:
+    required: true
+  release-directory:
+    default: './'
+
+runs:
+  using: composite
+
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup
+      uses: ./.github/actions/setup
+
+    - name: Build package
+      shell: bash
+      run: yarn ci
+
+    - name: Verify npm token
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.npm-token }}" ]; then
+          echo "Error: npm-token is not provided."
+          exit 1
+        fi
+
+    - name: Publish release to NPM
+      shell: bash
+      working-directory: ${{ inputs.release-directory }}
+      run: |
+        if [[ "${VERSION}" == *"beta"* ]]; then
+          TAG="beta"
+        elif [[ "${VERSION}" == *"alpha"* ]]; then
+          TAG="alpha"
+        else
+          TAG="latest"
+        fi
+        npm publish --provenance --tag $TAG
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.npm-token }}
+        VERSION: ${{ inputs.version }}
