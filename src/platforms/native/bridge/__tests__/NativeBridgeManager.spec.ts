@@ -99,7 +99,7 @@ describe('NativeBridgeManager', () => {
         undefined, // invitationUrl
         0, // leeway
         false, // ephemeralSession
-        undefined, // presentationStyle
+        99, // presentationStyle
         {} // additionalParameters
       );
     });

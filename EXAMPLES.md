@@ -341,8 +341,10 @@ In the case of signup, you can add [an additional parameter](https://auth0.com/d
 auth0.webAuth.authorize({
   connection: realm,
   scope: scope,
-  login_hint: email,
-  screen_hint: 'signup', // 👈🏻
+  additionalParameters: {
+    login_hint: email,
+    screen_hint: 'signup', // 👈🏻
+  },
 });
 ```
 
