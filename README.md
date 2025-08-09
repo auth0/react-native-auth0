@@ -625,7 +625,7 @@ The options for configuring the display of local authentication prompt, authenti
 
 > :warning: You need a real device to test Local Authentication for iOS. Local Authentication is not available in simulators.
 
-#### Credentials Manager errors
+### Credentials Manager errors
 
 The Credentials Manager will only throw `CredentialsManagerError` exceptions. You can find more information in the details property of the exception.
 
@@ -649,8 +649,6 @@ try {
 }
 ```
 
-_Note_ : We have platform agnostic error codes available only for `CredentialsManagerError` as of now.
-
 | Generic Error Code    | Corresponding Error Code in Android                                                                                                                                                                                                                                                                                                              | Corresponding Error Code in iOS |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------- |
 | `INVALID_CREDENTIALS` | `INVALID_CREDENTIALS`                                                                                                                                                                                                                                                                                                                            |                                 |
@@ -665,6 +663,65 @@ _Note_ : We have platform agnostic error codes available only for `CredentialsMa
 | `BIOMETRICS_FAILED`   | OneOf <br>`BIOMETRIC_NO_ACTIVITY`,`BIOMETRIC_ERROR_STATUS_UNKNOWN`,`BIOMETRIC_ERROR_UNSUPPORTED`,<br>`BIOMETRIC_ERROR_HW_UNAVAILABLE`,`BIOMETRIC_ERROR_NONE_ENROLLED`,`BIOMETRIC_ERROR_NO_HARDWARE`,<br>`BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED`,`BIOMETRIC_AUTHENTICATION_CHECK_FAILED`,<br>`BIOMETRIC_ERROR_DEVICE_CREDENTIAL_NOT_AVAILABLE` | `biometricsFailed`              |
 | `NO_NETWORK`          | `NO_NETWORK`                                                                                                                                                                                                                                                                                                                                     |                                 |
 | `API_ERROR`           | `API_ERROR`                                                                                                                                                                                                                                                                                                                                      |                                 |
+
+### WebAuth errors
+
+**Before (Platform-Specific Codes)**
+
+```javascript
+// Old way: required checking Platform.OS and different error codes
+import { Platform } from 'react-native';
+
+try {
+  await auth0.webAuth.authorize();
+} catch (e) {
+  const isCancelled =
+    Platform.OS === 'ios'
+      ? e.code === 'USER_CANCELLED'
+      : e.code === 'a0.session.user_cancelled';
+
+  if (isCancelled) {
+    console.log('User cancelled the login.');
+  } else {
+    console.error(e);
+  }
+}
+```
+
+**After (Platform-Agnostic and Typed)**
+
+```javascript
+// New way: use 'instanceof' and the 'type' property
+import { WebAuthError } from 'react-native-auth0';
+
+try {
+  await auth0.webAuth.authorize();
+} catch (e) {
+  if (e instanceof WebAuthError && e.type === 'USER_CANCELLED') {
+    console.log('User cancelled the login.');
+  } else {
+    // Handle other errors
+    console.error(e);
+  }
+}
+```
+
+| Platform-Agnostic            | Description                                                                                                                                                   | Android Native Error            | iOS Native Error                |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | ------------------------------- |
+| `USER_CANCELLED`             | The user actively cancelled the web authentication flow.                                                                                                      | `a0.session.user_cancelled`     | `USER_CANCELLED`                |
+| `BROWSER_NOT_AVAILABLE`      | No compatible browser application is installed on the device.                                                                                                 | `a0.browser_not_available`      | -                               |
+| `NO_BUNDLE_IDENTIFIER`       | The native bundle identifier could not be retrieved, which is required to construct the callback URL.                                                         | -                               | `NO_BUNDLE_IDENTIFIER`          |
+| `FAILED_TO_LOAD_URL`         | The authorization URL could not be loaded in the browser.                                                                                                     | `a0.session.failed_load`        | -                               |
+| `BROWSER_TERMINATED`         | The browser was closed unexpectedly, likely because the application was relaunched from the home screen while the login was in progress.                      | `a0.session.browser_terminated` | -                               |
+| `INVALID_STATE`              | The `state` parameter returned from the server did not match the one sent, indicating a potential Cross-Site Request Forgery (CSRF) attack.                   | `access_denied`                 | `OTHER`                         |
+| `ACCESS_DENIED`              | The user or Auth0 denied the authentication request. This can be caused by a user denying consent, a failing Action or Rule, or other authorization policies. | `access_denied`                 | `OTHER`                         |
+| `NO_AUTHORIZATION_CODE`      | The callback URL from the server is missing the required `code` parameter needed for the token exchange.                                                      | -                               | `NO_AUTHORIZATION_CODE`         |
+| `INVALID_CONFIGURATION`      | The Auth0 Application is misconfigured. Common causes include an invalid social connection configuration.                                                     | `a0.invalid_configuration`      | `OTHER`                         |
+| `PKCE_NOT_ALLOWED`           | PKCE is required but not enabled for the Auth0 Application. Ensure the "Application Type" is set to "Native" in your Auth0 dashboard.                         | `a0.pkce_not_available`         | `PKCE_NOT_ALLOWED`              |
+| `ID_TOKEN_VALIDATION_FAILED` | The ID token received is invalid and failed one or more validation checks, such as signature, issuer, audience, or nonce verification.                        | `a0.session.invalid_idtoken`    | `ID_TOKEN_VALIDATION_FAILED`    |
+| `INVALID_INVITATION_URL`     | The organization invitation URL is malformed or missing the required `organization` and `invitation` parameters.                                              | -                               | `INVALID_INVITATION_URL`        |
+| `NETWORK_ERROR`              | A network error occurred, preventing the request from completing. The device may be offline or unable to reach the Auth0 servers.                             | `a0.network_error`              | `OTHER` (with `URLError` cause) |
+| `UNKNOWN_ERROR`              | An unexpected or uncategorized error occurred. Check the `message` and `cause` properties for more specific details.                                          | _(various)_                     | `UNKNOWN` or `OTHER`            |
 
 ## Features and Platform Support
 

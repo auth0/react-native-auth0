@@ -13,6 +13,8 @@ import {
 import {
   AuthError,
   Credentials as CredentialsModel,
+  CredentialsManagerError,
+  WebAuthError,
 } from '../../../core/models';
 import Auth0NativeModule from '../../../specs/NativeA0Auth0';
 

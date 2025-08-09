@@ -1,6 +1,6 @@
 import type { ICredentialsManager } from '../../../core/interfaces';
 import type { AuthError } from '../../../core/models';
-import { CredentialsManagerError } from '../../../core/models/CredentialsManagerError';
+import { CredentialsManagerError } from '../../../core/models';
 import type { Credentials } from '../../../types';
 import type { INativeBridge } from '../bridge';
 

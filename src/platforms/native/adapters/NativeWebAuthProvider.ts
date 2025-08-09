@@ -11,7 +11,7 @@ import type {
 } from '../../../types/platform-specific';
 import type { INativeBridge } from '../bridge';
 import { finalizeScope } from '../../../core/utils';
-import { AuthError } from '../../../core/models';
+import { AuthError, WebAuthError } from '../../../core/models';
 
 const webAuthNotSupported = 'This Method is only available in web platform.';
 
@@ -72,7 +72,7 @@ export class NativeWebAuthProvider implements IWebAuthProvider {
     } catch (error) {
       // On error, always clean up the listener.
       linkSubscription?.remove();
-      throw error;
+      throw new WebAuthError(error as AuthError);
     }
   }
 
@@ -80,32 +80,39 @@ export class NativeWebAuthProvider implements IWebAuthProvider {
     parameters: ClearSessionParameters = {},
     options: NativeClearSessionOptions = {}
   ): Promise<void> {
-    // 1. Determine the scheme from the `options` object.
-    const scheme =
-      options.customScheme ??
-      (await this.getDefaultScheme(options.useLegacyCallbackUrl));
+    try {
+      // 1. Determine the scheme from the `options` object.
+      const scheme =
+        options.customScheme ??
+        (await this.getDefaultScheme(options.useLegacyCallbackUrl));
 
-    // 2. Determine the returnToUrl from the `parameters` object, providing a default if needed.
-    const returnToUrl =
-      parameters.returnToUrl ?? (await this.getCallbackUri(scheme));
+      // 2. Determine the returnToUrl from the `parameters` object, providing a default if needed.
+      const returnToUrl =
+        parameters.returnToUrl ?? (await this.getCallbackUri(scheme));
 
-    // 3. Prepare the final parameters and options for the bridge.
-    const finalParameters: ClearSessionParameters = {
-      ...parameters,
-      returnToUrl,
-    };
-    const finalOptions: NativeClearSessionOptions = {
-      ...options,
-      customScheme: scheme,
-    };
+      // 3. Prepare the final parameters and options for the bridge.
+      const finalParameters: ClearSessionParameters = {
+        ...parameters,
+        returnToUrl,
+      };
+      const finalOptions: NativeClearSessionOptions = {
+        ...options,
+        customScheme: scheme,
+      };
 
-    // 4. Call the bridge with the two separate, finalized objects.
-    return this.bridge.clearSession(finalParameters, finalOptions);
+      // 4. Call the bridge with the two separate, finalized objects.
+      return this.bridge.clearSession(finalParameters, finalOptions);
+    } catch (error) {
+      throw new WebAuthError(error as AuthError);
+    }
   }
 
   async cancelWebAuth(): Promise<void> {
-    // This is a direct pass-through, as the method signatures match.
-    return this.bridge.cancelWebAuth();
+    try {
+      return this.bridge.cancelWebAuth();
+    } catch (error) {
+      throw new WebAuthError(error as AuthError);
+    }
   }
 
   private async getDefaultScheme(useLegacy: boolean = false): Promise<string> {
