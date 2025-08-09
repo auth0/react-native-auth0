@@ -20,6 +20,12 @@ const ERROR_CODE_MAP: Record<string, string> = {
   'PKCE_NOT_ALLOWED': 'PKCE_NOT_ALLOWED',
   'INVALID_INVITATION_URL': 'INVALID_INVITATION_URL',
 
+  // --- Web (@auth0/auth0-spa-js) mappings ---
+  'cancelled': 'USER_CANCELLED',
+  'state_mismatch': 'INVALID_STATE',
+  'login_required': 'ACCESS_DENIED',
+  'timeout': 'TIMEOUT_ERROR',
+
   // --- Generic Fallbacks ---
   'a0.invalid_configuration': 'INVALID_CONFIGURATION',
   'UNKNOWN': 'UNKNOWN_ERROR',
@@ -36,7 +42,10 @@ export class WebAuthError extends AuthError {
       json: originalError.json,
     });
 
-    if (originalError.message.includes('state is invalid')) {
+    if (
+      originalError.message.includes('state is invalid') ||
+      originalError.code === 'state_mismatch'
+    ) {
       this.type = 'INVALID_STATE';
     } else {
       this.type = ERROR_CODE_MAP[originalError.code] || 'UNKNOWN_ERROR';

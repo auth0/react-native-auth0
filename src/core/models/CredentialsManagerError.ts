@@ -17,6 +17,12 @@ const ERROR_CODE_MAP: Record<string, string> = {
   NO_NETWORK: 'NO_NETWORK',
   API_ERROR: 'API_ERROR',
 
+  // --- Web (@auth0/auth0-spa-js) mappings ---
+  login_required: 'NO_CREDENTIALS',
+  consent_required: 'RENEW_FAILED',
+  invalid_grant: 'RENEW_FAILED',
+  missing_refresh_token: 'NO_REFRESH_TOKEN',
+
   // --- Many-to-one mapping for granular Android Biometric errors ---
   BIOMETRIC_NO_ACTIVITY: 'BIOMETRICS_FAILED',
   BIOMETRIC_ERROR_STATUS_UNKNOWN: 'BIOMETRICS_FAILED',
