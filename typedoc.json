@@ -1,13 +1,15 @@
 {
-  "entryPoints": ["src/index.ts"],
+  "entryPoints": ["src/exports/index.ts"],
   "out": "out",
   "name": "React Native Auth0",
+  "tsconfig": "./tsconfig.json",
   "readme": "README.md",
   "theme": "default",
   "includeVersion": true,
   "excludePrivate": true,
   "excludeProtected": true,
   "excludeExternals": true,
+  "json": "out/index.json",
   "sort": ["source-order"],
   "kindSortOrder": [
     "Project",
@@ -61,6 +63,7 @@
     "@private",
     "@protected",
     "@internal",
+    "@hidden",
     "@override",
     "@readonly"
   ],

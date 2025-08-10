@@ -33,7 +33,7 @@
     "example": "yarn workspace Auth0Example",
     "test": "jest",
     "test:ci": "jest --coverage",
-    "docs": "typedoc",
+    "docs": "typedoc --options ./typedoc.json",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "lint:fix": "eslint \"**/*.{js,ts,tsx}\" --fix",
