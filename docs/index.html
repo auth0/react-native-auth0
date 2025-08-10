@@ -209,6 +209,12 @@
             </li>
             <li>
               <a
+                href="https://github.com/auth0/react-native-auth0/blob/master/REACT_NATIVE_WEB_SETUP.md"
+                >React Native Web Setup</a
+              >
+            </li>
+            <li>
+              <a
                 href="https://github.com/auth0/react-native-auth0/blob/master/FAQ.md"
                 >FAQs</a
               >
@@ -217,6 +223,12 @@
               <a
                 href="https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES.md"
                 >Examples</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES-WEB.md"
+                >Examples for Web</a
               >
             </li>
             <li>
@@ -1424,7 +1436,7 @@
               iOS. Local Authentication is not available in simulators.
             </p>
           </blockquote>
-          <h4 id="credentials-manager-errors" class="tsd-anchor-link">
+          <h3 id="credentials-manager-errors" class="tsd-anchor-link">
             Credentials Manager errors<a
               href="#credentials-manager-errors"
               aria-label="Permalink"
@@ -1432,7 +1444,7 @@
               ><svg viewBox="0 0 24 24" aria-hidden="true">
                 <use href="assets/icons.svg#icon-anchor"></use></svg
             ></a>
-          </h4>
+          </h3>
           <p>
             The Credentials Manager will only throw
             <code>CredentialsManagerError</code> exceptions. You can find more
@@ -1448,16 +1460,13 @@
           <pre><code class="js"><span class="hl-6">try</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-14">credentials</span><span class="hl-1"> = </span><span class="hl-6">await</span><span class="hl-1"> </span><span class="hl-2">auth0</span><span class="hl-1">.</span><span class="hl-2">credentialsManager</span><span class="hl-1">.</span><span class="hl-8">getCredentials</span><span class="hl-1">();</span><br/><span class="hl-1">} </span><span class="hl-6">catch</span><span class="hl-1"> (</span><span class="hl-2">error</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-8">log</span><span class="hl-1">(</span><span class="hl-2">e</span><span class="hl-1">.</span><span class="hl-2">type</span><span class="hl-1">);</span><br/><span class="hl-1">}</span>
 </code><button type="button">Copy</button></pre>
 
-          <p>
-            <em>Note</em> : We have platform agnostic error codes available only
-            for <code>CredentialsManagerError</code> as of now.
-          </p>
           <table>
             <thead>
               <tr>
                 <th>Generic Error Code</th>
-                <th>Corresponding Error Code in Android</th>
-                <th>Corresponding Error Code in iOS</th>
+                <th>Android Native Error</th>
+                <th>iOS Native Error</th>
+                <th>Web Error Code</th>
               </tr>
             </thead>
             <tbody>
@@ -1465,45 +1474,56 @@
                 <td><code>INVALID_CREDENTIALS</code></td>
                 <td><code>INVALID_CREDENTIALS</code></td>
                 <td></td>
+                <td></td>
               </tr>
               <tr>
                 <td><code>NO_CREDENTIALS</code></td>
                 <td><code>NO_CREDENTIALS</code></td>
                 <td><code>noCredentials</code></td>
+                <td><code>login_required</code></td>
               </tr>
               <tr>
                 <td><code>NO_REFRESH_TOKEN</code></td>
                 <td><code>NO_REFRESH_TOKEN</code></td>
                 <td><code>noRefreshToken</code></td>
+                <td></td>
               </tr>
               <tr>
                 <td><code>RENEW_FAILED</code></td>
                 <td><code>RENEW_FAILED</code></td>
                 <td><code>renewFailed</code></td>
+                <td><code>missing_refresh_token</code></td>
               </tr>
               <tr>
                 <td><code>STORE_FAILED</code></td>
                 <td><code>STORE_FAILED</code></td>
                 <td><code>storeFailed</code></td>
+                <td>
+                  <code>invalid_grant</code>, <code>consent_required</code>
+                </td>
               </tr>
               <tr>
                 <td><code>REVOKE_FAILED</code></td>
                 <td><code>REVOKE_FAILED</code></td>
                 <td><code>revokeFailed</code></td>
+                <td></td>
               </tr>
               <tr>
                 <td><code>LARGE_MIN_TTL</code></td>
                 <td><code>LARGE_MIN_TTL</code></td>
                 <td><code>largeMinTTL</code></td>
+                <td></td>
               </tr>
               <tr>
                 <td><code>INCOMPATIBLE_DEVICE</code></td>
                 <td><code>INCOMPATIBLE_DEVICE</code></td>
                 <td></td>
+                <td></td>
               </tr>
               <tr>
                 <td><code>CRYPTO_EXCEPTION</code></td>
                 <td><code>CRYPTO_EXCEPTION</code></td>
+                <td></td>
                 <td></td>
               </tr>
               <tr>
@@ -1519,15 +1539,230 @@
                   >
                 </td>
                 <td><code>biometricsFailed</code></td>
+                <td></td>
               </tr>
               <tr>
                 <td><code>NO_NETWORK</code></td>
                 <td><code>NO_NETWORK</code></td>
                 <td></td>
+                <td></td>
               </tr>
               <tr>
                 <td><code>API_ERROR</code></td>
                 <td><code>API_ERROR</code></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <h3 id="webauth-errors" class="tsd-anchor-link">
+            WebAuth errors<a
+              href="#webauth-errors"
+              aria-label="Permalink"
+              class="tsd-anchor-icon"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <use href="assets/icons.svg#icon-anchor"></use></svg
+            ></a>
+          </h3>
+          <p><strong>Before (Platform-Specific Codes)</strong></p>
+          <pre><code class="text">// Old way: required checking Platform.OS and different error codes
+import { Platform } from &#39;react-native&#39;;
+
+try {
+  await auth0.webAuth.authorize();
+} catch (e) {
+  const isCancelled =
+    Platform.OS === &#39;ios&#39;
+      ? e.code === &#39;USER_CANCELLED&#39;
+      : e.code === &#39;a0.session.user_cancelled&#39;;
+
+  if (isCancelled) {
+    console.log(&#39;User cancelled the login.&#39;);
+  } else {
+    console.error(e);
+  }
+}
+</code><button type="button">Copy</button></pre>
+
+          <p><strong>After (Platform-Agnostic and Typed)</strong></p>
+          <pre><code class="text">// New way: use &#39;instanceof&#39; and the &#39;type&#39; property
+import { WebAuthError } from &#39;react-native-auth0&#39;;
+
+try {
+  await auth0.webAuth.authorize();
+} catch (e) {
+  if (e instanceof WebAuthError &amp;&amp; e.type === &#39;USER_CANCELLED&#39;) {
+    console.log(&#39;User cancelled the login.&#39;);
+  } else {
+    // Handle other errors
+    console.error(e);
+  }
+}
+</code><button type="button">Copy</button></pre>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Platform-Agnostic</th>
+                <th>Description</th>
+                <th>Android Native Error</th>
+                <th>iOS Native Error</th>
+                <th>Web Error Code</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>USER_CANCELLED</code></td>
+                <td>
+                  The user actively cancelled the web authentication flow.
+                </td>
+                <td><code>a0.session.user_cancelled</code></td>
+                <td><code>USER_CANCELLED</code></td>
+                <td><code>cancelled</code></td>
+              </tr>
+              <tr>
+                <td><code>BROWSER_NOT_AVAILABLE</code></td>
+                <td>
+                  No compatible browser application is installed on the device.
+                </td>
+                <td><code>a0.browser_not_available</code></td>
+                <td>-</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>NO_BUNDLE_IDENTIFIER</code></td>
+                <td>
+                  The native bundle identifier could not be retrieved, which is
+                  required to construct the callback URL.
+                </td>
+                <td>-</td>
+                <td><code>NO_BUNDLE_IDENTIFIER</code></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>FAILED_TO_LOAD_URL</code></td>
+                <td>
+                  The authorization URL could not be loaded in the browser.
+                </td>
+                <td><code>a0.session.failed_load</code></td>
+                <td>-</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>BROWSER_TERMINATED</code></td>
+                <td>
+                  The browser was closed unexpectedly, likely because the
+                  application was relaunched from the home screen while the
+                  login was in progress.
+                </td>
+                <td><code>a0.session.browser_terminated</code></td>
+                <td>-</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>INVALID_STATE</code></td>
+                <td>
+                  The <code>state</code> parameter returned from the server did
+                  not match the one sent, indicating a potential Cross-Site
+                  Request Forgery (CSRF) attack.
+                </td>
+                <td><code>access_denied</code></td>
+                <td><code>OTHER</code></td>
+                <td><code>state_mismatch</code></td>
+              </tr>
+              <tr>
+                <td><code>ACCESS_DENIED</code></td>
+                <td>
+                  The user or Auth0 denied the authentication request. This can
+                  be caused by a user denying consent, a failing Action or Rule,
+                  or other authorization policies.
+                </td>
+                <td><code>access_denied</code></td>
+                <td><code>OTHER</code></td>
+                <td><code>access_denied</code></td>
+              </tr>
+              <tr>
+                <td><code>NO_AUTHORIZATION_CODE</code></td>
+                <td>
+                  The callback URL from the server is missing the required
+                  <code>code</code> parameter needed for the token exchange.
+                </td>
+                <td>-</td>
+                <td><code>NO_AUTHORIZATION_CODE</code></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>INVALID_CONFIGURATION</code></td>
+                <td>
+                  The Auth0 Application is misconfigured. Common causes include
+                  an invalid social connection configuration.
+                </td>
+                <td><code>a0.invalid_configuration</code></td>
+                <td><code>OTHER</code></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>PKCE_NOT_ALLOWED</code></td>
+                <td>
+                  PKCE is required but not enabled for the Auth0 Application.
+                  Ensure the &quot;Application Type&quot; is set to
+                  &quot;Native&quot; in your Auth0 dashboard.
+                </td>
+                <td><code>a0.pkce_not_available</code></td>
+                <td><code>PKCE_NOT_ALLOWED</code></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>ID_TOKEN_VALIDATION_FAILED</code></td>
+                <td>
+                  The ID token received is invalid and failed one or more
+                  validation checks, such as signature, issuer, audience, or
+                  nonce verification.
+                </td>
+                <td><code>a0.session.invalid_idtoken</code></td>
+                <td><code>ID_TOKEN_VALIDATION_FAILED</code></td>
+                <td>(various validation Errors).</td>
+              </tr>
+              <tr>
+                <td><code>INVALID_INVITATION_URL</code></td>
+                <td>
+                  The organization invitation URL is malformed or missing the
+                  required <code>organization</code> and
+                  <code>invitation</code> parameters.
+                </td>
+                <td>-</td>
+                <td><code>INVALID_INVITATION_URL</code></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>NETWORK_ERROR</code></td>
+                <td>
+                  A network error occurred, preventing the request from
+                  completing. The device may be offline or unable to reach the
+                  Auth0 servers.
+                </td>
+                <td><code>a0.network_error</code></td>
+                <td><code>OTHER</code> (with <code>URLError</code> cause)</td>
+                <td>(Network-related fetch exception)</td>
+              </tr>
+              <tr>
+                <td><code>TIMEOUT_ERROR</code></td>
+                <td>The web authentication flow timed out.</td>
+                <td>-</td>
+                <td>-</td>
+                <td>
+                  <code>timeout</code> (from <code>PopupTimeoutError</code>)
+                </td>
+              </tr>
+              <tr>
+                <td><code>UNKNOWN_ERROR</code></td>
+                <td>
+                  An unexpected or uncategorized error occurred. Check the
+                  <code>message</code> and <code>cause</code> properties for
+                  more specific details.
+                </td>
+                <td><em>(various)</em></td>
+                <td><code>UNKNOWN</code> or <code>OTHER</code></td>
                 <td></td>
               </tr>
             </tbody>
@@ -2176,12 +2411,17 @@ end
                         ></a
                       >
                     </li>
-                    <li>
-                      <a href="#credentials-manager-errors"
-                        ><span>Credentials <wbr />Manager errors</span></a
-                      >
-                    </li>
                   </ul>
+                </li>
+                <li>
+                  <a href="#credentials-manager-errors"
+                    ><span>Credentials <wbr />Manager errors</span></a
+                  >
+                </li>
+                <li>
+                  <a href="#webauth-errors"
+                    ><span>Web<wbr />Auth errors</span></a
+                  >
                 </li>
               </ul>
               <a href="#features-and-platform-support"
