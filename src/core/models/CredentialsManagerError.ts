@@ -1,11 +1,6 @@
 import { AuthError } from './AuthError';
 
 const ERROR_CODE_MAP: Record<string, string> = {
-  // --- Android-only codes that have no iOS equivalent ---
-  INCOMPATIBLE_DEVICE: 'INCOMPATIBLE_DEVICE',
-  CRYPTO_EXCEPTION: 'CRYPTO_EXCEPTION',
-
-  // --- Self-mappings (acts as an allow-list of known codes) ---
   INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
   NO_CREDENTIALS: 'NO_CREDENTIALS',
   NO_REFRESH_TOKEN: 'NO_REFRESH_TOKEN',
@@ -24,6 +19,8 @@ const ERROR_CODE_MAP: Record<string, string> = {
   missing_refresh_token: 'NO_REFRESH_TOKEN',
 
   // --- Many-to-one mapping for granular Android Biometric errors ---
+  INCOMPATIBLE_DEVICE: 'INCOMPATIBLE_DEVICE',
+  CRYPTO_EXCEPTION: 'CRYPTO_EXCEPTION',
   BIOMETRIC_NO_ACTIVITY: 'BIOMETRICS_FAILED',
   BIOMETRIC_ERROR_STATUS_UNKNOWN: 'BIOMETRICS_FAILED',
   BIOMETRIC_ERROR_UNSUPPORTED: 'BIOMETRICS_FAILED',

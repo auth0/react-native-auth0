@@ -280,7 +280,7 @@ extension CredentialsManagerError {
                 code = "REVOKE_FAILED"
             } 
             case .largeMinTTL: code = "LARGE_MIN_TTL"
-            default: code = NativeBridge.credentialsManagerErrorCode
+            default: code = "UNKNOWN"
         }
         return code
     }

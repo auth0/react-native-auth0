@@ -25,10 +25,49 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     companion object {
         const val NAME = "A0Auth0"
         const val UNKNOWN_ERROR_RESULT_CODE = 1405
+        private const val CREDENTIAL_MANAGER_ERROR_CODE = "a0.invalid_state.credential_manager_exception"
         private const val INVALID_DOMAIN_URL_ERROR_CODE = "a0.invalid_domain_url"
         private const val BIOMETRICS_AUTHENTICATION_ERROR_CODE = "a0.invalid_options_biometrics_authentication"
         private const val LOCAL_AUTH_REQUEST_CODE = 150
     }
+
+    private val errorCodeMap = mapOf(
+        CredentialsManagerException.INVALID_CREDENTIALS to "INVALID_CREDENTIALS",
+        CredentialsManagerException.NO_CREDENTIALS to "NO_CREDENTIALS",
+        CredentialsManagerException.NO_REFRESH_TOKEN to "NO_REFRESH_TOKEN",
+        CredentialsManagerException.RENEW_FAILED to "RENEW_FAILED",
+        CredentialsManagerException.STORE_FAILED to "STORE_FAILED",
+        CredentialsManagerException.REVOKE_FAILED to "REVOKE_FAILED",
+        CredentialsManagerException.LARGE_MIN_TTL to "LARGE_MIN_TTL",
+        CredentialsManagerException.INCOMPATIBLE_DEVICE to "INCOMPATIBLE_DEVICE",
+        CredentialsManagerException.CRYPTO_EXCEPTION to "CRYPTO_EXCEPTION",
+        CredentialsManagerException.BIOMETRIC_ERROR_NO_ACTIVITY to "BIOMETRIC_NO_ACTIVITY",
+        CredentialsManagerException.BIOMETRIC_ERROR_STATUS_UNKNOWN to "BIOMETRIC_ERROR_STATUS_UNKNOWN",
+        CredentialsManagerException.BIOMETRIC_ERROR_UNSUPPORTED to "BIOMETRIC_ERROR_UNSUPPORTED",
+        CredentialsManagerException.BIOMETRIC_ERROR_HW_UNAVAILABLE to "BIOMETRIC_ERROR_HW_UNAVAILABLE",
+        CredentialsManagerException.BIOMETRIC_ERROR_NONE_ENROLLED to "BIOMETRIC_ERROR_NONE_ENROLLED",
+        CredentialsManagerException.BIOMETRIC_ERROR_NO_HARDWARE to "BIOMETRIC_ERROR_NO_HARDWARE",
+        CredentialsManagerException.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED to "BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED",
+        CredentialsManagerException.BIOMETRIC_AUTHENTICATION_CHECK_FAILED to "BIOMETRIC_AUTHENTICATION_CHECK_FAILED",
+        CredentialsManagerException.BIOMETRIC_ERROR_DEVICE_CREDENTIAL_NOT_AVAILABLE to "BIOMETRIC_ERROR_DEVICE_CREDENTIAL_NOT_AVAILABLE",
+        CredentialsManagerException.BIOMETRIC_ERROR_STRONG_AND_DEVICE_CREDENTIAL_NOT_AVAILABLE to "BIOMETRIC_ERROR_STRONG_AND_DEVICE_CREDENTIAL_NOT_AVAILABLE",
+        CredentialsManagerException.BIOMETRIC_ERROR_NO_DEVICE_CREDENTIAL to "BIOMETRIC_ERROR_NO_DEVICE_CREDENTIAL",
+        CredentialsManagerException.BIOMETRIC_ERROR_NEGATIVE_BUTTON to "BIOMETRIC_ERROR_NEGATIVE_BUTTON",
+        CredentialsManagerException.BIOMETRIC_ERROR_HW_NOT_PRESENT to "BIOMETRIC_ERROR_HW_NOT_PRESENT",
+        CredentialsManagerException.BIOMETRIC_ERROR_NO_BIOMETRICS to "BIOMETRIC_ERROR_NO_BIOMETRICS",
+        CredentialsManagerException.BIOMETRIC_ERROR_USER_CANCELED to "BIOMETRIC_ERROR_USER_CANCELED",
+        CredentialsManagerException.BIOMETRIC_ERROR_LOCKOUT_PERMANENT to "BIOMETRIC_ERROR_LOCKOUT_PERMANENT",
+        CredentialsManagerException.BIOMETRIC_ERROR_VENDOR to "BIOMETRIC_ERROR_VENDOR",
+        CredentialsManagerException.BIOMETRIC_ERROR_LOCKOUT to "BIOMETRIC_ERROR_LOCKOUT",
+        CredentialsManagerException.BIOMETRIC_ERROR_CANCELED to "BIOMETRIC_ERROR_CANCELED",
+        CredentialsManagerException.BIOMETRIC_ERROR_NO_SPACE to "BIOMETRIC_ERROR_NO_SPACE",
+        CredentialsManagerException.BIOMETRIC_ERROR_TIMEOUT to "BIOMETRIC_ERROR_TIMEOUT",
+        CredentialsManagerException.BIOMETRIC_ERROR_UNABLE_TO_PROCESS to "BIOMETRIC_ERROR_UNABLE_TO_PROCESS",
+        CredentialsManagerException.BIOMETRICS_INVALID_USER to "BIOMETRICS_INVALID_USER",
+        CredentialsManagerException.BIOMETRIC_AUTHENTICATION_FAILED to "BIOMETRIC_AUTHENTICATION_FAILED",
+        CredentialsManagerException.API_ERROR to "API_ERROR",
+        CredentialsManagerException.NO_NETWORK to "NO_NETWORK"
+    )
 
     private var auth0: Auth0? = null
     private lateinit var secureCredentialsManager: SecureCredentialsManager
@@ -183,7 +222,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                     }
 
                     override fun onFailure(e: CredentialsManagerException) {
-                        promise.reject(e.code, e.message, e)
+                        val errorCode = deduceErrorCode(e)
+                        promise.reject(errorCode, e.message, e)
                     }
                 }
             )
@@ -196,7 +236,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             secureCredentialsManager.saveCredentials(CredentialsParser.fromMap(credentials))
             promise.resolve(true)
         } catch (e: CredentialsManagerException) {
-            promise.reject(e.code, e.message, e)
+            val errorCode = deduceErrorCode(e)
+            promise.reject(errorCode, e.message, e)
         }
     }
 
@@ -269,6 +310,10 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             auth0!!,
             SharedPreferencesStorage(reactContext)
         )
+    }
+
+    private fun deduceErrorCode(e: CredentialsManagerException): String {
+        return errorCodeMap[e] ?: CREDENTIAL_MANAGER_ERROR_CODE
     }
 
     private fun handleError(error: AuthenticationException, promise: Promise) {
