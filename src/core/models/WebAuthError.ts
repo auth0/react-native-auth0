@@ -8,6 +8,7 @@ const ERROR_CODE_MAP: Record<string, string> = {
   'a0.network_error': 'NETWORK_ERROR',
   'a0.session.invalid_idtoken': 'ID_TOKEN_VALIDATION_FAILED',
   'ID_TOKEN_VALIDATION_FAILED': 'ID_TOKEN_VALIDATION_FAILED',
+  'BIOMETRICS_CONFIGURATION_ERROR': 'BIOMETRICS_CONFIGURATION_ERROR',
 
   // --- Android-specific mappings ---
   'a0.browser_not_available': 'BROWSER_NOT_AVAILABLE',
