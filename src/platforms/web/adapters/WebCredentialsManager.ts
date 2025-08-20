@@ -46,11 +46,11 @@ export class WebCredentialsManager implements ICredentialsManager {
         scope: tokenResponse.scope,
       });
     } catch (e: any) {
-      const authError = new AuthError(
-        e.error ?? 'GetCredentialsFailed',
-        e.error_description ?? e.message,
-        { json: e }
-      );
+      const code = e.error ?? 'GetCredentialsFailed';
+      const authError = new AuthError(code, e.error_description ?? e.message, {
+        json: e,
+        code,
+      });
       throw new CredentialsManagerError(authError);
     }
   }
@@ -63,11 +63,11 @@ export class WebCredentialsManager implements ICredentialsManager {
     try {
       await this.client.logout({ openUrl: false });
     } catch (e: any) {
-      const authError = new AuthError(
-        e.error ?? 'ClearCredentialsFailed',
-        e.error_description ?? e.message,
-        { json: e }
-      );
+      const code = e.error ?? 'ClearCredentialsFailed';
+      const authError = new AuthError(code, e.error_description ?? e.message, {
+        json: e,
+        code,
+      });
       throw new CredentialsManagerError(authError);
     }
   }
