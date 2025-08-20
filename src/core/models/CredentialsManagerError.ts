@@ -16,7 +16,9 @@ const ERROR_CODE_MAP: Record<string, string> = {
   // --- Web (@auth0/auth0-spa-js) mappings ---
   login_required: 'NO_CREDENTIALS',
   consent_required: 'RENEW_FAILED',
+  mfa_required: 'RENEW_FAILED',
   invalid_grant: 'RENEW_FAILED',
+  invalid_refresh_token: 'RENEW_FAILED',
   missing_refresh_token: 'NO_REFRESH_TOKEN',
 
   // --- Many-to-one mapping for granular Android Biometric errors ---
