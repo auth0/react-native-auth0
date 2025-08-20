@@ -101,7 +101,7 @@ export class NativeWebAuthProvider implements IWebAuthProvider {
       };
 
       // 4. Call the bridge with the two separate, finalized objects.
-      return this.bridge.clearSession(finalParameters, finalOptions);
+      return await this.bridge.clearSession(finalParameters, finalOptions);
     } catch (error) {
       throw new WebAuthError(error as AuthError);
     }
