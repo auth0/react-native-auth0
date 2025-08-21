@@ -31,12 +31,9 @@ export class WebWebAuthProvider implements IWebAuthProvider {
       // interface, but in practice, the application context will be lost.
       return new Promise(() => {});
     } catch (e: any) {
+      const code = e.error ?? 'AuthorizeFailed';
       throw new WebAuthError(
-        new AuthError(
-          e.error ?? 'AuthorizeFailed',
-          e.error_description ?? e.message,
-          { json: e }
-        )
+        new AuthError(code, e.error_description ?? e.message, { json: e, code })
       );
     }
   }
@@ -45,12 +42,9 @@ export class WebWebAuthProvider implements IWebAuthProvider {
     try {
       await this.client.handleRedirectCallback(url);
     } catch (e: any) {
+      const code = e.error ?? 'RedirectCallbackError';
       throw new WebAuthError(
-        new AuthError(
-          e.error ?? 'RedirectCallbackError',
-          e.error_description ?? e.message,
-          { json: e }
-        )
+        new AuthError(code, e.error_description ?? e.message, { json: e, code })
       );
     }
   }
@@ -64,19 +58,17 @@ export class WebWebAuthProvider implements IWebAuthProvider {
         },
       });
     } catch (e: any) {
+      const code = e.error ?? 'LogoutFailed';
       if ((e as PopupCancelledError).error === 'cancelled') {
         throw new WebAuthError(
           new AuthError('cancelled', 'User cancelled the logout popup.', {
             json: e,
+            code,
           })
         );
       }
       throw new WebAuthError(
-        new AuthError(
-          e.error ?? 'LogoutFailed',
-          e.error_description ?? e.message,
-          { json: e }
-        )
+        new AuthError(code, e.error_description ?? e.message, { json: e, code })
       );
     }
   }

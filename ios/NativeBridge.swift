@@ -245,6 +245,7 @@ extension WebAuthError {
         var code: String
         switch self {
             case .noBundleIdentifier: code = "NO_BUNDLE_IDENTIFIER"
+            case .transactionActiveAlready: code = "TRANSACTION_ACTIVE_ALREADY"
             case .invalidInvitationURL: code = "INVALID_INVITATION_URL"
             case .userCancelled: code = "USER_CANCELLED"
             case .noAuthorizationCode: code = "NO_AUTHORIZATION_CODE"
@@ -280,7 +281,7 @@ extension CredentialsManagerError {
                 code = "REVOKE_FAILED"
             } 
             case .largeMinTTL: code = "LARGE_MIN_TTL"
-            default: code = NativeBridge.credentialsManagerErrorCode
+            default: code = "UNKNOWN"
         }
         return code
     }
