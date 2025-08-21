@@ -1492,15 +1492,16 @@
                 <td><code>RENEW_FAILED</code></td>
                 <td><code>RENEW_FAILED</code></td>
                 <td><code>renewFailed</code></td>
-                <td><code>missing_refresh_token</code></td>
+                <td>
+                  <code>missing_refresh_token</code>,
+                  <code>invalid_grant</code>,<code>consent_required</code>
+                </td>
               </tr>
               <tr>
                 <td><code>STORE_FAILED</code></td>
                 <td><code>STORE_FAILED</code></td>
                 <td><code>storeFailed</code></td>
-                <td>
-                  <code>invalid_grant</code>, <code>consent_required</code>
-                </td>
+                <td></td>
               </tr>
               <tr>
                 <td><code>REVOKE_FAILED</code></td>
@@ -1680,6 +1681,16 @@ try {
                 <td><code>access_denied</code></td>
                 <td><code>OTHER</code></td>
                 <td><code>access_denied</code></td>
+              </tr>
+              <tr>
+                <td><code>CONSENT_REQUIRED</code></td>
+                <td>
+                  The user needs to explicitly grant consent for the application
+                  to access requested scopes or resources.
+                </td>
+                <td>-</td>
+                <td></td>
+                <td><code>consent_required</code></td>
               </tr>
               <tr>
                 <td><code>NO_AUTHORIZATION_CODE</code></td>
