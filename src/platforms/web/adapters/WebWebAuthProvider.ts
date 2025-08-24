@@ -61,10 +61,16 @@ export class WebWebAuthProvider implements IWebAuthProvider {
       const code = e.error ?? 'LogoutFailed';
       if ((e as PopupCancelledError).error === 'cancelled') {
         throw new WebAuthError(
-          new AuthError('cancelled', 'User cancelled the logout popup.', {
-            json: e,
-            code,
-          })
+          new AuthError(
+            'cancelled',
+            e.error_description ??
+              e.message ??
+              'User cancelled the logout popup.',
+            {
+              json: e,
+              code,
+            }
+          )
         );
       }
       throw new WebAuthError(
