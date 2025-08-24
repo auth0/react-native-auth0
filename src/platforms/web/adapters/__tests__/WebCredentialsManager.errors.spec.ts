@@ -17,55 +17,57 @@ describe('WebCredentialsManager Error Handling', () => {
     manager = new WebCredentialsManager(mockSpaClient);
   });
 
-  it('should convert a "login_required" error into a CredentialsManagerError with type "NO_CREDENTIALS"', async () => {
-    const spaJsError = {
-      error: 'login_required',
-      error_description: 'Login is required',
-    };
-    mockSpaClient.getTokenSilently.mockRejectedValue(spaJsError);
-    await expect(manager.getCredentials()).rejects.toThrow(
-      CredentialsManagerError
-    );
-    try {
-      await manager.getCredentials();
-    } catch (e) {
-      const err = e as CredentialsManagerError;
-      expect(err.type).toBe('NO_CREDENTIALS');
-      expect(err.message).toBe('Login is required');
-    }
-  });
+  describe('Web Error Mappings', () => {
+    const webErrorTestCases = [
+      {
+        code: 'login_required',
+        message: 'Login is required.',
+        expectedType: 'NO_CREDENTIALS',
+      },
+      {
+        code: 'consent_required',
+        message: 'Consent is required.',
+        expectedType: 'RENEW_FAILED',
+      },
+      {
+        code: 'mfa_required',
+        message: 'Multi-factor authentication is required.',
+        expectedType: 'RENEW_FAILED',
+      },
+      {
+        code: 'invalid_grant',
+        message: 'Invalid grant provided.',
+        expectedType: 'RENEW_FAILED',
+      },
+      {
+        code: 'invalid_refresh_token',
+        message: 'Invalid refresh token.',
+        expectedType: 'RENEW_FAILED',
+      },
+      {
+        code: 'missing_refresh_token',
+        message: 'Missing refresh token.',
+        expectedType: 'NO_REFRESH_TOKEN',
+      },
+    ];
 
-  it('should convert an "invalid_grant" error into a CredentialsManagerError with type "RENEW_FAILED"', async () => {
-    const spaJsError = {
-      error: 'invalid_grant',
-      error_description: 'Invalid refresh token',
-    };
-    mockSpaClient.getTokenSilently.mockRejectedValue(spaJsError);
-    await expect(manager.getCredentials()).rejects.toThrow(
-      CredentialsManagerError
-    );
-    try {
-      await manager.getCredentials();
-    } catch (e) {
-      const err = e as CredentialsManagerError;
-      expect(err.type).toBe('RENEW_FAILED');
-    }
-  });
+    webErrorTestCases.forEach(({ code, message, expectedType }) => {
+      it(`should map ${code} to ${expectedType}`, async () => {
+        const spaJsError = { error: code, error_description: message };
+        mockSpaClient.getTokenSilently.mockRejectedValue(spaJsError);
 
-  it('should convert a "consent_required" error into a CredentialsManagerError with type "RENEW_FAILED"', async () => {
-    const spaJsError = {
-      error: 'consent_required',
-      error_description: 'User consent is required',
-    };
-    mockSpaClient.getTokenSilently.mockRejectedValue(spaJsError);
-    await expect(manager.getCredentials()).rejects.toThrow(
-      CredentialsManagerError
-    );
-    try {
-      await manager.getCredentials();
-    } catch (e) {
-      const err = e as CredentialsManagerError;
-      expect(err.type).toBe('RENEW_FAILED');
-    }
+        await expect(manager.getCredentials()).rejects.toThrow(
+          CredentialsManagerError
+        );
+
+        try {
+          await manager.getCredentials();
+        } catch (e) {
+          const err = e as CredentialsManagerError;
+          expect(err.type).toBe(expectedType);
+          expect(err.message).toBe(message);
+        }
+      });
+    });
   });
 });
