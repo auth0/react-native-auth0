@@ -16,9 +16,7 @@ Pod::Spec.new do |s|
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
   s.requires_arc = true
 
-  s.dependency 'Auth0', '2.10'
-  s.dependency 'JWTDecode', '3.2.0'
-  s.dependency 'SimpleKeychain', '1.2.0'
+  s.dependency 'Auth0', '2.13'
   
   install_modules_dependencies(s)
 end

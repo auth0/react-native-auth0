@@ -8,6 +8,20 @@ const ERROR_CODE_MAP: Record<string, string> = {
   STORE_FAILED: 'STORE_FAILED',
   REVOKE_FAILED: 'REVOKE_FAILED',
   LARGE_MIN_TTL: 'LARGE_MIN_TTL',
+  CREDENTIAL_MANAGER_ERROR: 'CREDENTIAL_MANAGER_ERROR',
+  BIOMETRICS_FAILED: 'BIOMETRICS_FAILED',
+  NO_NETWORK: 'NO_NETWORK',
+  API_ERROR: 'API_ERROR',
+
+  // --- Web (@auth0/auth0-spa-js) mappings ---
+  login_required: 'NO_CREDENTIALS',
+  consent_required: 'RENEW_FAILED',
+  mfa_required: 'RENEW_FAILED',
+  invalid_grant: 'RENEW_FAILED',
+  invalid_refresh_token: 'RENEW_FAILED',
+  missing_refresh_token: 'NO_REFRESH_TOKEN',
+
+  // --- Many-to-one mapping for granular Android Biometric errors ---
   INCOMPATIBLE_DEVICE: 'INCOMPATIBLE_DEVICE',
   CRYPTO_EXCEPTION: 'CRYPTO_EXCEPTION',
   BIOMETRIC_NO_ACTIVITY: 'BIOMETRICS_FAILED',
@@ -35,9 +49,6 @@ const ERROR_CODE_MAP: Record<string, string> = {
   BIOMETRIC_ERROR_UNABLE_TO_PROCESS: 'BIOMETRICS_FAILED',
   BIOMETRICS_INVALID_USER: 'BIOMETRICS_FAILED',
   BIOMETRIC_AUTHENTICATION_FAILED: 'BIOMETRICS_FAILED',
-  BIOMETRICS_FAILED: 'BIOMETRICS_FAILED',
-  NO_NETWORK: 'NO_NETWORK',
-  API_ERROR: 'API_ERROR',
 };
 
 export class CredentialsManagerError extends AuthError {
