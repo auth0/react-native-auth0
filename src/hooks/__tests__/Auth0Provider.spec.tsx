@@ -468,4 +468,151 @@ describe('Auth0Provider', () => {
       'Not logged in'
     );
   });
+
+  describe('saveCredentials', () => {
+    const TestSaveCredentialsConsumer = () => {
+      const { saveCredentials, error } = useAuth0();
+
+      const handleSaveCredentials = () => {
+        const credentials = {
+          idToken: 'id_token_123',
+          accessToken: 'access_token_456',
+          tokenType: 'Bearer' as const,
+          expiresAt: Date.now() / 1000 + 3600,
+          scope: 'openid profile email',
+          refreshToken: 'refresh_token_789',
+        };
+        saveCredentials(credentials).catch(() => {});
+      };
+
+      if (error) {
+        return <Text testID="error">Error: {error.message}</Text>;
+      }
+
+      return (
+        <View>
+          <Button
+            title="Save Credentials"
+            onPress={handleSaveCredentials}
+            testID="save-credentials-button"
+          />
+        </View>
+      );
+    };
+
+    it('should save credentials successfully', async () => {
+      mockClientInstance.credentialsManager.saveCredentials.mockResolvedValueOnce(
+        undefined
+      );
+
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.com" clientId="123">
+            <TestSaveCredentialsConsumer />
+          </Auth0Provider>
+        );
+      });
+
+      const saveButton = screen.getByTestId('save-credentials-button');
+      await act(async () => {
+        fireEvent.click(saveButton);
+      });
+
+      expect(
+        mockClientInstance.credentialsManager.saveCredentials
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        mockClientInstance.credentialsManager.saveCredentials
+      ).toHaveBeenCalledWith({
+        idToken: 'id_token_123',
+        accessToken: 'access_token_456',
+        tokenType: 'Bearer',
+        expiresAt: expect.any(Number),
+        scope: 'openid profile email',
+        refreshToken: 'refresh_token_789',
+      });
+    });
+
+    it('should handle save credentials error and dispatch to state', async () => {
+      const saveError = new Error('Failed to save credentials to Keychain');
+      mockClientInstance.credentialsManager.saveCredentials.mockRejectedValueOnce(
+        saveError
+      );
+
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.com" clientId="123">
+            <TestSaveCredentialsConsumer />
+          </Auth0Provider>
+        );
+      });
+
+      const saveButton = screen.getByTestId('save-credentials-button');
+      await act(async () => {
+        fireEvent.click(saveButton);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('error')).toHaveTextContent(
+          'Error: Failed to save credentials to Keychain'
+        );
+      });
+
+      expect(
+        mockClientInstance.credentialsManager.saveCredentials
+      ).toHaveBeenCalledTimes(1);
+    });
+
+    it('should save minimal credentials', async () => {
+      const TestMinimalCredentialsConsumer = () => {
+        const { saveCredentials } = useAuth0();
+
+        const handleSaveMinimalCredentials = () => {
+          const minimalCredentials = {
+            idToken: 'id_token_minimal',
+            accessToken: 'access_token_minimal',
+            tokenType: 'Bearer' as const,
+            expiresAt: Date.now() / 1000 + 1800,
+            scope: 'openid',
+          };
+          saveCredentials(minimalCredentials).catch(() => {});
+        };
+
+        return (
+          <Button
+            title="Save Minimal Credentials"
+            onPress={handleSaveMinimalCredentials}
+            testID="save-minimal-button"
+          />
+        );
+      };
+
+      mockClientInstance.credentialsManager.saveCredentials.mockResolvedValueOnce(
+        undefined
+      );
+
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.com" clientId="123">
+            <TestMinimalCredentialsConsumer />
+          </Auth0Provider>
+        );
+      });
+
+      const saveButton = screen.getByTestId('save-minimal-button');
+      await act(async () => {
+        fireEvent.click(saveButton);
+      });
+
+      expect(
+        mockClientInstance.credentialsManager.saveCredentials
+      ).toHaveBeenCalledWith({
+        idToken: 'id_token_minimal',
+        accessToken: 'access_token_minimal',
+        tokenType: 'Bearer',
+        expiresAt: expect.any(Number),
+        scope: 'openid',
+      });
+    });
+  });
 });
