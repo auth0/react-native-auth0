@@ -49,6 +49,14 @@ export interface Auth0ContextInterface extends AuthState {
   clearSession(parameters?: ClearSessionParameters): Promise<void>;
 
   /**
+   * Saves the user's credentials.
+   * @param credentials The credentials to save.
+   * @returns A promise that resolves when the credentials have been saved.
+   * @throws {AuthError} If the save fails.
+   */
+  saveCredentials(credentials: Credentials): Promise<void>;
+
+  /**
    * Retrieves the stored credentials, refreshing them if necessary.
    * @param scope The scopes to request for the new access token (used during refresh).
    * @param minTtl The minimum time-to-live (in seconds) required for the access token.
@@ -208,6 +216,7 @@ const initialContext: Auth0ContextInterface = {
   isLoading: true,
   authorize: stub,
   clearSession: stub,
+  saveCredentials: stub,
   getCredentials: stub,
   clearCredentials: stub,
   hasValidCredentials: stub,

@@ -170,6 +170,19 @@ export const Auth0Provider = ({
     [client]
   );
 
+  const saveCredentials = useCallback(
+    async (credentials: Credentials) => {
+      try {
+        await client.credentialsManager.saveCredentials(credentials);
+      } catch (e) {
+        const error = e as AuthError;
+        dispatch({ type: 'ERROR', error });
+        throw error;
+      }
+    },
+    [client]
+  );
+
   const clearCredentials = useCallback(async (): Promise<void> => {
     try {
       await client.credentialsManager.clearCredentials();
@@ -290,6 +303,7 @@ export const Auth0Provider = ({
       ...state,
       authorize,
       clearSession,
+      saveCredentials,
       getCredentials,
       hasValidCredentials,
       clearCredentials,
@@ -313,6 +327,7 @@ export const Auth0Provider = ({
       state,
       authorize,
       clearSession,
+      saveCredentials,
       getCredentials,
       hasValidCredentials,
       clearCredentials,
