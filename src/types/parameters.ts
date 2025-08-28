@@ -214,6 +214,7 @@ export interface UserInfoParameters extends RequestOptions {
 export interface ResetPasswordParameters extends RequestOptions {
   email: string;
   connection: string;
+  organization?: string;
 }
 
 /** Parameters for creating a new user in a database connection. */
