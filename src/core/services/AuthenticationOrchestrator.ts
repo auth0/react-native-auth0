@@ -358,11 +358,19 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
 
   async resetPassword(parameters: ResetPasswordParameters): Promise<void> {
     const { headers, ...payload } = parameters;
-    const body = {
+    const body: {
+      client_id: string;
+      email: string;
+      connection: string;
+      organization?: string;
+    } = {
       client_id: this.clientId,
       email: payload.email,
       connection: payload.connection,
     };
+    if (payload.organization) {
+      body.organization = payload.organization;
+    }
     const { json, response } = await this.client.post<void>(
       '/dbconnections/change_password',
       body,
