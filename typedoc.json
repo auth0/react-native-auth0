@@ -81,6 +81,7 @@
     "NPM": "https://npmjs.com/package/react-native-auth0",
     "Auth0 Docs": "https://auth0.com/docs"
   },
+  "placeInternalsInOwningModule": true,
   "versions": {
     "domLocation": "top",
     "makeRelativeLinks": true
