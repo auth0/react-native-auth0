@@ -447,6 +447,71 @@ describe('AuthenticationOrchestrator', () => {
       );
     });
 
+    it('resetPassword should include organization when provided', async () => {
+      mockHttpClientInstance.post.mockResolvedValueOnce({
+        json: {},
+        response: new Response(null, { status: 200 }),
+      });
+      await orchestrator.resetPassword({
+        email: 'info@auth0.com',
+        connection: 'Username-Password-Authentication',
+        organization: 'org_123',
+      });
+
+      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+        '/dbconnections/change_password',
+        {
+          client_id: clientId,
+          email: 'info@auth0.com',
+          connection: 'Username-Password-Authentication',
+          organization: 'org_123',
+        },
+        undefined
+      );
+    });
+
+    it('resetPassword should handle custom headers', async () => {
+      mockHttpClientInstance.post.mockResolvedValueOnce({
+        json: {},
+        response: new Response(null, { status: 200 }),
+      });
+      await orchestrator.resetPassword({
+        email: 'info@auth0.com',
+        connection: 'Username-Password-Authentication',
+        organization: 'org_456',
+        headers: { 'X-Custom-Header': 'custom-value' },
+      });
+
+      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+        '/dbconnections/change_password',
+        {
+          client_id: clientId,
+          email: 'info@auth0.com',
+          connection: 'Username-Password-Authentication',
+          organization: 'org_456',
+        },
+        { 'X-Custom-Header': 'custom-value' }
+      );
+    });
+
+    it('resetPassword should handle error response', async () => {
+      const errorResponse = {
+        error: 'invalid_request',
+        error_description: 'Invalid connection',
+      };
+      mockHttpClientInstance.post.mockResolvedValueOnce({
+        json: errorResponse,
+        response: new Response(null, { status: 400 }),
+      });
+
+      await expect(
+        orchestrator.resetPassword({
+          email: 'info@auth0.com',
+          connection: 'Invalid-Connection',
+        })
+      ).rejects.toThrow(AuthError);
+    });
+
     it('createUser should send correct payload and return camelCased response', async () => {
       const userResponse = {
         id: 'user_id_123',
