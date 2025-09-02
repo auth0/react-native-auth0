@@ -149,6 +149,69 @@ describe(addAndroidAuth0Manifest, () => {
     }
     expect(check()).toMatchSnapshot();
   });
+
+  it(`should correctly add pathPrefix to Android manifest with application ID`, () => {
+    const config = getConfig();
+    const result = addAndroidAuth0Manifest(
+      [{ domain: 'sample.auth0.com' }],
+      config,
+      'com.auth0.testapp'
+    );
+
+    // Access the RedirectActivity to check if the pathPrefix is correctly added
+    const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(
+      result.modResults
+    );
+    const redirectActivity = mainApplication.activity?.find(
+      (activity) =>
+        activity.$['android:name'] ===
+        'com.auth0.android.provider.RedirectActivity'
+    );
+
+    const intentFilter = redirectActivity?.['intent-filter']?.[0];
+    const dataElement = intentFilter?.data?.[0];
+
+    expect(dataElement).toBeDefined();
+    expect(dataElement?.$['android:pathPrefix']).toBe(
+      '/android/com.auth0.testapp/callback'
+    );
+    expect(dataElement?.$['android:scheme']).toBe('com.auth0.testapp.auth0');
+    expect(dataElement?.$['android:host']).toBe('sample.auth0.com');
+  });
+
+  it(`should correctly add pathPrefix to Android manifest with custom scheme`, () => {
+    const config = getConfig();
+    const result = addAndroidAuth0Manifest(
+      [
+        {
+          domain: 'sample.auth0.com',
+          customScheme: 'com.custom.scheme',
+        },
+      ],
+      config,
+      'com.auth0.testapp'
+    );
+
+    // Access the RedirectActivity to check if the pathPrefix is correctly added
+    const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(
+      result.modResults
+    );
+    const redirectActivity = mainApplication.activity?.find(
+      (activity) =>
+        activity.$['android:name'] ===
+        'com.auth0.android.provider.RedirectActivity'
+    );
+
+    const intentFilter = redirectActivity?.['intent-filter']?.[0];
+    const dataElement = intentFilter?.data?.[0];
+
+    expect(dataElement).toBeDefined();
+    expect(dataElement?.$['android:pathPrefix']).toBe(
+      '/android/com.auth0.testapp/callback'
+    );
+    expect(dataElement?.$['android:scheme']).toBe('com.custom.scheme');
+    expect(dataElement?.$['android:host']).toBe('sample.auth0.com');
+  });
 });
 
 describe(addIOSAuth0ConfigInInfoPList, () => {
