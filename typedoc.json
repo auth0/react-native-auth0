@@ -9,7 +9,7 @@
   "excludePrivate": true,
   "excludeProtected": true,
   "excludeExternals": true,
-  "json": "out/index.json",
+  "json": "docs/index.json",
   "sort": ["source-order"],
   "kindSortOrder": [
     "Project",
