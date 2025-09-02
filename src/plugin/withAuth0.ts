@@ -88,6 +88,7 @@ export const addAndroidAuth0Manifest = (
     const dataElement = {
       $: {
         'android:scheme': auth0Scheme,
+        'android:pathPrefix': `/android/${applicationId}/callback`,
         'android:host': config.domain,
       },
     };
