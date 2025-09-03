@@ -2,6 +2,5 @@
     "files": {
         "src/core/utils/telemetry.ts": [],
         ".version": []
-    },
-    "postbump": "node scripts/jsdocs.js"
+    }
 }
