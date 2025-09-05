@@ -11,7 +11,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: get the gh-pages repo
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
               with:
                   ref: gh-pages
 
@@ -31,7 +31,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout src
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
 
             - run: mkdir -p ./docs
             - name: Download the existing documents artifact
@@ -63,7 +63,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: checkout the gh-pages repo
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
               with:
                   ref: gh-pages
 
