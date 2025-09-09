@@ -23,11 +23,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
     companion object {
         const val NAME = "A0Auth0"
-        const val UNKNOWN_ERROR_RESULT_CODE = 1405
-        private const val CREDENTIAL_MANAGER_ERROR_CODE = "a0.invalid_state.credential_manager_exception"
-        private const val INVALID_DOMAIN_URL_ERROR_CODE = "a0.invalid_domain_url"
-        private const val BIOMETRICS_AUTHENTICATION_ERROR_CODE = "a0.invalid_options_biometrics_authentication"
-        private const val LOCAL_AUTH_REQUEST_CODE = 150
+        private const val CREDENTIAL_MANAGER_ERROR_CODE = "CREDENTIAL_MANAGER_ERROR"
+        private const val BIOMETRICS_AUTHENTICATION_ERROR_CODE = "BIOMETRICS_CONFIGURATION_ERROR"
     }
 
     private val errorCodeMap = mapOf(

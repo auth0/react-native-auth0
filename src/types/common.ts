@@ -133,29 +133,3 @@ export type MfaChallengeResponse =
   | MfaChallengeOtpResponse
   | MfaChallengeOobResponse
   | MfaChallengeOobWithBindingResponse;
-
-/**
- * Represents a generic authentication error from the library or the Auth0 service.
- * This class provides a consistent error structure across platforms.
- */
-export class Auth0Error extends Error {
-  public readonly json: any;
-  public readonly status: number;
-  public readonly code: string;
-
-  constructor(
-    message: string,
-    name: string = 'Auth0Error',
-    details?: {
-      json?: any;
-      status?: number;
-      code?: string;
-    }
-  ) {
-    super(message);
-    this.name = name;
-    this.json = details?.json ?? {};
-    this.status = details?.status ?? 0;
-    this.code = details?.code ?? 'unknown';
-  }
-}

@@ -1,4 +1,6 @@
-/** A base interface for API calls that allow passing custom headers. */
+/** A base interface for API calls that allow passing custom headers.
+ * @hidden
+ */
 interface RequestOptions {
   /** Optional custom headers to be included in the request. */
   headers?: Record<string, string>;
@@ -218,6 +220,7 @@ export interface UserInfoParameters extends RequestOptions {
 export interface ResetPasswordParameters extends RequestOptions {
   email: string;
   connection: string;
+  organization?: string;
 }
 
 /** Parameters for creating a new user in a database connection. */

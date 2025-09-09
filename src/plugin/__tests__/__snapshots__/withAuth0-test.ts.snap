@@ -60,12 +60,14 @@ exports[`addAndroidAuth0Manifest with multiple domains and schemes should have t
                     {
                       "$": {
                         "android:host": "sample.us.auth0.com",
+                        "android:pathPrefix": "/android/com.sample.application/callback",
                         "android:scheme": "com.sample.us.auth0",
                       },
                     },
                     {
                       "$": {
                         "android:host": "sample.eu.auth0.com",
+                        "android:pathPrefix": "/android/com.sample.application/callback",
                         "android:scheme": "com.sample.eu.auth0",
                       },
                     },
@@ -138,12 +140,14 @@ exports[`addAndroidAuth0Manifest with multiple domains should have that value an
                     {
                       "$": {
                         "android:host": "sample.us.auth0.com",
+                        "android:pathPrefix": "/android/com.sample.application/callback",
                         "android:scheme": "com.sample.application.auth0",
                       },
                     },
                     {
                       "$": {
                         "android:host": "sample.eu.auth0.com",
+                        "android:pathPrefix": "/android/com.sample.application/callback",
                         "android:scheme": "com.sample.application.auth0",
                       },
                     },
@@ -216,6 +220,7 @@ exports[`addAndroidAuth0Manifest with scheme should have that value 1`] = `
                     {
                       "$": {
                         "android:host": "sample.auth0.com",
+                        "android:pathPrefix": "/android/undefined/callback",
                         "android:scheme": "com.sample.application",
                       },
                     },
@@ -288,6 +293,7 @@ exports[`addAndroidAuth0Manifest without scheme should have package name 1`] = `
                     {
                       "$": {
                         "android:host": "sample.auth0.com",
+                        "android:pathPrefix": "/android/com.auth0.sample/callback",
                         "android:scheme": "com.auth0.sample.auth0",
                       },
                     },

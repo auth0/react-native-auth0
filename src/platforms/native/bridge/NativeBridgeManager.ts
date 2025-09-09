@@ -16,11 +16,7 @@ import {
   Credentials as CredentialsModel,
 } from '../../../core/models';
 import Auth0NativeModule from '../../../specs/NativeA0Auth0';
-
-type NativeModuleError = {
-  code: string;
-  message: string;
-};
+import type { NativeModuleError } from '../../../core/interfaces';
 
 /**
  * Manages the direct communication with the native Auth0 module.
@@ -38,7 +34,7 @@ export class NativeBridgeManager implements INativeBridge {
       return await nativeMethod(...args);
     } catch (e) {
       const { code, message } = e as NativeModuleError;
-      throw new AuthError(code, message, { code });
+      throw new AuthError(code, message, { code, json: e });
     }
   }
 
