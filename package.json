@@ -77,15 +77,11 @@
     "react-native": ">=0.78.0"
   },
   "peerDependenciesMeta": {
-    "@auth0/auth0-spa-js": {
-      "optional": true
-    },
     "expo": {
       "optional": true
     }
   },
   "devDependencies": {
-    "@auth0/auth0-spa-js": "2.3.0",
     "@commitlint/config-conventional": "^17.0.2",
     "@eslint/compat": "^1.2.7",
     "@eslint/eslintrc": "^3.3.0",
@@ -139,6 +135,7 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
+    "@auth0/auth0-spa-js": "2.3.0",
     "base-64": "^1.0.0",
     "jwt-decode": "^4.0.0",
     "url": "^0.11.4"
