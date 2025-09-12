@@ -146,21 +146,31 @@ export const Auth0Provider = ({
   );
 
   const getCredentials = useCallback(
-    (
+    async (
       scope?: string,
       minTtl?: number,
       parameters?: Record<string, unknown>,
       forceRefresh?: boolean
-    ) =>
-      loginFlow(
-        client.credentialsManager.getCredentials(
+    ) => {
+      try {
+        const credentials = await client.credentialsManager.getCredentials(
           scope,
           minTtl,
           parameters,
           forceRefresh
-        )
-      ),
-    [client, loginFlow]
+        );
+        if (credentials.idToken) {
+          const user = Auth0User.fromIdToken(credentials.idToken);
+          dispatch({ type: 'SET_USER', user });
+        }
+        return credentials;
+      } catch (e) {
+        const error = e as AuthError;
+        dispatch({ type: 'ERROR', error });
+        throw error;
+      }
+    },
+    [client]
   );
 
   const hasValidCredentials = useCallback(
