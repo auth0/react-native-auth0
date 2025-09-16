@@ -1,5 +1,11 @@
 # Change Log
 
+## [v5.0.0-beta.6](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.6) (2025-09-16)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0-beta.5...v5.0.0-beta.6)
+
+**Fixed**
+- fix: concurrent credential storage errors by preventing unnecessary state updates [\#1302](https://github.com/auth0/react-native-auth0/pull/1302) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.0.0-beta.5](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.5) (2025-09-03)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0-beta.4...v5.0.0-beta.5)
