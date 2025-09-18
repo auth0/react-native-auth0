@@ -113,17 +113,7 @@ On React Native Web, the `authorize()` method now triggers a **full-page redirec
 
 **✅ Action Required:** Review the new **[FAQ entry](#faq-authorize-web)** for guidance on how to correctly handle the post-login flow on the web. The `Auth0Provider` and `useAuth0` hook are designed to manage this flow automatically.
 
-### Change #5: New Peer Dependency for Web Support
-
-To support the web platform, the library now has an **optional peer dependency** on `@auth0/auth0-spa-js`.
-
-**✅ Action Required:** If you are using `react-native-auth0` in a React Native Web project, you **must** install this package. Native-only projects can ignore this.
-
-```bash
-npm install @auth0/auth0-spa-js
-```
-
-### Change #6: Hook Methods Now Throw Error
+### Change #5: Hook Methods Now Throw Error
 
 Previously, all hook-related methods such as `getCredentials()`, `saveCredentials()`, etc., did not throw error directly. Instead, any issues were silently handled and surfaced via the error property in `useAuth0()`:
 

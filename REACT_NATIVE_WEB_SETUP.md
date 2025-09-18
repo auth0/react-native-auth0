@@ -17,19 +17,7 @@ If you want to use React Native Web with React Native Auth0, follow these steps:
 Follow the official React Native Web installation guide:
 **https://necolas.github.io/react-native-web/docs/setup/**
 
-### 2. Install Auth0 SPA JS (Required for Web)
-
-React Native Auth0 requires `@auth0/auth0-spa-js` for web platform support:
-
-```bash
-# Using npm
-npm install @auth0/auth0-spa-js
-
-# Using yarn
-yarn add @auth0/auth0-spa-js
-```
-
-### 3. Use React Native Auth0
+### 2. Use React Native Auth0
 
 Once React Native Web and Auth0 SPA JS are installed, you can use React Native Auth0 exactly as you would in a native React Native app. The library will automatically detect the web platform and use the appropriate implementation.
 
