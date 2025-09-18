@@ -4,6 +4,7 @@ import type {
   Credentials,
   WebAuthorizeParameters,
   ClearSessionParameters,
+  User,
 } from '../../../types';
 import type {
   NativeAuthorizeOptions,
@@ -25,6 +26,10 @@ export class NativeWebAuthProvider implements IWebAuthProvider {
     private domain: string
   ) {}
   handleRedirectCallback(): Promise<void> {
+    throw new AuthError('NotImplemented', webAuthNotSupported);
+  }
+
+  async checkWebSession(): Promise<User | null> {
     throw new AuthError('NotImplemented', webAuthNotSupported);
   }
 

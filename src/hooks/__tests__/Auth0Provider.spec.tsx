@@ -88,6 +88,7 @@ const createMockClient = () => {
       clearSession: jest.fn().mockResolvedValue(undefined),
       cancelWebAuth: jest.fn().mockResolvedValue(undefined),
       handleRedirectCallback: jest.fn().mockResolvedValue(undefined),
+      checkWebSession: jest.fn().mockResolvedValue(null),
     },
     credentialsManager: {
       hasValidCredentials: jest.fn().mockResolvedValue(false),
@@ -194,11 +195,20 @@ describe('Auth0Provider', () => {
   });
 
   it('should render a loading state initially', async () => {
-    // Make getCredentials return a promise that we can control
+    // Make both checkWebSession and getCredentials return promises that we can control
+    let resolveCheckSession: (value: any) => void;
     let resolveCredentials: (value: any) => void;
+    
+    const checkSessionPromise = new Promise((resolve) => {
+      resolveCheckSession = resolve;
+    });
     const credentialsPromise = new Promise((resolve) => {
       resolveCredentials = resolve;
     });
+    
+    mockClientInstance.webAuth.checkWebSession.mockReturnValue(
+      checkSessionPromise
+    );
     mockClientInstance.credentialsManager.getCredentials.mockReturnValue(
       credentialsPromise
     );
@@ -214,8 +224,9 @@ describe('Auth0Provider', () => {
     // Should show loading state initially
     expect(screen.getByTestId('loading')).toBeDefined();
 
-    // Resolve the credentials promise
+    // Resolve the promises
     await act(async () => {
+      resolveCheckSession!(null);
       resolveCredentials!(null);
     });
 
@@ -330,6 +341,89 @@ describe('Auth0Provider', () => {
       )
     );
     expect(mockClientInstance.webAuth.clearSession).toHaveBeenCalled();
+  });
+
+  it('should call clearSession operations in the correct order', async () => {
+    // Start with a logged-in state
+    mockClientInstance.credentialsManager.getCredentials.mockResolvedValueOnce({
+      idToken: 'a.b.c',
+      accessToken: 'access-token-123',
+      tokenType: 'Bearer',
+      expiresAt: Date.now() / 1000 + 3600,
+    } as any);
+
+    // Track the order of calls
+    const callOrder: string[] = [];
+
+    // Mock clearSession to track when it's called
+    mockClientInstance.webAuth.clearSession.mockImplementation(async () => {
+      callOrder.push('webAuth.clearSession');
+    });
+
+    // Mock clearCredentials to track when it's called
+    mockClientInstance.credentialsManager.clearCredentials.mockImplementation(
+      async () => {
+        callOrder.push('credentialsManager.clearCredentials');
+      }
+    );
+
+    let componentRef: any;
+    const TestConsumerWithRef = () => {
+      const auth0Context = useAuth0();
+      componentRef = auth0Context;
+      return <TestConsumer />;
+    };
+
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumerWithRef />
+        </Auth0Provider>
+      );
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('user-status')).toHaveTextContent(
+        'Logged in as: Test User'
+      )
+    );
+
+    // Track when the user state changes from logged-in to logged-out
+    const originalUser = componentRef.user;
+    expect(originalUser).toBeTruthy();
+
+    const logoutButton = screen.getByTestId('logout-button');
+    await act(async () => {
+      fireEvent.click(logoutButton);
+    });
+
+    // Wait for the logout to complete and check the order
+    await waitFor(() => {
+      expect(screen.getByTestId('user-status')).toHaveTextContent(
+        'Not logged in'
+      );
+
+      // At this point, the dispatch action should have been triggered
+      callOrder.push('dispatch.LOGOUT_COMPLETE');
+    });
+
+    // Verify that the operations happened in the correct order:
+    // 1. webAuth.clearSession (server-side session)
+    // 2. credentialsManager.clearCredentials (local credentials)
+    // 3. dispatch LOGOUT_COMPLETE action (React state update)
+    expect(callOrder).toEqual([
+      'webAuth.clearSession',
+      'credentialsManager.clearCredentials',
+      'dispatch.LOGOUT_COMPLETE',
+    ]);
+
+    expect(mockClientInstance.webAuth.clearSession).toHaveBeenCalled();
+    expect(
+      mockClientInstance.credentialsManager.clearCredentials
+    ).toHaveBeenCalled();
+
+    // Verify the user state has been cleared
+    expect(componentRef.user).toBeNull();
   });
 
   it('should update the state correctly after a clearCredentials call', async () => {

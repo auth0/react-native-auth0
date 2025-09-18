@@ -50,7 +50,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@auth0/auth0-spa-js@npm:^2.2.0":
+"@auth0/auth0-spa-js@npm:2.3.0":
   version: 2.3.0
   resolution: "@auth0/auth0-spa-js@npm:2.3.0"
   checksum: 6f9c84cd300ba7215a7b894690418010cd743ada5970083f0753f189a39208b4262a9828f28c8f932ca33c1dfe6e587b057a6c956e40632aea9dbed5099220fd
@@ -5184,7 +5184,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "Auth0Example@workspace:example"
   dependencies:
-    "@auth0/auth0-spa-js": ^2.2.0
     "@babel/core": ^7.25.2
     "@babel/preset-env": ^7.25.3
     "@babel/runtime": ^7.25.0
@@ -14604,7 +14603,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "react-native-auth0@workspace:."
   dependencies:
-    "@auth0/auth0-spa-js": ^2.2.0
+    "@auth0/auth0-spa-js": 2.3.0
     "@commitlint/config-conventional": ^17.0.2
     "@eslint/compat": ^1.2.7
     "@eslint/eslintrc": ^3.3.0
@@ -14660,12 +14659,9 @@ __metadata:
     typescript: 5.2.2
     url: ^0.11.4
   peerDependencies:
-    "@auth0/auth0-spa-js": ">=2.2.0"
     react: ">=19.0.0"
     react-native: ">=0.78.0"
   peerDependenciesMeta:
-    "@auth0/auth0-spa-js":
-      optional: true
     expo:
       optional: true
   languageName: unknown
