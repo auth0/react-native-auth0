@@ -15,10 +15,13 @@ jobs:
               with:
                   ref: gh-pages
 
-            - name: tar the existing docs
+            - name: remove all symbolic links from root
               run: |
-                  mkdir -p ./docs
-                  tar -cvf documentation.tar ./docs
+                  find . -maxdepth 1 -type l -delete
+
+            - name: tar the existing docs from root
+              run: |
+                  tar -cvf documentation.tar . --exclude='.git' --exclude='documentation.tar'
 
             - name: create a document artifact
               uses: actions/upload-artifact@v4
@@ -33,12 +36,12 @@ jobs:
             - name: Checkout src
               uses: actions/checkout@v5
 
-            - run: mkdir -p ./docs
             - name: Download the existing documents artifact
               uses: actions/download-artifact@v5
               with:
                   name: documentation
-            - run: tar -xf documentation.tar -C ./docs
+            - run: tar -xf documentation.tar
+            - run: rm -f documentation.tar
 
             - name: Setup
               uses: ./.github/actions/setup
@@ -49,8 +52,11 @@ jobs:
             - name: Run cleanup and manage document versions
               run: node scripts/manage-doc-versions.js
 
+            - name: Create symbolic links for version management and store them
+              run: ./scripts/create-doc-symlinks.sh
+
             - name: tar the new docs
-              run: tar -cvf newdocumentation.tar ./docs
+              run: tar -cvf newdocumentation.tar . --exclude='.git' --exclude='newdocumentation.tar' --exclude='documentation.tar'
 
             - name: create a new document artifact
               uses: actions/upload-artifact@v4
@@ -58,7 +64,7 @@ jobs:
                   name: newdocumentation
                   path: newdocumentation.tar
 
-    commit: # commit the old and new merged documents to gh-pages/docs
+    commit: # commit the old and new merged documents to gh-pages root
         needs: build
         runs-on: ubuntu-latest
         steps:
@@ -67,7 +73,9 @@ jobs:
               with:
                   ref: gh-pages
 
-            - run: mkdir -p ./docs
+            - name: remove all symbolic links from root
+              run: |
+                  find . -maxdepth 1 -type l -delete
             - name: Download the new documents artifact
               uses: actions/download-artifact@v5
               with:
