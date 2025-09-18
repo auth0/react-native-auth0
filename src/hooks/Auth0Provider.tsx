@@ -131,14 +131,14 @@ export const Auth0Provider = ({
       opts?: NativeClearSessionOptions
     ): Promise<void> => {
       try {
-        // Step 1: Clear the locally stored credentials first.
+        // Step 1: Clear the server-side session cookie.
+        await client.webAuth.clearSession(parameters, opts);
+
+        // Step 2: Clear the locally stored credentials first.
         await client.credentialsManager.clearCredentials();
 
-        // Step 2: Update the React state immediately for a snappy UX.
+        // Step 3: Update the React state immediately for a snappy UX.
         dispatch({ type: 'LOGOUT_COMPLETE' });
-
-        // Step 3: Clear the server-side session cookie.
-        await client.webAuth.clearSession(parameters, opts);
       } catch (e) {
         const error = e as AuthError;
         dispatch({ type: 'ERROR', error });
