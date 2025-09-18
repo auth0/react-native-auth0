@@ -14662,8 +14662,6 @@ __metadata:
     react: ">=19.0.0"
     react-native: ">=0.78.0"
   peerDependenciesMeta:
-    "@auth0/auth0-spa-js":
-      optional: true
     expo:
       optional: true
   languageName: unknown

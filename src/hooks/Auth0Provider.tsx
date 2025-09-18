@@ -64,6 +64,9 @@ export const Auth0Provider = ({
           // If the redirect fails, dispatch an error.
           dispatch({ type: 'ERROR', error: e as AuthError });
         }
+      } else if (typeof window !== 'undefined') {
+        const user = await client.webAuth.checkWebSession();
+        dispatch({ type: 'INITIALIZED', user });
       }
       try {
         const credentials = await client.credentialsManager.getCredentials();
