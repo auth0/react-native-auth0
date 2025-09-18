@@ -88,6 +88,7 @@ const createMockClient = () => {
       clearSession: jest.fn().mockResolvedValue(undefined),
       cancelWebAuth: jest.fn().mockResolvedValue(undefined),
       handleRedirectCallback: jest.fn().mockResolvedValue(undefined),
+      checkWebSession: jest.fn().mockResolvedValue(null),
     },
     credentialsManager: {
       hasValidCredentials: jest.fn().mockResolvedValue(false),
@@ -194,11 +195,20 @@ describe('Auth0Provider', () => {
   });
 
   it('should render a loading state initially', async () => {
-    // Make getCredentials return a promise that we can control
+    // Make both checkWebSession and getCredentials return promises that we can control
+    let resolveCheckSession: (value: any) => void;
     let resolveCredentials: (value: any) => void;
+    
+    const checkSessionPromise = new Promise((resolve) => {
+      resolveCheckSession = resolve;
+    });
     const credentialsPromise = new Promise((resolve) => {
       resolveCredentials = resolve;
     });
+    
+    mockClientInstance.webAuth.checkWebSession.mockReturnValue(
+      checkSessionPromise
+    );
     mockClientInstance.credentialsManager.getCredentials.mockReturnValue(
       credentialsPromise
     );
@@ -214,8 +224,9 @@ describe('Auth0Provider', () => {
     // Should show loading state initially
     expect(screen.getByTestId('loading')).toBeDefined();
 
-    // Resolve the credentials promise
+    // Resolve the promises
     await act(async () => {
+      resolveCheckSession!(null);
       resolveCredentials!(null);
     });
 
