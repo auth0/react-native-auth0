@@ -77,7 +77,9 @@ export const Auth0Provider = ({
             ? Auth0User.fromIdToken(credentials.idToken)
             : null;
         } catch (e) {
-          dispatch({ type: 'ERROR', error: e as AuthError });
+          if ((e as AuthError).code !== 'no_credentials') {
+            dispatch({ type: 'ERROR', error: e as AuthError });
+          }
         }
       }
       dispatch({ type: 'INITIALIZED', user });
