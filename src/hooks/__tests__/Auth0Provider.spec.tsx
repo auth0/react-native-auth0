@@ -198,14 +198,14 @@ describe('Auth0Provider', () => {
     // Make both checkWebSession and getCredentials return promises that we can control
     let resolveCheckSession: (value: any) => void;
     let resolveCredentials: (value: any) => void;
-    
+
     const checkSessionPromise = new Promise((resolve) => {
       resolveCheckSession = resolve;
     });
     const credentialsPromise = new Promise((resolve) => {
       resolveCredentials = resolve;
     });
-    
+
     mockClientInstance.webAuth.checkWebSession.mockReturnValue(
       checkSessionPromise
     );
