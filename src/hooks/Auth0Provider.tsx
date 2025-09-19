@@ -70,7 +70,7 @@ export const Auth0Provider = ({
         } else if (typeof window !== 'undefined') {
           user = await client.webAuth.checkWebSession();
         }
-      } else {
+      } else if (await client.credentialsManager.hasValidCredentials()) {
         try {
           const credentials = await client.credentialsManager.getCredentials();
           user = credentials
