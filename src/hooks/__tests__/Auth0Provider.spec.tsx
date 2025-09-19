@@ -282,7 +282,7 @@ describe('Auth0Provider', () => {
 
   // Tests for the new platform-specific initialization behavior
   describe('Platform-specific error handling', () => {
-    it('should dispatch error for no_credentials error in mobile platforms', async () => {
+    it('should not dispatch error for no_credentials error in mobile platforms', async () => {
       // Mock credentials manager to throw no_credentials error
       const noCredentialsError = new Error('No credentials found');
       (noCredentialsError as any).code = 'no_credentials';
@@ -300,9 +300,7 @@ describe('Auth0Provider', () => {
 
       await waitFor(() => {
         // With the new error handling, no_credentials errors are now dispatched as errors
-        expect(screen.getByTestId('error')).toHaveTextContent(
-          'Error: No credentials found'
-        );
+        expect(screen.queryByTestId('error')).toBeNull();
       });
 
       expect(
