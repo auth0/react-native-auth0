@@ -151,6 +151,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
       client_id: this.clientId,
       refresh_token: payload.refreshToken,
       scope: payload.scope,
+      audience: payload.audience,
     };
     const { json, response } =
       await this.client.post<NativeCredentialsResponse>(
