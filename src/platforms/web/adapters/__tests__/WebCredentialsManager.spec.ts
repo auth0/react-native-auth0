@@ -12,6 +12,14 @@ jest.mock('../../../../core/models', () => ({
     if (details) Object.assign(error, details);
     return error;
   }),
+  CredentialsManagerError: jest
+    .fn()
+    .mockImplementation(function (originalError) {
+      const error = new Error(originalError.message);
+      error.name = originalError.name;
+      (error as any).type = 'MOCKED_TYPE';
+      return error;
+    }),
   Credentials: jest.fn().mockImplementation(function (data) {
     return Object.assign(this, data);
   }),
@@ -26,10 +34,10 @@ describe('WebCredentialsManager', () => {
     jest.clearAllMocks();
 
     mockSpaClient = {
-      getTokenSilently: jest.fn(),
-      getIdTokenClaims: jest.fn(),
-      isAuthenticated: jest.fn(),
-      logout: jest.fn(),
+      getTokenSilently: jest.fn().mockResolvedValue({}),
+      getIdTokenClaims: jest.fn().mockResolvedValue({}),
+      isAuthenticated: jest.fn().mockResolvedValue(false),
+      logout: jest.fn().mockResolvedValue(undefined),
     } as any;
 
     consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
@@ -71,6 +79,7 @@ describe('WebCredentialsManager', () => {
       iat: 1234567800,
       aud: 'test-client-id',
       iss: 'https://test.auth0.com/',
+      __raw: 'raw-token-string',
     };
 
     it('should get credentials successfully with default parameters', async () => {
@@ -146,30 +155,6 @@ describe('WebCredentialsManager', () => {
 
       await expect(credentialsManager.getCredentials()).rejects.toThrow(
         'ID token or expiration claim is missing.'
-      );
-    });
-
-    it('should handle login_required error specifically', async () => {
-      const loginRequiredError = {
-        error: 'login_required',
-        error_description: 'User interaction is required',
-      };
-      mockSpaClient.getTokenSilently.mockRejectedValue(loginRequiredError);
-
-      await expect(credentialsManager.getCredentials()).rejects.toThrow(
-        'User interaction is required for login or consent.'
-      );
-    });
-
-    it('should handle consent_required error specifically', async () => {
-      const consentRequiredError = {
-        error: 'consent_required',
-        error_description: 'Consent is required',
-      };
-      mockSpaClient.getTokenSilently.mockRejectedValue(consentRequiredError);
-
-      await expect(credentialsManager.getCredentials()).rejects.toThrow(
-        'User interaction is required for login or consent.'
       );
     });
 

@@ -20,7 +20,10 @@ import type {
   ResetPasswordParameters,
   MfaChallengeResponse,
 } from '../types';
-import type { NativeAuthorizeOptions } from '../types/platform-specific';
+import type {
+  NativeAuthorizeOptions,
+  NativeClearSessionOptions,
+} from '../types/platform-specific';
 import type { AuthState } from './reducer';
 
 /**
@@ -43,10 +46,22 @@ export interface Auth0ContextInterface extends AuthState {
   /**
    * Clears the user's session and logs them out.
    * @param parameters The parameters to send to the `/v2/logout` endpoint.
+   * @param options Platform-specific options to customize the logout experience.
    * @returns A promise that resolves when the session has been cleared.
    * @throws {AuthError} If the logout fails.
    */
-  clearSession(parameters?: ClearSessionParameters): Promise<void>;
+  clearSession(
+    parameters?: ClearSessionParameters,
+    options?: NativeClearSessionOptions
+  ): Promise<void>;
+
+  /**
+   * Saves the user's credentials.
+   * @param credentials The credentials to save.
+   * @returns A promise that resolves when the credentials have been saved.
+   * @throws {AuthError} If the save fails.
+   */
+  saveCredentials(credentials: Credentials): Promise<void>;
 
   /**
    * Retrieves the stored credentials, refreshing them if necessary.
@@ -208,6 +223,7 @@ const initialContext: Auth0ContextInterface = {
   isLoading: true,
   authorize: stub,
   clearSession: stub,
+  saveCredentials: stub,
   getCredentials: stub,
   clearCredentials: stub,
   hasValidCredentials: stub,

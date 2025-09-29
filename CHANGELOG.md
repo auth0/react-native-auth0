@@ -1,5 +1,36 @@
 # Change Log
 
+## [v5.0.0-beta.6](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.6) (2025-09-16)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0-beta.5...v5.0.0-beta.6)
+
+**Fixed**
+- fix: concurrent credential storage errors by preventing unnecessary state updates [\#1302](https://github.com/auth0/react-native-auth0/pull/1302) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+## [v5.0.0-beta.5](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.5) (2025-09-03)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0-beta.4...v5.0.0-beta.5)
+
+**Added**
+
+- feat: add organization parameter support to resetPassword API [\#1286](https://github.com/auth0/react-native-auth0/pull/1286) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat(auth): add `saveCredentials` method to `useAuth0` hook [\#1285](https://github.com/auth0/react-native-auth0/pull/1285) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: unify and improve error handling across platforms [\#1261](https://github.com/auth0/react-native-auth0/pull/1261) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix(auth): Added back clearCredentials method [\#1256](https://github.com/auth0/react-native-auth0/pull/1256) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- Add `screen_hint` usage for login/signup in FAQ and fix usage in EXAMPLES.md [\#1253](https://github.com/auth0/react-native-auth0/pull/1253) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- refactor(android): Migrate native module from Java to Kotlin [\#1239](https://github.com/auth0/react-native-auth0/pull/1239) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- Add Web Callback/Logout URL Configuration to React Native Web Setup Guide [\#1250](https://github.com/auth0/react-native-auth0/pull/1250) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Fixed**
+
+- fix(docs): organize exports into namespaces for better typedocs [\#1269](https://github.com/auth0/react-native-auth0/pull/1269) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix: add missing clearSession native options [\#1289](https://github.com/auth0/react-native-auth0/pull/1289) ([burriedu2](https://github.com/burriedu2))
+- fix(android): add pathPrefix to Android manifest for proper App Links functionality [\#1288](https://github.com/auth0/react-native-auth0/pull/1288) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix(ios): Ensure useSFSafariViewController: true correctly opens SFSafariViewController [\#1257](https://github.com/auth0/react-native-auth0/pull/1257) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Security**
+
+- chore(deps): update fetch-mock and node-fetch to latest versions [\#1243](https://github.com/auth0/react-native-auth0/pull/1243) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.0.0-beta.4](https://github.com/auth0/react-native-auth0/tree/v5.0.0-beta.4) (2025-07-21)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0-beta.3...v5.0.0-beta.4)
