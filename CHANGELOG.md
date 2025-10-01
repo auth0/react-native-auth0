@@ -4,6 +4,12 @@
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.6.0...v5.0.0)
 
+**💡 Major Refactor**: Version 5.0 features a complete architectural overhaul for improved performance, maintainability, and multi-platform extensibility. Check the [Migration Guide](https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md) for detailed upgrade instructions.
+
+**⚠️ BREAKING CHANGES**
+
+- feat: architectural refactor and react-native-web support [\#1233](https://github.com/auth0/react-native-auth0/pull/1233) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 **Added**
 
 - feat: add organization parameter support to resetPassword API [\#1286](https://github.com/auth0/react-native-auth0/pull/1286) ([subhankarmaiti](https://github.com/subhankarmaiti))
