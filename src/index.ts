@@ -1,6 +1,7 @@
 import { Auth0ClientFactory } from './factory/Auth0ClientFactory';
 import type { IAuth0Client } from './core/interfaces/IAuth0Client';
 import type { Auth0Options } from './types';
+export { AuthError } from './core/models/AuthError';
 export { TimeoutError } from './core/utils/fetchWithTimeout';
 export { useAuth0 } from './hooks/useAuth0';
 export { Auth0Provider } from './hooks/Auth0Provider';
