@@ -55,9 +55,19 @@ export interface IWebAuthProvider {
   ): Promise<void>;
 
   /**
+   * Retrives the authenticated user's profile information.
+   *
+   * @remarks
+   * This method fetches the user's profile from the Auth0 session if available.
+   *
+   * @returns A promise that resolves with the user's profile information, or null if not authenticated.
+   */
+  getWebUser(): Promise<User | null>;
+
+  /**
    * Checks the user's session and updates the local state if the session is still valid.
    */
-  checkWebSession(): Promise<User | null>;
+  checkWebSession(): Promise<void>;
 
   /**
    * Cancels an ongoing web authentication transaction.
