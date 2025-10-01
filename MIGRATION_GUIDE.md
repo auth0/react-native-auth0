@@ -28,7 +28,7 @@ Before updating the library, ensure your project meets the new minimum requireme
     ```
 2.  **Update this Library:**
     ```bash
-    npm install react-native-auth0@beta
+    npm install react-native-auth0
     ```
 3.  **Update iOS Target:** In your `ios/Podfile`, set the platform version:
     ```ruby
@@ -47,7 +47,7 @@ Before updating the library, ensure your project meets the new minimum requireme
     ```
 2.  **Update this Library:**
     ```bash
-    npm install react-native-auth0@beta
+    npm install react-native-auth0
     ```
 3.  **Rebuild Native Code:**
     ```bash
