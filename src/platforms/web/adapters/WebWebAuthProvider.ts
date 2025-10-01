@@ -86,7 +86,7 @@ export class WebWebAuthProvider implements IWebAuthProvider {
       await this.client.logout({
         logoutParams: {
           federated: parameters.federated,
-          returnTo: parameters.returnToUrl,
+          returnTo: parameters.returnToUrl || window?.location?.origin,
         },
       });
     } catch (e: any) {
@@ -111,12 +111,15 @@ export class WebWebAuthProvider implements IWebAuthProvider {
     }
   }
 
-  async checkWebSession(): Promise<User | null> {
-    await this.client.checkSession();
+  async getWebUser(): Promise<User | null> {
     const spaUser: SpaJSUser | undefined = await this.client.getUser();
     // convert this to a User
     const user = this.convertUser(spaUser);
     return user;
+  }
+
+  async checkWebSession() {
+    await this.client.checkSession();
   }
 
   async cancelWebAuth(): Promise<void> {

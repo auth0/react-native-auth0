@@ -55,6 +55,7 @@ export const Auth0Provider = ({
           window?.location?.search?.includes('state=');
         if (hasRedirectParams) {
           try {
+            user = await client.webAuth.getWebUser();
             // If it does, handle the redirect. This will exchange the code for tokens.
             await client.webAuth.handleRedirectCallback();
             // Clean the URL
@@ -68,7 +69,8 @@ export const Auth0Provider = ({
             dispatch({ type: 'ERROR', error: e as AuthError });
           }
         } else if (typeof window !== 'undefined') {
-          user = await client.webAuth.checkWebSession();
+          await client.webAuth.checkWebSession();
+          user = await client.webAuth.getWebUser();
         }
       } else if (await client.credentialsManager.hasValidCredentials()) {
         try {
