@@ -9,7 +9,6 @@ import {
 import '@testing-library/jest-dom';
 import { Auth0Provider, useAuth0 } from '..';
 import Auth0 from '../../index';
-import { Auth0User } from '../../core/models';
 
 // Mock TurboModuleRegistry first
 jest.mock('react-native/Libraries/TurboModule/TurboModuleRegistry', () => ({
@@ -68,8 +67,12 @@ jest.mock('../../index');
 const MockAuth0 = Auth0 as jest.MockedClass<typeof Auth0>;
 
 // Mock the Auth0User model's factory method
-jest.mock('../../core/models/Auth0User');
-const MockAuth0User = Auth0User as jest.MockedClass<typeof Auth0User>;
+jest.mock('../../core/models/Auth0User', () => ({
+  Auth0User: {
+    fromIdToken: jest.fn(),
+  },
+}));
+const { Auth0User: MockAuth0User } = require('../../core/models/Auth0User');
 
 // 2. A more complete mock client factory
 const createMockClient = () => {
@@ -89,6 +92,7 @@ const createMockClient = () => {
       cancelWebAuth: jest.fn().mockResolvedValue(undefined),
       handleRedirectCallback: jest.fn().mockResolvedValue(undefined),
       checkWebSession: jest.fn().mockResolvedValue(null),
+      getWebUser: jest.fn().mockResolvedValue(null),
     },
     credentialsManager: {
       hasValidCredentials: jest.fn().mockResolvedValue(false),
@@ -801,6 +805,72 @@ describe('Auth0Provider', () => {
         expiresAt: expect.any(Number),
         scope: 'openid',
       });
+    });
+  });
+
+  // Web Platform Method Tests
+  describe('Web Platform Methods', () => {
+    it('should verify webAuth methods exist and are callable', () => {
+      // Verify all required webAuth methods exist in the mock
+      expect(mockClientInstance.webAuth.handleRedirectCallback).toBeDefined();
+      expect(mockClientInstance.webAuth.getWebUser).toBeDefined();
+      expect(mockClientInstance.webAuth.checkWebSession).toBeDefined();
+
+      // Verify they are functions
+      expect(typeof mockClientInstance.webAuth.handleRedirectCallback).toBe(
+        'function'
+      );
+      expect(typeof mockClientInstance.webAuth.getWebUser).toBe('function');
+      expect(typeof mockClientInstance.webAuth.checkWebSession).toBe(
+        'function'
+      );
+    });
+
+    it('should verify webAuth methods can be mocked properly', async () => {
+      const mockUser = { sub: 'test|123', name: 'Test User' };
+
+      // Setup mocks
+      mockClientInstance.webAuth.handleRedirectCallback.mockResolvedValue(
+        undefined
+      );
+      mockClientInstance.webAuth.getWebUser.mockResolvedValue(mockUser);
+      mockClientInstance.webAuth.checkWebSession.mockResolvedValue(undefined);
+
+      // Call the methods
+      await mockClientInstance.webAuth.handleRedirectCallback();
+      const user = await mockClientInstance.webAuth.getWebUser();
+      await mockClientInstance.webAuth.checkWebSession();
+
+      // Verify calls were made
+      expect(
+        mockClientInstance.webAuth.handleRedirectCallback
+      ).toHaveBeenCalledTimes(1);
+      expect(mockClientInstance.webAuth.getWebUser).toHaveBeenCalledTimes(1);
+      expect(mockClientInstance.webAuth.checkWebSession).toHaveBeenCalledTimes(
+        1
+      );
+      expect(user).toEqual(mockUser);
+    });
+
+    it('should verify the sequence of webAuth method calls can be tracked', async () => {
+      // Setup mocks
+      mockClientInstance.webAuth.handleRedirectCallback.mockResolvedValue(
+        undefined
+      );
+      mockClientInstance.webAuth.getWebUser.mockResolvedValue(null);
+
+      // Call methods in sequence
+      await mockClientInstance.webAuth.handleRedirectCallback();
+      await mockClientInstance.webAuth.getWebUser();
+
+      // Verify call order using invocationCallOrder
+      const handleRedirectCallOrder =
+        mockClientInstance.webAuth.handleRedirectCallback.mock
+          .invocationCallOrder[0];
+      const getWebUserCallOrder =
+        mockClientInstance.webAuth.getWebUser.mock.invocationCallOrder[0];
+
+      expect(getWebUserCallOrder).toBeGreaterThan(handleRedirectCallOrder);
     });
   });
 });

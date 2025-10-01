@@ -55,9 +55,10 @@ export const Auth0Provider = ({
           window?.location?.search?.includes('state=');
         if (hasRedirectParams) {
           try {
-            user = await client.webAuth.getWebUser();
             // If it does, handle the redirect. This will exchange the code for tokens.
             await client.webAuth.handleRedirectCallback();
+            // should get the user after handle redirect
+            user = await client.webAuth.getWebUser();
             // Clean the URL
             window.history.replaceState(
               {},
