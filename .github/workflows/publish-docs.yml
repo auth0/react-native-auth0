@@ -15,10 +15,13 @@ jobs:
               with:
                   ref: gh-pages
 
-            - name: tar the existing docs
+            - name: remove all symbolic links from root if present
               run: |
-                  mkdir -p ./docs
-                  tar -cvf documentation.tar ./docs
+                  find . -maxdepth 1 -type l -delete
+
+            - name: tar the existing docs from root
+              run: |
+                  tar -cvf documentation.tar
 
             - name: create a document artifact
               uses: actions/upload-artifact@v4
@@ -33,51 +36,26 @@ jobs:
             - name: Checkout src
               uses: actions/checkout@v5
 
-            - run: mkdir -p ./docs
             - name: Download the existing documents artifact
               uses: actions/download-artifact@v5
               with:
                   name: documentation
+            - run: rm -rf ./docs # delete previous docs folder present
+            - run: mkdir ./docs # create an empty docs folder
             - run: tar -xf documentation.tar -C ./docs
+            - run: rm -f documentation.tar
 
             - name: Setup
               uses: ./.github/actions/setup
 
             - name: Build documents
               run: yarn docs #set up 'docs' build script in your package.json
-              
+
+            - name: Remove all the symbolic links from docs folder
+              run: find ./docs -type l -delete
+
             - name: Run cleanup and manage document versions
               run: node scripts/manage-doc-versions.js
 
-            - name: tar the new docs
-              run: tar -cvf newdocumentation.tar ./docs
-
-            - name: create a new document artifact
-              uses: actions/upload-artifact@v4
-              with:
-                  name: newdocumentation
-                  path: newdocumentation.tar
-
-    commit: # commit the old and new merged documents to gh-pages/docs
-        needs: build
-        runs-on: ubuntu-latest
-        steps:
-            - name: checkout the gh-pages repo
-              uses: actions/checkout@v5
-              with:
-                  ref: gh-pages
-
-            - run: mkdir -p ./docs
-            - name: Download the new documents artifact
-              uses: actions/download-artifact@v5
-              with:
-                  name: newdocumentation
-            - run: tar -xf newdocumentation.tar -C ./docs
-
-            - name: commit
-              run: |
-                  git config --global user.email "username@users.noreply.github.com"
-                  git config --global user.name "Continuous Integration"
-                  git add .
-                  git commit -m "CI updated the documentation"
-                  git push
+            - name: Deploy to github pages using gh-pages
+              run: npx gh-pages -d docs
