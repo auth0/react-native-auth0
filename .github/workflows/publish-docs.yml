@@ -28,13 +28,20 @@ jobs:
               with:
                   name: documentation
                   path: documentation.tar
+                  retention-days: 1
 
-    build: # builds the distribution and then the documentation
+    build_and_deploy: # builds the distribution and then the documentation
         needs: get_history
         runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pages: write
+            id-token: write
         steps:
             - name: Checkout src
               uses: actions/checkout@v5
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Download the existing documents artifact
               uses: actions/download-artifact@v5
@@ -62,5 +69,7 @@ jobs:
                   git config --global user.email "action@github.com"
                   git config --global user.name "GitHub Action"
 
-            - name: Deploy to github pages using gh-pages
+            - name: Deploy to GitHub Pages using gh-pages
               run: npx gh-pages -d docs
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
