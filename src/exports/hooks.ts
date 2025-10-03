@@ -1,1 +1,1 @@
-export { useAuth0, Auth0Provider } from '../hooks';
+export { Auth0Provider, useAuth0 } from '../hooks';

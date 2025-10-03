@@ -193,7 +193,7 @@ describe('WebWebAuthProvider', () => {
 
       expect(mockSpaClient.logout).toHaveBeenCalledWith({
         logoutParams: {
-          returnTo: undefined,
+          returnTo: 'http://localhost',
           federated: undefined,
         },
       });
@@ -204,7 +204,7 @@ describe('WebWebAuthProvider', () => {
 
       expect(mockSpaClient.logout).toHaveBeenCalledWith({
         logoutParams: {
-          returnTo: undefined,
+          returnTo: 'http://localhost',
           federated: undefined,
         },
       });

@@ -29,7 +29,11 @@ export class NativeWebAuthProvider implements IWebAuthProvider {
     throw new AuthError('NotImplemented', webAuthNotSupported);
   }
 
-  async checkWebSession(): Promise<User | null> {
+  async checkWebSession() {
+    throw new AuthError('NotImplemented', webAuthNotSupported);
+  }
+
+  async getWebUser(): Promise<User | null> {
     throw new AuthError('NotImplemented', webAuthNotSupported);
   }
 
