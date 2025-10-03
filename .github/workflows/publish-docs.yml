@@ -21,7 +21,7 @@ jobs:
 
             - name: tar the existing docs from root
               run: |
-                  tar -cvf documentation.tar
+                  tar -cvf documentation.tar ./
 
             - name: create a document artifact
               uses: actions/upload-artifact@v4
