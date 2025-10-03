@@ -103,6 +103,27 @@ function updateVersionsFile(versionsToKeep) {
   console.log(
     `📝 Updated versions.json with ${versionsToKeep.length} versions`
   );
+
+  // Update version.js with the correct versions
+  const versionJsPath = path.join(DOCS_DIR, 'versions.js');
+  const versionContent = `'use strict';
+  export const DOC_VERSIONS = [${versionsToKeep
+    .map((v) => `'v${v}'`)
+    .join(', ')}];
+  `;
+  fs.writeFileSync(versionJsPath, versionContent);
+  console.log(
+    `📝 Updated version.js with versions: ${versionsToKeep
+      .map((v) => `v${v}`)
+      .join(', ')}`
+  );
+  // Update index.html to redirect to the latest version
+  const indexPath = path.join(DOCS_DIR, 'index.html');
+  const latestVersion = versionsToKeep[0];
+  const indexContent = `
+    <meta http-equiv="refresh" content="0; url=v${latestVersion}/" />`;
+  fs.writeFileSync(indexPath, indexContent);
+  console.log(`📝 Updated index.html to redirect to v${latestVersion}`);
 }
 
 /**
