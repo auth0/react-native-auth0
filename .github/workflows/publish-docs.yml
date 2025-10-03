@@ -57,5 +57,10 @@ jobs:
             - name: Run cleanup and manage document versions
               run: node scripts/manage-doc-versions.js
 
+            - name: Configure Git user for gh-pages
+              run: |
+                  git config --global user.email "action@github.com"
+                  git config --global user.name "GitHub Action"
+
             - name: Deploy to github pages using gh-pages
               run: npx gh-pages -d docs
