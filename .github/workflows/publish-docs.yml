@@ -33,6 +33,9 @@ jobs:
     build_and_deploy: # builds the distribution and then the documentation
         needs: get_history
         runs-on: ubuntu-latest
+        environment:
+            name: release
+            url: ${{ steps.deployment.outputs.page_url }}
         permissions:
             contents: write
             pages: write
@@ -64,12 +67,14 @@ jobs:
             - name: Run cleanup and manage document versions
               run: node scripts/manage-doc-versions.js
 
-            - name: Configure Git user for gh-pages
-              run: |
-                  git config --global user.email "action@github.com"
-                  git config --global user.name "GitHub Action"
+            - name: Setup Pages
+              uses: actions/configure-pages@v4
 
-            - name: Deploy to GitHub Pages using gh-pages
-              run: npx gh-pages -d docs
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Upload pages artifact
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  path: docs
+
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
