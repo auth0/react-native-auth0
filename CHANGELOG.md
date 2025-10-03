@@ -1,5 +1,11 @@
 # Change Log
 
+## [v5.0.1](https://github.com/auth0/react-native-auth0/tree/v5.0.1) (2025-10-03)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0...v5.0.1)
+
+**Added**
+- feat: export AuthError class from main entry point [\#1329](https://github.com/auth0/react-native-auth0/pull/1329) ([afonsojramos](https://github.com/afonsojramos))
+
 ## [v5.0.0](https://github.com/auth0/react-native-auth0/tree/v5.0.0) (2025-10-01)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v4.6.0...v5.0.0)
