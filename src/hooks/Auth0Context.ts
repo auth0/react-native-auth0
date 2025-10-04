@@ -20,6 +20,7 @@ import type {
   ResetPasswordParameters,
   MfaChallengeResponse,
 } from '../types';
+import type { ApiCredentials } from '../core/models';
 import type {
   NativeAuthorizeOptions,
   NativeClearSessionOptions,
@@ -97,6 +98,22 @@ export interface Auth0ContextInterface extends AuthState {
    */
   hasValidCredentials(minTtl?: number): Promise<boolean>;
 
+  /**
+   * Retrieves API-specific credentials.
+   *
+   * @param audience The identifier of the API for which to get credentials.
+   * @param scope The scopes to request for the new access token.
+   * @param parameters Additional parameters to send during the token refresh request.
+   * @returns A promise that resolves with the API credentials.
+   * @throws {AuthError} If credentials cannot be retrieved or refreshed.
+   */
+  getApiCredentials(
+    audience: string,
+    scope?: string,
+    parameters?: Record<string, any>
+  ): Promise<ApiCredentials>;
+
+  clearApiCredentials(audience: string): Promise<void>;
   /**
    * Cancels the ongoing web authentication process.
    * This works only on iOS. On other platforms, it will resolve without performing an action.
@@ -234,6 +251,8 @@ const initialContext: Auth0ContextInterface = {
   getCredentials: stub,
   clearCredentials: stub,
   hasValidCredentials: stub,
+  getApiCredentials: stub,
+  clearApiCredentials: stub,
   loginWithPasswordRealm: stub,
   cancelWebAuth: stub,
   authorizeWithExchange: stub,
