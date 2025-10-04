@@ -3,13 +3,45 @@ import type {
   Credentials,
   WebAuthorizeParameters,
   ClearSessionParameters,
+  User,
 } from '../../../types';
 import { AuthError, WebAuthError } from '../../../core/models';
 import { finalizeScope } from '../../../core/utils';
-import type { Auth0Client, PopupCancelledError } from '@auth0/auth0-spa-js';
+import type {
+  Auth0Client,
+  PopupCancelledError,
+  User as SpaJSUser,
+} from '@auth0/auth0-spa-js';
 
 export class WebWebAuthProvider implements IWebAuthProvider {
   constructor(private client: Auth0Client) {}
+
+  // private method to convert a SpaJSUser to a User
+  private convertUser(user: SpaJSUser | undefined): User | null {
+    if (!user || !user.sub) return null;
+    return {
+      sub: user.sub,
+      name: user.name,
+      givenName: user.given_name,
+      familyName: user.family_name,
+      middleName: user.middle_name,
+      nickname: user.nickname,
+      preferredUsername: user.preferred_username,
+      profile: user.profile,
+      picture: user.picture,
+      website: user.website,
+      email: user.email,
+      emailVerified: user.email_verified,
+      gender: user.gender,
+      birthdate: user.birthdate,
+      zoneinfo: user.zoneinfo,
+      locale: user.locale,
+      phoneNumber: user.phone_number,
+      phoneNumberVerified: user.phone_number_verified,
+      address: user.address,
+      updatedAt: user.updated_at,
+    };
+  }
 
   async authorize(
     parameters: WebAuthorizeParameters = {}
@@ -54,7 +86,7 @@ export class WebWebAuthProvider implements IWebAuthProvider {
       await this.client.logout({
         logoutParams: {
           federated: parameters.federated,
-          returnTo: parameters.returnToUrl,
+          returnTo: parameters.returnToUrl || window?.location?.origin,
         },
       });
     } catch (e: any) {
@@ -77,6 +109,17 @@ export class WebWebAuthProvider implements IWebAuthProvider {
         new AuthError(code, e.error_description ?? e.message, { json: e, code })
       );
     }
+  }
+
+  async getWebUser(): Promise<User | null> {
+    const spaUser: SpaJSUser | undefined = await this.client.getUser();
+    // convert this to a User
+    const user = this.convertUser(spaUser);
+    return user;
+  }
+
+  async checkWebSession() {
+    await this.client.checkSession();
   }
 
   async cancelWebAuth(): Promise<void> {

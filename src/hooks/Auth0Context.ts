@@ -68,10 +68,17 @@ export interface Auth0ContextInterface extends AuthState {
    * Retrieves the stored credentials, refreshing them if necessary.
    * @param scope The scopes to request for the new access token (used during refresh).
    * @param minTtl The minimum time-to-live (in seconds) required for the access token.
+   * @param parameters Additional parameters to send during the refresh request.
+   * @param forceRefresh If true, forces a refresh of the credentials.
    * @returns A promise that resolves with the user's credentials.
    * @throws {AuthError} If credentials cannot be retrieved or refreshed.
    */
-  getCredentials(scope?: string, minTtl?: number): Promise<Credentials>;
+  getCredentials(
+    scope?: string,
+    minTtl?: number,
+    parameters?: Record<string, unknown>,
+    forceRefresh?: boolean
+  ): Promise<Credentials>;
 
   /**
    * Clears the user's credentials without clearing their web session and logs them out.

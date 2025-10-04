@@ -31,6 +31,7 @@ import type {
 } from '../types/platform-specific';
 import { Auth0User, AuthError } from '../core/models';
 import Auth0 from '../index';
+import { Platform } from 'react-native';
 
 export const Auth0Provider = ({
   children,
@@ -46,39 +47,46 @@ export const Auth0Provider = ({
 
   useEffect(() => {
     const initialize = async () => {
-      const hasRedirectParams =
-        typeof window !== 'undefined' &&
-        (window?.location?.search?.includes('code=') ||
-          window?.location?.search?.includes('error=')) &&
-        window?.location?.search?.includes('state=');
-      if (hasRedirectParams) {
+      let user: User | null = null;
+      if (Platform.OS === 'web') {
+        const hasRedirectParams =
+          typeof window !== 'undefined' &&
+          (window?.location?.search?.includes('code=') ||
+            window?.location?.search?.includes('error=')) &&
+          window?.location?.search?.includes('state=');
+        if (hasRedirectParams) {
+          try {
+            // If it does, handle the redirect. This will exchange the code for tokens.
+            await client.webAuth.handleRedirectCallback();
+            // should get the user after handle redirect
+            user = await client.webAuth.getWebUser();
+            // Clean the URL
+            window.history.replaceState(
+              {},
+              document.title,
+              window.location.pathname
+            );
+          } catch (e) {
+            // If the redirect fails, dispatch an error.
+            dispatch({ type: 'ERROR', error: e as AuthError });
+          }
+        } else if (typeof window !== 'undefined') {
+          await client.webAuth.checkWebSession();
+          user = await client.webAuth.getWebUser();
+        }
+      } else if (await client.credentialsManager.hasValidCredentials()) {
         try {
-          // If it does, handle the redirect. This will exchange the code for tokens.
-          await client.webAuth.handleRedirectCallback();
-          // Clean the URL
-          window.history.replaceState(
-            {},
-            document.title,
-            window.location.pathname
-          );
+          const credentials = await client.credentialsManager.getCredentials();
+          user = credentials
+            ? Auth0User.fromIdToken(credentials.idToken)
+            : null;
         } catch (e) {
-          // If the redirect fails, dispatch an error.
-          dispatch({ type: 'ERROR', error: e as AuthError });
+          if ((e as AuthError).code !== 'no_credentials') {
+            dispatch({ type: 'ERROR', error: e as AuthError });
+          }
         }
       }
-      try {
-        const credentials = await client.credentialsManager.getCredentials();
-        const user = credentials
-          ? Auth0User.fromIdToken(credentials.idToken)
-          : null;
-        dispatch({ type: 'INITIALIZED', user });
-      } catch (e) {
-        if ((e as AuthError).code === 'no_credentials') {
-          dispatch({ type: 'INITIALIZED', user: null });
-        } else {
-          dispatch({ type: 'ERROR', error: e as AuthError });
-        }
-      }
+      dispatch({ type: 'INITIALIZED', user });
     };
     initialize();
   }, [client]);
@@ -129,14 +137,14 @@ export const Auth0Provider = ({
       opts?: NativeClearSessionOptions
     ): Promise<void> => {
       try {
-        // Step 1: Clear the locally stored credentials first.
+        // Step 1: Clear the server-side session cookie.
+        await client.webAuth.clearSession(parameters, opts);
+
+        // Step 2: Clear the locally stored credentials first.
         await client.credentialsManager.clearCredentials();
 
-        // Step 2: Update the React state immediately for a snappy UX.
+        // Step 3: Update the React state immediately for a snappy UX.
         dispatch({ type: 'LOGOUT_COMPLETE' });
-
-        // Step 3: Clear the server-side session cookie.
-        await client.webAuth.clearSession(parameters, opts);
       } catch (e) {
         const error = e as AuthError;
         dispatch({ type: 'ERROR', error });
@@ -147,21 +155,31 @@ export const Auth0Provider = ({
   );
 
   const getCredentials = useCallback(
-    (
+    async (
       scope?: string,
       minTtl?: number,
       parameters?: Record<string, unknown>,
       forceRefresh?: boolean
-    ) =>
-      loginFlow(
-        client.credentialsManager.getCredentials(
+    ) => {
+      try {
+        const credentials = await client.credentialsManager.getCredentials(
           scope,
           minTtl,
           parameters,
           forceRefresh
-        )
-      ),
-    [client, loginFlow]
+        );
+        if (credentials.idToken) {
+          const user = Auth0User.fromIdToken(credentials.idToken);
+          dispatch({ type: 'SET_USER', user });
+        }
+        return credentials;
+      } catch (e) {
+        const error = e as AuthError;
+        dispatch({ type: 'ERROR', error });
+        throw error;
+      }
+    },
+    [client]
   );
 
   const hasValidCredentials = useCallback(

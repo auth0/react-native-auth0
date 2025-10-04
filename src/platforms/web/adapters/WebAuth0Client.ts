@@ -67,7 +67,7 @@ export class WebAuth0Client implements IAuth0Client {
       clientId: options.clientId,
       useMrrt: options.useMrrt,
       cacheLocation: options.cacheLocation ?? 'memory',
-      useRefreshTokens: options.useRefreshTokens ?? true,
+      useRefreshTokens: options.useRefreshTokens ?? false,
       authorizationParams: {
         redirect_uri:
           typeof window !== 'undefined' ? window.location.origin : '',

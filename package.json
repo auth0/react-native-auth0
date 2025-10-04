@@ -1,7 +1,7 @@
 {
   "name": "react-native-auth0",
   "title": "React Native Auth0",
-  "version": "5.0.0-beta.5",
+  "version": "5.0.1",
   "description": "React Native toolkit for Auth0 API",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
@@ -73,20 +73,15 @@
     "registry": "https://registry.npmjs.org/"
   },
   "peerDependencies": {
-    "@auth0/auth0-spa-js": ">=2.2.0",
     "react": ">=19.0.0",
     "react-native": ">=0.78.0"
   },
   "peerDependenciesMeta": {
-    "@auth0/auth0-spa-js": {
-      "optional": true
-    },
     "expo": {
       "optional": true
     }
   },
   "devDependencies": {
-    "@auth0/auth0-spa-js": "^2.2.0",
     "@commitlint/config-conventional": "^17.0.2",
     "@eslint/compat": "^1.2.7",
     "@eslint/eslintrc": "^3.3.0",
@@ -140,6 +135,7 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
+    "@auth0/auth0-spa-js": "2.3.0",
     "base-64": "^1.0.0",
     "jwt-decode": "^4.0.0",
     "url": "^0.11.4"
