@@ -4,11 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.FragmentActivity
 import com.auth0.android.Auth0
+import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.authentication.storage.CredentialsManagerException
 import com.auth0.android.authentication.storage.LocalAuthenticationOptions
 import com.auth0.android.authentication.storage.SecureCredentialsManager
 import com.auth0.android.authentication.storage.SharedPreferencesStorage
+import com.auth0.android.dpop.DPoP
+import com.auth0.android.dpop.DPoPException
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
 import com.facebook.react.bridge.ActivityEventListener
@@ -17,6 +20,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.bridge.WritableNativeMap
 import java.net.MalformedURLException
 import java.net.URL
 
@@ -65,6 +69,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         CredentialsManagerException.API_ERROR to "API_ERROR",
         CredentialsManagerException.NO_NETWORK to "NO_NETWORK"
     )
+    // DPoP enabled by default
+    private var useDPoP: Boolean = true
 
     private var auth0: Auth0? = null
     private lateinit var secureCredentialsManager: SecureCredentialsManager
@@ -92,6 +98,9 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         additionalParameters: ReadableMap?,
         promise: Promise
     ) {
+        if(this.useDPoP) {
+            WebAuthProvider.useDPoP(reactContext)
+        }
         webAuthPromise = promise
         val cleanedParameters = mutableMapOf<String, String>()
         
@@ -143,9 +152,16 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         clientId: String,
         domain: String,
         localAuthenticationOptions: ReadableMap?,
+        useDPoP: Boolean?,
         promise: Promise
     ) {
+        this.useDPoP = useDPoP ?: true
         auth0 = Auth0.getInstance(clientId, domain)
+
+        val authAPI = AuthenticationAPIClient(auth0!!)
+        if (this.useDPoP) {
+            authAPI.useDPoP(reactContext)
+        }
         
         localAuthenticationOptions?.let { options ->
             val activity = reactContext.currentActivity
@@ -275,6 +291,31 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                     handleError(e, promise)
                 }
             })
+    }
+
+    @ReactMethod
+    override fun getDPoPHeaders(url: String, method: String, accessToken: String, tokenType: String, promise: Promise) {
+        try {
+            val headerData = DPoP.getHeaderData(method, url, accessToken, tokenType)
+            val map = WritableNativeMap()
+            map.putString("Authorization", headerData.authorizationHeader)
+            headerData.dpopProof?.let { map.putString("DPoP", it) }
+            promise.resolve(map)
+        } catch (e: DPoPException) {
+            // TODO: need to create an DPOP error code for typescript layer
+            promise.reject("DPoPError", e.message, e)
+        }
+    }
+
+    @ReactMethod
+    override fun clearDPoPKey(promise: Promise) {
+        try {
+            DPoP.clearKeyPair()
+            promise.resolve(null)
+        } catch (e: DPoPException) {
+            // TODO: need to create an DPOP error code for typescript layer
+            promise.reject("DPoPError", e.message, e)
+        }
     }
 
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {

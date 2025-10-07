@@ -25,6 +25,7 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
         clientId: String,
         domain: String,
         localAuthenticationOptions: ReadableMap?,
+        useDPoP: Boolean?,
         promise: Promise
     )
 
@@ -81,4 +82,12 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
     @ReactMethod
     @DoNotStrip
     abstract fun cancelWebAuth(promise: Promise)
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun getDPoPHeaders(url: String, method: String, accessToken: String, tokenType: String, promise: Promise)
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun clearDPoPKey(promise: Promise)
 }
