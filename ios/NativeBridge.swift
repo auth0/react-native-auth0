@@ -29,12 +29,17 @@ public class NativeBridge: NSObject {
     var credentialsManager: CredentialsManager
     var clientId: String
     var domain: String
+    var useDPoP: Bool
     
-    @objc public init(clientId: String, domain: String, localAuthenticationOptions: [String: Any]?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        let auth0 = Auth0
+    @objc public init(clientId: String, domain: String, localAuthenticationOptions: [String: Any]?, useDPoP: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        var auth0 = Auth0
             .authentication(clientId: clientId, domain: domain)
         self.clientId = clientId
         self.domain = domain
+        self.useDPoP = useDPoP
+        if self.useDPoP {
+            auth0 = auth0.useDPoP()
+        }
         self.credentialsManager = CredentialsManager(authentication: auth0)
         super.init()
         if let localAuthenticationOptions = localAuthenticationOptions {
@@ -55,7 +60,10 @@ public class NativeBridge: NSObject {
    }
     
     @objc public func webAuth(scheme: String, state: String?, redirectUri: String, nonce: String?, audience: String?, scope: String?, connection: String?, maxAge: Int, organization: String?, invitationUrl: String?, leeway: Int, ephemeralSession: Bool, safariViewControllerPresentationStyle: Int, additionalParameters: [String: String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
+        var builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
+        if self.useDPoP {
+            builder = builder.useDPoP()
+        }
         if let value = URL(string: redirectUri) {
             let _ = builder.redirectURL(value)
         }
@@ -208,6 +216,34 @@ public class NativeBridge: NSObject {
     
     @objc public func clearCredentials(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         resolve(credentialsManager.clear())
+    }
+    
+    @objc public func getDPoPHeaders(url: String, method: String, accessToken: String, tokenType: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        guard let url = URL(string: url) else {
+            // TODO: use native error code
+            reject("DPoPError", "Invalid URL provided.", nil)
+            return
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = method
+        
+        do {
+            try DPoP.addHeaders(to: &request, accessToken: accessToken, tokenType: tokenType)
+            resolve(request.allHTTPHeaderFields ?? [:])
+        } catch {
+            // TODO: use native error code
+            reject("DPoPError", error.localizedDescription, error)
+        }
+    }
+    
+    @objc public func clearDPoPKey(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        do {
+            try DPoP.clearKeypair()
+            resolve(nil)
+        } catch {
+            // TODO: use native error code
+            reject("DPoPError", error.localizedDescription, error)
+        }
     }
     
     @objc public func getClientId() -> String {
