@@ -29,15 +29,23 @@ import type {
   NativeClearSessionOptions,
 } from '../types/platform-specific';
 import { Auth0User, AuthError } from '../core/models';
-import Auth0 from '../index';
 import { Platform } from 'react-native';
+import { Auth0ClientFactory } from '../factory/Auth0ClientFactory';
 
 export const Auth0Provider = ({
   children,
   ...options
 }: PropsWithChildren<Auth0Options>) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const client = useMemo(() => new Auth0(options), []);
+  const client = useMemo(() => {
+    const auth0Client = Auth0ClientFactory.createClient(options);
+    return {
+      webAuth: auth0Client.webAuth,
+      credentialsManager: auth0Client.credentialsManager,
+      auth: auth0Client.auth,
+      users: (token: string) => auth0Client.users(token),
+    };
+  }, []);
   const [state, dispatch] = useReducer(reducer, {
     user: null,
     error: null,
