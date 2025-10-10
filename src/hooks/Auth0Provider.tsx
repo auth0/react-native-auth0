@@ -30,7 +30,7 @@ import type {
 } from '../types/platform-specific';
 import { Auth0User, AuthError } from '../core/models';
 import { Platform } from 'react-native';
-import { Auth0ClientFactory } from '../factory/Auth0ClientFactory';
+import { Auth0 } from '../Auth0';
 
 export const Auth0Provider = ({
   children,
@@ -38,7 +38,7 @@ export const Auth0Provider = ({
 }: PropsWithChildren<Auth0Options>) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const client = useMemo(() => {
-    const auth0Client = Auth0ClientFactory.createClient(options);
+    const auth0Client = new Auth0(options);
     return {
       webAuth: auth0Client.webAuth,
       credentialsManager: auth0Client.credentialsManager,
