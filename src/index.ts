@@ -6,6 +6,7 @@ export {
   WebAuthError,
 } from './core/models';
 export { TimeoutError } from './core/utils/fetchWithTimeout';
+export { snakeToCamel, deepCamelCase } from './core/utils/conversion';
 export { Auth0Provider } from './hooks/Auth0Provider';
 export { useAuth0 } from './hooks/useAuth0';
 export * from './types';
