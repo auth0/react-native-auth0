@@ -36,7 +36,6 @@ export const Auth0Provider = ({
   children,
   ...options
 }: PropsWithChildren<Auth0Options>) => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const client = useMemo(() => {
     const auth0Client = new Auth0(options);
     return {
@@ -45,6 +44,7 @@ export const Auth0Provider = ({
       auth: auth0Client.auth,
       users: (token: string) => auth0Client.users(token),
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [state, dispatch] = useReducer(reducer, {
     user: null,

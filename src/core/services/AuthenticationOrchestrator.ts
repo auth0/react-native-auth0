@@ -107,7 +107,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
       subject_token_type: payload.subjectTokenType,
       user_profile: payload.userProfile,
       audience: payload.audience,
-      scope: payload.scope,
+      scope: finalizeScope(payload.scope),
     };
     const { json, response } =
       await this.client.post<NativeCredentialsResponse>(
@@ -131,7 +131,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
       password: payload.password,
       realm: payload.realm,
       audience: payload.audience,
-      scope: payload.scope,
+      scope: finalizeScope(payload.scope),
     };
     const { json, response } =
       await this.client.post<NativeCredentialsResponse>(
