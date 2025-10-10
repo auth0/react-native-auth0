@@ -36,16 +36,8 @@ export const Auth0Provider = ({
   children,
   ...options
 }: PropsWithChildren<Auth0Options>) => {
-  const client = useMemo(() => {
-    const auth0Client = new Auth0(options);
-    return {
-      webAuth: auth0Client.webAuth,
-      credentialsManager: auth0Client.credentialsManager,
-      auth: auth0Client.auth,
-      users: (token: string) => auth0Client.users(token),
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const client = useMemo(() =>  new Auth0(options), []);
   const [state, dispatch] = useReducer(reducer, {
     user: null,
     error: null,
