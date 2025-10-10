@@ -37,7 +37,7 @@ export const Auth0Provider = ({
   ...options
 }: PropsWithChildren<Auth0Options>) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const client = useMemo(() =>  new Auth0(options), []);
+  const client = useMemo(() => new Auth0(options), []);
   const [state, dispatch] = useReducer(reducer, {
     user: null,
     error: null,
