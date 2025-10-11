@@ -1,6 +1,22 @@
 import { jwtDecode } from 'jwt-decode';
 import type { User } from '../../types';
-import { snakeToCamel } from '../utils';
+
+/**
+ * A private helper that converts a single snake_case string to camelCase.
+ * Inlined to avoid module loading issues at runtime.
+ * e.g., 'given_name' -> 'givenName'
+ */
+function snakeToCamel(str: string): string {
+  var parts = str.split('_').filter((part) => part.length > 0);
+  if (parts.length === 0) return '';
+
+  return parts.reduce(function (p, c, index) {
+    if (index === 0) {
+      return c.charAt(0).toLowerCase() + c.slice(1);
+    }
+    return p + c.charAt(0).toUpperCase() + c.slice(1);
+  }, '');
+}
 
 /**
  * A Set containing all OIDC protocol claims that are part of a standard ID token

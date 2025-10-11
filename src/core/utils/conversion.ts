@@ -2,7 +2,7 @@
  * A private helper that converts a single snake_case or kebab-case string to camelCase.
  * e.g., 'user_profile' -> 'userProfile'
  */
-function snakeToCamel(str: string): string {
+export function snakeToCamel(str: string): string {
   var parts = str.split('_').filter((part) => part.length > 0);
   if (parts.length === 0) return '';
 
@@ -21,7 +21,7 @@ function snakeToCamel(str: string): string {
  * @param data The object or array to be transformed.
  * @returns A new object or array with all keys in camelCase.
  */
-function deepCamelCase<T>(data: any): T {
+export function deepCamelCase<T>(data: any): T {
   if (Array.isArray(data)) {
     return data.map((v) => deepCamelCase(v)) as T;
   }
@@ -53,7 +53,7 @@ function deepCamelCase<T>(data: any): T {
  * @param params The object of parameters to convert.
  * @returns A URL-encoded query string.
  */
-function toUrlQueryParams(params: Record<string, any>): string {
+export function toUrlQueryParams(params: Record<string, any>): string {
   const searchParams = new URLSearchParams();
   for (const key in params) {
     if (Object.prototype.hasOwnProperty.call(params, key)) {
@@ -65,6 +65,3 @@ function toUrlQueryParams(params: Record<string, any>): string {
   }
   return searchParams.toString();
 }
-
-// Export all functions at the end
-export { snakeToCamel, deepCamelCase, toUrlQueryParams };
