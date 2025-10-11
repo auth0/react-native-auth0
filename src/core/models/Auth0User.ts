@@ -7,7 +7,7 @@ import type { User } from '../../types';
  * e.g., 'given_name' -> 'givenName'
  */
 function snakeToCamel(str: string): string {
-  var parts = str.split('_').filter((part) => part.length > 0);
+  const parts = str.split('_').filter((part) => part.length > 0);
   if (parts.length === 0) return '';
 
   return parts.reduce(function (p, c, index) {
