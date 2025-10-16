@@ -101,7 +101,7 @@ const withAndroidAuth0Manifest: ConfigPlugin<Auth0PluginConfig[]> = (
   config,
   auth0Configs
 ) => {
-  let applicationId = config.android?.package;
+  let applicationId = config.android?.package?.toLowerCase();
   return withAndroidManifest(config, (manifest) => {
     return addAndroidAuth0Manifest(auth0Configs, manifest, applicationId);
   });
