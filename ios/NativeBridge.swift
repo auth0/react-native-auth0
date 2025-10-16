@@ -26,6 +26,20 @@ public class NativeBridge: NSObject {
     static let credentialsManagerErrorCode = "CREDENTIAL_MANAGER_ERROR"
     static let biometricsAuthenticationErrorCode = "BIOMETRICS_CONFIGURATION_ERROR"
     
+    // DPoP error codes
+    static let dpopErrorCode = "DPOP_ERROR"
+    static let dpopKeyGenerationFailedCode = "DPOP_KEY_GENERATION_FAILED"
+    static let dpopKeyStorageFailedCode = "DPOP_KEY_STORAGE_FAILED"
+    static let dpopKeyRetrievalFailedCode = "DPOP_KEY_RETRIEVAL_FAILED"
+    static let dpopKeyNotFoundCode = "DPOP_KEY_NOT_FOUND"
+    static let dpopKeychainErrorCode = "DPOP_KEYCHAIN_ERROR"
+    static let dpopGenerationFailedCode = "DPOP_GENERATION_FAILED"
+    static let dpopProofFailedCode = "DPOP_PROOF_FAILED"
+    static let dpopNonceMismatchCode = "DPOP_NONCE_MISMATCH"
+    static let dpopInvalidTokenTypeCode = "DPOP_INVALID_TOKEN_TYPE"
+    static let dpopMissingParameterCode = "DPOP_MISSING_PARAMETER"
+    static let dpopClearKeyFailedCode = "DPOP_CLEAR_KEY_FAILED"
+    
     var credentialsManager: CredentialsManager
     var clientId: String
     var domain: String
@@ -215,24 +229,82 @@ public class NativeBridge: NSObject {
     }
     
     @objc public func clearCredentials(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        resolve(credentialsManager.clear())
+        let removed = credentialsManager.clear()
+        
+        // Also clear DPoP key if DPoP is enabled
+        if self.useDPoP {
+            do {
+                try DPoP.clearKeypair()
+            } catch {
+                // Log error but don't fail the operation
+                print("Warning: Failed to clear DPoP key: \(error.localizedDescription)")
+            }
+        }
+        
+        resolve(removed)
     }
     
     @objc public func getDPoPHeaders(url: String, method: String, accessToken: String, tokenType: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        guard let url = URL(string: url) else {
-            // TODO: use native error code
-            reject("DPoPError", "Invalid URL provided.", nil)
+        // Validate parameters
+        guard !url.isEmpty else {
+            reject(
+                NativeBridge.dpopMissingParameterCode,
+                "URL parameter is required for DPoP header generation",
+                nil
+            )
             return
         }
-        var request = URLRequest(url: url)
+        
+        guard !method.isEmpty else {
+            reject(
+                NativeBridge.dpopMissingParameterCode,
+                "HTTP method parameter is required for DPoP header generation",
+                nil
+            )
+            return
+        }
+        
+        guard !accessToken.isEmpty else {
+            reject(
+                NativeBridge.dpopMissingParameterCode,
+                "Access token parameter is required for DPoP header generation",
+                nil
+            )
+            return
+        }
+        
+        // Check if token type is DPoP
+        guard tokenType.uppercased() == "DPOP" else {
+            // If not DPoP, return Bearer token format
+            let headers = [
+                "Authorization": "Bearer \(accessToken)"
+            ]
+            resolve(headers)
+            return
+        }
+        
+        // Validate URL format
+        guard let urlObj = URL(string: url) else {
+            reject(
+                NativeBridge.dpopMissingParameterCode,
+                "Invalid URL format: \(url)",
+                nil
+            )
+            return
+        }
+        
+        var request = URLRequest(url: urlObj)
         request.httpMethod = method
         
         do {
             try DPoP.addHeaders(to: &request, accessToken: accessToken, tokenType: tokenType)
             resolve(request.allHTTPHeaderFields ?? [:])
         } catch {
-            // TODO: use native error code
-            reject("DPoPError", error.localizedDescription, error)
+            if let dpopError = error as? DPoPError {
+                reject(dpopError.reactNativeErrorCode(), dpopError.errorDescription, error)
+            } else {
+                reject(NativeBridge.dpopGenerationFailedCode, error.localizedDescription, error)
+            }
         }
     }
     
@@ -241,8 +313,11 @@ public class NativeBridge: NSObject {
             try DPoP.clearKeypair()
             resolve(nil)
         } catch {
-            // TODO: use native error code
-            reject("DPoPError", error.localizedDescription, error)
+            if let dpopError = error as? DPoPError {
+                reject(dpopError.reactNativeErrorCode(), dpopError.errorDescription, error)
+            } else {
+                reject(NativeBridge.dpopClearKeyFailedCode, error.localizedDescription, error)
+            }
         }
     }
     
@@ -293,6 +368,23 @@ extension WebAuthError {
                 code = "OTHER"
             }
             default: code = "UNKNOWN"
+        }
+        return code
+    }
+}
+
+extension DPoPError {
+    func reactNativeErrorCode() -> String {
+        var code: String
+        switch self {
+            case .secureEnclaveOperationFailed: code = NativeBridge.dpopKeyGenerationFailedCode
+            case .keychainOperationFailed: code = NativeBridge.dpopKeyStorageFailedCode
+            case .cryptoKitOperationFailed: code = NativeBridge.dpopProofFailedCode
+            case .secKeyOperationFailed: code = NativeBridge.dpopProofFailedCode
+            case .other: code = NativeBridge.dpopErrorCode
+            case .unknown: code = NativeBridge.dpopErrorCode
+        default:
+            code = NativeBridge.dpopErrorCode
         }
         return code
     }
