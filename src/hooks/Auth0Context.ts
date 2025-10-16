@@ -19,6 +19,7 @@ import type {
   RevokeOptions,
   ResetPasswordParameters,
   MfaChallengeResponse,
+  DPoPHeadersParams,
 } from '../types';
 import type {
   NativeAuthorizeOptions,
@@ -218,6 +219,32 @@ export interface Auth0ContextInterface extends AuthState {
 
   // Token Management
   revokeRefreshToken(parameters: RevokeOptions): Promise<void>;
+
+  /**
+   * Generates DPoP headers for making authenticated requests to custom APIs.
+   * This method creates the necessary HTTP headers (Authorization and DPoP) to
+   * securely bind the access token to a specific API request.
+   *
+   * @param params Parameters including the URL, HTTP method, access token, and token type.
+   * @returns A promise that resolves to an object containing the required headers.
+   *
+   * @example
+   * ```typescript
+   * const credentials = await getCredentials();
+   *
+   * if (credentials.tokenType === 'DPoP') {
+   *   const headers = await getDPoPHeaders({
+   *     url: 'https://api.example.com/data',
+   *     method: 'GET',
+   *     accessToken: credentials.accessToken,
+   *     tokenType: credentials.tokenType
+   *   });
+   *
+   *   const response = await fetch('https://api.example.com/data', { headers });
+   * }
+   * ```
+   */
+  getDPoPHeaders(params: DPoPHeadersParams): Promise<Record<string, string>>;
 }
 
 const stub = (): any => {
@@ -249,6 +276,7 @@ const initialContext: Auth0ContextInterface = {
   authorizeWithOTP: stub,
   resetPassword: stub,
   revokeRefreshToken: stub,
+  getDPoPHeaders: stub,
 };
 
 export const Auth0Context =

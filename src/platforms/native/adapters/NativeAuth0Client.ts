@@ -4,6 +4,7 @@ import type {
   IUsersClient,
 } from '../../../core/interfaces';
 import type { NativeAuth0Options } from '../../../types/platform-specific';
+import type { DPoPHeadersParams } from '../../../types';
 import { NativeWebAuthProvider } from './NativeWebAuthProvider';
 import { NativeCredentialsManager } from './NativeCredentialsManager';
 import { type INativeBridge, NativeBridgeManager } from '../bridge';
@@ -12,6 +13,7 @@ import {
   ManagementApiOrchestrator,
 } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
+import { AuthError, DPoPError } from '../../../core/models';
 
 export class NativeAuth0Client implements IAuth0Client {
   readonly webAuth: NativeWebAuthProvider;
@@ -19,6 +21,7 @@ export class NativeAuth0Client implements IAuth0Client {
   readonly auth: IAuthenticationProvider;
   private ready: Promise<void>;
   private readonly httpClient: HttpClient;
+  private readonly bridge: INativeBridge;
 
   constructor(options: NativeAuth0Options) {
     const baseUrl = `https://${options.domain}`;
@@ -32,6 +35,7 @@ export class NativeAuth0Client implements IAuth0Client {
       httpClient: this.httpClient,
     });
     const bridge = new NativeBridgeManager();
+    this.bridge = bridge;
 
     this.ready = this.initialize(bridge, options);
 
@@ -46,10 +50,20 @@ export class NativeAuth0Client implements IAuth0Client {
     bridge: INativeBridge,
     options: NativeAuth0Options
   ): Promise<void> {
-    const { clientId, domain, localAuthenticationOptions } = options;
+    const {
+      clientId,
+      domain,
+      localAuthenticationOptions,
+      useDPoP = true,
+    } = options;
     const hasValidInstance = await bridge.hasValidInstance(clientId, domain);
     if (!hasValidInstance) {
-      await bridge.initialize(clientId, domain, localAuthenticationOptions);
+      await bridge.initialize(
+        clientId,
+        domain,
+        localAuthenticationOptions,
+        useDPoP
+      );
     }
   }
 
@@ -58,6 +72,21 @@ export class NativeAuth0Client implements IAuth0Client {
       token: token,
       httpClient: this.httpClient,
     });
+  }
+
+  async getDPoPHeaders(
+    params: DPoPHeadersParams
+  ): Promise<Record<string, string>> {
+    await this.ready;
+    try {
+      return await this.bridge.getDPoPHeaders(params);
+    } catch (e) {
+      // Wrap the error as a DPoPError if it's an AuthError
+      if (e instanceof AuthError) {
+        throw new DPoPError(e);
+      }
+      throw e;
+    }
   }
 
   private createGuardedBridge(bridge: INativeBridge): INativeBridge {

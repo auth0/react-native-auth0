@@ -50,10 +50,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@auth0/auth0-spa-js@npm:2.3.0":
-  version: 2.3.0
-  resolution: "@auth0/auth0-spa-js@npm:2.3.0"
-  checksum: 6f9c84cd300ba7215a7b894690418010cd743ada5970083f0753f189a39208b4262a9828f28c8f932ca33c1dfe6e587b057a6c956e40632aea9dbed5099220fd
+"@auth0/auth0-spa-js@npm:2.4.1":
+  version: 2.4.1
+  resolution: "@auth0/auth0-spa-js@npm:2.4.1"
+  dependencies:
+    browser-tabs-lock: ^1.2.15
+    dpop: ^2.1.1
+    es-cookie: ~1.3.2
+  checksum: a825b51e674e3c6462201bdf96ef9454dc4e24bf0ddae169e798e50c98ae8c20987b67f12da5794b2d72dd311247ddb61494844fc302975891f29c83e0460204
   languageName: node
   linkType: hard
 
@@ -6169,6 +6173,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"browser-tabs-lock@npm:^1.2.15":
+  version: 1.3.0
+  resolution: "browser-tabs-lock@npm:1.3.0"
+  dependencies:
+    lodash: ">=4.17.21"
+  checksum: 4fcfb6d5fc4bc5e4f53c298d555d8421ca4f815e32c2650b73008868eb70d7ee41aca8f92ad84d9beb77a8ffe0cb99f1efc8d9b3135cc434d48f7bd569f2bb72
+  languageName: node
+  linkType: hard
+
 "browserslist@npm:^4.20.4, browserslist@npm:^4.24.0, browserslist@npm:^4.25.3":
   version: 4.25.3
   resolution: "browserslist@npm:4.25.3"
@@ -7803,6 +7816,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dpop@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "dpop@npm:2.1.1"
+  checksum: 919527254feac8ac46ee1c8b3776f8c2f4ada1876072f3df567eccefaef84ef40ac8d8e50383145322652200877628914045ce7b624a1af64b48f3e88ca5493f
+  languageName: node
+  linkType: hard
+
 "dunder-proto@npm:^1.0.0, dunder-proto@npm:^1.0.1":
   version: 1.0.1
   resolution: "dunder-proto@npm:1.0.1"
@@ -8050,6 +8070,13 @@ __metadata:
     unbox-primitive: ^1.1.0
     which-typed-array: ^1.1.19
   checksum: 06b3d605e56e3da9d16d4db2629a42dac1ca31f2961a41d15c860422a266115e865b43e82d6b9da81a0fabbbb65ebc12fb68b0b755bc9dbddacb6bf7450e96df
+  languageName: node
+  linkType: hard
+
+"es-cookie@npm:~1.3.2":
+  version: 1.3.2
+  resolution: "es-cookie@npm:1.3.2"
+  checksum: 8509355a7d00bd2e3fcab4a76a90e0da35b40c1e76f114f8ffe805ab3fdfff51e8fc0e7cdccd9bf1536066150b6b9861e37d78ae14f80680513901902ac4f0df
   languageName: node
   linkType: hard
 
@@ -12075,7 +12102,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4.17.21, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21":
+"lodash@npm:4.17.21, lodash@npm:>=4.17.21, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
@@ -14603,7 +14630,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "react-native-auth0@workspace:."
   dependencies:
-    "@auth0/auth0-spa-js": 2.3.0
+    "@auth0/auth0-spa-js": 2.4.1
     "@commitlint/config-conventional": ^17.0.2
     "@eslint/compat": ^1.2.7
     "@eslint/eslintrc": ^3.3.0

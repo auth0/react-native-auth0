@@ -96,7 +96,7 @@ dependencies {
   implementation "com.facebook.react:react-android"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   implementation "androidx.browser:browser:1.2.0"
-  implementation 'com.auth0.android:auth0:3.8.0'
+  implementation 'com.auth0.android:auth0:3.9.1'
 }
 
 if (isNewArchitectureEnabled()) {

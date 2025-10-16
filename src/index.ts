@@ -1,11 +1,12 @@
 import type { IAuth0Client } from './core/interfaces/IAuth0Client';
 import { Auth0ClientFactory } from './factory/Auth0ClientFactory';
-import type { Auth0Options } from './types';
+import type { Auth0Options, DPoPHeadersParams } from './types';
 
 export {
   AuthError,
   CredentialsManagerError,
   WebAuthError,
+  DPoPError,
 } from './core/models';
 export { TimeoutError } from './core/utils/fetchWithTimeout';
 export { Auth0Provider } from './hooks/Auth0Provider';
@@ -75,6 +76,34 @@ class Auth0 {
    */
   users(token: string) {
     return this.client.users(token);
+  }
+
+  /**
+   * Generates DPoP headers for making authenticated requests to custom APIs.
+   * This method creates the necessary HTTP headers (Authorization and DPoP) to
+   * securely bind the access token to a specific API request.
+   *
+   * @param params Parameters including the URL, HTTP method, access token, and token type.
+   * @returns A promise that resolves to an object containing the required headers.
+   *
+   * @example
+   * ```typescript
+   * const credentials = await auth0.credentialsManager.getCredentials();
+   *
+   * if (credentials.tokenType === 'DPoP') {
+   *   const headers = await auth0.getDPoPHeaders({
+   *     url: 'https://api.example.com/data',
+   *     method: 'GET',
+   *     accessToken: credentials.accessToken,
+   *     tokenType: credentials.tokenType
+   *   });
+   *
+   *   const response = await fetch('https://api.example.com/data', { headers });
+   * }
+   * ```
+   */
+  getDPoPHeaders(params: DPoPHeadersParams) {
+    return this.client.getDPoPHeaders(params);
   }
 }
 

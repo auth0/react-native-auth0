@@ -1,6 +1,6 @@
 PODS:
-  - A0Auth0 (5.0.0-beta.6):
-    - Auth0 (= 2.13)
+  - A0Auth0 (5.0.1):
+    - Auth0 (= 2.14)
     - boost
     - DoubleConversion
     - fast_float
@@ -29,7 +29,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Auth0 (2.13.0):
+  - Auth0 (2.14.0):
     - JWTDecode (= 3.3.0)
     - SimpleKeychain (= 1.3.0)
   - boost (1.84.0)
@@ -2583,8 +2583,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  A0Auth0: 2ef6c2abf8572225a9fb23e6e648e55aef3c2f4e
-  Auth0: 8deb8df56dd91516403ec474d968fb9f79189b93
+  A0Auth0: b7aa31492adae9b7af64f66b6515a2accecf9a84
+  Auth0: 022dda235af8a664a4faf9e7b60b063b5bc08373
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
