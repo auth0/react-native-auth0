@@ -14184,17 +14184,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-organize-imports@npm:4.1.0":
-  version: 4.1.0
-  resolution: "prettier-plugin-organize-imports@npm:4.1.0"
+"prettier-plugin-organize-imports@npm:4.3.0":
+  version: 4.3.0
+  resolution: "prettier-plugin-organize-imports@npm:4.3.0"
   peerDependencies:
     prettier: ">=2.0"
     typescript: ">=2.9"
-    vue-tsc: ^2.1.0
+    vue-tsc: ^2.1.0 || 3
   peerDependenciesMeta:
     vue-tsc:
       optional: true
-  checksum: 43c917959170fa3e30e41f9b3bd314a31462ae34e5568b4dba6b1c8b8da758adf900fdf4999333ab2b60b3d1af541f9521396a5e19df03ab5400a50edc9a75f6
+  checksum: 0fcedc6eba82906e7c4004858313dcc6b8a6122fc169dac9911e884b322a38541dfe07ec56b6f9d17cef42aba78bb0280a87a1187723bf7ba63d86a9f522eea3
   languageName: node
   linkType: hard
 
@@ -14688,7 +14688,7 @@ __metadata:
     node-fetch: ^3.3.2
     pod-install: ^0.3.9
     prettier: 3.0.3
-    prettier-plugin-organize-imports: 4.1.0
+    prettier-plugin-organize-imports: 4.3.0
     pretty-quick: ^4.1.1
     react: 19.1.0
     react-dom: 19.1.0
