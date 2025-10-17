@@ -1,5 +1,6 @@
 import { useEffect, useReducer, useMemo, useCallback } from 'react';
 import type { PropsWithChildren } from 'react';
+import type { ApiCredentials } from '../core/models';
 import { Auth0Context, type Auth0ContextInterface } from './Auth0Context';
 import { reducer } from './reducer';
 import type {
@@ -217,6 +218,36 @@ export const Auth0Provider = ({
     [client, voidFlow]
   );
 
+  const getApiCredentials = useCallback(
+    async (
+      audience: string,
+      scope?: string,
+      parameters?: Record<string, any>
+    ): Promise<ApiCredentials> => {
+      try {
+        return await client.credentialsManager.getApiCredentials(
+          audience,
+          scope,
+          parameters
+        );
+      } catch (e) {
+        const error = e as AuthError;
+        dispatch({ type: 'ERROR', error });
+        throw error;
+      }
+    },
+    [client]
+  );
+
+  const clearApiCredentials = useCallback(
+    (audience: string): Promise<void> => {
+      // Clearing API credentials doesn't affect the user's login state
+      // so we don't need to dispatch any actions.
+      return voidFlow(client.credentialsManager.clearApiCredentials(audience));
+    },
+    [client, voidFlow]
+  );
+
   const loginWithPasswordRealm = useCallback(
     (parameters: PasswordRealmParameters) =>
       loginFlow(client.auth.passwordRealm(parameters)),
@@ -325,6 +356,8 @@ export const Auth0Provider = ({
       getCredentials,
       hasValidCredentials,
       clearCredentials,
+      getApiCredentials,
+      clearApiCredentials,
       cancelWebAuth,
       loginWithPasswordRealm,
       createUser,
@@ -349,6 +382,8 @@ export const Auth0Provider = ({
       getCredentials,
       hasValidCredentials,
       clearCredentials,
+      getApiCredentials,
+      clearApiCredentials,
       cancelWebAuth,
       loginWithPasswordRealm,
       createUser,
