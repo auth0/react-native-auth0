@@ -32,7 +32,8 @@ const ERROR_CODE_MAP: Record<string, string> = {
   'a0.network_error': WebAuthErrorCodes.NETWORK_ERROR,
   'a0.session.invalid_idtoken': WebAuthErrorCodes.ID_TOKEN_VALIDATION_FAILED,
   'ID_TOKEN_VALIDATION_FAILED': WebAuthErrorCodes.ID_TOKEN_VALIDATION_FAILED,
-  'BIOMETRICS_CONFIGURATION_ERROR': WebAuthErrorCodes.BIOMETRICS_CONFIGURATION_ERROR,
+  'BIOMETRICS_CONFIGURATION_ERROR':
+    WebAuthErrorCodes.BIOMETRICS_CONFIGURATION_ERROR,
 
   // --- Android-specific mappings ---
   'a0.browser_not_available': WebAuthErrorCodes.BROWSER_NOT_AVAILABLE,
@@ -75,7 +76,8 @@ export class WebAuthError extends AuthError {
     ) {
       this.type = WebAuthErrorCodes.INVALID_STATE;
     } else {
-      this.type = ERROR_CODE_MAP[originalError.code] || WebAuthErrorCodes.UNKNOWN_ERROR;
+      this.type =
+        ERROR_CODE_MAP[originalError.code] || WebAuthErrorCodes.UNKNOWN_ERROR;
     }
   }
 }
