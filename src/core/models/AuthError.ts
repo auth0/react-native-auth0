@@ -1,16 +1,3 @@
-import { CredentialsManagerErrorCodes } from "./CredentialsManagerError";
-import { WebAuthErrorCodes } from "./WebAuthError";
-
-/**
- * Public constants exposing all possible error codes across the SDK.
- *
- * Useful for generic handling across both WebAuthError and CredentialsManagerError.
- */
-export const AuthErrorCodes = {
-  ...WebAuthErrorCodes,
-  ...CredentialsManagerErrorCodes,
-} as const;
-
 /**
  * Represents a generic authentication or API error from Auth0.
  *
