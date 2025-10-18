@@ -29,8 +29,8 @@ import type {
   NativeClearSessionOptions,
 } from '../types/platform-specific';
 import { Auth0User, AuthError } from '../core/models';
-import Auth0 from '../index';
 import { Platform } from 'react-native';
+import { Auth0 } from '../Auth0';
 
 export const Auth0Provider = ({
   children,

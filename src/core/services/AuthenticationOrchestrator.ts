@@ -30,7 +30,7 @@ import {
 } from '../models';
 import { validateParameters } from '../utils/validation';
 import { HttpClient } from './HttpClient';
-import { deepCamelCase } from '../utils';
+import { deepCamelCase, finalizeScope } from '../utils';
 
 // Represents the raw user profile returned by an API (snake_case)
 type RawUser = { [key: string]: any };
@@ -212,7 +212,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
       otp: payload.code,
       realm: 'email',
       audience: payload.audience,
-      scope: payload.scope,
+      scope: finalizeScope(payload.scope),
     };
     const { json, response } =
       await this.client.post<NativeCredentialsResponse>(
@@ -234,7 +234,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
       otp: payload.code,
       realm: 'sms',
       audience: payload.audience,
-      scope: payload.scope,
+      scope: finalizeScope(payload.scope),
     };
     const { json, response } =
       await this.client.post<NativeCredentialsResponse>(
