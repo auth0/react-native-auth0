@@ -126,15 +126,22 @@ export class WebAuth0Client implements IAuth0Client {
     }
 
     try {
-      // Use the internal DPoP utilities from auth0-spa-js
-      // The client internally handles DPoP proof generation
+      // Use the public DPoP methods from auth0-spa-js
+      // These methods are available when useDpop is enabled
       const headers: Record<string, string> = {
         Authorization: `DPoP ${accessToken}`,
       };
 
-      // Generate DPoP proof using the client's internal method
-      // Note: This requires auth0-spa-js v2.4.1 or later
-      const dpopProof = await (this.client as any).getDPoPProof(url, method);
+      // Get the current DPoP nonce (may be undefined on first request)
+      const nonce = await this.client.getDpopNonce();
+
+      // Generate DPoP proof using the client's public method
+      const dpopProof = await this.client.generateDpopProof({
+        url,
+        method,
+        nonce,
+        accessToken,
+      });
 
       if (dpopProof) {
         headers.DPoP = dpopProof;
