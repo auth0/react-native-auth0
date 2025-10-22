@@ -215,7 +215,9 @@ To use the SDK with Expo, configure the app at build time by providing the `doma
 | API          | Description                                                                                                                                                                                                                                                                  |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | domain       | Mandatory: Provide the Auth0 domain that can be found at the [Application Settings](https://manage.auth0.com/#/applications)                                                                                                                                                 |
-| customScheme | Optional: Custom scheme to build the callback URL with. The value provided here should be passed to the `customScheme` option parameter of the `authorize` and `clearSession` methods. The custom scheme should be a unique, all lowercase value with no special characters. |
+| customScheme | Optional: Custom scheme to build the callback URL with. The value provided here should be passed to the `customScheme` option parameter of the `authorize` and `clearSession` methods. The custom scheme should be a unique, all lowercase value with no special characters. To use Android App Links, set this value to `"https"`. |
+
+**Note:** When using `customScheme: "https"` for Android App Links, the plugin will automatically add `android:autoVerify="true"` to the intent-filter in your Android manifest to enable automatic verification of App Links.
 
 Now you can run the application using `expo run:android` or `expo run:ios`.
 
