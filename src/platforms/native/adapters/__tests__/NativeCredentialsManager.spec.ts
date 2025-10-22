@@ -8,6 +8,7 @@ const mockBridge: jest.Mocked<INativeBridge> = {
   getCredentials: jest.fn(),
   hasValidCredentials: jest.fn(),
   clearCredentials: jest.fn(),
+  clearDPoPKey: jest.fn(),
   // Add stubs for other INativeBridge methods to satisfy the type.
   initialize: jest.fn(),
   hasValidInstance: jest.fn(),
@@ -16,6 +17,7 @@ const mockBridge: jest.Mocked<INativeBridge> = {
   clearSession: jest.fn(),
   cancelWebAuth: jest.fn(),
   resumeWebAuth: jest.fn(),
+  getDPoPHeaders: jest.fn(),
 };
 
 describe('NativeCredentialsManager', () => {
