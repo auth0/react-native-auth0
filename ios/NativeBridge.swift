@@ -284,7 +284,7 @@ public class NativeBridge: NSObject {
         }
         
         // Validate URL format
-        guard let urlObj = URL(string: url) else {
+        guard !url.isEmpty, let urlObj = URL(string: url) else {
             reject(
                 NativeBridge.dpopMissingParameterCode,
                 "Invalid URL format: \(url)",

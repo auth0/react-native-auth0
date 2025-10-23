@@ -85,7 +85,7 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
 
     @ReactMethod
     @DoNotStrip
-    abstract fun getDPoPHeaders(url: String, method: String, accessToken: String, tokenType: String, promise: Promise)
+    abstract fun getDPoPHeaders(url: String, method: String, accessToken: String, tokenType: String, nonce: String?, promise: Promise)
 
     @ReactMethod
     @DoNotStrip
