@@ -116,7 +116,13 @@ export class WebAuth0Client implements IAuth0Client {
   ): Promise<Record<string, string>> {
     // For web platform, we need to get the access token and use the underlying
     // auth0-spa-js DPoP utilities to generate the headers
-    const { url, method, accessToken, tokenType } = params;
+    const {
+      url,
+      method,
+      accessToken,
+      tokenType,
+      nonce: providedNonce,
+    } = params;
 
     // If DPoP is not enabled or token is not DPoP type, return bearer header
     if (tokenType !== 'DPoP') {
@@ -132,8 +138,9 @@ export class WebAuth0Client implements IAuth0Client {
         Authorization: `DPoP ${accessToken}`,
       };
 
-      // Get the current DPoP nonce (may be undefined on first request)
-      const nonce = await this.client.getDpopNonce();
+      // Use provided nonce if available, otherwise get the current DPoP nonce
+      // (may be undefined on first request)
+      const nonce = providedNonce ?? (await this.client.getDpopNonce());
 
       // Generate DPoP proof using the client's public method
       const dpopProof = await this.client.generateDpopProof({

@@ -156,7 +156,8 @@ export class NativeBridgeManager implements INativeBridge {
       params.url,
       params.method,
       params.accessToken,
-      params.tokenType
+      params.tokenType,
+      params.nonce
     );
   }
 

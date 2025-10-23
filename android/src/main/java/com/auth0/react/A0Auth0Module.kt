@@ -319,7 +319,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     }
 
     @ReactMethod
-    override fun getDPoPHeaders(url: String, method: String, accessToken: String, tokenType: String, promise: Promise) {
+    override fun getDPoPHeaders(url: String, method: String, accessToken: String, tokenType: String, nonce: String?, promise: Promise) {
         try {
             // Validate parameters
             if (url.isEmpty()) {
@@ -355,7 +355,11 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 return
             }
 
-            val headerData = DPoP.getHeaderData(method, url, accessToken, tokenType)
+            val headerData = if (nonce != null && nonce.isNotEmpty()) {
+                DPoP.getHeaderData(method, url, accessToken, tokenType, nonce)
+            } else {
+                DPoP.getHeaderData(method, url, accessToken, tokenType)
+            }
             val map = WritableNativeMap()
             map.putString("Authorization", headerData.authorizationHeader)
             headerData.dpopProof?.let { map.putString("DPoP", it) }

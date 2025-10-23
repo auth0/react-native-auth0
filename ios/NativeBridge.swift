@@ -244,7 +244,7 @@ public class NativeBridge: NSObject {
         resolve(removed)
     }
     
-    @objc public func getDPoPHeaders(url: String, method: String, accessToken: String, tokenType: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func getDPoPHeaders(url: String, method: String, accessToken: String, tokenType: String, nonce: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         // Validate parameters
         guard !url.isEmpty else {
             reject(
@@ -297,7 +297,11 @@ public class NativeBridge: NSObject {
         request.httpMethod = method
         
         do {
-            try DPoP.addHeaders(to: &request, accessToken: accessToken, tokenType: tokenType)
+            if let nonce = nonce, !nonce.isEmpty {
+                try DPoP.addHeaders(to: &request, accessToken: accessToken, tokenType: tokenType, nonce: nonce)
+            } else {
+                try DPoP.addHeaders(to: &request, accessToken: accessToken, tokenType: tokenType)
+            }
             resolve(request.allHTTPHeaderFields ?? [:])
         } catch {
             if let dpopError = error as? DPoPError {

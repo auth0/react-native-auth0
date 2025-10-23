@@ -100,7 +100,8 @@ export interface Spec extends TurboModule {
     url: string,
     method: string,
     accessToken: string,
-    tokenType: string
+    tokenType: string,
+    nonce?: string
   ): Promise<{ [key: string]: string }>;
 
   /**

@@ -135,13 +135,13 @@ RCT_EXPORT_METHOD(webAuthLogout:(NSString *)scheme
     [self.nativeBridge webAuthLogoutWithScheme:scheme federated:federated redirectUri:redirectUri resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(clearDPoPKey:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(clearDPoPKey:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     [self.nativeBridge clearDPoPKeyWithResolve:resolve reject:reject];
 }
 
 
-RCT_EXPORT_METHOD(getDPoPHeaders:(nonnull NSString *)url method:(nonnull NSString *)method accessToken:(nonnull NSString *)accessToken tokenType:(nonnull NSString *)tokenType resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject) {
-    [self.nativeBridge getDPoPHeadersWithUrl:url method:method accessToken:accessToken tokenType:tokenType resolve:resolve reject:reject];
+RCT_EXPORT_METHOD(getDPoPHeaders:(NSString *)url method:(NSString *)method accessToken:(NSString *)accessToken tokenType:(NSString *)tokenType nonce:(NSString *)nonce resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge getDPoPHeadersWithUrl:url method:method accessToken:accessToken tokenType:tokenType nonce:nonce resolve:resolve reject:reject];
 }
 
 

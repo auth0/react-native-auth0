@@ -145,4 +145,6 @@ export interface DPoPHeadersParams {
   accessToken: string;
   /** The type of the token (should be 'DPoP' when DPoP is enabled). */
   tokenType: string;
+  /** Optional nonce value */
+  nonce?: string;
 }
