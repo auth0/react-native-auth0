@@ -3835,18 +3835,18 @@ __metadata:
   linkType: hard
 
 "@react-navigation/bottom-tabs@npm:^7.4.2":
-  version: 7.4.6
-  resolution: "@react-navigation/bottom-tabs@npm:7.4.6"
+  version: 7.6.0
+  resolution: "@react-navigation/bottom-tabs@npm:7.6.0"
   dependencies:
-    "@react-navigation/elements": ^2.6.3
+    "@react-navigation/elements": ^2.7.1
     color: ^4.2.3
   peerDependencies:
-    "@react-navigation/native": ^7.1.17
+    "@react-navigation/native": ^7.1.19
     react: ">= 18.2.0"
     react-native: "*"
     react-native-safe-area-context: ">= 4.0.0"
     react-native-screens: ">= 4.0.0"
-  checksum: 42f6bf8d043a227c2c5cca8e68fd7b6d3870bef269d415a09003fae210b8e53eab1f80fe013c401e2ccb48d360e3afb8cff72642e8c5f952f1aea433300a783c
+  checksum: f64927d1aba1289f75e2cfc65ea952b539b59b9e14b062c85fed7e98632f1d9d0613db6ff553cb99c6289d559192e4b9642f74766983724d68a3b2278f98c573
   languageName: node
   linkType: hard
 
@@ -3884,6 +3884,26 @@ __metadata:
     "@react-native-masked-view/masked-view":
       optional: true
   checksum: e676f1dfed37eca5275d982e2a060ba224ae5c495b6204c6753b34d90b32227093a945ce11ed82c16001dadbcade49474047188c6df9533c61f88dd5dd038c3f
+  languageName: node
+  linkType: hard
+
+"@react-navigation/elements@npm:^2.7.1":
+  version: 2.7.1
+  resolution: "@react-navigation/elements@npm:2.7.1"
+  dependencies:
+    color: ^4.2.3
+    use-latest-callback: ^0.2.4
+    use-sync-external-store: ^1.5.0
+  peerDependencies:
+    "@react-native-masked-view/masked-view": ">= 0.2.0"
+    "@react-navigation/native": ^7.1.19
+    react: ">= 18.2.0"
+    react-native: "*"
+    react-native-safe-area-context: ">= 4.0.0"
+  peerDependenciesMeta:
+    "@react-native-masked-view/masked-view":
+      optional: true
+  checksum: 38131c1e71cd49c5ac6b5165655cef6560606df80b04c3fcfed7d82878326cf099e319bdc5520230eb924202c9ec5707f63623c0e2d12109ecf159f6551f3d85
   languageName: node
   linkType: hard
 
