@@ -43,8 +43,10 @@ export class NativeCredentialsManager implements ICredentialsManager {
     return this.handleError(this.bridge.hasValidCredentials(minTtl));
   }
 
-  clearCredentials(): Promise<void> {
-    return this.handleError(this.bridge.clearCredentials());
+  async clearCredentials(): Promise<void> {
+    await this.handleError(this.bridge.clearCredentials());
+    // Also clear the DPoP key when clearing credentials
+    await this.handleError(this.bridge.clearDPoPKey());
   }
 
   async getApiCredentials(

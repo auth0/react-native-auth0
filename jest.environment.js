@@ -1,5 +1,6 @@
 import JSDOMEnvironment from 'jest-environment-jsdom';
 import fetch, { Headers, Request, Response } from 'node-fetch';
+import { TextEncoder, TextDecoder } from 'util';
 
 /**
  * Custom Jest Environment based on JSDOMEnvironment to support TextEncoder and TextDecoder.
@@ -18,6 +19,8 @@ export default class CustomJSDOMEnvironment extends JSDOMEnvironment {
     this.global.Headers = Headers;
     this.global.Request = Request;
     this.global.Response = Response;
+    this.global.TextEncoder = TextEncoder;
+    this.global.TextDecoder = TextDecoder;
   }
 }
 

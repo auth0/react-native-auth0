@@ -24,6 +24,7 @@ import type {
   RevokeOptions,
   ResetPasswordParameters,
   MfaChallengeResponse,
+  DPoPHeadersParams,
 } from '../types';
 import type {
   NativeAuthorizeOptions,
@@ -347,6 +348,19 @@ export const Auth0Provider = ({
     [client, voidFlow]
   );
 
+  const getDPoPHeaders = useCallback(
+    async (params: DPoPHeadersParams): Promise<Record<string, string>> => {
+      try {
+        return await client.getDPoPHeaders(params);
+      } catch (e) {
+        const error = e as AuthError;
+        dispatch({ type: 'ERROR', error });
+        throw error;
+      }
+    },
+    [client]
+  );
+
   const contextValue = useMemo<Auth0ContextInterface>(
     () => ({
       ...state,
@@ -373,6 +387,7 @@ export const Auth0Provider = ({
       authorizeWithOTP,
       authorizeWithRecoveryCode,
       revokeRefreshToken,
+      getDPoPHeaders,
     }),
     [
       state,
@@ -399,6 +414,7 @@ export const Auth0Provider = ({
       authorizeWithOTP,
       authorizeWithRecoveryCode,
       revokeRefreshToken,
+      getDPoPHeaders,
     ]
   );
 

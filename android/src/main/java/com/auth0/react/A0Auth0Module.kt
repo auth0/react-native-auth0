@@ -5,11 +5,14 @@ import android.content.Intent
 import androidx.fragment.app.FragmentActivity
 import com.auth0.android.Auth0
 import com.auth0.android.result.APICredentials
+import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.authentication.storage.CredentialsManagerException
 import com.auth0.android.authentication.storage.LocalAuthenticationOptions
 import com.auth0.android.authentication.storage.SecureCredentialsManager
 import com.auth0.android.authentication.storage.SharedPreferencesStorage
+import com.auth0.android.dpop.DPoP
+import com.auth0.android.dpop.DPoPException
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
 import com.facebook.react.bridge.ActivityEventListener
@@ -18,6 +21,9 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.bridge.WritableNativeMap
+import java.net.MalformedURLException
+import java.net.URL
 
 class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0Spec(reactContext), ActivityEventListener {
 
@@ -25,6 +31,20 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         const val NAME = "A0Auth0"
         private const val CREDENTIAL_MANAGER_ERROR_CODE = "CREDENTIAL_MANAGER_ERROR"
         private const val BIOMETRICS_AUTHENTICATION_ERROR_CODE = "BIOMETRICS_CONFIGURATION_ERROR"
+        
+        // DPoP-specific error codes
+        private const val DPOP_ERROR_CODE = "DPOP_ERROR"
+        private const val DPOP_KEY_GENERATION_FAILED_CODE = "DPOP_KEY_GENERATION_FAILED"
+        private const val DPOP_KEY_STORAGE_FAILED_CODE = "DPOP_KEY_STORAGE_FAILED"
+        private const val DPOP_KEY_RETRIEVAL_FAILED_CODE = "DPOP_KEY_RETRIEVAL_FAILED"
+        private const val DPOP_KEYSTORE_ERROR_CODE = "DPOP_KEYSTORE_ERROR"
+        private const val DPOP_CRYPTO_ERROR_CODE = "DPOP_CRYPTO_ERROR"
+        private const val DPOP_GENERATION_FAILED_CODE = "DPOP_GENERATION_FAILED"
+        private const val DPOP_PROOF_FAILED_CODE = "DPOP_PROOF_FAILED"
+        private const val DPOP_NONCE_MISMATCH_CODE = "DPOP_NONCE_MISMATCH"
+        private const val DPOP_INVALID_TOKEN_TYPE_CODE = "DPOP_INVALID_TOKEN_TYPE"
+        private const val DPOP_MISSING_PARAMETER_CODE = "DPOP_MISSING_PARAMETER"
+        private const val DPOP_CLEAR_KEY_FAILED_CODE = "DPOP_CLEAR_KEY_FAILED"
     }
 
     private val errorCodeMap = mapOf(
@@ -64,6 +84,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         CredentialsManagerException.API_ERROR to "API_ERROR",
         CredentialsManagerException.NO_NETWORK to "NO_NETWORK"
     )
+    // DPoP enabled by default
+    private var useDPoP: Boolean = true
 
     private var auth0: Auth0? = null
     private lateinit var secureCredentialsManager: SecureCredentialsManager
@@ -91,6 +113,9 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         additionalParameters: ReadableMap?,
         promise: Promise
     ) {
+        if(this.useDPoP) {
+            WebAuthProvider.useDPoP(reactContext)
+        }
         webAuthPromise = promise
         val cleanedParameters = mutableMapOf<String, String>()
         
@@ -142,9 +167,16 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         clientId: String,
         domain: String,
         localAuthenticationOptions: ReadableMap?,
+        useDPoP: Boolean?,
         promise: Promise
     ) {
+        this.useDPoP = useDPoP ?: true
         auth0 = Auth0.getInstance(clientId, domain)
+
+        val authAPI = AuthenticationAPIClient(auth0!!)
+        if (this.useDPoP) {
+            authAPI.useDPoP(reactContext)
+        }
         
         localAuthenticationOptions?.let { options ->
             val activity = reactContext.currentActivity
@@ -240,6 +272,17 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     @ReactMethod
     override fun clearCredentials(promise: Promise) {
         secureCredentialsManager.clearCredentials()
+        
+        // Also clear DPoP key if DPoP is enabled
+        if (useDPoP) {
+            try {
+                DPoP.clearKeyPair()
+            } catch (e: Exception) {
+                // Log error but don't fail the operation
+                android.util.Log.w(NAME, "Failed to clear DPoP key", e)
+            }
+        }
+        
         promise.resolve(true)
     }
 
@@ -316,6 +359,79 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             })
     }
 
+    @ReactMethod
+    override fun getDPoPHeaders(url: String, method: String, accessToken: String, tokenType: String, nonce: String?, promise: Promise) {
+        try {
+            // Validate parameters
+            if (url.isEmpty()) {
+                promise.reject(
+                    DPOP_MISSING_PARAMETER_CODE,
+                    "URL parameter is required for DPoP header generation"
+                )
+                return
+            }
+
+            if (method.isEmpty()) {
+                promise.reject(
+                    DPOP_MISSING_PARAMETER_CODE,
+                    "HTTP method parameter is required for DPoP header generation"
+                )
+                return
+            }
+
+            if (accessToken.isEmpty()) {
+                promise.reject(
+                    DPOP_MISSING_PARAMETER_CODE,
+                    "Access token parameter is required for DPoP header generation"
+                )
+                return
+            }
+
+            // Check if token type is DPoP
+            if (!tokenType.equals("DPoP", ignoreCase = true)) {
+                // If not DPoP, return Bearer token format
+                val headers = WritableNativeMap()
+                headers.putString("Authorization", "Bearer $accessToken")
+                promise.resolve(headers)
+                return
+            }
+
+            val headerData = if (nonce != null && nonce.isNotEmpty()) {
+                DPoP.getHeaderData(method, url, accessToken, tokenType, nonce)
+            } else {
+                DPoP.getHeaderData(method, url, accessToken, tokenType)
+            }
+            val map = WritableNativeMap()
+            map.putString("Authorization", headerData.authorizationHeader)
+            headerData.dpopProof?.let { map.putString("DPoP", it) }
+            promise.resolve(map)
+        } catch (e: DPoPException) {
+            handleDPoPError(e, promise)
+        } catch (e: Exception) {
+            promise.reject(
+                DPOP_GENERATION_FAILED_CODE,
+                "Failed to generate DPoP headers: ${e.message}",
+                e
+            )
+        }
+    }
+
+    @ReactMethod
+    override fun clearDPoPKey(promise: Promise) {
+        try {
+            DPoP.clearKeyPair()
+            promise.resolve(null)
+        } catch (e: DPoPException) {
+            handleDPoPError(e, promise)
+        } catch (e: Exception) {
+            promise.reject(
+                DPOP_CLEAR_KEY_FAILED_CODE,
+                "Failed to clear DPoP key: ${e.message}",
+                e
+            )
+        }
+    }
+
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         // No-op
     }
@@ -350,6 +466,21 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
     private fun deduceErrorCode(e: CredentialsManagerException): String {
         return errorCodeMap[e] ?: CREDENTIAL_MANAGER_ERROR_CODE
+    }
+
+    private fun handleDPoPError(error: DPoPException, promise: Promise) {
+        val errorCode = when (error) {
+            DPoPException.KEY_GENERATION_ERROR -> DPOP_KEY_GENERATION_FAILED_CODE
+            DPoPException.KEY_STORE_ERROR -> DPOP_KEYSTORE_ERROR_CODE
+            DPoPException.KEY_PAIR_NOT_FOUND -> DPOP_KEY_RETRIEVAL_FAILED_CODE
+            DPoPException.SIGNING_ERROR -> DPOP_PROOF_FAILED_CODE
+            DPoPException.MALFORMED_URL -> DPOP_MISSING_PARAMETER_CODE
+            DPoPException.UNSUPPORTED_ERROR -> DPOP_ERROR_CODE
+            DPoPException.UNKNOWN_ERROR -> DPOP_GENERATION_FAILED_CODE
+            else -> DPOP_GENERATION_FAILED_CODE
+        }
+        
+        promise.reject(errorCode, error.message ?: "DPoP operation failed", error)
     }
 
     private fun handleError(error: AuthenticationException, promise: Promise) {

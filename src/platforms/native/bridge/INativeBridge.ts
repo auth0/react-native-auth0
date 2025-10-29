@@ -3,6 +3,7 @@ import type {
   ApiCredentials,
   WebAuthorizeParameters,
   ClearSessionParameters,
+  DPoPHeadersParams,
 } from '../../../types';
 import type {
   LocalAuthenticationOptions,
@@ -30,11 +31,13 @@ export interface INativeBridge {
    * @param clientId The Auth0 application client ID.
    * @param domain The Auth0 application domain.
    * @param localAuthenticationOptions Options for local authentication.
+   * @param useDPoP Whether to enable DPoP (Demonstrating Proof-of-Possession) for token requests.
    */
   initialize(
     clientId: string,
     domain: string,
-    localAuthenticationOptions?: LocalAuthenticationOptions
+    localAuthenticationOptions?: LocalAuthenticationOptions,
+    useDPoP?: boolean
   ): Promise<void>;
 
   /**
@@ -131,4 +134,20 @@ export interface INativeBridge {
    * @returns A promise that resolves when the flow has been resumed.
    */
   resumeWebAuth(url: string): Promise<void>;
+
+  /**
+   * Generates DPoP headers for making authenticated requests to custom APIs.
+   * This method creates the necessary HTTP headers (Authorization and DPoP) to
+   * securely bind the access token to a specific API request.
+   *
+   * @param params Parameters including the URL, HTTP method, access token, and token type.
+   * @returns A promise that resolves to an object containing the required headers.
+   */
+  getDPoPHeaders(params: DPoPHeadersParams): Promise<Record<string, string>>;
+
+  /**
+   * Clears the DPoP key from secure storage.
+   * This should be called during logout to ensure the key is removed.
+   */
+  clearDPoPKey(): Promise<void>;
 }
