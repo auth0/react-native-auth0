@@ -19,7 +19,7 @@ export type Credentials = {
   idToken: string;
   /** The token used to make API calls to protected resources (your APIs). */
   accessToken: string;
-  /** The type of the token, typically "Bearer". */
+  /** The type of the token, typically "Bearer" or "DPoP" */
   tokenType: string;
   /** The expiration time of the access token, represented as a UNIX timestamp (in seconds). */
   expiresAt: number;
