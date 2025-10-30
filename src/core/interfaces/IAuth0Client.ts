@@ -2,6 +2,7 @@ import type { IWebAuthProvider } from './IWebAuthProvider';
 import type { ICredentialsManager } from './ICredentialsManager';
 import type { IAuthenticationProvider } from './IAuthenticationProvider';
 import type { IUsersClient } from './IUsersClient';
+import type { DPoPHeadersParams } from '../../types';
 
 /**
  * The primary interface for the Auth0 client.
@@ -33,4 +34,27 @@ export interface IAuth0Client {
    * @returns An `IUsersClient` instance configured with the provided token.
    */
   users(token: string): IUsersClient;
+
+  /**
+   * Generates DPoP headers for making authenticated requests to custom APIs.
+   * This method creates the necessary HTTP headers (Authorization and DPoP) to
+   * securely bind the access token to a specific API request.
+   *
+   * @param params Parameters including the URL, HTTP method, access token, and token type.
+   * @returns A promise that resolves to an object containing the required headers.
+   *
+   * @example
+   * ```typescript
+   * const credentials = await auth0.credentialsManager.getCredentials();
+   * const headers = await auth0.getDPoPHeaders({
+   *   url: 'https://api.example.com/data',
+   *   method: 'GET',
+   *   accessToken: credentials.accessToken,
+   *   tokenType: credentials.tokenType
+   * });
+   *
+   * fetch('https://api.example.com/data', { headers });
+   * ```
+   */
+  getDPoPHeaders(params: DPoPHeadersParams): Promise<Record<string, string>>;
 }

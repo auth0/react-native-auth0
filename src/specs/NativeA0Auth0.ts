@@ -23,7 +23,8 @@ export interface Spec extends TurboModule {
     domain: string,
     localAuthenticationOptions:
       | { [key: string]: string | Int32 | boolean }
-      | undefined
+      | undefined,
+    useDPoP: boolean | undefined
   ): Promise<void>;
 
   /**
@@ -91,6 +92,23 @@ export interface Spec extends TurboModule {
    * Cancel web authentication
    */
   cancelWebAuth(): Promise<void>;
+
+  /**
+   * Get the DPoP headers for a request
+   */
+  getDPoPHeaders(
+    url: string,
+    method: string,
+    accessToken: string,
+    tokenType: string,
+    nonce?: string
+  ): Promise<{ [key: string]: string }>;
+
+  /**
+   * Clear the DPoP key
+   * This method clears the DPoP key from the native module.
+   */
+  clearDPoPKey(): Promise<void>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('A0Auth0');

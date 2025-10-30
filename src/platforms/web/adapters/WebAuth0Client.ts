@@ -5,6 +5,7 @@ import {
 } from '@auth0/auth0-spa-js';
 import type { IAuth0Client, IUsersClient } from '../../../core/interfaces';
 import type { WebAuth0Options } from '../../../types/platform-specific';
+import type { DPoPHeadersParams } from '../../../types';
 import { WebWebAuthProvider } from './WebWebAuthProvider';
 import { WebCredentialsManager } from './WebCredentialsManager';
 import {
@@ -12,7 +13,7 @@ import {
   ManagementApiOrchestrator,
 } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
-import { AuthError } from '../../../core/models';
+import { AuthError, DPoPError } from '../../../core/models';
 
 export class WebAuth0Client implements IAuth0Client {
   readonly webAuth: WebWebAuthProvider;
@@ -67,6 +68,7 @@ export class WebAuth0Client implements IAuth0Client {
       clientId: options.clientId,
       cacheLocation: options.cacheLocation ?? 'memory',
       useRefreshTokens: options.useRefreshTokens ?? false,
+      useDpop: options.useDPoP ?? true,
       authorizationParams: {
         redirect_uri:
           typeof window !== 'undefined' ? window.location.origin : '',
@@ -106,6 +108,60 @@ export class WebAuth0Client implements IAuth0Client {
         e.error_description ?? e.message,
         { json: e }
       );
+    }
+  }
+
+  async getDPoPHeaders(
+    params: DPoPHeadersParams
+  ): Promise<Record<string, string>> {
+    // For web platform, we need to get the access token and use the underlying
+    // auth0-spa-js DPoP utilities to generate the headers
+    const {
+      url,
+      method,
+      accessToken,
+      tokenType,
+      nonce: providedNonce,
+    } = params;
+
+    // If DPoP is not enabled or token is not DPoP type, return bearer header
+    if (tokenType !== 'DPoP') {
+      return {
+        Authorization: `Bearer ${accessToken}`,
+      };
+    }
+
+    try {
+      // Use the public DPoP methods from auth0-spa-js
+      // These methods are available when useDpop is enabled
+      const headers: Record<string, string> = {
+        Authorization: `DPoP ${accessToken}`,
+      };
+
+      // Use provided nonce if available, otherwise get the current DPoP nonce
+      // (may be undefined on first request)
+      const nonce = providedNonce ?? (await this.client.getDpopNonce());
+
+      // Generate DPoP proof using the client's public method
+      const dpopProof = await this.client.generateDpopProof({
+        url,
+        method,
+        nonce,
+        accessToken,
+      });
+
+      if (dpopProof) {
+        headers.DPoP = dpopProof;
+      }
+
+      return headers;
+    } catch (e: any) {
+      const authError = new AuthError(
+        e.error ?? 'dpop_generation_failed',
+        e.error_description ?? e.message ?? 'Failed to generate DPoP headers',
+        { json: e }
+      );
+      throw new DPoPError(authError);
     }
   }
 }
