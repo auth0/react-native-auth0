@@ -19,6 +19,12 @@
 - [Organizations](#organizations)
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
+- [DPoP (Demonstrating Proof-of-Possession)](#dpop-demonstrating-proof-of-possession)
+  - [Enabling DPoP](#enabling-dpop)
+  - [Making API calls with DPoP](#making-api-calls-with-dpop)
+  - [Handling DPoP token migration](#handling-dpop-token-migration)
+  - [Checking token type](#checking-token-type)
+  - [Handling nonce errors](#handling-nonce-errors)
 - [Bot Protection](#bot-protection)
   - [Domain Switching](#domain-switching)
     - [Android](#android)
@@ -441,3 +447,353 @@ If you want to support multiple domains, you would have to pass an array of obje
 ```
 
 You can skip sending the `customScheme` property if you do not want to customize it.
+
+## DPoP (Demonstrating Proof-of-Possession)
+
+[DPoP](https://datatracker.ietf.org/doc/html/rfc9449) (Demonstrating Proof-of-Possession) is an OAuth 2.0 extension that cryptographically binds access and refresh tokens to a client-specific key pair. This prevents token theft and replay attacks by ensuring that even if a token is intercepted, it cannot be used from a different device.
+
+> **Note**: This feature is currently available in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access). Please reach out to Auth0 support to get it enabled for your tenant.
+
+### Enabling DPoP
+
+DPoP is enabled by default (`useDPoP: true`) when you initialize the Auth0 client:
+
+```js
+import Auth0 from 'react-native-auth0';
+
+// DPoP is enabled by default
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+});
+
+// Or explicitly enable it
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+  useDPoP: true, // Explicitly enable DPoP
+});
+```
+
+**Using Auth0Provider (React Hooks):**
+
+```js
+import { Auth0Provider } from 'react-native-auth0';
+
+function App() {
+  return (
+    <Auth0Provider
+      domain="YOUR_AUTH0_DOMAIN"
+      clientId="YOUR_AUTH0_CLIENT_ID"
+      // DPoP is enabled by default
+    >
+      {/* Your app components */}
+    </Auth0Provider>
+  );
+}
+```
+
+> **Important**: DPoP will only be used for **new user sessions** created after enabling it. Existing sessions with Bearer tokens will continue to work until the user logs in again. See [Handling DPoP token migration](#handling-dpop-token-migration) for how to handle this transition.
+
+### Making API calls with DPoP
+
+When calling your own APIs with DPoP-bound tokens, you need to include both the `Authorization` header and the `DPoP` proof header. The SDK provides a `getDPoPHeaders()` method to generate these headers:
+
+```js
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+  useDPoP: true,
+});
+
+async function callApi() {
+  try {
+    // Get credentials
+    const credentials = await auth0.credentialsManager.getCredentials();
+
+    // Generate DPoP headers for your API request
+    const headers = await auth0.getDPoPHeaders({
+      url: 'https://api.example.com/data',
+      method: 'GET',
+      accessToken: credentials.accessToken,
+      tokenType: credentials.tokenType,
+    });
+
+    // Make the API call with the headers
+    const response = await fetch('https://api.example.com/data', {
+      method: 'GET',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.error('API call failed:', error);
+  }
+}
+```
+
+**Using React Hooks:**
+
+```js
+import { useAuth0 } from 'react-native-auth0';
+
+function MyComponent() {
+  const { getCredentials, getDPoPHeaders } = useAuth0();
+
+  const callApi = async () => {
+    try {
+      const credentials = await getCredentials();
+
+      const headers = await getDPoPHeaders({
+        url: 'https://api.example.com/data',
+        method: 'POST',
+        accessToken: credentials.accessToken,
+        tokenType: credentials.tokenType,
+      });
+
+      const response = await fetch('https://api.example.com/data', {
+        method: 'POST',
+        headers: {
+          ...headers,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: 'Hello' }),
+      });
+
+      return await response.json();
+    } catch (error) {
+      console.error('API call failed:', error);
+    }
+  };
+
+  return <Button title="Call API" onPress={callApi} />;
+}
+```
+
+### Handling DPoP token migration
+
+When you enable DPoP in your app, existing users will still have Bearer tokens until they log in again. You should implement logic to detect old tokens and prompt users to re-authenticate:
+
+```js
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+  useDPoP: true,
+});
+
+async function ensureDPoPTokens() {
+  try {
+    // Check if user has credentials
+    const hasCredentials = await auth0.credentialsManager.hasValidCredentials();
+
+    if (!hasCredentials) {
+      // No credentials, user needs to log in
+      return await auth0.webAuth.authorize();
+    }
+
+    // Get existing credentials
+    const credentials = await auth0.credentialsManager.getCredentials();
+
+    // Check if the token is DPoP
+    if (credentials.tokenType !== 'DPoP') {
+      console.log(
+        'User has old Bearer token, clearing and re-authenticating...'
+      );
+
+      // Clear old credentials
+      await auth0.credentialsManager.clearCredentials();
+
+      // Prompt user to log in again with DPoP
+      return await auth0.webAuth.authorize();
+    }
+
+    console.log('User already has DPoP token');
+    return credentials;
+  } catch (error) {
+    console.error('Token migration failed:', error);
+    throw error;
+  }
+}
+
+// Call this when your app starts or when accessing protected resources
+ensureDPoPTokens()
+  .then((credentials) => console.log('Ready with DPoP tokens:', credentials))
+  .catch((error) => console.error('Failed to ensure DPoP tokens:', error));
+```
+
+**Using React Hooks:**
+
+```js
+import { useAuth0 } from 'react-native-auth0';
+import { useEffect, useState } from 'react';
+
+function App() {
+  const { authorize, getCredentials, clearSession, hasValidCredentials } =
+    useAuth0();
+  const [isReady, setIsReady] = useState(false);
+  const [needsMigration, setNeedsMigration] = useState(false);
+
+  useEffect(() => {
+    checkAndMigrateToDPoP();
+  }, []);
+
+  const checkAndMigrateToDPoP = async () => {
+    try {
+      const hasValid = await hasValidCredentials();
+
+      if (!hasValid) {
+        setIsReady(true);
+        return;
+      }
+
+      const credentials = await getCredentials();
+
+      if (credentials.tokenType !== 'DPoP') {
+        setNeedsMigration(true);
+        // Optionally auto-clear or wait for user action
+        // await clearSession();
+        // await authorize();
+      }
+
+      setIsReady(true);
+    } catch (error) {
+      console.error('Migration check failed:', error);
+      setIsReady(true);
+    }
+  };
+
+  const handleMigration = async () => {
+    try {
+      await clearSession();
+      await authorize();
+      setNeedsMigration(false);
+    } catch (error) {
+      console.error('Migration failed:', error);
+    }
+  };
+
+  if (!isReady) {
+    return <LoadingScreen />;
+  }
+
+  if (needsMigration) {
+    return (
+      <View>
+        <Text>Security Update Required</Text>
+        <Text>
+          Please log in again to enhance your account security with DPoP.
+        </Text>
+        <Button title="Log In Again" onPress={handleMigration} />
+      </View>
+    );
+  }
+
+  return <YourApp />;
+}
+```
+
+### Checking token type
+
+You can check whether credentials use DPoP or Bearer tokens:
+
+```js
+const credentials = await auth0.credentialsManager.getCredentials();
+
+if (credentials.tokenType === 'DPoP') {
+  console.log('Using DPoP token - enhanced security enabled');
+
+  // Generate DPoP headers for API calls
+  const headers = await auth0.getDPoPHeaders({
+    url: 'https://api.example.com/data',
+    method: 'GET',
+    accessToken: credentials.accessToken,
+    tokenType: credentials.tokenType,
+  });
+} else {
+  console.log('Using Bearer token - consider migrating to DPoP');
+
+  // Standard Bearer authorization
+  const headers = {
+    Authorization: `Bearer ${credentials.accessToken}`,
+  };
+}
+```
+
+### Handling nonce errors
+
+Some APIs may require DPoP nonces to prevent replay attacks. If your API responds with a `use_dpop_nonce` error, you can retry the request with the nonce:
+
+```js
+async function callApiWithNonce(url, method, credentials, retryCount = 0) {
+  try {
+    // Generate headers (initially without nonce)
+    const headers = await auth0.getDPoPHeaders({
+      url,
+      method,
+      accessToken: credentials.accessToken,
+      tokenType: credentials.tokenType,
+    });
+
+    const response = await fetch(url, {
+      method,
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    // Check if nonce is required
+    if (response.status === 401 && retryCount === 0) {
+      const authHeader = response.headers.get('WWW-Authenticate');
+
+      if (authHeader && authHeader.includes('use_dpop_nonce')) {
+        // Extract nonce from response
+        const nonce = response.headers.get('DPoP-Nonce');
+
+        if (nonce) {
+          console.log('Retrying with DPoP nonce...');
+
+          // Retry with nonce
+          const headersWithNonce = await auth0.getDPoPHeaders({
+            url,
+            method,
+            accessToken: credentials.accessToken,
+            tokenType: credentials.tokenType,
+            nonce,
+          });
+
+          return await fetch(url, {
+            method,
+            headers: {
+              ...headersWithNonce,
+              'Content-Type': 'application/json',
+            },
+          });
+        }
+      }
+    }
+
+    return response;
+  } catch (error) {
+    console.error('API call with nonce failed:', error);
+    throw error;
+  }
+}
+
+// Usage
+const credentials = await auth0.credentialsManager.getCredentials();
+const response = await callApiWithNonce(
+  'https://api.example.com/data',
+  'GET',
+  credentials
+);
+const data = await response.json();
+```

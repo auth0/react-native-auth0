@@ -30,9 +30,19 @@ export const addAndroidAuth0Manifest = (
   if (auth0Configs.length === 0) {
     throw new Error(`No auth0 domain specified in expo config`);
   }
+  // Check if any config uses https/http scheme for App Links
+  const hasAppLinks = auth0Configs.some(
+    (config) =>
+      config.customScheme === 'https' || config.customScheme === 'http'
+  );
 
   const intentFilterContent = [
     {
+      ...(hasAppLinks && {
+        $: {
+          'android:autoVerify': 'true' as AndroidConfig.Manifest.StringBoolean,
+        },
+      }),
       action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }],
       category: [
         { $: { 'android:name': 'android.intent.category.DEFAULT' } },
@@ -61,16 +71,28 @@ export const addAndroidAuth0Manifest = (
         'tools:node': 'replace',
         'android:exported': 'true',
       },
-      'intent-filter': intentFilterContent,
+      'intent-filter':
+        intentFilterContent as AndroidConfig.Manifest.ManifestIntentFilter[],
     };
     mainApplication.activity = mainApplication.activity || [];
     mainApplication.activity.push(redirectActivity);
   }
 
   redirectActivity['intent-filter'] =
-    redirectActivity['intent-filter'] || intentFilterContent;
+    redirectActivity['intent-filter'] ||
+    (intentFilterContent as AndroidConfig.Manifest.ManifestIntentFilter[]);
   const intentFilter = redirectActivity['intent-filter'][0] || {};
+  if (!intentFilter) {
+    throw new Error('Failed to create intent filter');
+  }
   intentFilter.data = intentFilter.data || [];
+
+  // Add android:autoVerify="true" for App Links
+  if (hasAppLinks) {
+    intentFilter.$ = intentFilter.$ || {};
+    intentFilter.$['android:autoVerify'] =
+      'true' as AndroidConfig.Manifest.StringBoolean;
+  }
 
   // Add data elements for each auth0Config
   auth0Configs.forEach((config) => {
@@ -101,7 +123,7 @@ const withAndroidAuth0Manifest: ConfigPlugin<Auth0PluginConfig[]> = (
   config,
   auth0Configs
 ) => {
-  let applicationId = config.android?.package;
+  let applicationId = config.android?.package?.toLowerCase();
   return withAndroidManifest(config, (manifest) => {
     return addAndroidAuth0Manifest(auth0Configs, manifest, applicationId);
   });

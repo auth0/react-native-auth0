@@ -4,6 +4,7 @@ import type {
   WebAuthorizeParameters,
   ClearSessionParameters,
   NativeClearSessionOptions,
+  DPoPHeadersParams,
 } from '../../../types';
 import {
   SafariViewControllerPresentationStyle,
@@ -48,7 +49,8 @@ export class NativeBridgeManager implements INativeBridge {
   async initialize(
     clientId: string,
     domain: string,
-    localAuthenticationOptions?: LocalAuthenticationOptions
+    localAuthenticationOptions?: LocalAuthenticationOptions,
+    useDPoP: boolean = true
   ): Promise<void> {
     // This is a new method we'd add to the native side to ensure the
     // underlying Auth0.swift/Auth0.android SDKs are configured.
@@ -56,7 +58,8 @@ export class NativeBridgeManager implements INativeBridge {
       Auth0NativeModule.initializeAuth0WithConfiguration,
       clientId,
       domain,
-      localAuthenticationOptions
+      localAuthenticationOptions,
+      useDPoP
     );
   }
 
@@ -143,5 +146,22 @@ export class NativeBridgeManager implements INativeBridge {
 
   async resumeWebAuth(url: string): Promise<void> {
     return this.a0_call(Auth0NativeModule.resumeWebAuth, url);
+  }
+
+  async getDPoPHeaders(
+    params: DPoPHeadersParams
+  ): Promise<Record<string, string>> {
+    return this.a0_call(
+      Auth0NativeModule.getDPoPHeaders,
+      params.url,
+      params.method,
+      params.accessToken,
+      params.tokenType,
+      params.nonce
+    );
+  }
+
+  async clearDPoPKey(): Promise<void> {
+    return this.a0_call(Auth0NativeModule.clearDPoPKey);
   }
 }
