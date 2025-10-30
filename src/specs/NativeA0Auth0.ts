@@ -1,6 +1,6 @@
 import { TurboModuleRegistry, type TurboModule } from 'react-native';
 import type { Int32 } from 'react-native/Libraries/Types/CodegenTypes';
-import type { Credentials } from '../types';
+import type { ApiCredentials, Credentials } from '../types';
 export interface Spec extends TurboModule {
   /**
    * Get the bundle identifier
@@ -53,6 +53,21 @@ export interface Spec extends TurboModule {
    * Clear credentials
    */
   clearCredentials(): Promise<void>;
+
+  /**
+   * Get API credentials for a specific audience
+   */
+  getApiCredentials(
+    audience: string,
+    scope: string | undefined,
+    minTTL: Int32,
+    parameters: Object
+  ): Promise<ApiCredentials>;
+
+  /**
+   * Clear API credentials for a specific audience
+   */
+  clearApiCredentials(audience: string): Promise<void>;
 
   /**
    * Start web authentication

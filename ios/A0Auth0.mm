@@ -77,6 +77,21 @@ RCT_EXPORT_METHOD(hasValidCredentials:(NSInteger)minTTL
     [self.nativeBridge hasValidCredentialsWithMinTTL:minTTL resolve:resolve];
 }
 
+RCT_EXPORT_METHOD(getApiCredentials: (NSString *)audience
+                  scope:(NSString * _Nullable)scope
+                  minTTL:(NSInteger)minTTL
+                  parameters:(NSDictionary *)parameters
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge getApiCredentialsWithAudience:audience scope:scope minTTL:minTTL parameters:parameters resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(clearApiCredentials: (NSString *)audience
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge clearApiCredentialsWithAudience:audience resolve:resolve reject:reject];
+}
+
 
 RCT_EXPORT_METHOD(initializeAuth0WithConfiguration:(NSString *)clientId
                                   domain:(NSString *)domain
