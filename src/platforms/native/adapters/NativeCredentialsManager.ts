@@ -1,5 +1,5 @@
 import type { ICredentialsManager } from '../../../core/interfaces';
-import { AuthError } from '../../../core/models';
+import { ApiCredentials, AuthError } from '../../../core/models';
 import { CredentialsManagerError } from '../../../core/models';
 import type {
   ApiCredentials as IApiCredentials,

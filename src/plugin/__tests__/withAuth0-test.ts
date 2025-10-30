@@ -212,6 +212,101 @@ describe(addAndroidAuth0Manifest, () => {
     expect(dataElement?.$['android:scheme']).toBe('com.custom.scheme');
     expect(dataElement?.$['android:host']).toBe('sample.auth0.com');
   });
+
+  it(`should add android:autoVerify="true" when customScheme is https`, () => {
+    const config = getConfig();
+    const result = addAndroidAuth0Manifest(
+      [
+        {
+          domain: 'sample.auth0.com',
+          customScheme: 'https',
+        },
+      ],
+      config,
+      'com.auth0.testapp'
+    );
+
+    // Access the RedirectActivity to check if autoVerify is correctly added
+    const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(
+      result.modResults
+    );
+    const redirectActivity = mainApplication.activity?.find(
+      (activity) =>
+        activity.$['android:name'] ===
+        'com.auth0.android.provider.RedirectActivity'
+    );
+
+    const intentFilter = redirectActivity?.['intent-filter']?.[0];
+
+    expect(intentFilter?.$).toBeDefined();
+    expect(intentFilter?.$?.['android:autoVerify']).toBe('true');
+
+    const dataElement = intentFilter?.data?.[0];
+    expect(dataElement?.$['android:scheme']).toBe('https');
+    expect(dataElement?.$['android:host']).toBe('sample.auth0.com');
+  });
+
+  it(`should add android:autoVerify="true" when customScheme is http`, () => {
+    const config = getConfig();
+    const result = addAndroidAuth0Manifest(
+      [
+        {
+          domain: 'sample.auth0.com',
+          customScheme: 'http',
+        },
+      ],
+      config,
+      'com.auth0.testapp'
+    );
+
+    // Access the RedirectActivity to check if autoVerify is correctly added
+    const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(
+      result.modResults
+    );
+    const redirectActivity = mainApplication.activity?.find(
+      (activity) =>
+        activity.$['android:name'] ===
+        'com.auth0.android.provider.RedirectActivity'
+    );
+
+    const intentFilter = redirectActivity?.['intent-filter']?.[0];
+
+    expect(intentFilter?.$).toBeDefined();
+    expect(intentFilter?.$?.['android:autoVerify']).toBe('true');
+
+    const dataElement = intentFilter?.data?.[0];
+    expect(dataElement?.$['android:scheme']).toBe('http');
+    expect(dataElement?.$['android:host']).toBe('sample.auth0.com');
+  });
+
+  it(`should not add android:autoVerify when customScheme is not http/https`, () => {
+    const config = getConfig();
+    const result = addAndroidAuth0Manifest(
+      [
+        {
+          domain: 'sample.auth0.com',
+          customScheme: 'com.custom.scheme',
+        },
+      ],
+      config,
+      'com.auth0.testapp'
+    );
+
+    // Access the RedirectActivity
+    const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(
+      result.modResults
+    );
+    const redirectActivity = mainApplication.activity?.find(
+      (activity) =>
+        activity.$['android:name'] ===
+        'com.auth0.android.provider.RedirectActivity'
+    );
+
+    const intentFilter = redirectActivity?.['intent-filter']?.[0];
+
+    // autoVerify should not be present for non-http(s) schemes
+    expect(intentFilter?.$?.['android:autoVerify']).toBeUndefined();
+  });
 });
 
 describe(addIOSAuth0ConfigInInfoPList, () => {
