@@ -132,7 +132,8 @@
     "typedoc": "^0.28.2",
     "typedoc-plugin-missing-exports": "^4.0.0",
     "typedoc-plugin-replace-text": "^4.2.0",
-    "typescript": "5.2.2"
+    "typescript": "5.2.2",
+    "typescript-eslint": "^8.46.2"
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "2.7.0",
