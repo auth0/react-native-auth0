@@ -36,6 +36,30 @@ import { deepCamelCase } from '../utils';
 type RawUser = { [key: string]: any };
 
 /**
+ * Ensures the 'openid' scope is included in the scope string.
+ * This is required for receiving an ID token in the response.
+ * Follows the same pattern as Auth0.Android and Auth0.Swift SDKs.
+ *
+ * When no scope is provided, defaults to 'openid profile email' to match
+ * the behavior of other Auth0 SDKs and provide a complete user profile.
+ *
+ * @param scope - The original scope string (optional)
+ * @returns A scope string that includes 'openid'
+ */
+function includeRequiredScope(scope?: string): string {
+  if (!scope) {
+    return 'openid profile email';
+  }
+  
+  const scopes = scope.split(' ');
+  if (!scopes.includes('openid')) {
+    return `openid ${scope}`;
+  }
+  
+  return scope;
+}
+
+/**
  * Orchestrates all direct authentication flows by making calls to the Auth0 Authentication API.
  * This class is platform-agnostic and relies on an injected HttpClient.
  */
@@ -107,7 +131,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
       subject_token_type: payload.subjectTokenType,
       user_profile: payload.userProfile,
       audience: payload.audience,
-      scope: payload.scope,
+      scope: includeRequiredScope(payload.scope),
     };
     const { json, response } =
       await this.client.post<NativeCredentialsResponse>(
@@ -131,7 +155,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
       password: payload.password,
       realm: payload.realm,
       audience: payload.audience,
-      scope: payload.scope,
+      scope: includeRequiredScope(payload.scope),
     };
     const { json, response } =
       await this.client.post<NativeCredentialsResponse>(
@@ -150,7 +174,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
       grant_type: 'refresh_token',
       client_id: this.clientId,
       refresh_token: payload.refreshToken,
-      scope: payload.scope,
+      scope: includeRequiredScope(payload.scope),
     };
     const { json, response } =
       await this.client.post<NativeCredentialsResponse>(
@@ -212,7 +236,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
       otp: payload.code,
       realm: 'email',
       audience: payload.audience,
-      scope: payload.scope,
+      scope: includeRequiredScope(payload.scope),
     };
     const { json, response } =
       await this.client.post<NativeCredentialsResponse>(
@@ -234,7 +258,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
       otp: payload.code,
       realm: 'sms',
       audience: payload.audience,
-      scope: payload.scope,
+      scope: includeRequiredScope(payload.scope),
     };
     const { json, response } =
       await this.client.post<NativeCredentialsResponse>(
