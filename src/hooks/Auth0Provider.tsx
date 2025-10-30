@@ -30,7 +30,7 @@ import type {
   NativeClearSessionOptions,
 } from '../types/platform-specific';
 import { Auth0User, AuthError } from '../core/models';
-import Auth0 from '../index';
+import Auth0 from '../Auth0';
 import { Platform } from 'react-native';
 
 export const Auth0Provider = ({
