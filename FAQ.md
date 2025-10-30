@@ -11,6 +11,10 @@
 9. [Why doesn't `await authorize()` work on the web? How do I handle login?](#9-why-doesnt-await-authorize-work-on-the-web-how-do-i-handle-login)
 10. [Why do my users get logged out frequently? How do I keep them logged in?](#10-why-do-my-users-get-logged-out-frequently-how-do-i-keep-them-logged-in)
 11. [How can I prompt users to the login page versus signup page?](#11-how-can-i-prompt-users-to-the-login-page-versus-signup-page)
+12. [What is DPoP and should I enable it?](#12-what-is-dpop-and-should-i-enable-it)
+13. [How do I migrate existing users to DPoP?](#13-how-do-i-migrate-existing-users-to-dpop)
+14. [How do I know if my tokens are using DPoP?](#14-how-do-i-know-if-my-tokens-are-using-dpop)
+15. [What happens if I disable DPoP after enabling it?](#15-what-happens-if-i-disable-dpop-after-enabling-it)
 
 ## 1. How can I have separate Auth0 domains for each environment on Android?
 
@@ -361,3 +365,389 @@ const signup = async () => {
   // continue with signup process!
 }
 ```
+
+## 12. What is DPoP and should I enable it?
+
+**DPoP** (Demonstrating Proof-of-Possession) is an OAuth 2.0 security extension ([RFC 9449](https://datatracker.ietf.org/doc/html/rfc9449)) that cryptographically binds access and refresh tokens to a specific device using public/private key pairs. This means that even if an access token is stolen (e.g., through XSS or network interception), it cannot be used from a different device because the attacker won't have the private key needed to generate valid DPoP proofs.
+
+**Benefits:**
+
+- **Enhanced Security**: Prevents token theft and replay attacks
+- **Device Binding**: Tokens only work on the device that requested them
+- **Compliance**: Helps meet security requirements for sensitive applications
+- **Zero-Knowledge Security**: The private key never leaves the device
+
+**Should you enable it?**
+
+DPoP is **enabled by default** (`useDPoP: true`) in this SDK because it provides significant security benefits with minimal impact on the developer experience. However, you should consider:
+
+- ✅ Enable if you handle sensitive data or financial transactions
+- ✅ Enable if you want best-in-class security practices
+- ✅ Enable if your users access the app from multiple devices (DPoP helps prevent cross-device token abuse)
+- ⚠️ **Note**: DPoP is currently in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access) - contact Auth0 support to enable it on your tenant
+- ⚠️ **Note**: Existing users with Bearer tokens will need to log in again to get DPoP tokens (see [FAQ #13](#13-how-do-i-migrate-existing-users-to-dpop))
+
+**How to disable it (if needed):**
+
+```javascript
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+  useDPoP: false, // Disable DPoP
+});
+```
+
+## 13. How do I migrate existing users to DPoP?
+
+When you enable DPoP in your app, existing users will still have Bearer tokens from their previous sessions. DPoP only applies to **new sessions** created after it's enabled. Here's how to handle the migration:
+
+### Option 1: Automatic Detection and Re-authentication
+
+Check the token type when your app starts and automatically prompt users to log in again if they have old Bearer tokens:
+
+```javascript
+import { useAuth0 } from 'react-native-auth0';
+import { useEffect, useState } from 'react';
+
+function App() {
+  const { authorize, getCredentials, clearSession, hasValidCredentials } =
+    useAuth0();
+  const [isReady, setIsReady] = useState(false);
+  const [needsMigration, setNeedsMigration] = useState(false);
+
+  useEffect(() => {
+    checkTokenType();
+  }, []);
+
+  const checkTokenType = async () => {
+    try {
+      const hasValid = await hasValidCredentials();
+
+      if (!hasValid) {
+        // No credentials, user needs to log in
+        setIsReady(true);
+        return;
+      }
+
+      const credentials = await getCredentials();
+
+      // Check if user has old Bearer token
+      if (credentials.tokenType !== 'DPoP') {
+        console.log('User has old Bearer token, migration needed');
+        setNeedsMigration(true);
+      }
+
+      setIsReady(true);
+    } catch (error) {
+      console.error('Token check failed:', error);
+      setIsReady(true);
+    }
+  };
+
+  const handleMigration = async () => {
+    try {
+      // Clear old credentials
+      await clearSession();
+
+      // Re-authenticate to get DPoP tokens
+      await authorize();
+
+      setNeedsMigration(false);
+    } catch (error) {
+      console.error('Migration failed:', error);
+    }
+  };
+
+  if (!isReady) {
+    return <LoadingScreen />;
+  }
+
+  if (needsMigration) {
+    return (
+      <View>
+        <Text>Security Update Required</Text>
+        <Text>
+          We've enhanced our security. Please log in again to continue.
+        </Text>
+        <Button title="Log In Again" onPress={handleMigration} />
+      </View>
+    );
+  }
+
+  return <YourMainApp />;
+}
+```
+
+### Option 2: Gradual Migration with User Choice
+
+Allow users to continue using the app but encourage migration:
+
+```javascript
+function App() {
+  const { authorize, getCredentials, clearSession } = useAuth0();
+  const [showMigrationBanner, setShowMigrationBanner] = useState(false);
+
+  useEffect(() => {
+    checkAndShowMigrationBanner();
+  }, []);
+
+  const checkAndShowMigrationBanner = async () => {
+    try {
+      const credentials = await getCredentials();
+
+      if (credentials.tokenType !== 'DPoP') {
+        setShowMigrationBanner(true);
+      }
+    } catch (error) {
+      console.error('Failed to check token type:', error);
+    }
+  };
+
+  const handleOptionalMigration = async () => {
+    try {
+      await clearSession();
+      await authorize();
+      setShowMigrationBanner(false);
+    } catch (error) {
+      console.error('Migration failed:', error);
+    }
+  };
+
+  return (
+    <View>
+      {showMigrationBanner && (
+        <Banner>
+          <Text>Enhanced security available! Log in again to enable.</Text>
+          <Button title="Update Now" onPress={handleOptionalMigration} />
+          <Button title="Later" onPress={() => setShowMigrationBanner(false)} />
+        </Banner>
+      )}
+      <YourMainApp />
+    </View>
+  );
+}
+```
+
+### Option 3: Silent Migration on Next API Call
+
+Migrate users transparently when they make an API call:
+
+```javascript
+async function callApiWithMigration(url, method = 'GET') {
+  try {
+    let credentials = await auth0.credentialsManager.getCredentials();
+
+    // Check if migration is needed
+    if (credentials.tokenType !== 'DPoP') {
+      console.log('Migrating to DPoP tokens...');
+
+      // Clear old credentials
+      await auth0.credentialsManager.clearCredentials();
+
+      // Re-authenticate silently (will get DPoP tokens)
+      await auth0.webAuth.authorize();
+
+      // Get new DPoP credentials
+      credentials = await auth0.credentialsManager.getCredentials();
+    }
+
+    // Generate headers (DPoP or Bearer)
+    const headers = await auth0.getDPoPHeaders({
+      url,
+      method,
+      accessToken: credentials.accessToken,
+      tokenType: credentials.tokenType,
+    });
+
+    return await fetch(url, { method, headers });
+  } catch (error) {
+    console.error('API call failed:', error);
+    throw error;
+  }
+}
+```
+
+### Important Notes:
+
+1. **Only check if DPoP is enabled**: The migration check should only run if you've initialized the SDK with `useDPoP: true`
+
+```javascript
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+  useDPoP: true, // Ensure DPoP is enabled
+});
+
+// Then check token type
+const credentials = await auth0.credentialsManager.getCredentials();
+if (credentials.tokenType !== 'DPoP') {
+  // Migration needed
+}
+```
+
+2. **Preserve user experience**: Consider the timing of migration (e.g., during app launch vs. during API calls)
+3. **Communicate with users**: Explain why re-authentication is necessary
+4. **Handle errors gracefully**: Network issues or user cancellation should be handled appropriately
+
+## 14. How do I know if my tokens are using DPoP?
+
+You can check the `tokenType` property of the credentials returned by `getCredentials()`:
+
+```javascript
+import { useAuth0 } from 'react-native-auth0';
+
+function TokenInfo() {
+  const { getCredentials } = useAuth0();
+  const [tokenInfo, setTokenInfo] = useState(null);
+
+  const checkTokenType = async () => {
+    try {
+      const credentials = await getCredentials();
+
+      setTokenInfo({
+        type: credentials.tokenType,
+        isDPoP: credentials.tokenType === 'DPoP',
+        isBearer: credentials.tokenType === 'Bearer',
+      });
+
+      console.log('Token Type:', credentials.tokenType); // 'DPoP' or 'Bearer'
+
+      if (credentials.tokenType === 'DPoP') {
+        console.log('✅ Using DPoP - Enhanced security enabled');
+      } else {
+        console.log('⚠️ Using Bearer token - Consider migrating to DPoP');
+      }
+    } catch (error) {
+      console.error('Failed to get credentials:', error);
+    }
+  };
+
+  return (
+    <View>
+      <Button title="Check Token Type" onPress={checkTokenType} />
+      {tokenInfo && (
+        <View>
+          <Text>Token Type: {tokenInfo.type}</Text>
+          <Text>
+            Security:{' '}
+            {tokenInfo.isDPoP ? '🔒 DPoP (High)' : '⚠️ Bearer (Standard)'}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+}
+```
+
+**When making API calls**, you can also check the headers to see if DPoP is being used:
+
+```javascript
+const credentials = await auth0.credentialsManager.getCredentials();
+
+const headers = await auth0.getDPoPHeaders({
+  url: 'https://api.example.com/data',
+  method: 'GET',
+  accessToken: credentials.accessToken,
+  tokenType: credentials.tokenType,
+});
+
+console.log('Headers:', headers);
+// DPoP tokens will have:
+// {
+//   'Authorization': 'DPoP <access_token>',
+//   'DPoP': '<dpop_proof_jwt>'
+// }
+
+// Bearer tokens will have:
+// {
+//   'Authorization': 'Bearer <access_token>'
+// }
+
+if (headers.DPoP) {
+  console.log('✅ Using DPoP headers');
+} else {
+  console.log('⚠️ Using Bearer headers');
+}
+```
+
+## 15. What happens if I disable DPoP after enabling it?
+
+If you disable DPoP after enabling it (by setting `useDPoP: false`), here's what happens:
+
+### Immediate Effects:
+
+1. **New logins will use Bearer tokens** instead of DPoP tokens
+2. **Existing DPoP tokens remain valid** until they expire
+3. **The SDK will handle both token types** automatically during the transition
+
+### Handling the transition:
+
+```javascript
+// Disable DPoP
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+  useDPoP: false, // Disabled
+});
+
+// The SDK will automatically handle existing DPoP tokens
+try {
+  const credentials = await auth0.credentialsManager.getCredentials();
+
+  // Token type will be 'DPoP' for existing sessions
+  // or 'Bearer' for new sessions
+  console.log('Current token type:', credentials.tokenType);
+
+  // getDPoPHeaders() will still work with both types
+  const headers = await auth0.getDPoPHeaders({
+    url: 'https://api.example.com/data',
+    method: 'GET',
+    accessToken: credentials.accessToken,
+    tokenType: credentials.tokenType,
+  });
+
+  // Headers will be appropriate for the token type:
+  // DPoP tokens: { Authorization: 'DPoP <token>', DPoP: '<proof>' }
+  // Bearer tokens: { Authorization: 'Bearer <token>' }
+} catch (error) {
+  console.error('Failed to get credentials:', error);
+}
+```
+
+### Best Practices:
+
+1. **Don't disable DPoP without a good reason**: DPoP provides enhanced security with minimal overhead
+
+2. **If you must disable it**, consider forcing users to re-authenticate to get Bearer tokens:
+
+```javascript
+// Force migration from DPoP to Bearer
+async function migrateFromDPoP() {
+  try {
+    const credentials = await auth0.credentialsManager.getCredentials();
+
+    if (credentials.tokenType === 'DPoP') {
+      console.log('Migrating from DPoP to Bearer...');
+
+      // Clear DPoP credentials
+      await auth0.credentialsManager.clearCredentials();
+
+      // Re-authenticate to get Bearer tokens
+      await auth0.webAuth.authorize();
+    }
+  } catch (error) {
+    console.error('Migration from DPoP failed:', error);
+  }
+}
+```
+
+3. **Communicate with your team**: Disabling DPoP is a **security downgrade**, so ensure all stakeholders are aware
+
+4. **Monitor your application**: Watch for any API errors during the transition period
+
+### What stays the same:
+
+- Your API calls will continue to work
+- The `getDPoPHeaders()` method gracefully handles both token types
+- User sessions remain active (no forced logout)
+- All other SDK functionality remains unchanged

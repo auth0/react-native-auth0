@@ -19,7 +19,7 @@ export type Credentials = {
   idToken: string;
   /** The token used to make API calls to protected resources (your APIs). */
   accessToken: string;
-  /** The type of the token, typically "Bearer". */
+  /** The type of the token, typically "Bearer" or "DPoP" */
   tokenType: string;
   /** The expiration time of the access token, represented as a UNIX timestamp (in seconds). */
   expiresAt: number;
@@ -98,6 +98,13 @@ export interface Auth0Options {
   clientId: string;
   timeout?: number;
   headers?: Record<string, string>;
+  /**
+   * Enables DPoP (Demonstrating Proof-of-Possession) for enhanced token security.
+   * When enabled, access and refresh tokens are cryptographically bound to a client-specific key pair.
+   * @default true
+   * @see https://datatracker.ietf.org/doc/html/rfc9449
+   */
+  useDPoP?: boolean;
   // Telemetry and localAuthenticationOptions are platform-specific extensions
 }
 
@@ -122,3 +129,22 @@ export type MfaChallengeResponse =
   | MfaChallengeOtpResponse
   | MfaChallengeOobResponse
   | MfaChallengeOobWithBindingResponse;
+
+// ========= DPoP Types =========
+
+/**
+ * Parameters required to generate DPoP headers for custom API requests.
+ * These headers cryptographically bind the access token to the specific HTTP request.
+ */
+export interface DPoPHeadersParams {
+  /** The full URL of the API endpoint being called. */
+  url: string;
+  /** The HTTP method of the request (e.g., 'GET', 'POST'). */
+  method: string;
+  /** The access token to bind to the request. */
+  accessToken: string;
+  /** The type of the token (should be 'DPoP' when DPoP is enabled). */
+  tokenType: string;
+  /** Optional nonce value */
+  nonce?: string;
+}

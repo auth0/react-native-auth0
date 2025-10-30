@@ -34,7 +34,9 @@ describe('NativeAuth0Client', () => {
       saveCredentials: jest.fn().mockResolvedValue(undefined),
       hasValidCredentials: jest.fn().mockResolvedValue(true),
       clearCredentials: jest.fn().mockResolvedValue(undefined),
+      clearDPoPKey: jest.fn().mockResolvedValue(undefined),
       resumeWebAuth: jest.fn().mockResolvedValue(undefined),
+      getDPoPHeaders: jest.fn().mockResolvedValue({} as any),
     };
 
     // Set up the mock implementation with a proper prototype
@@ -107,7 +109,8 @@ describe('NativeAuth0Client', () => {
     expect(mockBridgeInstance.initialize).toHaveBeenCalledWith(
       options.clientId,
       options.domain,
-      undefined // No local auth options provided in this test
+      undefined, // No local auth options provided in this test
+      true // useDPoP defaults to true
     );
 
     // Use client to avoid unused variable warning
@@ -127,7 +130,8 @@ describe('NativeAuth0Client', () => {
     expect(mockBridgeInstance.initialize).toHaveBeenCalledWith(
       options.clientId,
       options.domain,
-      localAuthOptions
+      localAuthOptions,
+      true // useDPoP defaults to true
     );
 
     // Use client to avoid unused variable warning

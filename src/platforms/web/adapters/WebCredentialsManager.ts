@@ -41,7 +41,7 @@ export class WebCredentialsManager implements ICredentialsManager {
       return new CredentialsModel({
         idToken: tokenResponse.id_token,
         accessToken: tokenResponse.access_token,
-        tokenType: 'Bearer',
+        tokenType: tokenResponse.token_type ?? 'Bearer',
         expiresAt: claims.exp,
         scope: tokenResponse.scope,
       });
