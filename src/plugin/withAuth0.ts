@@ -38,7 +38,11 @@ export const addAndroidAuth0Manifest = (
 
   const intentFilterContent = [
     {
-      ...(hasAppLinks && { $: { 'android:autoVerify': 'true' as AndroidConfig.Manifest.StringBoolean } }),
+      ...(hasAppLinks && {
+        $: {
+          'android:autoVerify': 'true' as AndroidConfig.Manifest.StringBoolean,
+        },
+      }),
       action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }],
       category: [
         { $: { 'android:name': 'android.intent.category.DEFAULT' } },
@@ -67,14 +71,16 @@ export const addAndroidAuth0Manifest = (
         'tools:node': 'replace',
         'android:exported': 'true',
       },
-      'intent-filter': intentFilterContent as AndroidConfig.Manifest.ManifestIntentFilter[],
+      'intent-filter':
+        intentFilterContent as AndroidConfig.Manifest.ManifestIntentFilter[],
     };
     mainApplication.activity = mainApplication.activity || [];
     mainApplication.activity.push(redirectActivity);
   }
-  
+
   redirectActivity['intent-filter'] =
-      redirectActivity['intent-filter'] || intentFilterContent as AndroidConfig.Manifest.ManifestIntentFilter[];
+    redirectActivity['intent-filter'] ||
+    (intentFilterContent as AndroidConfig.Manifest.ManifestIntentFilter[]);
   const intentFilter = redirectActivity['intent-filter'][0] || {};
   if (!intentFilter) {
     throw new Error('Failed to create intent filter');
@@ -84,7 +90,8 @@ export const addAndroidAuth0Manifest = (
   // Add android:autoVerify="true" for App Links
   if (hasAppLinks) {
     intentFilter.$ = intentFilter.$ || {};
-    intentFilter.$['android:autoVerify'] = 'true' as AndroidConfig.Manifest.StringBoolean;
+    intentFilter.$['android:autoVerify'] =
+      'true' as AndroidConfig.Manifest.StringBoolean;
   }
 
   // Add data elements for each auth0Config
