@@ -50,12 +50,12 @@ function includeRequiredScope(scope?: string): string {
   if (!scope) {
     return 'openid profile email';
   }
-  
+
   const scopes = scope.split(' ');
   if (!scopes.includes('openid')) {
     return `openid ${scope}`;
   }
-  
+
   return scope;
 }
 
