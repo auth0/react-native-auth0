@@ -23,13 +23,14 @@ import type {
   RevokeOptions,
   ResetPasswordParameters,
   MfaChallengeResponse,
+  DPoPHeadersParams,
 } from '../types';
 import type {
   NativeAuthorizeOptions,
   NativeClearSessionOptions,
 } from '../types/platform-specific';
 import { Auth0User, AuthError } from '../core/models';
-import Auth0 from '../index';
+import Auth0 from '../Auth0';
 import { Platform } from 'react-native';
 
 export const Auth0Provider = ({
@@ -316,6 +317,19 @@ export const Auth0Provider = ({
     [client, voidFlow]
   );
 
+  const getDPoPHeaders = useCallback(
+    async (params: DPoPHeadersParams): Promise<Record<string, string>> => {
+      try {
+        return await client.getDPoPHeaders(params);
+      } catch (e) {
+        const error = e as AuthError;
+        dispatch({ type: 'ERROR', error });
+        throw error;
+      }
+    },
+    [client]
+  );
+
   const contextValue = useMemo<Auth0ContextInterface>(
     () => ({
       ...state,
@@ -340,6 +354,7 @@ export const Auth0Provider = ({
       authorizeWithOTP,
       authorizeWithRecoveryCode,
       revokeRefreshToken,
+      getDPoPHeaders,
     }),
     [
       state,
@@ -364,6 +379,7 @@ export const Auth0Provider = ({
       authorizeWithOTP,
       authorizeWithRecoveryCode,
       revokeRefreshToken,
+      getDPoPHeaders,
     ]
   );
 
