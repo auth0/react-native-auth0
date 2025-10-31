@@ -33,18 +33,13 @@ jobs:
     build_and_deploy: # builds the distribution and then the documentation
         needs: get_history
         runs-on: ubuntu-latest
-        environment:
-            name: release
-            url: ${{ steps.deployment.outputs.page_url }}
         permissions:
             contents: write
-            pages: write
-            id-token: write
         steps:
             - name: Checkout src
               uses: actions/checkout@v5
               with:
-                  token: ${{ secrets.GITHUB_TOKEN }}
+                  token: ${{ github.token }}
 
             - name: Download the existing documents artifact
               uses: actions/download-artifact@v6
@@ -67,14 +62,9 @@ jobs:
             - name: Run cleanup and manage document versions
               run: node scripts/manage-doc-versions.js
 
-            - name: Setup Pages
-              uses: actions/configure-pages@v4
-
-            - name: Upload pages artifact
-              uses: actions/upload-pages-artifact@v3
-              with:
-                  path: docs
-
             - name: Deploy to GitHub Pages
-              id: deployment
-              uses: actions/deploy-pages@v4
+              uses: peaceiris/actions-gh-pages@v4
+              with:
+                  github_token: ${{ github.token }}
+                  publish_dir: ./docs
+                  keep_files: false
