@@ -93,7 +93,7 @@ export type User = {
 export interface Auth0Options {
   /** Your Auth0 application's domain. e.g., 'your-tenant.us.auth0.com' */
   domain: string;
-  LocalAuthenticationOptions?: LocalAuthenticationOptions;
+  localAuthenticationOptions?: LocalAuthenticationOptions;
   /** Your Auth0 application's client ID. */
   clientId: string;
   timeout?: number;
