@@ -11,10 +11,11 @@
 9. [Why doesn't `await authorize()` work on the web? How do I handle login?](#9-why-doesnt-await-authorize-work-on-the-web-how-do-i-handle-login)
 10. [Why do my users get logged out frequently? How do I keep them logged in?](#10-why-do-my-users-get-logged-out-frequently-how-do-i-keep-them-logged-in)
 11. [How can I prompt users to the login page versus signup page?](#11-how-can-i-prompt-users-to-the-login-page-versus-signup-page)
-12. [What is DPoP and should I enable it?](#12-what-is-dpop-and-should-i-enable-it)
-13. [How do I migrate existing users to DPoP?](#13-how-do-i-migrate-existing-users-to-dpop)
-14. [How do I know if my tokens are using DPoP?](#14-how-do-i-know-if-my-tokens-are-using-dpop)
-15. [What happens if I disable DPoP after enabling it?](#15-what-happens-if-i-disable-dpop-after-enabling-it)
+12. [Why does `getCredentials()` return an opaque access token on web instead of a JWT?](#12-why-does-getcredentials-return-an-opaque-access-token-on-web-instead-of-a-jwt)
+13. [What is DPoP and should I enable it?](#13-what-is-dpop-and-should-i-enable-it)
+14. [How do I migrate existing users to DPoP?](#14-how-do-i-migrate-existing-users-to-dpop)
+15. [How do I know if my tokens are using DPoP?](#15-how-do-i-know-if-my-tokens-are-using-dpop)
+16. [What happens if I disable DPoP after enabling it?](#16-what-happens-if-i-disable-dpop-after-enabling-it)
 
 ## 1. How can I have separate Auth0 domains for each environment on Android?
 
@@ -366,7 +367,103 @@ const signup = async () => {
 }
 ```
 
-## 12. What is DPoP and should I enable it?
+## 12. Why does `getCredentials()` return an opaque access token on web instead of a JWT?
+
+When calling `getCredentials()` on the **web platform**, you may receive an opaque access token (a token with ".." in the middle that doesn't parse as a JWT) instead of a JWT, even though you specified an `audience` during the initial `authorize()` call.
+
+**Root Cause:**
+
+On web, credentials are stored in browser storage (sessionStorage/localStorage). When you call `getCredentials()` without specifying the `audience` parameter, the SDK returns the default opaque token instead of the API-specific JWT access token.
+
+**Solution:**
+
+You must pass the `audience` parameter to **both** `authorize()` and `getCredentials()`:
+
+```javascript
+import { useAuth0 } from 'react-native-auth0';
+
+const AUDIENCE = 'https://your-api.example.com';
+
+function App() {
+  const { authorize, getCredentials } = useAuth0();
+
+  // ✅ CORRECT: Specify audience during login
+  const onLogin = async () => {
+    await authorize({
+      audience: AUDIENCE,
+      scope: 'openid profile email offline_access',
+    });
+  };
+
+  // ✅ CORRECT: Specify audience when retrieving credentials
+  const onGetCredentials = async () => {
+    const credentials = await getCredentials(
+      'openid profile email offline_access',
+      0,
+      { audience: AUDIENCE } // ← Must include audience here!
+    );
+    console.log('JWT Access Token:', credentials.accessToken);
+  };
+
+  return (
+    <View>
+      <Button onPress={onLogin} title="Log In" />
+      <Button onPress={onGetCredentials} title="Get Credentials" />
+    </View>
+  );
+}
+```
+
+**Why this happens:**
+
+- **During `authorize()`**: The `audience` tells Auth0 to issue a JWT for your API
+- **During `getCredentials()`**: On web, the audience must be re-specified to retrieve the correct token type
+- **Platform difference**: Native platforms (iOS/Android) store credentials with all parameters and retrieve as-is, but web may need to refresh tokens
+
+**Best Practice:**
+
+Define your auth configuration once and reuse it:
+
+```javascript
+const AUTH_CONFIG = {
+  audience: 'https://your-api.example.com',
+  scope: 'openid profile email offline_access',
+};
+
+// Login
+await authorize(AUTH_CONFIG);
+
+// Get credentials later (include audience in parameters)
+await getCredentials(AUTH_CONFIG.scope, 0, {
+  audience: AUTH_CONFIG.audience,
+});
+```
+
+**Using the class-based API:**
+
+```javascript
+const auth0 = new Auth0({
+  domain: 'YOUR_DOMAIN',
+  clientId: 'YOUR_CLIENT_ID',
+});
+
+// Login
+await auth0.webAuth.authorize({
+  audience: 'https://your-api.example.com',
+  scope: 'openid profile email offline_access',
+});
+
+// Get credentials (must include audience)
+const credentials = await auth0.credentialsManager.getCredentials(
+  'openid profile email offline_access',
+  0,
+  { audience: 'https://your-api.example.com' }
+);
+```
+
+> **Note**: This behavior is specific to the web platform. On iOS and Android, the `audience` parameter is automatically preserved from the initial `authorize()` call.
+
+## 13. What is DPoP and should I enable it?
 
 **DPoP** (Demonstrating Proof-of-Possession) is an OAuth 2.0 security extension ([RFC 9449](https://datatracker.ietf.org/doc/html/rfc9449)) that cryptographically binds access and refresh tokens to a specific device using public/private key pairs. This means that even if an access token is stolen (e.g., through XSS or network interception), it cannot be used from a different device because the attacker won't have the private key needed to generate valid DPoP proofs.
 
@@ -397,7 +494,7 @@ const auth0 = new Auth0({
 });
 ```
 
-## 13. How do I migrate existing users to DPoP?
+## 14. How do I migrate existing users to DPoP?
 
 When you enable DPoP in your app, existing users will still have Bearer tokens from their previous sessions. DPoP only applies to **new sessions** created after it's enabled. Here's how to handle the migration:
 
@@ -589,7 +686,7 @@ if (credentials.tokenType !== 'DPoP') {
 3. **Communicate with users**: Explain why re-authentication is necessary
 4. **Handle errors gracefully**: Network issues or user cancellation should be handled appropriately
 
-## 14. How do I know if my tokens are using DPoP?
+## 15. How do I know if my tokens are using DPoP?
 
 You can check the `tokenType` property of the credentials returned by `getCredentials()`:
 
@@ -670,7 +767,7 @@ if (headers.DPoP) {
 }
 ```
 
-## 15. What happens if I disable DPoP after enabling it?
+## 16. What happens if I disable DPoP after enabling it?
 
 If you disable DPoP after enabling it (by setting `useDPoP: false`), here's what happens:
 

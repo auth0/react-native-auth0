@@ -119,6 +119,47 @@ describe('AuthenticationOrchestrator', () => {
         AuthError
       );
     });
+
+    it('should auto-include openid scope when scope is undefined', async () => {
+      mockHttpClientInstance.post.mockResolvedValueOnce({
+        json: tokensResponse,
+        response: new Response(null, { status: 200 }),
+      });
+      await orchestrator.passwordRealm({
+        username: 'info@auth0.com',
+        password: 'secret pass',
+        realm: 'Username-Password-Authentication',
+      });
+
+      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+        '/oauth/token',
+        expect.objectContaining({
+          scope: 'openid profile email',
+        }),
+        undefined
+      );
+    });
+
+    it('should auto-include openid scope when not present in custom scope', async () => {
+      mockHttpClientInstance.post.mockResolvedValueOnce({
+        json: tokensResponse,
+        response: new Response(null, { status: 200 }),
+      });
+      await orchestrator.passwordRealm({
+        username: 'info@auth0.com',
+        password: 'secret pass',
+        realm: 'Username-Password-Authentication',
+        scope: 'offline_access',
+      });
+
+      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+        '/oauth/token',
+        expect.objectContaining({
+          scope: 'openid offline_access',
+        }),
+        undefined
+      );
+    });
   });
 
   describe('refresh token', () => {
@@ -163,6 +204,43 @@ describe('AuthenticationOrchestrator', () => {
       });
       await expect(orchestrator.refreshToken(parameters)).rejects.toThrow(
         AuthError
+      );
+    });
+
+    it('should auto-include openid scope when scope is undefined', async () => {
+      mockHttpClientInstance.post.mockResolvedValueOnce({
+        json: tokensResponse,
+        response: new Response(null, { status: 200 }),
+      });
+      await orchestrator.refreshToken({
+        refreshToken: 'a refresh token of a user',
+      });
+
+      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+        '/oauth/token',
+        expect.objectContaining({
+          scope: 'openid profile email',
+        }),
+        undefined
+      );
+    });
+
+    it('should auto-include openid scope when not present in custom scope', async () => {
+      mockHttpClientInstance.post.mockResolvedValueOnce({
+        json: tokensResponse,
+        response: new Response(null, { status: 200 }),
+      });
+      await orchestrator.refreshToken({
+        refreshToken: 'a refresh token of a user',
+        scope: 'offline_access',
+      });
+
+      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+        '/oauth/token',
+        expect.objectContaining({
+          scope: 'openid offline_access',
+        }),
+        undefined
       );
     });
   });
@@ -290,6 +368,43 @@ describe('AuthenticationOrchestrator', () => {
           undefined
         );
       });
+
+      it('should auto-include openid scope when scope is undefined', async () => {
+        mockHttpClientInstance.post.mockResolvedValueOnce({
+          json: tokensResponse,
+          response: new Response(null, { status: 200 }),
+        });
+        await orchestrator.loginWithEmail({
+          email: 'info@auth0.com',
+          code: '123456',
+        });
+        expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+          '/oauth/token',
+          expect.objectContaining({
+            scope: 'openid profile email',
+          }),
+          undefined
+        );
+      });
+
+      it('should auto-include openid scope when not present in custom scope', async () => {
+        mockHttpClientInstance.post.mockResolvedValueOnce({
+          json: tokensResponse,
+          response: new Response(null, { status: 200 }),
+        });
+        await orchestrator.loginWithEmail({
+          email: 'info@auth0.com',
+          code: '123456',
+          scope: 'profile email',
+        });
+        expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+          '/oauth/token',
+          expect.objectContaining({
+            scope: 'openid profile email',
+          }),
+          undefined
+        );
+      });
     });
 
     describe('with SMS connection', () => {
@@ -328,6 +443,62 @@ describe('AuthenticationOrchestrator', () => {
             username: '+15555555555',
             otp: '123456',
             realm: 'sms',
+          }),
+          undefined
+        );
+      });
+
+      it('should auto-include openid scope when scope is undefined', async () => {
+        mockHttpClientInstance.post.mockResolvedValueOnce({
+          json: tokensResponse,
+          response: new Response(null, { status: 200 }),
+        });
+        await orchestrator.loginWithSMS({
+          phoneNumber: '+15555555555',
+          code: '123456',
+        });
+        expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+          '/oauth/token',
+          expect.objectContaining({
+            scope: 'openid profile email',
+          }),
+          undefined
+        );
+      });
+
+      it('should auto-include openid scope when not present in custom scope', async () => {
+        mockHttpClientInstance.post.mockResolvedValueOnce({
+          json: tokensResponse,
+          response: new Response(null, { status: 200 }),
+        });
+        await orchestrator.loginWithSMS({
+          phoneNumber: '+15555555555',
+          code: '123456',
+          scope: 'offline_access',
+        });
+        expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+          '/oauth/token',
+          expect.objectContaining({
+            scope: 'openid offline_access',
+          }),
+          undefined
+        );
+      });
+
+      it('should not duplicate openid scope when already present', async () => {
+        mockHttpClientInstance.post.mockResolvedValueOnce({
+          json: tokensResponse,
+          response: new Response(null, { status: 200 }),
+        });
+        await orchestrator.loginWithSMS({
+          phoneNumber: '+15555555555',
+          code: '123456',
+          scope: 'openid profile email',
+        });
+        expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+          '/oauth/token',
+          expect.objectContaining({
+            scope: 'openid profile email',
           }),
           undefined
         );
@@ -591,6 +762,45 @@ describe('AuthenticationOrchestrator', () => {
           client_id: clientId,
           subject_token: 'native_token',
           subject_token_type: 'facebook',
+        }),
+        undefined
+      );
+    });
+
+    it('should auto-include openid scope when scope is undefined', async () => {
+      mockHttpClientInstance.post.mockResolvedValueOnce({
+        json: tokensResponse,
+        response: new Response(null, { status: 200 }),
+      });
+      await orchestrator.exchangeNativeSocial({
+        subjectToken: 'native_token',
+        subjectTokenType: 'facebook',
+      });
+
+      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+        '/oauth/token',
+        expect.objectContaining({
+          scope: 'openid profile email',
+        }),
+        undefined
+      );
+    });
+
+    it('should auto-include openid scope when not present in custom scope', async () => {
+      mockHttpClientInstance.post.mockResolvedValueOnce({
+        json: tokensResponse,
+        response: new Response(null, { status: 200 }),
+      });
+      await orchestrator.exchangeNativeSocial({
+        subjectToken: 'native_token',
+        subjectTokenType: 'facebook',
+        scope: 'profile email',
+      });
+
+      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+        '/oauth/token',
+        expect.objectContaining({
+          scope: 'openid profile email',
         }),
         undefined
       );

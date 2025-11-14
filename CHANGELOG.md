@@ -1,9 +1,32 @@
 # Change Log
 
+## [v5.1.0](https://github.com/auth0/react-native-auth0/tree/v5.1.0) (2025-10-31)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.1...v5.1.0)
+
+**Added**
+
+- docs: Add FAQ section for web opaque token issue [\#1366](https://github.com/auth0/react-native-auth0/pull/1366) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: add support for Demonstration of Proof-of-Possession(DPoP) [\#1345](https://github.com/auth0/react-native-auth0/pull/1345) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Changed**
+
+- chore(deps): upgrade React Native to 0.82.0 and related dependencies [\#1348](https://github.com/auth0/react-native-auth0/pull/1348) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Fixed**
+
+- Fix: Auto-include `openid` scope in authentication methods to prevent ID token errors [\#1369](https://github.com/auth0/react-native-auth0/pull/1369) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix: TypeScript ESLint unbound-method errors in Auth0 context interface [\#1368](https://github.com/auth0/react-native-auth0/pull/1368) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- Fix: Remove require cycle between index.ts and Auth0Provider.tsx [\#1367](https://github.com/auth0/react-native-auth0/pull/1367) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix: add android:autoVerify="true" for Android App Links in Expo plugin [\#1355](https://github.com/auth0/react-native-auth0/pull/1355) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix: android intent-filter generation for packages with uppercase letters [\#1346](https://github.com/auth0/react-native-auth0/pull/1346) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.0.1](https://github.com/auth0/react-native-auth0/tree/v5.0.1) (2025-10-03)
+
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.0...v5.0.1)
 
 **Added**
+
 - feat: export AuthError class from main entry point [\#1329](https://github.com/auth0/react-native-auth0/pull/1329) ([afonsojramos](https://github.com/afonsojramos))
 
 ## [v5.0.0](https://github.com/auth0/react-native-auth0/tree/v5.0.0) (2025-10-01)

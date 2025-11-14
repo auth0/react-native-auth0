@@ -28,13 +28,18 @@ jobs:
         with:
           name: documentation
           path: documentation.tar
+          retention-days: 1
 
-  build: # builds the distribution and then the documentation
+  build_and_deploy: # builds the distribution and then the documentation
     needs: get_history
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout src
         uses: actions/checkout@v5
+        with:
+          token: ${{ github.token }}
 
       - name: Download the existing documents artifact
         uses: actions/download-artifact@v6
@@ -57,5 +62,9 @@ jobs:
       - name: Run cleanup and manage document versions
         run: node scripts/manage-doc-versions.js
 
-      - name: Deploy to github pages using gh-pages
-        run: npx gh-pages -d docs
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ github.token }}
+          publish_dir: ./docs
+          keep_files: false

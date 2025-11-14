@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Auth0Provider, useAuth0 } from '..';
-import Auth0 from '../../index';
+import Auth0 from '../../Auth0';
 
 // Mock TurboModuleRegistry first
 jest.mock('react-native/Libraries/TurboModule/TurboModuleRegistry', () => ({
@@ -63,7 +63,7 @@ jest.mock('react-native', () => ({
 }));
 
 // 1. Mock the top-level Auth0 facade
-jest.mock('../../index');
+jest.mock('../../Auth0');
 const MockAuth0 = Auth0 as jest.MockedClass<typeof Auth0>;
 
 // Mock the Auth0User model's factory method

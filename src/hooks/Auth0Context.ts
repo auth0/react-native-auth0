@@ -40,10 +40,10 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise that resolves with the user's credentials upon successful authentication.
    * @throws {AuthError} If the authentication fails.
    */
-  authorize(
+  authorize: (
     parameters?: WebAuthorizeParameters,
     options?: NativeAuthorizeOptions
-  ): Promise<Credentials>;
+  ) => Promise<Credentials>;
 
   /**
    * Clears the user's session and logs them out.
@@ -52,10 +52,10 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise that resolves when the session has been cleared.
    * @throws {AuthError} If the logout fails.
    */
-  clearSession(
+  clearSession: (
     parameters?: ClearSessionParameters,
     options?: NativeClearSessionOptions
-  ): Promise<void>;
+  ) => Promise<void>;
 
   /**
    * Saves the user's credentials.
@@ -63,7 +63,7 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise that resolves when the credentials have been saved.
    * @throws {AuthError} If the save fails.
    */
-  saveCredentials(credentials: Credentials): Promise<void>;
+  saveCredentials: (credentials: Credentials) => Promise<void>;
 
   /**
    * Retrieves the stored credentials, refreshing them if necessary.
@@ -74,12 +74,12 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise that resolves with the user's credentials.
    * @throws {AuthError} If credentials cannot be retrieved or refreshed.
    */
-  getCredentials(
+  getCredentials: (
     scope?: string,
     minTtl?: number,
     parameters?: Record<string, unknown>,
     forceRefresh?: boolean
-  ): Promise<Credentials>;
+  ) => Promise<Credentials>;
 
   /**
    * Clears the user's credentials without clearing their web session and logs them out.
@@ -97,7 +97,7 @@ export interface Auth0ContextInterface extends AuthState {
    * @param minTtl The minimum time-to-live (in seconds) required for the access token to be considered valid. Defaults to 0.
    * @returns A promise that resolves with `true` if valid credentials exist, `false` otherwise.
    */
-  hasValidCredentials(minTtl?: number): Promise<boolean>;
+  hasValidCredentials: (minTtl?: number) => Promise<boolean>;
 
   /**
    * Retrieves API-specific credentials.
@@ -119,7 +119,7 @@ export interface Auth0ContextInterface extends AuthState {
    * Cancels the ongoing web authentication process.
    * This works only on iOS. On other platforms, it will resolve without performing an action.
    */
-  cancelWebAuth(): Promise<void>;
+  cancelWebAuth: () => Promise<void>;
 
   /**
    * Authenticates a user with their username and password.
@@ -128,9 +128,9 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise that resolves with the user's credentials.
    * @throws {AuthError} If the authentication fails.
    */
-  loginWithPasswordRealm(
+  loginWithPasswordRealm: (
     parameters: PasswordRealmParameters
-  ): Promise<Credentials>;
+  ) => Promise<Credentials>;
 
   /**
    * Creates a new user in a database connection.
@@ -138,7 +138,7 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise that resolves with the new user's profile information.
    * @throws {AuthError} If the user creation fails.
    */
-  createUser(parameters: CreateUserParameters): Promise<Partial<User>>;
+  createUser: (parameters: CreateUserParameters) => Promise<Partial<User>>;
 
   /**
    * Resets the user's password.
@@ -146,7 +146,7 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise that resolves when the password has been reset.
    * @throws {AuthError} If the reset fails.
    */
-  resetPassword(parameters: ResetPasswordParameters): Promise<void>;
+  resetPassword: (parameters: ResetPasswordParameters) => Promise<void>;
 
   /**
    * Exchanges an authorization code for tokens.
@@ -155,7 +155,9 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise that resolves with the user's credentials.
    * @throws {AuthError} If the exchange fails.
    */
-  authorizeWithExchange(parameters: ExchangeParameters): Promise<Credentials>;
+  authorizeWithExchange: (
+    parameters: ExchangeParameters
+  ) => Promise<Credentials>;
 
   /**
    * Exchanges an authorization code for native social tokens.
@@ -163,16 +165,16 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise that resolves with the user's credentials.
    * @throws {AuthError} If the exchange fails.
    */
-  authorizeWithExchangeNativeSocial(
+  authorizeWithExchangeNativeSocial: (
     parameters: ExchangeNativeSocialParameters
-  ): Promise<Credentials>;
+  ) => Promise<Credentials>;
 
   /**
    * Sends a verification code to the user's email.
    * @param parameters The parameters for sending the email code.
    * @throws {AuthError} If sending the email code fails.
    */
-  sendEmailCode(parameters: PasswordlessEmailParameters): Promise<void>;
+  sendEmailCode: (parameters: PasswordlessEmailParameters) => Promise<void>;
 
   /**
    * Authorizes a user with their email.
@@ -180,7 +182,9 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise that resolves with the user's credentials.
    * @throws {AuthError} If the authorization fails.
    */
-  authorizeWithEmail(parameters: LoginEmailParameters): Promise<Credentials>;
+  authorizeWithEmail: (
+    parameters: LoginEmailParameters
+  ) => Promise<Credentials>;
 
   /**
    /**
@@ -188,7 +192,7 @@ export interface Auth0ContextInterface extends AuthState {
    * @param parameters The parameters for sending the SMS code.
    * @throws {AuthError} If sending the SMS code fails.
    */
-  sendSMSCode(parameters: PasswordlessSmsParameters): Promise<void>;
+  sendSMSCode: (parameters: PasswordlessSmsParameters) => Promise<void>;
 
   /**
    * Authorizes a user with their SMS.
@@ -196,7 +200,7 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise that resolves with the user's credentials.
    * @throws {AuthError} If the authorization fails.
    */
-  authorizeWithSMS(parameters: LoginSmsParameters): Promise<Credentials>;
+  authorizeWithSMS: (parameters: LoginSmsParameters) => Promise<Credentials>;
 
   /**
    * Sends a multifactor challenge to the user.
@@ -204,9 +208,9 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise that resolves when the challenge has been sent.
    * @throws {AuthError} If sending the challenge fails.
    */
-  sendMultifactorChallenge(
+  sendMultifactorChallenge: (
     parameters: MfaChallengeParameters
-  ): Promise<MfaChallengeResponse>;
+  ) => Promise<MfaChallengeResponse>;
 
   /**
    * Authorizes a user with out-of-band (OOB) authentication.
@@ -214,7 +218,7 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise that resolves with the user's credentials.
    * @throws {AuthError} If the authorization fails.
    */
-  authorizeWithOOB(parameters: LoginOobParameters): Promise<Credentials>;
+  authorizeWithOOB: (parameters: LoginOobParameters) => Promise<Credentials>;
 
   /**
    * Authorizes a user with a one-time password (OTP).
@@ -222,7 +226,7 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise that resolves with the user's credentials.
    * @throws {AuthError} If the authorization fails.
    */
-  authorizeWithOTP(parameters: LoginOtpParameters): Promise<Credentials>;
+  authorizeWithOTP: (parameters: LoginOtpParameters) => Promise<Credentials>;
 
   /**
    * Authorizes a user with a recovery code.
@@ -230,12 +234,12 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise that resolves with the user's credentials.
    * @throws {AuthError} If the authorization fails.
    */
-  authorizeWithRecoveryCode(
+  authorizeWithRecoveryCode: (
     parameters: LoginRecoveryCodeParameters
-  ): Promise<Credentials>;
+  ) => Promise<Credentials>;
 
   // Token Management
-  revokeRefreshToken(parameters: RevokeOptions): Promise<void>;
+  revokeRefreshToken: (parameters: RevokeOptions) => Promise<void>;
 
   /**
    * Generates DPoP headers for making authenticated requests to custom APIs.
@@ -261,7 +265,9 @@ export interface Auth0ContextInterface extends AuthState {
    * }
    * ```
    */
-  getDPoPHeaders(params: DPoPHeadersParams): Promise<Record<string, string>>;
+  getDPoPHeaders: (
+    params: DPoPHeadersParams
+  ) => Promise<Record<string, string>>;
 }
 
 const stub = (): any => {
