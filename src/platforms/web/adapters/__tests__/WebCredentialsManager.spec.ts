@@ -218,4 +218,135 @@ describe('WebCredentialsManager', () => {
       );
     });
   });
+
+  describe('getApiCredentials', () => {
+    it('should throw CredentialsManagerError on login_required error', async () => {
+      const spaError = {
+        error: 'login_required',
+        error_description: 'Login is required',
+      };
+      mockSpaClient.getTokenSilently.mockRejectedValue(spaError);
+
+      await expect(
+        credentialsManager.getApiCredentials('https://api.example.com')
+      ).rejects.toThrow();
+
+      const error = await credentialsManager
+        .getApiCredentials('https://api.example.com')
+        .catch((e) => e);
+
+      expect(error.type).toBe('MOCKED_TYPE');
+      expect(error.name).toBe('login_required');
+    });
+
+    it('should throw CredentialsManagerError on invalid_grant error', async () => {
+      const spaError = {
+        error: 'invalid_grant',
+        error_description: 'Refresh token is invalid',
+      };
+      mockSpaClient.getTokenSilently.mockRejectedValue(spaError);
+
+      const error = await credentialsManager
+        .getApiCredentials('https://api.example.com', 'read:data')
+        .catch((e) => e);
+
+      expect(error.type).toBe('MOCKED_TYPE');
+      expect(error.message).toBe('Refresh token is invalid');
+    });
+
+    it('should throw CredentialsManagerError on missing_refresh_token error', async () => {
+      const spaError = {
+        error: 'missing_refresh_token',
+        error_description: 'No refresh token available',
+      };
+      mockSpaClient.getTokenSilently.mockRejectedValue(spaError);
+
+      const error = await credentialsManager
+        .getApiCredentials('https://api.example.com')
+        .catch((e) => e);
+
+      expect(error.type).toBe('MOCKED_TYPE');
+    });
+
+    it('should throw CredentialsManagerError on consent_required error', async () => {
+      const spaError = {
+        error: 'consent_required',
+        error_description: 'Consent is required',
+      };
+      mockSpaClient.getTokenSilently.mockRejectedValue(spaError);
+
+      const error = await credentialsManager
+        .getApiCredentials('https://api.example.com')
+        .catch((e) => e);
+
+      expect(error.type).toBe('MOCKED_TYPE');
+    });
+
+    it('should throw CredentialsManagerError on network error', async () => {
+      const spaError = {
+        error: 'temporarily_unavailable',
+        error_description: 'Service temporarily unavailable',
+      };
+      mockSpaClient.getTokenSilently.mockRejectedValue(spaError);
+
+      const error = await credentialsManager
+        .getApiCredentials('https://api.example.com')
+        .catch((e) => e);
+
+      expect(error.type).toBe('MOCKED_TYPE');
+    });
+
+    it('should throw CredentialsManagerError on invalid_scope error', async () => {
+      const spaError = {
+        error: 'invalid_scope',
+        error_description: 'The requested scope is invalid',
+      };
+      mockSpaClient.getTokenSilently.mockRejectedValue(spaError);
+
+      const error = await credentialsManager
+        .getApiCredentials('https://api.example.com', 'invalid:scope')
+        .catch((e) => e);
+
+      expect(error.type).toBe('MOCKED_TYPE');
+    });
+
+    it('should throw CredentialsManagerError on unknown error', async () => {
+      const spaError = {
+        error: 'unknown_error',
+        error_description: 'An unknown error occurred',
+      };
+      mockSpaClient.getTokenSilently.mockRejectedValue(spaError);
+
+      const error = await credentialsManager
+        .getApiCredentials('https://api.example.com')
+        .catch((e) => e);
+
+      expect(error.type).toBe('MOCKED_TYPE');
+    });
+
+    it('should handle error without error_description', async () => {
+      const spaError = {
+        error: 'invalid_grant',
+        message: 'The refresh token is invalid',
+      };
+      mockSpaClient.getTokenSilently.mockRejectedValue(spaError);
+
+      const error = await credentialsManager
+        .getApiCredentials('https://api.example.com')
+        .catch((e) => e);
+
+      expect(error.type).toBe('MOCKED_TYPE');
+      expect(error.message).toBe('The refresh token is invalid');
+    });
+  });
+
+  describe('clearApiCredentials', () => {
+    it('should log a warning and resolve without doing anything', async () => {
+      await credentialsManager.clearApiCredentials('https://api.example.com');
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        "'clearApiCredentials' for audience https://api.example.com is a no-op on the web. @auth0/auth0-spa-js handles credential storage automatically."
+      );
+    });
+  });
 });

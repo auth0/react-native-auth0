@@ -61,29 +61,38 @@ export class WebCredentialsManager implements ICredentialsManager {
     scope?: string,
     parameters?: Record<string, any>
   ): Promise<ApiCredentials> {
-    const tokenResponse = await this.client.getTokenSilently({
-      authorizationParams: {
-        ...parameters,
-        audience: audience,
-        scope: scope,
-      },
-      detailedResponse: true,
-    });
+    try {
+      const tokenResponse = await this.client.getTokenSilently({
+        authorizationParams: {
+          ...parameters,
+          audience: audience,
+          scope: scope,
+        },
+        detailedResponse: true,
+      });
 
-    const claims = await this.client.getIdTokenClaims();
-    if (!claims || !claims.exp) {
-      throw new AuthError(
-        'IdTokenMissing',
-        'ID token or expiration claim is missing.'
-      );
+      const claims = await this.client.getIdTokenClaims();
+      if (!claims || !claims.exp) {
+        throw new AuthError(
+          'IdTokenMissing',
+          'ID token or expiration claim is missing.'
+        );
+      }
+
+      return new ApiCredentials({
+        accessToken: tokenResponse.access_token,
+        tokenType: 'Bearer',
+        expiresAt: claims.exp,
+        scope: tokenResponse.scope,
+      });
+    } catch (e: any) {
+      const code = e.error ?? 'GetApiCredentialsFailed';
+      const authError = new AuthError(code, e.error_description ?? e.message, {
+        json: e,
+        code,
+      });
+      throw new CredentialsManagerError(authError);
     }
-
-    return new ApiCredentials({
-      accessToken: tokenResponse.access_token,
-      tokenType: 'Bearer',
-      expiresAt: claims.exp,
-      scope: tokenResponse.scope,
-    });
   }
 
   async hasValidCredentials(): Promise<boolean> {
