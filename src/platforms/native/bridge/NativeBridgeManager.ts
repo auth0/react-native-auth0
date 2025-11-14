@@ -156,7 +156,7 @@ export class NativeBridgeManager implements INativeBridge {
   ): Promise<ApiCredentials> {
     const params = parameters ?? {};
     return this.a0_call(
-      Auth0NativeModule.getApiCredentials,
+      Auth0NativeModule.getApiCredentials.bind(Auth0NativeModule),
       audience,
       scope,
       minTtl ?? 0,
@@ -165,7 +165,10 @@ export class NativeBridgeManager implements INativeBridge {
   }
 
   clearApiCredentials(audience: string): Promise<void> {
-    return this.a0_call(Auth0NativeModule.clearApiCredentials, audience);
+    return this.a0_call(
+      Auth0NativeModule.clearApiCredentials.bind(Auth0NativeModule),
+      audience
+    );
   }
 
   async hasValidCredentials(minTtl?: number): Promise<boolean> {
