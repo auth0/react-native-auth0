@@ -124,7 +124,7 @@
     "prettier-plugin-organize-imports": "4.3.0",
     "pretty-quick": "^4.1.1",
     "react": "19.1.1",
-    "react-dom": "19.1.1",
+    "react-dom": "19.2.0",
     "react-native": "0.82.1",
     "react-native-builder-bob": "^0.40.15",
     "release-it": "^19.0.4",
