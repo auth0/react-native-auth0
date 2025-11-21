@@ -213,6 +213,25 @@ export const Auth0Provider = ({
     }
   }, [client]);
 
+  const getSSOCredentials = useCallback(
+    async (
+      parameters?: Record<string, any>,
+      headers?: Record<string, string>
+    ) => {
+      try {
+        return await client.credentialsManager.getSSOCredentials(
+          parameters,
+          headers
+        );
+      } catch (e) {
+        const error = e as AuthError;
+        dispatch({ type: 'ERROR', error });
+        throw error;
+      }
+    },
+    [client]
+  );
+
   const cancelWebAuth = useCallback(
     () => voidFlow(client.webAuth.cancelWebAuth()),
     [client, voidFlow]
@@ -339,6 +358,7 @@ export const Auth0Provider = ({
       getCredentials,
       hasValidCredentials,
       clearCredentials,
+      getSSOCredentials,
       cancelWebAuth,
       loginWithPasswordRealm,
       createUser,
@@ -364,6 +384,7 @@ export const Auth0Provider = ({
       getCredentials,
       hasValidCredentials,
       clearCredentials,
+      getSSOCredentials,
       cancelWebAuth,
       loginWithPasswordRealm,
       createUser,

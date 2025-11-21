@@ -35,6 +35,36 @@ export type Credentials = {
 };
 
 /**
+ * Represents the session transfer credentials used for Native to Web SSO.
+ * These credentials are obtained by exchanging a refresh token and can be used
+ * to authenticate in web contexts without requiring the user to log in again.
+ *
+ * @remarks
+ * Session transfer tokens are short-lived and expire after a few minutes.
+ * Once expired, they can no longer be used for web SSO.
+ *
+ * @see https://auth0.com/docs/authenticate/login/configure-silent-authentication
+ */
+export type SessionTransferCredentials = {
+  /** The session transfer token used for web SSO. */
+  sessionTransferToken: string;
+  /** The type of the token issued (typically "N_A" for session transfer tokens). */
+  tokenType: string;
+  /** The expiration time of the session transfer token in seconds. */
+  expiresIn: number;
+  /**
+   * A new ID token, if one was issued during the token exchange.
+   * This is typically present when Refresh Token Rotation is enabled.
+   */
+  idToken?: string;
+  /**
+   * A new refresh token, if one was issued during the token exchange.
+   * This is present when Refresh Token Rotation is enabled.
+   */
+  refreshToken?: string;
+};
+
+/**
  * Represents the standard profile information of an authenticated user,
  * typically decoded from the ID token.
  *

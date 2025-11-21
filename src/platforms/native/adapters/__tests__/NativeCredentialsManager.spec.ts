@@ -9,6 +9,7 @@ const mockBridge: jest.Mocked<INativeBridge> = {
   hasValidCredentials: jest.fn(),
   clearCredentials: jest.fn(),
   clearDPoPKey: jest.fn(),
+  getSSOCredentials: jest.fn(),
   // Add stubs for other INativeBridge methods to satisfy the type.
   initialize: jest.fn(),
   hasValidInstance: jest.fn(),
@@ -129,6 +130,115 @@ describe('NativeCredentialsManager', () => {
       mockBridge.clearCredentials.mockResolvedValueOnce();
       await manager.clearCredentials();
       expect(mockBridge.clearCredentials).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getSSOCredentials', () => {
+    const validSSOCredentials = {
+      sessionTransferToken: 'stt_xyz123',
+      tokenType: 'Bearer',
+      expiresIn: 3600,
+      idToken: 'id_token_123',
+      refreshToken: 'refresh_token_789',
+    };
+
+    it('should call the bridge to get SSO credentials without parameters', async () => {
+      mockBridge.getSSOCredentials.mockResolvedValueOnce(validSSOCredentials);
+
+      const result = await manager.getSSOCredentials();
+
+      expect(mockBridge.getSSOCredentials).toHaveBeenCalledTimes(1);
+      expect(mockBridge.getSSOCredentials).toHaveBeenCalledWith(
+        undefined,
+        undefined
+      );
+      expect(result).toEqual(validSSOCredentials);
+    });
+
+    it('should call the bridge to get SSO credentials with parameters', async () => {
+      const parameters = { audience: 'https://api.example.com' };
+      mockBridge.getSSOCredentials.mockResolvedValueOnce(validSSOCredentials);
+
+      const result = await manager.getSSOCredentials(parameters);
+
+      expect(mockBridge.getSSOCredentials).toHaveBeenCalledTimes(1);
+      expect(mockBridge.getSSOCredentials).toHaveBeenCalledWith(
+        parameters,
+        undefined
+      );
+      expect(result).toEqual(validSSOCredentials);
+    });
+
+    it('should call the bridge to get SSO credentials with headers', async () => {
+      const headers = { 'X-Custom-Header': 'value' };
+      mockBridge.getSSOCredentials.mockResolvedValueOnce(validSSOCredentials);
+
+      const result = await manager.getSSOCredentials(undefined, headers);
+
+      expect(mockBridge.getSSOCredentials).toHaveBeenCalledTimes(1);
+      expect(mockBridge.getSSOCredentials).toHaveBeenCalledWith(
+        undefined,
+        headers
+      );
+      expect(result).toEqual(validSSOCredentials);
+    });
+
+    it('should call the bridge to get SSO credentials with both parameters and headers', async () => {
+      const parameters = {
+        audience: 'https://api.example.com',
+        scope: 'openid profile',
+      };
+      const headers = { 'X-Custom-Header': 'value' };
+      mockBridge.getSSOCredentials.mockResolvedValueOnce(validSSOCredentials);
+
+      const result = await manager.getSSOCredentials(parameters, headers);
+
+      expect(mockBridge.getSSOCredentials).toHaveBeenCalledTimes(1);
+      expect(mockBridge.getSSOCredentials).toHaveBeenCalledWith(
+        parameters,
+        headers
+      );
+      expect(result).toEqual(validSSOCredentials);
+    });
+
+    it('should return SSO credentials without optional tokens', async () => {
+      const minimalSSOCredentials = {
+        sessionTransferToken: 'stt_xyz123',
+        tokenType: 'Bearer',
+        expiresIn: 3600,
+      };
+      mockBridge.getSSOCredentials.mockResolvedValueOnce(minimalSSOCredentials);
+
+      const result = await manager.getSSOCredentials();
+
+      expect(result).toEqual(minimalSSOCredentials);
+      expect(result.idToken).toBeUndefined();
+      expect(result.refreshToken).toBeUndefined();
+    });
+
+    it('should propagate errors from the bridge', async () => {
+      const ssoError = new Error(
+        'Failed to get SSO credentials from native SDK.'
+      );
+      mockBridge.getSSOCredentials.mockRejectedValueOnce(ssoError);
+
+      await expect(manager.getSSOCredentials()).rejects.toThrow(ssoError);
+    });
+
+    it('should handle authentication errors', async () => {
+      const authError = new Error('No valid credentials stored');
+      mockBridge.getSSOCredentials.mockRejectedValueOnce(authError);
+
+      await expect(manager.getSSOCredentials()).rejects.toThrow(authError);
+    });
+
+    it('should handle network errors', async () => {
+      const networkError = new Error('Network request failed');
+      mockBridge.getSSOCredentials.mockRejectedValueOnce(networkError);
+
+      await expect(
+        manager.getSSOCredentials({ audience: 'https://api.example.com' })
+      ).rejects.toThrow(networkError);
     });
   });
 });
