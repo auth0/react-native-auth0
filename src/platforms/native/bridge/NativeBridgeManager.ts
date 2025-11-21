@@ -5,6 +5,7 @@ import type {
   ClearSessionParameters,
   NativeClearSessionOptions,
   DPoPHeadersParams,
+  SessionTransferCredentials,
 } from '../../../types';
 import {
   SafariViewControllerPresentationStyle,
@@ -182,5 +183,18 @@ export class NativeBridgeManager implements INativeBridge {
 
   async clearDPoPKey(): Promise<void> {
     return this.a0_call(Auth0NativeModule.clearDPoPKey.bind(Auth0NativeModule));
+  }
+
+  async getSSOCredentials(
+    parameters?: Record<string, any>,
+    headers?: Record<string, string>
+  ): Promise<SessionTransferCredentials> {
+    const params = parameters ?? {};
+    const hdrs = headers ?? {};
+    return this.a0_call(
+      Auth0NativeModule.getSSOCredentials.bind(Auth0NativeModule),
+      params,
+      hdrs
+    );
   }
 }

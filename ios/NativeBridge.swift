@@ -244,6 +244,35 @@ public class NativeBridge: NSObject {
         resolve(removed)
     }
     
+    @objc public func getSSOCredentials(parameters: [String: Any], headers: [String: Any], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        credentialsManager.ssoCredentials(parameters: parameters, headers: headers) { result in
+            switch result {
+            case .success(let ssoCredentials):
+                var response: [String: Any] = [
+                    "sessionTransferToken": ssoCredentials.sessionTransferToken,
+                    "tokenType": ssoCredentials.tokenType,
+                    "expiresIn": ssoCredentials.expiresIn
+                ]
+                
+                // Add optional fields if present
+                if let idToken = ssoCredentials.idToken {
+                    response["idToken"] = idToken
+                }
+                if let refreshToken = ssoCredentials.refreshToken {
+                    response["refreshToken"] = refreshToken
+                }
+                
+                resolve(response)
+            case .failure(let error):
+                reject(
+                    NativeBridge.credentialsManagerErrorCode,
+                    error.localizedDescription,
+                    error
+                )
+            }
+        }
+    }
+    
     @objc public func getDPoPHeaders(url: String, method: String, accessToken: String, tokenType: String, nonce: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         // Validate parameters
         guard !url.isEmpty else {

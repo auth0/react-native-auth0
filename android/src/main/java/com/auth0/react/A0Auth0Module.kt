@@ -391,6 +391,33 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         }
     }
 
+    @ReactMethod
+    override fun getSSOCredentials(parameters: ReadableMap?, headers: ReadableMap?, promise: Promise) {
+        val params = parameters?.toHashMap() ?: emptyMap()
+        val headerMap = headers?.toHashMap() ?: emptyMap()
+        
+        secureCredentialsManager.getSSOCredentials(
+            params as Map<String, String>,
+            headerMap as Map<String, String>,
+            object : com.auth0.android.callback.Callback<com.auth0.android.result.SessionTransferCredentials, CredentialsManagerException> {
+                override fun onSuccess(result: com.auth0.android.result.SessionTransferCredentials) {
+                    val map = WritableNativeMap().apply {
+                        putString("sessionTransferToken", result.sessionTransferToken)
+                        putString("tokenType", result.tokenType)
+                        putInt("expiresIn", result.expiresIn)
+                        result.idToken?.let { putString("idToken", it) }
+                        result.refreshToken?.let { putString("refreshToken", it) }
+                    }
+                    promise.resolve(map)
+                }
+                
+                override fun onFailure(error: CredentialsManagerException) {
+                    handleCredentialsManagerError(error, promise)
+                }
+            }
+        )
+    }
+
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         // No-op
     }

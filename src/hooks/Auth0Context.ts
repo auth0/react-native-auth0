@@ -20,6 +20,7 @@ import type {
   ResetPasswordParameters,
   MfaChallengeResponse,
   DPoPHeadersParams,
+  SessionTransferCredentials,
 } from '../types';
 import type {
   NativeAuthorizeOptions,
@@ -251,6 +252,51 @@ export interface Auth0ContextInterface extends AuthState {
   getDPoPHeaders: (
     params: DPoPHeadersParams
   ) => Promise<Record<string, string>>;
+
+  /**
+   * Obtains session transfer credentials for performing Native to Web SSO.
+   *
+   * @remarks
+   * This method exchanges the stored refresh token for a session transfer token
+   * that can be used to authenticate in web contexts without requiring the user
+   * to log in again. The session transfer token can be passed as a cookie or
+   * query parameter to the `/authorize` endpoint to establish a web session.
+   *
+   * Session transfer tokens are short-lived and expire after a few minutes.
+   * Once expired, they can no longer be used for web SSO.
+   *
+   * If Refresh Token Rotation is enabled, this method will also update the stored
+   * credentials with new tokens (ID token and refresh token) returned from the
+   * token exchange.
+   *
+   * **Platform specific:** This method is only available on native platforms (iOS/Android).
+   * On web, it will throw an error.
+   *
+   * @param parameters Optional additional parameters to pass to the token exchange.
+   * @param headers Optional additional headers to include in the token exchange request.
+   * @returns A promise that resolves with the session transfer credentials.
+   *
+   * @example
+   * ```typescript
+   * // Get session transfer credentials
+   * const ssoCredentials = await getSSOCredentials();
+   *
+   * // Option 1: Use as a cookie (recommended)
+   * const cookie = `auth0_session_transfer_token=${ssoCredentials.sessionTransferToken}; path=/; domain=.yourdomain.com; secure; httponly`;
+   * document.cookie = cookie;
+   * window.location.href = `https://yourdomain.com/authorize?client_id=${clientId}&...`;
+   *
+   * // Option 2: Use as a query parameter
+   * const authorizeUrl = `https://yourdomain.com/authorize?session_transfer_token=${ssoCredentials.sessionTransferToken}&client_id=${clientId}&...`;
+   * window.location.href = authorizeUrl;
+   * ```
+   *
+   * @see https://auth0.com/docs/authenticate/login/configure-silent-authentication
+   */
+  getSSOCredentials: (
+    parameters?: Record<string, any>,
+    headers?: Record<string, string>
+  ) => Promise<SessionTransferCredentials>;
 }
 
 const stub = (): any => {
@@ -283,6 +329,7 @@ const initialContext: Auth0ContextInterface = {
   resetPassword: stub,
   revokeRefreshToken: stub,
   getDPoPHeaders: stub,
+  getSSOCredentials: stub,
 };
 
 export const Auth0Context =

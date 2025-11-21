@@ -1,7 +1,7 @@
 import type { ICredentialsManager } from '../../../core/interfaces';
 import { AuthError } from '../../../core/models';
 import { CredentialsManagerError } from '../../../core/models';
-import type { Credentials } from '../../../types';
+import type { Credentials, SessionTransferCredentials } from '../../../types';
 import type { INativeBridge } from '../bridge';
 
 /**
@@ -44,5 +44,12 @@ export class NativeCredentialsManager implements ICredentialsManager {
     await this.handleError(this.bridge.clearCredentials());
     // Also clear the DPoP key when clearing credentials
     await this.handleError(this.bridge.clearDPoPKey());
+  }
+
+  getSSOCredentials(
+    parameters?: Record<string, any>,
+    headers?: Record<string, string>
+  ): Promise<SessionTransferCredentials> {
+    return this.handleError(this.bridge.getSSOCredentials(parameters, headers));
   }
 }

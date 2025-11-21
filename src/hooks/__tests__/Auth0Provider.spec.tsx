@@ -99,6 +99,7 @@ const createMockClient = () => {
       getCredentials: jest.fn().mockResolvedValue(null),
       clearCredentials: jest.fn().mockResolvedValue(undefined),
       saveCredentials: jest.fn().mockResolvedValue(undefined),
+      getSSOCredentials: jest.fn().mockResolvedValue(null),
     },
     auth: {
       loginWithPasswordRealm: jest.fn().mockResolvedValue(mockCredentials),
@@ -805,6 +806,256 @@ describe('Auth0Provider', () => {
         expiresAt: expect.any(Number),
         scope: 'openid',
       });
+    });
+  });
+
+  describe('getSSOCredentials', () => {
+    const TestGetSSOCredentialsConsumer = () => {
+      const { getSSOCredentials, error, isLoading } = useAuth0();
+      const [ssoCredentials, setSSOCredentials] = React.useState<any>(null);
+
+      const handleGetSSOCredentials = async () => {
+        try {
+          const credentials = await getSSOCredentials();
+          setSSOCredentials(credentials);
+        } catch {
+          // Error will be dispatched to state
+        }
+      };
+
+      if (isLoading) {
+        return <Text testID="loading">Loading...</Text>;
+      }
+
+      if (error) {
+        return <Text testID="error">Error: {error.message}</Text>;
+      }
+
+      return (
+        <View>
+          <Button
+            title="Get SSO Credentials"
+            onPress={handleGetSSOCredentials}
+            testID="get-sso-credentials-button"
+          />
+          {ssoCredentials && (
+            <Text testID="sso-credentials">
+              Token: {ssoCredentials.sessionTransferToken}
+            </Text>
+          )}
+        </View>
+      );
+    };
+
+    it('should get SSO credentials successfully', async () => {
+      const mockSSOCredentials = {
+        sessionTransferToken: 'stt_xyz123',
+        tokenType: 'Bearer',
+        expiresIn: 3600,
+        idToken: 'id_token_123',
+        refreshToken: 'refresh_token_789',
+      };
+
+      mockClientInstance.credentialsManager.getSSOCredentials = jest
+        .fn()
+        .mockResolvedValueOnce(mockSSOCredentials);
+
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.com" clientId="123">
+            <TestGetSSOCredentialsConsumer />
+          </Auth0Provider>
+        );
+      });
+
+      const getButton = screen.getByTestId('get-sso-credentials-button');
+      await act(async () => {
+        fireEvent.click(getButton);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('sso-credentials')).toHaveTextContent(
+          'Token: stt_xyz123'
+        );
+      });
+
+      expect(
+        mockClientInstance.credentialsManager.getSSOCredentials
+      ).toHaveBeenCalledTimes(1);
+    });
+
+    it('should get SSO credentials with parameters', async () => {
+      const TestGetSSOCredentialsWithParamsConsumer = () => {
+        const { getSSOCredentials, error } = useAuth0();
+
+        const handleGetSSOCredentialsWithParams = () => {
+          const parameters = { audience: 'https://api.example.com' };
+          getSSOCredentials(parameters).catch(() => {});
+        };
+
+        if (error) {
+          return <Text testID="error">Error: {error.message}</Text>;
+        }
+
+        return (
+          <Button
+            title="Get SSO Credentials With Params"
+            onPress={handleGetSSOCredentialsWithParams}
+            testID="get-sso-credentials-with-params-button"
+          />
+        );
+      };
+
+      const mockSSOCredentials = {
+        sessionTransferToken: 'stt_xyz123',
+        tokenType: 'Bearer',
+        expiresIn: 3600,
+      };
+
+      mockClientInstance.credentialsManager.getSSOCredentials = jest
+        .fn()
+        .mockResolvedValueOnce(mockSSOCredentials);
+
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.com" clientId="123">
+            <TestGetSSOCredentialsWithParamsConsumer />
+          </Auth0Provider>
+        );
+      });
+
+      const getButton = screen.getByTestId(
+        'get-sso-credentials-with-params-button'
+      );
+      await act(async () => {
+        fireEvent.click(getButton);
+      });
+
+      expect(
+        mockClientInstance.credentialsManager.getSSOCredentials
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        mockClientInstance.credentialsManager.getSSOCredentials
+      ).toHaveBeenCalledWith(
+        { audience: 'https://api.example.com' },
+        undefined
+      );
+    });
+
+    it('should get SSO credentials with headers', async () => {
+      const TestGetSSOCredentialsWithHeadersConsumer = () => {
+        const { getSSOCredentials } = useAuth0();
+
+        const handleGetSSOCredentialsWithHeaders = () => {
+          const headers = { 'X-Custom-Header': 'value' };
+          getSSOCredentials(undefined, headers).catch(() => {});
+        };
+
+        return (
+          <Button
+            title="Get SSO Credentials With Headers"
+            onPress={handleGetSSOCredentialsWithHeaders}
+            testID="get-sso-credentials-with-headers-button"
+          />
+        );
+      };
+
+      const mockSSOCredentials = {
+        sessionTransferToken: 'stt_xyz123',
+        tokenType: 'Bearer',
+        expiresIn: 3600,
+      };
+
+      mockClientInstance.credentialsManager.getSSOCredentials = jest
+        .fn()
+        .mockResolvedValueOnce(mockSSOCredentials);
+
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.com" clientId="123">
+            <TestGetSSOCredentialsWithHeadersConsumer />
+          </Auth0Provider>
+        );
+      });
+
+      const getButton = screen.getByTestId(
+        'get-sso-credentials-with-headers-button'
+      );
+      await act(async () => {
+        fireEvent.click(getButton);
+      });
+
+      expect(
+        mockClientInstance.credentialsManager.getSSOCredentials
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        mockClientInstance.credentialsManager.getSSOCredentials
+      ).toHaveBeenCalledWith(undefined, { 'X-Custom-Header': 'value' });
+    });
+
+    it('should handle getSSOCredentials error and dispatch to state', async () => {
+      const ssoError = new Error('No valid credentials stored');
+      mockClientInstance.credentialsManager.getSSOCredentials = jest
+        .fn()
+        .mockRejectedValueOnce(ssoError);
+
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.com" clientId="123">
+            <TestGetSSOCredentialsConsumer />
+          </Auth0Provider>
+        );
+      });
+
+      const getButton = screen.getByTestId('get-sso-credentials-button');
+      await act(async () => {
+        fireEvent.click(getButton);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('error')).toHaveTextContent(
+          'Error: No valid credentials stored'
+        );
+      });
+
+      expect(
+        mockClientInstance.credentialsManager.getSSOCredentials
+      ).toHaveBeenCalledTimes(1);
+    });
+
+    it('should get minimal SSO credentials without optional tokens', async () => {
+      const minimalSSOCredentials = {
+        sessionTransferToken: 'stt_minimal',
+        tokenType: 'Bearer',
+        expiresIn: 1800,
+      };
+
+      mockClientInstance.credentialsManager.getSSOCredentials = jest
+        .fn()
+        .mockResolvedValueOnce(minimalSSOCredentials);
+
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.com" clientId="123">
+            <TestGetSSOCredentialsConsumer />
+          </Auth0Provider>
+        );
+      });
+
+      const getButton = screen.getByTestId('get-sso-credentials-button');
+      await act(async () => {
+        fireEvent.click(getButton);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('sso-credentials')).toHaveTextContent(
+          'Token: stt_minimal'
+        );
+      });
+
+      expect(
+        mockClientInstance.credentialsManager.getSSOCredentials
+      ).toHaveBeenCalledTimes(1);
     });
   });
 
