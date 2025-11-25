@@ -96,7 +96,7 @@ RCT_EXPORT_METHOD(clearApiCredentials: (NSString *)audience
 RCT_EXPORT_METHOD(initializeAuth0WithConfiguration:(NSString *)clientId
                                   domain:(NSString *)domain
               localAuthenticationOptions:(NSDictionary * _Nullable)localAuthenticationOptions
-                                  useDPoP:(NSNumber *)useDPoP
+                                  useDPoP:(nonnull NSNumber *)useDPoP
                                  resolve:(RCTPromiseResolveBlock)resolve
                                   reject:(RCTPromiseRejectBlock)reject) {
     [self tryAndInitializeNativeBridge:clientId domain:domain withLocalAuthenticationOptions:localAuthenticationOptions useDPoP:useDPoP resolve:resolve reject:reject];
