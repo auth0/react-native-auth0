@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: get the gh-pages repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: gh-pages
 
@@ -37,7 +37,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout src
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           token: ${{ github.token }}
 
