@@ -184,6 +184,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 try {
                     val localAuthOptions = LocalAuthenticationOptionsParser.fromMap(options)
                     secureCredentialsManager = SecureCredentialsManager(
+                        authAPI,
                         reactContext,
                         auth0!!,
                         SharedPreferencesStorage(reactContext),
@@ -193,7 +194,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                     promise.resolve(true)
                     return
                 } catch (e: Exception) {
-                    secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics()
+                    secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authAPI)
                     promise.reject(
                         BIOMETRICS_AUTHENTICATION_ERROR_CODE,
                         "Failed to parse the Local Authentication Options, hence proceeding without Biometrics Authentication for handling Credentials"
@@ -201,7 +202,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                     return
                 }
             } else {
-                secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics()
+                secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authAPI)
                 promise.reject(
                     BIOMETRICS_AUTHENTICATION_ERROR_CODE,
                     "Biometrics Authentication for Handling Credentials are supported only on FragmentActivity, since a different activity is supplied, proceeding without it"
@@ -210,7 +211,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             }
         }
         
-        secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics()
+        secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authAPI)
         promise.resolve(true)
     }
 
@@ -456,8 +457,9 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         promise.resolve(true)
     }
 
-    private fun getSecureCredentialsManagerWithoutBiometrics(): SecureCredentialsManager {
+    private fun getSecureCredentialsManagerWithoutBiometrics(authAPI: AuthenticationAPIClient): SecureCredentialsManager {
         return SecureCredentialsManager(
+            authAPI,
             reactContext,
             auth0!!,
             SharedPreferencesStorage(reactContext)
