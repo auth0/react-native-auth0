@@ -59,6 +59,7 @@ export class WebCredentialsManager implements ICredentialsManager {
   async getApiCredentials(
     audience: string,
     scope?: string,
+    _minTtl?: number,
     parameters?: Record<string, any>
   ): Promise<ApiCredentials> {
     try {
@@ -71,18 +72,15 @@ export class WebCredentialsManager implements ICredentialsManager {
         detailedResponse: true,
       });
 
-      const claims = await this.client.getIdTokenClaims();
-      if (!claims || !claims.exp) {
-        throw new AuthError(
-          'IdTokenMissing',
-          'ID token or expiration claim is missing.'
-        );
-      }
+      // Calculate access token expiration from expires_in (seconds until expiration)
+      // This is more accurate than using ID token claims for API credentials
+      const nowInSeconds = Math.floor(Date.now() / 1000);
+      const expiresAt = nowInSeconds + (tokenResponse.expires_in ?? 3600);
 
       return new ApiCredentials({
         accessToken: tokenResponse.access_token,
-        tokenType: 'Bearer',
-        expiresAt: claims.exp,
+        tokenType: tokenResponse.token_type,
+        expiresAt: expiresAt,
         scope: tokenResponse.scope,
       });
     } catch (e: any) {

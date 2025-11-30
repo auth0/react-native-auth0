@@ -332,6 +332,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         secureCredentialsManager.clearApiCredentials(audience)
         promise.resolve(true)
     }
+
     override fun getConstants(): Map<String, String> {
         return mapOf("bundleIdentifier" to reactContext.applicationInfo.packageName)
     }

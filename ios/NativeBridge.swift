@@ -13,7 +13,6 @@ import LocalAuthentication
 @objc
 public class NativeBridge: NSObject {
     
-    
     static let accessTokenKey = "accessToken";
     static let idTokenKey = "idToken";
     static let expiresAtKey = "expiresAt";

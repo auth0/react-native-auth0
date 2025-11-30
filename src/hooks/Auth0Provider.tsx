@@ -223,12 +223,14 @@ export const Auth0Provider = ({
     async (
       audience: string,
       scope?: string,
+      minTtl?: number,
       parameters?: Record<string, any>
     ): Promise<ApiCredentials> => {
       try {
         return await client.credentialsManager.getApiCredentials(
           audience,
           scope,
+          minTtl,
           parameters
         );
       } catch (e) {

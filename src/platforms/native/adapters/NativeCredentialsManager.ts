@@ -46,16 +46,24 @@ export class NativeCredentialsManager implements ICredentialsManager {
   async clearCredentials(): Promise<void> {
     await this.handleError(this.bridge.clearCredentials());
     // Also clear the DPoP key when clearing credentials
-    await this.handleError(this.bridge.clearDPoPKey());
+    // Ignore errors from DPoP key clearing - this matches iOS behavior
+    // where we log the error but don't fail the operation
+    try {
+      await this.bridge.clearDPoPKey();
+    } catch {
+      // Silently ignore DPoP key clearing errors
+      // The main credentials are already cleared at this point
+    }
   }
 
   async getApiCredentials(
     audience: string,
     scope?: string,
+    minTtl?: number,
     parameters?: Record<string, any>
   ): Promise<ApiCredentials> {
     const nativeCredentials = await this.handleError(
-      this.bridge.getApiCredentials(audience, scope, 0, parameters)
+      this.bridge.getApiCredentials(audience, scope, minTtl ?? 0, parameters)
     );
     // Convert plain object from native to class instance
     return new ApiCredentials(nativeCredentials as IApiCredentials);

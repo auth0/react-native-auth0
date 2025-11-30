@@ -60,6 +60,7 @@ export interface ICredentialsManager {
    *
    * @param audience The identifier of the API for which to get credentials (e.g., 'https://api.example.com').
    * @param scope The scopes to request for the new access token. If omitted, default scopes configured for the API will be used.
+   * @param minTtl The minimum time-to-live (in seconds) required for the access token. If the token expires sooner, a refresh will be attempted.
    * @param parameters Additional parameters to send during the token refresh request.
    * @returns A promise that resolves with the API credentials.
    * @throws {CredentialsManagerError} If the operation fails. Common error types include:
@@ -88,6 +89,7 @@ export interface ICredentialsManager {
   getApiCredentials(
     audience: string,
     scope?: string,
+    minTtl?: number,
     parameters?: Record<string, any>
   ): Promise<ApiCredentials>;
 
