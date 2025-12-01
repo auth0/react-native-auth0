@@ -5032,7 +5032,7 @@ __metadata:
     "@react-navigation/stack": ^7.6.4
     "@types/react": ^19.2.2
     babel-loader: ^10.0.0
-    babel-plugin-react-native-web: ^0.20.0
+    babel-plugin-react-native-web: ^0.21.2
     html-webpack-plugin: ^5.6.5
     react: 19.1.1
     react-native: 0.82.1
@@ -5682,10 +5682,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-react-native-web@npm:^0.20.0":
-  version: 0.20.0
-  resolution: "babel-plugin-react-native-web@npm:0.20.0"
-  checksum: cab19ccec5de6bbbfe1c66ca6624d1744f2b2d01cce926a8bbe96f712778067f309b0fb9f111a6ab48f3c63b05a698b7e6caf2cafe088a1c8583e524261708f2
+"babel-plugin-react-native-web@npm:^0.21.2":
+  version: 0.21.2
+  resolution: "babel-plugin-react-native-web@npm:0.21.2"
+  checksum: ad02ffe67ab8368530f2b792663bd2367f8f3d8c9fd1bcd7e3f723f850aca20d98244fc874037586280a21543ace82edb6afd470f0a2c6181e3afd5fc6a78af1
   languageName: node
   linkType: hard
 
