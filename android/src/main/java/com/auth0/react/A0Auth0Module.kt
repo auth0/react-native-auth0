@@ -393,14 +393,15 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
     @ReactMethod
     override fun getSSOCredentials(parameters: ReadableMap?, headers: ReadableMap?, promise: Promise) {
-        val params = parameters?.toHashMap() ?: emptyMap()
-        val headerMap = headers?.toHashMap() ?: emptyMap()
+        val params = mutableMapOf<String, String>()
+        parameters?.toHashMap()?.forEach { (key, value) ->
+            value?.let { params[key] = it.toString() }
+        }
         
-        secureCredentialsManager.getSSOCredentials(
-            params as Map<String, String>,
-            headerMap as Map<String, String>,
-            object : com.auth0.android.callback.Callback<com.auth0.android.result.SessionTransferCredentials, CredentialsManagerException> {
-                override fun onSuccess(result: com.auth0.android.result.SessionTransferCredentials) {
+        secureCredentialsManager.getSsoCredentials(
+            params,
+            object : com.auth0.android.callback.Callback<com.auth0.android.result.SSOCredentials, CredentialsManagerException> {
+                override fun onSuccess(result: com.auth0.android.result.SSOCredentials) {
                     val map = WritableNativeMap().apply {
                         putString("sessionTransferToken", result.sessionTransferToken)
                         putString("tokenType", result.tokenType)
@@ -412,7 +413,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 }
                 
                 override fun onFailure(error: CredentialsManagerException) {
-                    handleCredentialsManagerError(error, promise)
+                    val errorCode = deduceErrorCode(error)
+                    promise.reject(errorCode, error.message, error)
                 }
             }
         )
