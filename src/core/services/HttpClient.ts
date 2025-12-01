@@ -70,6 +70,27 @@ export class HttpClient {
     return url;
   }
 
+  /**
+   * Safely parses a JSON response, handling cases where the body might be empty or invalid JSON.
+   * This prevents "body already consumed" errors by reading text first, then parsing.
+   */
+  private async safeJson(response: Response): Promise<any> {
+    if (response.status === 204) {
+      // No Content
+      return {};
+    }
+    let text = 'Failed to parse response body';
+    try {
+      text = await response.text();
+      return JSON.parse(text);
+    } catch {
+      return {
+        error: 'invalid_json',
+        error_description: text,
+      };
+    }
+  }
+
   private async request<T>(
     url: string,
     method: 'GET' | 'POST' | 'PATCH',
@@ -91,22 +112,7 @@ export class HttpClient {
         this.timeout
       );
 
-      let json: any;
-      if (response.status === 204) {
-        // No Content
-        json = {};
-      } else {
-        // Read text first to avoid body-already-consumed errors when JSON parsing fails
-        const text = await response.text();
-        try {
-          json = JSON.parse(text);
-        } catch {
-          json = {
-            error: 'invalid_json',
-            error_description: text,
-          };
-        }
-      }
+      const json = await this.safeJson(response);
 
       return { json: json as T, response };
     } catch (e) {
