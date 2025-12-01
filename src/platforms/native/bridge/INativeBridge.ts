@@ -1,5 +1,6 @@
 import type {
   Credentials,
+  ApiCredentials,
   WebAuthorizeParameters,
   ClearSessionParameters,
   DPoPHeadersParams,
@@ -106,6 +107,23 @@ export interface INativeBridge {
    */
   hasValidCredentials(minTtl?: number): Promise<boolean>;
 
+  /**
+   * Retrieves API-specific credentials from secure storage.
+   *
+   * @param audience The audience of the API.
+   * @param scope The scopes to request during a token refresh.
+   * @param minTtl The minimum time-to-live (in seconds) for the access token.
+   * @param parameters Additional parameters for the refresh request.
+   * @returns A promise that resolves with the API credentials.
+   */
+  getApiCredentials(
+    audience: string,
+    scope?: string,
+    minTtl?: number,
+    parameters?: object
+  ): Promise<ApiCredentials>;
+
+  clearApiCredentials(audience: string): Promise<void>;
   /**
    * Clears credentials from secure storage.
    */

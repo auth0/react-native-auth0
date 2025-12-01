@@ -391,7 +391,7 @@ function App() {
   const onLogin = async () => {
     await authorize({
       audience: AUDIENCE,
-      scope: 'openid profile email offline_access'
+      scope: 'openid profile email offline_access',
     });
   };
 
@@ -400,7 +400,7 @@ function App() {
     const credentials = await getCredentials(
       'openid profile email offline_access',
       0,
-      { audience: AUDIENCE }  // ← Must include audience here!
+      { audience: AUDIENCE } // ← Must include audience here!
     );
     console.log('JWT Access Token:', credentials.accessToken);
   };
@@ -427,7 +427,7 @@ Define your auth configuration once and reuse it:
 ```javascript
 const AUTH_CONFIG = {
   audience: 'https://your-api.example.com',
-  scope: 'openid profile email offline_access'
+  scope: 'openid profile email offline_access',
 };
 
 // Login
@@ -435,7 +435,7 @@ await authorize(AUTH_CONFIG);
 
 // Get credentials later (include audience in parameters)
 await getCredentials(AUTH_CONFIG.scope, 0, {
-  audience: AUTH_CONFIG.audience
+  audience: AUTH_CONFIG.audience,
 });
 ```
 
@@ -444,13 +444,13 @@ await getCredentials(AUTH_CONFIG.scope, 0, {
 ```javascript
 const auth0 = new Auth0({
   domain: 'YOUR_DOMAIN',
-  clientId: 'YOUR_CLIENT_ID'
+  clientId: 'YOUR_CLIENT_ID',
 });
 
 // Login
 await auth0.webAuth.authorize({
   audience: 'https://your-api.example.com',
-  scope: 'openid profile email offline_access'
+  scope: 'openid profile email offline_access',
 });
 
 // Get credentials (must include audience)

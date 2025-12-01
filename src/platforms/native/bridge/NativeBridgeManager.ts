@@ -1,5 +1,6 @@
 import type { INativeBridge } from './INativeBridge';
 import type {
+  ApiCredentials,
   Credentials,
   WebAuthorizeParameters,
   ClearSessionParameters,
@@ -79,9 +80,9 @@ export class NativeBridgeManager implements INativeBridge {
     options: NativeAuthorizeOptions
   ): Promise<Credentials> {
     let presentationStyle = options.useSFSafariViewController
-      ? (options.useSFSafariViewController as { presentationStyle: number })
+      ? ((options.useSFSafariViewController as { presentationStyle: number })
           ?.presentationStyle ??
-        SafariViewControllerPresentationStyle.fullScreen
+        SafariViewControllerPresentationStyle.fullScreen)
       : undefined;
     const scheme =
       parameters.redirectUrl?.split('://')[0] ?? options.customScheme;
@@ -145,6 +146,29 @@ export class NativeBridgeManager implements INativeBridge {
       minTtl ?? 0,
       params,
       forceRefresh ?? false
+    );
+  }
+
+  getApiCredentials(
+    audience: string,
+    scope?: string,
+    minTtl?: number,
+    parameters?: Record<string, any>
+  ): Promise<ApiCredentials> {
+    const params = parameters ?? {};
+    return this.a0_call(
+      Auth0NativeModule.getApiCredentials.bind(Auth0NativeModule),
+      audience,
+      scope,
+      minTtl ?? 0,
+      params
+    );
+  }
+
+  clearApiCredentials(audience: string): Promise<void> {
+    return this.a0_call(
+      Auth0NativeModule.clearApiCredentials.bind(Auth0NativeModule),
+      audience
     );
   }
 

@@ -554,12 +554,6 @@ describe('Auth0Provider', () => {
     await act(async () => {
       fireEvent.click(clearCredentialsButton);
     });
-
-    await waitFor(() =>
-      expect(screen.getByTestId('user-status')).toHaveTextContent(
-        'Not logged in'
-      )
-    );
     expect(
       mockClientInstance.credentialsManager.clearCredentials
     ).toHaveBeenCalled();

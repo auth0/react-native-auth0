@@ -25,6 +25,12 @@
   - [Handling DPoP token migration](#handling-dpop-token-migration)
   - [Checking token type](#checking-token-type)
   - [Handling nonce errors](#handling-nonce-errors)
+- [Multi-Resource Refresh Tokens (MRRT)](#multi-resource-refresh-tokens-mrrt)
+  - [Overview](#mrrt-overview)
+  - [Prerequisites](#mrrt-prerequisites)
+  - [Using MRRT with Hooks](#using-mrrt-with-hooks)
+  - [Using MRRT with Auth0 Class](#using-mrrt-with-auth0-class)
+  - [Web Platform Configuration](#web-platform-configuration)
 - [Bot Protection](#bot-protection)
   - [Domain Switching](#domain-switching)
     - [Android](#android)
@@ -303,6 +309,128 @@ auth0.webAuth
 ```
 
 If the URL doesn't contain the expected values, an error will be raised through the provided callback.
+
+## Multi-Resource Refresh Tokens (MRRT)
+
+### MRRT Overview
+
+Multi-Resource Refresh Tokens (MRRT) allow your application to obtain access tokens for multiple APIs using a single refresh token. This is useful when your application needs to access multiple backend services, each identified by a different audience.
+
+### MRRT Prerequisites
+
+Before using MRRT, ensure:
+
+1. **MRRT is enabled on your Auth0 tenant** - Contact Auth0 support or enable it through the Auth0 Dashboard
+2. **Request `offline_access` scope during login** - This ensures a refresh token is issued
+3. **Configure your APIs in Auth0 Dashboard** - Each API you want to access should be registered with its own audience identifier
+
+### Using MRRT with Hooks
+
+```tsx
+import { useAuth0 } from 'react-native-auth0';
+
+function MyComponent() {
+  const { authorize, getApiCredentials, clearApiCredentials } = useAuth0();
+
+  const login = async () => {
+    // Login with offline_access to get a refresh token
+    await authorize({
+      scope: 'openid profile email offline_access',
+      audience: 'https://primary-api.example.com',
+    });
+  };
+
+  const getFirstApiToken = async () => {
+    try {
+      // Get credentials for the first API
+      const credentials = await getApiCredentials(
+        'https://first-api.example.com',
+        'read:data write:data'
+      );
+      console.log('First API Access Token:', credentials.accessToken);
+      console.log('Expires At:', new Date(credentials.expiresAt * 1000));
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const getSecondApiToken = async () => {
+    try {
+      // Get credentials for a different API using the same refresh token
+      const credentials = await getApiCredentials(
+        'https://second-api.example.com',
+        'read:reports'
+      );
+      console.log('Second API Access Token:', credentials.accessToken);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const clearFirstApiCache = async () => {
+    // Clear cached credentials for a specific API
+    await clearApiCredentials('https://first-api.example.com');
+  };
+
+  return (
+    // Your UI components
+  );
+}
+```
+
+### Using MRRT with Auth0 Class
+
+```js
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+});
+
+// Login with offline_access scope
+await auth0.webAuth.authorize({
+  scope: 'openid profile email offline_access',
+  audience: 'https://primary-api.example.com',
+});
+
+// Get credentials for a specific API
+const apiCredentials = await auth0.credentialsManager.getApiCredentials(
+  'https://first-api.example.com',
+  'read:data write:data'
+);
+
+console.log('Access Token:', apiCredentials.accessToken);
+console.log('Token Type:', apiCredentials.tokenType);
+console.log('Expires At:', apiCredentials.expiresAt);
+console.log('Scope:', apiCredentials.scope);
+
+// Clear cached credentials for a specific API
+await auth0.credentialsManager.clearApiCredentials(
+  'https://first-api.example.com'
+);
+```
+
+### Web Platform Configuration
+
+On the **web platform**, you must explicitly enable MRRT support in the `Auth0Provider`:
+
+```tsx
+import { Auth0Provider } from 'react-native-auth0';
+
+function App() {
+  return (
+    <Auth0Provider
+      domain="your-domain.auth0.com"
+      clientId="your-client-id"
+      useMrrt={true}
+      cacheLocation="localstorage"
+    >
+      <YourApp />
+    </Auth0Provider>
+  );
+}
+```
 
 ## Bot Protection
 
