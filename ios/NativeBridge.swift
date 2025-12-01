@@ -19,7 +19,6 @@ public class NativeBridge: NSObject {
     static let scopeKey = "scope";
     static let refreshTokenKey = "refreshToken";
     static let typeKey = "type";
-    static let audienceKey = "audience";
     static let tokenTypeKey = "tokenType";
     static let dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     
