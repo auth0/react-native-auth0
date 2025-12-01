@@ -79,9 +79,9 @@ export class NativeBridgeManager implements INativeBridge {
     options: NativeAuthorizeOptions
   ): Promise<Credentials> {
     let presentationStyle = options.useSFSafariViewController
-      ? (options.useSFSafariViewController as { presentationStyle: number })
+      ? ((options.useSFSafariViewController as { presentationStyle: number })
           ?.presentationStyle ??
-        SafariViewControllerPresentationStyle.fullScreen
+        SafariViewControllerPresentationStyle.fullScreen)
       : undefined;
     const scheme =
       parameters.redirectUrl?.split('://')[0] ?? options.customScheme;
