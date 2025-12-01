@@ -96,12 +96,14 @@ export class HttpClient {
         // No Content
         json = {};
       } else {
+        // Read text first to avoid body-already-consumed errors when JSON parsing fails
+        const text = await response.text();
         try {
-          json = await response.json();
+          json = JSON.parse(text);
         } catch {
           json = {
             error: 'invalid_json',
-            error_description: await response.text(),
+            error_description: text,
           };
         }
       }
