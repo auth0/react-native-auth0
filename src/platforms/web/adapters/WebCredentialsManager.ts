@@ -4,6 +4,7 @@ import {
   AuthError,
   CredentialsManagerError,
   Credentials as CredentialsModel,
+  ApiCredentials,
 } from '../../../core/models';
 import type { Auth0Client } from '@auth0/auth0-spa-js';
 
@@ -55,6 +56,43 @@ export class WebCredentialsManager implements ICredentialsManager {
     }
   }
 
+  async getApiCredentials(
+    audience: string,
+    scope?: string,
+    _minTtl?: number,
+    parameters?: Record<string, any>
+  ): Promise<ApiCredentials> {
+    try {
+      const tokenResponse = await this.client.getTokenSilently({
+        authorizationParams: {
+          ...parameters,
+          audience: audience,
+          scope: scope,
+        },
+        detailedResponse: true,
+      });
+
+      // Calculate access token expiration from expires_in (seconds until expiration)
+      // This is more accurate than using ID token claims for API credentials
+      const nowInSeconds = Math.floor(Date.now() / 1000);
+      const expiresAt = nowInSeconds + (tokenResponse.expires_in ?? 3600);
+
+      return new ApiCredentials({
+        accessToken: tokenResponse.access_token,
+        tokenType: tokenResponse.token_type,
+        expiresAt: expiresAt,
+        scope: tokenResponse.scope,
+      });
+    } catch (e: any) {
+      const code = e.error ?? 'GetApiCredentialsFailed';
+      const authError = new AuthError(code, e.error_description ?? e.message, {
+        json: e,
+        code,
+      });
+      throw new CredentialsManagerError(authError);
+    }
+  }
+
   async hasValidCredentials(): Promise<boolean> {
     return this.client.isAuthenticated();
   }
@@ -70,5 +108,12 @@ export class WebCredentialsManager implements ICredentialsManager {
       });
       throw new CredentialsManagerError(authError);
     }
+  }
+
+  async clearApiCredentials(audience: string): Promise<void> {
+    console.warn(
+      `'clearApiCredentials' for audience ${audience} is a no-op on the web. @auth0/auth0-spa-js handles credential storage automatically.`
+    );
+    return Promise.resolve();
   }
 }
