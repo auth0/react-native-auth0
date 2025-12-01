@@ -5033,7 +5033,7 @@ __metadata:
     "@types/react": ^19.2.2
     babel-loader: ^10.0.0
     babel-plugin-react-native-web: ^0.20.0
-    html-webpack-plugin: ^5.6.3
+    html-webpack-plugin: ^5.6.5
     react: 19.1.1
     react-native: 0.82.1
     react-native-builder-bob: ^0.40.15
@@ -9596,9 +9596,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-webpack-plugin@npm:^5.6.3":
-  version: 5.6.4
-  resolution: "html-webpack-plugin@npm:5.6.4"
+"html-webpack-plugin@npm:^5.6.5":
+  version: 5.6.5
+  resolution: "html-webpack-plugin@npm:5.6.5"
   dependencies:
     "@types/html-minifier-terser": ^6.0.0
     html-minifier-terser: ^6.0.2
@@ -9613,7 +9613,7 @@ __metadata:
       optional: true
     webpack:
       optional: true
-  checksum: b486d99ce820d563dda215f8b6bbeb78127a738b88b419c95d577165e10dd29125e151010b5745ce933e8055f2445c2f9ad1c93024ad3b752db9ac613e84cfac
+  checksum: 74fa9b1a25cb1e5434d22bbc7cce8d7a182f2db9061accf8b535cdb676e251bd0d9f3d7efd6aaab0988157acc8c8349a435c6fd0d4f2c21f5d24c2b3c5c9f611
   languageName: node
   linkType: hard
 
