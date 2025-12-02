@@ -36,7 +36,14 @@ export default defineConfig([
   // TypeScript-specific configuration for type-checked rules
   {
     files: ['**/*.ts', '**/*.tsx'],
-    ignores: ['**/__tests__/**', '**/__mocks__/**', '**/*.spec.ts', '**/*.spec.tsx', '**/*.test.ts', '**/*.test.tsx'],
+    ignores: [
+      '**/__tests__/**',
+      '**/__mocks__/**',
+      '**/*.spec.ts',
+      '**/*.spec.tsx',
+      '**/*.test.ts',
+      '**/*.test.tsx',
+    ],
     languageOptions: {
       parserOptions: {
         project: true,
