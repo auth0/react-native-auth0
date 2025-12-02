@@ -149,10 +149,21 @@ export interface WebAuth0Options extends Auth0Options {
   cacheLocation?: 'memory' | 'localstorage';
   /** Enables the use of refresh tokens for silent authentication. */
   useRefreshTokens?: boolean;
+  /**
+   * Fallback to iframe-based token retrieval if refresh token fails.
+   * @default true
+   */
+  useRefreshTokensFallback?: boolean;
   /** A custom audience for the `getTokenSilently` call. */
   audience?: string;
   /** A custom scope for the `getTokenSilently` call. */
   scope?: string;
+  /**
+   * **Web only:** Enables the use of Multi-Resource Refresh Tokens (MRRT).
+   * When enabled, `useRefreshTokens` is automatically set to `true`.
+   * @default false
+   */
+  useMrrt?: boolean;
 }
 
 /**

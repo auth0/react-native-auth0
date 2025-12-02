@@ -1,5 +1,6 @@
 import type { INativeBridge } from './INativeBridge';
 import type {
+  ApiCredentials,
   Credentials,
   WebAuthorizeParameters,
   ClearSessionParameters,
@@ -40,7 +41,9 @@ export class NativeBridgeManager implements INativeBridge {
 
   async hasValidInstance(clientId: string, domain: string): Promise<boolean> {
     return this.a0_call(
-      Auth0NativeModule.hasValidAuth0InstanceWithConfiguration,
+      Auth0NativeModule.hasValidAuth0InstanceWithConfiguration.bind(
+        Auth0NativeModule
+      ),
       clientId,
       domain
     );
@@ -55,7 +58,9 @@ export class NativeBridgeManager implements INativeBridge {
     // This is a new method we'd add to the native side to ensure the
     // underlying Auth0.swift/Auth0.android SDKs are configured.
     return this.a0_call(
-      Auth0NativeModule.initializeAuth0WithConfiguration,
+      Auth0NativeModule.initializeAuth0WithConfiguration.bind(
+        Auth0NativeModule
+      ),
       clientId,
       domain,
       localAuthenticationOptions,
@@ -64,7 +69,9 @@ export class NativeBridgeManager implements INativeBridge {
   }
 
   getBundleIdentifier(): Promise<string> {
-    return this.a0_call(Auth0NativeModule.getBundleIdentifier);
+    return this.a0_call(
+      Auth0NativeModule.getBundleIdentifier.bind(Auth0NativeModule)
+    );
   }
 
   async authorize(
@@ -72,14 +79,14 @@ export class NativeBridgeManager implements INativeBridge {
     options: NativeAuthorizeOptions
   ): Promise<Credentials> {
     let presentationStyle = options.useSFSafariViewController
-      ? (options.useSFSafariViewController as { presentationStyle: number })
+      ? ((options.useSFSafariViewController as { presentationStyle: number })
           ?.presentationStyle ??
-        SafariViewControllerPresentationStyle.fullScreen
+        SafariViewControllerPresentationStyle.fullScreen)
       : undefined;
     const scheme =
       parameters.redirectUrl?.split('://')[0] ?? options.customScheme;
     const credential = await this.a0_call(
-      Auth0NativeModule.webAuth,
+      Auth0NativeModule.webAuth.bind(Auth0NativeModule),
       scheme,
       parameters.redirectUrl,
       parameters.state,
@@ -104,7 +111,7 @@ export class NativeBridgeManager implements INativeBridge {
     options: NativeClearSessionOptions
   ): Promise<void> {
     return this.a0_call(
-      Auth0NativeModule.webAuthLogout,
+      Auth0NativeModule.webAuthLogout.bind(Auth0NativeModule),
       options.customScheme,
       parameters.federated ?? false,
       parameters.returnToUrl
@@ -112,11 +119,16 @@ export class NativeBridgeManager implements INativeBridge {
   }
 
   async cancelWebAuth(): Promise<void> {
-    return this.a0_call(Auth0NativeModule.cancelWebAuth);
+    return this.a0_call(
+      Auth0NativeModule.cancelWebAuth.bind(Auth0NativeModule)
+    );
   }
 
   async saveCredentials(credentials: Credentials): Promise<void> {
-    return this.a0_call(Auth0NativeModule.saveCredentials, credentials);
+    return this.a0_call(
+      Auth0NativeModule.saveCredentials.bind(Auth0NativeModule),
+      credentials
+    );
   }
 
   async getCredentials(
@@ -128,7 +140,7 @@ export class NativeBridgeManager implements INativeBridge {
     // Assuming the native side can take an empty object for parameters.
     const params = parameters ?? {};
     return this.a0_call(
-      Auth0NativeModule.getCredentials,
+      Auth0NativeModule.getCredentials.bind(Auth0NativeModule),
       scope,
       minTtl ?? 0,
       params,
@@ -136,23 +148,54 @@ export class NativeBridgeManager implements INativeBridge {
     );
   }
 
+  getApiCredentials(
+    audience: string,
+    scope?: string,
+    minTtl?: number,
+    parameters?: Record<string, any>
+  ): Promise<ApiCredentials> {
+    const params = parameters ?? {};
+    return this.a0_call(
+      Auth0NativeModule.getApiCredentials.bind(Auth0NativeModule),
+      audience,
+      scope,
+      minTtl ?? 0,
+      params
+    );
+  }
+
+  clearApiCredentials(audience: string): Promise<void> {
+    return this.a0_call(
+      Auth0NativeModule.clearApiCredentials.bind(Auth0NativeModule),
+      audience
+    );
+  }
+
   async hasValidCredentials(minTtl?: number): Promise<boolean> {
-    return this.a0_call(Auth0NativeModule.hasValidCredentials, minTtl ?? 0);
+    return this.a0_call(
+      Auth0NativeModule.hasValidCredentials.bind(Auth0NativeModule),
+      minTtl ?? 0
+    );
   }
 
   async clearCredentials(): Promise<void> {
-    return this.a0_call(Auth0NativeModule.clearCredentials);
+    return this.a0_call(
+      Auth0NativeModule.clearCredentials.bind(Auth0NativeModule)
+    );
   }
 
   async resumeWebAuth(url: string): Promise<void> {
-    return this.a0_call(Auth0NativeModule.resumeWebAuth, url);
+    return this.a0_call(
+      Auth0NativeModule.resumeWebAuth.bind(Auth0NativeModule),
+      url
+    );
   }
 
   async getDPoPHeaders(
     params: DPoPHeadersParams
   ): Promise<Record<string, string>> {
     return this.a0_call(
-      Auth0NativeModule.getDPoPHeaders,
+      Auth0NativeModule.getDPoPHeaders.bind(Auth0NativeModule),
       params.url,
       params.method,
       params.accessToken,
@@ -162,6 +205,6 @@ export class NativeBridgeManager implements INativeBridge {
   }
 
   async clearDPoPKey(): Promise<void> {
-    return this.a0_call(Auth0NativeModule.clearDPoPKey);
+    return this.a0_call(Auth0NativeModule.clearDPoPKey.bind(Auth0NativeModule));
   }
 }

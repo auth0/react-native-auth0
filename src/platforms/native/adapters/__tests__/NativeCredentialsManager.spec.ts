@@ -1,5 +1,6 @@
 import { NativeCredentialsManager } from '../NativeCredentialsManager';
 import { INativeBridge } from '../../bridge';
+import { AuthError, CredentialsManagerError } from '../../../../core/models';
 
 // 1. Create a mock of the INativeBridge dependency.
 const mockBridge: jest.Mocked<INativeBridge> = {
@@ -9,6 +10,8 @@ const mockBridge: jest.Mocked<INativeBridge> = {
   hasValidCredentials: jest.fn(),
   clearCredentials: jest.fn(),
   clearDPoPKey: jest.fn(),
+  getApiCredentials: jest.fn(),
+  clearApiCredentials: jest.fn(),
   // Add stubs for other INativeBridge methods to satisfy the type.
   initialize: jest.fn(),
   hasValidInstance: jest.fn(),
@@ -129,6 +132,132 @@ describe('NativeCredentialsManager', () => {
       mockBridge.clearCredentials.mockResolvedValueOnce();
       await manager.clearCredentials();
       expect(mockBridge.clearCredentials).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getApiCredentials', () => {
+    it('should throw CredentialsManagerError on NO_CREDENTIALS error', async () => {
+      const authError = new AuthError('NO_CREDENTIALS', 'No credentials', {
+        code: 'NO_CREDENTIALS',
+      });
+      mockBridge.getApiCredentials.mockRejectedValue(authError);
+
+      await expect(
+        manager.getApiCredentials('https://api.example.com')
+      ).rejects.toThrow(CredentialsManagerError);
+
+      await expect(
+        manager.getApiCredentials('https://api.example.com')
+      ).rejects.toMatchObject({
+        type: 'NO_CREDENTIALS',
+        message: 'No credentials',
+      });
+    });
+
+    it('should throw CredentialsManagerError on NO_REFRESH_TOKEN error', async () => {
+      const authError = new AuthError('NO_REFRESH_TOKEN', 'No refresh token', {
+        code: 'NO_REFRESH_TOKEN',
+      });
+      mockBridge.getApiCredentials.mockRejectedValue(authError);
+
+      await expect(
+        manager.getApiCredentials('https://api.example.com', 'read:data')
+      ).rejects.toThrow(CredentialsManagerError);
+
+      await expect(
+        manager.getApiCredentials('https://api.example.com', 'read:data')
+      ).rejects.toMatchObject({
+        type: 'NO_REFRESH_TOKEN',
+        message: 'No refresh token',
+      });
+    });
+
+    it('should throw CredentialsManagerError on API_EXCHANGE_FAILED error', async () => {
+      const authError = new AuthError(
+        'invalid_grant',
+        'Refresh token is invalid',
+        {
+          code: 'invalid_grant',
+          status: 403,
+        }
+      );
+      mockBridge.getApiCredentials.mockRejectedValue(authError);
+
+      await expect(
+        manager.getApiCredentials('https://api.example.com')
+      ).rejects.toThrow(CredentialsManagerError);
+
+      const error = await manager
+        .getApiCredentials('https://api.example.com')
+        .catch((e) => e);
+
+      expect(error).toBeInstanceOf(CredentialsManagerError);
+      expect(error.type).toBe('RENEW_FAILED');
+      expect(error.message).toBe('Refresh token is invalid');
+      expect(error.status).toBe(403);
+    });
+
+    it('should throw CredentialsManagerError with proper error code mapping', async () => {
+      const authError = new AuthError('RENEW_FAILED', 'Renewal failed', {
+        code: 'RENEW_FAILED',
+      });
+      mockBridge.getApiCredentials.mockRejectedValue(authError);
+
+      const error = await manager
+        .getApiCredentials('https://api.example.com')
+        .catch((e) => e);
+
+      expect(error).toBeInstanceOf(CredentialsManagerError);
+      expect(error.type).toBe('RENEW_FAILED');
+    });
+
+    it('should return API credentials on success', async () => {
+      const mockCredentials = {
+        accessToken: 'access_token_123',
+        tokenType: 'Bearer',
+        expiresAt: Date.now() + 3600000,
+        scope: 'read:data',
+      };
+      mockBridge.getApiCredentials.mockResolvedValue(mockCredentials);
+
+      const result = await manager.getApiCredentials(
+        'https://api.example.com',
+        'read:data'
+      );
+
+      expect(result.accessToken).toBe('access_token_123');
+      expect(result.tokenType).toBe('Bearer');
+      expect(mockBridge.getApiCredentials).toHaveBeenCalledWith(
+        'https://api.example.com',
+        'read:data',
+        0,
+        undefined
+      );
+    });
+  });
+
+  describe('clearApiCredentials', () => {
+    it('should throw CredentialsManagerError on error', async () => {
+      const authError = new AuthError('CLEAR_FAILED', 'Clear failed', {
+        code: 'CLEAR_FAILED',
+      });
+      mockBridge.clearApiCredentials.mockRejectedValue(authError);
+
+      await expect(
+        manager.clearApiCredentials('https://api.example.com')
+      ).rejects.toThrow(CredentialsManagerError);
+    });
+
+    it('should clear credentials on success', async () => {
+      mockBridge.clearApiCredentials.mockResolvedValue(undefined);
+
+      await expect(
+        manager.clearApiCredentials('https://api.example.com')
+      ).resolves.toBeUndefined();
+
+      expect(mockBridge.clearApiCredentials).toHaveBeenCalledWith(
+        'https://api.example.com'
+      );
     });
   });
 });

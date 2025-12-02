@@ -35,6 +35,17 @@ export type Credentials = {
 };
 
 /**
+ * Represents API-specific credentials, primarily containing an access token.
+ * This is returned when requesting tokens for a specific API (audience).
+ */
+export type ApiCredentials = {
+  accessToken: string;
+  tokenType: string;
+  expiresAt: number;
+  scope?: string;
+};
+
+/**
  * Represents the standard profile information of an authenticated user,
  * typically decoded from the ID token.
  *
@@ -93,7 +104,7 @@ export type User = {
 export interface Auth0Options {
   /** Your Auth0 application's domain. e.g., 'your-tenant.us.auth0.com' */
   domain: string;
-  LocalAuthenticationOptions?: LocalAuthenticationOptions;
+  localAuthenticationOptions?: LocalAuthenticationOptions;
   /** Your Auth0 application's client ID. */
   clientId: string;
   timeout?: number;

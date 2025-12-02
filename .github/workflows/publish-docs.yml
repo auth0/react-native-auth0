@@ -1,61 +1,70 @@
 name: PUBLISH DOCS
 on:
-    workflow_dispatch:
-    workflow_call:
-    # or set up your own custom triggers
+  workflow_dispatch:
+  workflow_call:
+  # or set up your own custom triggers
 permissions:
-    contents: write # allows the 'Commit' step without tokens
+  contents: write # allows the 'Commit' step without tokens
 
 jobs:
-    get_history: # create an artifact from the existing documentation builds
-        runs-on: ubuntu-latest
-        steps:
-            - name: get the gh-pages repo
-              uses: actions/checkout@v5
-              with:
-                  ref: gh-pages
+  get_history: # create an artifact from the existing documentation builds
+    runs-on: ubuntu-latest
+    steps:
+      - name: get the gh-pages repo
+        uses: actions/checkout@v6
+        with:
+          ref: gh-pages
 
-            - name: remove all symbolic links from root if present
-              run: |
-                  find . -maxdepth 1 -type l -delete
+      - name: remove all symbolic links from root if present
+        run: |
+          find . -maxdepth 1 -type l -delete
 
-            - name: tar the existing docs from root
-              run: |
-                  tar -cvf documentation.tar ./
+      - name: tar the existing docs from root
+        run: |
+          tar -cvf documentation.tar ./
 
-            - name: create a document artifact
-              uses: actions/upload-artifact@v5
-              with:
-                  name: documentation
-                  path: documentation.tar
+      - name: create a document artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: documentation
+          path: documentation.tar
+          retention-days: 1
 
-    build: # builds the distribution and then the documentation
-        needs: get_history
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout src
-              uses: actions/checkout@v5
+  build_and_deploy: # builds the distribution and then the documentation
+    needs: get_history
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout src
+        uses: actions/checkout@v6
+        with:
+          token: ${{ github.token }}
 
-            - name: Download the existing documents artifact
-              uses: actions/download-artifact@v6
-              with:
-                  name: documentation
-            - run: rm -rf ./docs # delete previous docs folder present
-            - run: mkdir ./docs # create an empty docs folder
-            - run: tar -xf documentation.tar -C ./docs
-            - run: rm -f documentation.tar
+      - name: Download the existing documents artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: documentation
+      - run: rm -rf ./docs # delete previous docs folder present
+      - run: mkdir ./docs # create an empty docs folder
+      - run: tar -xf documentation.tar -C ./docs
+      - run: rm -f documentation.tar
 
-            - name: Setup
-              uses: ./.github/actions/setup
+      - name: Setup
+        uses: ./.github/actions/setup
 
-            - name: Build documents
-              run: yarn docs #set up 'docs' build script in your package.json
+      - name: Build documents
+        run: yarn docs #set up 'docs' build script in your package.json
 
-            - name: Remove all the symbolic links from docs folder
-              run: find ./docs -type l -delete
+      - name: Remove all the symbolic links from docs folder
+        run: find ./docs -type l -delete
 
-            - name: Run cleanup and manage document versions
-              run: node scripts/manage-doc-versions.js
+      - name: Run cleanup and manage document versions
+        run: node scripts/manage-doc-versions.js
 
-            - name: Deploy to github pages using gh-pages
-              run: npx gh-pages -d docs
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ github.token }}
+          publish_dir: ./docs
+          keep_files: false
