@@ -5037,7 +5037,7 @@ __metadata:
     react-native: 0.82.1
     react-native-builder-bob: ^0.40.15
     react-native-gesture-handler: ^2.29.1
-    react-native-monorepo-config: ^0.1.9
+    react-native-monorepo-config: ^0.3.0
     react-native-safe-area-context: ^5.6.2
     react-native-screens: ^4.18.0
     react-native-web: ^0.21.2
@@ -14038,13 +14038,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-monorepo-config@npm:^0.1.8, react-native-monorepo-config@npm:^0.1.9":
+"react-native-monorepo-config@npm:^0.1.8":
   version: 0.1.10
   resolution: "react-native-monorepo-config@npm:0.1.10"
   dependencies:
     escape-string-regexp: ^5.0.0
     fast-glob: ^3.3.3
   checksum: 9b1c6fefb4d67e4a9f3f11554d33072c2112f56d578b8e9b68becc3457383e4f487f31af00d9e85cd43f0b23996c1b22e10cbec57e80c3fb2e4557a0e3db176d
+  languageName: node
+  linkType: hard
+
+"react-native-monorepo-config@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "react-native-monorepo-config@npm:0.3.0"
+  dependencies:
+    escape-string-regexp: ^5.0.0
+    fast-glob: ^3.3.3
+  checksum: eea8b0c0d49faeaba4712773a3d17b3e4307d6988ccfd46879e2cc1ca7f09593fa877a4e97caff457fdc1142ccdca68493a0fe7331d5a1e0de6ce38f81f1ac2b
   languageName: node
   linkType: hard
 
