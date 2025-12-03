@@ -116,10 +116,14 @@ describe('WebAuth0Client', () => {
         headers: undefined,
       });
 
-      expect(MockAuthenticationOrchestrator).toHaveBeenCalledWith({
-        clientId: defaultOptions.clientId,
-        httpClient: mockHttpClient,
-      });
+      expect(MockAuthenticationOrchestrator).toHaveBeenCalledWith(
+        expect.objectContaining({
+          clientId: defaultOptions.clientId,
+          httpClient: mockHttpClient,
+          tokenType: 'DPoP',
+          baseUrl: `https://${defaultOptions.domain}`,
+        })
+      );
 
       expect(MockWebWebAuthProvider).toHaveBeenCalledWith(mockSpaClient);
       expect(MockWebCredentialsManager).toHaveBeenCalledWith(mockSpaClient);
@@ -182,6 +186,9 @@ describe('WebAuth0Client', () => {
       expect(MockManagementApiOrchestrator).toHaveBeenCalledWith({
         token,
         httpClient: mockHttpClient,
+        tokenType: 'DPoP',
+        baseUrl: `https://${defaultOptions.domain}`,
+        getDPoPHeaders: expect.any(Function),
       });
       expect(usersClient).toBeDefined();
     });
@@ -199,10 +206,16 @@ describe('WebAuth0Client', () => {
       expect(MockManagementApiOrchestrator).toHaveBeenNthCalledWith(1, {
         token: token1,
         httpClient: mockHttpClient,
+        tokenType: 'DPoP',
+        baseUrl: `https://${defaultOptions.domain}`,
+        getDPoPHeaders: expect.any(Function),
       });
       expect(MockManagementApiOrchestrator).toHaveBeenNthCalledWith(2, {
         token: token2,
         httpClient: mockHttpClient,
+        tokenType: 'DPoP',
+        baseUrl: `https://${defaultOptions.domain}`,
+        getDPoPHeaders: expect.any(Function),
       });
     });
   });

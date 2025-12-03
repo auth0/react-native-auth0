@@ -12,7 +12,7 @@ import {
   AuthenticationOrchestrator,
   ManagementApiOrchestrator,
 } from '../../../core/services';
-import { HttpClient } from '../../../core/services/HttpClient';
+import { HttpClient, TokenType } from '../../../core/services/HttpClient';
 import { AuthError, DPoPError } from '../../../core/models';
 
 export class WebAuth0Client implements IAuth0Client {
@@ -21,6 +21,11 @@ export class WebAuth0Client implements IAuth0Client {
   readonly auth: AuthenticationOrchestrator;
 
   private readonly httpClient: HttpClient;
+  private readonly tokenType: TokenType;
+  private readonly baseUrl: string;
+  private readonly getDPoPHeadersForOrchestrator?: (
+    params: DPoPHeadersParams
+  ) => Promise<Record<string, string>>;
   public readonly client: Auth0Client;
   private static spaClient: Auth0Client | null = null;
 
@@ -51,16 +56,14 @@ export class WebAuth0Client implements IAuth0Client {
 
   constructor(options: WebAuth0Options) {
     const baseUrl = `https://${options.domain}`;
+    this.baseUrl = baseUrl;
+    const useDPoP = options.useDPoP ?? true;
+    this.tokenType = useDPoP ? TokenType.dpop : TokenType.bearer;
 
     this.httpClient = new HttpClient({
       baseUrl: baseUrl,
       timeout: options.timeout,
       headers: options.headers,
-    });
-
-    this.auth = new AuthenticationOrchestrator({
-      clientId: options.clientId,
-      httpClient: this.httpClient,
     });
 
     const clientOptions: Auth0ClientOptions = {
@@ -83,6 +86,22 @@ export class WebAuth0Client implements IAuth0Client {
     const client = WebAuth0Client.getSpaClient(clientOptions);
     this.client = client;
 
+    // Create a bound getDPoPHeaders function for the orchestrator
+    const getDPoPHeadersForOrchestrator = async (params: DPoPHeadersParams) => {
+      return this.getDPoPHeaders(params);
+    };
+    this.getDPoPHeadersForOrchestrator = useDPoP
+      ? getDPoPHeadersForOrchestrator
+      : undefined;
+
+    this.auth = new AuthenticationOrchestrator({
+      clientId: options.clientId,
+      httpClient: this.httpClient,
+      tokenType: this.tokenType,
+      baseUrl: baseUrl,
+      getDPoPHeaders: useDPoP ? getDPoPHeadersForOrchestrator : undefined,
+    });
+
     this.webAuth = new WebWebAuthProvider(this.client);
     this.credentialsManager = new WebCredentialsManager(this.client);
   }
@@ -91,6 +110,9 @@ export class WebAuth0Client implements IAuth0Client {
     return new ManagementApiOrchestrator({
       token: token,
       httpClient: this.httpClient,
+      tokenType: this.tokenType,
+      baseUrl: this.baseUrl,
+      getDPoPHeaders: this.getDPoPHeadersForOrchestrator,
     });
   }
 

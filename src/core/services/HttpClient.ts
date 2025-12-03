@@ -4,6 +4,25 @@ import { AuthError } from '../models';
 import base64 from 'base-64';
 import { telemetry } from '../utils/telemetry';
 
+/**
+ * Token type representing the type of token to use for authentication.
+ */
+export enum TokenType {
+  /** Standard Bearer token authentication (default) */
+  bearer = 'Bearer',
+  /** Demonstrating Proof-of-Possession token authentication */
+  dpop = 'DPoP',
+}
+
+/**
+ * Returns the Bearer authentication header.
+ * @param token - The token value
+ * @returns A record with the Authorization header containing the Bearer token
+ */
+export function getBearerHeader(token: string): Record<string, string> {
+  return { Authorization: `${TokenType.bearer} ${token}` };
+}
+
 export interface HttpClientOptions {
   baseUrl: string;
   timeout?: number;
@@ -68,6 +87,38 @@ export class HttpClient {
       }
     }
     return url;
+  }
+
+  /**
+   * Parses the WWW-Authenticate header to extract error information.
+   * Per RFC 6750, OAuth 2.0 Bearer Token errors are returned in this header with format:
+   * Bearer error="invalid_token", error_description="The access token expired"
+   *
+   * @see https://datatracker.ietf.org/doc/html/rfc6750#section-3
+   */
+  private parseWwwAuthenticateHeader(
+    response: Response
+  ): { error: string; error_description?: string } | null {
+    const wwwAuthenticate = response.headers.get('WWW-Authenticate');
+    if (!wwwAuthenticate) {
+      return null;
+    }
+
+    // Parse key="value" pairs from the header
+    // Matches: error="invalid_token", error_description="The access token expired"
+    const errorMatch = wwwAuthenticate.match(/error="([^"]+)"/);
+    const descriptionMatch = wwwAuthenticate.match(
+      /error_description="([^"]+)"/
+    );
+
+    if (errorMatch?.[1]) {
+      return {
+        error: errorMatch[1],
+        error_description: descriptionMatch?.[1],
+      };
+    }
+
+    return null;
   }
 
   /**

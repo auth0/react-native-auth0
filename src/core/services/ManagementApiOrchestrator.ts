@@ -1,8 +1,19 @@
 import type { IUsersClient } from '../interfaces/IUsersClient';
 import type { GetUserParameters, PatchUserParameters, User } from '../../types';
 import { Auth0User, AuthError } from '../models';
-import { HttpClient } from '../services/HttpClient';
+import { HttpClient, getBearerHeader, TokenType } from '../services/HttpClient';
 import { deepCamelCase } from '../utils';
+
+/**
+ * Function type for getting DPoP headers from the native/platform layer.
+ */
+export type DPoPHeadersProvider = (params: {
+  url: string;
+  method: string;
+  accessToken: string;
+  tokenType: string;
+  nonce?: string;
+}) => Promise<Record<string, string>>;
 
 /**
  * Orchestrates interactions with the Auth0 Management API's user endpoints.
@@ -10,20 +21,45 @@ import { deepCamelCase } from '../utils';
 export class ManagementApiOrchestrator implements IUsersClient {
   private readonly client: HttpClient;
   private readonly token: string;
+  private readonly tokenType: TokenType;
+  private readonly baseUrl: string;
+  private readonly getDPoPHeaders?: DPoPHeadersProvider;
 
-  constructor(options: { token: string; httpClient: HttpClient }) {
+  constructor(options: {
+    token: string;
+    httpClient: HttpClient;
+    tokenType?: TokenType;
+    baseUrl?: string;
+    getDPoPHeaders?: DPoPHeadersProvider;
+  }) {
     this.token = options.token;
     this.client = options.httpClient;
+    this.tokenType = options.tokenType ?? TokenType.bearer;
+    this.baseUrl = options.baseUrl ?? '';
+    this.getDPoPHeaders = options.getDPoPHeaders;
   }
+
   /**
    * Creates the specific headers required for Management API requests,
-   * including the Bearer token.
-   * @returns A record of headers for the request.
+   * including the Bearer or DPoP token based on tokenType.
+   * @param path - The API path (used to build full URL for DPoP proof generation)
+   * @param method - The HTTP method (needed for DPoP proof generation)
+   * @returns A promise that resolves to a record of headers for the request.
    */
-  private getRequestHeaders(): Record<string, string> {
-    return {
-      Authorization: `Bearer ${this.token}`,
-    };
+  private async getRequestHeaders(
+    path: string,
+    method: string
+  ): Promise<Record<string, string>> {
+    if (this.tokenType === TokenType.dpop && this.getDPoPHeaders) {
+      const fullUrl = `${this.baseUrl}${path}`;
+      return this.getDPoPHeaders({
+        url: fullUrl,
+        method,
+        accessToken: this.token,
+        tokenType: TokenType.dpop,
+      });
+    }
+    return getBearerHeader(this.token);
   }
 
   /**
@@ -44,11 +80,12 @@ export class ManagementApiOrchestrator implements IUsersClient {
 
   async getUser(parameters: GetUserParameters): Promise<User> {
     const path = `/api/v2/users/${encodeURIComponent(parameters.id)}`;
+    const headers = await this.getRequestHeaders(path, 'GET');
 
     const { json, response } = await this.client.get<any>(
       path,
       undefined, // No query parameters
-      this.getRequestHeaders()
+      headers
     );
 
     if (!response.ok) {
@@ -64,11 +101,12 @@ export class ManagementApiOrchestrator implements IUsersClient {
     const body = {
       user_metadata: parameters.metadata,
     };
+    const headers = await this.getRequestHeaders(path, 'PATCH');
 
     const { json, response } = await this.client.patch<any>(
       path,
       body,
-      this.getRequestHeaders()
+      headers
     );
 
     if (!response.ok) {
