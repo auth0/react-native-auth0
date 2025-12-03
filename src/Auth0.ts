@@ -57,9 +57,11 @@ class Auth0 {
 
   /**
    * Provides access to the Management API (e.g., for user patching).
+   * @param token An access token with the required permissions for the management operations.
+   * @param tokenType Optional token type ('Bearer' or 'DPoP'). Defaults to the client's configured token type.
    */
-  users(token: string) {
-    return this.client.users(token);
+  users(token: string, tokenType?: string) {
+    return this.client.users(token, tokenType);
   }
 
   /**

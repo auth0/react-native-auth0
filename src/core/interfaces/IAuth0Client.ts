@@ -31,9 +31,10 @@ export interface IAuth0Client {
    * Creates a client for interacting with the Auth0 Management API's user endpoints.
    *
    * @param token An access token with the required permissions for the management operations.
+   * @param tokenType Optional token type ('Bearer' or 'DPoP'). Defaults to the client's configured token type.
    * @returns An `IUsersClient` instance configured with the provided token.
    */
-  users(token: string): IUsersClient;
+  users(token: string, tokenType?: string): IUsersClient;
 
   /**
    * Generates DPoP headers for making authenticated requests to custom APIs.

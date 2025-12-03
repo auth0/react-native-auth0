@@ -214,6 +214,11 @@ export interface MfaChallengeParameters extends RequestOptions {
 /** Parameters for accessing the `/userinfo` endpoint. */
 export interface UserInfoParameters extends RequestOptions {
   token: string;
+  /**
+   * The type of the token. When 'DPoP', DPoP headers will be generated automatically.
+   * Defaults to the client's configured token type.
+   */
+  tokenType?: string;
 }
 
 /** Parameters for requesting a password reset email. */

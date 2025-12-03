@@ -106,13 +106,21 @@ export class WebAuth0Client implements IAuth0Client {
     this.credentialsManager = new WebCredentialsManager(this.client);
   }
 
-  users(token: string): IUsersClient {
+  users(token: string, tokenType?: string): IUsersClient {
+    // Use provided tokenType or fall back to client's default
+    const effectiveTokenType = (tokenType as TokenType) ?? this.tokenType;
+    // Only provide getDPoPHeaders if the effective token type is DPoP
+    const getDPoPHeaders =
+      effectiveTokenType === TokenType.dpop
+        ? this.getDPoPHeadersForOrchestrator
+        : undefined;
+
     return new ManagementApiOrchestrator({
       token: token,
       httpClient: this.httpClient,
-      tokenType: this.tokenType,
+      tokenType: effectiveTokenType,
       baseUrl: this.baseUrl,
-      getDPoPHeaders: this.getDPoPHeadersForOrchestrator,
+      getDPoPHeaders,
     });
   }
 

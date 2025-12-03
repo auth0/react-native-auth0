@@ -392,12 +392,15 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
   }
 
   async userInfo(parameters: UserInfoParameters): Promise<User> {
-    const { token, headers } = parameters;
+    const { token, tokenType: paramTokenType, headers } = parameters;
+
+    // Use parameter tokenType if provided, otherwise use client's default
+    const effectiveTokenType = (paramTokenType as TokenType) ?? this.tokenType;
 
     let authHeader: Record<string, string>;
 
     // For DPoP tokens, we need to generate a DPoP proof using the native layer
-    if (this.tokenType === TokenType.dpop && this.getDPoPHeaders) {
+    if (effectiveTokenType === TokenType.dpop && this.getDPoPHeaders) {
       const userInfoUrl = `${this.baseUrl}/userinfo`;
       authHeader = await this.getDPoPHeaders({
         url: userInfoUrl,
