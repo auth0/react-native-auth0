@@ -5,6 +5,17 @@ import base64 from 'base-64';
 import { telemetry } from '../utils/telemetry';
 
 /**
+ * Function type for getting DPoP headers from the native/platform layer.
+ */
+export type DPoPHeadersProvider = (params: {
+  url: string;
+  method: string;
+  accessToken: string;
+  tokenType: string;
+  nonce?: string;
+}) => Promise<Record<string, string>>;
+
+/**
  * Token type representing the type of token to use for authentication.
  */
 export enum TokenType {

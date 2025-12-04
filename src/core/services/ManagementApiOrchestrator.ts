@@ -1,19 +1,13 @@
 import type { IUsersClient } from '../interfaces/IUsersClient';
 import type { GetUserParameters, PatchUserParameters, User } from '../../types';
 import { Auth0User, AuthError } from '../models';
-import { HttpClient, getBearerHeader, TokenType } from '../services/HttpClient';
+import {
+  HttpClient,
+  getBearerHeader,
+  TokenType,
+  type DPoPHeadersProvider,
+} from '../services/HttpClient';
 import { deepCamelCase } from '../utils';
-
-/**
- * Function type for getting DPoP headers from the native/platform layer.
- */
-export type DPoPHeadersProvider = (params: {
-  url: string;
-  method: string;
-  accessToken: string;
-  tokenType: string;
-  nonce?: string;
-}) => Promise<Record<string, string>>;
 
 /**
  * Orchestrates interactions with the Auth0 Management API's user endpoints.

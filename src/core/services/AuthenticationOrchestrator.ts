@@ -29,7 +29,12 @@ import {
   AuthError,
 } from '../models';
 import { validateParameters } from '../utils/validation';
-import { HttpClient, getBearerHeader, TokenType } from './HttpClient';
+import {
+  HttpClient,
+  getBearerHeader,
+  TokenType,
+  type DPoPHeadersProvider,
+} from './HttpClient';
 import { deepCamelCase } from '../utils';
 
 // Represents the raw user profile returned by an API (snake_case)
@@ -58,18 +63,6 @@ function includeRequiredScope(scope?: string): string {
 
   return scope;
 }
-
-/**
- * Function type for getting DPoP headers from the native/platform layer.
- * This allows the orchestrator to request DPoP proof generation when needed.
- */
-export type DPoPHeadersProvider = (params: {
-  url: string;
-  method: string;
-  accessToken: string;
-  tokenType: string;
-  nonce?: string;
-}) => Promise<Record<string, string>>;
 
 /**
  * Orchestrates all direct authentication flows by making calls to the Auth0 Authentication API.
