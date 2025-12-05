@@ -24,8 +24,10 @@ runs:
 
     - name: Verify npm token
       shell: bash
+      env:
+        NPM_TOKEN: ${{ inputs.npm-token }}
       run: |
-        if [ -z "${{ inputs.npm-token }}" ]; then
+        if [ -z "${NPM_TOKEN}" ]; then
           echo "Error: npm-token is not provided."
           exit 1
         fi
