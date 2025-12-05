@@ -32,9 +32,9 @@ import { validateParameters } from '../utils/validation';
 import {
   HttpClient,
   getBearerHeader,
-  TokenType,
   type DPoPHeadersProvider,
 } from './HttpClient';
+import { TokenType } from '../../types/common';
 import { deepCamelCase } from '../utils';
 
 // Represents the raw user profile returned by an API (snake_case)
@@ -388,7 +388,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
     const { token, tokenType: paramTokenType, headers } = parameters;
 
     // Use parameter tokenType if provided, otherwise use client's default
-    const effectiveTokenType = (paramTokenType as TokenType) ?? this.tokenType;
+    const effectiveTokenType = paramTokenType ?? this.tokenType;
 
     let authHeader: Record<string, string>;
 

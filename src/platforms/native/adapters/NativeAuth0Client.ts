@@ -13,10 +13,7 @@ import {
   ManagementApiOrchestrator,
 } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
-import {
-  type TokenType,
-  TokenType as TokenTypeEnum,
-} from '../../../core/services/HttpClient';
+import { TokenType } from '../../../types/common';
 import { AuthError, DPoPError } from '../../../core/models';
 
 export class NativeAuth0Client implements IAuth0Client {
@@ -36,7 +33,7 @@ export class NativeAuth0Client implements IAuth0Client {
     const baseUrl = `https://${options.domain}`;
     this.baseUrl = baseUrl;
     const useDPoP = options.useDPoP ?? true;
-    this.tokenType = useDPoP ? TokenTypeEnum.dpop : TokenTypeEnum.bearer;
+    this.tokenType = useDPoP ? TokenType.dpop : TokenType.bearer;
 
     this.httpClient = new HttpClient({
       baseUrl: baseUrl,
@@ -94,12 +91,12 @@ export class NativeAuth0Client implements IAuth0Client {
     }
   }
 
-  users(token: string, tokenType?: string): IUsersClient {
+  users(token: string, tokenType?: TokenType): IUsersClient {
     // Use provided tokenType or fall back to client's default
-    const effectiveTokenType = (tokenType as TokenType) ?? this.tokenType;
+    const effectiveTokenType = tokenType ?? this.tokenType;
     // Only provide getDPoPHeaders if the effective token type is DPoP
     const getDPoPHeaders =
-      effectiveTokenType === TokenTypeEnum.dpop
+      effectiveTokenType === TokenType.dpop
         ? this.getDPoPHeadersForOrchestrator
         : undefined;
 

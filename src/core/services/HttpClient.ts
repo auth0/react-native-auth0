@@ -1,6 +1,7 @@
 import { fetchWithTimeout, TimeoutError } from '../utils/fetchWithTimeout';
 import { toUrlQueryParams } from '../utils';
 import { AuthError } from '../models';
+import { TokenType } from '../../types/common';
 import base64 from 'base-64';
 import { telemetry } from '../utils/telemetry';
 
@@ -14,48 +15,6 @@ export type DPoPHeadersProvider = (params: {
   tokenType: string;
   nonce?: string;
 }) => Promise<Record<string, string>>;
-
-/**
- * Represents the type of access token used for API authentication.
- *
- * This enum provides type-safe constants for token types returned by Auth0
- * and used when making authenticated API requests.
- *
- * @remarks
- * - `TokenType.bearer` - Standard OAuth 2.0 Bearer token (default)
- * - `TokenType.dpop` - Demonstrating Proof-of-Possession (DPoP) bound token
- *
- * @example
- * ```typescript
- * import { TokenType } from 'react-native-auth0';
- *
- * // Check if credentials use DPoP
- * if (credentials.tokenType === TokenType.dpop) {
- *   const headers = await auth0.getDPoPHeaders({
- *     url: 'https://api.example.com/data',
- *     method: 'GET',
- *     accessToken: credentials.accessToken,
- *     tokenType: credentials.tokenType
- *   });
- * }
- * ```
- *
- * @public
- */
-export enum TokenType {
-  /**
-   * Standard OAuth 2.0 Bearer token authentication.
-   * This is the default token type used by most OAuth 2.0 implementations.
-   */
-  bearer = 'Bearer',
-  /**
-   * Demonstrating Proof-of-Possession (DPoP) token authentication.
-   * DPoP tokens are sender-constrained, providing additional security
-   * by cryptographically binding the token to the client.
-   * @see {@link https://datatracker.ietf.org/doc/html/rfc9449 | RFC 9449}
-   */
-  dpop = 'DPoP',
-}
 
 /**
  * Returns the Bearer authentication header.

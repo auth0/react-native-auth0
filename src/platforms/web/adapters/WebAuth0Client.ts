@@ -12,7 +12,8 @@ import {
   AuthenticationOrchestrator,
   ManagementApiOrchestrator,
 } from '../../../core/services';
-import { HttpClient, TokenType } from '../../../core/services/HttpClient';
+import { HttpClient } from '../../../core/services/HttpClient';
+import { TokenType } from '../../../types/common';
 import { AuthError, DPoPError } from '../../../core/models';
 
 export class WebAuth0Client implements IAuth0Client {
@@ -106,9 +107,9 @@ export class WebAuth0Client implements IAuth0Client {
     this.credentialsManager = new WebCredentialsManager(this.client);
   }
 
-  users(token: string, tokenType?: string): IUsersClient {
+  users(token: string, tokenType?: TokenType): IUsersClient {
     // Use provided tokenType or fall back to client's default
-    const effectiveTokenType = (tokenType as TokenType) ?? this.tokenType;
+    const effectiveTokenType = tokenType ?? this.tokenType;
     // Only provide getDPoPHeaders if the effective token type is DPoP
     const getDPoPHeaders =
       effectiveTokenType === TokenType.dpop

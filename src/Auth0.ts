@@ -1,4 +1,5 @@
 import type { IAuth0Client } from './core/interfaces/IAuth0Client';
+import type { TokenType } from './types/common';
 import { Auth0ClientFactory } from './factory/Auth0ClientFactory';
 import type { Auth0Options, DPoPHeadersParams } from './types';
 
@@ -60,7 +61,7 @@ class Auth0 {
    * @param token An access token with the required permissions for the management operations.
    * @param tokenType Optional token type ('Bearer' or 'DPoP'). Defaults to the client's configured token type.
    */
-  users(token: string, tokenType?: string) {
+  users(token: string, tokenType?: TokenType) {
     return this.client.users(token, tokenType);
   }
 

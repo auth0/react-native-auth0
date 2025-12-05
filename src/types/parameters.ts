@@ -1,3 +1,5 @@
+import type { TokenType } from './common';
+
 /** A base interface for API calls that allow passing custom headers.
  * @hidden
  */
@@ -218,7 +220,7 @@ export interface UserInfoParameters extends RequestOptions {
    * The type of the token. When 'DPoP', DPoP headers will be generated automatically.
    * Defaults to the client's configured token type.
    */
-  tokenType?: string;
+  tokenType?: TokenType;
 }
 
 /** Parameters for requesting a password reset email. */

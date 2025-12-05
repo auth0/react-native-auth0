@@ -2,7 +2,7 @@ import type { IWebAuthProvider } from './IWebAuthProvider';
 import type { ICredentialsManager } from './ICredentialsManager';
 import type { IAuthenticationProvider } from './IAuthenticationProvider';
 import type { IUsersClient } from './IUsersClient';
-import type { DPoPHeadersParams } from '../../types';
+import type { DPoPHeadersParams, TokenType } from '../../types';
 
 /**
  * The primary interface for the Auth0 client.
@@ -34,7 +34,7 @@ export interface IAuth0Client {
    * @param tokenType Optional token type ('Bearer' or 'DPoP'). Defaults to the client's configured token type.
    * @returns An `IUsersClient` instance configured with the provided token.
    */
-  users(token: string, tokenType?: string): IUsersClient;
+  users(token: string, tokenType?: TokenType): IUsersClient;
 
   /**
    * Generates DPoP headers for making authenticated requests to custom APIs.

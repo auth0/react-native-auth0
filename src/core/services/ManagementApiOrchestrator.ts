@@ -1,10 +1,14 @@
 import type { IUsersClient } from '../interfaces/IUsersClient';
-import type { GetUserParameters, PatchUserParameters, User } from '../../types';
+import {
+  TokenType,
+  type GetUserParameters,
+  type PatchUserParameters,
+  type User,
+} from '../../types';
 import { Auth0User, AuthError } from '../models';
 import {
   HttpClient,
   getBearerHeader,
-  TokenType,
   type DPoPHeadersProvider,
 } from '../services/HttpClient';
 import { deepCamelCase } from '../utils';
