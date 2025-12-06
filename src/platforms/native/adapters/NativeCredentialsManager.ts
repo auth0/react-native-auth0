@@ -4,6 +4,7 @@ import { CredentialsManagerError } from '../../../core/models';
 import type {
   ApiCredentials as IApiCredentials,
   Credentials,
+  SessionTransferCredentials,
 } from '../../../types';
 import type { INativeBridge } from '../bridge';
 
@@ -71,5 +72,12 @@ export class NativeCredentialsManager implements ICredentialsManager {
 
   clearApiCredentials(audience: string): Promise<void> {
     return this.handleError(this.bridge.clearApiCredentials(audience));
+  }
+
+  getSSOCredentials(
+    parameters?: Record<string, any>,
+    headers?: Record<string, string>
+  ): Promise<SessionTransferCredentials> {
+    return this.handleError(this.bridge.getSSOCredentials(parameters, headers));
   }
 }

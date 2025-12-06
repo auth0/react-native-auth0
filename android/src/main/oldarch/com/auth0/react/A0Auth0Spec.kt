@@ -104,4 +104,8 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
     @ReactMethod
     @DoNotStrip
     abstract fun clearDPoPKey(promise: Promise)
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun getSSOCredentials(parameters: ReadableMap?, headers: ReadableMap?, promise: Promise)
 }

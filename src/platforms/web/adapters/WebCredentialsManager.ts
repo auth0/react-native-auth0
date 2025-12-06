@@ -1,5 +1,5 @@
 import type { ICredentialsManager } from '../../../core/interfaces';
-import type { Credentials } from '../../../types';
+import type { Credentials, SessionTransferCredentials } from '../../../types';
 import {
   AuthError,
   CredentialsManagerError,
@@ -108,6 +108,18 @@ export class WebCredentialsManager implements ICredentialsManager {
       });
       throw new CredentialsManagerError(authError);
     }
+  }
+
+  async getSSOCredentials(
+    _parameters?: Record<string, any>,
+    _headers?: Record<string, string>
+  ): Promise<SessionTransferCredentials> {
+    const authError = new AuthError(
+      'UnsupportedOperation',
+      'Native to Web SSO is only supported on native platforms (iOS/Android). This feature is not available in web environments.',
+      { code: 'unsupported_operation' }
+    );
+    throw new CredentialsManagerError(authError);
   }
 
   async clearApiCredentials(audience: string): Promise<void> {

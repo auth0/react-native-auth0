@@ -124,6 +124,20 @@ export interface Spec extends TurboModule {
    * This method clears the DPoP key from the native module.
    */
   clearDPoPKey(): Promise<void>;
+
+  /**
+   * Get session transfer credentials for Native to Web SSO
+   */
+  getSSOCredentials(
+    parameters: Object,
+    headers: Object
+  ): Promise<{
+    sessionTransferToken: string;
+    tokenType: string;
+    expiresIn: Int32;
+    idToken?: string;
+    refreshToken?: string;
+  }>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('A0Auth0');
