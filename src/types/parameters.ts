@@ -1,3 +1,5 @@
+import type { TokenType } from './common';
+
 /** A base interface for API calls that allow passing custom headers.
  * @hidden
  */
@@ -214,6 +216,11 @@ export interface MfaChallengeParameters extends RequestOptions {
 /** Parameters for accessing the `/userinfo` endpoint. */
 export interface UserInfoParameters extends RequestOptions {
   token: string;
+  /**
+   * The type of the token. When 'DPoP', DPoP headers will be generated automatically.
+   * Defaults to the client's configured token type.
+   */
+  tokenType?: TokenType;
 }
 
 /** Parameters for requesting a password reset email. */
