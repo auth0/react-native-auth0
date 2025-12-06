@@ -6,8 +6,34 @@ import {
   Credentials as CredentialsModel,
 } from '../../models';
 
-// 1. Mock the HttpClient. We only need to mock the methods we use.
-jest.mock('../HttpClient');
+// Mock HttpClient but preserve getAuthHeader
+jest.mock('../HttpClient', () => {
+  const actual = jest.requireActual('../HttpClient');
+  return {
+    ...actual,
+    HttpClient: jest.fn().mockImplementation(() => ({
+      get: jest.fn(),
+      post: jest.fn(),
+      patch: jest.fn(),
+      buildUrl: jest.fn((path: string, query?: Record<string, any>) => {
+        let url = `https://samples.auth0.com${path}`;
+        if (query) {
+          const params = new URLSearchParams();
+          Object.entries(query).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+              params.append(key, String(value));
+            }
+          });
+          const queryString = params.toString();
+          if (queryString) {
+            url += `?${queryString}`;
+          }
+        }
+        return url;
+      }),
+    })),
+  };
+});
 const MockHttpClient = HttpClient as jest.MockedClass<typeof HttpClient>;
 
 // 2. Define test data, mirroring the old auth.spec.js file.
@@ -44,7 +70,12 @@ const userProfileResponse = {
 
 describe('AuthenticationOrchestrator', () => {
   let orchestrator: AuthenticationOrchestrator;
-  let mockHttpClientInstance: jest.Mocked<HttpClient>;
+  let mockHttpClientInstance: {
+    get: jest.Mock;
+    post: jest.Mock;
+    patch: jest.Mock;
+    buildUrl: jest.Mock;
+  };
 
   beforeAll(() => {
     // Set a fixed date for consistent `expiresAt` calculations
@@ -57,12 +88,35 @@ describe('AuthenticationOrchestrator', () => {
 
   beforeEach(() => {
     // Reset mocks and create new instances for each test
+    mockHttpClientInstance = {
+      get: jest.fn(),
+      post: jest.fn(),
+      patch: jest.fn(),
+      buildUrl: jest.fn((path: string, query?: Record<string, any>) => {
+        let url = `${baseUrl}${path}`;
+        if (query) {
+          const params = new URLSearchParams();
+          Object.entries(query).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+              params.append(key, String(value));
+            }
+          });
+          const queryString = params.toString();
+          if (queryString) {
+            url += `?${queryString}`;
+          }
+        }
+        return url;
+      }),
+    };
     MockHttpClient.mockClear();
+    (MockHttpClient as jest.Mock).mockImplementation(
+      () => mockHttpClientInstance
+    );
     orchestrator = new AuthenticationOrchestrator({
       clientId,
-      httpClient: new MockHttpClient({ baseUrl }),
+      httpClient: mockHttpClientInstance as unknown as HttpClient,
     });
-    mockHttpClientInstance = MockHttpClient.mock.instances[0];
   });
 
   // Note: Constructor and URL builder tests are not applicable here.

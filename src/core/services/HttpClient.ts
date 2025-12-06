@@ -1,8 +1,29 @@
 import { fetchWithTimeout, TimeoutError } from '../utils/fetchWithTimeout';
 import { toUrlQueryParams } from '../utils';
 import { AuthError } from '../models';
+import { TokenType } from '../../types/common';
 import base64 from 'base-64';
 import { telemetry } from '../utils/telemetry';
+
+/**
+ * Function type for getting DPoP headers from the native/platform layer.
+ */
+export type DPoPHeadersProvider = (params: {
+  url: string;
+  method: string;
+  accessToken: string;
+  tokenType: string;
+  nonce?: string;
+}) => Promise<Record<string, string>>;
+
+/**
+ * Returns the Bearer authentication header.
+ * @param token - The token value
+ * @returns A record with the Authorization header containing the Bearer token
+ */
+export function getBearerHeader(token: string): Record<string, string> {
+  return { Authorization: `${TokenType.bearer} ${token}` };
+}
 
 export interface HttpClientOptions {
   baseUrl: string;
@@ -71,22 +92,76 @@ export class HttpClient {
   }
 
   /**
+   * Parses the WWW-Authenticate header to extract error information.
+   * Per RFC 6750, OAuth 2.0 Bearer Token errors are returned in this header with format:
+   * Bearer error="invalid_token", error_description="The access token expired"
+   *
+   * @see https://datatracker.ietf.org/doc/html/rfc6750#section-3
+   */
+  private parseWwwAuthenticateHeader(
+    response: Response
+  ): { error: string; error_description?: string } | null {
+    const wwwAuthenticate = response.headers.get('WWW-Authenticate');
+    if (!wwwAuthenticate) {
+      return null;
+    }
+
+    // Parse key="value" pairs from the header
+    // Matches: error="invalid_token", error_description="The access token expired"
+    const errorMatch = wwwAuthenticate.match(/error="([^"]+)"/);
+    const descriptionMatch = wwwAuthenticate.match(
+      /error_description="([^"]+)"/
+    );
+
+    if (errorMatch?.[1]) {
+      return {
+        error: errorMatch[1],
+        error_description: descriptionMatch?.[1],
+      };
+    }
+
+    return null;
+  }
+
+  /**
    * Safely parses a JSON response, handling cases where the body might be empty or invalid JSON.
    * This prevents "body already consumed" errors by reading text first, then parsing.
+   *
+   * For error responses (4xx/5xx), if the body is not valid JSON, we check the WWW-Authenticate
+   * header for OAuth 2.0 Bearer token errors (RFC 6750), which is how endpoints like /userinfo
+   * return errors.
    */
   private async safeJson(response: Response): Promise<any> {
     if (response.status === 204) {
       // No Content
       return {};
     }
-    let text = 'Failed to parse response body';
+
+    let text = '';
     try {
       text = await response.text();
       return JSON.parse(text);
     } catch {
+      // For error responses, check WWW-Authenticate header (RFC 6750)
+      // This is how OAuth 2.0 protected resources like /userinfo return errors
+      if (!response.ok) {
+        const wwwAuthError = this.parseWwwAuthenticateHeader(response);
+        if (wwwAuthError) {
+          return wwwAuthError;
+        }
+
+        // Fallback: return a generic HTTP error with the status code
+        return {
+          error: `http_error_${response.status}`,
+          error_description:
+            text || response.statusText || `HTTP ${response.status} error`,
+        };
+      }
+
+      // For successful responses with invalid JSON, return invalid_json error
       return {
         error: 'invalid_json',
-        error_description: text,
+        error_description: text || 'Failed to parse response body',
       };
     }
   }
