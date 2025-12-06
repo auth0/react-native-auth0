@@ -13,6 +13,7 @@ import {
   ManagementApiOrchestrator,
 } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
+import { TokenType } from '../../../types/common';
 import { AuthError, DPoPError } from '../../../core/models';
 
 export class NativeAuth0Client implements IAuth0Client {
@@ -21,21 +22,44 @@ export class NativeAuth0Client implements IAuth0Client {
   readonly auth: IAuthenticationProvider;
   private ready: Promise<void>;
   private readonly httpClient: HttpClient;
+  private readonly tokenType: TokenType;
   private readonly bridge: INativeBridge;
+  private readonly baseUrl: string;
+  private readonly getDPoPHeadersForOrchestrator?: (
+    params: DPoPHeadersParams
+  ) => Promise<Record<string, string>>;
 
   constructor(options: NativeAuth0Options) {
     const baseUrl = `https://${options.domain}`;
+    this.baseUrl = baseUrl;
+    const useDPoP = options.useDPoP ?? true;
+    this.tokenType = useDPoP ? TokenType.dpop : TokenType.bearer;
+
     this.httpClient = new HttpClient({
       baseUrl: baseUrl,
       timeout: options.timeout,
       headers: options.headers,
     });
+
+    const bridge = new NativeBridgeManager();
+    this.bridge = bridge;
+
+    // Create a bound getDPoPHeaders function for the orchestrator
+    const getDPoPHeadersForOrchestrator = async (params: DPoPHeadersParams) => {
+      await this.ready;
+      return this.bridge.getDPoPHeaders(params);
+    };
+    this.getDPoPHeadersForOrchestrator = useDPoP
+      ? getDPoPHeadersForOrchestrator
+      : undefined;
+
     this.auth = new AuthenticationOrchestrator({
       clientId: options.clientId,
       httpClient: this.httpClient,
+      tokenType: this.tokenType,
+      baseUrl: baseUrl,
+      getDPoPHeaders: useDPoP ? getDPoPHeadersForOrchestrator : undefined,
     });
-    const bridge = new NativeBridgeManager();
-    this.bridge = bridge;
 
     this.ready = this.initialize(bridge, options);
 
@@ -67,10 +91,21 @@ export class NativeAuth0Client implements IAuth0Client {
     }
   }
 
-  users(token: string): IUsersClient {
+  users(token: string, tokenType?: TokenType): IUsersClient {
+    // Use provided tokenType or fall back to client's default
+    const effectiveTokenType = tokenType ?? this.tokenType;
+    // Only provide getDPoPHeaders if the effective token type is DPoP
+    const getDPoPHeaders =
+      effectiveTokenType === TokenType.dpop
+        ? this.getDPoPHeadersForOrchestrator
+        : undefined;
+
     return new ManagementApiOrchestrator({
       token: token,
       httpClient: this.httpClient,
+      tokenType: effectiveTokenType,
+      baseUrl: this.baseUrl,
+      getDPoPHeaders,
     });
   }
 

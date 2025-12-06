@@ -2,10 +2,21 @@ import { ManagementApiOrchestrator } from '../ManagementApiOrchestrator';
 import { HttpClient } from '../HttpClient';
 import { AuthError, Auth0User } from '../../models';
 
-jest.mock('../HttpClient');
+// Mock HttpClient but preserve getBearerHeader
+jest.mock('../HttpClient', () => {
+  const actual = jest.requireActual('../HttpClient');
+  return {
+    ...actual,
+    HttpClient: jest.fn().mockImplementation(() => ({
+      get: jest.fn(),
+      post: jest.fn(),
+      patch: jest.fn(),
+      buildUrl: jest.fn(),
+    })),
+  };
+});
 const MockHttpClient = HttpClient as jest.MockedClass<typeof HttpClient>;
 
-const baseUrl = 'https://samples.auth0.com';
 const managementToken = 'a.management.api.token';
 const userId = 'auth0|53b995f8bce68d9fc900099c';
 
@@ -34,14 +45,27 @@ const managementApiErrorResponse = {
 
 describe('ManagementApiOrchestrator', () => {
   let orchestrator: ManagementApiOrchestrator;
-  let mockHttpClientInstance: jest.Mocked<HttpClient>;
+  let mockHttpClientInstance: {
+    get: jest.Mock;
+    post: jest.Mock;
+    patch: jest.Mock;
+    buildUrl: jest.Mock;
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockHttpClientInstance = new MockHttpClient({ baseUrl });
+    mockHttpClientInstance = {
+      get: jest.fn(),
+      post: jest.fn(),
+      patch: jest.fn(),
+      buildUrl: jest.fn(),
+    };
+    (MockHttpClient as jest.Mock).mockImplementation(
+      () => mockHttpClientInstance
+    );
     orchestrator = new ManagementApiOrchestrator({
       token: managementToken,
-      httpClient: mockHttpClientInstance,
+      httpClient: mockHttpClientInstance as unknown as HttpClient,
     });
   });
 
