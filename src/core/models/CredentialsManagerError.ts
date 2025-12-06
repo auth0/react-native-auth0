@@ -1,7 +1,9 @@
 import { AuthError } from './AuthError';
 
-const ERROR_CODE_MAP: Record<string, string> = {
-  // --- Core CredentialsManager error codes ---
+/**
+ * Public constants exposing all possible CredentialsManager error codes.
+ */
+export const CredentialsManagerErrorCodes = {
   INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
   NO_CREDENTIALS: 'NO_CREDENTIALS',
   NO_REFRESH_TOKEN: 'NO_REFRESH_TOKEN',
@@ -13,58 +15,88 @@ const ERROR_CODE_MAP: Record<string, string> = {
   BIOMETRICS_FAILED: 'BIOMETRICS_FAILED',
   NO_NETWORK: 'NO_NETWORK',
   API_ERROR: 'API_ERROR',
-
-  // --- API Credentials (MRRT) specific codes ---
   API_EXCHANGE_FAILED: 'API_EXCHANGE_FAILED',
-
-  // --- Web (@auth0/auth0-spa-js) mappings ---
-  login_required: 'NO_CREDENTIALS',
-  consent_required: 'RENEW_FAILED',
-  mfa_required: 'RENEW_FAILED',
-  invalid_grant: 'RENEW_FAILED',
-  invalid_refresh_token: 'RENEW_FAILED',
-  missing_refresh_token: 'NO_REFRESH_TOKEN',
-  invalid_request: 'API_ERROR',
-  invalid_scope: 'API_ERROR',
-  server_error: 'API_ERROR',
-  temporarily_unavailable: 'NO_NETWORK',
-
-  // --- iOS-specific mappings ---
-  renewFailed: 'RENEW_FAILED',
-  apiExchangeFailed: 'API_EXCHANGE_FAILED',
-  noCredentials: 'NO_CREDENTIALS',
-  noRefreshToken: 'NO_REFRESH_TOKEN',
-  storeFailed: 'STORE_FAILED',
-  largeMinTTL: 'LARGE_MIN_TTL',
-
-  // --- Many-to-one mapping for granular Android Biometric errors ---
   INCOMPATIBLE_DEVICE: 'INCOMPATIBLE_DEVICE',
   CRYPTO_EXCEPTION: 'CRYPTO_EXCEPTION',
-  BIOMETRIC_NO_ACTIVITY: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_STATUS_UNKNOWN: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_UNSUPPORTED: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_HW_UNAVAILABLE: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_NONE_ENROLLED: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_NO_HARDWARE: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED: 'BIOMETRICS_FAILED',
-  BIOMETRIC_AUTHENTICATION_CHECK_FAILED: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_DEVICE_CREDENTIAL_NOT_AVAILABLE: 'BIOMETRICS_FAILED',
+  UNKNOWN_ERROR: 'UNKNOWN_ERROR',
+} as const;
+
+const ERROR_CODE_MAP: Record<string, string> = {
+  // --- Core CredentialsManager error codes ---
+  INVALID_CREDENTIALS: CredentialsManagerErrorCodes.INVALID_CREDENTIALS,
+  NO_CREDENTIALS: CredentialsManagerErrorCodes.NO_CREDENTIALS,
+  NO_REFRESH_TOKEN: CredentialsManagerErrorCodes.NO_REFRESH_TOKEN,
+  RENEW_FAILED: CredentialsManagerErrorCodes.RENEW_FAILED,
+  STORE_FAILED: CredentialsManagerErrorCodes.STORE_FAILED,
+  REVOKE_FAILED: CredentialsManagerErrorCodes.REVOKE_FAILED,
+  LARGE_MIN_TTL: CredentialsManagerErrorCodes.LARGE_MIN_TTL,
+  CREDENTIAL_MANAGER_ERROR:
+    CredentialsManagerErrorCodes.CREDENTIAL_MANAGER_ERROR,
+  BIOMETRICS_FAILED: CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  NO_NETWORK: CredentialsManagerErrorCodes.NO_NETWORK,
+  API_ERROR: CredentialsManagerErrorCodes.API_ERROR,
+
+  // --- API Credentials (MRRT) specific codes ---
+  API_EXCHANGE_FAILED: CredentialsManagerErrorCodes.API_EXCHANGE_FAILED,
+  // --- Web (@auth0/auth0-spa-js) mappings ---
+  login_required: CredentialsManagerErrorCodes.NO_CREDENTIALS,
+  consent_required: CredentialsManagerErrorCodes.RENEW_FAILED,
+  mfa_required: CredentialsManagerErrorCodes.RENEW_FAILED,
+  invalid_grant: CredentialsManagerErrorCodes.RENEW_FAILED,
+  invalid_refresh_token: CredentialsManagerErrorCodes.RENEW_FAILED,
+  missing_refresh_token: CredentialsManagerErrorCodes.NO_REFRESH_TOKEN,
+  invalid_request: CredentialsManagerErrorCodes.API_ERROR,
+  invalid_scope: CredentialsManagerErrorCodes.API_ERROR,
+  server_error: CredentialsManagerErrorCodes.API_ERROR,
+  temporarily_unavailable: CredentialsManagerErrorCodes.NO_NETWORK,
+
+  // --- iOS-specific mappings ---
+  renewFailed: CredentialsManagerErrorCodes.RENEW_FAILED,
+  apiExchangeFailed: CredentialsManagerErrorCodes.API_EXCHANGE_FAILED,
+  noCredentials: CredentialsManagerErrorCodes.NO_CREDENTIALS,
+  noRefreshToken: CredentialsManagerErrorCodes.NO_REFRESH_TOKEN,
+  storeFailed: CredentialsManagerErrorCodes.STORE_FAILED,
+  largeMinTTL: CredentialsManagerErrorCodes.LARGE_MIN_TTL,
+
+  // --- Many-to-one mapping for granular Android Biometric errors ---
+  INCOMPATIBLE_DEVICE: CredentialsManagerErrorCodes.INCOMPATIBLE_DEVICE,
+  CRYPTO_EXCEPTION: CredentialsManagerErrorCodes.CRYPTO_EXCEPTION,
+  BIOMETRIC_NO_ACTIVITY: CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_STATUS_UNKNOWN:
+    CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_UNSUPPORTED: CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_HW_UNAVAILABLE:
+    CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_NONE_ENROLLED: CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_NO_HARDWARE: CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED:
+    CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_AUTHENTICATION_CHECK_FAILED:
+    CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_DEVICE_CREDENTIAL_NOT_AVAILABLE:
+    CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
   BIOMETRIC_ERROR_STRONG_AND_DEVICE_CREDENTIAL_NOT_AVAILABLE:
-    'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_NO_DEVICE_CREDENTIAL: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_NEGATIVE_BUTTON: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_HW_NOT_PRESENT: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_NO_BIOMETRICS: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_USER_CANCELED: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_LOCKOUT_PERMANENT: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_VENDOR: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_LOCKOUT: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_CANCELED: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_NO_SPACE: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_TIMEOUT: 'BIOMETRICS_FAILED',
-  BIOMETRIC_ERROR_UNABLE_TO_PROCESS: 'BIOMETRICS_FAILED',
-  BIOMETRICS_INVALID_USER: 'BIOMETRICS_FAILED',
-  BIOMETRIC_AUTHENTICATION_FAILED: 'BIOMETRICS_FAILED',
+    CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_NO_DEVICE_CREDENTIAL:
+    CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_NEGATIVE_BUTTON:
+    CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_HW_NOT_PRESENT:
+    CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_NO_BIOMETRICS: CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_USER_CANCELED: CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_LOCKOUT_PERMANENT:
+    CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_VENDOR: CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_LOCKOUT: CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_CANCELED: CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_NO_SPACE: CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_TIMEOUT: CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_ERROR_UNABLE_TO_PROCESS:
+    CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRICS_INVALID_USER: CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
+  BIOMETRIC_AUTHENTICATION_FAILED:
+    CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
 };
 
 /**
@@ -229,6 +261,8 @@ export class CredentialsManagerError extends AuthError {
       json: originalError.json,
     });
 
-    this.type = ERROR_CODE_MAP[originalError.code] || 'UNKNOWN_ERROR';
+    this.type =
+      ERROR_CODE_MAP[originalError.code] ||
+      CredentialsManagerErrorCodes.UNKNOWN_ERROR;
   }
 }
