@@ -19,7 +19,6 @@ jobs:
   release:
     uses: ./.github/workflows/npm-release.yml
     secrets:
-      npm-token: ${{ secrets.NPM_TOKEN }}
       github-token: ${{ secrets.GITHUB_TOKEN }}
 
   publish-docs:
