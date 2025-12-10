@@ -1,5 +1,13 @@
 # Change Log
 
+## [v5.2.1](https://github.com/auth0/react-native-auth0/tree/v5.2.1) (2025-12-08)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.2.0...v5.2.1)
+
+**Added**
+
+- feat: Add DPoP support for `/userinfo` and Management API calls [\#1398](https://github.com/auth0/react-native-auth0/pull/1398) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.2.0](https://github.com/auth0/react-native-auth0/tree/v5.2.0) (2025-12-02)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.1.0...v5.2.0)

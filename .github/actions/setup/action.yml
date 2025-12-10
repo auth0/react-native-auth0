@@ -10,6 +10,10 @@ runs:
         node-version-file: .nvmrc
         registry-url: 'https://registry.npmjs.org'
 
+    - name: Install npm 11 # required to use npm OIDC
+      shell: bash
+      run: npm install -g npm@11
+
     - name: Restore dependencies
       id: yarn-cache
       uses: actions/cache/restore@v4
