@@ -4,6 +4,7 @@ import type {
   WebAuthorizeParameters,
   ClearSessionParameters,
   DPoPHeadersParams,
+  SessionTransferCredentials,
 } from '../../../types';
 import type {
   LocalAuthenticationOptions,
@@ -150,4 +151,28 @@ export interface INativeBridge {
    * This should be called during logout to ensure the key is removed.
    */
   clearDPoPKey(): Promise<void>;
+
+  /**
+   * Obtains session transfer credentials for performing Native to Web SSO.
+   *
+   * @remarks
+   * This method exchanges the stored refresh token for a session transfer token
+   * that can be used to authenticate in web contexts without requiring the user
+   * to log in again. The session transfer token is short-lived and expires after
+   * a few minutes.
+   *
+   * If Refresh Token Rotation is enabled, this method will also update the stored
+   * credentials with new tokens (ID token and refresh token) returned from the
+   * token exchange.
+   *
+   * @param parameters Optional additional parameters to pass to the token exchange.
+   * @param headers Optional additional headers to include in the token exchange request.
+   * @returns A promise that resolves with the session transfer credentials.
+   *
+   * @see https://auth0.com/docs/authenticate/single-sign-on/native-to-web/configure-implement-native-to-web
+   */
+  getSSOCredentials(
+    parameters?: Record<string, any>,
+    headers?: Record<string, string>
+  ): Promise<SessionTransferCredentials>;
 }

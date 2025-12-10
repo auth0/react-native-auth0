@@ -1,4 +1,4 @@
-import type { Credentials } from '../../types';
+import type { Credentials, SessionTransferCredentials } from '../../types';
 import { ApiCredentials } from '../models';
 
 /**
@@ -49,6 +49,47 @@ export interface ICredentialsManager {
    * @returns A promise that resolves when the credentials have been cleared.
    */
   clearCredentials(): Promise<void>;
+
+  /**
+   * Obtains session transfer credentials for performing Native to Web SSO.
+   *
+   * @remarks
+   * This method exchanges the stored refresh token for a session transfer token
+   * that can be used to authenticate in web contexts without requiring the user
+   * to log in again. The session transfer token can be passed as a cookie or
+   * query parameter to the `/authorize` endpoint to establish a web session.
+   *
+   * Session transfer tokens are short-lived and expire after a few minutes.
+   * Once expired, they can no longer be used for web SSO.
+   *
+   * If Refresh Token Rotation is enabled, this method will also update the stored
+   * credentials with new tokens (ID token and refresh token) returned from the
+   * token exchange.
+   *
+   * @param parameters Optional additional parameters to pass to the token exchange.
+   * @param headers Optional additional headers to include in the token exchange request. **iOS only** - this parameter is ignored on Android.
+   * @returns A promise that resolves with the session transfer credentials.
+   *
+   * @example
+   * ```typescript
+   * // Get session transfer credentials
+   * const ssoCredentials = await auth0.credentialsManager.getSSOCredentials();
+   *
+   * // Option 1: Use as a cookie
+   * const cookie = `auth0_session_transfer_token=${ssoCredentials.sessionTransferToken}; path=/; domain=.yourdomain.com; secure; httponly`;
+   * document.cookie = cookie;
+   *
+   * // Option 2: Use as a query parameter
+   * const authorizeUrl = `https://${domain}/authorize?session_transfer_token=${ssoCredentials.sessionTransferToken}&...`;
+   * window.location.href = authorizeUrl;
+   * ```
+   *
+   * @see https://auth0.com/docs/authenticate/single-sign-on/native-to-web/configure-implement-native-to-web
+   */
+  getSSOCredentials(
+    parameters?: Record<string, any>,
+    headers?: Record<string, string>
+  ): Promise<SessionTransferCredentials>;
 
   /**
    * Retrieves API-specific credentials for a given audience using the Multi-Resource Refresh Token (MRRT).

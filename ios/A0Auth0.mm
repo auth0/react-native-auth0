@@ -159,6 +159,13 @@ RCT_EXPORT_METHOD(getDPoPHeaders:(NSString *)url method:(NSString *)method acces
     [self.nativeBridge getDPoPHeadersWithUrl:url method:method accessToken:accessToken tokenType:tokenType nonce:nonce resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(getSSOCredentials:(NSDictionary *)parameters
+                headers:(NSDictionary *)headers
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge getSSOCredentialsWithParameters:parameters headers:headers resolve:resolve reject:reject];
+}
+
 
 
 

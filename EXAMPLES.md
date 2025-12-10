@@ -31,6 +31,12 @@
   - [Using MRRT with Hooks](#using-mrrt-with-hooks)
   - [Using MRRT with Auth0 Class](#using-mrrt-with-auth0-class)
   - [Web Platform Configuration](#web-platform-configuration)
+- [Native to Web SSO (Early Access)](#native-to-web-sso-early-access)
+  - [Overview](#native-to-web-sso-overview)
+  - [Prerequisites](#native-to-web-sso-prerequisites)
+  - [Using Native to Web SSO with Hooks](#using-native-to-web-sso-with-hooks)
+  - [Using Native to Web SSO with Auth0 Class](#using-native-to-web-sso-with-auth0-class)
+  - [Sending the Session Transfer Token](#sending-the-session-transfer-token)
 - [Bot Protection](#bot-protection)
   - [Domain Switching](#domain-switching)
     - [Android](#android)
@@ -431,6 +437,172 @@ function App() {
   );
 }
 ```
+
+## Native to Web SSO (Early Access)
+
+> ⚠️ **Early Access Feature**: Native to Web SSO is currently available in Early Access. To use this feature, you must have an Enterprise plan. For more information, see [Product Release Stages](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages).
+
+### Native to Web SSO Overview
+
+Native to Web SSO allows authenticated users in your native mobile application to seamlessly transition to your web application without requiring them to log in again. This is achieved by exchanging a refresh token for a Session Transfer Token, which can then be used to establish a session in the web application.
+
+The Session Transfer Token is:
+
+- **Short-lived**: Expires after approximately 1 minute
+- **Single-use**: Can only be used once to establish a web session
+- **Secure**: Can be bound to the user's device through IP address or ASN
+
+For detailed configuration and implementation guidance, see the [Auth0 Native to Web SSO documentation](https://auth0.com/docs/authenticate/single-sign-on/native-to-web/configure-implement-native-to-web).
+
+### Native to Web SSO Prerequisites
+
+Before using Native to Web SSO:
+
+1. **Enable Native to Web SSO on your Auth0 tenant** - This feature requires an Enterprise plan
+2. [**Configure your native application**](https://auth0.com/docs/authenticate/single-sign-on/native-to-web/configure-implement-native-to-web#configure-native-applications)
+3. **Request `offline_access` scope during login** to ensure a refresh token is issued
+
+### Using Native to Web SSO with Hooks
+
+```tsx
+import { useAuth0 } from 'react-native-auth0';
+import { Linking } from 'react-native';
+
+function MyComponent() {
+  const { authorize, getSSOCredentials } = useAuth0();
+
+  const login = async () => {
+    // Login with offline_access to get a refresh token
+    await authorize({
+      scope: 'openid profile email offline_access',
+    });
+  };
+
+  const openWebApp = async () => {
+    try {
+      // Get session transfer credentials
+      const ssoCredentials = await getSSOCredentials();
+
+      console.log('Session Transfer Token:', ssoCredentials.sessionTransferToken);
+      console.log('Token Type:', ssoCredentials.tokenType);
+      console.log('Expires In:', ssoCredentials.expiresIn, 'seconds');
+
+      // Open web app with session transfer token as query parameter
+      const webAppUrl = `https://your-web-app.com/login?session_transfer_token=${ssoCredentials.sessionTransferToken}`;
+      await Linking.openURL(webAppUrl);
+    } catch (error) {
+      console.error('Failed to get SSO credentials:', error);
+    }
+  };
+
+  return (
+    // Your UI components
+  );
+}
+```
+
+### Using Native to Web SSO with Auth0 Class
+
+```js
+import Auth0 from 'react-native-auth0';
+import { Linking } from 'react-native';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+});
+
+// Login with offline_access scope
+await auth0.webAuth.authorize({
+  scope: 'openid profile email offline_access',
+});
+
+// Get session transfer credentials
+const ssoCredentials = await auth0.credentialsManager.getSSOCredentials();
+
+console.log('Session Transfer Token:', ssoCredentials.sessionTransferToken);
+console.log('Token Type:', ssoCredentials.tokenType);
+console.log('Expires In:', ssoCredentials.expiresIn);
+
+// Optional: ID Token and Refresh Token may be returned if RTR is enabled
+if (ssoCredentials.idToken) {
+  console.log('ID Token:', ssoCredentials.idToken);
+}
+if (ssoCredentials.refreshToken) {
+  console.log('New Refresh Token received (RTR enabled)');
+}
+
+// Open your web application with the session transfer token
+const webAppUrl = `https://your-web-app.com/login?session_transfer_token=${ssoCredentials.sessionTransferToken}`;
+await Linking.openURL(webAppUrl);
+```
+
+### Sending the Session Transfer Token
+
+There are two ways to send the Session Transfer Token to your web application:
+
+#### Option 1: As a Query Parameter
+
+Pass the token as a URL parameter when opening your web application:
+
+```js
+const ssoCredentials = await auth0.credentialsManager.getSSOCredentials();
+
+// Your web app should extract the token and pass it to Auth0's /authorize endpoint
+const webAppUrl = `https://your-web-app.com/login?session_transfer_token=${ssoCredentials.sessionTransferToken}`;
+await Linking.openURL(webAppUrl);
+```
+
+Your web application should then include the `session_transfer_token` in the `/authorize` request:
+
+```js
+// In your web application
+const urlParams = new URLSearchParams(window.location.search);
+const sessionTransferToken = urlParams.get('session_transfer_token');
+
+if (sessionTransferToken) {
+  // Include in your authorization request
+  const authorizeUrl =
+    `https://YOUR_AUTH0_DOMAIN/authorize?` +
+    `client_id=YOUR_WEB_CLIENT_ID&` +
+    `redirect_uri=${encodeURIComponent('https://your-web-app.com/callback')}&` +
+    `response_type=code&` +
+    `scope=openid profile email&` +
+    `session_transfer_token=${sessionTransferToken}`;
+
+  window.location.href = authorizeUrl;
+}
+```
+
+#### Option 2: As a Cookie (WebView only)
+
+If your application uses a WebView that supports cookie injection:
+
+```js
+import { WebView } from 'react-native-webview';
+
+function WebAppView() {
+  const [cookies, setCookies] = useState('');
+
+  const prepareWebSession = async () => {
+    const ssoCredentials = await auth0.credentialsManager.getSSOCredentials();
+
+    // Set cookie that will be sent to Auth0
+    const cookie = `auth0_session_transfer_token=${ssoCredentials.sessionTransferToken}; path=/; domain=.your-auth0-domain.auth0.com; secure`;
+    setCookies(cookie);
+  };
+
+  return (
+    <WebView
+      source={{ uri: 'https://your-web-app.com' }}
+      sharedCookiesEnabled={true}
+      // Additional WebView configuration for cookie injection
+    />
+  );
+}
+```
+
+> **Note**: Cookie injection is platform-specific and may require additional configuration. The query parameter method is generally more straightforward and recommended for most use cases.
 
 ## Bot Protection
 
