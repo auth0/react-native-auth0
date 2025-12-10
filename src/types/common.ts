@@ -134,7 +134,7 @@ export type User = {
 export interface Auth0Options {
   /** Your Auth0 application's domain. e.g., 'your-tenant.us.auth0.com' */
   domain: string;
-  LocalAuthenticationOptions?: LocalAuthenticationOptions;
+  localAuthenticationOptions?: LocalAuthenticationOptions;
   /** Your Auth0 application's client ID. */
   clientId: string;
   timeout?: number;
@@ -172,6 +172,48 @@ export type MfaChallengeResponse =
   | MfaChallengeOobWithBindingResponse;
 
 // ========= DPoP Types =========
+
+/**
+ * Represents the type of access token used for API authentication.
+ *
+ * This enum provides type-safe constants for token types returned by Auth0
+ * and used when making authenticated API requests.
+ *
+ * @remarks
+ * - `TokenType.bearer` - Standard OAuth 2.0 Bearer token (default)
+ * - `TokenType.dpop` - Demonstrating Proof-of-Possession (DPoP) bound token
+ *
+ * @example
+ * ```typescript
+ * import { TokenType } from 'react-native-auth0';
+ *
+ * // Check if credentials use DPoP
+ * if (credentials.tokenType === TokenType.dpop) {
+ *   const headers = await auth0.getDPoPHeaders({
+ *     url: 'https://api.example.com/data',
+ *     method: 'GET',
+ *     accessToken: credentials.accessToken,
+ *     tokenType: credentials.tokenType
+ *   });
+ * }
+ * ```
+ *
+ * @public
+ */
+export enum TokenType {
+  /**
+   * Standard OAuth 2.0 Bearer token authentication.
+   * This is the default token type used by most OAuth 2.0 implementations.
+   */
+  bearer = 'Bearer',
+  /**
+   * Demonstrating Proof-of-Possession (DPoP) token authentication.
+   * DPoP tokens are sender-constrained, providing additional security
+   * by cryptographically binding the token to the client.
+   * @see {@link https://datatracker.ietf.org/doc/html/rfc9449 | RFC 9449}
+   */
+  dpop = 'DPoP',
+}
 
 /**
  * Parameters required to generate DPoP headers for custom API requests.

@@ -1,5 +1,27 @@
 # Change Log
 
+## [v5.2.1](https://github.com/auth0/react-native-auth0/tree/v5.2.1) (2025-12-08)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.2.0...v5.2.1)
+
+**Added**
+
+- feat: Add DPoP support for `/userinfo` and Management API calls [\#1398](https://github.com/auth0/react-native-auth0/pull/1398) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+## [v5.2.0](https://github.com/auth0/react-native-auth0/tree/v5.2.0) (2025-12-02)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.1.0...v5.2.0)
+
+**Added**
+
+- feat: add Multi-Resource Refresh Token (MRRT) support [\#1258](https://github.com/auth0/react-native-auth0/pull/1258) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Fixed**
+
+- fix: fixed spelling for localAuthenticationOptions is incorrect in Au… [\#1373](https://github.com/auth0/react-native-auth0/pull/1373) ([1aishwaryasharma](https://github.com/1aishwaryasharma))
+- fix: handle 401 response parsing correctly in userInfo endpoint [\#1393](https://github.com/auth0/react-native-auth0/pull/1393) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix: enforce nonnull type for useDPoP parameter in initializeAuth0WithConfiguration method [\#1388](https://github.com/auth0/react-native-auth0/pull/1388) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.1.0](https://github.com/auth0/react-native-auth0/tree/v5.1.0) (2025-10-31)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.0.1...v5.1.0)

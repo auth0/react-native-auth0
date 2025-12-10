@@ -29,7 +29,12 @@ import {
   AuthError,
 } from '../models';
 import { validateParameters } from '../utils/validation';
-import { HttpClient } from './HttpClient';
+import {
+  HttpClient,
+  getBearerHeader,
+  type DPoPHeadersProvider,
+} from './HttpClient';
+import { TokenType } from '../../types/common';
 import { deepCamelCase } from '../utils';
 
 // Represents the raw user profile returned by an API (snake_case)
@@ -66,10 +71,22 @@ function includeRequiredScope(scope?: string): string {
 export class AuthenticationOrchestrator implements IAuthenticationProvider {
   private readonly client: HttpClient;
   private readonly clientId: string;
+  private readonly tokenType: TokenType;
+  private readonly baseUrl: string;
+  private readonly getDPoPHeaders?: DPoPHeadersProvider;
 
-  constructor(options: { clientId: string; httpClient: HttpClient }) {
+  constructor(options: {
+    clientId: string;
+    httpClient: HttpClient;
+    tokenType?: TokenType;
+    baseUrl?: string;
+    getDPoPHeaders?: DPoPHeadersProvider;
+  }) {
     this.clientId = options.clientId;
     this.client = options.httpClient;
+    this.tokenType = options.tokenType ?? TokenType.bearer;
+    this.baseUrl = options.baseUrl ?? '';
+    this.getDPoPHeaders = options.getDPoPHeaders;
   }
 
   authorizeUrl(parameters: AuthorizeUrlParameters): string {
@@ -368,8 +385,27 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
   }
 
   async userInfo(parameters: UserInfoParameters): Promise<User> {
-    const { token, headers } = parameters;
-    const requestHeaders = { Authorization: `Bearer ${token}`, ...headers };
+    const { token, tokenType: paramTokenType, headers } = parameters;
+
+    // Use parameter tokenType if provided, otherwise use client's default
+    const effectiveTokenType = paramTokenType ?? this.tokenType;
+
+    let authHeader: Record<string, string>;
+
+    // For DPoP tokens, we need to generate a DPoP proof using the native layer
+    if (effectiveTokenType === TokenType.dpop && this.getDPoPHeaders) {
+      const userInfoUrl = `${this.baseUrl}/userinfo`;
+      authHeader = await this.getDPoPHeaders({
+        url: userInfoUrl,
+        method: 'GET',
+        accessToken: token,
+        tokenType: TokenType.dpop,
+      });
+    } else {
+      authHeader = getBearerHeader(token);
+    }
+
+    const requestHeaders = { ...authHeader, ...headers };
     const { json, response } = await this.client.get<RawUser>(
       '/userinfo',
       undefined,
