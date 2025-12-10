@@ -84,7 +84,7 @@ export interface ICredentialsManager {
    * window.location.href = authorizeUrl;
    * ```
    *
-   * @see https://auth0.com/docs/authenticate/login/configure-silent-authentication
+   * @see https://auth0.com/docs/authenticate/single-sign-on/native-to-web/configure-implement-native-to-web
    */
   getSSOCredentials(
     parameters?: Record<string, any>,

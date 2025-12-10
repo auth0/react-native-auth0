@@ -440,6 +440,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         parameters?.toHashMap()?.forEach { (key, value) ->
             value?.let { params[key] = it.toString() }
         }
+        // header is only for keeping the platform agnostic, only used in iOS
         
         secureCredentialsManager.getSsoCredentials(
             params,

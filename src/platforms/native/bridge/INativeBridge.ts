@@ -169,7 +169,7 @@ export interface INativeBridge {
    * @param headers Optional additional headers to include in the token exchange request.
    * @returns A promise that resolves with the session transfer credentials.
    *
-   * @see https://auth0.com/docs/authenticate/login/configure-silent-authentication
+   * @see https://auth0.com/docs/authenticate/single-sign-on/native-to-web/configure-implement-native-to-web
    */
   getSSOCredentials(
     parameters?: Record<string, any>,

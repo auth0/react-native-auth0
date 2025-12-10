@@ -43,12 +43,12 @@ export type Credentials = {
  * Session transfer tokens are short-lived and expire after a few minutes.
  * Once expired, they can no longer be used for web SSO.
  *
- * @see https://auth0.com/docs/authenticate/login/configure-silent-authentication
+ * @see https://auth0.com/docs/authenticate/single-sign-on/native-to-web/configure-implement-native-to-web
  */
 export type SessionTransferCredentials = {
   /** The session transfer token used for web SSO. */
   sessionTransferToken: string;
-  /** The type of the token issued (typically "N_A" for session transfer tokens). */
+  /** The type of the token issued */
   tokenType: string;
   /** The expiration time of the session transfer token in seconds. */
   expiresIn: number;
