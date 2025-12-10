@@ -298,7 +298,7 @@ export interface Auth0ContextInterface extends AuthState {
    * On web, it will throw an error.
    *
    * @param parameters Optional additional parameters to pass to the token exchange.
-   * @param headers Optional additional headers to include in the token exchange request.
+   * @param headers Optional additional headers to include in the token exchange request. **iOS only** - this parameter is ignored on Android.
    * @returns A promise that resolves with the session transfer credentials.
    *
    * @example
