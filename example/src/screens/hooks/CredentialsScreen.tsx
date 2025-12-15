@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, View, Text } from 'react-native';
+import {
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+  Text,
+  Linking,
+  Alert,
+} from 'react-native';
 import { useAuth0, Credentials, ApiCredentials } from 'react-native-auth0';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
 import Result from '../../components/Result';
 import LabeledInput from '../../components/LabeledInput';
-import config from '../../auth0-configuration';
 
 const CredentialsScreen = () => {
   const {
@@ -15,14 +22,16 @@ const CredentialsScreen = () => {
     getApiCredentials,
     clearApiCredentials,
     revokeRefreshToken,
+    getSSOCredentials,
   } = useAuth0();
 
   const [result, setResult] = useState<
     Credentials | ApiCredentials | object | boolean | null
   >(null);
   const [error, setError] = useState<Error | null>(null);
-  const [audience, setAudience] = useState(config.audience);
+  const [audience, setAudience] = useState('');
   const [scope, setScope] = useState('openid profile email');
+  const [webAppUrl, setWebAppUrl] = useState('https://your-web-app.com/login');
 
   const runTest = async (testFn: () => Promise<any>, title: string) => {
     setError(null);
@@ -117,6 +126,59 @@ const CredentialsScreen = () => {
             style={styles.secondaryButton}
           />
         </Section>
+
+        <Section title="Native to Web SSO (Early Access)">
+          <Text style={styles.description}>
+            Exchange your refresh token for a Session Transfer Token to enable
+            seamless SSO to your web application.
+          </Text>
+          <LabeledInput
+            label="Web App URL"
+            value={webAppUrl}
+            onChangeText={setWebAppUrl}
+            autoCapitalize="none"
+            placeholder="https://your-web-app.com/login"
+          />
+          <Button
+            onPress={() => runTest(getSSOCredentials, 'Get SSO Credentials')}
+            title="getSSOCredentials()"
+          />
+          <Button
+            onPress={async () => {
+              try {
+                setError(null);
+                const ssoCredentials = await getSSOCredentials();
+                setResult(ssoCredentials);
+
+                // Open web app with session transfer token
+                const url = `${webAppUrl}?session_transfer_token=${ssoCredentials.sessionTransferToken}`;
+
+                Alert.alert(
+                  'Open Web App',
+                  `Open ${webAppUrl} with session transfer token?`,
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                      text: 'Open',
+                      onPress: async () => {
+                        const supported = await Linking.canOpenURL(url);
+                        if (supported) {
+                          await Linking.openURL(url);
+                        } else {
+                          Alert.alert('Error', `Cannot open URL: ${url}`);
+                        }
+                      },
+                    },
+                  ]
+                );
+              } catch (e) {
+                setError(e as Error);
+              }
+            }}
+            title="Get SSO Credentials & Open Web App"
+            style={styles.primaryButton}
+          />
+        </Section>
       </ScrollView>
     </SafeAreaView>
   );
@@ -147,8 +209,10 @@ const styles = StyleSheet.create({
   },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 12 },
   buttonGroup: { gap: 10 },
+  description: { fontSize: 14, color: '#757575', marginBottom: 10 },
   destructiveButton: { backgroundColor: '#424242' },
   secondaryButton: { backgroundColor: '#FF9800' },
+  primaryButton: { backgroundColor: '#4CAF50' },
 });
 
 export default CredentialsScreen;

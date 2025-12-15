@@ -244,19 +244,18 @@ public class NativeBridge: NSObject {
     }
     
     @objc public func getSSOCredentials(parameters: [String: Any], headers: [String: Any], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        credentialsManager.ssoCredentials(parameters: parameters, headers: headers) { result in
+        let stringHeaders = headers.compactMapValues { $0 as? String }
+        credentialsManager.ssoCredentials(parameters: parameters, headers: stringHeaders) { result in
             switch result {
             case .success(let ssoCredentials):
                 var response: [String: Any] = [
                     "sessionTransferToken": ssoCredentials.sessionTransferToken,
-                    "tokenType": ssoCredentials.tokenType,
-                    "expiresIn": ssoCredentials.expiresIn
+                    "tokenType": ssoCredentials.issuedTokenType,
+                    "expiresIn": ssoCredentials.expiresIn,
+                    "idToken": ssoCredentials.idToken
                 ]
                 
                 // Add optional fields if present
-                if let idToken = ssoCredentials.idToken {
-                    response["idToken"] = idToken
-                }
                 if let refreshToken = ssoCredentials.refreshToken {
                     response["refreshToken"] = refreshToken
                 }

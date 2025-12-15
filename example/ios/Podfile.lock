@@ -1,5 +1,5 @@
 PODS:
-  - A0Auth0 (5.1.0):
+  - A0Auth0 (5.2.1):
     - Auth0 (= 2.14)
     - boost
     - DoubleConversion
@@ -2778,7 +2778,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  A0Auth0: 022a85f2093860dcbf9e5337946f6cda5780de4d
+  A0Auth0: 9253099fae9372f663f89abbf5d02a6b36faf45c
   Auth0: 022dda235af8a664a4faf9e7b60b063b5bc08373
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
