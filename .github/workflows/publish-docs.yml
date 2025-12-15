@@ -24,7 +24,7 @@ jobs:
           tar -cvf documentation.tar ./
 
       - name: create a document artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: documentation
           path: documentation.tar
@@ -42,7 +42,7 @@ jobs:
           token: ${{ github.token }}
 
       - name: Download the existing documents artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: documentation
       - run: rm -rf ./docs # delete previous docs folder present
