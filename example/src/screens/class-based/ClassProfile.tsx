@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   Alert,
+  Linking,
 } from 'react-native';
 import { RouteProp, NavigationProp } from '@react-navigation/native';
 import { jwtDecode } from 'jwt-decode';
@@ -16,7 +17,6 @@ import UserInfo from '../../components/UserInfo';
 import { User, Credentials, ApiCredentials } from 'react-native-auth0';
 import type { ClassDemoStackParamList } from '../../navigation/ClassDemoNavigator';
 import LabeledInput from '../../components/LabeledInput';
-import config from '../../auth0-configuration';
 import Result from '../../components/Result';
 
 type ProfileRouteProp = RouteProp<ClassDemoStackParamList, 'ClassProfile'>;
@@ -31,6 +31,7 @@ interface State {
   result: Credentials | ApiCredentials | object | boolean | null;
   error: Error | null;
   audience: string;
+  webAppUrl: string;
 }
 
 class ClassProfileScreen extends Component<Props, State> {
@@ -41,7 +42,8 @@ class ClassProfileScreen extends Component<Props, State> {
       user,
       result: null,
       error: null,
-      audience: config.audience,
+      audience: '',
+      webAppUrl: 'https://your-web-app.com/login',
     };
   }
 
@@ -74,7 +76,7 @@ class ClassProfileScreen extends Component<Props, State> {
   };
 
   render() {
-    const { user, result, error, audience } = this.state;
+    const { user, result, error, audience, webAppUrl } = this.state;
     const { accessToken } = this.props.route.params.credentials;
 
     return (
@@ -143,6 +145,65 @@ class ClassProfileScreen extends Component<Props, State> {
             />
           </Section>
 
+          <Section title="Native to Web SSO (Early Access)">
+            <Text style={styles.description}>
+              Exchange your refresh token for a Session Transfer Token to enable
+              seamless SSO to your web application.
+            </Text>
+            <LabeledInput
+              label="Web App URL"
+              value={webAppUrl}
+              onChangeText={(text) => this.setState({ webAppUrl: text })}
+              autoCapitalize="none"
+              placeholder="https://your-web-app.com/login"
+            />
+            <Button
+              onPress={() =>
+                this.runTest(
+                  () => auth0.credentialsManager.getSSOCredentials(),
+                  'Get SSO Credentials'
+                )
+              }
+              title="credentialsManager.getSSOCredentials()"
+            />
+            <Button
+              onPress={async () => {
+                try {
+                  this.setState({ error: null });
+                  const ssoCredentials =
+                    await auth0.credentialsManager.getSSOCredentials();
+                  this.setState({ result: ssoCredentials });
+
+                  // Open web app with session transfer token
+                  const url = `${webAppUrl}?session_transfer_token=${ssoCredentials.sessionTransferToken}`;
+
+                  Alert.alert(
+                    'Open Web App',
+                    `Open ${webAppUrl} with session transfer token?`,
+                    [
+                      { text: 'Cancel', style: 'cancel' },
+                      {
+                        text: 'Open',
+                        onPress: async () => {
+                          const supported = await Linking.canOpenURL(url);
+                          if (supported) {
+                            await Linking.openURL(url);
+                          } else {
+                            Alert.alert('Error', `Cannot open URL: ${url}`);
+                          }
+                        },
+                      },
+                    ]
+                  );
+                } catch (e) {
+                  this.setState({ error: e as Error });
+                }
+              }}
+              title="Get SSO Credentials & Open Web App"
+              style={styles.primaryButton}
+            />
+          </Section>
+
           <Section title="Navigation & Logout">
             <Button
               onPress={() =>
@@ -188,8 +249,10 @@ const styles = StyleSheet.create({
   },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 12 },
   buttonGroup: { gap: 10 },
+  description: { fontSize: 14, color: '#757575', marginBottom: 10 },
   destructiveButton: { backgroundColor: '#424242' },
   secondaryButton: { backgroundColor: '#FF9800' },
+  primaryButton: { backgroundColor: '#4CAF50' },
 });
 
 export default ClassProfileScreen;

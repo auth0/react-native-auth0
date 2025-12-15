@@ -9,6 +9,7 @@ import Button from '../../components/Button';
 import Header from '../../components/Header';
 import Result from '../../components/Result';
 import type { ClassDemoStackParamList } from '../../navigation/ClassDemoNavigator';
+import config from '../../auth0-configuration';
 
 type NavigationProp = StackNavigationProp<
   ClassDemoStackParamList,
@@ -24,7 +25,10 @@ const ClassLoginScreen = () => {
     setLoading(true);
     setError(null);
     try {
-      const credentials = await auth0.webAuth.authorize();
+      const credentials = await auth0.webAuth.authorize({
+        scope: 'openid profile email offline_access',
+        audience: `https://${config.domain}/api/v2/`,
+      });
       // On success, we save the credentials and navigate to the profile screen.
       await auth0.credentialsManager.saveCredentials(credentials);
       navigation.replace('ClassProfile', { credentials });

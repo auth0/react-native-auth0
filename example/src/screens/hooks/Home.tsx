@@ -12,6 +12,7 @@ import Button from '../../components/Button';
 import Header from '../../components/Header';
 import LabeledInput from '../../components/LabeledInput';
 import Result from '../../components/Result';
+import config from '../../auth0-configuration';
 
 const HomeScreen = () => {
   const {
@@ -30,7 +31,10 @@ const HomeScreen = () => {
 
   const onLogin = async () => {
     try {
-      await authorize();
+      await authorize({
+        scope: 'openid profile email offline_access',
+        audience: `https://${config.domain}/api/v2/`,
+      });
     } catch (e) {
       console.log('Login error: ', e);
     }
