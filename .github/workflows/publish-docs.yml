@@ -42,7 +42,7 @@ jobs:
           token: ${{ github.token }}
 
       - name: Download the existing documents artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: documentation
       - run: rm -rf ./docs # delete previous docs folder present
