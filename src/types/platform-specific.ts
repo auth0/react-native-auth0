@@ -47,7 +47,7 @@ export enum LocalAuthenticationStrategy {
  * **Platform specific:** Native only (iOS/Android).
  * Controls when biometric authentication prompts are shown when accessing stored credentials.
  *
- * - `default`: System-managed behavior (preserves backward compatibility, reuses LAContext on iOS); maps to Always policy on Android)
+ * - `default`: System-managed behavior (preserves backward compatibility, reuses LAContext on iOS; maps to Always policy on Android)
  * - `always`: Always prompts for biometric authentication (creates fresh LAContext on iOS, maps to 'always' on Android)
  * - `session`: Prompts once, then caches for the specified timeout in seconds
  * - `appLifecycle`: Prompts once until app restart or manual clear, with optional timeout

@@ -278,7 +278,12 @@ Configure biometric authentication to protect credential access. The SDK support
 ### Using with Auth0Provider (Hooks)
 
 ```jsx
-import { Auth0Provider, BiometricPolicy } from 'react-native-auth0';
+import {
+  Auth0Provider,
+  BiometricPolicy,
+  LocalAuthenticationStrategy,
+  LocalAuthenticationLevel,
+} from 'react-native-auth0';
 
 function App() {
   return (
@@ -318,7 +323,11 @@ function App() {
 ### Using with Auth0 Class
 
 ```js
-import Auth0, { BiometricPolicy } from 'react-native-auth0';
+import Auth0, {
+  BiometricPolicy,
+  LocalAuthenticationStrategy,
+  LocalAuthenticationLevel,
+} from 'react-native-auth0';
 
 const auth0 = new Auth0({
   domain: 'YOUR_AUTH0_DOMAIN',
