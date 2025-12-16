@@ -61,7 +61,15 @@ public class NativeBridge: NSObject {
                 if let evaluationPolicyInt = localAuthenticationOptions["evaluationPolicy"] as? Int {
                     evaluationPolicy = convert(policyInt: evaluationPolicyInt)
                 }
-                self.credentialsManager.enableBiometrics(withTitle: title, cancelTitle: localAuthenticationOptions["cancelTitle"] as? String, fallbackTitle: localAuthenticationOptions["fallbackTitle"] as? String, evaluationPolicy: evaluationPolicy)
+
+                // Parse biometric policy
+                var biometricPolicy = BiometricPolicy.default
+                if let policyString = localAuthenticationOptions["biometricPolicy"] as? String {
+                    let timeout = localAuthenticationOptions["biometricTimeout"] as? Int ?? 3600
+                    biometricPolicy = convert(policyString: policyString, timeout: timeout)
+                }
+
+                self.credentialsManager.enableBiometrics(withTitle: title, cancelTitle: localAuthenticationOptions["cancelTitle"] as? String, fallbackTitle: localAuthenticationOptions["fallbackTitle"] as? String, evaluationPolicy: evaluationPolicy, policy: biometricPolicy)
                 resolve(true)
                 return
             } else {
@@ -383,6 +391,21 @@ public class NativeBridge: NSObject {
             return LAPolicy.deviceOwnerAuthentication
         }
         return LAPolicy.deviceOwnerAuthenticationWithBiometrics
+    }
+
+    func convert(policyString: String, timeout: Int) -> BiometricPolicy {
+        switch policyString {
+        case "default":
+            return .default
+        case "always":
+            return .always
+        case "session":
+            return .session(timeoutInSeconds: timeout)
+        case "appLifecycle":
+            return .appLifecycle(timeoutInSeconds: timeout)
+        default:
+            return .default
+        }
     }
 }
 

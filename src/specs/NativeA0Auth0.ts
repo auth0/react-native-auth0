@@ -175,4 +175,12 @@ export interface LocalAuthenticationOptions {
    * Should the user be given the option to authenticate with their device PIN, pattern, or password instead of a biometric. **Applicable for Android only.**
    */
   deviceCredentialFallback: boolean | undefined;
+  /**
+   * Controls when biometric authentication prompts are shown. **Applicable for both Android and iOS.**
+   */
+  biometricPolicy: string | undefined;
+  /**
+   * Timeout in seconds for session and appLifecycle policies. Defaults to 3600 seconds (1 hour). **Applicable for both Android and iOS.**
+   */
+  biometricTimeout: Int32 | undefined;
 }
