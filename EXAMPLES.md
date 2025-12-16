@@ -18,7 +18,6 @@
   - [Using with Auth0Provider (Hooks)](#using-with-auth0provider-hooks)
   - [Using with Auth0 Class](#using-with-auth0-class)
   - [Platform-Specific Behavior](#platform-specific-behavior)
-  - [Additional Configuration Options](#additional-configuration-options)
   - [Migration from Previous Behavior](#migration-from-previous-behavior)
 - [Management API (Users)](#management-api-users)
   - [Patch user with user_metadata](#patch-user-with-user_metadata)
@@ -288,6 +287,13 @@ function App() {
       clientId="YOUR_CLIENT_ID"
       localAuthenticationOptions={{
         title: 'Authenticate to access credentials',
+        subtitle: 'Please authenticate to continue',
+        description: 'We need to authenticate you to retrieve your credentials',
+        cancelTitle: 'Cancel',
+        evaluationPolicy: LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
+        fallbackTitle: 'Use Passcode',
+        authenticationLevel: LocalAuthenticationLevel.strong,
+        deviceCredentialFallback: true,
         // Option 1: Default policy (system-managed, backward compatible)
         biometricPolicy: BiometricPolicy.default,
 
@@ -319,6 +325,13 @@ const auth0 = new Auth0({
   clientId: 'YOUR_AUTH0_CLIENT_ID',
   localAuthenticationOptions: {
     title: 'Authenticate to access credentials',
+    subtitle: 'Please authenticate to continue',
+    description: 'We need to authenticate you to retrieve your credentials',
+    cancelTitle: 'Cancel',
+    evaluationPolicy: LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
+    fallbackTitle: 'Use Passcode',
+    authenticationLevel: LocalAuthenticationLevel.strong,
+    deviceCredentialFallback: true,
     biometricPolicy: BiometricPolicy.session,
     biometricTimeout: 300, // 5 minutes
   },
@@ -342,41 +355,6 @@ const credentials = await auth0.credentialsManager.getCredentials();
 - `BiometricPolicy.always`, `session`, and `appLifecycle` create a fresh `LAContext` to ensure reliable prompts
 - Uses Face ID or Touch ID based on device capabilities
 - Session state is thread-safe and managed in memory
-
-### Additional Configuration Options
-
-You can combine biometric policies with other authentication options:
-
-```js
-import Auth0, {
-  BiometricPolicy,
-  LocalAuthenticationLevel,
-  LocalAuthenticationStrategy,
-} from 'react-native-auth0';
-
-const auth0 = new Auth0({
-  domain: 'YOUR_AUTH0_DOMAIN',
-  clientId: 'YOUR_AUTH0_CLIENT_ID',
-  localAuthenticationOptions: {
-    title: 'Authenticate',
-    subtitle: 'Please authenticate to continue', // Android only
-    description: 'We need to verify your identity', // Android only
-    cancelTitle: 'Cancel',
-    fallbackTitle: 'Use Passcode', // iOS only
-
-    // Biometric policy
-    biometricPolicy: BiometricPolicy.session,
-    biometricTimeout: 300,
-
-    // iOS: Choose authentication policy
-    evaluationPolicy: LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
-
-    // Android: Set authentication strength
-    authenticationLevel: LocalAuthenticationLevel.strong,
-    deviceCredentialFallback: true, // Allow PIN/pattern/password fallback
-  },
-});
-```
 
 ### Migration from Previous Behavior
 

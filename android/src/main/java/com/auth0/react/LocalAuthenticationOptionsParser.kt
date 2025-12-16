@@ -65,7 +65,7 @@ object LocalAuthenticationOptionsParser {
 
     private fun getBiometricPolicyFromString(policy: String?, timeout: Int): BiometricPolicy {
         return when (policy) {
-            "default", "always" -> BiometricPolicy.Always  // Map both 'default' and 'always' to Always
+            "default", "always", null -> BiometricPolicy.Always  // Map both 'default' and 'always' to Always
             "session" -> BiometricPolicy.Session(timeout)
             "appLifecycle" -> BiometricPolicy.AppLifecycle(timeout)
             else -> BiometricPolicy.Always  // Default to Always

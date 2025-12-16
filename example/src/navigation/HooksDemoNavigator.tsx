@@ -53,7 +53,7 @@ const HooksDemoNavigator = () => {
       clientId={AUTH0_CLIENT_ID}
       // Example: Enable biometric authentication with different policies
       localAuthenticationOptions={{
-        title: 'Authenticate to retreive your credentials',
+        title: 'Authenticate to retrieve your credentials',
         subtitle: 'Please authenticate to continue',
         description: 'We need to authenticate you to retrieve your credentials',
         cancelTitle: 'Cancel',
