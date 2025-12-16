@@ -1,10 +1,14 @@
 // example/src/navigation/RootNavigator.tsx
 
-import React from 'react';
+import React, { Suspense } from 'react';
+import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import SelectionScreen from '../screens/SelectionScreen';
-import HooksDemoNavigator from './HooksDemoNavigator';
-import ClassDemoNavigator from './ClassDemoNavigator';
+
+// Lazy load the demo navigators to prevent Auth0Provider from initializing
+// until the user actually navigates to those screens.
+const HooksDemoNavigator = React.lazy(() => import('./HooksDemoNavigator'));
+const ClassDemoNavigator = React.lazy(() => import('./ClassDemoNavigator'));
 
 // Define the parameter list for type safety
 export type RootStackParamList = {
@@ -14,6 +18,13 @@ export type RootStackParamList = {
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
+
+// Loading fallback component
+const LoadingFallback = () => (
+  <View style={styles.loadingContainer}>
+    <ActivityIndicator size="large" color="#E53935" />
+  </View>
+);
 
 /**
  * The top-level navigator that allows the user to select which
@@ -33,16 +44,35 @@ const RootNavigator = () => {
       />
       <Stack.Screen
         name="HooksDemo"
-        component={HooksDemoNavigator}
         options={{ headerShown: false }} // The hooks demo will manage its own UI
-      />
+      >
+        {() => (
+          <Suspense fallback={<LoadingFallback />}>
+            <HooksDemoNavigator />
+          </Suspense>
+        )}
+      </Stack.Screen>
       <Stack.Screen
         name="ClassDemo"
-        component={ClassDemoNavigator}
         options={{ headerShown: false }} // The class demo will manage its own UI
-      />
+      >
+        {() => (
+          <Suspense fallback={<LoadingFallback />}>
+            <ClassDemoNavigator />
+          </Suspense>
+        )}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+});
 
 export default RootNavigator;
