@@ -42,6 +42,23 @@ export enum LocalAuthenticationStrategy {
   deviceOwner,
 }
 
+/**
+ * @remarks
+ * **Platform specific:** Native only (iOS/Android).
+ * Controls when biometric authentication prompts are shown when accessing stored credentials.
+ *
+ * - `default`: System-managed behavior (preserves backward compatibility, reuses LAContext on iOS; maps to Always policy on Android)
+ * - `always`: Always prompts for biometric authentication (creates fresh LAContext on iOS, maps to 'always' on Android)
+ * - `session`: Prompts once, then caches for the specified timeout in seconds
+ * - `appLifecycle`: Prompts once until app restart or manual clear, with optional timeout
+ */
+export enum BiometricPolicy {
+  default = 'default',
+  always = 'always',
+  session = 'session',
+  appLifecycle = 'appLifecycle',
+}
+
 // ========= Native-Specific Options =========
 
 /**
@@ -58,6 +75,18 @@ export interface LocalAuthenticationOptions {
   authenticationLevel?: LocalAuthenticationLevel;
   fallbackTitle?: string;
   deviceCredentialFallback?: boolean;
+  /**
+   * Controls when biometric authentication prompts are shown when accessing stored credentials.
+   * @default BiometricPolicy.default
+   */
+  biometricPolicy?: BiometricPolicy;
+  /**
+   * Timeout in seconds for session and appLifecycle policies.
+   * - For `session` policy: credentials are cached for this duration after successful biometric authentication
+   * - For `appLifecycle` policy: optional timeout, defaults to 3600 seconds (1 hour) if not specified
+   * @default 3600 (1 hour)
+   */
+  biometricTimeout?: number;
 }
 
 /**

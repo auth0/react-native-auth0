@@ -9,11 +9,12 @@ export { TokenType } from './types/common';
 export { Auth0Provider } from './hooks/Auth0Provider';
 export { useAuth0 } from './hooks/useAuth0';
 export * from './types';
-export type {
+export {
+  BiometricPolicy,
   LocalAuthenticationLevel,
-  LocalAuthenticationOptions,
   LocalAuthenticationStrategy,
 } from './types/platform-specific';
+export type { LocalAuthenticationOptions } from './types/platform-specific';
 
 // Re-export Auth0 as default
 export { default } from './Auth0';

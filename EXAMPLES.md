@@ -13,6 +13,12 @@
     - [Set global headers during initialization](#set-global-headers-during-initialization)
     - [Using custom headers with Auth0Provider component](#using-custom-headers-with-auth0provider-component)
     - [Set request-specific headers](#set-request-specific-headers)
+- [Biometric Authentication](#biometric-authentication)
+  - [Biometric Policy Types](#biometric-policy-types)
+  - [Using with Auth0Provider (Hooks)](#using-with-auth0provider-hooks)
+  - [Using with Auth0 Class](#using-with-auth0-class)
+  - [Platform-Specific Behavior](#platform-specific-behavior)
+  - [Migration from Previous Behavior](#migration-from-previous-behavior)
 - [Management API (Users)](#management-api-users)
   - [Patch user with user_metadata](#patch-user-with-user_metadata)
   - [Get full user profile](#get-full-user-profile)
@@ -252,6 +258,116 @@ auth0.auth
   .then(console.log)
   .catch(console.error);
 ```
+
+## Biometric Authentication
+
+> **Platform Support:** Native only (iOS/Android)
+
+Configure biometric authentication to protect credential access. The SDK supports four biometric policies that control when biometric prompts are shown.
+
+### Biometric Policy Types
+
+- **`BiometricPolicy.default`**: System-managed behavior. Reuses the same `LAContext` on iOS, allowing the system to optimize prompt frequency. May skip the biometric prompt if authentication was recently successful.
+
+- **`BiometricPolicy.always`**: Always requires biometric authentication on every credential access. Creates a fresh `LAContext` on iOS and uses the "Always" policy on Android to ensure a new prompt is shown.
+
+- **`BiometricPolicy.session`**: Requires biometric authentication only once per session. After successful authentication, credentials can be accessed without prompting for the specified timeout duration.
+
+- **`BiometricPolicy.appLifecycle`**: Similar to session policy, but persists for the app's lifecycle. Session remains valid until the app restarts or `clearCredentials()` is called. Default timeout is 1 hour (3600 seconds).
+
+### Using with Auth0Provider (Hooks)
+
+```jsx
+import {
+  Auth0Provider,
+  BiometricPolicy,
+  LocalAuthenticationStrategy,
+  LocalAuthenticationLevel,
+} from 'react-native-auth0';
+
+function App() {
+  return (
+    <Auth0Provider
+      domain="YOUR_AUTH0_DOMAIN"
+      clientId="YOUR_CLIENT_ID"
+      localAuthenticationOptions={{
+        title: 'Authenticate to access credentials',
+        subtitle: 'Please authenticate to continue',
+        description: 'We need to authenticate you to retrieve your credentials',
+        cancelTitle: 'Cancel',
+        evaluationPolicy: LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
+        fallbackTitle: 'Use Passcode',
+        authenticationLevel: LocalAuthenticationLevel.strong,
+        deviceCredentialFallback: true,
+        // Option 1: Default policy (system-managed, backward compatible)
+        biometricPolicy: BiometricPolicy.default,
+
+        // Option 2: Always require biometric authentication
+        // biometricPolicy: BiometricPolicy.always,
+
+        // Option 3: Session-based (5 minutes)
+        // biometricPolicy: BiometricPolicy.session,
+        // biometricTimeout: 300,
+
+        // Option 4: App lifecycle (1 hour)
+        // biometricPolicy: BiometricPolicy.appLifecycle,
+        // biometricTimeout: 3600,
+      }}
+    >
+      <YourApp />
+    </Auth0Provider>
+  );
+}
+```
+
+### Using with Auth0 Class
+
+```js
+import Auth0, {
+  BiometricPolicy,
+  LocalAuthenticationStrategy,
+  LocalAuthenticationLevel,
+} from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+  localAuthenticationOptions: {
+    title: 'Authenticate to access credentials',
+    subtitle: 'Please authenticate to continue',
+    description: 'We need to authenticate you to retrieve your credentials',
+    cancelTitle: 'Cancel',
+    evaluationPolicy: LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
+    fallbackTitle: 'Use Passcode',
+    authenticationLevel: LocalAuthenticationLevel.strong,
+    deviceCredentialFallback: true,
+    biometricPolicy: BiometricPolicy.session,
+    biometricTimeout: 300, // 5 minutes
+  },
+});
+
+// Get credentials - will prompt for biometric authentication based on policy
+const credentials = await auth0.credentialsManager.getCredentials();
+```
+
+### Platform-Specific Behavior
+
+#### Android
+
+- `BiometricPolicy.default` and `BiometricPolicy.always` both map to the Android SDK's "Always" policy
+- Uses `BiometricPrompt` for authentication
+- Session state is stored in memory and cleared on app restart
+
+#### iOS
+
+- `BiometricPolicy.default` reuses the same `LAContext`, allowing the system to manage prompt frequency
+- `BiometricPolicy.always`, `session`, and `appLifecycle` create a fresh `LAContext` to ensure reliable prompts
+- Uses Face ID or Touch ID based on device capabilities
+- Session state is thread-safe and managed in memory
+
+### Migration from Previous Behavior
+
+If you were not explicitly configuring biometric authentication before, the new `BiometricPolicy.default` maintains backward-compatible behavior. To enforce stricter biometric requirements, switch to `BiometricPolicy.always`.
 
 ## Management API (Users)
 

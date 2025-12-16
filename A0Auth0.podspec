@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
   s.requires_arc = true
 
-  s.dependency 'Auth0', '2.14'
+  s.dependency 'Auth0', '2.16'
   
   install_modules_dependencies(s)
 end
