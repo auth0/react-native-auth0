@@ -142,7 +142,7 @@ export interface ICredentialsManager {
    * `getApiCredentials` call for this audience to perform a fresh token exchange.
    *
    * @param audience The identifier of the API for which to clear credentials.
-   * @param scope Optional scope to clear. If not provided, clears all credentials for the audience.
+   * @param scope Optional scope to clear. If credentials were fetched with a scope, it is recommended to pass the same scope when clearing them.
    * @returns A promise that resolves when the credentials are cleared.
    * @throws {CredentialsManagerError} If the operation fails.
    *
@@ -151,7 +151,7 @@ export interface ICredentialsManager {
    * // Clear all credentials for an audience
    * await credentialsManager.clearApiCredentials('https://api.example.com');
    *
-   * // Clear credentials for specific scope
+   * // Clear credentials for specific scope (recommended)
    * await credentialsManager.clearApiCredentials('https://api.example.com', 'read:data');
    * ```
    */
