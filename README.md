@@ -640,13 +640,51 @@ try {
 
 **Platform agnostic errors:**
 
-You can access the platform agnostic generic error codes as below :
+You can access the platform agnostic generic error codes as below:
 
 ```js
 try {
   const credentials = await auth0.credentialsManager.getCredentials();
 } catch (error) {
-  console.log(e.type);
+  console.log(error.type);
+}
+```
+
+**Using Error Code Constants (Recommended)**
+
+For better type safety and autocompletion, you can use the exported error code constants:
+
+```js
+import {
+  CredentialsManagerError,
+  CredentialsManagerErrorCodes,
+} from 'react-native-auth0';
+
+try {
+  const credentials = await auth0.credentialsManager.getCredentials();
+} catch (error) {
+  if (error instanceof CredentialsManagerError) {
+    switch (error.type) {
+      case CredentialsManagerErrorCodes.NO_CREDENTIALS:
+        console.log('No credentials stored. User needs to log in.');
+        break;
+      case CredentialsManagerErrorCodes.NO_REFRESH_TOKEN:
+        console.log(
+          'No refresh token available. Request offline_access scope during login.'
+        );
+        break;
+      case CredentialsManagerErrorCodes.RENEW_FAILED:
+        console.log(
+          'Failed to refresh credentials. Re-authentication may be required.'
+        );
+        break;
+      case CredentialsManagerErrorCodes.BIOMETRICS_FAILED:
+        console.log('Biometric authentication failed.');
+        break;
+      default:
+        console.error('Credentials error:', error.message);
+    }
+  }
 }
 ```
 
@@ -703,6 +741,34 @@ try {
   } else {
     // Handle other errors
     console.error(e);
+  }
+}
+```
+
+**Using Error Code Constants (Recommended)**
+
+For better type safety and autocompletion, you can use the exported error code constants:
+
+```javascript
+import { WebAuthError, WebAuthErrorCodes } from 'react-native-auth0';
+
+try {
+  await auth0.webAuth.authorize();
+} catch (e) {
+  if (e instanceof WebAuthError) {
+    switch (e.type) {
+      case WebAuthErrorCodes.USER_CANCELLED:
+        console.log('User cancelled the login.');
+        break;
+      case WebAuthErrorCodes.NETWORK_ERROR:
+        console.log('Network error occurred. Please check your connection.');
+        break;
+      case WebAuthErrorCodes.BROWSER_NOT_AVAILABLE:
+        console.log('No browser available on this device.');
+        break;
+      default:
+        console.error('Authentication error:', e.message);
+    }
   }
 }
 ```

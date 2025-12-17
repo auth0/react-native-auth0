@@ -1,8 +1,11 @@
 export {
   AuthError,
   CredentialsManagerError,
+  CredentialsManagerErrorCodes,
   WebAuthError,
+  WebAuthErrorCodes,
   DPoPError,
+  DPoPErrorCodes,
 } from './core/models';
 export { TimeoutError } from './core/utils/fetchWithTimeout';
 export { TokenType } from './types/common';
