@@ -492,6 +492,9 @@ function MyComponent() {
   const clearFirstApiCache = async () => {
     // Clear cached credentials for a specific API
     await clearApiCredentials('https://first-api.example.com');
+
+    // Or clear with specific scope
+    await clearApiCredentials('https://first-api.example.com', 'read:data');
   };
 
   return (
@@ -530,6 +533,12 @@ console.log('Scope:', apiCredentials.scope);
 // Clear cached credentials for a specific API
 await auth0.credentialsManager.clearApiCredentials(
   'https://first-api.example.com'
+);
+
+// Clear with specific scope
+await auth0.credentialsManager.clearApiCredentials(
+  'https://first-api.example.com',
+  'read:data write:data'
 );
 ```
 

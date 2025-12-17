@@ -357,7 +357,7 @@ describe('NativeCredentialsManager', () => {
       ).rejects.toThrow(CredentialsManagerError);
     });
 
-    it('should clear credentials on success', async () => {
+    it('should clear credentials for audience without scope', async () => {
       mockBridge.clearApiCredentials.mockResolvedValue(undefined);
 
       await expect(
@@ -365,7 +365,46 @@ describe('NativeCredentialsManager', () => {
       ).resolves.toBeUndefined();
 
       expect(mockBridge.clearApiCredentials).toHaveBeenCalledWith(
-        'https://api.example.com'
+        'https://api.example.com',
+        undefined
+      );
+    });
+
+    it('should clear credentials for audience with scope', async () => {
+      mockBridge.clearApiCredentials.mockResolvedValue(undefined);
+
+      await expect(
+        manager.clearApiCredentials(
+          'https://api.example.com',
+          'read:data write:data'
+        )
+      ).resolves.toBeUndefined();
+
+      expect(mockBridge.clearApiCredentials).toHaveBeenCalledWith(
+        'https://api.example.com',
+        'read:data write:data'
+      );
+    });
+
+    it('should handle multiple different audiences', async () => {
+      mockBridge.clearApiCredentials.mockResolvedValue(undefined);
+
+      await manager.clearApiCredentials('https://api1.example.com');
+      await manager.clearApiCredentials(
+        'https://api2.example.com',
+        'admin:write'
+      );
+
+      expect(mockBridge.clearApiCredentials).toHaveBeenCalledTimes(2);
+      expect(mockBridge.clearApiCredentials).toHaveBeenNthCalledWith(
+        1,
+        'https://api1.example.com',
+        undefined
+      );
+      expect(mockBridge.clearApiCredentials).toHaveBeenNthCalledWith(
+        2,
+        'https://api2.example.com',
+        'admin:write'
       );
     });
   });

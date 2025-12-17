@@ -328,8 +328,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     }
 
     @ReactMethod
-    override fun clearApiCredentials(audience: String, promise: Promise) {
-        secureCredentialsManager.clearApiCredentials(audience)
+    override fun clearApiCredentials(audience: String, scope: String?, promise: Promise) {
+        secureCredentialsManager.clearApiCredentials(audience, scope)
         promise.resolve(true)
     }
 

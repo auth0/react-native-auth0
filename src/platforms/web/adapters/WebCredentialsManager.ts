@@ -122,9 +122,10 @@ export class WebCredentialsManager implements ICredentialsManager {
     throw new CredentialsManagerError(authError);
   }
 
-  async clearApiCredentials(audience: string): Promise<void> {
+  async clearApiCredentials(audience: string, scope?: string): Promise<void> {
+    const scopeInfo = scope ? ` and scope ${scope}` : '';
     console.warn(
-      `'clearApiCredentials' for audience ${audience} is a no-op on the web. @auth0/auth0-spa-js handles credential storage automatically.`
+      `'clearApiCredentials' for audience ${audience}${scopeInfo} is a no-op on the web. @auth0/auth0-spa-js handles credential storage automatically.`
     );
     return Promise.resolve();
   }

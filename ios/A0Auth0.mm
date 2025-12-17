@@ -87,9 +87,10 @@ RCT_EXPORT_METHOD(getApiCredentials: (NSString *)audience
 }
 
 RCT_EXPORT_METHOD(clearApiCredentials: (NSString *)audience
+                  scope:(NSString * _Nullable)scope
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-    [self.nativeBridge clearApiCredentialsWithAudience:audience resolve:resolve reject:reject];
+    [self.nativeBridge clearApiCredentialsWithAudience:audience scope:scope resolve:resolve reject:reject];
 }
 
 

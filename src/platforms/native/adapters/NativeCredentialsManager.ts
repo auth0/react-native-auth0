@@ -40,21 +40,12 @@ export class NativeCredentialsManager implements ICredentialsManager {
     );
   }
 
-  hasValidCredentials(minTtl?: number): Promise<boolean> {
-    return this.handleError(this.bridge.hasValidCredentials(minTtl));
+  async clearCredentials(): Promise<void> {
+    return this.handleError(this.bridge.clearCredentials());
   }
 
-  async clearCredentials(): Promise<void> {
-    await this.handleError(this.bridge.clearCredentials());
-    // Also clear the DPoP key when clearing credentials
-    // Ignore errors from DPoP key clearing - this matches iOS behavior
-    // where we log the error but don't fail the operation
-    try {
-      await this.bridge.clearDPoPKey();
-    } catch {
-      // Silently ignore DPoP key clearing errors
-      // The main credentials are already cleared at this point
-    }
+  async hasValidCredentials(minTtl?: number): Promise<boolean> {
+    return this.handleError(this.bridge.hasValidCredentials(minTtl));
   }
 
   async getApiCredentials(
@@ -70,8 +61,8 @@ export class NativeCredentialsManager implements ICredentialsManager {
     return new ApiCredentials(nativeCredentials as IApiCredentials);
   }
 
-  clearApiCredentials(audience: string): Promise<void> {
-    return this.handleError(this.bridge.clearApiCredentials(audience));
+  async clearApiCredentials(audience: string, scope?: string): Promise<void> {
+    return this.handleError(this.bridge.clearApiCredentials(audience, scope));
   }
 
   getSSOCredentials(

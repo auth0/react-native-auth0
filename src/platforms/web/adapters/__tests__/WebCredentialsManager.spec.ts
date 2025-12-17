@@ -341,8 +341,30 @@ describe('WebCredentialsManager', () => {
   });
 
   describe('clearApiCredentials', () => {
-    it('should log a warning and resolve without doing anything', async () => {
+    it('should log a warning without scope and resolve without doing anything', async () => {
       await credentialsManager.clearApiCredentials('https://api.example.com');
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        "'clearApiCredentials' for audience https://api.example.com is a no-op on the web. @auth0/auth0-spa-js handles credential storage automatically."
+      );
+    });
+
+    it('should log a warning with scope and resolve without doing anything', async () => {
+      await credentialsManager.clearApiCredentials(
+        'https://api.example.com',
+        'read:data write:data'
+      );
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        "'clearApiCredentials' for audience https://api.example.com and scope read:data write:data is a no-op on the web. @auth0/auth0-spa-js handles credential storage automatically."
+      );
+    });
+
+    it('should handle empty scope string', async () => {
+      await credentialsManager.clearApiCredentials(
+        'https://api.example.com',
+        ''
+      );
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         "'clearApiCredentials' for audience https://api.example.com is a no-op on the web. @auth0/auth0-spa-js handles credential storage automatically."

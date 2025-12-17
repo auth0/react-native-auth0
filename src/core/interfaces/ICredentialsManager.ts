@@ -136,18 +136,24 @@ export interface ICredentialsManager {
 
   /**
    * Removes cached credentials for a specific audience.
+   * Optionally filter by scope to clear only specific scope-based credentials.
    *
    * This clears the stored API credentials for the given audience, forcing the next
    * `getApiCredentials` call for this audience to perform a fresh token exchange.
    *
    * @param audience The identifier of the API for which to clear credentials.
+   * @param scope Optional scope to clear. If credentials were fetched with a scope, it is recommended to pass the same scope when clearing them.
    * @returns A promise that resolves when the credentials are cleared.
    * @throws {CredentialsManagerError} If the operation fails.
    *
    * @example
    * ```typescript
+   * // Clear all credentials for an audience
    * await credentialsManager.clearApiCredentials('https://api.example.com');
+   *
+   * // Clear credentials for specific scope (recommended)
+   * await credentialsManager.clearApiCredentials('https://api.example.com', 'read:data');
    * ```
    */
-  clearApiCredentials(audience: string): Promise<void>;
+  clearApiCredentials(audience: string, scope?: string): Promise<void>;
 }

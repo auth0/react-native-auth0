@@ -63,7 +63,7 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
 
     @ReactMethod
     @DoNotStrip
-    abstract fun clearApiCredentials(audience: String, promise: Promise)
+    abstract fun clearApiCredentials(audience: String, scope: String?, promise: Promise)
 
     @ReactMethod
     @DoNotStrip

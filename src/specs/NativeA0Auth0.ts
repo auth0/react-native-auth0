@@ -65,9 +65,14 @@ export interface Spec extends TurboModule {
   ): Promise<ApiCredentials>;
 
   /**
-   * Clear API credentials for a specific audience
+   * Clear API credentials for a specific audience. Optionally filter by scope.
+   * @param audience The audience to clear credentials for.
+   * @param scope The scope to clear credentials for. If not provided, clears all credentials for the audience.
    */
-  clearApiCredentials(audience: string): Promise<void>;
+  clearApiCredentials(
+    audience: string,
+    scope: string | undefined
+  ): Promise<void>;
 
   /**
    * Start web authentication

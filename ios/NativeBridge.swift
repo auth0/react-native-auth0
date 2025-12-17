@@ -372,10 +372,10 @@ public class NativeBridge: NSObject {
     }
 
     
-    @objc public func clearApiCredentials(audience: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        // The clear(forAudience:) method returns a boolean indicating success.
+    @objc public func clearApiCredentials(audience: String, scope: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        // The clear(forAudience:scope:) method returns a boolean indicating success.
         // We can resolve the promise with this boolean value.
-        resolve(credentialsManager.clear(forAudience: audience))
+        resolve(credentialsManager.clear(forAudience: audience, scope: scope))
     }
     
     @objc public func getClientId() -> String {

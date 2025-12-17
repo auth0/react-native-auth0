@@ -123,7 +123,15 @@ export interface INativeBridge {
     parameters?: object
   ): Promise<ApiCredentials>;
 
-  clearApiCredentials(audience: string): Promise<void>;
+  /**
+   * Clears API credentials for a specific audience from secure storage.
+   * Optionally filter by scope to clear only specific scope-based credentials.
+   *
+   * @param audience The audience of the API.
+   * @param scope Optional scope to clear. If credentials were fetched with a scope, it is recommended to pass the same scope when clearing them.
+   */
+  clearApiCredentials(audience: string, scope?: string): Promise<void>;
+
   /**
    * Clears credentials from secure storage.
    */
