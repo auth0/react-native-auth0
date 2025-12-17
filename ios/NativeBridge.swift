@@ -244,15 +244,15 @@ public class NativeBridge: NSObject {
         } else {
             // Clear all credentials
             removed = credentialsManager.clear()
+        }
             
-            // Also clear DPoP key if DPoP is enabled
-            if self.useDPoP {
-                do {
-                    try DPoP.clearKeypair()
-                } catch {
-                    // Log error but don't fail the operation
-                    print("Warning: Failed to clear DPoP key: \(error.localizedDescription)")
-                }
+        // Also clear DPoP key if DPoP is enabled
+        if self.useDPoP {
+            do {
+                try DPoP.clearKeypair()
+            } catch {
+                // Log error but don't fail the operation
+                print("Warning: Failed to clear DPoP key: \(error.localizedDescription)")
             }
         }
         

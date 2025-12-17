@@ -278,18 +278,17 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         } else {
             // Clear all credentials
             secureCredentialsManager.clearCredentials()
-            
-            // Also clear DPoP key if DPoP is enabled
-            if (useDPoP) {
-                try {
-                    DPoP.clearKeyPair()
-                } catch (e: Exception) {
-                    // Log error but don't fail the operation
-                    android.util.Log.w(NAME, "Failed to clear DPoP key", e)
-                }
+        }
+        // Also clear DPoP key if DPoP is enabled
+        if (useDPoP) {
+            try {
+                DPoP.clearKeyPair()
+            } catch (e: Exception) {
+                // Log error but don't fail the operation
+                android.util.Log.w(NAME, "Failed to clear DPoP key", e)
             }
         }
-        
+
         promise.resolve(true)
     }
 

@@ -46,9 +46,11 @@ RCT_EXPORT_METHOD(cancelWebAuth:(RCTPromiseResolveBlock)resolve
 }
 
 
-RCT_EXPORT_METHOD(clearCredentials:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(clearCredentials:(NSString * _Nullable)audience
+                  scope:(NSString * _Nullable)scope
+                  resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) { 
-    [self.nativeBridge clearCredentialsWithResolve:resolve reject:reject];
+    [self.nativeBridge clearCredentialsWithAudience:audience scope:scope resolve:resolve reject:reject];
 }
 
 
@@ -87,9 +89,10 @@ RCT_EXPORT_METHOD(getApiCredentials: (NSString *)audience
 }
 
 RCT_EXPORT_METHOD(clearApiCredentials: (NSString *)audience
+                  scope:(NSString * _Nullable)scope
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-    [self.nativeBridge clearApiCredentialsWithAudience:audience resolve:resolve reject:reject];
+    [self.nativeBridge clearApiCredentialsWithAudience:audience scope:scope resolve:resolve reject:reject];
 }
 
 
