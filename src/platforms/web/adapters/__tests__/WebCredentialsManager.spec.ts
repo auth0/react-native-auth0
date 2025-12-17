@@ -203,13 +203,35 @@ describe('WebCredentialsManager', () => {
   });
 
   describe('clearCredentials', () => {
-    it('should call logout with openUrl false', async () => {
+    it('should call logout with openUrl false when no parameters provided', async () => {
       await credentialsManager.clearCredentials();
 
       expect(mockSpaClient.logout).toHaveBeenCalledWith({ openUrl: false });
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
 
-    it('should handle logout errors', async () => {
+    it('should delegate to clearApiCredentials when audience is provided', async () => {
+      await credentialsManager.clearCredentials('https://api.example.com');
+
+      expect(mockSpaClient.logout).not.toHaveBeenCalled();
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        "'clearApiCredentials' for audience https://api.example.com is a no-op on the web. @auth0/auth0-spa-js handles credential storage automatically."
+      );
+    });
+
+    it('should delegate to clearApiCredentials with scope when both audience and scope provided', async () => {
+      await credentialsManager.clearCredentials(
+        'https://api.example.com',
+        'read:data'
+      );
+
+      expect(mockSpaClient.logout).not.toHaveBeenCalled();
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        "'clearApiCredentials' for audience https://api.example.com and scope read:data is a no-op on the web. @auth0/auth0-spa-js handles credential storage automatically."
+      );
+    });
+
+    it('should handle logout errors when clearing all credentials', async () => {
       const logoutError = new Error('Logout failed');
       mockSpaClient.logout.mockRejectedValue(logoutError);
 
@@ -341,8 +363,30 @@ describe('WebCredentialsManager', () => {
   });
 
   describe('clearApiCredentials', () => {
-    it('should log a warning and resolve without doing anything', async () => {
+    it('should log a warning without scope and resolve without doing anything', async () => {
       await credentialsManager.clearApiCredentials('https://api.example.com');
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        "'clearApiCredentials' for audience https://api.example.com is a no-op on the web. @auth0/auth0-spa-js handles credential storage automatically."
+      );
+    });
+
+    it('should log a warning with scope and resolve without doing anything', async () => {
+      await credentialsManager.clearApiCredentials(
+        'https://api.example.com',
+        'read:data write:data'
+      );
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        "'clearApiCredentials' for audience https://api.example.com and scope read:data write:data is a no-op on the web. @auth0/auth0-spa-js handles credential storage automatically."
+      );
+    });
+
+    it('should handle empty scope string', async () => {
+      await credentialsManager.clearApiCredentials(
+        'https://api.example.com',
+        ''
+      );
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         "'clearApiCredentials' for audience https://api.example.com is a no-op on the web. @auth0/auth0-spa-js handles credential storage automatically."
