@@ -497,11 +497,6 @@ function MyComponent() {
     await clearApiCredentials('https://first-api.example.com', 'read:data');
   };
 
-  const clearSpecificCredentials = async () => {
-    // You can also use clearCredentials with audience/scope
-    await clearCredentials('https://first-api.example.com', 'read:data');
-  };
-
   return (
     // Your UI components
   );
@@ -544,12 +539,6 @@ await auth0.credentialsManager.clearApiCredentials(
 await auth0.credentialsManager.clearApiCredentials(
   'https://first-api.example.com',
   'read:data write:data'
-);
-
-// Or use clearCredentials with audience/scope
-await auth0.credentialsManager.clearCredentials(
-  'https://first-api.example.com',
-  'read:data'
 );
 ```
 

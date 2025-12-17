@@ -271,14 +271,9 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     }
 
     @ReactMethod
-    override fun clearCredentials(audience: String?, scope: String?, promise: Promise) {
-        if (audience != null) {
-            // Clear API credentials for specific audience and scope
-            secureCredentialsManager.clearApiCredentials(audience, scope)
-        } else {
-            // Clear all credentials
-            secureCredentialsManager.clearCredentials()
-        }
+    override fun clearCredentials(promise: Promise) {
+        secureCredentialsManager.clearCredentials()
+        
         // Also clear DPoP key if DPoP is enabled
         if (useDPoP) {
             try {
@@ -288,7 +283,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 android.util.Log.w(NAME, "Failed to clear DPoP key", e)
             }
         }
-
+        
         promise.resolve(true)
     }
 

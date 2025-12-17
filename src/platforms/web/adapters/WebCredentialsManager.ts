@@ -97,14 +97,8 @@ export class WebCredentialsManager implements ICredentialsManager {
     return this.client.isAuthenticated();
   }
 
-  async clearCredentials(audience?: string, scope?: string): Promise<void> {
+  async clearCredentials(): Promise<void> {
     try {
-      // For web, if audience is provided, delegate to clearApiCredentials
-      if (audience) {
-        return this.clearApiCredentials(audience, scope);
-      }
-
-      // Otherwise, clear all credentials
       await this.client.logout({ openUrl: false });
     } catch (e: any) {
       const code = e.error ?? 'ClearCredentialsFailed';

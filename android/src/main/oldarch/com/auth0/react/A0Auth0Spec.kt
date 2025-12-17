@@ -49,7 +49,7 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
 
     @ReactMethod
     @DoNotStrip
-    abstract fun clearCredentials(audience: String?, scope: String?, promise: Promise)
+    abstract fun clearCredentials(promise: Promise)
 
     @ReactMethod
     @DoNotStrip

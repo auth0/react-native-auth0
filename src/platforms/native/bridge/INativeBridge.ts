@@ -134,12 +134,8 @@ export interface INativeBridge {
 
   /**
    * Clears credentials from secure storage.
-   * Optionally filter by audience and scope to clear specific credentials.
-   *
-   * @param audience Optional audience to clear credentials for. If not provided, clears all credentials.
-   * @param scope Optional scope to clear. Only applicable when audience is provided.
    */
-  clearCredentials(audience?: string, scope?: string): Promise<void>;
+  clearCredentials(): Promise<void>;
 
   /**
    * Resumes the web authentication flow with the provided URL.

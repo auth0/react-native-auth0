@@ -45,13 +45,10 @@ export interface ICredentialsManager {
 
   /**
    * Removes all credentials from the device's storage.
-   * Optionally filter by audience and scope to clear specific credentials.
    *
-   * @param audience Optional audience to clear credentials for. If not provided, clears all credentials.
-   * @param scope Optional scope to clear. Only applicable when audience is provided.
    * @returns A promise that resolves when the credentials have been cleared.
    */
-  clearCredentials(audience?: string, scope?: string): Promise<void>;
+  clearCredentials(): Promise<void>;
 
   /**
    * Obtains session transfer credentials for performing Native to Web SSO.

@@ -235,17 +235,9 @@ public class NativeBridge: NSObject {
         resolve(credentialsManager.canRenew() || credentialsManager.hasValid(minTTL: minTTL))
     }
     
-    @objc public func clearCredentials(audience: String?, scope: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        let removed: Bool
+    @objc public func clearCredentials(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        let removed = credentialsManager.clear()
         
-        if let audience = audience {
-            // Clear API credentials for specific audience and scope
-            removed = credentialsManager.clear(forAudience: audience, scope: scope)
-        } else {
-            // Clear all credentials
-            removed = credentialsManager.clear()
-        }
-            
         // Also clear DPoP key if DPoP is enabled
         if self.useDPoP {
             do {

@@ -40,8 +40,8 @@ export class NativeCredentialsManager implements ICredentialsManager {
     );
   }
 
-  async clearCredentials(audience?: string, scope?: string): Promise<void> {
-    return this.handleError(this.bridge.clearCredentials(audience, scope));
+  async clearCredentials(): Promise<void> {
+    return this.handleError(this.bridge.clearCredentials());
   }
 
   async hasValidCredentials(minTtl?: number): Promise<boolean> {

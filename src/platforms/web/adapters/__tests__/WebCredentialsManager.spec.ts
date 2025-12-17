@@ -203,35 +203,13 @@ describe('WebCredentialsManager', () => {
   });
 
   describe('clearCredentials', () => {
-    it('should call logout with openUrl false when no parameters provided', async () => {
+    it('should call logout with openUrl false', async () => {
       await credentialsManager.clearCredentials();
 
       expect(mockSpaClient.logout).toHaveBeenCalledWith({ openUrl: false });
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
 
-    it('should delegate to clearApiCredentials when audience is provided', async () => {
-      await credentialsManager.clearCredentials('https://api.example.com');
-
-      expect(mockSpaClient.logout).not.toHaveBeenCalled();
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        "'clearApiCredentials' for audience https://api.example.com is a no-op on the web. @auth0/auth0-spa-js handles credential storage automatically."
-      );
-    });
-
-    it('should delegate to clearApiCredentials with scope when both audience and scope provided', async () => {
-      await credentialsManager.clearCredentials(
-        'https://api.example.com',
-        'read:data'
-      );
-
-      expect(mockSpaClient.logout).not.toHaveBeenCalled();
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        "'clearApiCredentials' for audience https://api.example.com and scope read:data is a no-op on the web. @auth0/auth0-spa-js handles credential storage automatically."
-      );
-    });
-
-    it('should handle logout errors when clearing all credentials', async () => {
+    it('should handle logout errors', async () => {
       const logoutError = new Error('Logout failed');
       mockSpaClient.logout.mockRejectedValue(logoutError);
 

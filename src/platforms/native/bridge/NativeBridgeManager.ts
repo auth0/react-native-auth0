@@ -180,11 +180,9 @@ export class NativeBridgeManager implements INativeBridge {
     );
   }
 
-  async clearCredentials(audience?: string, scope?: string): Promise<void> {
+  async clearCredentials(): Promise<void> {
     return this.a0_call(
-      Auth0NativeModule.clearCredentials.bind(Auth0NativeModule),
-      audience,
-      scope
+      Auth0NativeModule.clearCredentials.bind(Auth0NativeModule)
     );
   }
 
