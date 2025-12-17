@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import { useAuth0 } from 'react-native-auth0';
+import { useAuth0, WebAuthError, WebAuthErrorCodes } from 'react-native-auth0';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
 import LabeledInput from '../../components/LabeledInput';
@@ -37,6 +37,28 @@ const HomeScreen = () => {
       });
     } catch (e) {
       console.log('Login error: ', e);
+      // Demonstrate usage of WebAuthErrorCodes for type-safe error handling
+      if (e instanceof WebAuthError) {
+        const webAuthError: WebAuthError = e;
+        switch (webAuthError.type) {
+          case WebAuthErrorCodes.USER_CANCELLED:
+            Alert.alert(
+              'Login Cancelled',
+              'You cancelled the login process. Please try again when ready.'
+            );
+            break;
+          case WebAuthErrorCodes.TIMEOUT_ERROR:
+            Alert.alert(
+              'Login Timeout',
+              'The login process timed out. Please try again.'
+            );
+            break;
+          default:
+            Alert.alert('Authentication Error', webAuthError.message);
+        }
+      } else {
+        Alert.alert('Error', 'An unexpected error occurred during login.');
+      }
     }
   };
 
