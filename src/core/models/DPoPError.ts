@@ -1,18 +1,60 @@
 import { AuthError } from './AuthError';
 
 /**
- * Public constants exposing all possible DPoP error codes.
+ * Platform-agnostic error code constants for DPoP (Demonstrating Proof-of-Possession) operations.
+ *
+ * Use these constants for type-safe error handling when working with DPoP-bound tokens.
+ * DPoP enhances OAuth 2.0 security by binding tokens to cryptographic keys.
+ * Each constant corresponds to a specific error type in the {@link DPoPError.type} property.
+ *
+ * @example
+ * ```typescript
+ * import { DPoPError, DPoPErrorCodes } from 'react-native-auth0';
+ *
+ * try {
+ *   const headers = await auth0.getDPoPHeaders({
+ *     url: 'https://api.example.com/data',
+ *     method: 'GET',
+ *     accessToken: credentials.accessToken,
+ *     tokenType: credentials.tokenType
+ *   });
+ * } catch (e) {
+ *   if (e instanceof DPoPError) {
+ *     switch (e.type) {
+ *       case DPoPErrorCodes.DPOP_KEY_GENERATION_FAILED:
+ *         // Failed to generate DPoP key pair
+ *         break;
+ *       case DPoPErrorCodes.DPOP_PROOF_FAILED:
+ *         // Failed to create DPoP proof
+ *         break;
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * @see {@link DPoPError}
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc9449|RFC 9449 - OAuth 2.0 DPoP}
  */
 export const DPoPErrorCodes = {
+  /** Failed to generate DPoP proof JWT */
   DPOP_GENERATION_FAILED: 'DPOP_GENERATION_FAILED',
+  /** DPoP proof validation or creation failed */
   DPOP_PROOF_FAILED: 'DPOP_PROOF_FAILED',
+  /** Failed to generate DPoP key pair */
   DPOP_KEY_GENERATION_FAILED: 'DPOP_KEY_GENERATION_FAILED',
+  /** Failed to store DPoP key securely (keychain/keystore) */
   DPOP_KEY_STORAGE_FAILED: 'DPOP_KEY_STORAGE_FAILED',
+  /** Failed to retrieve stored DPoP key */
   DPOP_KEY_RETRIEVAL_FAILED: 'DPOP_KEY_RETRIEVAL_FAILED',
+  /** DPoP nonce mismatch - server rejected the proof */
   DPOP_NONCE_MISMATCH: 'DPOP_NONCE_MISMATCH',
+  /** Invalid token type for DPoP operation */
   DPOP_INVALID_TOKEN_TYPE: 'DPOP_INVALID_TOKEN_TYPE',
+  /** Required DPoP parameter is missing */
   DPOP_MISSING_PARAMETER: 'DPOP_MISSING_PARAMETER',
+  /** Failed to clear/delete DPoP key */
   DPOP_CLEAR_KEY_FAILED: 'DPOP_CLEAR_KEY_FAILED',
+  /** Unknown or uncategorized DPoP error */
   UNKNOWN_DPOP_ERROR: 'UNKNOWN_DPOP_ERROR',
 } as const;
 
