@@ -165,10 +165,11 @@ export class NativeBridgeManager implements INativeBridge {
     );
   }
 
-  clearApiCredentials(audience: string): Promise<void> {
+  clearApiCredentials(audience: string, scope?: string): Promise<void> {
     return this.a0_call(
       Auth0NativeModule.clearApiCredentials.bind(Auth0NativeModule),
-      audience
+      audience,
+      scope
     );
   }
 
@@ -179,9 +180,11 @@ export class NativeBridgeManager implements INativeBridge {
     );
   }
 
-  async clearCredentials(): Promise<void> {
+  async clearCredentials(audience?: string, scope?: string): Promise<void> {
     return this.a0_call(
-      Auth0NativeModule.clearCredentials.bind(Auth0NativeModule)
+      Auth0NativeModule.clearCredentials.bind(Auth0NativeModule),
+      audience,
+      scope
     );
   }
 

@@ -50,9 +50,14 @@ export interface Spec extends TurboModule {
   hasValidCredentials(minTTL: Int32): Promise<boolean>;
 
   /**
-   * Clear credentials
+   * Clear credentials. Optionally filter by audience and scope.
+   * @param audience The audience to clear credentials for. If not provided, clears all credentials.
+   * @param scope The scope to clear credentials for. Only applicable when audience is provided.
    */
-  clearCredentials(): Promise<void>;
+  clearCredentials(
+    audience: string | undefined,
+    scope: string | undefined
+  ): Promise<void>;
 
   /**
    * Get API credentials for a specific audience
@@ -65,9 +70,14 @@ export interface Spec extends TurboModule {
   ): Promise<ApiCredentials>;
 
   /**
-   * Clear API credentials for a specific audience
+   * Clear API credentials for a specific audience. Optionally filter by scope.
+   * @param audience The audience to clear credentials for.
+   * @param scope The scope to clear credentials for. If not provided, clears all credentials for the audience.
    */
-  clearApiCredentials(audience: string): Promise<void>;
+  clearApiCredentials(
+    audience: string,
+    scope: string | undefined
+  ): Promise<void>;
 
   /**
    * Start web authentication

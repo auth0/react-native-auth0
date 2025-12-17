@@ -45,10 +45,13 @@ export interface ICredentialsManager {
 
   /**
    * Removes all credentials from the device's storage.
+   * Optionally filter by audience and scope to clear specific credentials.
    *
+   * @param audience Optional audience to clear credentials for. If not provided, clears all credentials.
+   * @param scope Optional scope to clear. Only applicable when audience is provided.
    * @returns A promise that resolves when the credentials have been cleared.
    */
-  clearCredentials(): Promise<void>;
+  clearCredentials(audience?: string, scope?: string): Promise<void>;
 
   /**
    * Obtains session transfer credentials for performing Native to Web SSO.
@@ -136,18 +139,24 @@ export interface ICredentialsManager {
 
   /**
    * Removes cached credentials for a specific audience.
+   * Optionally filter by scope to clear only specific scope-based credentials.
    *
    * This clears the stored API credentials for the given audience, forcing the next
    * `getApiCredentials` call for this audience to perform a fresh token exchange.
    *
    * @param audience The identifier of the API for which to clear credentials.
+   * @param scope Optional scope to clear. If not provided, clears all credentials for the audience.
    * @returns A promise that resolves when the credentials are cleared.
    * @throws {CredentialsManagerError} If the operation fails.
    *
    * @example
    * ```typescript
+   * // Clear all credentials for an audience
    * await credentialsManager.clearApiCredentials('https://api.example.com');
+   *
+   * // Clear credentials for specific scope
+   * await credentialsManager.clearApiCredentials('https://api.example.com', 'read:data');
    * ```
    */
-  clearApiCredentials(audience: string): Promise<void>;
+  clearApiCredentials(audience: string, scope?: string): Promise<void>;
 }

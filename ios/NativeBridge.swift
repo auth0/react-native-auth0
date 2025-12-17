@@ -235,16 +235,24 @@ public class NativeBridge: NSObject {
         resolve(credentialsManager.canRenew() || credentialsManager.hasValid(minTTL: minTTL))
     }
     
-    @objc public func clearCredentials(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        let removed = credentialsManager.clear()
+    @objc public func clearCredentials(audience: String?, scope: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        let removed: Bool
         
-        // Also clear DPoP key if DPoP is enabled
-        if self.useDPoP {
-            do {
-                try DPoP.clearKeypair()
-            } catch {
-                // Log error but don't fail the operation
-                print("Warning: Failed to clear DPoP key: \(error.localizedDescription)")
+        if let audience = audience {
+            // Clear API credentials for specific audience and scope
+            removed = credentialsManager.clear(forAudience: audience, scope: scope)
+        } else {
+            // Clear all credentials
+            removed = credentialsManager.clear()
+            
+            // Also clear DPoP key if DPoP is enabled
+            if self.useDPoP {
+                do {
+                    try DPoP.clearKeypair()
+                } catch {
+                    // Log error but don't fail the operation
+                    print("Warning: Failed to clear DPoP key: \(error.localizedDescription)")
+                }
             }
         }
         
@@ -372,10 +380,10 @@ public class NativeBridge: NSObject {
     }
 
     
-    @objc public func clearApiCredentials(audience: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        // The clear(forAudience:) method returns a boolean indicating success.
+    @objc public func clearApiCredentials(audience: String, scope: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        // The clear(forAudience:scope:) method returns a boolean indicating success.
         // We can resolve the promise with this boolean value.
-        resolve(credentialsManager.clear(forAudience: audience))
+        resolve(credentialsManager.clear(forAudience: audience, scope: scope))
     }
     
     @objc public func getClientId() -> String {

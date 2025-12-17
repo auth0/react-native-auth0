@@ -271,16 +271,22 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     }
 
     @ReactMethod
-    override fun clearCredentials(promise: Promise) {
-        secureCredentialsManager.clearCredentials()
-        
-        // Also clear DPoP key if DPoP is enabled
-        if (useDPoP) {
-            try {
-                DPoP.clearKeyPair()
-            } catch (e: Exception) {
-                // Log error but don't fail the operation
-                android.util.Log.w(NAME, "Failed to clear DPoP key", e)
+    override fun clearCredentials(audience: String?, scope: String?, promise: Promise) {
+        if (audience != null) {
+            // Clear API credentials for specific audience and scope
+            secureCredentialsManager.clearApiCredentials(audience, scope)
+        } else {
+            // Clear all credentials
+            secureCredentialsManager.clearCredentials()
+            
+            // Also clear DPoP key if DPoP is enabled
+            if (useDPoP) {
+                try {
+                    DPoP.clearKeyPair()
+                } catch (e: Exception) {
+                    // Log error but don't fail the operation
+                    android.util.Log.w(NAME, "Failed to clear DPoP key", e)
+                }
             }
         }
         
@@ -328,8 +334,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     }
 
     @ReactMethod
-    override fun clearApiCredentials(audience: String, promise: Promise) {
-        secureCredentialsManager.clearApiCredentials(audience)
+    override fun clearApiCredentials(audience: String, scope: String?, promise: Promise) {
+        secureCredentialsManager.clearApiCredentials(audience, scope)
         promise.resolve(true)
     }
 
