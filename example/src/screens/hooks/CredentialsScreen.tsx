@@ -8,7 +8,13 @@ import {
   Linking,
   Alert,
 } from 'react-native';
-import { useAuth0, Credentials, ApiCredentials } from 'react-native-auth0';
+import {
+  useAuth0,
+  Credentials,
+  ApiCredentials,
+  CredentialsManagerError,
+  CredentialsManagerErrorCodes,
+} from 'react-native-auth0';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
 import Result from '../../components/Result';
@@ -41,6 +47,28 @@ const CredentialsScreen = () => {
       setResult(res ?? { success: `${title} completed` });
     } catch (e) {
       setError(e as Error);
+      // Demonstrate usage of CredentialsManagerErrorCodes for type-safe error handling
+      if (e instanceof CredentialsManagerError) {
+        const credError: CredentialsManagerError = e;
+        switch (credError.type) {
+          case CredentialsManagerErrorCodes.NO_CREDENTIALS:
+            Alert.alert(
+              'No Credentials',
+              'No credentials are stored. Please log in first.'
+            );
+            break;
+          case CredentialsManagerErrorCodes.NO_REFRESH_TOKEN:
+            Alert.alert(
+              'No Refresh Token',
+              'Refresh token is not available. Make sure to request the "offline_access" scope during login.'
+            );
+            break;
+          default:
+            console.log(
+              `Credentials error: ${credError.type} - ${credError.message}`
+            );
+        }
+      }
     }
   };
 

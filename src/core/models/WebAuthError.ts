@@ -1,26 +1,69 @@
 import { AuthError } from './AuthError';
 
 /**
- * Public constants exposing all possible WebAuth error codes.
+ * Platform-agnostic error code constants for WebAuth operations.
+ *
+ * Use these constants for type-safe error handling when working with WebAuth errors.
+ * Each constant corresponds to a specific error type in the {@link WebAuthError.type} property.
+ *
+ * @example
+ * ```typescript
+ * import { WebAuthError, WebAuthErrorCodes } from 'react-native-auth0';
+ *
+ * try {
+ *   await auth0.webAuth.authorize();
+ * } catch (e) {
+ *   if (e instanceof WebAuthError) {
+ *     switch (e.type) {
+ *       case WebAuthErrorCodes.USER_CANCELLED:
+ *         // User cancelled the authentication
+ *         break;
+ *       case WebAuthErrorCodes.NETWORK_ERROR:
+ *         // Network connectivity issue
+ *         break;
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * @see {@link WebAuthError}
  */
 export const WebAuthErrorCodes = {
+  /** User actively cancelled the authentication flow */
   USER_CANCELLED: 'USER_CANCELLED',
+  /** Authentication was denied by user or Auth0 (rules, actions, policies) */
   ACCESS_DENIED: 'ACCESS_DENIED',
+  /** Network error occurred during authentication */
   NETWORK_ERROR: 'NETWORK_ERROR',
+  /** ID token validation failed (signature, issuer, audience, nonce) */
   ID_TOKEN_VALIDATION_FAILED: 'ID_TOKEN_VALIDATION_FAILED',
+  /** Biometric configuration error */
   BIOMETRICS_CONFIGURATION_ERROR: 'BIOMETRICS_CONFIGURATION_ERROR',
+  /** No compatible browser available on device */
   BROWSER_NOT_AVAILABLE: 'BROWSER_NOT_AVAILABLE',
+  /** Authorization URL failed to load in browser */
   FAILED_TO_LOAD_URL: 'FAILED_TO_LOAD_URL',
+  /** Browser was closed unexpectedly */
   BROWSER_TERMINATED: 'BROWSER_TERMINATED',
+  /** Native bundle identifier could not be retrieved (iOS) */
   NO_BUNDLE_IDENTIFIER: 'NO_BUNDLE_IDENTIFIER',
+  /** Another authentication transaction is already active */
   TRANSACTION_ACTIVE_ALREADY: 'TRANSACTION_ACTIVE_ALREADY',
+  /** Authorization code missing from callback URL */
   NO_AUTHORIZATION_CODE: 'NO_AUTHORIZATION_CODE',
+  /** PKCE is required but not enabled in Auth0 Application */
   PKCE_NOT_ALLOWED: 'PKCE_NOT_ALLOWED',
+  /** Organization invitation URL is malformed */
   INVALID_INVITATION_URL: 'INVALID_INVITATION_URL',
+  /** State parameter mismatch (potential CSRF attack) */
   INVALID_STATE: 'INVALID_STATE',
+  /** Authentication flow timed out */
   TIMEOUT_ERROR: 'TIMEOUT_ERROR',
+  /** User consent required for requested scopes */
   CONSENT_REQUIRED: 'CONSENT_REQUIRED',
+  /** Auth0 Application is misconfigured */
   INVALID_CONFIGURATION: 'INVALID_CONFIGURATION',
+  /** Unknown or uncategorized error */
   UNKNOWN_ERROR: 'UNKNOWN_ERROR',
 } as const;
 

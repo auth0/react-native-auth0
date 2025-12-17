@@ -1,23 +1,67 @@
 import { AuthError } from './AuthError';
 
 /**
- * Public constants exposing all possible CredentialsManager error codes.
+ * Platform-agnostic error code constants for Credentials Manager operations.
+ *
+ * Use these constants for type-safe error handling when working with credentials operations
+ * like getCredentials, saveCredentials, clearCredentials, and getApiCredentials.
+ * Each constant corresponds to a specific error type in the {@link CredentialsManagerError.type} property.
+ *
+ * @example
+ * ```typescript
+ * import { CredentialsManagerError, CredentialsManagerErrorCodes } from 'react-native-auth0';
+ *
+ * try {
+ *   const credentials = await auth0.credentialsManager.getCredentials();
+ * } catch (e) {
+ *   if (e instanceof CredentialsManagerError) {
+ *     switch (e.type) {
+ *       case CredentialsManagerErrorCodes.NO_CREDENTIALS:
+ *         // User needs to log in
+ *         break;
+ *       case CredentialsManagerErrorCodes.NO_REFRESH_TOKEN:
+ *         // Request offline_access scope during login
+ *         break;
+ *       case CredentialsManagerErrorCodes.RENEW_FAILED:
+ *         // Token refresh failed - may need re-authentication
+ *         break;
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * @see {@link CredentialsManagerError}
  */
 export const CredentialsManagerErrorCodes = {
+  /** Stored credentials are invalid or corrupted */
   INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
+  /** No credentials are stored - user needs to log in */
   NO_CREDENTIALS: 'NO_CREDENTIALS',
+  /** Refresh token is not available - ensure offline_access scope was requested */
   NO_REFRESH_TOKEN: 'NO_REFRESH_TOKEN',
+  /** Failed to refresh credentials using refresh token */
   RENEW_FAILED: 'RENEW_FAILED',
+  /** Failed to store credentials securely */
   STORE_FAILED: 'STORE_FAILED',
+  /** Failed to revoke refresh token */
   REVOKE_FAILED: 'REVOKE_FAILED',
+  /** Requested minimum TTL exceeds token lifetime */
   LARGE_MIN_TTL: 'LARGE_MIN_TTL',
+  /** Generic credentials manager error */
   CREDENTIAL_MANAGER_ERROR: 'CREDENTIAL_MANAGER_ERROR',
+  /** Biometric authentication failed */
   BIOMETRICS_FAILED: 'BIOMETRICS_FAILED',
+  /** Network connectivity issue */
   NO_NETWORK: 'NO_NETWORK',
+  /** Generic API error */
   API_ERROR: 'API_ERROR',
+  /** Failed to exchange refresh token for API-specific credentials (MRRT) */
   API_EXCHANGE_FAILED: 'API_EXCHANGE_FAILED',
+  /** Device is incompatible with secure storage requirements */
   INCOMPATIBLE_DEVICE: 'INCOMPATIBLE_DEVICE',
+  /** Cryptographic operation failed */
   CRYPTO_EXCEPTION: 'CRYPTO_EXCEPTION',
+  /** Unknown or uncategorized error */
   UNKNOWN_ERROR: 'UNKNOWN_ERROR',
 } as const;
 
