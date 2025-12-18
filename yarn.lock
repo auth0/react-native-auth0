@@ -14590,8 +14590,8 @@ __metadata:
   linkType: hard
 
 "release-it@npm:^19.0.4":
-  version: 19.0.6
-  resolution: "release-it@npm:19.0.6"
+  version: 19.1.0
+  resolution: "release-it@npm:19.1.0"
   dependencies:
     "@nodeutils/defaults-deep": 1.1.0
     "@octokit/rest": 22.0.0
@@ -14618,7 +14618,7 @@ __metadata:
     yargs-parser: 21.1.1
   bin:
     release-it: bin/release-it.js
-  checksum: 0c9f504cdebabbda0941c3afd2f37e60868c79834e47601fabca77bf8ba431fa2596ed25422606c016fe01a2b0493836fc622daf020e173497f60a8d3ab56a65
+  checksum: 23c1096601237cce86d03e197e695567cfa3e510792fb315c3cb67a99176565fe9f0be41ddbe5bf0d7256d3a783d7e01f857e35daadce0aadeac309f7afbdd27
   languageName: node
   linkType: hard
 
