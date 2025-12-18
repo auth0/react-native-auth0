@@ -1,5 +1,26 @@
 # Change Log
 
+## [v5.3.0](https://github.com/auth0/react-native-auth0/tree/v5.3.0) (2025-12-18)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.2.1...v5.3.0)
+
+**Added**
+
+- feat: complete error code constants implementation [\#1413](https://github.com/auth0/react-native-auth0/pull/1413) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: add optional scope parameter to clearApiCredentials [\#1412](https://github.com/auth0/react-native-auth0/pull/1412) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: add configurable biometric authentication policies [\#1411](https://github.com/auth0/react-native-auth0/pull/1411) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: add AI Agent guidelines for react-native-auth0 SDK [\#1405](https://github.com/auth0/react-native-auth0/pull/1405) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: add support for Native to Web SSO [\#1386](https://github.com/auth0/react-native-auth0/pull/1386) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- Feat: add exported error code constants [\#1365](https://github.com/auth0/react-native-auth0/pull/1365) ([hugoecken](https://github.com/hugoecken))
+
+**Changed**
+
+- feat: add Native to Web SSO example and fix iOS implementation [\#1409](https://github.com/auth0/react-native-auth0/pull/1409) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Security**
+
+- chore: upgrade React Native to 0.83.0 and update dev dependencies [\#1414](https://github.com/auth0/react-native-auth0/pull/1414) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.2.1](https://github.com/auth0/react-native-auth0/tree/v5.2.1) (2025-12-08)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.2.0...v5.2.1)
