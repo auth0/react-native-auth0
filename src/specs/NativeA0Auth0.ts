@@ -1,6 +1,7 @@
 import { TurboModuleRegistry, type TurboModule } from 'react-native';
-import type { Int32 } from 'react-native/Libraries/Types/CodegenTypes';
 import type { ApiCredentials, Credentials } from '../types';
+
+type Int32 = number;
 export interface Spec extends TurboModule {
   /**
    * Get the bundle identifier

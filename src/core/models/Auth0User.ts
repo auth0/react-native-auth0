@@ -1,6 +1,6 @@
 import { jwtDecode } from 'jwt-decode';
 import type { User } from '../../types';
-import { snakeToCamel } from '../utils';
+import { snakeToCamel } from '../utils/conversion';
 
 /**
  * A Set containing all OIDC protocol claims that are part of a standard ID token

@@ -21,16 +21,7 @@ export default defineConfig([
     plugins: { prettier },
     rules: {
       'react/react-in-jsx-scope': 'off',
-      'prettier/prettier': [
-        'error',
-        {
-          quoteProps: 'consistent',
-          singleQuote: true,
-          tabWidth: 2,
-          trailingComma: 'es5',
-          useTabs: false,
-        },
-      ],
+      'prettier/prettier': 'error',
     },
   },
   // TypeScript-specific configuration for type-checked rules
@@ -58,6 +49,6 @@ export default defineConfig([
     },
   },
   {
-    ignores: ['node_modules/', 'lib/', 'docs'],
+    ignores: ['node_modules/', 'lib/', 'docs', 'example/', 'coverage/'],
   },
 ]);
