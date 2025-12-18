@@ -8,5 +8,6 @@ jobs:
   snyk-cli:
     uses: auth0/devsecops-tooling/.github/workflows/sca-scan.yml@main
     with:
-      additional-arguments: '--exclude=example'
+      additional-arguments: '--exclude=example --exclude=android --detection-depth=3'
+      java-version: '17'
     secrets: inherit
