@@ -53,12 +53,12 @@ RCT_EXPORT_METHOD(clearCredentials:(RCTPromiseResolveBlock)resolve
 
 
 RCT_EXPORT_METHOD(getCredentials:(NSString * _Nullable)scope
-                minTTL:(NSInteger)minTTL
+                minTTL:(double)minTTL
             parameters:(NSDictionary *)parameters
           forceRefresh:(BOOL)forceRefresh
                resolve:(RCTPromiseResolveBlock)resolve
                 reject:(RCTPromiseRejectBlock)reject) { 
-    [self.nativeBridge getCredentialsWithScope:scope minTTL:minTTL parameters:parameters forceRefresh:forceRefresh resolve:resolve reject:reject];
+    [self.nativeBridge getCredentialsWithScope:scope minTTL:(NSInteger)minTTL parameters:parameters forceRefresh:forceRefresh resolve:resolve reject:reject];
 }
 
 
@@ -71,19 +71,19 @@ RCT_EXPORT_METHOD(hasValidAuth0InstanceWithConfiguration:(NSString *)clientId
 }
 
 
-RCT_EXPORT_METHOD(hasValidCredentials:(NSInteger)minTTL
+RCT_EXPORT_METHOD(hasValidCredentials:(double)minTTL
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject) { 
-    [self.nativeBridge hasValidCredentialsWithMinTTL:minTTL resolve:resolve];
+    [self.nativeBridge hasValidCredentialsWithMinTTL:(NSInteger)minTTL resolve:resolve];
 }
 
 RCT_EXPORT_METHOD(getApiCredentials: (NSString *)audience
                   scope:(NSString * _Nullable)scope
-                  minTTL:(NSInteger)minTTL
+                  minTTL:(double)minTTL
                   parameters:(NSDictionary *)parameters
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-    [self.nativeBridge getApiCredentialsWithAudience:audience scope:scope minTTL:minTTL parameters:parameters resolve:resolve reject:reject];
+    [self.nativeBridge getApiCredentialsWithAudience:audience scope:scope minTTL:(NSInteger)minTTL parameters:parameters resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(clearApiCredentials: (NSString *)audience
@@ -134,9 +134,9 @@ safariViewControllerPresentationStyle:(nonnull NSNumber *)safariViewControllerPr
 additionalParameters:(NSDictionary * _Nullable)additionalParameters
         resolve:(RCTPromiseResolveBlock)resolve
          reject:(RCTPromiseRejectBlock)reject) { 
-    NSInteger maxAgeValue = maxAge != nil ? [maxAge integerValue] : 0;
-    NSInteger leewayValue = leeway != nil ? [leeway integerValue] : 0;
-    NSInteger safariStyleValue = safariViewControllerPresentationStyle != nil ? [safariViewControllerPresentationStyle integerValue] : 0;
+    NSInteger maxAgeValue = maxAge != nil ? (NSInteger)[maxAge doubleValue] : 0;
+    NSInteger leewayValue = leeway != nil ? (NSInteger)[leeway doubleValue] : 0;
+    NSInteger safariStyleValue = safariViewControllerPresentationStyle != nil ? (NSInteger)[safariViewControllerPresentationStyle doubleValue] : 0;
     BOOL ephemeralSessionBool = [ephemeralSession boolValue];
     
     [self.nativeBridge webAuthWithScheme:scheme state:state redirectUri:redirectUri nonce:nonce audience:audience scope:scope connection:connection maxAge:maxAgeValue organization:organization invitationUrl:invitationUrl leeway:leewayValue ephemeralSession:ephemeralSessionBool safariViewControllerPresentationStyle:safariStyleValue additionalParameters:additionalParameters resolve:resolve reject:reject];
