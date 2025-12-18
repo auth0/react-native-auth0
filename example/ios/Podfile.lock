@@ -1,5 +1,5 @@
 PODS:
-  - A0Auth0 (5.2.1):
+  - A0Auth0 (5.3.0):
     - Auth0 (= 2.16)
     - boost
     - DoubleConversion
@@ -2597,7 +2597,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNScreens (4.18.0):
+  - RNScreens (4.19.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2624,10 +2624,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.18.0)
+    - RNScreens/common (= 4.19.0)
     - SocketRocket
     - Yoga
-  - RNScreens/common (4.18.0):
+  - RNScreens/common (4.19.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2918,7 +2918,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  A0Auth0: 936bf2484d314ca9ae7c3285bcc53ebe92b5e1cd
+  A0Auth0: 18df09ad940ea6b4a849cbc07d8ef6f5d9ec9299
   Auth0: 6db7cf0801a5201b3c6c376f07b8dfecfac21ebe
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
@@ -2926,7 +2926,7 @@ SPEC CHECKSUMS:
   FBLazyVector: a293a88992c4c33f0aee184acab0b64a08ff9458
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
-  hermes-engine: 039b13e774bcd4b303155c2e470209866822f41e
+  hermes-engine: e410265f320674b432b5603fc6a0ad9760b76674
   JWTDecode: 1ca6f765844457d0dd8690436860fecee788f631
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
   RCTDeprecation: 2b70c6e3abe00396cefd8913efbf6a2db01a2b36
@@ -2999,7 +2999,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 11c08ff43a62009d48c71de000352e4515918801
   ReactCommon: 424cc34cf5055d69a3dcf02f3436481afb8b0f6f
   RNGestureHandler: 73726300d4c5ca4d80378cae85f9dad8908b3289
-  RNScreens: d821082c6dd1cb397cc0c98b026eeafaa68be479
+  RNScreens: ffbb0296608eb3560de641a711bbdb663ed1f6b4
   SimpleKeychain: 9c0f3ca8458fed74e01db864d181c5cbe278603e
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 6ca93c8c13f56baeec55eb608577619b17a4d64e
