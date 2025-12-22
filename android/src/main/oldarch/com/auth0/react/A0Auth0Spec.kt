@@ -105,7 +105,44 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
     @DoNotStrip
     abstract fun clearDPoPKey(promise: Promise)
 
-    @ReactMethod
+        @ReactMethod
     @DoNotStrip
     abstract fun getSSOCredentials(parameters: ReadableMap?, headers: ReadableMap?, promise: Promise)
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun measurePasswordRealm(
+        username: String,
+        password: String,
+        realm: String,
+        audience: String,
+        scope: String,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun measureRefreshToken(
+        refreshToken: String,
+        scope: String,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun measureUserInfo(
+        token: String,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun measureCreateUser(
+        email: String,
+        password: String,
+        connection: String,
+        promise: Promise
+    )
+}
+
 }

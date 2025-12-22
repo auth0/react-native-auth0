@@ -51,6 +51,7 @@ const HooksDemoNavigator = () => {
     <Auth0Provider
       domain={AUTH0_DOMAIN}
       clientId={AUTH0_CLIENT_ID}
+      useDPoP={false}
       // Example: Enable biometric authentication with different policies
       localAuthenticationOptions={{
         title: 'Authenticate to retrieve your credentials',

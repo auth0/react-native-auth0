@@ -44,6 +44,15 @@ const SelectionScreen = () => {
           textStyle={styles.secondaryButtonText}
         />
 
+        <View style={styles.spacer} />
+
+        <Button
+          onPress={() => navigation.navigate('PerformanceComparison')}
+          title="Performance Comparison"
+          style={styles.performanceButton}
+          textStyle={styles.performanceButtonText}
+        />
+
         <Text style={styles.footer}>
           The Hooks demo shows the recommended integration for modern React
           Native apps. The Class-based demo is for testing direct API calls.
@@ -80,6 +89,14 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: {
     color: '#E53935',
+  },
+  performanceButton: {
+    backgroundColor: '#1976D2',
+    borderWidth: 2,
+    borderColor: '#1976D2',
+  },
+  performanceButtonText: {
+    color: '#FFFFFF',
   },
   footer: {
     position: 'absolute',

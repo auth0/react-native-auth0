@@ -167,6 +167,39 @@ RCT_EXPORT_METHOD(getSSOCredentials:(NSDictionary *)parameters
     [self.nativeBridge getSSOCredentialsWithParameters:parameters headers:headers resolve:resolve reject:reject];
 }
 
+// MARK: - Performance Measurement Methods
+
+RCT_EXPORT_METHOD(measurePasswordRealm:(NSString *)username
+                            password:(NSString *)password
+                               realm:(NSString *)realm
+                            audience:(NSString *)audience
+                               scope:(NSString *)scope
+                             resolve:(RCTPromiseResolveBlock)resolve
+                              reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge measurePasswordRealmWithUsername:username password:password realm:realm audience:audience scope:scope resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(measureRefreshToken:(NSString *)refreshToken
+                                 scope:(NSString *)scope
+                               resolve:(RCTPromiseResolveBlock)resolve
+                                reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge measureRefreshTokenWithRefreshToken:refreshToken scope:scope resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(measureUserInfo:(NSString *)token
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge measureUserInfoWithToken:token resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(measureCreateUser:(NSString *)email
+                            password:(NSString *)password
+                          connection:(NSString *)connection
+                             resolve:(RCTPromiseResolveBlock)resolve
+                              reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge measureCreateUserWithEmail:email password:password connection:connection resolve:resolve reject:reject];
+}
+
 
 
 

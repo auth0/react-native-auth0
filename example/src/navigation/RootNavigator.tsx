@@ -4,6 +4,7 @@ import React, { Suspense } from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import SelectionScreen from '../screens/SelectionScreen';
+import PerformanceComparisonScreen from '../screens/PerformanceComparisonScreen';
 
 // Lazy load the demo navigators to prevent Auth0Provider from initializing
 // until the user actually navigates to those screens.
@@ -15,6 +16,7 @@ export type RootStackParamList = {
   Selection: undefined;
   HooksDemo: undefined;
   ClassDemo: undefined;
+  PerformanceComparison: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -62,6 +64,11 @@ const RootNavigator = () => {
           </Suspense>
         )}
       </Stack.Screen>
+      <Stack.Screen
+        name="PerformanceComparison"
+        component={PerformanceComparisonScreen}
+        options={{ title: 'Performance Comparison' }}
+      />
     </Stack.Navigator>
   );
 };

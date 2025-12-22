@@ -543,4 +543,178 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             error
         )
     }
+
+    // MARK: - Performance Measurement Methods
+
+    @ReactMethod
+    override fun measurePasswordRealm(
+        username: String,
+        password: String,
+        realm: String,
+        audience: String,
+        scope: String,
+        promise: Promise
+    ) {
+        val startTime = System.nanoTime()
+        
+        val authAPI = AuthenticationAPIClient(auth0!!)
+        if (this.useDPoP) {
+            authAPI.useDPoP(reactContext)
+        }
+
+        authAPI
+            .login(username, password, realm)
+            .apply {
+                if (audience.isNotEmpty()) setAudience(audience)
+                if (scope.isNotEmpty()) setScope(scope) else setScope("openid profile email")
+            }
+            .start(object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
+                override fun onSuccess(credentials: Credentials) {
+                    val endTime = System.nanoTime()
+                    val executionTimeMs = (endTime - startTime) / 1_000_000.0 // Convert nanoseconds to milliseconds
+
+                    val result = WritableNativeMap().apply {
+                        putMap("credentials", CredentialsParser.toMap(credentials))
+                        putDouble("executionTimeMs", executionTimeMs)
+                    }
+                    promise.resolve(result)
+                }
+
+                override fun onFailure(error: AuthenticationException) {
+                    handleError(error, promise)
+                }
+            })
+    }
+
+    @ReactMethod
+    override fun measureRefreshToken(
+        refreshToken: String,
+        scope: String,
+        promise: Promise
+    ) {
+        val startTime = System.nanoTime()
+        
+        val authAPI = AuthenticationAPIClient(auth0!!)
+        if (this.useDPoP) {
+            authAPI.useDPoP(reactContext)
+        }
+
+        authAPI
+            .renewAuth(refreshToken)
+            .apply {
+                if (scope.isNotEmpty()) addParameter("scope", scope)
+            }
+            .start(object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
+                override fun onSuccess(credentials: Credentials) {
+                    val endTime = System.nanoTime()
+                    val executionTimeMs = (endTime - startTime) / 1_000_000.0 // Convert nanoseconds to milliseconds
+
+                    val result = WritableNativeMap().apply {
+                        putMap("credentials", CredentialsParser.toMap(credentials))
+                        putDouble("executionTimeMs", executionTimeMs)
+                    }
+                    promise.resolve(result)
+                }
+
+                override fun onFailure(error: AuthenticationException) {
+                    handleError(error, promise)
+                }
+            })
+    }
+
+    @ReactMethod
+    override fun measureUserInfo(
+        token: String,
+        promise: Promise
+    ) {
+        val startTime = System.nanoTime()
+        
+        val authAPI = AuthenticationAPIClient(auth0!!)
+        if (this.useDPoP) {
+            authAPI.useDPoP(reactContext)
+        }
+
+        authAPI
+            .userInfo(token)
+            .start(object : com.auth0.android.callback.Callback<com.auth0.android.result.UserProfile, AuthenticationException> {
+                override fun onSuccess(profile: com.auth0.android.result.UserProfile) {
+                    val endTime = System.nanoTime()
+                    val executionTimeMs = (endTime - startTime) / 1_000_000.0 // Convert nanoseconds to milliseconds
+
+                    val userInfo = WritableNativeMap().apply {
+                        putString("sub", profile.getId())
+                        profile.name?.let { putString("name", it) }
+                        profile.givenName?.let { putString("givenName", it) }
+                        profile.familyName?.let { putString("familyName", it) }
+                        profile.nickname?.let { putString("nickname", it) }
+                        profile.email?.let { putString("email", it) }
+                        profile.isEmailVerified?.let { putBoolean("emailVerified", it) }
+                        profile.pictureURL?.let { putString("picture", it) }
+                        profile.createdAt?.let { putString("createdAt", it.toString()) }
+                        
+                        // Add custom claims
+                        val customClaims = WritableNativeMap()
+                        profile.getExtraInfo()?.forEach { (key, value) ->
+                            when (value) {
+                                is String -> customClaims.putString(key, value)
+                                is Number -> customClaims.putDouble(key, value.toDouble())
+                                is Boolean -> customClaims.putBoolean(key, value)
+                            }
+                        }
+                        putMap("customClaims", customClaims)
+                    }
+
+                    val result = WritableNativeMap().apply {
+                        putMap("userInfo", userInfo)
+                        putDouble("executionTimeMs", executionTimeMs)
+                    }
+                    promise.resolve(result)
+                }
+
+                override fun onFailure(error: AuthenticationException) {
+                    handleError(error, promise)
+                }
+            })
+    }
+
+    @ReactMethod
+    override fun measureCreateUser(
+        email: String,
+        password: String,
+        connection: String,
+        promise: Promise
+    ) {
+        val startTime = System.nanoTime()
+        
+        val authAPI = AuthenticationAPIClient(auth0!!)
+        if (this.useDPoP) {
+            authAPI.useDPoP(reactContext)
+        }
+
+        authAPI
+            .createUser(email, password,null, connection)
+            .start(object : com.auth0.android.callback.Callback<com.auth0.android.result.DatabaseUser, AuthenticationException> {
+                override fun onSuccess(databaseUser: com.auth0.android.result.DatabaseUser) {
+                    val endTime = System.nanoTime()
+                    val executionTimeMs = (endTime - startTime) / 1_000_000.0 // Convert nanoseconds to milliseconds
+
+                    val user = WritableNativeMap().apply {
+                        putString("email", databaseUser.email)
+                        putBoolean("emailVerified", databaseUser.isEmailVerified)
+                        databaseUser.username?.let { putString("username", it) }
+                    }
+
+                    val result = WritableNativeMap().apply {
+                        putMap("user", user)
+                        putDouble("executionTimeMs", executionTimeMs)
+                    }
+                    promise.resolve(result)
+                }
+
+                override fun onFailure(error: AuthenticationException) {
+                    handleError(error, promise)
+                }
+            })
+    }
 }
+

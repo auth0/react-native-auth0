@@ -144,6 +144,55 @@ export interface Spec extends TurboModule {
     idToken?: string;
     refreshToken?: string;
   }>;
+
+  /**
+   * Performance measurement: Password Realm authentication
+   * Measures the native execution time for passwordRealm authentication
+   */
+  measurePasswordRealm(
+    username: string,
+    password: string,
+    realm: string,
+    audience: string,
+    scope: string
+  ): Promise<{
+    credentials: { [key: string]: string | Int32 };
+    executionTimeMs: number;
+  }>;
+
+  /**
+   * Performance measurement: Refresh Token
+   * Measures the native execution time for token refresh
+   */
+  measureRefreshToken(
+    refreshToken: string,
+    scope: string
+  ): Promise<{
+    credentials: { [key: string]: string | Int32 };
+    executionTimeMs: number;
+  }>;
+
+  /**
+   * Performance measurement: User Info
+   * Measures the native execution time for fetching user info
+   */
+  measureUserInfo(token: string): Promise<{
+    userInfo: { [key: string]: string };
+    executionTimeMs: number;
+  }>;
+
+  /**
+   * Performance measurement: Create User
+   * Measures the native execution time for creating a user
+   */
+  measureCreateUser(
+    email: string,
+    password: string,
+    connection: string
+  ): Promise<{
+    user: { [key: string]: string };
+    executionTimeMs: number;
+  }>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('A0Auth0');

@@ -395,8 +395,8 @@ public class NativeBridge: NSObject {
 
     func convert(policyString: String, timeout: Int) -> BiometricPolicy {
         switch policyString {
-        case "default":
-            return .default
+        case "never":
+            return .never
         case "always":
             return .always
         case "session":
@@ -405,6 +405,146 @@ public class NativeBridge: NSObject {
             return .appLifecycle(timeoutInSeconds: timeout)
         default:
             return .default
+        }
+    }
+    
+    // MARK: - Performance Measurement Methods
+    
+    @objc public func measurePasswordRealm(username: String, password: String, realm: String, audience: String, scope: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        let startTime = CACurrentMediaTime()
+        
+        var auth = Auth0.authentication(clientId: self.clientId, domain: self.domain)
+        if self.useDPoP {
+            auth = auth.useDPoP()
+        }
+        
+        auth.login(
+            usernameOrEmail: username,
+            password: password,
+            realmOrConnection: realm,
+            audience: audience.isEmpty ? nil : audience,
+            scope: scope.isEmpty ? "openid profile email" : scope
+        ).start { result in
+            let endTime = CACurrentMediaTime()
+            let executionTimeMs = (endTime - startTime) * 1000 // Convert to milliseconds
+            
+            switch result {
+            case .success(let credentials):
+                resolve([
+                    "credentials": credentials.asDictionary(),
+                    "executionTimeMs": executionTimeMs
+                ])
+            case .failure(let error):
+                reject(error.reactNativeErrorCode(), error.errorDescription, error)
+            }
+        }
+    }
+    
+    @objc public func measureRefreshToken(refreshToken: String, scope: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        let startTime = CACurrentMediaTime()
+        
+        var auth = Auth0.authentication(clientId: self.clientId, domain: self.domain)
+        if self.useDPoP {
+            auth = auth.useDPoP()
+        }
+        
+        auth.renew(withRefreshToken: refreshToken, scope: scope.isEmpty ? nil : scope)
+            .start { result in
+                let endTime = CACurrentMediaTime()
+                let executionTimeMs = (endTime - startTime) * 1000 // Convert to milliseconds
+                
+                switch result {
+                case .success(let credentials):
+                    resolve([
+                        "credentials": credentials.asDictionary(),
+                        "executionTimeMs": executionTimeMs
+                    ])
+                case .failure(let error):
+                    reject(error.reactNativeErrorCode(), error.errorDescription, error)
+                }
+            }
+    }
+    
+    @objc public func measureUserInfo(token: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        let startTime = CACurrentMediaTime()
+        
+        var auth = Auth0.authentication(clientId: self.clientId, domain: self.domain)
+        if self.useDPoP {
+            auth = auth.useDPoP()
+        }
+        
+        auth.userInfo(withAccessToken: token)
+            .start { result in
+                let endTime = CACurrentMediaTime()
+                let executionTimeMs = (endTime - startTime) * 1000 // Convert to milliseconds
+                
+                switch result {
+                case .success(let profile):
+                    // Convert UserInfo to dictionary
+                    var userDict: [String: Any] = [:]
+                    userDict["sub"] = profile.sub
+                    userDict["name"] = profile.name
+                    userDict["givenName"] = profile.givenName
+                    userDict["familyName"] = profile.familyName
+                    userDict["middleName"] = profile.middleName
+                    userDict["nickname"] = profile.nickname
+                    userDict["preferredUsername"] = profile.preferredUsername
+                    userDict["profile"] = profile.profileURL?.absoluteString
+                    userDict["picture"] = profile.pictureURL?.absoluteString
+                    userDict["website"] = profile.websiteURL?.absoluteString
+                    userDict["email"] = profile.email
+                    userDict["emailVerified"] = profile.emailVerified
+                    userDict["gender"] = profile.gender
+                    userDict["birthdate"] = profile.birthdate
+                    userDict["zoneinfo"] = profile.zoneinfo
+                    userDict["locale"] = profile.locale
+                    userDict["phoneNumber"] = profile.phoneNumber
+                    userDict["phoneNumberVerified"] = profile.phoneNumberVerified
+                    userDict["address"] = profile.address
+                    userDict["updatedAt"] = profile.updatedAt?.timeIntervalSince1970
+                    userDict["customClaims"] = profile.customClaims
+                    
+                    resolve([
+                        "userInfo": userDict,
+                        "executionTimeMs": executionTimeMs
+                    ])
+                case .failure(let error):
+                    reject(error.reactNativeErrorCode(), error.errorDescription, error)
+                }
+            }
+    }
+    
+    @objc public func measureCreateUser(email: String, password: String, connection: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        let startTime = CACurrentMediaTime()
+        
+        var auth = Auth0.authentication(clientId: self.clientId, domain: self.domain)
+        if self.useDPoP {
+            auth = auth.useDPoP()
+        }
+        
+        auth.signup(
+            email: email,
+            password: password,
+            connection: connection,
+            userMetadata: nil
+        ).start { result in
+            let endTime = CACurrentMediaTime()
+            let executionTimeMs = (endTime - startTime) * 1000 // Convert to milliseconds
+            
+            switch result {
+            case .success(let user):
+                var userDict: [String: Any] = [:]
+                userDict["email"] = user.email
+                userDict["emailVerified"] = user.verified ?? false
+                userDict["username"] = user.username
+                
+                resolve([
+                    "user": userDict,
+                    "executionTimeMs": executionTimeMs
+                ])
+            case .failure(let error):
+                reject(error.reactNativeErrorCode(), error.errorDescription, error)
+            }
         }
     }
 }
