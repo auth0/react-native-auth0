@@ -1,5 +1,13 @@
 # Change Log
 
+## [v5.3.1](https://github.com/auth0/react-native-auth0/tree/v5.3.1) (2025-12-23)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.3.0...v5.3.1)
+
+**Changed**
+
+- chore: update Auth0.swift to 2.16.1 [\#1428](https://github.com/auth0/react-native-auth0/pull/1428) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.3.0](https://github.com/auth0/react-native-auth0/tree/v5.3.0) (2025-12-18)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.2.1...v5.3.0)
