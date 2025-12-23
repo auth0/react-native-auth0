@@ -40,14 +40,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@auth0/auth0-spa-js@npm:2.9.1":
-  version: 2.9.1
-  resolution: "@auth0/auth0-spa-js@npm:2.9.1"
+"@auth0/auth0-spa-js@npm:2.11.0":
+  version: 2.11.0
+  resolution: "@auth0/auth0-spa-js@npm:2.11.0"
   dependencies:
     browser-tabs-lock: ^1.2.15
     dpop: ^2.1.1
     es-cookie: ~1.3.2
-  checksum: 032030f946995bc1c621d39caa3da8fe71fe913c42b24785f76c1e0c117c84b3e1325b805d88d3e9542f35bb2b633232f9f46fc9323b28438e03ba1eaa7cc7d3
+  checksum: 606e47a3b75a345f80a3e5de44481a5f2f5698892952c358c26b73bf69dc6e080b6b6cbcee01419565b3840c6da64ec3217d346351bb2e07dfe2af150a664785
   languageName: node
   linkType: hard
 
@@ -14278,7 +14278,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "react-native-auth0@workspace:."
   dependencies:
-    "@auth0/auth0-spa-js": 2.9.1
+    "@auth0/auth0-spa-js": 2.11.0
     "@commitlint/config-conventional": ^19.8.1
     "@eslint/compat": ^1.3.2
     "@eslint/eslintrc": ^3.3.1
