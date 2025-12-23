@@ -3872,11 +3872,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-navigation/core@npm:^7.13.3":
-  version: 7.13.3
-  resolution: "@react-navigation/core@npm:7.13.3"
+"@react-navigation/core@npm:^7.13.7":
+  version: 7.13.7
+  resolution: "@react-navigation/core@npm:7.13.7"
   dependencies:
-    "@react-navigation/routers": ^7.5.2
+    "@react-navigation/routers": ^7.5.3
     escape-string-regexp: ^4.0.0
     fast-deep-equal: ^3.1.3
     nanoid: ^3.3.11
@@ -3886,7 +3886,7 @@ __metadata:
     use-sync-external-store: ^1.5.0
   peerDependencies:
     react: ">= 18.2.0"
-  checksum: 461ee9cfae877e385e3e138218c7f482e4d3b772441cf362ca642ea351248aef48c1ca822cf0df488d2eb43a7f478de9b037f2581b090aecade67015325bd2f1
+  checksum: aa5870970c2e3605bc310483a218fc6d1ec47e6fc5b4dc61d12ed8663abb6104c317f92292c7bf226175f9c5dfbc51e8cea7a2ece2b9d0d308f452dbed672b4f
   languageName: node
   linkType: hard
 
@@ -3931,10 +3931,10 @@ __metadata:
   linkType: hard
 
 "@react-navigation/native@npm:^7.1.20":
-  version: 7.1.22
-  resolution: "@react-navigation/native@npm:7.1.22"
+  version: 7.1.26
+  resolution: "@react-navigation/native@npm:7.1.26"
   dependencies:
-    "@react-navigation/core": ^7.13.3
+    "@react-navigation/core": ^7.13.7
     escape-string-regexp: ^4.0.0
     fast-deep-equal: ^3.1.3
     nanoid: ^3.3.11
@@ -3942,16 +3942,16 @@ __metadata:
   peerDependencies:
     react: ">= 18.2.0"
     react-native: "*"
-  checksum: f460161db582318c8ccfc887c57929341d18da7ded8741dedb0f5c104161ca1bbba56bece00a45f572c358249ba7f9932c484f02963ed44bc3b36fe8f0139cdd
+  checksum: 37d41b358b33ed5e9b1cddea62f8d3f9a60e160d89102609ce700003adeaab8df8e41db1c534f2d59acb4f279cc09e624f31298030d25beb06269c736e8230b9
   languageName: node
   linkType: hard
 
-"@react-navigation/routers@npm:^7.5.2":
-  version: 7.5.2
-  resolution: "@react-navigation/routers@npm:7.5.2"
+"@react-navigation/routers@npm:^7.5.3":
+  version: 7.5.3
+  resolution: "@react-navigation/routers@npm:7.5.3"
   dependencies:
     nanoid: ^3.3.11
-  checksum: 378c49a39eaf5e848d71991af25eca1aa1cda3926e470825abc743d6e086f79223a58605a1acc592825f9ab91a1ca79177304c68e8e757d5a2812fc3cbf97dc0
+  checksum: 1b8397ade6bbab51a60d2671fd88eca2e0cf22b9cd10bee16d3537bc5f05deea7dad8c116a809f580c87c5a6cceae7c4fc9f20644f45076ee8f00524e903fc4b
   languageName: node
   linkType: hard
 
