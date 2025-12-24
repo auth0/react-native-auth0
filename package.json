@@ -136,7 +136,7 @@
     "typescript-eslint": "^8.46.2"
   },
   "dependencies": {
-    "@auth0/auth0-spa-js": "2.9.1",
+    "@auth0/auth0-spa-js": "2.10.0",
     "base-64": "^1.0.0",
     "jwt-decode": "^4.0.0",
     "url": "^0.11.4"
