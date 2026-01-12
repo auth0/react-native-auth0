@@ -146,6 +146,15 @@ export interface Auth0Options {
    * @see https://datatracker.ietf.org/doc/html/rfc9449
    */
   useDPoP?: boolean;
+  /**
+   * The maximum number of retry attempts for transient errors during credential renewal.
+   * Helps handle network failures and transient errors when using refresh token rotation.
+   * **iOS only** - This parameter is accepted on Android for API compatibility but has no effect
+   * as the Auth0.Android SDK does not currently support retry configuration.
+   * @default 0 (no retries)
+   * @platform ios
+   */
+  maxRetries?: number;
   // Telemetry and localAuthenticationOptions are platform-specific extensions
 }
 
