@@ -276,15 +276,15 @@ Automatic retry mechanism for credential renewal to improve reliability in unsta
 
 ### Overview
 
-When your application operates on unstable mobile networks, credential renewal requests may fail due to transient network issues. This is especially problematic with refresh token rotation enabled, as a failed response can invalidate the refresh token even though the server successfully issued new credentials.
-
-The `maxRetries` configuration option enables automatic retry with exponential backoff for the following error scenarios:
+When your application operates on unstable mobile networks, credential renewal requests may fail due to transient network issues. The `maxRetries` configuration option enables automatic retry with exponential backoff for the following error scenarios:
 
 - **Network errors**: Connection timeouts, DNS failures, unreachable hosts
 - **Rate limiting**: HTTP 429 (Too Many Requests)
 - **Server errors**: HTTP 5xx responses
 
-**Example scenario this solves:**
+> **Important:** While the retry mechanism is particularly valuable for refresh token rotation (RRT) scenarios, it can be used to improve credential renewal reliability in any configuration, including non-RRT deployments. The retry logic helps handle transient network failures regardless of your token rotation strategy.
+
+**Example scenario with Refresh Token Rotation:**
 
 1. Request A calls `getCredentials()` and starts a token refresh
 2. Request A successfully hits the server and gets new credentials
@@ -292,16 +292,22 @@ The `maxRetries` configuration option enables automatic retry with exponential b
 4. The retry mechanism automatically retries the failed request using the same (old) refresh token
 5. The retry succeeds within the refresh token rotation overlap window
 
+> **Critical for RRT:** If you have refresh token rotation enabled, you **must** configure a token overlap period of at least **180 seconds (3 minutes)** in your Auth0 tenant. This overlap window allows retries to succeed using the old refresh token before it expires, preventing users from being locked out due to network failures.
+
 <a name="credential-renewal-retry-prerequisites"></a>
 
 ### Prerequisites
 
-To use the retry mechanism effectively:
+To use the retry mechanism:
 
 1. **SDK Version**: Requires react-native-auth0 v5.4.0 or later
-2. **Refresh Token Rotation**: Should be enabled in your Auth0 tenant
-3. **Token Overlap Period**: Configure refresh token rotation with an overlap period of at least **180 seconds** (3 minutes) in your Auth0 tenant settings
-4. **Scope**: Ensure your authentication requests include the `offline_access` scope to receive refresh tokens
+2. **Scope**: Ensure your authentication requests include the `offline_access` scope to receive refresh tokens
+
+**Additional requirements for Refresh Token Rotation:**
+
+If you have refresh token rotation enabled in your Auth0 tenant:
+
+1. **Token Overlap Period**: Configure an overlap period of at least **180 seconds (3 minutes)** in your Auth0 tenant settings. This is **critical** to ensure retries can succeed using the old refresh token before it expires.
 
 <a name="using-retry-with-hooks"></a>
 
