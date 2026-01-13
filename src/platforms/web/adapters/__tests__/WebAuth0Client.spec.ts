@@ -309,4 +309,115 @@ describe('WebAuth0Client', () => {
       expect(MockWebCredentialsManager).toHaveBeenCalledWith(mockSpaClient);
     });
   });
+
+  describe('customTokenExchange method', () => {
+    const mockExchangeResponse = {
+      access_token: 'exchanged-access-token',
+      id_token: 'exchanged-id-token',
+      token_type: 'Bearer',
+      expires_in: 3600,
+      scope: 'openid profile email',
+      refresh_token: 'exchanged-refresh-token',
+    };
+
+    beforeEach(() => {
+      mockSpaClient.exchangeToken = jest
+        .fn()
+        .mockResolvedValue(mockExchangeResponse);
+    });
+
+    it('should call exchangeToken on SPA client with all parameters', async () => {
+      const parameters = {
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+        audience: 'https://api.example.com',
+        scope: 'openid profile email',
+        organization: 'org_123',
+      };
+
+      await client.customTokenExchange(parameters);
+
+      expect(mockSpaClient.exchangeToken).toHaveBeenCalledWith({
+        subject_token: 'external-token',
+        subject_token_type: 'urn:acme:legacy-token',
+        audience: 'https://api.example.com',
+        scope: 'openid profile email',
+        organization: 'org_123',
+      });
+    });
+
+    it('should call exchangeToken with only required parameters', async () => {
+      const parameters = {
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+      };
+
+      await client.customTokenExchange(parameters);
+
+      expect(mockSpaClient.exchangeToken).toHaveBeenCalledWith({
+        subject_token: 'external-token',
+        subject_token_type: 'urn:acme:legacy-token',
+        audience: undefined,
+        scope: undefined,
+        organization: undefined,
+      });
+    });
+
+    it('should return credentials with correct structure', async () => {
+      const result = await client.customTokenExchange({
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+      });
+
+      expect(result.accessToken).toBe('exchanged-access-token');
+      expect(result.idToken).toBe('exchanged-id-token');
+      expect(result.tokenType).toBe('Bearer');
+      expect(result.scope).toBe('openid profile email');
+      expect(result.refreshToken).toBe('exchanged-refresh-token');
+      // expiresAt should be a timestamp in the future
+      expect(result.expiresAt).toBeGreaterThan(Math.floor(Date.now() / 1000));
+    });
+
+    it('should convert expires_in to expiresAt timestamp', async () => {
+      const beforeCall = Math.floor(Date.now() / 1000);
+
+      const result = await client.customTokenExchange({
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+      });
+
+      const afterCall = Math.floor(Date.now() / 1000);
+
+      // expiresAt should be approximately now + expires_in (3600 seconds)
+      expect(result.expiresAt).toBeGreaterThanOrEqual(beforeCall + 3600);
+      expect(result.expiresAt).toBeLessThanOrEqual(afterCall + 3600);
+    });
+
+    it('should use client tokenType as fallback when response token_type is missing', async () => {
+      mockSpaClient.exchangeToken.mockResolvedValueOnce({
+        ...mockExchangeResponse,
+        token_type: undefined,
+      });
+
+      const result = await client.customTokenExchange({
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+      });
+
+      // Should use client's default tokenType (DPoP)
+      expect(result.tokenType).toBe('DPoP');
+    });
+
+    it('should propagate errors from exchangeToken', async () => {
+      const exchangeError = new Error('Token exchange failed');
+      mockSpaClient.exchangeToken.mockRejectedValueOnce(exchangeError);
+
+      await expect(
+        client.customTokenExchange({
+          subjectToken: 'bad-token',
+          subjectTokenType: 'urn:acme:legacy-token',
+        })
+      ).rejects.toThrow('Token exchange failed');
+    });
+  });
 });
