@@ -167,6 +167,16 @@ RCT_EXPORT_METHOD(getSSOCredentials:(NSDictionary *)parameters
     [self.nativeBridge getSSOCredentialsWithParameters:parameters headers:headers resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(customTokenExchange:(NSString *)subjectToken
+                  subjectTokenType:(NSString *)subjectTokenType
+                  audience:(NSString * _Nullable)audience
+                  scope:(NSString * _Nullable)scope
+                  organization:(NSString * _Nullable)organization
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge customTokenExchangeWithSubjectToken:subjectToken subjectTokenType:subjectTokenType audience:audience scope:scope organization:organization resolve:resolve reject:reject];
+}
+
 
 
 

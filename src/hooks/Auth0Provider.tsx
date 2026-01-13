@@ -21,6 +21,7 @@ import type {
   LoginOtpParameters,
   LoginRecoveryCodeParameters,
   ExchangeNativeSocialParameters,
+  CustomTokenExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
   MfaChallengeResponse,
@@ -307,6 +308,12 @@ export const Auth0Provider = ({
     [client, loginFlow]
   );
 
+  const customTokenExchange = useCallback(
+    (parameters: CustomTokenExchangeParameters) =>
+      loginFlow(client.customTokenExchange(parameters)),
+    [client, loginFlow]
+  );
+
   const sendEmailCode = useCallback(
     (parameters: PasswordlessEmailParameters) =>
       voidFlow(client.auth.passwordlessWithEmail(parameters)),
@@ -400,6 +407,7 @@ export const Auth0Provider = ({
       resetPassword,
       authorizeWithExchange,
       authorizeWithExchangeNativeSocial,
+      customTokenExchange,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,
@@ -428,6 +436,7 @@ export const Auth0Provider = ({
       resetPassword,
       authorizeWithExchange,
       authorizeWithExchangeNativeSocial,
+      customTokenExchange,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,

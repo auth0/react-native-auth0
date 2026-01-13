@@ -222,4 +222,22 @@ export class NativeBridgeManager implements INativeBridge {
       hdrs
     );
   }
+
+  async customTokenExchange(
+    subjectToken: string,
+    subjectTokenType: string,
+    audience?: string,
+    scope?: string,
+    organization?: string
+  ): Promise<Credentials> {
+    const credential = await this.a0_call(
+      Auth0NativeModule.customTokenExchange.bind(Auth0NativeModule),
+      subjectToken,
+      subjectTokenType,
+      audience,
+      scope,
+      organization
+    );
+    return new CredentialsModel(credential);
+  }
 }

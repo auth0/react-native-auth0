@@ -183,4 +183,23 @@ export interface INativeBridge {
     parameters?: Record<string, any>,
     headers?: Record<string, string>
   ): Promise<SessionTransferCredentials>;
+
+  /**
+   * Performs a Custom Token Exchange, exchanging an external provider's token
+   * for Auth0 credentials using RFC 8693 Token Exchange.
+   *
+   * @param subjectToken The external token to exchange.
+   * @param subjectTokenType The type identifier of the external token (URI).
+   * @param audience Optional target API identifier.
+   * @param scope Optional space-separated scopes.
+   * @param organization Optional organization ID or name.
+   * @returns A promise that resolves with Auth0 credentials.
+   */
+  customTokenExchange(
+    subjectToken: string,
+    subjectTokenType: string,
+    audience?: string,
+    scope?: string,
+    organization?: string
+  ): Promise<Credentials>;
 }

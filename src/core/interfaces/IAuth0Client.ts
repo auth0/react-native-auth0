@@ -2,7 +2,12 @@ import type { IWebAuthProvider } from './IWebAuthProvider';
 import type { ICredentialsManager } from './ICredentialsManager';
 import type { IAuthenticationProvider } from './IAuthenticationProvider';
 import type { IUsersClient } from './IUsersClient';
-import type { DPoPHeadersParams, TokenType } from '../../types';
+import type {
+  DPoPHeadersParams,
+  TokenType,
+  CustomTokenExchangeParameters,
+  Credentials,
+} from '../../types';
 
 /**
  * The primary interface for the Auth0 client.
@@ -58,4 +63,15 @@ export interface IAuth0Client {
    * ```
    */
   getDPoPHeaders(params: DPoPHeadersParams): Promise<Record<string, string>>;
+
+  /**
+   * Performs a Custom Token Exchange using RFC 8693.
+   * Exchanges an external identity provider token for Auth0 tokens.
+   *
+   * @param parameters The token exchange parameters.
+   * @returns A promise resolving with Auth0 credentials.
+   */
+  customTokenExchange(
+    parameters: CustomTokenExchangeParameters
+  ): Promise<Credentials>;
 }

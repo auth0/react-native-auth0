@@ -1,7 +1,12 @@
 import type { IAuth0Client } from './core/interfaces/IAuth0Client';
 import type { TokenType } from './types/common';
 import { Auth0ClientFactory } from './factory/Auth0ClientFactory';
-import type { Auth0Options, DPoPHeadersParams } from './types';
+import type {
+  Auth0Options,
+  DPoPHeadersParams,
+  CustomTokenExchangeParameters,
+  Credentials,
+} from './types';
 
 /**
  * The main Auth0 client class.
@@ -91,6 +96,30 @@ class Auth0 {
    */
   getDPoPHeaders(params: DPoPHeadersParams) {
     return this.client.getDPoPHeaders(params);
+  }
+
+  /**
+   * Performs a Custom Token Exchange using RFC 8693.
+   * Exchanges an external identity provider token for Auth0 tokens.
+   *
+   * @param parameters The token exchange parameters.
+   * @returns A promise resolving with Auth0 credentials.
+   *
+   * @example
+   * ```typescript
+   * const credentials = await auth0.customTokenExchange({
+   *   subjectToken: 'external-idp-token',
+   *   subjectTokenType: 'urn:ietf:params:oauth:token-type:access_token',
+   *   audience: 'https://api.example.com',
+   *   scope: 'openid profile email',
+   *   organization: 'org_abc123'
+   * });
+   * ```
+   */
+  customTokenExchange(
+    parameters: CustomTokenExchangeParameters
+  ): Promise<Credentials> {
+    return this.client.customTokenExchange(parameters);
   }
 }
 

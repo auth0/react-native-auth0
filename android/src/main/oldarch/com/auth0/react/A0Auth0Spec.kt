@@ -108,4 +108,15 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
     @ReactMethod
     @DoNotStrip
     abstract fun getSSOCredentials(parameters: ReadableMap?, headers: ReadableMap?, promise: Promise)
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun customTokenExchange(
+        subjectToken: String,
+        subjectTokenType: String,
+        audience: String?,
+        scope: String?,
+        organization: String?,
+        promise: Promise
+    )
 }

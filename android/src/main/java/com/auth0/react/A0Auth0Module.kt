@@ -464,6 +464,40 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         )
     }
 
+    @ReactMethod
+    override fun customTokenExchange(
+        subjectToken: String,
+        subjectTokenType: String,
+        audience: String?,
+        scope: String?,
+        organization: String?,
+        promise: Promise
+    ) {
+        val authClient = AuthenticationAPIClient(auth0!!)
+        if (useDPoP) {
+            authClient.useDPoP(reactContext)
+        }
+        
+        val finalScope = scope ?: "openid profile email"
+        
+        authClient.customTokenExchange(
+            subjectToken = subjectToken,
+            subjectTokenType = subjectTokenType,
+            audience = audience,
+            scope = finalScope,
+            organization = organization
+        ).start(object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
+            override fun onSuccess(result: Credentials) {
+                val map = CredentialsParser.toMap(result)
+                promise.resolve(map)
+            }
+
+            override fun onFailure(error: AuthenticationException) {
+                handleError(error, promise)
+            }
+        })
+    }
+
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         // No-op
     }

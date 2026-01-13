@@ -3,9 +3,17 @@ import {
   type Auth0ClientOptions,
   type LogoutOptions,
 } from '@auth0/auth0-spa-js';
-import type { IAuth0Client, IUsersClient } from '../../../core/interfaces';
+import type {
+  IAuth0Client,
+  IAuthenticationProvider,
+  IUsersClient,
+} from '../../../core/interfaces';
 import type { WebAuth0Options } from '../../../types/platform-specific';
-import type { DPoPHeadersParams } from '../../../types';
+import type {
+  DPoPHeadersParams,
+  CustomTokenExchangeParameters,
+  Credentials,
+} from '../../../types';
 import { WebWebAuthProvider } from './WebWebAuthProvider';
 import { WebCredentialsManager } from './WebCredentialsManager';
 import {
@@ -19,7 +27,7 @@ import { AuthError, DPoPError } from '../../../core/models';
 export class WebAuth0Client implements IAuth0Client {
   readonly webAuth: WebWebAuthProvider;
   readonly credentialsManager: WebCredentialsManager;
-  readonly auth: AuthenticationOrchestrator;
+  readonly auth: IAuthenticationProvider;
 
   private readonly httpClient: HttpClient;
   private readonly tokenType: TokenType;
@@ -197,5 +205,39 @@ export class WebAuth0Client implements IAuth0Client {
       );
       throw new DPoPError(authError);
     }
+  }
+
+  /**
+   * Performs a Custom Token Exchange using RFC 8693.
+   * Exchanges an external identity provider token for Auth0 tokens.
+   *
+   * @param parameters The token exchange parameters.
+   * @returns A promise that resolves with Auth0 credentials.
+   */
+  async customTokenExchange(
+    parameters: CustomTokenExchangeParameters
+  ): Promise<Credentials> {
+    const { subjectToken, subjectTokenType, audience, scope, organization } =
+      parameters;
+
+    const response = await this.client.exchangeToken({
+      subject_token: subjectToken,
+      subject_token_type: subjectTokenType,
+      audience,
+      scope,
+      organization,
+    });
+
+    // Convert expiresIn (seconds from now) to expiresAt (UNIX timestamp)
+    const expiresAt = Math.floor(Date.now() / 1000) + response.expires_in;
+
+    return {
+      accessToken: response.access_token,
+      idToken: response.id_token,
+      tokenType: (response.token_type as TokenType) ?? this.tokenType,
+      expiresAt,
+      scope: response.scope,
+      refreshToken: response.refresh_token,
+    };
   }
 }

@@ -37,6 +37,11 @@
   - [Using MRRT with Hooks](#using-mrrt-with-hooks)
   - [Using MRRT with Auth0 Class](#using-mrrt-with-auth0-class)
   - [Web Platform Configuration](#web-platform-configuration)
+- [Custom Token Exchange (RFC 8693)](#custom-token-exchange-rfc-8693)
+  - [Using Custom Token Exchange with Hooks](#using-custom-token-exchange-with-hooks)
+  - [Using Custom Token Exchange with Auth0 Class](#using-custom-token-exchange-with-auth0-class)
+  - [With Organization Context](#with-organization-context)
+  - [Subject Token Type Requirements](#subject-token-type-requirements)
 - [Native to Web SSO (Early Access)](#native-to-web-sso-early-access)
   - [Overview](#native-to-web-sso-overview)
   - [Prerequisites](#native-to-web-sso-prerequisites)
@@ -562,6 +567,96 @@ function App() {
   );
 }
 ```
+
+## Custom Token Exchange (RFC 8693)
+
+Custom Token Exchange allows you to exchange external identity provider tokens for Auth0 tokens using the [RFC 8693 OAuth 2.0 Token Exchange](https://www.rfc-editor.org/rfc/rfc8693) specification. This enables scenarios where users authenticate with an external system and that token needs to be exchanged for Auth0 tokens.
+
+> ⚠️ **Important**: The external token must be validated in Auth0 Actions using cryptographic verification. See the [Auth0 Custom Token Exchange documentation](https://auth0.com/docs/authenticate/login/custom-token-exchange) for setup instructions.
+
+### Using Custom Token Exchange with Hooks
+
+```typescript
+import React from 'react';
+import { Button, Alert } from 'react-native';
+import { useAuth0 } from 'react-native-auth0';
+
+function TokenExchangeScreen() {
+  const { customTokenExchange, user, error } = useAuth0();
+
+  const handleExchange = async () => {
+    try {
+      // Exchange an external token for Auth0 tokens
+      const credentials = await customTokenExchange({
+        subjectToken: 'token-from-external-provider',
+        subjectTokenType: 'urn:acme:legacy-system-token',
+        scope: 'openid profile email',
+        audience: 'https://api.example.com',
+      });
+
+      Alert.alert('Success', `Logged in as ${user?.name}`);
+    } catch (e) {
+      console.error('Token exchange failed:', e);
+    }
+  };
+
+  return <Button onPress={handleExchange} title="Exchange Token" />;
+}
+```
+
+### Using Custom Token Exchange with Auth0 Class
+
+```typescript
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_CLIENT_ID',
+});
+
+async function exchangeExternalToken(externalToken: string) {
+  try {
+    const credentials = await auth0.customTokenExchange({
+      subjectToken: externalToken,
+      subjectTokenType: 'urn:acme:legacy-system-token',
+      audience: 'https://api.example.com',
+      scope: 'openid profile email',
+    });
+
+    console.log('Exchange successful:', credentials);
+    return credentials;
+  } catch (error) {
+    console.error('Exchange failed:', error);
+    throw error;
+  }
+}
+```
+
+### With Organization Context
+
+Exchange tokens within a specific organization context:
+
+```typescript
+const credentials = await customTokenExchange({
+  subjectToken: 'external-provider-token',
+  subjectTokenType: 'urn:acme:legacy-system-token',
+  organization: 'org_123', // or organization name
+  scope: 'openid profile email',
+});
+```
+
+### Subject Token Type Requirements
+
+The `subjectTokenType` must be a namespaced URI under your organization's control. The following patterns are forbidden:
+
+- `urn:ietf:params:oauth:*` (IETF reserved)
+- `https://auth0.com/*` (Auth0 reserved)
+- `urn:auth0:*` (Auth0 reserved)
+
+Valid examples:
+
+- `urn:acme:legacy-system-token`
+- `https://yourcompany.com/tokens/legacy`
 
 ## Native to Web SSO (Early Access)
 

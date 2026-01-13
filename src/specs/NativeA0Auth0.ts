@@ -144,6 +144,18 @@ export interface Spec extends TurboModule {
     idToken?: string;
     refreshToken?: string;
   }>;
+
+  /**
+   * Perform Custom Token Exchange (RFC 8693)
+   * Exchanges an external token for Auth0 tokens.
+   */
+  customTokenExchange(
+    subjectToken: string,
+    subjectTokenType: string,
+    audience: string | undefined,
+    scope: string | undefined,
+    organization: string | undefined
+  ): Promise<Credentials>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('A0Auth0');
