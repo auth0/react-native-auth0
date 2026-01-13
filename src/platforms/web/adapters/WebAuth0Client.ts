@@ -22,7 +22,11 @@ import {
 } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
-import { AuthError, DPoPError } from '../../../core/models';
+import {
+  AuthError,
+  DPoPError,
+  CustomTokenExchangeError,
+} from '../../../core/models';
 
 export class WebAuth0Client implements IAuth0Client {
   readonly webAuth: WebWebAuthProvider;
@@ -217,27 +221,36 @@ export class WebAuth0Client implements IAuth0Client {
   async customTokenExchange(
     parameters: CustomTokenExchangeParameters
   ): Promise<Credentials> {
-    const { subjectToken, subjectTokenType, audience, scope, organization } =
-      parameters;
+    try {
+      const { subjectToken, subjectTokenType, audience, scope, organization } =
+        parameters;
 
-    const response = await this.client.exchangeToken({
-      subject_token: subjectToken,
-      subject_token_type: subjectTokenType,
-      audience,
-      scope,
-      organization,
-    });
+      const response = await this.client.exchangeToken({
+        subject_token: subjectToken,
+        subject_token_type: subjectTokenType,
+        audience,
+        scope,
+        organization,
+      });
 
-    // Convert expiresIn (seconds from now) to expiresAt (UNIX timestamp)
-    const expiresAt = Math.floor(Date.now() / 1000) + response.expires_in;
+      // Convert expiresIn (seconds from now) to expiresAt (UNIX timestamp)
+      const expiresAt = Math.floor(Date.now() / 1000) + response.expires_in;
 
-    return {
-      accessToken: response.access_token,
-      idToken: response.id_token,
-      tokenType: (response.token_type as TokenType) ?? this.tokenType,
-      expiresAt,
-      scope: response.scope,
-      refreshToken: response.refresh_token,
-    };
+      return {
+        accessToken: response.access_token,
+        idToken: response.id_token,
+        tokenType: (response.token_type as TokenType) ?? this.tokenType,
+        expiresAt,
+        scope: response.scope,
+        refreshToken: response.refresh_token,
+      };
+    } catch (e: any) {
+      const authError = new AuthError(
+        e.error ?? 'custom_token_exchange_failed',
+        e.error_description ?? e.message ?? 'Custom token exchange failed',
+        { json: e }
+      );
+      throw new CustomTokenExchangeError(authError);
+    }
   }
 }

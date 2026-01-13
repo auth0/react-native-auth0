@@ -16,6 +16,7 @@ import {
 import {
   AuthError,
   Credentials as CredentialsModel,
+  CustomTokenExchangeError,
 } from '../../../core/models';
 import Auth0NativeModule from '../../../specs/NativeA0Auth0';
 import type { NativeModuleError } from '../../../core/interfaces';
@@ -230,14 +231,22 @@ export class NativeBridgeManager implements INativeBridge {
     scope?: string,
     organization?: string
   ): Promise<Credentials> {
-    const credential = await this.a0_call(
-      Auth0NativeModule.customTokenExchange.bind(Auth0NativeModule),
-      subjectToken,
-      subjectTokenType,
-      audience,
-      scope,
-      organization
-    );
-    return new CredentialsModel(credential);
+    try {
+      const credential = await this.a0_call(
+        Auth0NativeModule.customTokenExchange.bind(Auth0NativeModule),
+        subjectToken,
+        subjectTokenType,
+        audience,
+        scope,
+        organization
+      );
+      return new CredentialsModel(credential);
+    } catch (e) {
+      // Wrap AuthError in CustomTokenExchangeError for better error handling
+      if (e instanceof AuthError) {
+        throw new CustomTokenExchangeError(e);
+      }
+      throw CustomTokenExchangeError.from(e);
+    }
   }
 }

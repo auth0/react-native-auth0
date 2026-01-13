@@ -579,7 +579,11 @@ Custom Token Exchange allows you to exchange external identity provider tokens f
 ```typescript
 import React from 'react';
 import { Button, Alert } from 'react-native';
-import { useAuth0 } from 'react-native-auth0';
+import {
+  useAuth0,
+  CustomTokenExchangeError,
+  CustomTokenExchangeErrorCodes,
+} from 'react-native-auth0';
 
 function TokenExchangeScreen() {
   const { customTokenExchange, user, error } = useAuth0();
@@ -596,7 +600,32 @@ function TokenExchangeScreen() {
 
       Alert.alert('Success', `Logged in as ${user?.name}`);
     } catch (e) {
-      console.error('Token exchange failed:', e);
+      if (e instanceof CustomTokenExchangeError) {
+        switch (e.type) {
+          case CustomTokenExchangeErrorCodes.INVALID_SUBJECT_TOKEN:
+            Alert.alert('Error', 'The external token is invalid or expired');
+            break;
+          case CustomTokenExchangeErrorCodes.UNSUPPORTED_TOKEN_TYPE:
+            Alert.alert('Error', 'The token type is not supported');
+            break;
+          case CustomTokenExchangeErrorCodes.TOKEN_EXCHANGE_NOT_CONFIGURED:
+            Alert.alert(
+              'Error',
+              'Custom Token Exchange is not configured for this tenant'
+            );
+            break;
+          case CustomTokenExchangeErrorCodes.TOKEN_VALIDATION_FAILED:
+            Alert.alert('Error', 'Token validation failed in Auth0 Action');
+            break;
+          case CustomTokenExchangeErrorCodes.NETWORK_ERROR:
+            Alert.alert('Error', 'Network error. Please check your connection.');
+            break;
+          default:
+            Alert.alert('Error', e.message);
+        }
+      } else {
+        console.error('Token exchange failed:', e);
+      }
     }
   };
 
@@ -607,7 +636,10 @@ function TokenExchangeScreen() {
 ### Using Custom Token Exchange with Auth0 Class
 
 ```typescript
-import Auth0 from 'react-native-auth0';
+import Auth0, {
+  CustomTokenExchangeError,
+  CustomTokenExchangeErrorCodes,
+} from 'react-native-auth0';
 
 const auth0 = new Auth0({
   domain: 'YOUR_AUTH0_DOMAIN',
@@ -626,7 +658,18 @@ async function exchangeExternalToken(externalToken: string) {
     console.log('Exchange successful:', credentials);
     return credentials;
   } catch (error) {
-    console.error('Exchange failed:', error);
+    if (error instanceof CustomTokenExchangeError) {
+      // Access the underlying error details
+      console.error('Error type:', error.type);
+      console.error('Error message:', error.message);
+      console.error('Underlying error code:', error.underlyingError.code);
+
+      // Handle specific error types
+      if (error.type === CustomTokenExchangeErrorCodes.INVALID_SUBJECT_TOKEN) {
+        // Token is invalid or expired - prompt user to re-authenticate
+        throw new Error('Please authenticate again with the external provider');
+      }
+    }
     throw error;
   }
 }
@@ -657,6 +700,29 @@ Valid examples:
 
 - `urn:acme:legacy-system-token`
 - `https://yourcompany.com/tokens/legacy`
+
+### Error Codes Reference
+
+The `CustomTokenExchangeError` class provides platform-agnostic error codes that are mapped from the underlying native SDK errors. Use the `type` property for programmatic error handling:
+
+| Error Code                      | Description                                                |
+| ------------------------------- | ---------------------------------------------------------- |
+| `INVALID_SUBJECT_TOKEN`         | The external token is invalid, malformed, or expired       |
+| `UNSUPPORTED_TOKEN_TYPE`        | The token type is not supported or recognized              |
+| `TOKEN_EXCHANGE_NOT_CONFIGURED` | Custom Token Exchange is not enabled for this Auth0 tenant |
+| `INVALID_AUDIENCE`              | The requested audience is invalid or not allowed           |
+| `INVALID_SCOPE`                 | The requested scope is invalid or not allowed              |
+| `TOKEN_EXCHANGE_DENIED`         | Token exchange was denied by the authorization server      |
+| `TOKEN_VALIDATION_FAILED`       | The token validation in Auth0 Action failed                |
+| `NETWORK_ERROR`                 | Network connectivity issue occurred                        |
+| `SERVER_ERROR`                  | The authorization server encountered an internal error     |
+| `UNKNOWN_ERROR`                 | An unknown or uncategorized error occurred                 |
+
+These error codes are mapped from:
+
+- **RFC 8693 standard errors**: `invalid_grant`, `invalid_request`, `unsupported_token_type`, `access_denied`, etc.
+- **Auth0-specific errors**: `a0.token_exchange_failed`, `a0.action_failed`, etc.
+- **Native SDK errors**: Platform-specific error codes from Auth0.swift and Auth0.Android
 
 ## Native to Web SSO (Early Access)
 
