@@ -168,8 +168,13 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         domain: String,
         localAuthenticationOptions: ReadableMap?,
         useDPoP: Boolean?,
+        maxRetries: Double,
         promise: Promise
     ) {
+        // Note: maxRetries parameter is ignored on Android as the Auth0.Android SDK
+        // does not currently support retry configuration for credential renewal.
+        // This parameter is accepted for API compatibility with iOS.
+        
         this.useDPoP = useDPoP ?: true
         auth0 = Auth0.getInstance(clientId, domain)
 

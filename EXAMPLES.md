@@ -13,6 +13,13 @@
     - [Set global headers during initialization](#set-global-headers-during-initialization)
     - [Using custom headers with Auth0Provider component](#using-custom-headers-with-auth0provider-component)
     - [Set request-specific headers](#set-request-specific-headers)
+- [Credential Renewal Retry](#credential-renewal-retry)
+  - [Overview](#credential-renewal-retry-overview)
+  - [Prerequisites](#credential-renewal-retry-prerequisites)
+  - [Using Retry with Hooks](#using-retry-with-hooks)
+  - [Using Retry with Auth0 Class](#using-retry-with-auth0-class)
+  - [Platform Support](#credential-renewal-retry-platform-support)
+  - [Error Handling](#credential-renewal-retry-error-handling)
 - [Biometric Authentication](#biometric-authentication)
   - [Biometric Policy Types](#biometric-policy-types)
   - [Using with Auth0Provider (Hooks)](#using-with-auth0provider-hooks)
@@ -263,6 +270,194 @@ auth0.auth
   .then(console.log)
   .catch(console.error);
 ```
+
+## Credential Renewal Retry
+
+> **Platform Support:** iOS only.
+
+Automatic retry mechanism for credential renewal to improve reliability in unstable network conditions, particularly important for mobile applications with refresh token rotation enabled.
+
+<a name="credential-renewal-retry-overview"></a>
+
+### Overview
+
+When your application operates on unstable mobile networks, credential renewal requests may fail due to transient network issues. The `maxRetries` configuration option enables automatic retry with exponential backoff for the following error scenarios:
+
+- **Network errors**: Connection timeouts, DNS failures, unreachable hosts
+- **Rate limiting**: HTTP 429 (Too Many Requests)
+- **Server errors**: HTTP 5xx responses
+
+> **Important:** While the retry mechanism is particularly valuable for refresh token rotation (RRT) scenarios, it can be used to improve credential renewal reliability in any configuration, including non-RRT deployments. The retry logic helps handle transient network failures regardless of your token rotation strategy.
+
+**Example scenario with Refresh Token Rotation:**
+
+1. Request A calls `getCredentials()` and starts a token refresh
+2. Request A successfully hits the server and gets new credentials
+3. Request A fails on the way back (network issue), never reaching the client
+4. The retry mechanism automatically retries the failed request using the same (old) refresh token
+5. The retry succeeds within the refresh token rotation overlap window
+
+> **Critical for RRT:** If you have refresh token rotation enabled, you **must** configure a token overlap period of at least **180 seconds (3 minutes)** in your Auth0 tenant. This overlap window allows retries to succeed using the old refresh token before it expires, preventing users from being locked out due to network failures.
+
+<a name="credential-renewal-retry-prerequisites"></a>
+
+### Prerequisites
+
+To use the retry mechanism:
+
+1. **SDK Version**: Requires react-native-auth0 v5.4.0 or later
+2. **Scope**: Ensure your authentication requests include the `offline_access` scope to receive refresh tokens
+
+**Additional requirements for Refresh Token Rotation:**
+
+If you have refresh token rotation enabled in your Auth0 tenant:
+
+1. **Token Overlap Period**: Configure an overlap period of at least **180 seconds (3 minutes)** in your Auth0 tenant settings. This is **critical** to ensure retries can succeed using the old refresh token before it expires.
+
+<a name="using-retry-with-hooks"></a>
+
+### Using Retry with Hooks
+
+```jsx
+import React from 'react';
+import { View, Button, Alert } from 'react-native';
+import { Auth0Provider, useAuth0 } from 'react-native-auth0';
+
+function App() {
+  return (
+    <Auth0Provider
+      domain="YOUR_AUTH0_DOMAIN"
+      clientId="YOUR_AUTH0_CLIENT_ID"
+      maxRetries={2} // Configure retry mechanism at initialization (iOS only)
+    >
+      <MyComponent />
+    </Auth0Provider>
+  );
+}
+
+function MyComponent() {
+  const { getCredentials } = useAuth0();
+
+  const fetchCredentialsWithRetry = async () => {
+    try {
+      // The retry mechanism is automatically applied to all credential renewal attempts
+      const credentials = await getCredentials();
+
+      console.log('Access Token:', credentials.accessToken);
+      // Use credentials for API calls...
+    } catch (error) {
+      console.error('Failed to get credentials after retries:', error);
+      Alert.alert(
+        'Error',
+        'Unable to refresh credentials. Please log in again.'
+      );
+    }
+  };
+
+  return (
+    <View>
+      <Button title="Get Credentials" onPress={fetchCredentialsWithRetry} />
+    </View>
+  );
+}
+```
+
+<a name="using-retry-with-auth0-class"></a>
+
+### Using Retry with Auth0 Class
+
+```js
+import Auth0 from 'react-native-auth0';
+
+// Configure retry mechanism at initialization (iOS only)
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+  maxRetries: 2, // Recommended maximum of 2 retries
+});
+
+// Get credentials - retry mechanism is automatically applied
+try {
+  const credentials = await auth0.credentialsManager.getCredentials();
+
+  console.log('Access Token:', credentials.accessToken);
+} catch (error) {
+  console.error('Credential renewal failed after retries:', error);
+}
+```
+
+<a name="credential-renewal-retry-platform-support"></a>
+
+### Platform Support
+
+| Platform    | Support              | Behavior                                                               |
+| ----------- | -------------------- | ---------------------------------------------------------------------- |
+| **iOS**     | ✅ Full Support      | Uses exponential backoff retry with Auth0.swift v2.14+                 |
+| **Android** | ⚠️ Parameter Ignored | Auth0.Android SDK does not currently support retry configuration       |
+| **Web**     | ⚠️ Parameter Ignored | @auth0/auth0-spa-js SDK does not currently support retry configuration |
+
+**Default Behavior:**
+
+- `maxRetries` defaults to **0** (no retries) to maintain backward compatibility
+- Recommended maximum: **2 retries**
+- Each retry uses exponential backoff to avoid overwhelming the server
+
+<a name="credential-renewal-retry-error-handling"></a>
+
+### Error Handling
+
+The retry mechanism only retries on transient, recoverable errors. The following errors will **not** trigger a retry:
+
+- Invalid refresh token
+- Refresh token expired
+- Refresh token revoked
+- Client authentication failures
+- Authorization errors (insufficient permissions)
+
+Example with comprehensive error handling:
+
+```jsx
+import { useAuth0 } from 'react-native-auth0';
+
+function MyComponent() {
+  const { getCredentials, authorize } = useAuth0();
+
+  const fetchCredentials = async () => {
+    try {
+      const credentials = await getCredentials(
+        undefined,
+        undefined,
+        undefined,
+        false,
+        2
+      );
+      return credentials;
+    } catch (error) {
+      // Check if it's a non-retryable error that requires re-authentication
+      if (
+        error.code === 'NO_REFRESH_TOKEN' ||
+        error.code === 'RENEW_FAILED' ||
+        error.message?.includes('refresh token')
+      ) {
+        console.log('Refresh token invalid, re-authenticating...');
+        // Trigger a new login flow
+        await authorize({ scope: 'openid profile offline_access' });
+      } else {
+        console.error('Transient error after retries:', error);
+        throw error;
+      }
+    }
+  };
+
+  // ...
+}
+```
+
+**Best Practices:**
+
+1. **Use moderate retry counts**: Recommended maximum of 2 retries to balance reliability with performance
+2. **Configure adequate overlap period**: Ensure your Auth0 tenant has at least 180 seconds token overlap configured
+3. **Test on real devices**: Simulate network instability during testing to validate retry behavior
 
 ## Biometric Authentication
 

@@ -43,17 +43,19 @@ public class NativeBridge: NSObject {
     var clientId: String
     var domain: String
     var useDPoP: Bool
+    var maxRetries: Int
     
-    @objc public init(clientId: String, domain: String, localAuthenticationOptions: [String: Any]?, useDPoP: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public init(clientId: String, domain: String, localAuthenticationOptions: [String: Any]?, useDPoP: Bool, maxRetries: Int, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         var auth0 = Auth0
             .authentication(clientId: clientId, domain: domain)
         self.clientId = clientId
         self.domain = domain
         self.useDPoP = useDPoP
+        self.maxRetries = maxRetries
         if self.useDPoP {
             auth0 = auth0.useDPoP()
         }
-        self.credentialsManager = CredentialsManager(authentication: auth0)
+        self.credentialsManager = CredentialsManager(authentication: auth0, maxRetries: maxRetries)
         super.init()
         if let localAuthenticationOptions = localAuthenticationOptions {
             if let title = localAuthenticationOptions["title"] as? String {

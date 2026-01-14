@@ -55,7 +55,8 @@ export class NativeBridgeManager implements INativeBridge {
     clientId: string,
     domain: string,
     localAuthenticationOptions?: LocalAuthenticationOptions,
-    useDPoP: boolean = true
+    useDPoP: boolean = true,
+    maxRetries: number = 0
   ): Promise<void> {
     // This is a new method we'd add to the native side to ensure the
     // underlying Auth0.swift/Auth0.android SDKs are configured.
@@ -66,7 +67,8 @@ export class NativeBridgeManager implements INativeBridge {
       clientId,
       domain,
       localAuthenticationOptions,
-      useDPoP
+      useDPoP,
+      maxRetries
     );
   }
 

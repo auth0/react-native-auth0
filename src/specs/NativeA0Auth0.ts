@@ -25,7 +25,8 @@ export interface Spec extends TurboModule {
     localAuthenticationOptions:
       | { [key: string]: string | Int32 | boolean }
       | undefined,
-    useDPoP: boolean | undefined
+    useDPoP: boolean | undefined,
+    maxRetries: Int32
   ): Promise<void>;
 
   /**
