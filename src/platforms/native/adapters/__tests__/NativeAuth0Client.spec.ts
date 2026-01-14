@@ -110,7 +110,8 @@ describe('NativeAuth0Client', () => {
       options.clientId,
       options.domain,
       undefined, // No local auth options provided in this test
-      true // useDPoP defaults to true
+      true, // useDPoP defaults to true
+      undefined // maxRetries not provided
     );
 
     // Use client to avoid unused variable warning
@@ -131,7 +132,8 @@ describe('NativeAuth0Client', () => {
       options.clientId,
       options.domain,
       localAuthOptions,
-      true // useDPoP defaults to true
+      true, // useDPoP defaults to true
+      undefined // maxRetries not provided
     );
 
     // Use client to avoid unused variable warning

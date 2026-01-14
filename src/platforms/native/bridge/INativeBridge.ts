@@ -33,12 +33,14 @@ export interface INativeBridge {
    * @param domain The Auth0 application domain.
    * @param localAuthenticationOptions Options for local authentication.
    * @param useDPoP Whether to enable DPoP (Demonstrating Proof-of-Possession) for token requests.
+   * @param maxRetries The maximum number of retry attempts for transient errors during credential renewal. **iOS only** - ignored on Android. Defaults to 0.
    */
   initialize(
     clientId: string,
     domain: string,
     localAuthenticationOptions?: LocalAuthenticationOptions,
-    useDPoP?: boolean
+    useDPoP?: boolean,
+    maxRetries?: number
   ): Promise<void>;
 
   /**
@@ -89,6 +91,7 @@ export interface INativeBridge {
    *
    * @param scope The scopes to request during a token refresh.
    * @param minTtl The minimum time-to-live (in seconds) for the access token.
+   * @param parameters Additional parameters to send during the token refresh request.
    * @param forceRefresh If true, forces a token refresh.
    * @returns A promise that resolves with the credentials.
    */

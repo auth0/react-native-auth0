@@ -98,9 +98,10 @@ RCT_EXPORT_METHOD(initializeAuth0WithConfiguration:(NSString *)clientId
                                   domain:(NSString *)domain
               localAuthenticationOptions:(NSDictionary * _Nullable)localAuthenticationOptions
                                   useDPoP:(nonnull NSNumber *)useDPoP
+                               maxRetries:(double)maxRetries
                                  resolve:(RCTPromiseResolveBlock)resolve
                                   reject:(RCTPromiseRejectBlock)reject) {
-    [self tryAndInitializeNativeBridge:clientId domain:domain withLocalAuthenticationOptions:localAuthenticationOptions useDPoP:useDPoP resolve:resolve reject:reject];
+    [self tryAndInitializeNativeBridge:clientId domain:domain withLocalAuthenticationOptions:localAuthenticationOptions useDPoP:useDPoP maxRetries:(NSInteger)maxRetries resolve:resolve reject:reject];
 }
 
 
@@ -189,9 +190,9 @@ UIBackgroundTaskIdentifier taskId;
     return valid;
 }
 
-- (void)tryAndInitializeNativeBridge:(NSString *)clientId domain:(NSString *)domain withLocalAuthenticationOptions:(NSDictionary*) options useDPoP:(NSNumber *)useDPoP resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+- (void)tryAndInitializeNativeBridge:(NSString *)clientId domain:(NSString *)domain withLocalAuthenticationOptions:(NSDictionary*) options useDPoP:(NSNumber *)useDPoP maxRetries:(NSInteger)maxRetries resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     BOOL useDPoPBool = [useDPoP boolValue];
-    NativeBridge *bridge = [[NativeBridge alloc] initWithClientId:clientId domain:domain localAuthenticationOptions:options useDPoP:useDPoPBool resolve:resolve reject:reject];
+    NativeBridge *bridge = [[NativeBridge alloc] initWithClientId:clientId domain:domain localAuthenticationOptions:options useDPoP:useDPoPBool maxRetries:maxRetries resolve:resolve reject:reject];
     self.nativeBridge = bridge;
 }
 #ifdef RCT_NEW_ARCH_ENABLED

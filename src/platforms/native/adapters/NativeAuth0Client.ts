@@ -79,6 +79,7 @@ export class NativeAuth0Client implements IAuth0Client {
       domain,
       localAuthenticationOptions,
       useDPoP = true,
+      maxRetries,
     } = options;
     const hasValidInstance = await bridge.hasValidInstance(clientId, domain);
     if (!hasValidInstance) {
@@ -86,7 +87,8 @@ export class NativeAuth0Client implements IAuth0Client {
         clientId,
         domain,
         localAuthenticationOptions,
-        useDPoP
+        useDPoP,
+        maxRetries
       );
     }
   }
