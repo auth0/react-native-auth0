@@ -25,7 +25,7 @@ import { TokenType } from '../../../types/common';
 import {
   AuthError,
   DPoPError,
-  CustomTokenExchangeError,
+  AuthenticationException,
 } from '../../../core/models';
 
 export class WebAuth0Client implements IAuth0Client {
@@ -225,11 +225,14 @@ export class WebAuth0Client implements IAuth0Client {
       const { subjectToken, subjectTokenType, audience, scope, organization } =
         parameters;
 
+      // Apply default scope if not provided for consistency with native platforms
+      const finalScope = scope ?? 'openid profile email';
+
       const response = await this.client.exchangeToken({
         subject_token: subjectToken,
         subject_token_type: subjectTokenType,
         audience,
-        scope,
+        scope: finalScope,
         organization,
       });
 
@@ -250,7 +253,7 @@ export class WebAuth0Client implements IAuth0Client {
         e.error_description ?? e.message ?? 'Custom token exchange failed',
         { json: e }
       );
-      throw new CustomTokenExchangeError(authError);
+      throw new AuthenticationException(authError);
     }
   }
 }

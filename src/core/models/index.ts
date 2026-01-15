@@ -9,6 +9,6 @@ export {
 export { WebAuthError, WebAuthErrorCodes } from './WebAuthError';
 export { DPoPError, DPoPErrorCodes } from './DPoPError';
 export {
-  CustomTokenExchangeError,
-  CustomTokenExchangeErrorCodes,
-} from './CustomTokenExchangeError';
+  AuthenticationException,
+  AuthenticationErrorCodes,
+} from './AuthenticationException';

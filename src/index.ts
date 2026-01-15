@@ -6,8 +6,8 @@ export {
   WebAuthErrorCodes,
   DPoPError,
   DPoPErrorCodes,
-  CustomTokenExchangeError,
-  CustomTokenExchangeErrorCodes,
+  AuthenticationException,
+  AuthenticationErrorCodes,
 } from './core/models';
 export { TimeoutError } from './core/utils/fetchWithTimeout';
 export { TokenType } from './types/common';

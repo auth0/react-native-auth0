@@ -122,7 +122,7 @@ export interface ExchangeNativeSocialParameters extends RequestOptions {
  * providers for Auth0 tokens. The external token must be validated in Auth0
  * Actions using cryptographic verification.
  *
- * @see https://auth0.com/docs/authenticate/login/custom-token-exchange
+ * @see https://auth0.com/docs/authenticate/custom-token-exchange
  */
 export interface CustomTokenExchangeParameters {
   /**
@@ -133,14 +133,22 @@ export interface CustomTokenExchangeParameters {
 
   /**
    * The type identifier for the subject token being exchanged.
-   * Must be a namespaced URI under your organization's control.
    *
-   * Forbidden patterns:
-   * - `urn:ietf:params:oauth:*` (IETF reserved)
+   * For standard OAuth tokens (e.g., from OIDC providers), use RFC 8693 standard types:
+   * - `urn:ietf:params:oauth:token-type:jwt` - For JWTs (ID tokens, signed access tokens)
+   * - `urn:ietf:params:oauth:token-type:access_token` - For OAuth access tokens
+   * - `urn:ietf:params:oauth:token-type:refresh_token` - For OAuth refresh tokens
+   * - `urn:ietf:params:oauth:token-type:id_token` - For OIDC ID tokens
+   * - `urn:ietf:params:oauth:token-type:saml1` - For SAML 1.1 assertions
+   * - `urn:ietf:params:oauth:token-type:saml2` - For SAML 2.0 assertions
+   *
+   * For custom/legacy tokens, use organization-controlled URIs. Forbidden patterns for custom types:
+   * - `urn:ietf:params:oauth:*` (IETF reserved for standard types only)
    * - `https://auth0.com/*` (Auth0 reserved)
    * - `urn:auth0:*` (Auth0 reserved)
    *
-   * @example "urn:acme:legacy-system-token"
+   * @example "urn:acme:legacy-system-token" // Custom legacy token
+   * @example "urn:ietf:params:oauth:token-type:jwt" // Standard JWT from OIDC provider
    */
   subjectTokenType: string;
 

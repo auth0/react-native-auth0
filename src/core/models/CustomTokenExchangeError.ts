@@ -11,9 +11,10 @@ import { AuthError } from './AuthError';
  * import { CustomTokenExchangeError, CustomTokenExchangeErrorCodes } from 'react-native-auth0';
  *
  * try {
+ *   // Exchange a custom legacy token
  *   const credentials = await auth0.customTokenExchange({
  *     subjectToken: externalToken,
- *     subjectTokenType: 'urn:ietf:params:oauth:token-type:jwt',
+ *     subjectTokenType: 'urn:acme:legacy-system-token',
  *   });
  * } catch (e) {
  *   if (e instanceof CustomTokenExchangeError) {
@@ -33,7 +34,7 @@ import { AuthError } from './AuthError';
  * ```
  *
  * @see {@link CustomTokenExchangeError}
- * @see {@link https://www.rfc-editor.org/rfc/rfc8693|RFC 8693 - OAuth 2.0 Token Exchange}
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc8693|RFC 8693 - OAuth 2.0 Token Exchange}
  */
 export const CustomTokenExchangeErrorCodes = {
   /** The subject token is invalid, malformed, or expired */
@@ -65,7 +66,7 @@ export type CustomTokenExchangeErrorCode =
   (typeof CustomTokenExchangeErrorCodes)[keyof typeof CustomTokenExchangeErrorCodes];
 
 const ERROR_CODE_MAP: Record<string, CustomTokenExchangeErrorCode> = {
-  // --- RFC 8693 OAuth 2.0 Token Exchange error codes ---
+  // RFC 8693 OAuth 2.0 Token Exchange standard error codes
   'invalid_request': CustomTokenExchangeErrorCodes.INVALID_SUBJECT_TOKEN,
   'invalid_grant': CustomTokenExchangeErrorCodes.INVALID_SUBJECT_TOKEN,
   'invalid_token': CustomTokenExchangeErrorCodes.INVALID_SUBJECT_TOKEN,
@@ -78,7 +79,7 @@ const ERROR_CODE_MAP: Record<string, CustomTokenExchangeErrorCode> = {
     CustomTokenExchangeErrorCodes.TOKEN_EXCHANGE_NOT_CONFIGURED,
   'server_error': CustomTokenExchangeErrorCodes.SERVER_ERROR,
 
-  // --- Auth0-specific error codes ---
+  // Auth0-specific error codes
   'a0.token_exchange_failed':
     CustomTokenExchangeErrorCodes.TOKEN_EXCHANGE_DENIED,
   'a0.token_exchange_not_enabled':
@@ -90,21 +91,7 @@ const ERROR_CODE_MAP: Record<string, CustomTokenExchangeErrorCode> = {
   'a0.subject_token_validation_failed':
     CustomTokenExchangeErrorCodes.TOKEN_VALIDATION_FAILED,
   'a0.action_failed': CustomTokenExchangeErrorCodes.TOKEN_VALIDATION_FAILED,
-
-  // --- Native SDK codes (iOS/Android) ---
-  'INVALID_SUBJECT_TOKEN': CustomTokenExchangeErrorCodes.INVALID_SUBJECT_TOKEN,
-  'UNSUPPORTED_TOKEN_TYPE':
-    CustomTokenExchangeErrorCodes.UNSUPPORTED_TOKEN_TYPE,
-  'TOKEN_EXCHANGE_FAILED': CustomTokenExchangeErrorCodes.TOKEN_EXCHANGE_DENIED,
-  'TOKEN_EXCHANGE_NOT_CONFIGURED':
-    CustomTokenExchangeErrorCodes.TOKEN_EXCHANGE_NOT_CONFIGURED,
-  'TOKEN_VALIDATION_FAILED':
-    CustomTokenExchangeErrorCodes.TOKEN_VALIDATION_FAILED,
-
-  // --- Network errors ---
   'a0.network_error': CustomTokenExchangeErrorCodes.NETWORK_ERROR,
-  'NETWORK_ERROR': CustomTokenExchangeErrorCodes.NETWORK_ERROR,
-  'network_error': CustomTokenExchangeErrorCodes.NETWORK_ERROR,
 };
 
 /**
@@ -128,6 +115,7 @@ const ERROR_CODE_MAP: Record<string, CustomTokenExchangeErrorCode> = {
  * } from 'react-native-auth0';
  *
  * try {
+ *   // Exchange a standard JWT from external OIDC provider
  *   const credentials = await auth0.customTokenExchange({
  *     subjectToken: externalToken,
  *     subjectTokenType: 'urn:ietf:params:oauth:token-type:jwt',
@@ -146,8 +134,8 @@ const ERROR_CODE_MAP: Record<string, CustomTokenExchangeErrorCode> = {
  * ```
  *
  * @see {@link CustomTokenExchangeErrorCodes}
- * @see {@link https://www.rfc-editor.org/rfc/rfc8693|RFC 8693 - OAuth 2.0 Token Exchange}
- * @see {@link https://auth0.com/docs/authenticate/login/custom-token-exchange|Auth0 Custom Token Exchange}
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc8693|RFC 8693 - OAuth 2.0 Token Exchange}
+ * @see {@link https://auth0.com/docs/authenticate/custom-token-exchange|Auth0 Custom Token Exchange}
  */
 export class CustomTokenExchangeError extends Error {
   /**

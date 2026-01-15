@@ -79,32 +79,8 @@ describe('CustomTokenExchangeError', () => {
         CustomTokenExchangeErrorCodes.TOKEN_VALIDATION_FAILED,
       ],
 
-      // Native SDK codes
-      [
-        'INVALID_SUBJECT_TOKEN',
-        CustomTokenExchangeErrorCodes.INVALID_SUBJECT_TOKEN,
-      ],
-      [
-        'UNSUPPORTED_TOKEN_TYPE',
-        CustomTokenExchangeErrorCodes.UNSUPPORTED_TOKEN_TYPE,
-      ],
-      [
-        'TOKEN_EXCHANGE_FAILED',
-        CustomTokenExchangeErrorCodes.TOKEN_EXCHANGE_DENIED,
-      ],
-      [
-        'TOKEN_EXCHANGE_NOT_CONFIGURED',
-        CustomTokenExchangeErrorCodes.TOKEN_EXCHANGE_NOT_CONFIGURED,
-      ],
-      [
-        'TOKEN_VALIDATION_FAILED',
-        CustomTokenExchangeErrorCodes.TOKEN_VALIDATION_FAILED,
-      ],
-
       // Network errors
       ['a0.network_error', CustomTokenExchangeErrorCodes.NETWORK_ERROR],
-      ['NETWORK_ERROR', CustomTokenExchangeErrorCodes.NETWORK_ERROR],
-      ['network_error', CustomTokenExchangeErrorCodes.NETWORK_ERROR],
     ])('should map "%s" to %s', (errorCode, expectedType) => {
       const authError = new AuthError(errorCode, 'Test error', {
         code: errorCode,

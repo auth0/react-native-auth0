@@ -2,7 +2,7 @@ import { NativeBridgeManager } from '../NativeBridgeManager';
 import {
   AuthError,
   Credentials,
-  CustomTokenExchangeError,
+  AuthenticationException,
 } from '../../../../core/models';
 import Auth0NativeModule from '../../../../specs/NativeA0Auth0';
 
@@ -268,7 +268,7 @@ describe('NativeBridgeManager', () => {
       expect(credentials.tokenType).toBe('Bearer');
     });
 
-    it('should throw CustomTokenExchangeError when native method fails', async () => {
+    it('should throw AuthenticationException when native method fails', async () => {
       const nativeError = {
         code: 'a0.token_exchange_failed',
         message: 'Token exchange failed',
@@ -279,21 +279,19 @@ describe('NativeBridgeManager', () => {
 
       await expect(
         bridge.customTokenExchange('bad-token', 'urn:acme:legacy-token')
-      ).rejects.toThrow(CustomTokenExchangeError);
+      ).rejects.toThrow(AuthenticationException);
 
       try {
         await bridge.customTokenExchange('bad-token', 'urn:acme:legacy-token');
       } catch (e) {
-        const tokenExchangeError = e as CustomTokenExchangeError;
+        const tokenExchangeError = e as AuthenticationException;
         expect(tokenExchangeError.type).toBe('TOKEN_EXCHANGE_DENIED');
         expect(tokenExchangeError.message).toBe('Token exchange failed');
-        expect(tokenExchangeError.underlyingError.code).toBe(
-          'a0.token_exchange_failed'
-        );
+        expect(tokenExchangeError.code).toBe('a0.token_exchange_failed');
       }
     });
 
-    it('should map invalid_grant error to INVALID_SUBJECT_TOKEN type', async () => {
+    it('should map invalid_grant error to INVALID_GRANT type', async () => {
       const nativeError = {
         code: 'invalid_grant',
         message: 'The subject token is invalid',
@@ -305,8 +303,8 @@ describe('NativeBridgeManager', () => {
       try {
         await bridge.customTokenExchange('bad-token', 'urn:acme:legacy-token');
       } catch (e) {
-        const tokenExchangeError = e as CustomTokenExchangeError;
-        expect(tokenExchangeError.type).toBe('INVALID_SUBJECT_TOKEN');
+        const tokenExchangeError = e as AuthenticationException;
+        expect(tokenExchangeError.type).toBe('INVALID_GRANT');
       }
     });
 
@@ -322,7 +320,7 @@ describe('NativeBridgeManager', () => {
       try {
         await bridge.customTokenExchange('token', 'urn:unknown:type');
       } catch (e) {
-        const tokenExchangeError = e as CustomTokenExchangeError;
+        const tokenExchangeError = e as AuthenticationException;
         expect(tokenExchangeError.type).toBe('UNSUPPORTED_TOKEN_TYPE');
       }
     });

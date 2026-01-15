@@ -16,7 +16,7 @@ jest.mock('../../../../core/services/AuthenticationOrchestrator');
 jest.mock('../../../../core/services/ManagementApiOrchestrator');
 jest.mock('../../../../core/services/HttpClient');
 
-// Mock AuthError and CustomTokenExchangeError properly to support inheritance
+// Mock AuthError and AuthenticationException properly to support inheritance
 jest.mock('../../../../core/models', () => {
   class MockAuthError extends Error {
     code: string;
@@ -32,16 +32,16 @@ jest.mock('../../../../core/models', () => {
     }
   }
 
-  class MockCustomTokenExchangeError extends Error {
+  class MockAuthenticationException extends Error {
     type: string;
     underlyingError: MockAuthError;
     constructor(underlyingError: MockAuthError) {
       super(underlyingError.message);
-      this.name = 'CustomTokenExchangeError';
+      this.name = 'AuthenticationException';
       this.underlyingError = underlyingError;
       // Map error codes to types
       const codeMap: Record<string, string> = {
-        'invalid_grant': 'INVALID_SUBJECT_TOKEN',
+        'invalid_grant': 'INVALID_GRANT',
         'a0.token_exchange_failed': 'TOKEN_EXCHANGE_DENIED',
         'custom_token_exchange_failed': 'UNKNOWN_ERROR',
       };
@@ -51,7 +51,7 @@ jest.mock('../../../../core/models', () => {
 
   return {
     AuthError: MockAuthError,
-    CustomTokenExchangeError: MockCustomTokenExchangeError,
+    AuthenticationException: MockAuthenticationException,
     // Add other exports from models if needed
     Credentials: jest.fn(),
     Auth0User: jest.fn(),
@@ -384,7 +384,7 @@ describe('WebAuth0Client', () => {
         subject_token: 'external-token',
         subject_token_type: 'urn:acme:legacy-token',
         audience: undefined,
-        scope: undefined,
+        scope: 'openid profile email', // Default scope applied
         organization: undefined,
       });
     });
@@ -434,7 +434,7 @@ describe('WebAuth0Client', () => {
       expect(result.tokenType).toBe('DPoP');
     });
 
-    it('should propagate errors from exchangeToken as CustomTokenExchangeError', async () => {
+    it('should propagate errors from exchangeToken as AuthenticationException', async () => {
       const exchangeError = {
         error: 'invalid_grant',
         error_description: 'Token exchange failed',
@@ -455,12 +455,12 @@ describe('WebAuth0Client', () => {
           subjectTokenType: 'urn:acme:legacy-token',
         });
       } catch (e: any) {
-        expect(e.name).toBe('CustomTokenExchangeError');
-        expect(e.type).toBe('INVALID_SUBJECT_TOKEN');
+        expect(e.name).toBe('AuthenticationException');
+        expect(e.type).toBe('INVALID_GRANT');
       }
     });
 
-    it('should wrap generic errors in CustomTokenExchangeError', async () => {
+    it('should wrap generic errors in AuthenticationException', async () => {
       const genericError = new Error('Network error');
       mockSpaClient.exchangeToken.mockRejectedValueOnce(genericError);
 
@@ -477,7 +477,7 @@ describe('WebAuth0Client', () => {
           subjectTokenType: 'urn:acme:legacy-token',
         });
       } catch (e: any) {
-        expect(e.name).toBe('CustomTokenExchangeError');
+        expect(e.name).toBe('AuthenticationException');
       }
     });
   });
