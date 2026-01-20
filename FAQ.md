@@ -16,6 +16,7 @@
 14. [How do I migrate existing users to DPoP?](#14-how-do-i-migrate-existing-users-to-dpop)
 15. [How do I know if my tokens are using DPoP?](#15-how-do-i-know-if-my-tokens-are-using-dpop)
 16. [What happens if I disable DPoP after enabling it?](#16-what-happens-if-i-disable-dpop-after-enabling-it)
+17. [Why does the app hang or freeze during Social Login (Google, Facebook, etc.)?](#17-why-does-the-app-hang-or-freeze-during-social-login-google-facebook-etc)
 
 ## 1. How can I have separate Auth0 domains for each environment on Android?
 
@@ -848,3 +849,91 @@ async function migrateFromDPoP() {
 - The `getDPoPHeaders()` method gracefully handles both token types
 - User sessions remain active (no forced logout)
 - All other SDK functionality remains unchanged
+
+## 17. Why does the app hang or freeze during Social Login (Google, Facebook, etc.)?
+
+If your app gets stuck during social authentication (Google, Facebook, etc.) but Auth0 logs show success, the cause is almost always an **incorrectly formatted callback URL**.
+
+### Step 1: Upgrade to the Latest SDK Version
+
+Before troubleshooting, ensure you're on the latest version:
+
+```bash
+# Check current version
+npm list react-native-auth0
+
+# Upgrade to latest
+npm install react-native-auth0@latest
+
+# For iOS, reinstall pods
+cd ios && pod install && cd ..
+```
+
+See the [Migration Guide](https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md) for breaking changes between major versions.
+
+### Step 2: Verify Callback URL Format
+
+#### Android
+
+```
+{YOUR_APP_PACKAGE_NAME}.auth0://{YOUR_AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
+```
+
+**Example:** `com.example.myapp.auth0://example.us.auth0.com/android/com.example.myapp/callback`
+
+#### iOS
+
+```
+{PRODUCT_BUNDLE_IDENTIFIER}.auth0://{YOUR_AUTH0_DOMAIN}/ios/{PRODUCT_BUNDLE_IDENTIFIER}/callback
+```
+
+**Example:** `com.example.myapp.auth0://example.us.auth0.com/ios/com.example.myapp/callback`
+
+### Common Mistakes
+
+| ❌ Wrong                        | ✅ Correct                                       | Platform |
+| ------------------------------- | ------------------------------------------------ | -------- |
+| `com.example.MyApp.auth0://...` | `com.example.myapp.auth0://...` (lowercase)      | Both     |
+| `.../callback/`                 | `.../callback` (no trailing slash)               | Both     |
+| `/android/` in iOS URL          | `/ios/` for iOS, `/android/` for Android         | Both     |
+| Mismatched domain               | Domain must match exactly (e.g., `us.auth0.com`) | Both     |
+
+### Quick Checklist
+
+- [ ] Using the **latest SDK version**
+- [ ] Package/Bundle ID is **all lowercase** in callback URL
+- [ ] **No trailing slash** at the end
+- [ ] Correct platform path (`/ios/` or `/android/`)
+- [ ] Domain matches exactly (e.g., `us.auth0.com` vs `auth0.com`)
+- [ ] URL added to **both** Allowed Callback URLs and Allowed Logout URLs in Auth0 Dashboard
+
+#### Android-specific
+
+- [ ] `manifestPlaceholders` in `build.gradle` match the dashboard configuration
+
+#### iOS-specific
+
+- [ ] `CFBundleURLSchemes` in `Info.plist` matches the callback URL scheme
+- [ ] `AppDelegate` has the URL handling code (see README)
+
+### Debugging
+
+**Both platforms:**
+
+1. Check **Auth0 Dashboard → Monitoring → Logs** for success/failure events
+2. Test with database connection first—if that works but social doesn't, check the social provider configuration
+
+**Android:**
+
+```bash
+adb shell dumpsys package your.package.name | grep -A 20 "auth0"
+```
+
+**iOS:**
+
+```bash
+# Check URL schemes registered
+plutil -p ios/YourApp/Info.plist | grep -A 5 "CFBundleURLSchemes"
+```
+
+> **Note**: The SDK automatically lowercases your package/bundle identifier. If it's `com.example.MyApp`, the callback URL uses `com.example.myapp`.

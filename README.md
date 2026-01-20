@@ -225,6 +225,9 @@ Now you can run the application using `expo run:android` or `expo run:ios`.
 
 Callback URLs are the URLs that Auth0 invokes after the authentication process. Auth0 routes your application back to this URL and appends additional parameters to it, including a token. Since callback URLs can be manipulated, you will need to add this URL to your Application's **Allowed Callback URLs** for security. This will enable Auth0 to recognize these URLs as valid. If omitted, authentication will not be successful.
 
+> [!IMPORTANT]
+> **Callback URL Formatting**: Must be **all lowercase**, have **no trailing slash**, and exactly match the URL in Auth0 Dashboard. Incorrect formatting causes the app to "hang" after authentication. See [FAQ #17](https://github.com/auth0/react-native-auth0/blob/master/FAQ.md#17-why-does-the-app-hang-or-freeze-during-social-login-google-facebook-etc) for troubleshooting.
+
 On the Android platform this URL is case-sensitive. Because of that, this SDK will auto convert the Bundle Identifier (iOS) and Application ID (Android) values to lowercase in order to build the Callback URL with them. If any of these values contains uppercase characters a warning message will be printed in the console. Make sure to check that the right Callback URL is whitelisted in the Auth0 dashboard or the browser will not route successfully back to your application.
 
 Go to the [Auth0 Dashboard](https://manage.auth0.com/#/applications), select your application and make sure that **Allowed Callback URLs** contains the URLs defined below.
@@ -242,6 +245,12 @@ If in addition you plan to use the log out method, you must also add these URLs 
 
 ```text
 {YOUR_APP_PACKAGE_NAME}.auth0://{YOUR_AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
+```
+
+**Example:** If your package name is `com.example.myapp` and your Auth0 domain is `example.us.auth0.com`:
+
+```text
+com.example.myapp.auth0://example.us.auth0.com/android/com.example.myapp/callback
 ```
 
 ##### App Link (Recommended):
@@ -819,6 +828,10 @@ This library provides a unified API across Native (iOS/Android) and Web platform
 | `users(token).patchUser()`                 |          ✅          |      ✅       | Calls the Management API. Works on any platform with a valid token, but use with caution in the browser.                                                                 |
 
 ## Troubleshooting
+
+### App Hangs During Social Login
+
+If your app "hangs" during authentication with social connections (Google, Facebook, etc.), first upgrade to the latest SDK version, then verify your callback URL is correctly formatted: **all lowercase**, **no trailing slash**, correct platform path (`/ios/` or `/android/`), and matches the Auth0 Dashboard exactly. See [FAQ #17](https://github.com/auth0/react-native-auth0/blob/master/FAQ.md#17-why-does-the-app-hang-or-freeze-during-social-login-google-facebook-etc) for details.
 
 ### Swift 6 Compatibility Issues on iOS
 
