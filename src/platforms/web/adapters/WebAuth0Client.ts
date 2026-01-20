@@ -22,11 +22,7 @@ import {
 } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
-import {
-  AuthError,
-  DPoPError,
-  AuthenticationException,
-} from '../../../core/models';
+import { AuthError, DPoPError } from '../../../core/models';
 
 export class WebAuth0Client implements IAuth0Client {
   readonly webAuth: WebWebAuthProvider;
@@ -248,12 +244,11 @@ export class WebAuth0Client implements IAuth0Client {
         refreshToken: response.refresh_token,
       };
     } catch (e: any) {
-      const authError = new AuthError(
+      throw new AuthError(
         e.error ?? 'custom_token_exchange_failed',
         e.error_description ?? e.message ?? 'Custom token exchange failed',
         { json: e }
       );
-      throw new AuthenticationException(authError);
     }
   }
 }

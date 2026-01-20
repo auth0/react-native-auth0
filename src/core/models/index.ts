@@ -8,7 +8,3 @@ export {
 } from './CredentialsManagerError';
 export { WebAuthError, WebAuthErrorCodes } from './WebAuthError';
 export { DPoPError, DPoPErrorCodes } from './DPoPError';
-export {
-  AuthenticationException,
-  AuthenticationErrorCodes,
-} from './AuthenticationException';

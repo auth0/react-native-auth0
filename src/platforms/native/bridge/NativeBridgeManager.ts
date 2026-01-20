@@ -16,7 +16,6 @@ import {
 import {
   AuthError,
   Credentials as CredentialsModel,
-  AuthenticationException,
 } from '../../../core/models';
 import Auth0NativeModule from '../../../specs/NativeA0Auth0';
 import type { NativeModuleError } from '../../../core/interfaces';
@@ -244,16 +243,12 @@ export class NativeBridgeManager implements INativeBridge {
       );
       return new CredentialsModel(credential);
     } catch (e) {
-      // Wrap AuthError in AuthenticationException for better error handling
-      const authError =
-        e instanceof AuthError
-          ? e
-          : new AuthError(
-              'authentication_error',
-              e instanceof Error ? e.message : String(e),
-              { code: 'authentication_error', json: e }
-            );
-      throw new AuthenticationException(authError);
+      // Convert to AuthError if needed, then throw directly
+      throw new AuthError(
+        e instanceof AuthError ? e.code : 'custom_token_exchange_failed',
+        e instanceof Error ? e.message : String(e),
+        { code: 'custom_token_exchange_failed', json: e }
+      );
     }
   }
 }

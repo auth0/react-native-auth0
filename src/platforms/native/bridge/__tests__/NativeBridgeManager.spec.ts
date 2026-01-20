@@ -1,9 +1,5 @@
 import { NativeBridgeManager } from '../NativeBridgeManager';
-import {
-  AuthError,
-  Credentials,
-  AuthenticationException,
-} from '../../../../core/models';
+import { AuthError, Credentials } from '../../../../core/models';
 import Auth0NativeModule from '../../../../specs/NativeA0Auth0';
 
 // Mock the entire spec file, which is our native module.
@@ -268,7 +264,7 @@ describe('NativeBridgeManager', () => {
       expect(credentials.tokenType).toBe('Bearer');
     });
 
-    it('should throw AuthenticationException when native method fails', async () => {
+    it('should throw AuthError when native method fails', async () => {
       const nativeError = {
         code: 'a0.token_exchange_failed',
         message: 'Token exchange failed',
@@ -279,49 +275,14 @@ describe('NativeBridgeManager', () => {
 
       await expect(
         bridge.customTokenExchange('bad-token', 'urn:acme:legacy-token')
-      ).rejects.toThrow(AuthenticationException);
+      ).rejects.toThrow(AuthError);
 
       try {
         await bridge.customTokenExchange('bad-token', 'urn:acme:legacy-token');
       } catch (e) {
-        const tokenExchangeError = e as AuthenticationException;
-        expect(tokenExchangeError.type).toBe('TOKEN_EXCHANGE_DENIED');
+        const tokenExchangeError = e as AuthError;
         expect(tokenExchangeError.message).toBe('Token exchange failed');
         expect(tokenExchangeError.code).toBe('a0.token_exchange_failed');
-      }
-    });
-
-    it('should map invalid_grant error to INVALID_GRANT type', async () => {
-      const nativeError = {
-        code: 'invalid_grant',
-        message: 'The subject token is invalid',
-      };
-      MockedAuth0NativeModule.customTokenExchange.mockRejectedValue(
-        nativeError
-      );
-
-      try {
-        await bridge.customTokenExchange('bad-token', 'urn:acme:legacy-token');
-      } catch (e) {
-        const tokenExchangeError = e as AuthenticationException;
-        expect(tokenExchangeError.type).toBe('INVALID_GRANT');
-      }
-    });
-
-    it('should map unsupported_token_type error correctly', async () => {
-      const nativeError = {
-        code: 'unsupported_token_type',
-        message: 'The token type is not supported',
-      };
-      MockedAuth0NativeModule.customTokenExchange.mockRejectedValue(
-        nativeError
-      );
-
-      try {
-        await bridge.customTokenExchange('token', 'urn:unknown:type');
-      } catch (e) {
-        const tokenExchangeError = e as AuthenticationException;
-        expect(tokenExchangeError.type).toBe('UNSUPPORTED_TOKEN_TYPE');
       }
     });
   });
