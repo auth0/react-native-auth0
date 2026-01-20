@@ -485,13 +485,17 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         
         val finalScope = scope ?: "openid profile email"
         
-        authClient.customTokenExchange(
-            subjectToken = subjectToken,
+        val request = authClient.customTokenExchange(
             subjectTokenType = subjectTokenType,
-            audience = audience,
-            scope = finalScope,
+            subjectToken = subjectToken,
             organization = organization
-        ).start(object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
+        )
+        
+        // Set audience and scope using the request builder methods
+        audience?.let { request.setAudience(it) }
+        request.setScope(finalScope)
+        
+        request.start(object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
             override fun onSuccess(result: Credentials) {
                 val map = CredentialsParser.toMap(result)
                 promise.resolve(map)
