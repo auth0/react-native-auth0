@@ -224,4 +224,31 @@ export class NativeBridgeManager implements INativeBridge {
       hdrs
     );
   }
+
+  async customTokenExchange(
+    subjectToken: string,
+    subjectTokenType: string,
+    audience?: string,
+    scope?: string,
+    organization?: string
+  ): Promise<Credentials> {
+    try {
+      const credential = await this.a0_call(
+        Auth0NativeModule.customTokenExchange.bind(Auth0NativeModule),
+        subjectToken,
+        subjectTokenType,
+        audience,
+        scope,
+        organization
+      );
+      return new CredentialsModel(credential);
+    } catch (e) {
+      // Convert to AuthError if needed, then throw directly
+      throw new AuthError(
+        e instanceof AuthError ? e.code : 'custom_token_exchange_failed',
+        e instanceof Error ? e.message : String(e),
+        { code: 'custom_token_exchange_failed', json: e }
+      );
+    }
+  }
 }

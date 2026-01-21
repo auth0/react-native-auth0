@@ -168,4 +168,113 @@ describe('NativeAuth0Client', () => {
     await authorizePromise;
     expect(mockBridgeInstance.authorize).toHaveBeenCalledTimes(1);
   });
+
+  describe('customTokenExchange', () => {
+    const mockCredentials = {
+      idToken: 'mock-id-token',
+      accessToken: 'mock-access-token',
+      tokenType: 'Bearer',
+      expiresAt: Math.floor(Date.now() / 1000) + 3600,
+      refreshToken: 'mock-refresh-token',
+      scope: 'openid profile email',
+    };
+
+    beforeEach(() => {
+      // Add customTokenExchange to the mock methods
+      (mockBridgeInstance as any).customTokenExchange = jest
+        .fn()
+        .mockResolvedValue(mockCredentials);
+    });
+
+    it('should call customTokenExchange on the guarded bridge with all parameters', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      const parameters = {
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+        audience: 'https://api.example.com',
+        scope: 'openid profile email',
+        organization: 'org_123',
+      };
+
+      await client.customTokenExchange(parameters);
+
+      expect(
+        (mockBridgeInstance as any).customTokenExchange
+      ).toHaveBeenCalledWith(
+        'external-token',
+        'urn:acme:legacy-token',
+        'https://api.example.com',
+        'openid profile email',
+        'org_123'
+      );
+    });
+
+    it('should call customTokenExchange with only required parameters', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      const parameters = {
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+      };
+
+      await client.customTokenExchange(parameters);
+
+      expect(
+        (mockBridgeInstance as any).customTokenExchange
+      ).toHaveBeenCalledWith(
+        'external-token',
+        'urn:acme:legacy-token',
+        undefined,
+        undefined,
+        undefined
+      );
+    });
+
+    it('should return credentials from customTokenExchange', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      const result = await client.customTokenExchange({
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+      });
+
+      expect(result).toEqual(mockCredentials);
+    });
+
+    it('should wait for initialization before calling customTokenExchange', async () => {
+      let resolveInitialization: () => void;
+      const initializationPromise = new Promise<void>((resolve) => {
+        resolveInitialization = resolve;
+      });
+
+      mockBridgeInstance.initialize.mockReturnValue(initializationPromise);
+      mockBridgeInstance.hasValidInstance.mockResolvedValue(false);
+
+      const client = new NativeAuth0Client(options);
+
+      const exchangePromise = client.customTokenExchange({
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+      });
+
+      // Should not be called yet since initialization is pending
+      expect(
+        (mockBridgeInstance as any).customTokenExchange
+      ).not.toHaveBeenCalled();
+
+      // Resolve initialization
+      await act(async () => {
+        resolveInitialization!();
+      });
+
+      await exchangePromise;
+      expect(
+        (mockBridgeInstance as any).customTokenExchange
+      ).toHaveBeenCalledTimes(1);
+    });
+  });
 });

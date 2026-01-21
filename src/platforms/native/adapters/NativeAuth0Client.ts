@@ -4,7 +4,11 @@ import type {
   IUsersClient,
 } from '../../../core/interfaces';
 import type { NativeAuth0Options } from '../../../types/platform-specific';
-import type { DPoPHeadersParams } from '../../../types';
+import type {
+  DPoPHeadersParams,
+  CustomTokenExchangeParameters,
+  Credentials,
+} from '../../../types';
 import { NativeWebAuthProvider } from './NativeWebAuthProvider';
 import { NativeCredentialsManager } from './NativeCredentialsManager';
 import { type INativeBridge, NativeBridgeManager } from '../bridge';
@@ -25,6 +29,7 @@ export class NativeAuth0Client implements IAuth0Client {
   private readonly tokenType: TokenType;
   private readonly bridge: INativeBridge;
   private readonly baseUrl: string;
+  private guardedBridge!: INativeBridge;
   private readonly getDPoPHeadersForOrchestrator?: (
     params: DPoPHeadersParams
   ) => Promise<Record<string, string>>;
@@ -53,6 +58,14 @@ export class NativeAuth0Client implements IAuth0Client {
       ? getDPoPHeadersForOrchestrator
       : undefined;
 
+    this.ready = this.initialize(bridge, options);
+
+    // The adapters are now constructed with a "proxied" bridge that
+    // automatically awaits the `ready` promise before any call.
+    const guardedBridge = this.createGuardedBridge(bridge);
+    this.guardedBridge = guardedBridge;
+
+    // Use AuthenticationOrchestrator directly for standard auth methods
     this.auth = new AuthenticationOrchestrator({
       clientId: options.clientId,
       httpClient: this.httpClient,
@@ -61,11 +74,6 @@ export class NativeAuth0Client implements IAuth0Client {
       getDPoPHeaders: useDPoP ? getDPoPHeadersForOrchestrator : undefined,
     });
 
-    this.ready = this.initialize(bridge, options);
-
-    // The adapters are now constructed with a "proxied" bridge that
-    // automatically awaits the `ready` promise before any call.
-    const guardedBridge = this.createGuardedBridge(bridge);
     this.webAuth = new NativeWebAuthProvider(guardedBridge, options.domain);
     this.credentialsManager = new NativeCredentialsManager(guardedBridge);
   }
@@ -154,5 +162,28 @@ export class NativeAuth0Client implements IAuth0Client {
     }
 
     return guarded as INativeBridge;
+  }
+
+  /**
+   * Performs a Custom Token Exchange using RFC 8693.
+   * Exchanges an external identity provider token for Auth0 tokens.
+   *
+   * This method delegates directly to the native SDK bridge.
+   *
+   * @param parameters The token exchange parameters.
+   * @returns A promise resolving with Auth0 credentials.
+   */
+  async customTokenExchange(
+    parameters: CustomTokenExchangeParameters
+  ): Promise<Credentials> {
+    const { subjectToken, subjectTokenType, audience, scope, organization } =
+      parameters;
+    return this.guardedBridge.customTokenExchange(
+      subjectToken,
+      subjectTokenType,
+      audience,
+      scope,
+      organization
+    );
   }
 }

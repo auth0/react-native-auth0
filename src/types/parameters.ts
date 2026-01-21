@@ -115,6 +115,61 @@ export interface ExchangeNativeSocialParameters extends RequestOptions {
 }
 
 /**
+ * Parameters for Custom Token Exchange (RFC 8693).
+ * Exchanges an external identity provider token for Auth0 tokens.
+ *
+ * Custom Token Exchange allows you to exchange tokens from external identity
+ * providers for Auth0 tokens. The external token must be validated in Auth0
+ * Actions using cryptographic verification.
+ *
+ * @see https://auth0.com/docs/authenticate/custom-token-exchange
+ */
+export interface CustomTokenExchangeParameters {
+  /**
+   * The external token to be exchanged for Auth0 tokens.
+   * Must be validated in Auth0 Actions using cryptographic verification.
+   */
+  subjectToken: string;
+
+  /**
+   * The type identifier for the subject token being exchanged.
+   *
+   * Must be a unique profile token type URI starting with `https://` or `urn:`.
+   *
+   * Valid patterns:
+   * - `urn:yourcompany:token-type` - Company-specific URN (recommended)
+   * - `https://yourcompany.com/tokens/custom` - HTTPS URL under your control
+   *
+   * Reserved namespaces (forbidden):
+   * - `http://auth0.com/*`, `https://auth0.com/*`
+   * - `http://okta.com/*`, `https://okta.com/*`
+   * - `urn:ietf:*`, `urn:auth0:*`, `urn:okta:*`
+   *
+   * @example "urn:acme:legacy-system-token" // Custom legacy token
+   * @example "https://yourcompany.com/tokens/partner-jwt" // Custom HTTPS identifier
+   */
+  subjectTokenType: string;
+
+  /**
+   * The target audience for the requested Auth0 token.
+   * Must match an API identifier configured in your Auth0 tenant.
+   */
+  audience?: string;
+
+  /**
+   * Space-separated list of OAuth 2.0 scopes.
+   * @default "openid profile email"
+   */
+  scope?: string;
+
+  /**
+   * Organization ID or name for authenticating in an organization context.
+   * When provided, the organization ID will be present in the access token.
+   */
+  organization?: string;
+}
+
+/**
  * Parameters for authenticating with a username and password.
  * @see https://auth0.com/docs/api-auth/grant/password
  */

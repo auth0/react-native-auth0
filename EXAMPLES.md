@@ -44,6 +44,11 @@
   - [Using MRRT with Hooks](#using-mrrt-with-hooks)
   - [Using MRRT with Auth0 Class](#using-mrrt-with-auth0-class)
   - [Web Platform Configuration](#web-platform-configuration)
+- [Custom Token Exchange (RFC 8693)](#custom-token-exchange-rfc-8693)
+  - [Using Custom Token Exchange with Hooks](#using-custom-token-exchange-with-hooks)
+  - [Using Custom Token Exchange with Auth0 Class](#using-custom-token-exchange-with-auth0-class)
+  - [With Organization Context](#with-organization-context)
+  - [Subject Token Type Requirements](#subject-token-type-requirements)
 - [Native to Web SSO (Early Access)](#native-to-web-sso-early-access)
   - [Overview](#native-to-web-sso-overview)
   - [Prerequisites](#native-to-web-sso-prerequisites)
@@ -757,6 +762,250 @@ function App() {
   );
 }
 ```
+
+## Custom Token Exchange (RFC 8693)
+
+Custom Token Exchange allows you to exchange external identity provider tokens for Auth0 tokens using the [RFC 8693 OAuth 2.0 Token Exchange](https://datatracker.ietf.org/doc/html/rfc8693) specification. This enables scenarios where users authenticate with an external system and that token needs to be exchanged for Auth0 tokens.
+
+> ⚠️ **Important**: The external token must be validated in Auth0 Actions using cryptographic verification. See the [Auth0 Custom Token Exchange documentation](https://auth0.com/docs/authenticate/custom-token-exchange) for setup instructions.
+
+### Using Custom Token Exchange with Hooks
+
+```typescript
+import React from 'react';
+import { Button, Alert } from 'react-native';
+import {
+  useAuth0,
+  AuthenticationException,
+  AuthenticationErrorCodes,
+} from 'react-native-auth0';
+
+function TokenExchangeScreen() {
+  const { customTokenExchange, user, error } = useAuth0();
+
+  const handleExchange = async () => {
+    try {
+      // Exchange an external token for Auth0 tokens
+      const credentials = await customTokenExchange({
+        subjectToken: 'token-from-external-provider',
+        subjectTokenType: 'urn:acme:legacy-system-token',
+        scope: 'openid profile email',
+        audience: 'https://api.example.com',
+      });
+
+      Alert.alert('Success', `Logged in as ${user?.name}`);
+    } catch (e) {
+      if (e instanceof AuthenticationException) {
+        switch (e.type) {
+          case AuthenticationErrorCodes.INVALID_SUBJECT_TOKEN:
+            Alert.alert('Error', 'The external token is invalid or expired');
+            break;
+          case AuthenticationErrorCodes.UNSUPPORTED_TOKEN_TYPE:
+            Alert.alert('Error', 'The token type is not supported');
+            break;
+          case AuthenticationErrorCodes.TOKEN_EXCHANGE_NOT_CONFIGURED:
+            Alert.alert(
+              'Error',
+              'Custom Token Exchange is not configured for this tenant'
+            );
+            break;
+          case AuthenticationErrorCodes.TOKEN_VALIDATION_FAILED:
+            Alert.alert('Error', 'Token validation failed in Auth0 Action');
+            break;
+          case AuthenticationErrorCodes.NETWORK_ERROR:
+            Alert.alert('Error', 'Network error. Please check your connection.');
+            break;
+          default:
+            Alert.alert('Error', e.message);
+        }
+      } else {
+        console.error('Token exchange failed:', e);
+      }
+    }
+  };
+
+  return <Button onPress={handleExchange} title="Exchange Token" />;
+}
+```
+
+### Using Custom Token Exchange with Auth0 Class
+
+```typescript
+import Auth0, {
+  AuthenticationException,
+  AuthenticationErrorCodes,
+} from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_CLIENT_ID',
+});
+
+async function exchangeExternalToken(externalToken: string) {
+  try {
+    const credentials = await auth0.customTokenExchange({
+      subjectToken: externalToken,
+      subjectTokenType: 'urn:acme:legacy-system-token',
+      audience: 'https://api.example.com',
+      scope: 'openid profile email',
+    });
+
+    console.log('Exchange successful:', credentials);
+    return credentials;
+  } catch (error) {
+    if (error instanceof AuthenticationException) {
+      // Access the underlying error details
+      console.error('Error type:', error.type);
+      console.error('Error message:', error.message);
+      console.error('Underlying error code:', error.underlyingError.code);
+
+      // Handle specific error types
+      if (error.type === AuthenticationErrorCodes.INVALID_SUBJECT_TOKEN) {
+        // Token is invalid or expired - prompt user to re-authenticate
+        throw new Error('Please authenticate again with the external provider');
+      }
+    }
+    throw error;
+  }
+}
+```
+
+### With Organization Context
+
+Exchange tokens within a specific organization context:
+
+```typescript
+const credentials = await customTokenExchange({
+  subjectToken: 'external-provider-token',
+  subjectTokenType: 'urn:acme:legacy-system-token',
+  organization: 'org_123', // or organization name
+  scope: 'openid profile email',
+});
+```
+
+### Subject Token Type Requirements
+
+The `subjectTokenType` parameter must be a **unique profile token type URI** starting with `https://` or `urn:`.
+
+#### Valid Token Type Patterns
+
+You control the token type namespace. Use one of these patterns:
+
+**URN Format (Recommended):**
+
+- `urn:yourcompany:token-type` - Company-specific token type
+- `urn:acme:legacy-system-token` - Legacy system tokens
+- `urn:example:external-idp` - External IdP tokens
+
+**HTTPS URL Format:**
+
+- `https://yourcompany.com/tokens/legacy` - Using your organization's domain
+- `https://example.com/custom-token` - Custom token identifier
+
+#### Reserved Namespaces (Forbidden)
+
+The following namespaces are **reserved** and you **CANNOT use them**:
+
+- ❌ `http://auth0.com/*`
+- ❌ `https://auth0.com/*`
+- ❌ `http://okta.com/*`
+- ❌ `https://okta.com/*`
+- ❌ `urn:ietf:*`
+- ❌ `urn:auth0:*`
+- ❌ `urn:okta:*`
+
+#### Common Use Cases
+
+1. **Seamless Migration from Legacy IdP**: Exchange legacy refresh tokens
+
+   ```typescript
+   await customTokenExchange({
+     subjectToken: legacyRefreshToken,
+     subjectTokenType: 'urn:acme:legacy-system-token',
+     scope: 'openid profile email offline_access',
+   });
+   ```
+
+2. **External Authentication Provider**: Exchange tokens from partner IdP
+
+   ```typescript
+   await customTokenExchange({
+     subjectToken: externalProviderToken,
+     subjectTokenType: 'urn:partner:auth-token',
+     scope: 'openid profile email',
+   });
+   ```
+
+3. **Custom JWT Tokens**: Exchange JWTs from your own system
+   ```typescript
+   await customTokenExchange({
+     subjectToken: customJwt,
+     subjectTokenType: 'urn:yourcompany:jwt-token',
+     audience: 'https://api.example.com',
+   });
+   ```
+
+### Error Codes Reference
+
+Custom Token Exchange throws `AuthError` with specific error codes for different failure scenarios. Use the `code` property for programmatic error handling:
+
+```typescript
+try {
+  await auth0.customTokenExchange({...});
+} catch (error) {
+  console.error('Error code:', error.code);
+  console.error('Error message:', error.message);
+
+  // Handle specific errors
+  if (error.code === 'invalid_grant') {
+    // Handle invalid token
+  }
+}
+```
+
+| Error Code                          | Description                                                |
+| ----------------------------------- | ---------------------------------------------------------- |
+| `custom_token_exchange_failed`      | General token exchange failure                             |
+| `invalid_grant`                     | The external token is invalid, malformed, or expired       |
+| `invalid_request`                   | The request is missing required parameters or is malformed |
+| `unsupported_token_type`            | The token type is not supported or recognized              |
+| `unauthorized_client`               | Custom Token Exchange is not enabled for this client       |
+| `invalid_target`                    | The requested audience is invalid or not allowed           |
+| `invalid_scope`                     | The requested scope is invalid or not allowed              |
+| `access_denied`                     | Token exchange was denied by the authorization server      |
+| `server_error`                      | The authorization server encountered an internal error     |
+| `temporarily_unavailable`           | The server is temporarily unable to handle the request     |
+| `network_error`                     | Network connectivity issue occurred                        |
+| `a0.token_exchange_failed`          | Auth0-specific token exchange failure                      |
+| `a0.action_failed`                  | The token validation in Auth0 Action failed                |
+| `a0.invalid_subject_token`          | Subject token validation failed                            |
+| `a0.unsupported_subject_token_type` | Subject token type is not supported                        |
+
+These error codes follow:
+
+- **RFC 8693 standard**: `invalid_grant`, `invalid_request`, `unsupported_token_type`, `access_denied`, etc.
+- **Auth0-specific codes**: `a0.token_exchange_failed`, `a0.action_failed`, etc.
+
+### Auth0 Actions Validation
+
+Custom Token Exchange requires validation of the subject token in Auth0 Actions. The Action must:
+
+1. **Validate the subject token** cryptographically (verify signature, expiration, issuer, etc.)
+2. **Apply authorization policy** to determine if the exchange is allowed
+3. **Set the user** using one of the `api.authentication.setUser*()` methods
+
+For detailed examples of validating different token types in Actions, see:
+
+- [Auth0 Custom Token Exchange Documentation](https://auth0.com/docs/authenticate/custom-token-exchange)
+- [Example Use Cases](https://auth0.com/docs/authenticate/custom-token-exchange/cte-example-use-cases)
+
+**Security Best Practices:**
+
+- Use asymmetric algorithms (RS256, ES256) whenever possible
+- Store secrets in Actions Secrets, never hardcode them
+- Cache JWKS keys using `api.cache.set()` to improve performance
+- Validate token expiration, issuer, and audience claims
+- Implement rate limiting for failed validations using `api.access.rejectInvalidSubjectToken()`
 
 ## Native to Web SSO (Early Access)
 

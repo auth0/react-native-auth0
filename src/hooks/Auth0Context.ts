@@ -16,6 +16,7 @@ import type {
   LoginOtpParameters,
   LoginRecoveryCodeParameters,
   ExchangeNativeSocialParameters,
+  CustomTokenExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
   MfaChallengeResponse,
@@ -176,6 +177,29 @@ export interface Auth0ContextInterface extends AuthState {
    */
   authorizeWithExchangeNativeSocial: (
     parameters: ExchangeNativeSocialParameters
+  ) => Promise<Credentials>;
+
+  /**
+   * Exchanges an external identity provider token for Auth0 tokens.
+   * Uses RFC 8693 OAuth 2.0 Token Exchange specification.
+   *
+   * @param parameters The token exchange parameters.
+   * @returns A promise that resolves with the user's Auth0 credentials.
+   * @throws {AuthError} If the token exchange fails.
+   *
+   * @example
+   * ```typescript
+   * const credentials = await customTokenExchange({
+   *   subjectToken: 'external-provider-token',
+   *   subjectTokenType: 'urn:acme:legacy-system-token',
+   *   scope: 'openid profile email',
+   *   audience: 'https://api.example.com',
+   *   organization: 'org_123'
+   * });
+   * ```
+   */
+  customTokenExchange: (
+    parameters: CustomTokenExchangeParameters
   ) => Promise<Credentials>;
 
   /**
@@ -346,6 +370,7 @@ const initialContext: Auth0ContextInterface = {
   createUser: stub,
   authorizeWithRecoveryCode: stub,
   authorizeWithExchangeNativeSocial: stub,
+  customTokenExchange: stub,
   sendEmailCode: stub,
   sendSMSCode: stub,
   authorizeWithEmail: stub,

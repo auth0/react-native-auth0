@@ -1053,6 +1053,232 @@ describe('Auth0Provider', () => {
     });
   });
 
+  // Custom Token Exchange Tests
+  describe('customTokenExchange', () => {
+    const mockExchangeCredentials = {
+      idToken: 'exchanged.id.token',
+      accessToken: 'exchanged-access-token',
+      tokenType: 'Bearer',
+      expiresAt: Date.now() / 1000 + 3600,
+      scope: 'openid profile email',
+      refreshToken: 'exchanged-refresh-token',
+    };
+
+    const TestCustomTokenExchangeConsumer = () => {
+      const { customTokenExchange, user, error, isLoading } = useAuth0();
+
+      const handleExchange = () => {
+        customTokenExchange({
+          subjectToken: 'external-token',
+          subjectTokenType: 'urn:acme:legacy-token',
+          audience: 'https://api.example.com',
+          scope: 'openid profile email',
+          organization: 'org_123',
+        }).catch(() => {});
+      };
+
+      if (isLoading) return <Text testID="loading">Loading...</Text>;
+      if (error) return <Text testID="error">Error: {error.message}</Text>;
+
+      return (
+        <View>
+          {user ? (
+            <Text testID="user-status">Logged in as: {user.name}</Text>
+          ) : (
+            <Text testID="user-status">Not logged in</Text>
+          )}
+          <Button
+            title="Exchange Token"
+            onPress={handleExchange}
+            testID="exchange-button"
+          />
+        </View>
+      );
+    };
+
+    beforeEach(() => {
+      mockClientInstance.customTokenExchange = jest
+        .fn()
+        .mockResolvedValue(mockExchangeCredentials);
+    });
+
+    it('should call customTokenExchange with all parameters', async () => {
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.com" clientId="123">
+            <TestCustomTokenExchangeConsumer />
+          </Auth0Provider>
+        );
+      });
+
+      await waitFor(() =>
+        expect(screen.getByTestId('user-status')).toHaveTextContent(
+          'Not logged in'
+        )
+      );
+
+      const exchangeButton = screen.getByTestId('exchange-button');
+      await act(async () => {
+        fireEvent.click(exchangeButton);
+      });
+
+      expect(mockClientInstance.customTokenExchange).toHaveBeenCalledWith({
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+        audience: 'https://api.example.com',
+        scope: 'openid profile email',
+        organization: 'org_123',
+      });
+    });
+
+    it('should update user state after successful token exchange', async () => {
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.com" clientId="123">
+            <TestCustomTokenExchangeConsumer />
+          </Auth0Provider>
+        );
+      });
+
+      await waitFor(() =>
+        expect(screen.getByTestId('user-status')).toHaveTextContent(
+          'Not logged in'
+        )
+      );
+
+      const exchangeButton = screen.getByTestId('exchange-button');
+      await act(async () => {
+        fireEvent.click(exchangeButton);
+      });
+
+      await waitFor(() =>
+        expect(screen.getByTestId('user-status')).toHaveTextContent(
+          'Logged in as: Test User'
+        )
+      );
+
+      // Should save credentials after exchange
+      expect(
+        mockClientInstance.credentialsManager.saveCredentials
+      ).toHaveBeenCalledWith(mockExchangeCredentials);
+    });
+
+    it('should handle customTokenExchange error and dispatch to state', async () => {
+      const exchangeError = new Error('Token exchange failed');
+      mockClientInstance.customTokenExchange.mockRejectedValueOnce(
+        exchangeError
+      );
+
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.com" clientId="123">
+            <TestCustomTokenExchangeConsumer />
+          </Auth0Provider>
+        );
+      });
+
+      await waitFor(() =>
+        expect(screen.getByTestId('user-status')).toHaveTextContent(
+          'Not logged in'
+        )
+      );
+
+      const exchangeButton = screen.getByTestId('exchange-button');
+      await act(async () => {
+        fireEvent.click(exchangeButton);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('error')).toHaveTextContent(
+          'Error: Token exchange failed'
+        );
+      });
+    });
+
+    it('should call customTokenExchange with minimal parameters', async () => {
+      const TestMinimalExchangeConsumer = () => {
+        const { customTokenExchange } = useAuth0();
+
+        const handleMinimalExchange = () => {
+          customTokenExchange({
+            subjectToken: 'external-token',
+            subjectTokenType: 'urn:acme:legacy-token',
+          }).catch(() => {});
+        };
+
+        return (
+          <Button
+            title="Minimal Exchange"
+            onPress={handleMinimalExchange}
+            testID="minimal-exchange-button"
+          />
+        );
+      };
+
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.com" clientId="123">
+            <TestMinimalExchangeConsumer />
+          </Auth0Provider>
+        );
+      });
+
+      const exchangeButton = screen.getByTestId('minimal-exchange-button');
+      await act(async () => {
+        fireEvent.click(exchangeButton);
+      });
+
+      expect(mockClientInstance.customTokenExchange).toHaveBeenCalledWith({
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+      });
+    });
+
+    it('should return credentials from customTokenExchange', async () => {
+      let returnedCredentials: any = null;
+
+      const TestReturnValueConsumer = () => {
+        const { customTokenExchange } = useAuth0();
+
+        const handleExchange = async () => {
+          try {
+            returnedCredentials = await customTokenExchange({
+              subjectToken: 'external-token',
+              subjectTokenType: 'urn:acme:legacy-token',
+            });
+          } catch {
+            // ignore
+          }
+        };
+
+        return (
+          <Button
+            title="Exchange"
+            onPress={handleExchange}
+            testID="return-value-exchange-button"
+          />
+        );
+      };
+
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.com" clientId="123">
+            <TestReturnValueConsumer />
+          </Auth0Provider>
+        );
+      });
+
+      const exchangeButton = screen.getByTestId('return-value-exchange-button');
+      await act(async () => {
+        fireEvent.click(exchangeButton);
+      });
+
+      await waitFor(() => {
+        expect(returnedCredentials).toEqual(mockExchangeCredentials);
+      });
+    });
+  });
+
   // Web Platform Method Tests
   describe('Web Platform Methods', () => {
     it('should verify webAuth methods exist and are callable', () => {

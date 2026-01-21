@@ -3,7 +3,25 @@ import { AuthError, Credentials } from '../../../../core/models';
 import Auth0NativeModule from '../../../../specs/NativeA0Auth0';
 
 // Mock the entire spec file, which is our native module.
-jest.mock('../../../../specs/NativeA0Auth0');
+jest.mock('../../../../specs/NativeA0Auth0', () => ({
+  webAuth: jest.fn(),
+  webAuthLogout: jest.fn(),
+  getCredentials: jest.fn(),
+  hasValidAuth0InstanceWithConfiguration: jest.fn(),
+  initializeAuth0WithConfiguration: jest.fn(),
+  getBundleIdentifier: jest.fn(),
+  saveCredentials: jest.fn(),
+  hasValidCredentials: jest.fn(),
+  clearCredentials: jest.fn(),
+  cancelWebAuth: jest.fn(),
+  resumeWebAuth: jest.fn(),
+  getDPoPHeaders: jest.fn(),
+  clearDPoPKey: jest.fn(),
+  getSSOCredentials: jest.fn(),
+  customTokenExchange: jest.fn(),
+  getApiCredentials: jest.fn(),
+  clearApiCredentials: jest.fn(),
+}));
 const MockedAuth0NativeModule = Auth0NativeModule as jest.Mocked<
   typeof Auth0NativeModule
 >;
@@ -159,7 +177,7 @@ describe('NativeBridgeManager', () => {
         code: 'a0.session.user_cancelled',
         message: 'User cancelled the Auth',
       };
-      MockedAuth0NativeModule.webAuth.mockRejectedValueOnce(nativeError);
+      MockedAuth0NativeModule.webAuth.mockRejectedValue(nativeError);
 
       await expect(bridge.authorize({} as any, {} as any)).rejects.toThrow(
         AuthError
@@ -172,6 +190,99 @@ describe('NativeBridgeManager', () => {
         expect(authError.name).toBe('a0.session.user_cancelled');
         expect(authError.message).toBe('User cancelled the Auth');
         expect(authError.code).toBe('a0.session.user_cancelled');
+      }
+    });
+  });
+
+  describe('customTokenExchange', () => {
+    const mockExchangeResponse = {
+      idToken: validIdToken,
+      accessToken: 'exchanged-access-token',
+      tokenType: 'Bearer',
+      expiresAt: Math.floor(Date.now() / 1000) + 3600,
+      refreshToken: 'exchanged-refresh-token',
+      scope: 'openid profile email',
+    };
+
+    it('should call the native customTokenExchange method with all parameters', async () => {
+      MockedAuth0NativeModule.customTokenExchange.mockResolvedValueOnce(
+        mockExchangeResponse as any
+      );
+
+      await bridge.customTokenExchange(
+        'external-token',
+        'urn:acme:legacy-token',
+        'https://api.example.com',
+        'openid profile email',
+        'org_123'
+      );
+
+      expect(MockedAuth0NativeModule.customTokenExchange).toHaveBeenCalledTimes(
+        1
+      );
+      expect(MockedAuth0NativeModule.customTokenExchange).toHaveBeenCalledWith(
+        'external-token',
+        'urn:acme:legacy-token',
+        'https://api.example.com',
+        'openid profile email',
+        'org_123'
+      );
+    });
+
+    it('should call native method with undefined for optional parameters', async () => {
+      MockedAuth0NativeModule.customTokenExchange.mockResolvedValueOnce(
+        mockExchangeResponse as any
+      );
+
+      await bridge.customTokenExchange(
+        'external-token',
+        'urn:acme:legacy-token'
+      );
+
+      expect(MockedAuth0NativeModule.customTokenExchange).toHaveBeenCalledWith(
+        'external-token',
+        'urn:acme:legacy-token',
+        undefined,
+        undefined,
+        undefined
+      );
+    });
+
+    it('should correctly transform the native response to a Credentials model', async () => {
+      MockedAuth0NativeModule.customTokenExchange.mockResolvedValueOnce(
+        mockExchangeResponse as any
+      );
+
+      const credentials = await bridge.customTokenExchange(
+        'external-token',
+        'urn:acme:legacy-token'
+      );
+
+      expect(credentials).toBeInstanceOf(Credentials);
+      expect(credentials.accessToken).toBe('exchanged-access-token');
+      expect(credentials.idToken).toBe(validIdToken);
+      expect(credentials.tokenType).toBe('Bearer');
+    });
+
+    it('should throw AuthError when native method fails', async () => {
+      const nativeError = {
+        code: 'a0.token_exchange_failed',
+        message: 'Token exchange failed',
+      };
+      MockedAuth0NativeModule.customTokenExchange.mockRejectedValue(
+        nativeError
+      );
+
+      await expect(
+        bridge.customTokenExchange('bad-token', 'urn:acme:legacy-token')
+      ).rejects.toThrow(AuthError);
+
+      try {
+        await bridge.customTokenExchange('bad-token', 'urn:acme:legacy-token');
+      } catch (e) {
+        const tokenExchangeError = e as AuthError;
+        expect(tokenExchangeError.message).toBe('Token exchange failed');
+        expect(tokenExchangeError.code).toBe('custom_token_exchange_failed');
       }
     });
   });
