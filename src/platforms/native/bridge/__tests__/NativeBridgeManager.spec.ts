@@ -282,7 +282,7 @@ describe('NativeBridgeManager', () => {
       } catch (e) {
         const tokenExchangeError = e as AuthError;
         expect(tokenExchangeError.message).toBe('Token exchange failed');
-        expect(tokenExchangeError.code).toBe('a0.token_exchange_failed');
+        expect(tokenExchangeError.code).toBe('custom_token_exchange_failed');
       }
     });
   });
