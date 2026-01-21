@@ -1,5 +1,15 @@
 # Change Log
 
+## [v5.4.0](https://github.com/auth0/react-native-auth0/tree/v5.4.0) (2026-01-21)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.3.1...v5.4.0)
+
+**Added**
+
+- feat: Add Custom Token Exchange support [\#1433](https://github.com/auth0/react-native-auth0/pull/1433) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- docs: add troubleshooting guide for social login callback URL issues [\#1435](https://github.com/auth0/react-native-auth0/pull/1435) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: Add maxRetries configuration for credential renewal (iOS) [\#1432](https://github.com/auth0/react-native-auth0/pull/1432) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.3.1](https://github.com/auth0/react-native-auth0/tree/v5.3.1) (2025-12-23)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.3.0...v5.3.1)
