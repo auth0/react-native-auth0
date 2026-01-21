@@ -109,7 +109,7 @@ class Auth0 {
    * ```typescript
    * const credentials = await auth0.customTokenExchange({
    *   subjectToken: 'external-idp-token',
-   *   subjectTokenType: 'urn:ietf:params:oauth:token-type:access_token',
+   *   subjectTokenType: 'urn:acme:external-idp-token',
    *   audience: 'https://api.example.com',
    *   scope: 'openid profile email',
    *   organization: 'org_abc123'

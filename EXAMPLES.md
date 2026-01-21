@@ -885,36 +885,38 @@ const credentials = await customTokenExchange({
 
 ### Subject Token Type Requirements
 
-The `subjectTokenType` parameter identifies the type of token being exchanged. Choose the appropriate type based on your use case:
+The `subjectTokenType` parameter must be a **unique profile token type URI** starting with `https://` or `urn:`.
 
-#### For Standard OAuth Tokens (RFC 8693)
+#### Valid Token Type Patterns
 
-When exchanging tokens from standard OAuth/OIDC providers (e.g., another Auth0 tenant, external IdP using standard protocols), use RFC 8693 standard token types:
+You control the token type namespace. Use one of these patterns:
 
-- `urn:ietf:params:oauth:token-type:jwt` - For JWTs (e.g., ID tokens, signed access tokens)
-- `urn:ietf:params:oauth:token-type:access_token` - For OAuth access tokens
-- `urn:ietf:params:oauth:token-type:refresh_token` - For OAuth refresh tokens
-- `urn:ietf:params:oauth:token-type:id_token` - For OIDC ID tokens
-- `urn:ietf:params:oauth:token-type:saml1` - For SAML 1.1 assertions
-- `urn:ietf:params:oauth:token-type:saml2` - For SAML 2.0 assertions
+**URN Format (Recommended):**
 
-#### For Custom/Legacy Tokens
+- `urn:yourcompany:token-type` - Company-specific token type
+- `urn:acme:legacy-system-token` - Legacy system tokens
+- `urn:example:external-idp` - External IdP tokens
 
-When exchanging tokens from custom systems or legacy identity providers that don't use standard OAuth formats, you MUST use organization-controlled URIs. The following patterns are **forbidden** for custom tokens:
+**HTTPS URL Format:**
 
-- `urn:ietf:params:oauth:*` (IETF reserved for RFC 8693 standard types only)
-- `https://auth0.com/*` (Auth0 reserved)
-- `urn:auth0:*` (Auth0 reserved)
-
-**Valid custom token type examples:**
-
-- `urn:acme:legacy-system-token` - For proprietary legacy system tokens
-- `urn:yourcompany:external-idp` - For external IdP tokens
 - `https://yourcompany.com/tokens/legacy` - Using your organization's domain
+- `https://example.com/custom-token` - Custom token identifier
+
+#### Reserved Namespaces (Forbidden)
+
+The following namespaces are **reserved** and you **CANNOT use them**:
+
+- ❌ `http://auth0.com/*`
+- ❌ `https://auth0.com/*`
+- ❌ `http://okta.com/*`
+- ❌ `https://okta.com/*`
+- ❌ `urn:ietf:*`
+- ❌ `urn:auth0:*`
+- ❌ `urn:okta:*`
 
 #### Common Use Cases
 
-1. **Seamless Migration from Legacy IdP**: Exchange legacy refresh tokens using a custom type
+1. **Seamless Migration from Legacy IdP**: Exchange legacy refresh tokens
 
    ```typescript
    await customTokenExchange({
@@ -924,47 +926,65 @@ When exchanging tokens from custom systems or legacy identity providers that don
    });
    ```
 
-2. **Re-use External Authentication**: Exchange ID token from external provider
+2. **External Authentication Provider**: Exchange tokens from partner IdP
 
    ```typescript
    await customTokenExchange({
-     subjectToken: externalIdToken,
-     subjectTokenType: 'urn:ietf:params:oauth:token-type:jwt', // Standard JWT
+     subjectToken: externalProviderToken,
+     subjectTokenType: 'urn:partner:auth-token',
      scope: 'openid profile email',
    });
    ```
 
-3. **Service-to-Service Token Exchange**: Exchange Auth0 access token for different audience
+3. **Custom JWT Tokens**: Exchange JWTs from your own system
    ```typescript
    await customTokenExchange({
-     subjectToken: currentAccessToken,
-     subjectTokenType: 'urn:ietf:params:oauth:token-type:access_token',
-     audience: 'https://api-b.example.com',
+     subjectToken: customJwt,
+     subjectTokenType: 'urn:yourcompany:jwt-token',
+     audience: 'https://api.example.com',
    });
    ```
 
 ### Error Codes Reference
 
-The `CustomTokenExchangeError` class provides platform-agnostic error codes that are mapped from the underlying native SDK errors. Use the `type` property for programmatic error handling:
+Custom Token Exchange throws `AuthError` with specific error codes for different failure scenarios. Use the `code` property for programmatic error handling:
 
-| Error Code                      | Description                                                |
-| ------------------------------- | ---------------------------------------------------------- |
-| `INVALID_SUBJECT_TOKEN`         | The external token is invalid, malformed, or expired       |
-| `UNSUPPORTED_TOKEN_TYPE`        | The token type is not supported or recognized              |
-| `TOKEN_EXCHANGE_NOT_CONFIGURED` | Custom Token Exchange is not enabled for this Auth0 tenant |
-| `INVALID_AUDIENCE`              | The requested audience is invalid or not allowed           |
-| `INVALID_SCOPE`                 | The requested scope is invalid or not allowed              |
-| `TOKEN_EXCHANGE_DENIED`         | Token exchange was denied by the authorization server      |
-| `TOKEN_VALIDATION_FAILED`       | The token validation in Auth0 Action failed                |
-| `NETWORK_ERROR`                 | Network connectivity issue occurred                        |
-| `SERVER_ERROR`                  | The authorization server encountered an internal error     |
-| `UNKNOWN_ERROR`                 | An unknown or uncategorized error occurred                 |
+```typescript
+try {
+  await auth0.customTokenExchange({...});
+} catch (error) {
+  console.error('Error code:', error.code);
+  console.error('Error message:', error.message);
 
-These error codes are mapped from:
+  // Handle specific errors
+  if (error.code === 'invalid_grant') {
+    // Handle invalid token
+  }
+}
+```
 
-- **RFC 8693 standard errors**: `invalid_grant`, `invalid_request`, `unsupported_token_type`, `access_denied`, etc.
-- **Auth0-specific errors**: `a0.token_exchange_failed`, `a0.action_failed`, etc.
-- **Native SDK errors**: Platform-specific error codes from Auth0.swift and Auth0.Android
+| Error Code                          | Description                                                |
+| ----------------------------------- | ---------------------------------------------------------- |
+| `custom_token_exchange_failed`      | General token exchange failure                             |
+| `invalid_grant`                     | The external token is invalid, malformed, or expired       |
+| `invalid_request`                   | The request is missing required parameters or is malformed |
+| `unsupported_token_type`            | The token type is not supported or recognized              |
+| `unauthorized_client`               | Custom Token Exchange is not enabled for this client       |
+| `invalid_target`                    | The requested audience is invalid or not allowed           |
+| `invalid_scope`                     | The requested scope is invalid or not allowed              |
+| `access_denied`                     | Token exchange was denied by the authorization server      |
+| `server_error`                      | The authorization server encountered an internal error     |
+| `temporarily_unavailable`           | The server is temporarily unable to handle the request     |
+| `network_error`                     | Network connectivity issue occurred                        |
+| `a0.token_exchange_failed`          | Auth0-specific token exchange failure                      |
+| `a0.action_failed`                  | The token validation in Auth0 Action failed                |
+| `a0.invalid_subject_token`          | Subject token validation failed                            |
+| `a0.unsupported_subject_token_type` | Subject token type is not supported                        |
+
+These error codes follow:
+
+- **RFC 8693 standard**: `invalid_grant`, `invalid_request`, `unsupported_token_type`, `access_denied`, etc.
+- **Auth0-specific codes**: `a0.token_exchange_failed`, `a0.action_failed`, etc.
 
 ### Auth0 Actions Validation
 

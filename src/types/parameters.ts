@@ -134,21 +134,19 @@ export interface CustomTokenExchangeParameters {
   /**
    * The type identifier for the subject token being exchanged.
    *
-   * For standard OAuth tokens (e.g., from OIDC providers), use RFC 8693 standard types:
-   * - `urn:ietf:params:oauth:token-type:jwt` - For JWTs (ID tokens, signed access tokens)
-   * - `urn:ietf:params:oauth:token-type:access_token` - For OAuth access tokens
-   * - `urn:ietf:params:oauth:token-type:refresh_token` - For OAuth refresh tokens
-   * - `urn:ietf:params:oauth:token-type:id_token` - For OIDC ID tokens
-   * - `urn:ietf:params:oauth:token-type:saml1` - For SAML 1.1 assertions
-   * - `urn:ietf:params:oauth:token-type:saml2` - For SAML 2.0 assertions
+   * Must be a unique profile token type URI starting with `https://` or `urn:`.
    *
-   * For custom/legacy tokens, use organization-controlled URIs. Forbidden patterns for custom types:
-   * - `urn:ietf:params:oauth:*` (IETF reserved for standard types only)
-   * - `https://auth0.com/*` (Auth0 reserved)
-   * - `urn:auth0:*` (Auth0 reserved)
+   * Valid patterns:
+   * - `urn:yourcompany:token-type` - Company-specific URN (recommended)
+   * - `https://yourcompany.com/tokens/custom` - HTTPS URL under your control
+   *
+   * Reserved namespaces (forbidden):
+   * - `http://auth0.com/*`, `https://auth0.com/*`
+   * - `http://okta.com/*`, `https://okta.com/*`
+   * - `urn:ietf:*`, `urn:auth0:*`, `urn:okta:*`
    *
    * @example "urn:acme:legacy-system-token" // Custom legacy token
-   * @example "urn:ietf:params:oauth:token-type:jwt" // Standard JWT from OIDC provider
+   * @example "https://yourcompany.com/tokens/partner-jwt" // Custom HTTPS identifier
    */
   subjectTokenType: string;
 
