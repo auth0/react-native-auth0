@@ -17,6 +17,7 @@
 15. [How do I know if my tokens are using DPoP?](#15-how-do-i-know-if-my-tokens-are-using-dpop)
 16. [What happens if I disable DPoP after enabling it?](#16-what-happens-if-i-disable-dpop-after-enabling-it)
 17. [Why does the app hang or freeze during Social Login (Google, Facebook, etc.)?](#17-why-does-the-app-hang-or-freeze-during-social-login-google-facebook-etc)
+18. [How do I refresh the user profile (e.g. `emailVerified`) after it changes on the server?](#18-how-do-i-refresh-the-user-profile-eg-emailverified-after-it-changes-on-the-server)
 
 ## 1. How can I have separate Auth0 domains for each environment on Android?
 
@@ -937,3 +938,87 @@ plutil -p ios/YourApp/Info.plist | grep -A 5 "CFBundleURLSchemes"
 ```
 
 > **Note**: The SDK automatically lowercases your package/bundle identifier. If it's `com.example.MyApp`, the callback URL uses `com.example.myapp`.
+
+## 18. How do I refresh the user profile (e.g. `emailVerified`) after it changes on the server?
+
+A common scenario is email verification: a user signs up, receives a verification email, clicks the link, and returns to the app. However, the `user` object from `useAuth0()` still shows `emailVerified: false` because the user state is derived from the ID token claims, which are cached locally.
+
+To get the updated user profile, you need to force-refresh the credentials so the SDK fetches a new ID token with the latest claims from Auth0.
+
+### Prerequisites
+
+1. **Include `offline_access` in the scope during the initial login.** This is required because `forceRefresh` uses the refresh token to obtain new credentials. Without it, calling `getCredentials` with `forceRefresh: true` will fail with a `NO_REFRESH_TOKEN` error.
+
+2. **Use `forceRefresh: true` when calling `getCredentials`.** This forces the SDK to call the `/oauth/token` endpoint and fetch a new ID token with up-to-date claims.
+
+### Step-by-Step Example
+
+**Step 1: Log in with `offline_access` scope**
+
+```tsx
+import { useAuth0 } from 'react-native-auth0';
+
+function LoginScreen() {
+  const { authorize } = useAuth0();
+
+  const handleLogin = async () => {
+    await authorize({
+      scope: 'openid profile email offline_access', // offline_access is required
+    });
+  };
+
+  // ...
+}
+```
+
+**Step 2: After the user verifies their email (or any server-side profile change), force-refresh credentials**
+
+```tsx
+import { useAuth0 } from 'react-native-auth0';
+
+function VerifyEmailScreen() {
+  const { user, getCredentials } = useAuth0();
+
+  const refreshUserProfile = async () => {
+    try {
+      await getCredentials(
+        'openid profile email offline_access',
+        undefined, // minTtl
+        undefined, // parameters
+        true // forceRefresh — forces a new token request
+      );
+      // After this call, the `user` object from useAuth0() will be updated
+      // with the latest claims (e.g., emailVerified: true)
+    } catch (error) {
+      console.error('Failed to refresh credentials:', error);
+    }
+  };
+
+  if (user?.emailVerified) {
+    return <Text>Email verified! You're all set.</Text>;
+  }
+
+  return (
+    <View>
+      <Text>Please verify your email, then tap the button below.</Text>
+      <Button title="I've verified my email" onPress={refreshUserProfile} />
+    </View>
+  );
+}
+```
+
+### How It Works
+
+1. `getCredentials` with `forceRefresh: true` uses the stored refresh token to call the Auth0 `/oauth/token` endpoint.
+2. Auth0 returns a new ID token whose claims reflect the current server-side user profile.
+3. The SDK parses the new ID token and updates the `user` object in the `Auth0Provider` context.
+4. Any component consuming `useAuth0()` will re-render with the updated user data.
+
+### Common Errors
+
+| Error                                   | Cause                                                        | Fix                                                                                                                     |
+| --------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `NO_REFRESH_TOKEN`                      | `offline_access` was not included in the `authorize()` scope | Add `offline_access` to the scope in the **initial** `authorize()` call. The user may need to log out and log in again. |
+| `getCredentials` promise never resolves | Missing refresh token or network issue                       | Ensure `offline_access` is included during login, and check network connectivity.                                       |
+
+> **Note**: This behavior differs from the web SDK (`@auth0/auth0-spa-js`), where token refresh is handled automatically via silent authentication using iframes. On native platforms (iOS/Android), a refresh token is explicitly required.
