@@ -155,7 +155,7 @@ const CredentialsScreen = () => {
           />
         </Section>
 
-        <Section title="Native to Web SSO (Early Access)">
+        <Section title="Native to Web SSO">
           <Text style={styles.description}>
             Exchange your refresh token for a Session Transfer Token to enable
             seamless SSO to your web application.

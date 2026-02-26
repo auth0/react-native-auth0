@@ -49,7 +49,7 @@
   - [Using Custom Token Exchange with Auth0 Class](#using-custom-token-exchange-with-auth0-class)
   - [With Organization Context](#with-organization-context)
   - [Subject Token Type Requirements](#subject-token-type-requirements)
-- [Native to Web SSO (Early Access)](#native-to-web-sso-early-access)
+- [Native to Web SSO](#native-to-web-sso)
   - [Overview](#native-to-web-sso-overview)
   - [Prerequisites](#native-to-web-sso-prerequisites)
   - [Using Native to Web SSO with Hooks](#using-native-to-web-sso-with-hooks)
@@ -1007,9 +1007,7 @@ For detailed examples of validating different token types in Actions, see:
 - Validate token expiration, issuer, and audience claims
 - Implement rate limiting for failed validations using `api.access.rejectInvalidSubjectToken()`
 
-## Native to Web SSO (Early Access)
-
-> ⚠️ **Early Access Feature**: Native to Web SSO is currently available in Early Access. To use this feature, you must have an Enterprise plan. For more information, see [Product Release Stages](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages).
+## Native to Web SSO
 
 ### Native to Web SSO Overview
 
