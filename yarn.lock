@@ -5237,6 +5237,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"acorn@npm:^8.16.0":
+  version: 8.16.0
+  resolution: "acorn@npm:8.16.0"
+  bin:
+    acorn: bin/acorn
+  checksum: bbfa466cd0dbd18b4460a85e9d0fc2f35db999380892403c573261beda91f23836db2aa71fd3ae65e94424ad14ff8e2b7bd37c7a2624278fd89137cd6e448c41
+  languageName: node
+  linkType: hard
+
 "agent-base@npm:6":
   version: 6.0.2
   resolution: "agent-base@npm:6.0.2"
@@ -7721,13 +7730,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enhanced-resolve@npm:^5.17.4":
-  version: 5.18.4
-  resolution: "enhanced-resolve@npm:5.18.4"
+"enhanced-resolve@npm:^5.19.0":
+  version: 5.19.0
+  resolution: "enhanced-resolve@npm:5.19.0"
   dependencies:
     graceful-fs: ^4.2.4
-    tapable: ^2.2.0
-  checksum: 8e8a1e8efd2361d32c8a4ea00523b52311ea47e66abebda159f1e60d8849161550821f44fde51fca20261b70a0b3f61dec6d4425816934a2adb65a9ea0574ec8
+    tapable: ^2.3.0
+  checksum: e7b30fa85a7831c79ad7b0aa15cde50e07eb9e770bc19266005821a596cf324f79d3b580223dccbd61e01a515cf4be09e1474745a4c47ad41d2d499b860314a5
   languageName: node
   linkType: hard
 
@@ -15982,7 +15991,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tapable@npm:^2.0.0, tapable@npm:^2.2.0, tapable@npm:^2.3.0":
+"tapable@npm:^2.0.0, tapable@npm:^2.3.0":
   version: 2.3.0
   resolution: "tapable@npm:2.3.0"
   checksum: ada1194219ad550e3626d15019d87a2b8e77521d8463ab1135f46356e987a4c37eff1e87ffdd5acd573590962e519cc81e8ea6f7ed632c66bb58c0f12bd772a4
@@ -16796,13 +16805,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"watchpack@npm:^2.4.4":
-  version: 2.4.4
-  resolution: "watchpack@npm:2.4.4"
+"watchpack@npm:^2.5.1":
+  version: 2.5.1
+  resolution: "watchpack@npm:2.5.1"
   dependencies:
     glob-to-regexp: ^0.4.1
     graceful-fs: ^4.1.2
-  checksum: 469514a04bcdd7ea77d4b3c62d1f087eafbce64cbc728c89355d5710ee01311533456122da7c585d3654d5bfcf09e6085db1a6eb274c4762a18e370526d17561
+  checksum: 44a6030e923fbbe2cbc51cd7fb7abdff58bc35ba68d6c3ca46e63b46f8b3502c7253e6ada384387e946df5515d3854227a84cec49eb88a315186f5c9a67a3e79
   languageName: node
   linkType: hard
 
@@ -16957,16 +16966,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-sources@npm:^3.3.3":
-  version: 3.3.3
-  resolution: "webpack-sources@npm:3.3.3"
-  checksum: 243d438ec4dfe805cca20fa66d111114b1f277b8ecfa95bb6ee0a6c7d996aee682539952028c2b203a6c170e6ef56f71ecf3e366e90bf1cb58b0ae982176b651
+"webpack-sources@npm:^3.3.4":
+  version: 3.3.4
+  resolution: "webpack-sources@npm:3.3.4"
+  checksum: 7a4862fc876417bdcefb21015f936ce645acd82e528433302f0c1d912e5f84f8cc051846c377935c98fd46131c342bb45a820e2a45af8eda4703bace46358dad
   languageName: node
   linkType: hard
 
 "webpack@npm:^5.104.0":
-  version: 5.104.0
-  resolution: "webpack@npm:5.104.0"
+  version: 5.105.3
+  resolution: "webpack@npm:5.105.3"
   dependencies:
     "@types/eslint-scope": ^3.7.7
     "@types/estree": ^1.0.8
@@ -16974,11 +16983,11 @@ __metadata:
     "@webassemblyjs/ast": ^1.14.1
     "@webassemblyjs/wasm-edit": ^1.14.1
     "@webassemblyjs/wasm-parser": ^1.14.1
-    acorn: ^8.15.0
+    acorn: ^8.16.0
     acorn-import-phases: ^1.0.3
     browserslist: ^4.28.1
     chrome-trace-event: ^1.0.2
-    enhanced-resolve: ^5.17.4
+    enhanced-resolve: ^5.19.0
     es-module-lexer: ^2.0.0
     eslint-scope: 5.1.1
     events: ^3.2.0
@@ -16991,14 +17000,14 @@ __metadata:
     schema-utils: ^4.3.3
     tapable: ^2.3.0
     terser-webpack-plugin: ^5.3.16
-    watchpack: ^2.4.4
-    webpack-sources: ^3.3.3
+    watchpack: ^2.5.1
+    webpack-sources: ^3.3.4
   peerDependenciesMeta:
     webpack-cli:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: f4f6b14a053fa1298120270df246806e8cbdb40f8fc27b9089c2acb6d4359f134ddb6dde20809fd0b3706f659b325ef30ac18f8e9b41b122fa0b36d774bbc40a
+  checksum: d46e0f7b2343c039b67f7b063674d03d3d56cd170077a8b47681d5fc5118f64d8918cc8eca43fb49c7f0660fcfc0f101fc668b72f70405cc045c5468d6528acd
   languageName: node
   linkType: hard
 
