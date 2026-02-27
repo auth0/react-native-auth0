@@ -3856,19 +3856,19 @@ __metadata:
   linkType: hard
 
 "@react-navigation/bottom-tabs@npm:^7.8.4":
-  version: 7.9.0
-  resolution: "@react-navigation/bottom-tabs@npm:7.9.0"
+  version: 7.15.2
+  resolution: "@react-navigation/bottom-tabs@npm:7.15.2"
   dependencies:
-    "@react-navigation/elements": ^2.9.3
+    "@react-navigation/elements": ^2.9.8
     color: ^4.2.3
     sf-symbols-typescript: ^2.1.0
   peerDependencies:
-    "@react-navigation/native": ^7.1.26
+    "@react-navigation/native": ^7.1.31
     react: ">= 18.2.0"
     react-native: "*"
     react-native-safe-area-context: ">= 4.0.0"
     react-native-screens: ">= 4.0.0"
-  checksum: f17e8486debf57b29783a5e72327e5f4fec7819bb7c99014451e42eb35a12643171d1f4f55f3c69f5b40fb62a744b51085152516d26cbfc580168b2341a02c62
+  checksum: 4b87cc8705e258f48d22c29e50361fafa9b8a3b4f24f84f07131849292df778c311e04f73f5389f18d4f04a9611ae0d7f3cacd65f5c8df7601eee7760d6bcc8a
   languageName: node
   linkType: hard
 
@@ -3910,23 +3910,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-navigation/elements@npm:^2.9.3":
-  version: 2.9.3
-  resolution: "@react-navigation/elements@npm:2.9.3"
+"@react-navigation/elements@npm:^2.9.8":
+  version: 2.9.8
+  resolution: "@react-navigation/elements@npm:2.9.8"
   dependencies:
     color: ^4.2.3
     use-latest-callback: ^0.2.4
     use-sync-external-store: ^1.5.0
   peerDependencies:
     "@react-native-masked-view/masked-view": ">= 0.2.0"
-    "@react-navigation/native": ^7.1.26
+    "@react-navigation/native": ^7.1.31
     react: ">= 18.2.0"
     react-native: "*"
     react-native-safe-area-context: ">= 4.0.0"
   peerDependenciesMeta:
     "@react-native-masked-view/masked-view":
       optional: true
-  checksum: d202151d7003e80fce3ffa69a0ad8854f191ba7e4383201cde7ea672f6a922c9bea165453e70fb660028cc5485aa2a1f915783643218dc7647312b4de2ce48f3
+  checksum: 5a02ecd3c21264c6a1f7b70a9ff2767035fcd5e53d52ba704b81505d14f669dc33f12004c7df0cdb3c7b323f4a4e05e5089e5bda9c96f5b3f5ba4294f9dec6b8
   languageName: node
   linkType: hard
 
