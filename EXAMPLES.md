@@ -1319,8 +1319,6 @@ You can skip sending the `customScheme` property if you do not want to customize
 
 [DPoP](https://datatracker.ietf.org/doc/html/rfc9449) (Demonstrating Proof-of-Possession) is an OAuth 2.0 extension that cryptographically binds access and refresh tokens to a client-specific key pair. This prevents token theft and replay attacks by ensuring that even if a token is intercepted, it cannot be used from a different device.
 
-> **Note**: This feature is currently available in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access). Please reach out to Auth0 support to get it enabled for your tenant.
-
 ### Enabling DPoP
 
 DPoP is enabled by default (`useDPoP: true`) when you initialize the Auth0 client:

@@ -483,7 +483,6 @@ DPoP is **enabled by default** (`useDPoP: true`) in this SDK because it provides
 - ✅ Enable if you handle sensitive data or financial transactions
 - ✅ Enable if you want best-in-class security practices
 - ✅ Enable if your users access the app from multiple devices (DPoP helps prevent cross-device token abuse)
-- ⚠️ **Note**: DPoP is currently in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access) - contact Auth0 support to enable it on your tenant
 - ⚠️ **Note**: Existing users with Bearer tokens will need to log in again to get DPoP tokens (see [FAQ #13](#13-how-do-i-migrate-existing-users-to-dpop))
 
 **How to disable it (if needed):**
