@@ -471,7 +471,7 @@ extension WebAuthError {
             case .noAuthorizationCode: code = "NO_AUTHORIZATION_CODE"
             case .pkceNotAllowed: code = "PKCE_NOT_ALLOWED"
             case .idTokenValidationFailed: code = "ID_TOKEN_VALIDATION_FAILED"
-            case .other: if let cause = self.cause as? AuthenticationError {
+            case WebAuthError.other: if let cause = self.cause as? AuthenticationError {
                 code = cause.code
             } else {
                 code = "OTHER"
@@ -490,8 +490,8 @@ extension DPoPError {
             case .keychainOperationFailed: code = NativeBridge.dpopKeyStorageFailedCode
             case .cryptoKitOperationFailed: code = NativeBridge.dpopProofFailedCode
             case .secKeyOperationFailed: code = NativeBridge.dpopProofFailedCode
-            case .other: code = NativeBridge.dpopErrorCode
-            case .unknown: code = NativeBridge.dpopErrorCode
+            case DPoPError.other: code = NativeBridge.dpopErrorCode
+            case DPoPError.unknown: code = NativeBridge.dpopErrorCode
         default:
             code = NativeBridge.dpopErrorCode
         }
