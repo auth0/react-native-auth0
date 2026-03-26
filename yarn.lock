@@ -40,14 +40,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@auth0/auth0-spa-js@npm:2.11.3":
-  version: 2.11.3
-  resolution: "@auth0/auth0-spa-js@npm:2.11.3"
+"@auth0/auth0-auth-js@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@auth0/auth0-auth-js@npm:1.6.0"
   dependencies:
-    browser-tabs-lock: "npm:^1.2.15"
-    dpop: "npm:^2.1.1"
-    es-cookie: "npm:~1.3.2"
-  checksum: 10c0/6b40be78ed539ebe39ec9384a62767bbaf69c43c82eb8a9a4e36f83f36422c824f2a5d87fab0d0b510458158265a83392153a6ed6a0ba74b5660169e0d066d46
+    jose: "npm:^6.0.8"
+    openid-client: "npm:^6.8.0"
+  checksum: 10c0/0f5672ea77045d1172dac8a2571f1a7111045677191fa6105c0458a720fab3db385384b302535a6694c16dfe82ef0e9a3510d2113d5c35ca0f5ecd1bb1d96c05
+  languageName: node
+  linkType: hard
+
+"@auth0/auth0-spa-js@npm:2.18.2":
+  version: 2.18.2
+  resolution: "@auth0/auth0-spa-js@npm:2.18.2"
+  dependencies:
+    "@auth0/auth0-auth-js": "npm:1.6.0"
+    browser-tabs-lock: "npm:1.3.0"
+    dpop: "npm:2.1.1"
+    es-cookie: "npm:1.3.2"
+  checksum: 10c0/b100778d4896ceb9cb88684f13c5ab0d45cf71430cbb4184530da32aaa1081b91ab6fa4621c56b184d8b488be4adc2570ac1ae5c0dd7d89f0e4a8f6a2616eae9
   languageName: node
   linkType: hard
 
@@ -7079,7 +7090,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browser-tabs-lock@npm:^1.2.15":
+"browser-tabs-lock@npm:1.3.0":
   version: 1.3.0
   resolution: "browser-tabs-lock@npm:1.3.0"
   dependencies:
@@ -8604,7 +8615,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dpop@npm:^2.1.1":
+"dpop@npm:2.1.1":
   version: 2.1.1
   resolution: "dpop@npm:2.1.1"
   checksum: 10c0/e46dfd62325dd63372a17492c1867f79cdaf235645d32b87c3be8a09d4c7b03b8b44efec26688ba19e8279c77497a08deb302a9a4704b432795efd1163519611
@@ -8861,7 +8872,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es-cookie@npm:~1.3.2":
+"es-cookie@npm:1.3.2":
   version: 1.3.2
   resolution: "es-cookie@npm:1.3.2"
   checksum: 10c0/26eb6e06b25b5569d8763fcb23b5335a5098e354b0a9a7bc5122e8c8705003307187a165ddaeda5cff08fa4cc8e1675dbddd5709279fb27cfa8875514dc3eccb
@@ -12287,6 +12298,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jose@npm:^6.0.8, jose@npm:^6.1.3":
+  version: 6.2.2
+  resolution: "jose@npm:6.2.2"
+  checksum: 10c0/201f4776d77eccd339de99fb3ba940fdf03db15e64be7a99b511e53c232e3f3818e3f21b95223d62f99315a2ab76b4251cedd94e067de56893e45273a8d2151b
+  languageName: node
+  linkType: hard
+
 "js-tokens@npm:^3.0.0 || ^4.0.0, js-tokens@npm:^4.0.0":
   version: 4.0.0
   resolution: "js-tokens@npm:4.0.0"
@@ -14325,6 +14343,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"oauth4webapi@npm:^3.8.4":
+  version: 3.8.5
+  resolution: "oauth4webapi@npm:3.8.5"
+  checksum: 10c0/688142b30f2243813721bfa4ab879aa0056636b19a3d7964d46b11b967199ab8f74f3771225f71ec766821d410add950475cf1afcfe26a9640cd1c0a1de8e423
+  languageName: node
+  linkType: hard
+
 "ob1@npm:0.83.2":
   version: 0.83.2
   resolution: "ob1@npm:0.83.2"
@@ -14546,6 +14571,16 @@ __metadata:
     is-docker: "npm:^2.1.1"
     is-wsl: "npm:^2.2.0"
   checksum: 10c0/bb6b3a58401dacdb0aad14360626faf3fb7fba4b77816b373495988b724fb48941cad80c1b65d62bb31a17609b2cd91c41a181602caea597ca80dfbcc27e84c9
+  languageName: node
+  linkType: hard
+
+"openid-client@npm:^6.8.0":
+  version: 6.8.2
+  resolution: "openid-client@npm:6.8.2"
+  dependencies:
+    jose: "npm:^6.1.3"
+    oauth4webapi: "npm:^3.8.4"
+  checksum: 10c0/98de93a1d1135f7c51b7707258ec0506bc6dc5359acf06f922cd4258635d657d1a80b740ad4a11ae9e79ce6061dd0d19cf5115a9918866f0b46c5486cfbbf22c
   languageName: node
   linkType: hard
 
@@ -15501,7 +15536,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "react-native-auth0@workspace:."
   dependencies:
-    "@auth0/auth0-spa-js": "npm:2.11.3"
+    "@auth0/auth0-spa-js": "npm:2.18.2"
     "@commitlint/config-conventional": "npm:^20.5.0"
     "@eslint/compat": "npm:^2.0.3"
     "@eslint/eslintrc": "npm:^3.3.5"
