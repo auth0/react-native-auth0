@@ -464,13 +464,13 @@ extension WebAuthError {
     func reactNativeErrorCode() -> String {
         var code: String
         switch self {
-            case .noBundleIdentifier: code = "NO_BUNDLE_IDENTIFIER"
-            case .transactionActiveAlready: code = "TRANSACTION_ACTIVE_ALREADY"
-            case .invalidInvitationURL: code = "INVALID_INVITATION_URL"
-            case .userCancelled: code = "USER_CANCELLED"
-            case .noAuthorizationCode: code = "NO_AUTHORIZATION_CODE"
-            case .pkceNotAllowed: code = "PKCE_NOT_ALLOWED"
-            case .idTokenValidationFailed: code = "ID_TOKEN_VALIDATION_FAILED"
+            case WebAuthError.noBundleIdentifier: code = "NO_BUNDLE_IDENTIFIER"
+            case WebAuthError.transactionActiveAlready: code = "TRANSACTION_ACTIVE_ALREADY"
+            case WebAuthError.invalidInvitationURL: code = "INVALID_INVITATION_URL"
+            case WebAuthError.userCancelled: code = "USER_CANCELLED"
+            case WebAuthError.noAuthorizationCode: code = "NO_AUTHORIZATION_CODE"
+            case WebAuthError.pkceNotAllowed: code = "PKCE_NOT_ALLOWED"
+            case WebAuthError.idTokenValidationFailed: code = "ID_TOKEN_VALIDATION_FAILED"
             case WebAuthError.other: if let cause = self.cause as? AuthenticationError {
                 code = cause.code
             } else {
@@ -486,10 +486,10 @@ extension DPoPError {
     func reactNativeErrorCode() -> String {
         var code: String
         switch self {
-            case .secureEnclaveOperationFailed: code = NativeBridge.dpopKeyGenerationFailedCode
-            case .keychainOperationFailed: code = NativeBridge.dpopKeyStorageFailedCode
-            case .cryptoKitOperationFailed: code = NativeBridge.dpopProofFailedCode
-            case .secKeyOperationFailed: code = NativeBridge.dpopProofFailedCode
+            case DPoPError.secureEnclaveOperationFailed: code = NativeBridge.dpopKeyGenerationFailedCode
+            case DPoPError.keychainOperationFailed: code = NativeBridge.dpopKeyStorageFailedCode
+            case DPoPError.cryptoKitOperationFailed: code = NativeBridge.dpopProofFailedCode
+            case DPoPError.secKeyOperationFailed: code = NativeBridge.dpopProofFailedCode
             case DPoPError.other: code = NativeBridge.dpopErrorCode
             case DPoPError.unknown: code = NativeBridge.dpopErrorCode
         default:
