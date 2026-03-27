@@ -503,21 +503,21 @@ extension CredentialsManagerError {
     func reactNativeErrorCode() -> String {
         var code: String
         switch self {
-            case .noCredentials: code = "NO_CREDENTIALS"
-            case .noRefreshToken: code = "NO_REFRESH_TOKEN"
-            case .renewFailed: if let cause = self.cause as? AuthenticationError {
+            case CredentialsManagerError.noCredentials: code = "NO_CREDENTIALS"
+            case CredentialsManagerError.noRefreshToken: code = "NO_REFRESH_TOKEN"
+            case CredentialsManagerError.renewFailed: if let cause = self.cause as? AuthenticationError {
                 code = cause.code
             } else {
                 code = "RENEW_FAILED"
             }
-            case .storeFailed: code = "STORE_FAILED"
-            case .biometricsFailed: code = "BIOMETRICS_FAILED"
-            case .revokeFailed: if let cause = self.cause as? AuthenticationError {
+            case CredentialsManagerError.storeFailed: code = "STORE_FAILED"
+            case CredentialsManagerError.biometricsFailed: code = "BIOMETRICS_FAILED"
+            case CredentialsManagerError.revokeFailed: if let cause = self.cause as? AuthenticationError {
                 code = cause.code
             } else {
                 code = "REVOKE_FAILED"
             } 
-            case .largeMinTTL: code = "LARGE_MIN_TTL"
+            case CredentialsManagerError.largeMinTTL: code = "LARGE_MIN_TTL"
             default: code = "UNKNOWN"
         }
         return code
