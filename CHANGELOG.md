@@ -1,5 +1,17 @@
 # Change Log
 
+## [v5.4.1](https://github.com/auth0/react-native-auth0/tree/v5.4.1) (2026-03-27)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.4.0...v5.4.1)
+
+**Changed**
+
+- doc: Remove EA tag for DPoP [\#1460](https://github.com/auth0/react-native-auth0/pull/1460) ([pmathew92](https://github.com/pmathew92))
+
+**Fixed**
+
+- fix(ios): qualify enum cases for newer Swift compilers [\#1467](https://github.com/auth0/react-native-auth0/pull/1467) ([ThnxFredrik](https://github.com/ThnxFredrik))
+
 ## [v5.4.0](https://github.com/auth0/react-native-auth0/tree/v5.4.0) (2026-01-21)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.3.1...v5.4.0)
