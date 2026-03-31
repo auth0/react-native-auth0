@@ -8,6 +8,10 @@ jobs:
   snyk-cli:
     uses: auth0/devsecops-tooling/.github/workflows/sca-scan.yml@main
     with:
+      java-version: '17'
       node-version: '22'
-      pre-scan-commands: 'yarn install && rm -f android/build.gradle'
+      pre-scan-commands: |
+        yarn install
+        printf "rootProject.name = 'react-native-auth0'\ninclude ':android'\n" > settings.gradle
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0" > /dev/null 2>&1 || true
     secrets: inherit
