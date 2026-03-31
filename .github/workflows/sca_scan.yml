@@ -8,5 +8,8 @@ jobs:
   snyk-cli:
     uses: auth0/devsecops-tooling/.github/workflows/sca-scan.yml@main
     with:
-      additional-arguments: '--exclude=README.md'
+      node-version: '22'
+      pre-scan-commands: |
+        yarn install
+        rm -f android/build.gradle
     secrets: inherit
