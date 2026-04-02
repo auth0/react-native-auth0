@@ -7,6 +7,8 @@ const webRefreshHandled =
   'Token refresh is handled automatically by `credentialsManager.getCredentials()` on the web.';
 const webUserInfoHandled =
   'User Info should be retrieved by decoding the ID token from `credentialsManager.getCredentials()` on the web.';
+export const ssoExchangeNotSupported =
+  'Native to Web SSO Exchange is only supported on native platforms (iOS/Android). This feature is not available in web environments.';
 
 /**
  * An IAuthenticationProvider implementation for the web that explicitly
@@ -54,4 +56,8 @@ export const UnimplementedWebAuthenticationProvider: IAuthenticationProvider = {
     Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
   createUser: () =>
     Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
+  ssoExchange: () =>
+    Promise.reject(
+      new AuthError('UnsupportedOperation', ssoExchangeNotSupported)
+    ),
 };

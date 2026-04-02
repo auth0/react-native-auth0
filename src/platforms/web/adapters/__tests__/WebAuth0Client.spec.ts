@@ -481,4 +481,17 @@ describe('WebAuth0Client', () => {
       }
     });
   });
+
+  describe('ssoExchange', () => {
+    it('should reject with UnsupportedOperation error on web', async () => {
+      await expect(
+        client.auth.ssoExchange({ refreshToken: 'test_token' })
+      ).rejects.toMatchObject({
+        name: 'UnsupportedOperation',
+        message: expect.stringContaining(
+          'Native to Web SSO Exchange is only supported on native platforms'
+        ),
+      });
+    });
+  });
 });

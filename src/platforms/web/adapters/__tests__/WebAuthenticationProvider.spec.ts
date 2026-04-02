@@ -313,6 +313,25 @@ describe('UnimplementedWebAuthenticationProvider', () => {
     });
   });
 
+  describe('ssoExchange', () => {
+    it('should reject with UnsupportedOperation error', async () => {
+      const parameters = {
+        refreshToken: 'refresh_token_123',
+      };
+
+      await expect(
+        UnimplementedWebAuthenticationProvider.ssoExchange(parameters)
+      ).rejects.toThrow(AuthError);
+      await expect(
+        UnimplementedWebAuthenticationProvider.ssoExchange(parameters)
+      ).rejects.toMatchObject({
+        name: 'UnsupportedOperation',
+        message:
+          'Native to Web SSO Exchange is only supported on native platforms (iOS/Android). This feature is not available in web environments.',
+      });
+    });
+  });
+
   describe('comprehensive method coverage', () => {
     it('should ensure all IAuthenticationProvider methods are implemented', () => {
       const provider = UnimplementedWebAuthenticationProvider;
@@ -334,6 +353,7 @@ describe('UnimplementedWebAuthenticationProvider', () => {
       expect(typeof provider.multifactorChallenge).toBe('function');
       expect(typeof provider.resetPassword).toBe('function');
       expect(typeof provider.createUser).toBe('function');
+      expect(typeof provider.ssoExchange).toBe('function');
     });
   });
 });

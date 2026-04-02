@@ -1,6 +1,7 @@
 import type { IAuthenticationProvider } from '../interfaces';
 import type {
   Credentials,
+  SessionTransferCredentials,
   User,
   MfaChallengeResponse,
   PasswordRealmParameters,
@@ -9,6 +10,7 @@ import type {
   RevokeOptions,
   ExchangeParameters,
   ExchangeNativeSocialParameters,
+  SSOExchangeParameters,
   PasswordlessEmailParameters,
   PasswordlessSmsParameters,
   LoginEmailParameters,
@@ -20,11 +22,13 @@ import type {
   ResetPasswordParameters,
   CreateUserParameters,
   NativeCredentialsResponse,
+  SSOCredentialsResponse,
   AuthorizeUrlParameters,
   LogoutUrlParameters,
 } from '../../types';
 import {
   Credentials as CredentialsModel,
+  SSOCredentials,
   Auth0User,
   AuthError,
 } from '../models';
@@ -456,5 +460,26 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
     if (!response.ok) throw AuthError.fromResponse(response, json);
     // The signup endpoint returns a snake_cased user profile.
     return deepCamelCase<Partial<User>>(json);
+  }
+
+  async ssoExchange(
+    parameters: SSOExchangeParameters
+  ): Promise<SessionTransferCredentials> {
+    validateParameters(parameters, ['refreshToken']);
+    const { headers, ...payload } = parameters;
+    const domain = new URL(this.baseUrl).host;
+    const body = {
+      client_id: this.clientId,
+      grant_type: 'refresh_token',
+      audience: `urn:${domain}:session_transfer`,
+      refresh_token: payload.refreshToken,
+    };
+    const { json, response } = await this.client.post<SSOCredentialsResponse>(
+      '/oauth/token',
+      body,
+      headers
+    );
+    if (!response.ok) throw AuthError.fromResponse(response, json);
+    return SSOCredentials.fromResponse(json);
   }
 }

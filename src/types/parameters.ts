@@ -105,6 +105,20 @@ export interface ExchangeParameters extends RequestOptions {
   redirectUri: string;
 }
 
+/**
+ * Parameters for exchanging a refresh token for session transfer credentials (Native to Web SSO).
+ * This allows apps that manage their own tokens to obtain a session transfer token
+ * without using the Credentials Manager.
+ *
+ * @see https://auth0.com/docs/authenticate/single-sign-on/native-to-web/configure-implement-native-to-web
+ */
+export interface SSOExchangeParameters extends RequestOptions {
+  /**
+   * The refresh token to exchange for a session transfer token.
+   */
+  refreshToken: string;
+}
+
 /** Parameters for exchanging a native social provider's token for Auth0 tokens. */
 export interface ExchangeNativeSocialParameters extends RequestOptions {
   subjectToken: string;
