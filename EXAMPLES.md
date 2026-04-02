@@ -1123,7 +1123,7 @@ This is useful when:
 
 ```js
 import { useAuth0 } from 'react-native-auth0';
-import { Linking, Alert } from 'react-native';
+import { Linking } from 'react-native';
 
 function SSOExchangeScreen() {
   const { ssoExchange } = useAuth0();
