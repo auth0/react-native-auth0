@@ -7,6 +7,7 @@ import type {
   Auth0Options,
   Credentials,
   User,
+  SessionTransferCredentials,
   PasswordRealmParameters,
   WebAuthorizeParameters,
   ClearSessionParameters,
@@ -22,6 +23,7 @@ import type {
   LoginRecoveryCodeParameters,
   ExchangeNativeSocialParameters,
   CustomTokenExchangeParameters,
+  SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
   MfaChallengeResponse,
@@ -389,6 +391,21 @@ export const Auth0Provider = ({
     [client]
   );
 
+  const ssoExchange = useCallback(
+    async (
+      parameters: SSOExchangeParameters
+    ): Promise<SessionTransferCredentials> => {
+      try {
+        return await client.auth.ssoExchange(parameters);
+      } catch (e) {
+        const error = e as AuthError;
+        dispatch({ type: 'ERROR', error });
+        throw error;
+      }
+    },
+    [client]
+  );
+
   const contextValue = useMemo<Auth0ContextInterface>(
     () => ({
       ...state,
@@ -418,6 +435,7 @@ export const Auth0Provider = ({
       authorizeWithRecoveryCode,
       revokeRefreshToken,
       getDPoPHeaders,
+      ssoExchange,
     }),
     [
       state,
@@ -447,6 +465,7 @@ export const Auth0Provider = ({
       authorizeWithRecoveryCode,
       revokeRefreshToken,
       getDPoPHeaders,
+      ssoExchange,
     ]
   );
 
