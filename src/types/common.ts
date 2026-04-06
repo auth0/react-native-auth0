@@ -64,6 +64,15 @@ export type SessionTransferCredentials = {
   refreshToken?: string;
 };
 
+export type SSOCredentialsResponse = {
+  access_token: string;
+  issued_token_type: string;
+  token_type: string;
+  expires_in: number;
+  id_token?: string;
+  refresh_token?: string;
+};
+
 /**
  * Represents API-specific credentials, primarily containing an access token.
  * This is returned when requesting tokens for a specific API (audience).

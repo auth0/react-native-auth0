@@ -54,6 +54,9 @@
   - [Prerequisites](#native-to-web-sso-prerequisites)
   - [Using Native to Web SSO with Hooks](#using-native-to-web-sso-with-hooks)
   - [Using Native to Web SSO with Auth0 Class](#using-native-to-web-sso-with-auth0-class)
+  - [SSO Exchange via Authentication API](#sso-exchange-via-authentication-api)
+    - [Using SSO Exchange with Hooks](#using-sso-exchange-with-hooks)
+    - [Using SSO Exchange with Auth0 Class](#using-sso-exchange-with-auth0-class)
   - [Sending the Session Transfer Token](#sending-the-session-transfer-token)
 - [Bot Protection](#bot-protection)
   - [Domain Switching](#domain-switching)
@@ -1098,6 +1101,75 @@ if (ssoCredentials.idToken) {
 if (ssoCredentials.refreshToken) {
   console.log('New Refresh Token received (RTR enabled)');
 }
+
+// Open your web application with the session transfer token
+const webAppUrl = `https://your-web-app.com/login?session_transfer_token=${ssoCredentials.sessionTransferToken}`;
+await Linking.openURL(webAppUrl);
+```
+
+### SSO Exchange via Authentication API
+
+If your app manages tokens independently (without using the Credentials Manager), you can use `auth.ssoExchange()` to exchange a refresh token for a session transfer token directly via the Authentication API.
+
+This is useful when:
+
+- Your app stores tokens outside of the built-in Credentials Manager
+- You need more control over the token exchange process
+- You want to perform the exchange as a standalone API call
+
+> **Note:** This method is only available on native platforms (iOS/Android). It is not supported on the web platform.
+
+#### Using SSO Exchange with Hooks
+
+```js
+import { useAuth0 } from 'react-native-auth0';
+import { Linking } from 'react-native';
+
+function SSOExchangeScreen() {
+  const { ssoExchange } = useAuth0();
+
+  const handleSSOExchange = async (refreshToken) => {
+    try {
+      const ssoCredentials = await ssoExchange({ refreshToken });
+
+      console.log('Session Transfer Token:', ssoCredentials.sessionTransferToken);
+      console.log('Token Type:', ssoCredentials.tokenType);
+      console.log('Expires In:', ssoCredentials.expiresIn);
+
+      // Open your web application with the session transfer token
+      const webAppUrl = `https://your-web-app.com/login?session_transfer_token=${ssoCredentials.sessionTransferToken}`;
+      await Linking.openURL(webAppUrl);
+    } catch (error) {
+      console.error('SSO Exchange failed:', error);
+    }
+  };
+
+  return (
+    // Your UI components
+  );
+}
+```
+
+#### Using SSO Exchange with Auth0 Class
+
+```js
+import Auth0 from 'react-native-auth0';
+import { Linking } from 'react-native';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+});
+
+// You must already have a refresh token (e.g., from a previous login with offline_access scope)
+const refreshToken = 'YOUR_REFRESH_TOKEN';
+
+// Exchange the refresh token for a session transfer token
+const ssoCredentials = await auth0.auth.ssoExchange({ refreshToken });
+
+console.log('Session Transfer Token:', ssoCredentials.sessionTransferToken);
+console.log('Token Type:', ssoCredentials.tokenType);
+console.log('Expires In:', ssoCredentials.expiresIn);
 
 // Open your web application with the session transfer token
 const webAppUrl = `https://your-web-app.com/login?session_transfer_token=${ssoCredentials.sessionTransferToken}`;

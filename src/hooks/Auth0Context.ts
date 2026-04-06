@@ -17,6 +17,7 @@ import type {
   LoginRecoveryCodeParameters,
   ExchangeNativeSocialParameters,
   CustomTokenExchangeParameters,
+  SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
   MfaChallengeResponse,
@@ -346,6 +347,26 @@ export interface Auth0ContextInterface extends AuthState {
     parameters?: Record<string, any>,
     headers?: Record<string, string>
   ) => Promise<SessionTransferCredentials>;
+
+  /**
+   * Exchanges a refresh token for session transfer credentials via the Authentication API.
+   *
+   * @remarks
+   * This method calls the Auth0 `/oauth/token` endpoint directly to exchange a refresh token
+   * for a session transfer token. Unlike `getSSOCredentials()` which uses the Credentials Manager,
+   * this method is intended for apps that manage their own tokens.
+   *
+   * **Platform specific:** This method is only available on native platforms (iOS/Android).
+   * On web, it will throw an error.
+   *
+   * @param parameters The parameters containing the refresh token to exchange.
+   * @returns A promise that resolves with the session transfer credentials.
+   *
+   * @see https://auth0.com/docs/authenticate/single-sign-on/native-to-web/configure-implement-native-to-web
+   */
+  ssoExchange: (
+    parameters: SSOExchangeParameters
+  ) => Promise<SessionTransferCredentials>;
 }
 
 const stub = (): any => {
@@ -382,6 +403,7 @@ const initialContext: Auth0ContextInterface = {
   revokeRefreshToken: stub,
   getDPoPHeaders: stub,
   getSSOCredentials: stub,
+  ssoExchange: stub,
 };
 
 export const Auth0Context =

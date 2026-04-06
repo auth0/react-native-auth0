@@ -120,6 +120,7 @@ const createMockClient = () => {
       revoke: jest.fn(),
       userInfo: jest.fn(),
       passwordRealm: jest.fn(),
+      ssoExchange: jest.fn(),
     },
     users: jest.fn(),
   };
@@ -1050,6 +1051,157 @@ describe('Auth0Provider', () => {
       expect(
         mockClientInstance.credentialsManager.getSSOCredentials
       ).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('ssoExchange', () => {
+    const TestSSOExchangeConsumer = () => {
+      const { ssoExchange, error, isLoading } = useAuth0();
+      const [ssoCredentials, setSSOCredentials] = React.useState<any>(null);
+
+      const handleSSOExchange = async () => {
+        try {
+          const credentials = await ssoExchange({
+            refreshToken: 'my_refresh_token',
+          });
+          setSSOCredentials(credentials);
+        } catch {
+          // Error will be dispatched to state
+        }
+      };
+
+      if (isLoading) return <Text testID="loading">Loading...</Text>;
+      if (error) return <Text testID="error">Error: {error.message}</Text>;
+
+      return (
+        <View>
+          <Button
+            title="SSO Exchange"
+            onPress={handleSSOExchange}
+            testID="sso-exchange-button"
+          />
+          {ssoCredentials && (
+            <Text testID="sso-credentials">
+              Token: {ssoCredentials.sessionTransferToken}
+            </Text>
+          )}
+        </View>
+      );
+    };
+
+    it('should call auth.ssoExchange and return session transfer credentials', async () => {
+      const mockSSOCredentials = {
+        sessionTransferToken: 'stt_exchange_123',
+        tokenType: 'urn:auth0:params:oauth:token-type:session_transfer_token',
+        expiresIn: 120,
+        idToken: 'id_token_123',
+        refreshToken: 'new_refresh_token',
+      };
+
+      mockClientInstance.auth.ssoExchange = jest
+        .fn()
+        .mockResolvedValueOnce(mockSSOCredentials);
+
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.auth0.com" clientId="test-client-id">
+            <TestSSOExchangeConsumer />
+          </Auth0Provider>
+        );
+      });
+
+      const exchangeButton = screen.getByTestId('sso-exchange-button');
+      await act(async () => {
+        fireEvent.click(exchangeButton);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('sso-credentials').textContent).toBe(
+          'Token: stt_exchange_123'
+        );
+      });
+
+      expect(mockClientInstance.auth.ssoExchange).toHaveBeenCalledTimes(1);
+      expect(mockClientInstance.auth.ssoExchange).toHaveBeenCalledWith({
+        refreshToken: 'my_refresh_token',
+      });
+    });
+
+    it('should handle ssoExchange error and dispatch to state', async () => {
+      const ssoError = new Error('Invalid refresh token');
+      mockClientInstance.auth.ssoExchange = jest
+        .fn()
+        .mockRejectedValueOnce(ssoError);
+
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.auth0.com" clientId="test-client-id">
+            <TestSSOExchangeConsumer />
+          </Auth0Provider>
+        );
+      });
+
+      const exchangeButton = screen.getByTestId('sso-exchange-button');
+      await act(async () => {
+        fireEvent.click(exchangeButton);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('error').textContent).toBe(
+          'Error: Invalid refresh token'
+        );
+      });
+
+      expect(mockClientInstance.auth.ssoExchange).toHaveBeenCalledTimes(1);
+    });
+
+    it('should pass custom headers to auth.ssoExchange', async () => {
+      const TestSSOExchangeWithHeadersConsumer = () => {
+        const { ssoExchange: ssoExchangeFn } = useAuth0();
+
+        const handleExchange = () => {
+          ssoExchangeFn({
+            refreshToken: 'my_refresh_token',
+            headers: { 'X-Custom': 'value' },
+          }).catch(() => {});
+        };
+
+        return (
+          <Button
+            title="SSO Exchange With Headers"
+            onPress={handleExchange}
+            testID="sso-exchange-headers-button"
+          />
+        );
+      };
+
+      const mockSSOCredentials = {
+        sessionTransferToken: 'stt_xyz',
+        tokenType: 'session_transfer',
+        expiresIn: 60,
+      };
+
+      mockClientInstance.auth.ssoExchange = jest
+        .fn()
+        .mockResolvedValueOnce(mockSSOCredentials);
+
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.auth0.com" clientId="test-client-id">
+            <TestSSOExchangeWithHeadersConsumer />
+          </Auth0Provider>
+        );
+      });
+
+      const exchangeButton = screen.getByTestId('sso-exchange-headers-button');
+      await act(async () => {
+        fireEvent.click(exchangeButton);
+      });
+
+      expect(mockClientInstance.auth.ssoExchange).toHaveBeenCalledWith({
+        refreshToken: 'my_refresh_token',
+        headers: { 'X-Custom': 'value' },
+      });
     });
   });
 

@@ -1,5 +1,6 @@
 import type {
   Credentials,
+  SessionTransferCredentials,
   User,
   MfaChallengeResponse,
   PasswordRealmParameters,
@@ -8,6 +9,7 @@ import type {
   RevokeOptions,
   ExchangeParameters,
   ExchangeNativeSocialParameters,
+  SSOExchangeParameters,
   PasswordlessEmailParameters,
   PasswordlessSmsParameters,
   LoginEmailParameters,
@@ -48,4 +50,8 @@ export interface IAuthenticationProvider {
   exchangeNativeSocial(
     parameters: ExchangeNativeSocialParameters
   ): Promise<Credentials>;
+
+  ssoExchange(
+    parameters: SSOExchangeParameters
+  ): Promise<SessionTransferCredentials>;
 }

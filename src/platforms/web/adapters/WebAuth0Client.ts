@@ -16,6 +16,7 @@ import type {
 } from '../../../types';
 import { WebWebAuthProvider } from './WebWebAuthProvider';
 import { WebCredentialsManager } from './WebCredentialsManager';
+import { ssoExchangeNotSupported } from './WebAuthenticationProvider';
 import {
   AuthenticationOrchestrator,
   ManagementApiOrchestrator,
@@ -103,13 +104,18 @@ export class WebAuth0Client implements IAuth0Client {
       ? getDPoPHeadersForOrchestrator
       : undefined;
 
-    this.auth = new AuthenticationOrchestrator({
+    const orchestrator = new AuthenticationOrchestrator({
       clientId: options.clientId,
       httpClient: this.httpClient,
       tokenType: this.tokenType,
       baseUrl: baseUrl,
       getDPoPHeaders: useDPoP ? getDPoPHeadersForOrchestrator : undefined,
     });
+    orchestrator.ssoExchange = () =>
+      Promise.reject(
+        new AuthError('UnsupportedOperation', ssoExchangeNotSupported)
+      );
+    this.auth = orchestrator;
 
     this.webAuth = new WebWebAuthProvider(this.client);
     this.credentialsManager = new WebCredentialsManager(this.client);

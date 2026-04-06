@@ -1,5 +1,6 @@
 export { AuthError } from './AuthError';
 export { Credentials } from './Credentials';
+export { SSOCredentials } from './SSOCredentials';
 export { Auth0User } from './Auth0User';
 export { ApiCredentials } from './ApiCredentials';
 export {

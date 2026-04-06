@@ -4,6 +4,7 @@ import {
   AuthError,
   Auth0User,
   Credentials as CredentialsModel,
+  SSOCredentials,
 } from '../../models';
 
 // Mock HttpClient but preserve getAuthHeader
@@ -116,6 +117,7 @@ describe('AuthenticationOrchestrator', () => {
     orchestrator = new AuthenticationOrchestrator({
       clientId,
       httpClient: mockHttpClientInstance as unknown as HttpClient,
+      baseUrl: baseUrl,
     });
   });
 
@@ -858,6 +860,92 @@ describe('AuthenticationOrchestrator', () => {
         }),
         undefined
       );
+    });
+  });
+
+  describe('sso exchange', () => {
+    const ssoResponse = {
+      access_token: 'session_transfer_token_value',
+      issued_token_type:
+        'urn:auth0:params:oauth:token-type:session_transfer_token',
+      token_type: 'N_A',
+      expires_in: 120,
+      id_token: validIdToken,
+      refresh_token: 'new_refresh_token',
+    };
+
+    const parameters = {
+      refreshToken: 'a refresh token of a user',
+    };
+
+    it('should send correct payload with session_transfer audience', async () => {
+      mockHttpClientInstance.post.mockResolvedValueOnce({
+        json: ssoResponse,
+        response: new Response(null, { status: 200 }),
+      });
+      await orchestrator.ssoExchange(parameters);
+
+      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+        '/oauth/token',
+        expect.objectContaining({
+          grant_type: 'refresh_token',
+          client_id: clientId,
+          refresh_token: parameters.refreshToken,
+          audience: 'urn:samples.auth0.com:session_transfer',
+        }),
+        undefined
+      );
+    });
+
+    it('should return SSOCredentials instance', async () => {
+      mockHttpClientInstance.post.mockResolvedValueOnce({
+        json: ssoResponse,
+        response: new Response(null, { status: 200 }),
+      });
+
+      const result = await orchestrator.ssoExchange(parameters);
+
+      expect(result).toBeInstanceOf(SSOCredentials);
+      expect(result.sessionTransferToken).toBe(ssoResponse.access_token);
+      expect(result.tokenType).toBe(ssoResponse.issued_token_type);
+      expect(result.expiresIn).toBe(ssoResponse.expires_in);
+      expect(result.idToken).toBe(ssoResponse.id_token);
+      expect(result.refreshToken).toBe(ssoResponse.refresh_token);
+    });
+
+    it('should handle oauth error', async () => {
+      mockHttpClientInstance.post.mockResolvedValueOnce({
+        json: oauthErrorResponse,
+        response: new Response(null, { status: 400 }),
+      });
+
+      await expect(orchestrator.ssoExchange(parameters)).rejects.toThrow(
+        AuthError
+      );
+    });
+
+    it('should pass custom headers', async () => {
+      mockHttpClientInstance.post.mockResolvedValueOnce({
+        json: ssoResponse,
+        response: new Response(null, { status: 200 }),
+      });
+      await orchestrator.ssoExchange({
+        refreshToken: 'a refresh token',
+        headers: { 'X-Custom-Header': 'custom-value' },
+      });
+
+      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+        '/oauth/token',
+        expect.objectContaining({
+          grant_type: 'refresh_token',
+          refresh_token: 'a refresh token',
+        }),
+        { 'X-Custom-Header': 'custom-value' }
+      );
+    });
+
+    it('should throw when refreshToken is missing', async () => {
+      await expect(orchestrator.ssoExchange({} as any)).rejects.toThrow();
     });
   });
 });
