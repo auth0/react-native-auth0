@@ -347,12 +347,12 @@ describe('WebAuth0Client', () => {
     };
 
     beforeEach(() => {
-      mockSpaClient.exchangeToken = jest
+      mockSpaClient.loginWithCustomTokenExchange = jest
         .fn()
         .mockResolvedValue(mockExchangeResponse);
     });
 
-    it('should call exchangeToken on SPA client with all parameters', async () => {
+    it('should call loginWithCustomTokenExchange on SPA client with all parameters', async () => {
       const parameters = {
         subjectToken: 'external-token',
         subjectTokenType: 'urn:acme:legacy-token',
@@ -363,7 +363,7 @@ describe('WebAuth0Client', () => {
 
       await client.customTokenExchange(parameters);
 
-      expect(mockSpaClient.exchangeToken).toHaveBeenCalledWith({
+      expect(mockSpaClient.loginWithCustomTokenExchange).toHaveBeenCalledWith({
         subject_token: 'external-token',
         subject_token_type: 'urn:acme:legacy-token',
         audience: 'https://api.example.com',
@@ -372,7 +372,7 @@ describe('WebAuth0Client', () => {
       });
     });
 
-    it('should call exchangeToken with only required parameters', async () => {
+    it('should call loginWithCustomTokenExchange with only required parameters', async () => {
       const parameters = {
         subjectToken: 'external-token',
         subjectTokenType: 'urn:acme:legacy-token',
@@ -380,7 +380,7 @@ describe('WebAuth0Client', () => {
 
       await client.customTokenExchange(parameters);
 
-      expect(mockSpaClient.exchangeToken).toHaveBeenCalledWith({
+      expect(mockSpaClient.loginWithCustomTokenExchange).toHaveBeenCalledWith({
         subject_token: 'external-token',
         subject_token_type: 'urn:acme:legacy-token',
         audience: undefined,
@@ -420,7 +420,7 @@ describe('WebAuth0Client', () => {
     });
 
     it('should use client tokenType as fallback when response token_type is missing', async () => {
-      mockSpaClient.exchangeToken.mockResolvedValueOnce({
+      mockSpaClient.loginWithCustomTokenExchange.mockResolvedValueOnce({
         ...mockExchangeResponse,
         token_type: undefined,
       });
@@ -434,13 +434,15 @@ describe('WebAuth0Client', () => {
       expect(result.tokenType).toBe('DPoP');
     });
 
-    it('should propagate errors from exchangeToken as AuthenticationException', async () => {
+    it('should propagate errors from loginWithCustomTokenExchange as AuthenticationException', async () => {
       const exchangeError = {
         error: 'invalid_grant',
         error_description: 'Token exchange failed',
         message: 'Token exchange failed',
       };
-      mockSpaClient.exchangeToken.mockRejectedValueOnce(exchangeError);
+      mockSpaClient.loginWithCustomTokenExchange.mockRejectedValueOnce(
+        exchangeError
+      );
 
       await expect(
         client.customTokenExchange({
@@ -462,7 +464,9 @@ describe('WebAuth0Client', () => {
 
     it('should wrap generic errors in AuthenticationException', async () => {
       const genericError = new Error('Network error');
-      mockSpaClient.exchangeToken.mockRejectedValueOnce(genericError);
+      mockSpaClient.loginWithCustomTokenExchange.mockRejectedValueOnce(
+        genericError
+      );
 
       await expect(
         client.customTokenExchange({
