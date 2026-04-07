@@ -230,7 +230,7 @@ export class WebAuth0Client implements IAuth0Client {
       // Apply default scope if not provided for consistency with native platforms
       const finalScope = scope ?? 'openid profile email';
 
-      const response = await this.client.exchangeToken({
+      const response = await this.client.loginWithCustomTokenExchange({
         subject_token: subjectToken,
         subject_token_type: subjectTokenType,
         audience,
