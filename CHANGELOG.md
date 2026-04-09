@@ -1,5 +1,17 @@
 # Change Log
 
+## [v5.5.0](https://github.com/auth0/react-native-auth0/tree/v5.5.0) (2026-04-09)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.4.1...v5.5.0)
+
+**Added**
+
+- feat: add ssoExchange to Authentication API for Native-to-Web SSO [\#1494](https://github.com/auth0/react-native-auth0/pull/1494) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Changed**
+
+- cache client instances in Auth0ClientFactory to prevent duplicate state [\#1506](https://github.com/auth0/react-native-auth0/pull/1506) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.4.1](https://github.com/auth0/react-native-auth0/tree/v5.4.1) (2026-03-27)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.4.0...v5.4.1)
