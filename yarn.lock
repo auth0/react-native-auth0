@@ -15230,14 +15230,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:19.2.3":
-  version: 19.2.3
-  resolution: "react-dom@npm:19.2.3"
+"react-dom@npm:19.2.5":
+  version: 19.2.5
+  resolution: "react-dom@npm:19.2.5"
   dependencies:
     scheduler: "npm:^0.27.0"
   peerDependencies:
-    react: ^19.2.3
-  checksum: 10c0/dc43f7ede06f46f3acc16ee83107c925530de9b91d1d0b3824583814746ff4c498ea64fd65cd83aba363205268adff52e2827c582634ae7b15069deaeabc4892
+    react: ^19.2.5
+  checksum: 10c0/8067606e9f58e4c2e8cb5f09570217dbc71c4843ebcaa20ae2085912d3e3a351f17d8f7c1713313cdda7f272840c8c34ff6c860fcb840862071bceea218e0c63
   languageName: node
   linkType: hard
 
@@ -15326,7 +15326,7 @@ __metadata:
     prettier-plugin-organize-imports: "npm:4.3.0"
     pretty-quick: "npm:^4.2.2"
     react: "npm:19.2.3"
-    react-dom: "npm:19.2.3"
+    react-dom: "npm:19.2.5"
     react-native: "npm:0.84.1"
     react-native-builder-bob: "npm:^0.40.18"
     release-it: "npm:^19.2.4"
