@@ -626,10 +626,10 @@ describe('AuthenticationOrchestrator', () => {
       );
     });
 
-    it('multifactorChallenge should send correct payload and return response', async () => {
-      const challengeResponse = { challengeType: 'oob', oobCode: 'abc' };
+    it('multifactorChallenge should send correct payload and return camelCased response', async () => {
+      const apiResponse = { challenge_type: 'oob', oob_code: 'abc' };
       mockHttpClientInstance.post.mockResolvedValueOnce({
-        json: challengeResponse,
+        json: apiResponse,
         response: new Response(null, { status: 200 }),
       });
       const result = await orchestrator.multifactorChallenge({
@@ -648,7 +648,7 @@ describe('AuthenticationOrchestrator', () => {
         },
         undefined
       );
-      expect(result).toEqual(challengeResponse);
+      expect(result).toEqual({ challengeType: 'oob', oobCode: 'abc' });
     });
   });
 
