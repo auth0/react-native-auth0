@@ -90,7 +90,8 @@ describe('NativeBridgeManager', () => {
         options.leeway,
         options.ephemeralSession,
         1, // presentationStyle
-        parameters.additionalParameters
+        parameters.additionalParameters,
+        undefined // allowedBrowserPackages (Android only)
       );
     });
 
@@ -118,7 +119,8 @@ describe('NativeBridgeManager', () => {
         0, // leeway
         false, // ephemeralSession
         99, // presentationStyle
-        {} // additionalParameters
+        {}, // additionalParameters
+        undefined // allowedBrowserPackages (Android only)
       );
     });
 
