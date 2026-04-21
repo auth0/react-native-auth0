@@ -5,6 +5,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 
 abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
@@ -83,6 +84,7 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
         ephemeralSession: Boolean?,
         safariViewControllerPresentationStyle: Double?,
         additionalParameters: ReadableMap?,
+        allowedBrowserPackages: ReadableArray?,
         promise: Promise
     )
 

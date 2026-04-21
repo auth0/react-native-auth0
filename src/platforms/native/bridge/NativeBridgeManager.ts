@@ -104,7 +104,8 @@ export class NativeBridgeManager implements INativeBridge {
       options.ephemeralSession ?? false,
       presentationStyle ?? 99, // Since we can't pass null to the native layer, and we need a value to represent this parameter is not set, we are using 99.
       // //The native layer will check for this and ignore if the value is 99
-      parameters.additionalParameters ?? {}
+      parameters.additionalParameters ?? {},
+      options.allowedBrowsers
     );
     return new CredentialsModel(credential);
   }

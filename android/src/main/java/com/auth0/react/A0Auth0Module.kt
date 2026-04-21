@@ -13,12 +13,15 @@ import com.auth0.android.authentication.storage.SecureCredentialsManager
 import com.auth0.android.authentication.storage.SharedPreferencesStorage
 import com.auth0.android.dpop.DPoP
 import com.auth0.android.dpop.DPoPException
+import com.auth0.android.provider.BrowserPicker
+import com.auth0.android.provider.CustomTabsOptions
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
 import com.facebook.react.bridge.ActivityEventListener
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableNativeMap
@@ -111,6 +114,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         ephemeralSession: Boolean?,
         safariViewControllerPresentationStyle: Double?,
         additionalParameters: ReadableMap?,
+        allowedBrowserPackages: ReadableArray?,
         promise: Promise
     ) {
         if(this.useDPoP) {
@@ -118,7 +122,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         }
         webAuthPromise = promise
         val cleanedParameters = mutableMapOf<String, String>()
-        
+
         additionalParameters?.let { params ->
             params.toHashMap().forEach { (key, value) ->
                 value?.let { cleanedParameters[key] = it.toString() }
@@ -126,7 +130,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         }
 
         val builder = WebAuthProvider.login(auth0!!).withScheme(scheme)
-        
+
         builder.apply {
             state?.let { withState(it) }
             nonce?.let { withNonce(it) }
@@ -138,6 +142,17 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             invitationUrl?.let { withInvitationUrl(it) }
             leeway?.let { if (it.toInt() != 0) withIdTokenVerificationLeeway(it.toInt()) }
             redirectUri?.let { withRedirectUri(it) }
+            allowedBrowserPackages?.let { packages ->
+                val packageList = (0 until packages.size()).mapNotNull { packages.getString(it) }
+                val browserPicker = BrowserPicker.newBuilder()
+                    .withAllowedPackages(packageList)
+                    .build()
+                withCustomTabsOptions(
+                    CustomTabsOptions.newBuilder()
+                        .withBrowserPicker(browserPicker)
+                        .build()
+                )
+            }
         }
         
         builder.withParameters(cleanedParameters)

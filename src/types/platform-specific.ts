@@ -144,6 +144,28 @@ export interface NativeAuthorizeOptions {
         presentationStyle?: SafariViewControllerPresentationStyle;
       }
     | boolean;
+  /**
+   * **Android only:** List of browser package names allowed to handle the web authentication flow.
+   * When set, only browsers whose package names appear in this list will be used. This is useful
+   * for excluding browsers that do not correctly handle App Link redirects (e.g. Firefox).
+   *
+   * - When the user's default browser is in the list, it is used.
+   * - When the user's default browser is not in the list but another allowed browser is installed, that browser is used instead.
+   * - When no allowed browser is installed, an `a0.browser_not_available` error is returned.
+   *
+   * @example
+   * ```typescript
+   * await authorize({}, {
+   *   allowedBrowsers: [
+   *     'com.android.chrome',
+   *     'com.chrome.beta',
+   *     'com.microsoft.emmx', // Edge
+   *     'com.brave.browser',
+   *   ]
+   * });
+   * ```
+   */
+  allowedBrowsers?: string[];
 }
 
 /**

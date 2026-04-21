@@ -93,7 +93,8 @@ export interface Spec extends TurboModule {
     leeway: Int32 | undefined,
     ephemeralSession: boolean | undefined,
     safariViewControllerPresentationStyle: Int32 | undefined,
-    additionalParameters: { [key: string]: string } | undefined
+    additionalParameters: { [key: string]: string } | undefined,
+    allowedBrowsers: string[] | undefined
   ): Promise<Credentials>;
 
   /**
