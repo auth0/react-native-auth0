@@ -133,6 +133,7 @@ RCT_EXPORT_METHOD(webAuth:(NSString *)scheme
 ephemeralSession:(nonnull NSNumber *)ephemeralSession
 safariViewControllerPresentationStyle:(nonnull NSNumber *)safariViewControllerPresentationStyle
 additionalParameters:(NSDictionary * _Nullable)additionalParameters
+ allowedBrowsers:(NSArray * _Nullable)allowedBrowsers
         resolve:(RCTPromiseResolveBlock)resolve
          reject:(RCTPromiseRejectBlock)reject) { 
     NSInteger maxAgeValue = maxAge != nil ? (NSInteger)[maxAge doubleValue] : 0;
