@@ -91,7 +91,7 @@ describe('NativeBridgeManager', () => {
         options.ephemeralSession,
         1, // presentationStyle
         parameters.additionalParameters,
-        undefined // allowedBrowserPackages (Android only)
+        undefined // allowedBrowserPackages
       );
     });
 
@@ -120,7 +120,40 @@ describe('NativeBridgeManager', () => {
         false, // ephemeralSession
         99, // presentationStyle
         {}, // additionalParameters
-        undefined // allowedBrowserPackages (Android only)
+        undefined // allowedBrowserPackages
+      );
+    });
+
+    it('should pass allowedBrowserPackages to native webAuth when provided', async () => {
+      MockedAuth0NativeModule.webAuth.mockResolvedValueOnce(
+        nativeSuccessCredentials as any
+      );
+      const allowedBrowserPackages = [
+        'com.android.chrome',
+        'com.brave.browser',
+      ];
+
+      await bridge.authorize(
+        { redirectUrl: 'com.myapp://cb' },
+        { customScheme: 'com.myapp', allowedBrowserPackages }
+      );
+
+      expect(MockedAuth0NativeModule.webAuth).toHaveBeenCalledWith(
+        'com.myapp',
+        'com.myapp://cb',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        0,
+        undefined,
+        undefined,
+        0,
+        false,
+        99,
+        {},
+        allowedBrowserPackages
       );
     });
 
@@ -151,7 +184,26 @@ describe('NativeBridgeManager', () => {
       expect(MockedAuth0NativeModule.webAuthLogout).toHaveBeenCalledWith(
         options.customScheme,
         parameters.federated,
-        parameters.returnToUrl
+        parameters.returnToUrl,
+        undefined // allowedBrowserPackages
+      );
+    });
+
+    it('should pass allowedBrowserPackages to native webAuthLogout when provided', async () => {
+      const parameters = {
+        federated: false,
+        returnToUrl: 'com.myapp://logout',
+      };
+      const allowedBrowserPackages = ['com.android.chrome'];
+      const options = { customScheme: 'com.myapp', allowedBrowserPackages };
+
+      await bridge.clearSession(parameters, options);
+
+      expect(MockedAuth0NativeModule.webAuthLogout).toHaveBeenCalledWith(
+        options.customScheme,
+        parameters.federated,
+        parameters.returnToUrl,
+        allowedBrowserPackages
       );
     });
   });

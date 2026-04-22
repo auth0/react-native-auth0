@@ -360,15 +360,27 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     override fun getName(): String = NAME
 
     @ReactMethod
-    override fun webAuthLogout(scheme: String, federated: Boolean, redirectUri: String?, promise: Promise) {
+    override fun webAuthLogout(scheme: String, federated: Boolean, redirectUri: String?, allowedBrowserPackages: ReadableArray?, promise: Promise) {
         val builder = WebAuthProvider.logout(auth0!!).withScheme(scheme)
-        
+
         if (federated) {
             builder.withFederated()
         }
-        
+
         redirectUri?.let { builder.withReturnToUrl(it) }
-        
+
+        allowedBrowserPackages?.let { packages ->
+            val packageList = (0 until packages.size()).mapNotNull { packages.getString(it) }
+            val browserPicker = BrowserPicker.newBuilder()
+                .withAllowedPackages(packageList)
+                .build()
+            builder.withCustomTabsOptions(
+                CustomTabsOptions.newBuilder()
+                    .withBrowserPicker(browserPicker)
+                    .build()
+            )
+        }
+
         builder.start(reactContext.currentActivity as FragmentActivity,
             object : com.auth0.android.callback.Callback<Void?, AuthenticationException> {
                 override fun onSuccess(result: Void?) {

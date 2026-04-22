@@ -156,7 +156,7 @@ export interface NativeAuthorizeOptions {
    * @example
    * ```typescript
    * await authorize({}, {
-   *   allowedBrowsers: [
+   *   allowedBrowserPackages: [
    *     'com.android.chrome',
    *     'com.chrome.beta',
    *     'com.microsoft.emmx', // Edge
@@ -165,7 +165,7 @@ export interface NativeAuthorizeOptions {
    * });
    * ```
    */
-  allowedBrowsers?: string[];
+  allowedBrowserPackages?: string[];
 }
 
 /**
@@ -184,6 +184,12 @@ export interface NativeClearSessionOptions {
    * See migration guide for details.
    */
   useLegacyCallbackUrl?: boolean;
+
+  /**
+   * **Android only:** List of browser package names allowed to handle the web logout flow.
+   * Mirrors the same option on {@link NativeAuthorizeOptions} — see that field for full details.
+   */
+  allowedBrowserPackages?: string[];
 }
 
 // ========= Web-Specific Options =========

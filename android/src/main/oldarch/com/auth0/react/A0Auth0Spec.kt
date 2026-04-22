@@ -90,7 +90,7 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
 
     @ReactMethod
     @DoNotStrip
-    abstract fun webAuthLogout(scheme: String, federated: Boolean, redirectUri: String?, promise: Promise)
+    abstract fun webAuthLogout(scheme: String, federated: Boolean, redirectUri: String?, allowedBrowserPackages: ReadableArray?, promise: Promise)
 
     @ReactMethod
     @DoNotStrip
