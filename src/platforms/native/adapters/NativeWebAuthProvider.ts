@@ -44,7 +44,16 @@ export class NativeWebAuthProvider implements IWebAuthProvider {
     let linkSubscription: EmitterSubscription | null = null;
     if (Platform.OS === 'ios') {
       linkSubscription = Linking.addEventListener('url', async (event) => {
-        // This listener catches the deep link and forwards it to the native side.
+        // Only forward URLs whose hostname matches the Auth0 domain.
+        // This prevents universal links on other domains from being
+        // incorrectly treated as Auth0 callbacks (e.g. when using
+        // customScheme: 'https' alongside app-specific universal links).
+        try {
+          const url = new URL(event.url);
+          if (url.hostname !== this.domain) return;
+        } catch {
+          return;
+        }
         linkSubscription?.remove();
         await this.bridge.resumeWebAuth(event.url);
       });
