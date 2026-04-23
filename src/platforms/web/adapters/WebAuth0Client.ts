@@ -31,6 +31,7 @@ export class WebAuth0Client implements IAuth0Client {
   readonly webAuth: WebWebAuthProvider;
   readonly credentialsManager: WebCredentialsManager;
   readonly auth: IAuthenticationProvider;
+  readonly mfa: IMfaClient;
 
   private readonly httpClient: HttpClient;
   private readonly tokenType: TokenType;
@@ -121,6 +122,7 @@ export class WebAuth0Client implements IAuth0Client {
 
     this.webAuth = new WebWebAuthProvider(this.client);
     this.credentialsManager = new WebCredentialsManager(this.client);
+    this.mfa = new WebMfaClient(this.client.mfa, this.tokenType);
   }
 
   users(token: string, tokenType?: TokenType): IUsersClient {
@@ -258,9 +260,5 @@ export class WebAuth0Client implements IAuth0Client {
         { json: e }
       );
     }
-  }
-
-  mfa(): IMfaClient {
-    return new WebMfaClient(this.client.mfa, this.tokenType);
   }
 }

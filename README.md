@@ -714,13 +714,13 @@ try {
 
 ### MFA errors
 
-All MFA operations (via `auth0.mfa()` or the `mfaGetAuthenticators`, `mfaEnroll`, `mfaChallenge`, `mfaVerify` hooks) throw `MfaError` with a normalized `type` property:
+All MFA operations (via `auth0.mfa` or the `mfa` property from `useAuth0()`) throw `MfaError` with a normalized `type` property:
 
 ```js
 import { MfaError, MfaErrorCodes } from 'react-native-auth0';
 
 try {
-  const credentials = await auth0.mfa().verify({ mfaToken, otp: '123456' });
+  const credentials = await auth0.mfa.verify({ mfaToken, otp: '123456' });
 } catch (error) {
   if (error instanceof MfaError) {
     switch (error.type) {
@@ -878,10 +878,10 @@ This library provides a unified API across Native (iOS/Android) and Web platform
 | `auth.resetPassword()`                     |          ✅          |      ✅       | Calls the `/dbconnections/change_password` endpoint. Works on both platforms.                                                                                            |
 | `users(token).patchUser()`                 |          ✅          |      ✅       | Calls the Management API. Works on any platform with a valid token, but use with caution in the browser.                                                                 |
 | **MFA Flexible Factors Grant**             |                      |               | ---                                                                                                                                                                      |
-| `mfa().getAuthenticators()`                |          ✅          |      ✅       | Lists enrolled MFA authenticators for the user.                                                                                                                          |
-| `mfa().enroll()`                           |          ✅          |      ✅       | Enrolls a new MFA factor (OTP, SMS, email, voice, push).                                                                                                                 |
-| `mfa().challenge()`                        |          ✅          |      ✅       | Triggers an MFA challenge for an enrolled authenticator.                                                                                                                 |
-| `mfa().verify()`                           |          ✅          |      ✅       | Verifies an MFA code (OTP, OOB, recovery) and returns credentials.                                                                                                       |
+| `mfa.getAuthenticators()`                  |          ✅          |      ✅       | Lists enrolled MFA authenticators for the user.                                                                                                                          |
+| `mfa.enroll()`                             |          ✅          |      ✅       | Enrolls a new MFA factor (OTP, SMS, email, voice, push).                                                                                                                 |
+| `mfa.challenge()`                          |          ✅          |      ✅       | Triggers an MFA challenge for an enrolled authenticator.                                                                                                                 |
+| `mfa.verify()`                             |          ✅          |      ✅       | Verifies an MFA code (OTP, OOB, recovery) and returns credentials.                                                                                                       |
 
 ## Troubleshooting
 

@@ -170,13 +170,12 @@ import { View, Button, TextInput, Text } from 'react-native';
 import { useAuth0, MfaError, MfaErrorCodes } from 'react-native-auth0';
 
 function MfaScreen({ mfaToken }: { mfaToken: string }) {
-  const { mfaGetAuthenticators, mfaEnroll, mfaChallenge, mfaVerify } =
-    useAuth0();
+  const { mfa } = useAuth0();
   const [otp, setOtp] = useState('');
 
   const listAuthenticators = async () => {
     try {
-      const authenticators = await mfaGetAuthenticators({ mfaToken });
+      const authenticators = await mfa.getAuthenticators({ mfaToken });
       console.log('Authenticators:', authenticators);
     } catch (error) {
       if (error instanceof MfaError) {
@@ -187,7 +186,7 @@ function MfaScreen({ mfaToken }: { mfaToken: string }) {
 
   const enrollTotp = async () => {
     try {
-      const challenge = await mfaEnroll({ mfaToken, type: 'otp' });
+      const challenge = await mfa.enroll({ mfaToken, type: 'otp' });
       if (challenge.type === 'totp') {
         console.log('Scan QR:', challenge.barcodeUri);
         console.log('Secret:', challenge.secret);
@@ -201,7 +200,7 @@ function MfaScreen({ mfaToken }: { mfaToken: string }) {
 
   const verifyOtp = async () => {
     try {
-      const credentials = await mfaVerify({ mfaToken, otp });
+      const credentials = await mfa.verify({ mfaToken, otp });
       console.log('Authenticated!', credentials.accessToken);
     } catch (error) {
       if (error instanceof MfaError) {
@@ -241,33 +240,31 @@ const auth0 = new Auth0({
   clientId: 'YOUR_AUTH0_CLIENT_ID',
 });
 
-const mfaClient = auth0.mfa();
-
 // List authenticators
-const authenticators = await mfaClient.getAuthenticators({
+const authenticators = await auth0.mfa.getAuthenticators({
   mfaToken: 'mfa_token',
 });
 
 // Enroll TOTP
-const challenge = await mfaClient.enroll({
+const challenge = await auth0.mfa.enroll({
   mfaToken: 'mfa_token',
   type: 'otp',
 });
 
 // Enroll SMS
-const smsChallenge = await mfaClient.enroll({
+const smsChallenge = await auth0.mfa.enroll({
   mfaToken: 'mfa_token',
   phoneNumber: '+12025550135',
 });
 
 // Challenge an authenticator
-const challengeResult = await mfaClient.challenge({
+const challengeResult = await auth0.mfa.challenge({
   mfaToken: 'mfa_token',
   authenticatorId: 'sms|dev_123',
 });
 
 // Verify OTP
-const credentials = await mfaClient.verify({
+const credentials = await auth0.mfa.verify({
   mfaToken: 'mfa_token',
   otp: '123456',
 });

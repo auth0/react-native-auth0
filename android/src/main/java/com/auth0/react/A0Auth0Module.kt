@@ -7,10 +7,6 @@ import com.auth0.android.Auth0
 import com.auth0.android.result.APICredentials
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
-import com.auth0.android.authentication.mfa.MfaApiClient
-import com.auth0.android.authentication.mfa.MfaEnrollmentType
-import com.auth0.android.authentication.mfa.MfaException
-import com.auth0.android.authentication.mfa.MfaVerificationType
 import com.auth0.android.authentication.storage.CredentialsManagerException
 import com.auth0.android.authentication.storage.LocalAuthenticationOptions
 import com.auth0.android.authentication.storage.SecureCredentialsManager
@@ -18,12 +14,7 @@ import com.auth0.android.authentication.storage.SharedPreferencesStorage
 import com.auth0.android.dpop.DPoP
 import com.auth0.android.dpop.DPoPException
 import com.auth0.android.provider.WebAuthProvider
-import com.auth0.android.result.Authenticator
 import com.auth0.android.result.Credentials
-import com.auth0.android.result.EnrollmentChallenge
-import com.auth0.android.result.OobEnrollmentChallenge
-import com.auth0.android.result.RecoveryCodeEnrollmentChallenge
-import com.auth0.android.result.TotpEnrollmentChallenge
 import com.facebook.react.bridge.ActivityEventListener
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
@@ -100,6 +91,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     private var useDPoP: Boolean = true
 
     private var auth0: Auth0? = null
+    private var mfaBridge: MfaBridge? = null
     private lateinit var secureCredentialsManager: SecureCredentialsManager
     private var webAuthPromise: Promise? = null
 
@@ -189,6 +181,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         
         this.useDPoP = useDPoP ?: true
         auth0 = Auth0.getInstance(clientId, domain)
+        mfaBridge = MfaBridge(auth0!!, this.useDPoP, reactContext)
 
         val authAPI = AuthenticationAPIClient(auth0!!)
         if (this.useDPoP) {
@@ -521,163 +514,26 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
     @ReactMethod
     override fun mfaGetAuthenticators(mfaToken: String, factorsAllowed: ReadableArray?, promise: Promise) {
-        val authClient = AuthenticationAPIClient(auth0!!)
-        if (useDPoP) {
-            authClient.useDPoP(reactContext)
-        }
-        val mfaClient = authClient.mfaClient(mfaToken)
-
-        val factors = mutableListOf<String>()
-        factorsAllowed?.let {
-            for (i in 0 until it.size()) {
-                it.getString(i)?.let { factor -> factors.add(factor) }
-            }
-        }
-
-        mfaClient.getAuthenticators(factors).start(
-            object : com.auth0.android.callback.Callback<List<Authenticator>, MfaException.MfaListAuthenticatorsException> {
-                override fun onSuccess(result: List<Authenticator>) {
-                    val array = WritableNativeArray()
-                    for (authenticator in result) {
-                        val map = WritableNativeMap().apply {
-                            putString("id", authenticator.id)
-                            putString("authenticatorType", authenticator.authenticatorType)
-                            putBoolean("active", authenticator.active)
-                            authenticator.name?.let { putString("name", it) }
-                            authenticator.oobChannel?.let { putString("oobChannel", it) }
-                        }
-                        array.pushMap(map)
-                    }
-                    promise.resolve(array)
-                }
-
-                override fun onFailure(error: MfaException.MfaListAuthenticatorsException) {
-                    promise.reject(error.getCode(), error.getDescription(), error)
-                }
-            }
-        )
+        mfaBridge?.getAuthenticators(mfaToken, factorsAllowed, promise)
+            ?: promise.reject("NOT_INITIALIZED", "Auth0 not initialized")
     }
 
     @ReactMethod
     override fun mfaEnroll(mfaToken: String, type: String, value: String?, promise: Promise) {
-        val authClient = AuthenticationAPIClient(auth0!!)
-        if (useDPoP) {
-            authClient.useDPoP(reactContext)
-        }
-        val mfaClient = authClient.mfaClient(mfaToken)
-
-        val enrollmentType = when (type) {
-            "phone" -> {
-                if (value == null) {
-                    promise.reject("MFA_ENROLLMENT_ERROR", "Phone number is required for phone enrollment")
-                    return
-                }
-                MfaEnrollmentType.Phone(value)
-            }
-            "email" -> {
-                if (value == null) {
-                    promise.reject("MFA_ENROLLMENT_ERROR", "Email is required for email enrollment")
-                    return
-                }
-                MfaEnrollmentType.Email(value)
-            }
-            "otp" -> MfaEnrollmentType.Otp
-            "push" -> MfaEnrollmentType.Push
-            else -> {
-                promise.reject("MFA_ENROLLMENT_ERROR", "Unsupported enrollment type: $type")
-                return
-            }
-        }
-
-        mfaClient.enroll(enrollmentType).start(
-            object : com.auth0.android.callback.Callback<EnrollmentChallenge, MfaException.MfaEnrollmentException> {
-                override fun onSuccess(result: EnrollmentChallenge) {
-                    val map = WritableNativeMap()
-                    when (result) {
-                        is TotpEnrollmentChallenge -> {
-                            map.putString("type", "totp")
-                            map.putString("barcodeUri", result.barcodeUri)
-                            map.putString("secret", result.manualInputCode)
-                        }
-                        is OobEnrollmentChallenge -> {
-                            map.putString("type", "oob")
-                            map.putString("oobCode", result.oobCode)
-                            result.bindingMethod?.let { map.putString("bindingMethod", it) }
-                        }
-                        is RecoveryCodeEnrollmentChallenge -> {
-                            map.putString("type", "recovery-code")
-                            map.putString("recoveryCode", result.recoveryCode)
-                        }
-                        else -> {
-                            map.putString("type", "unknown")
-                        }
-                    }
-                    promise.resolve(map)
-                }
-
-                override fun onFailure(error: MfaException.MfaEnrollmentException) {
-                    promise.reject(error.getCode(), error.getDescription(), error)
-                }
-            }
-        )
+        mfaBridge?.enroll(mfaToken, type, value, promise)
+            ?: promise.reject("NOT_INITIALIZED", "Auth0 not initialized")
     }
 
     @ReactMethod
     override fun mfaChallenge(mfaToken: String, authenticatorId: String, promise: Promise) {
-        val authClient = AuthenticationAPIClient(auth0!!)
-        if (useDPoP) {
-            authClient.useDPoP(reactContext)
-        }
-        val mfaClient = authClient.mfaClient(mfaToken)
-
-        mfaClient.challenge(authenticatorId).start(
-            object : com.auth0.android.callback.Callback<com.auth0.android.result.Challenge, MfaException.MfaChallengeException> {
-                override fun onSuccess(result: com.auth0.android.result.Challenge) {
-                    val map = WritableNativeMap().apply {
-                        putString("challengeType", result.challengeType)
-                        result.oobCode?.let { putString("oobCode", it) }
-                        result.bindingMethod?.let { putString("bindingMethod", it) }
-                    }
-                    promise.resolve(map)
-                }
-
-                override fun onFailure(error: MfaException.MfaChallengeException) {
-                    promise.reject(error.getCode(), error.getDescription(), error)
-                }
-            }
-        )
+        mfaBridge?.challenge(mfaToken, authenticatorId, promise)
+            ?: promise.reject("NOT_INITIALIZED", "Auth0 not initialized")
     }
 
     @ReactMethod
     override fun mfaVerify(mfaToken: String, type: String, code: String, bindingCode: String?, promise: Promise) {
-        val authClient = AuthenticationAPIClient(auth0!!)
-        if (useDPoP) {
-            authClient.useDPoP(reactContext)
-        }
-        val mfaClient = authClient.mfaClient(mfaToken)
-
-        val verificationType = when (type) {
-            "otp" -> MfaVerificationType.Otp(code)
-            "oob" -> MfaVerificationType.Oob(oobCode = code, bindingCode = bindingCode)
-            "recoveryCode" -> MfaVerificationType.RecoveryCode(code)
-            else -> {
-                promise.reject("MFA_VERIFY_ERROR", "Unsupported verification type: $type")
-                return
-            }
-        }
-
-        mfaClient.verify(verificationType).start(
-            object : com.auth0.android.callback.Callback<Credentials, MfaException.MfaVerifyException> {
-                override fun onSuccess(result: Credentials) {
-                    val map = CredentialsParser.toMap(result)
-                    promise.resolve(map)
-                }
-
-                override fun onFailure(error: MfaException.MfaVerifyException) {
-                    promise.reject(error.getCode(), error.getDescription(), error)
-                }
-            }
-        )
+        mfaBridge?.verify(mfaToken, type, code, bindingCode, promise)
+            ?: promise.reject("NOT_INITIALIZED", "Auth0 not initialized")
     }
 
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {

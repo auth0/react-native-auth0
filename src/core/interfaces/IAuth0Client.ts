@@ -77,26 +77,22 @@ export interface IAuth0Client {
   ): Promise<Credentials>;
 
   /**
-   * Creates an MFA client for performing Flexible Factors Grant operations.
+   * Provides access to MFA operations using the Flexible Factors Grant.
    *
    * The MFA client provides methods to list authenticators, enroll new MFA
    * factors, challenge existing factors, and verify MFA codes.
    *
-   * @returns An `IMfaClient` instance for interacting with the MFA API.
-   *
    * @example
    * ```typescript
-   * const mfaClient = auth0.mfa();
-   *
    * // List enrolled authenticators
-   * const authenticators = await mfaClient.getAuthenticators({ mfaToken });
+   * const authenticators = await auth0.mfa.getAuthenticators({ mfaToken });
    *
    * // Challenge an authenticator
-   * const challenge = await mfaClient.challenge({ mfaToken, authenticatorId });
+   * const challenge = await auth0.mfa.challenge({ mfaToken, authenticatorId });
    *
    * // Verify with OTP
-   * const credentials = await mfaClient.verify({ mfaToken, otp: '123456' });
+   * const credentials = await auth0.mfa.verify({ mfaToken, otp: '123456' });
    * ```
    */
-  mfa(): IMfaClient;
+  readonly mfa: IMfaClient;
 }

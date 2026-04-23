@@ -26,6 +26,7 @@ export class NativeAuth0Client implements IAuth0Client {
   readonly webAuth: NativeWebAuthProvider;
   readonly credentialsManager: NativeCredentialsManager;
   readonly auth: IAuthenticationProvider;
+  readonly mfa: IMfaClient;
   private ready: Promise<void>;
   private readonly httpClient: HttpClient;
   private readonly tokenType: TokenType;
@@ -78,6 +79,7 @@ export class NativeAuth0Client implements IAuth0Client {
 
     this.webAuth = new NativeWebAuthProvider(guardedBridge, options.domain);
     this.credentialsManager = new NativeCredentialsManager(guardedBridge);
+    this.mfa = new NativeMfaClient(guardedBridge);
   }
 
   private async initialize(
@@ -187,9 +189,5 @@ export class NativeAuth0Client implements IAuth0Client {
       scope,
       organization
     );
-  }
-
-  mfa(): IMfaClient {
-    return new NativeMfaClient(this.guardedBridge);
   }
 }
