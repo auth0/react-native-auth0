@@ -28,14 +28,8 @@ import type {
   ResetPasswordParameters,
   MfaChallengeResponse,
   DPoPHeadersParams,
-  MfaAuthenticator,
-  MfaEnrollmentChallenge,
-  MfaChallengeResult,
-  MfaGetAuthenticatorsParameters,
-  MfaEnrollParameters,
-  MfaChallengeWithAuthenticatorParameters,
-  MfaVerifyParameters,
 } from '../types';
+import type { IMfaClient } from '../core/interfaces/IMfaClient';
 import type {
   NativeAuthorizeOptions,
   NativeClearSessionOptions,
@@ -413,56 +407,51 @@ export const Auth0Provider = ({
     [client]
   );
 
-  const mfaGetAuthenticators = useCallback(
-    async (
-      parameters: MfaGetAuthenticatorsParameters
-    ): Promise<MfaAuthenticator[]> => {
-      try {
-        return await client.mfa().getAuthenticators(parameters);
-      } catch (e) {
-        const error = e as AuthError;
-        dispatch({ type: 'ERROR', error });
-        throw error;
-      }
-    },
-    [client]
-  );
-
-  const mfaEnroll = useCallback(
-    async (
-      parameters: MfaEnrollParameters
-    ): Promise<MfaEnrollmentChallenge> => {
-      try {
-        return await client.mfa().enroll(parameters);
-      } catch (e) {
-        const error = e as AuthError;
-        dispatch({ type: 'ERROR', error });
-        throw error;
-      }
-    },
-    [client]
-  );
-
-  const mfaChallenge = useCallback(
-    async (
-      parameters: MfaChallengeWithAuthenticatorParameters
-    ): Promise<MfaChallengeResult> => {
-      try {
-        return await client.mfa().challenge(parameters);
-      } catch (e) {
-        const error = e as AuthError;
-        dispatch({ type: 'ERROR', error });
-        throw error;
-      }
-    },
-    [client]
-  );
-
-  const mfaVerify = useCallback(
-    (parameters: MfaVerifyParameters) =>
-      loginFlow(client.mfa().verify(parameters)),
-    [client, loginFlow]
-  );
+  const mfa = useMemo<IMfaClient>(() => {
+    const mfaClient = client.mfa;
+    return {
+      getAuthenticators: async (parameters) => {
+        try {
+          return await mfaClient.getAuthenticators(parameters);
+        } catch (e) {
+          const error = e as AuthError;
+          dispatch({ type: 'ERROR', error });
+          throw error;
+        }
+      },
+      enroll: async (parameters) => {
+        try {
+          return await mfaClient.enroll(parameters);
+        } catch (e) {
+          const error = e as AuthError;
+          dispatch({ type: 'ERROR', error });
+          throw error;
+        }
+      },
+      challenge: async (parameters) => {
+        try {
+          return await mfaClient.challenge(parameters);
+        } catch (e) {
+          const error = e as AuthError;
+          dispatch({ type: 'ERROR', error });
+          throw error;
+        }
+      },
+      verify: async (parameters) => {
+        try {
+          const credentials = await mfaClient.verify(parameters);
+          const user = Auth0User.fromIdToken(credentials.idToken);
+          await client.credentialsManager.saveCredentials(credentials);
+          dispatch({ type: 'LOGIN_COMPLETE', user });
+          return credentials;
+        } catch (e) {
+          const error = e as AuthError;
+          dispatch({ type: 'ERROR', error });
+          throw error;
+        }
+      },
+    };
+  }, [client]);
 
   const contextValue = useMemo<Auth0ContextInterface>(
     () => ({
@@ -494,10 +483,7 @@ export const Auth0Provider = ({
       revokeRefreshToken,
       getDPoPHeaders,
       ssoExchange,
-      mfaGetAuthenticators,
-      mfaEnroll,
-      mfaChallenge,
-      mfaVerify,
+      mfa,
     }),
     [
       state,
@@ -528,10 +514,7 @@ export const Auth0Provider = ({
       revokeRefreshToken,
       getDPoPHeaders,
       ssoExchange,
-      mfaGetAuthenticators,
-      mfaEnroll,
-      mfaChallenge,
-      mfaVerify,
+      mfa,
     ]
   );
 

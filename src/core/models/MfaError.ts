@@ -12,7 +12,7 @@ import { AuthError } from './AuthError';
  * import { MfaError, MfaErrorCodes } from 'react-native-auth0';
  *
  * try {
- *   const credentials = await auth0.mfa().verify({ mfaToken, otp: '123456' });
+ *   const credentials = await auth0.mfa.verify({ mfaToken, otp: '123456' });
  * } catch (e) {
  *   if (e instanceof MfaError) {
  *     switch (e.type) {
@@ -115,7 +115,7 @@ const ERROR_CODE_MAP: Record<string, string> = {
  * import { MfaError, MfaErrorCodes } from 'react-native-auth0';
  *
  * try {
- *   const credentials = await auth0.mfa().verify({ mfaToken, otp: '123456' });
+ *   const credentials = await auth0.mfa.verify({ mfaToken, otp: '123456' });
  * } catch (error) {
  *   if (error instanceof MfaError) {
  *     switch (error.type) {
