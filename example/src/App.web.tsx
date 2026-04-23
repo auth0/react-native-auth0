@@ -7,7 +7,13 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import Auth0, { Auth0Provider, useAuth0, User } from 'react-native-auth0';
+import Auth0, {
+  Auth0Provider,
+  useAuth0,
+  User,
+  MfaError,
+  MfaErrorCodes,
+} from 'react-native-auth0';
 
 import config from './auth0-configuration';
 import Button from './components/Button';
@@ -29,7 +35,11 @@ const HooksAuthContent = (): React.JSX.Element => {
     getCredentials,
     createUser,
     resetPassword,
-    auth,
+    loginWithPasswordRealm,
+    mfaGetAuthenticators,
+    mfaEnroll,
+    mfaChallenge,
+    mfaVerify,
     users,
   } = useAuth0();
 
@@ -38,6 +48,14 @@ const HooksAuthContent = (): React.JSX.Element => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // MFA state
+  const [mfaToken, setMfaToken] = useState('');
+  const [mfaOtp, setMfaOtp] = useState('');
+  const [mfaOobCode, setMfaOobCode] = useState('');
+  const [mfaBindingCode, setMfaBindingCode] = useState('');
+  const [mfaRecoveryCode, setMfaRecoveryCode] = useState('');
+  const [mfaAuthenticatorId, setMfaAuthenticatorId] = useState('');
+
   const runDemo = async (action: () => Promise<any>) => {
     setResult(null);
     setApiError(null);
@@ -45,6 +63,10 @@ const HooksAuthContent = (): React.JSX.Element => {
       const response = await action();
       setResult(response ?? { success: true });
     } catch (e) {
+      if (e instanceof MfaError) {
+        setApiError(e);
+        return;
+      }
       setApiError(e as Error);
     }
   };
@@ -91,9 +113,9 @@ const HooksAuthContent = (): React.JSX.Element => {
               title="Log In"
             />
           </Section>
-          <Section title="User Self-Service">
+          <Section title="Database Login">
             <LabeledInput
-              label="Email"
+              label="Username or Email"
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
@@ -105,6 +127,29 @@ const HooksAuthContent = (): React.JSX.Element => {
               onChangeText={setPassword}
               secureTextEntry
             />
+            <Button
+              onPress={() =>
+                runDemo(async () => {
+                  try {
+                    return await loginWithPasswordRealm({
+                      username: email,
+                      password: password,
+                      realm: 'Username-Password-Authentication',
+                    });
+                  } catch (e: any) {
+                    if (e?.json?.mfa_token) {
+                      setMfaToken(e.json.mfa_token);
+                    }
+                    throw e;
+                  }
+                })
+              }
+              title="Log In with Password"
+            />
+            <Text style={styles.hint}>
+              If MFA is enabled, a failed login will return an mfa_token that
+              auto-populates below.
+            </Text>
             <Button
               onPress={() =>
                 runDemo(() =>
@@ -129,14 +174,121 @@ const HooksAuthContent = (): React.JSX.Element => {
               title="Reset Password"
             />
           </Section>
-          <Section title="Unsupported Web Methods (Will Fail)">
+          <Section title="MFA Flexible Factors Grant">
+            <Text style={styles.hint}>
+              Get an mfa_token from your Auth0 tenant, then test MFA flows
+              below.
+            </Text>
+            <LabeledInput
+              label="MFA Token"
+              value={mfaToken}
+              onChangeText={setMfaToken}
+              placeholder="Paste mfa_token here"
+            />
+            <Button
+              onPress={() => runDemo(() => mfaGetAuthenticators({ mfaToken }))}
+              title="List Authenticators"
+              disabled={!mfaToken}
+            />
             <Button
               onPress={() =>
-                runDemo(() =>
-                  auth.passwordRealm({ username: '', password: '', realm: '' })
-                )
+                runDemo(async () => {
+                  const challenge = await mfaEnroll({ mfaToken, type: 'otp' });
+                  return challenge;
+                })
               }
-              title="Test auth.passwordRealm()"
+              title="Enroll TOTP"
+              disabled={!mfaToken}
+            />
+            <LabeledInput
+              label="Authenticator ID"
+              value={mfaAuthenticatorId}
+              onChangeText={setMfaAuthenticatorId}
+              placeholder="e.g. sms|dev_123"
+            />
+            <Button
+              onPress={() =>
+                runDemo(async () => {
+                  const challengeResult = await mfaChallenge({
+                    mfaToken,
+                    authenticatorId: mfaAuthenticatorId,
+                  });
+                  if (challengeResult.oobCode) {
+                    setMfaOobCode(challengeResult.oobCode);
+                  }
+                  return challengeResult;
+                })
+              }
+              title="Challenge"
+              disabled={!mfaToken || !mfaAuthenticatorId}
+            />
+            <LabeledInput
+              label="OTP Code"
+              value={mfaOtp}
+              onChangeText={setMfaOtp}
+              placeholder="6-digit code"
+            />
+            <Button
+              onPress={() =>
+                runDemo(async () => {
+                  const creds = await mfaVerify({ mfaToken, otp: mfaOtp });
+                  return {
+                    success: true,
+                    accessToken: creds.accessToken.substring(0, 20) + '...',
+                  };
+                })
+              }
+              title="Verify OTP"
+              disabled={!mfaToken || !mfaOtp}
+            />
+            <LabeledInput
+              label="OOB Code"
+              value={mfaOobCode}
+              onChangeText={setMfaOobCode}
+              placeholder="Auto-filled from challenge"
+            />
+            <LabeledInput
+              label="Binding Code (optional)"
+              value={mfaBindingCode}
+              onChangeText={setMfaBindingCode}
+              placeholder="Code sent via SMS/email"
+            />
+            <Button
+              onPress={() =>
+                runDemo(async () => {
+                  const params: any = { mfaToken, oobCode: mfaOobCode };
+                  if (mfaBindingCode) params.bindingCode = mfaBindingCode;
+                  const creds = await mfaVerify(params);
+                  return {
+                    success: true,
+                    accessToken: creds.accessToken.substring(0, 20) + '...',
+                  };
+                })
+              }
+              title="Verify OOB"
+              disabled={!mfaToken || !mfaOobCode}
+            />
+            <LabeledInput
+              label="Recovery Code"
+              value={mfaRecoveryCode}
+              onChangeText={setMfaRecoveryCode}
+              placeholder="e.g. ABCDEF123456"
+            />
+            <Button
+              onPress={() =>
+                runDemo(async () => {
+                  const creds = await mfaVerify({
+                    mfaToken,
+                    recoveryCode: mfaRecoveryCode,
+                  });
+                  return {
+                    success: true,
+                    accessToken: creds.accessToken.substring(0, 20) + '...',
+                  };
+                })
+              }
+              title="Verify Recovery Code"
+              disabled={!mfaToken || !mfaRecoveryCode}
             />
           </Section>
         </>
@@ -158,11 +310,17 @@ const HooksApp = () => (
 interface ClassAppState {
   auth0: Auth0;
   user: User | null;
-  result: any; // Can hold credentials or other results
+  result: any;
   apiError: Error | null;
   isLoading: boolean;
   email: string;
   password: string;
+  mfaToken: string;
+  mfaOtp: string;
+  mfaOobCode: string;
+  mfaBindingCode: string;
+  mfaRecoveryCode: string;
+  mfaAuthenticatorId: string;
 }
 
 class ClassApp extends React.Component<{}, ClassAppState> {
@@ -174,6 +332,12 @@ class ClassApp extends React.Component<{}, ClassAppState> {
     isLoading: true,
     email: '',
     password: '',
+    mfaToken: '',
+    mfaOtp: '',
+    mfaOobCode: '',
+    mfaBindingCode: '',
+    mfaRecoveryCode: '',
+    mfaAuthenticatorId: '',
   };
 
   componentDidMount() {
@@ -240,7 +404,20 @@ class ClassApp extends React.Component<{}, ClassAppState> {
   };
 
   render() {
-    const { user, result, apiError, isLoading, email, password } = this.state;
+    const {
+      user,
+      result,
+      apiError,
+      isLoading,
+      email,
+      password,
+      mfaToken,
+      mfaOtp,
+      mfaOobCode,
+      mfaBindingCode,
+      mfaRecoveryCode,
+      mfaAuthenticatorId,
+    } = this.state;
     if (isLoading) {
       return (
         <View style={styles.content}>
@@ -283,9 +460,9 @@ class ClassApp extends React.Component<{}, ClassAppState> {
             <Section title="Web Auth (Recommended Flow)">
               <Button onPress={this.onLogin} title="Log In" />
             </Section>
-            <Section title="User Self-Service">
+            <Section title="Database Login">
               <LabeledInput
-                label="Email"
+                label="Username or Email"
                 value={email}
                 onChangeText={(val) => this.setState({ email: val })}
                 autoCapitalize="none"
@@ -297,6 +474,29 @@ class ClassApp extends React.Component<{}, ClassAppState> {
                 onChangeText={(val) => this.setState({ password: val })}
                 secureTextEntry
               />
+              <Button
+                onPress={() =>
+                  this.runDemo(async () => {
+                    try {
+                      return await this.state.auth0.auth.passwordRealm({
+                        username: email,
+                        password,
+                        realm: 'Username-Password-Authentication',
+                      });
+                    } catch (e: any) {
+                      if (e?.json?.mfa_token) {
+                        this.setState({ mfaToken: e.json.mfa_token });
+                      }
+                      throw e;
+                    }
+                  })
+                }
+                title="Log In with Password"
+              />
+              <Text style={styles.hint}>
+                If MFA is enabled, a failed login will return an mfa_token that
+                auto-populates below.
+              </Text>
               <Button
                 onPress={() =>
                   this.runDemo(() =>
@@ -321,18 +521,134 @@ class ClassApp extends React.Component<{}, ClassAppState> {
                 title="Reset Password"
               />
             </Section>
-            <Section title="Unsupported Web Methods (Will Fail)">
+            <Section title="MFA Flexible Factors Grant">
+              <Text style={styles.hint}>
+                Uses auth0.mfa() class-based API for MFA operations.
+              </Text>
+              <LabeledInput
+                label="MFA Token"
+                value={mfaToken}
+                onChangeText={(val: string) => this.setState({ mfaToken: val })}
+                placeholder="Paste mfa_token here"
+              />
               <Button
                 onPress={() =>
                   this.runDemo(() =>
-                    this.state.auth0.auth.passwordRealm({
-                      username: '',
-                      password: '',
-                      realm: '',
-                    })
+                    this.state.auth0.mfa().getAuthenticators({ mfaToken })
                   )
                 }
-                title="Test auth.passwordRealm()"
+                title="List Authenticators"
+                disabled={!mfaToken}
+              />
+              <Button
+                onPress={() =>
+                  this.runDemo(() =>
+                    this.state.auth0.mfa().enroll({ mfaToken, type: 'otp' })
+                  )
+                }
+                title="Enroll TOTP"
+                disabled={!mfaToken}
+              />
+              <LabeledInput
+                label="Authenticator ID"
+                value={mfaAuthenticatorId}
+                onChangeText={(val: string) =>
+                  this.setState({ mfaAuthenticatorId: val })
+                }
+                placeholder="e.g. sms|dev_123"
+              />
+              <Button
+                onPress={() =>
+                  this.runDemo(async () => {
+                    const challengeResult = await this.state.auth0
+                      .mfa()
+                      .challenge({
+                        mfaToken,
+                        authenticatorId: mfaAuthenticatorId,
+                      });
+                    if (challengeResult.oobCode) {
+                      this.setState({ mfaOobCode: challengeResult.oobCode });
+                    }
+                    return challengeResult;
+                  })
+                }
+                title="Challenge"
+                disabled={!mfaToken || !mfaAuthenticatorId}
+              />
+              <LabeledInput
+                label="OTP Code"
+                value={mfaOtp}
+                onChangeText={(val: string) => this.setState({ mfaOtp: val })}
+                placeholder="6-digit code"
+              />
+              <Button
+                onPress={() =>
+                  this.runDemo(async () => {
+                    const creds = await this.state.auth0
+                      .mfa()
+                      .verify({ mfaToken, otp: mfaOtp });
+                    return {
+                      success: true,
+                      accessToken: creds.accessToken.substring(0, 20) + '...',
+                    };
+                  })
+                }
+                title="Verify OTP"
+                disabled={!mfaToken || !mfaOtp}
+              />
+              <LabeledInput
+                label="OOB Code"
+                value={mfaOobCode}
+                onChangeText={(val: string) =>
+                  this.setState({ mfaOobCode: val })
+                }
+                placeholder="Auto-filled from challenge"
+              />
+              <LabeledInput
+                label="Binding Code (optional)"
+                value={mfaBindingCode}
+                onChangeText={(val: string) =>
+                  this.setState({ mfaBindingCode: val })
+                }
+                placeholder="Code sent via SMS/email"
+              />
+              <Button
+                onPress={() =>
+                  this.runDemo(async () => {
+                    const params: any = { mfaToken, oobCode: mfaOobCode };
+                    if (mfaBindingCode) params.bindingCode = mfaBindingCode;
+                    const creds = await this.state.auth0.mfa().verify(params);
+                    return {
+                      success: true,
+                      accessToken: creds.accessToken.substring(0, 20) + '...',
+                    };
+                  })
+                }
+                title="Verify OOB"
+                disabled={!mfaToken || !mfaOobCode}
+              />
+              <LabeledInput
+                label="Recovery Code"
+                value={mfaRecoveryCode}
+                onChangeText={(val: string) =>
+                  this.setState({ mfaRecoveryCode: val })
+                }
+                placeholder="e.g. ABCDEF123456"
+              />
+              <Button
+                onPress={() =>
+                  this.runDemo(async () => {
+                    const creds = await this.state.auth0
+                      .mfa()
+                      .verify({ mfaToken, recoveryCode: mfaRecoveryCode });
+                    return {
+                      success: true,
+                      accessToken: creds.accessToken.substring(0, 20) + '...',
+                    };
+                  })
+                }
+                title="Verify Recovery Code"
+                disabled={!mfaToken || !mfaRecoveryCode}
               />
             </Section>
           </>
@@ -402,6 +718,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 12 },
   buttonGroup: { gap: 10 },
+  hint: { fontSize: 12, color: '#888', fontStyle: 'italic', marginBottom: 8 },
   toggleContainer: {
     padding: 16,
     alignItems: 'center',

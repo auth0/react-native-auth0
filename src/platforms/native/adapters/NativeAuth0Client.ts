@@ -2,6 +2,7 @@ import type {
   IAuth0Client,
   IAuthenticationProvider,
   IUsersClient,
+  IMfaClient,
 } from '../../../core/interfaces';
 import type { NativeAuth0Options } from '../../../types/platform-specific';
 import type {
@@ -11,6 +12,7 @@ import type {
 } from '../../../types';
 import { NativeWebAuthProvider } from './NativeWebAuthProvider';
 import { NativeCredentialsManager } from './NativeCredentialsManager';
+import { NativeMfaClient } from './NativeMfaClient';
 import { type INativeBridge, NativeBridgeManager } from '../bridge';
 import {
   AuthenticationOrchestrator,
@@ -185,5 +187,9 @@ export class NativeAuth0Client implements IAuth0Client {
       scope,
       organization
     );
+  }
+
+  mfa(): IMfaClient {
+    return new NativeMfaClient(this.guardedBridge);
   }
 }

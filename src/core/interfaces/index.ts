@@ -4,3 +4,4 @@ export * from './IAuthenticationProvider';
 export * from './ICredentialsManager';
 export * from './IWebAuthProvider';
 export * from './IUsersClient';
+export * from './IMfaClient';

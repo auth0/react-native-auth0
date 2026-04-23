@@ -2,6 +2,7 @@ import type { IWebAuthProvider } from './IWebAuthProvider';
 import type { ICredentialsManager } from './ICredentialsManager';
 import type { IAuthenticationProvider } from './IAuthenticationProvider';
 import type { IUsersClient } from './IUsersClient';
+import type { IMfaClient } from './IMfaClient';
 import type {
   DPoPHeadersParams,
   TokenType,
@@ -74,4 +75,28 @@ export interface IAuth0Client {
   customTokenExchange(
     parameters: CustomTokenExchangeParameters
   ): Promise<Credentials>;
+
+  /**
+   * Creates an MFA client for performing Flexible Factors Grant operations.
+   *
+   * The MFA client provides methods to list authenticators, enroll new MFA
+   * factors, challenge existing factors, and verify MFA codes.
+   *
+   * @returns An `IMfaClient` instance for interacting with the MFA API.
+   *
+   * @example
+   * ```typescript
+   * const mfaClient = auth0.mfa();
+   *
+   * // List enrolled authenticators
+   * const authenticators = await mfaClient.getAuthenticators({ mfaToken });
+   *
+   * // Challenge an authenticator
+   * const challenge = await mfaClient.challenge({ mfaToken, authenticatorId });
+   *
+   * // Verify with OTP
+   * const credentials = await mfaClient.verify({ mfaToken, otp: '123456' });
+   * ```
+   */
+  mfa(): IMfaClient;
 }

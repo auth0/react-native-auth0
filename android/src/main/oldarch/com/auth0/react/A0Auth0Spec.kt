@@ -120,4 +120,39 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
         organization: String?,
         promise: Promise
     )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun mfaGetAuthenticators(
+        mfaToken: String,
+        factorsAllowed: com.facebook.react.bridge.ReadableArray?,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun mfaEnroll(
+        mfaToken: String,
+        type: String,
+        value: String?,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun mfaChallenge(
+        mfaToken: String,
+        authenticatorId: String,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun mfaVerify(
+        mfaToken: String,
+        type: String,
+        code: String,
+        bindingCode: String?,
+        promise: Promise
+    )
 }

@@ -7,6 +7,7 @@ import type {
   IAuth0Client,
   IAuthenticationProvider,
   IUsersClient,
+  IMfaClient,
 } from '../../../core/interfaces';
 import type { WebAuth0Options } from '../../../types/platform-specific';
 import type {
@@ -16,6 +17,7 @@ import type {
 } from '../../../types';
 import { WebWebAuthProvider } from './WebWebAuthProvider';
 import { WebCredentialsManager } from './WebCredentialsManager';
+import { WebMfaClient } from './WebMfaClient';
 import { ssoExchangeNotSupported } from './WebAuthenticationProvider';
 import {
   AuthenticationOrchestrator,
@@ -256,5 +258,9 @@ export class WebAuth0Client implements IAuth0Client {
         { json: e }
       );
     }
+  }
+
+  mfa(): IMfaClient {
+    return new WebMfaClient(this.client.mfa, this.tokenType);
   }
 }

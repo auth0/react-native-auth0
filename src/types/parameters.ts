@@ -280,6 +280,77 @@ export interface MfaChallengeParameters extends RequestOptions {
   authenticatorId?: string;
 }
 
+// ========= MFA Flexible Factors Grant Parameters =========
+
+/** Parameters for listing enrolled MFA authenticators. */
+export interface MfaGetAuthenticatorsParameters {
+  mfaToken: string;
+  factorsAllowed?: string[];
+}
+
+/** Parameters for enrolling a phone (SMS) MFA factor. */
+export interface MfaEnrollPhoneParameters {
+  mfaToken: string;
+  phoneNumber: string;
+}
+
+/** Parameters for enrolling a voice call MFA factor. */
+export interface MfaEnrollVoiceParameters {
+  mfaToken: string;
+  phoneNumber: string;
+  voice: true;
+}
+
+/** Parameters for enrolling an email MFA factor. */
+export interface MfaEnrollEmailParameters {
+  mfaToken: string;
+  email: string;
+}
+
+/** Parameters for enrolling a TOTP (authenticator app) or push notification MFA factor. */
+export interface MfaEnrollTypeParameters {
+  mfaToken: string;
+  type: 'otp' | 'push';
+}
+
+/** Union type for all MFA enrollment parameter types. */
+export type MfaEnrollParameters =
+  | MfaEnrollPhoneParameters
+  | MfaEnrollVoiceParameters
+  | MfaEnrollEmailParameters
+  | MfaEnrollTypeParameters;
+
+/** Parameters for requesting an MFA challenge via the MFA API. */
+export interface MfaChallengeWithAuthenticatorParameters {
+  mfaToken: string;
+  authenticatorId: string;
+}
+
+/** Parameters for verifying an MFA OTP code (authenticator app). */
+export interface MfaVerifyOtpParameters {
+  mfaToken: string;
+  otp: string;
+}
+
+/** Parameters for verifying an MFA OOB code (SMS/Email/Push). */
+export interface MfaVerifyOobParameters {
+  mfaToken: string;
+  oobCode: string;
+  bindingCode?: string;
+}
+
+/** Parameters for verifying with a recovery code. */
+export interface MfaVerifyRecoveryCodeParameters {
+  mfaToken: string;
+  recoveryCode: string;
+}
+
+/** Union type for all MFA verification parameter types. */
+export type MfaVerifyParameters =
+  | MfaVerifyOtpParameters
+  | MfaVerifyOobParameters
+  | MfaVerifyRecoveryCodeParameters;
+
 // ========= User Management & Profile Parameters =========
 
 /** Parameters for accessing the `/userinfo` endpoint. */
