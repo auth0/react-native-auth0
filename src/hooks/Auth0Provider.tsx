@@ -28,6 +28,13 @@ import type {
   ResetPasswordParameters,
   MfaChallengeResponse,
   DPoPHeadersParams,
+  MfaAuthenticator,
+  MfaEnrollmentChallenge,
+  MfaChallengeResult,
+  MfaGetAuthenticatorsParameters,
+  MfaEnrollParameters,
+  MfaChallengeWithAuthenticatorParameters,
+  MfaVerifyParameters,
 } from '../types';
 import type {
   NativeAuthorizeOptions,
@@ -406,6 +413,57 @@ export const Auth0Provider = ({
     [client]
   );
 
+  const mfaGetAuthenticators = useCallback(
+    async (
+      parameters: MfaGetAuthenticatorsParameters
+    ): Promise<MfaAuthenticator[]> => {
+      try {
+        return await client.mfa().getAuthenticators(parameters);
+      } catch (e) {
+        const error = e as AuthError;
+        dispatch({ type: 'ERROR', error });
+        throw error;
+      }
+    },
+    [client]
+  );
+
+  const mfaEnroll = useCallback(
+    async (
+      parameters: MfaEnrollParameters
+    ): Promise<MfaEnrollmentChallenge> => {
+      try {
+        return await client.mfa().enroll(parameters);
+      } catch (e) {
+        const error = e as AuthError;
+        dispatch({ type: 'ERROR', error });
+        throw error;
+      }
+    },
+    [client]
+  );
+
+  const mfaChallenge = useCallback(
+    async (
+      parameters: MfaChallengeWithAuthenticatorParameters
+    ): Promise<MfaChallengeResult> => {
+      try {
+        return await client.mfa().challenge(parameters);
+      } catch (e) {
+        const error = e as AuthError;
+        dispatch({ type: 'ERROR', error });
+        throw error;
+      }
+    },
+    [client]
+  );
+
+  const mfaVerify = useCallback(
+    (parameters: MfaVerifyParameters) =>
+      loginFlow(client.mfa().verify(parameters)),
+    [client, loginFlow]
+  );
+
   const contextValue = useMemo<Auth0ContextInterface>(
     () => ({
       ...state,
@@ -436,6 +494,10 @@ export const Auth0Provider = ({
       revokeRefreshToken,
       getDPoPHeaders,
       ssoExchange,
+      mfaGetAuthenticators,
+      mfaEnroll,
+      mfaChallenge,
+      mfaVerify,
     }),
     [
       state,
@@ -466,6 +528,10 @@ export const Auth0Provider = ({
       revokeRefreshToken,
       getDPoPHeaders,
       ssoExchange,
+      mfaGetAuthenticators,
+      mfaEnroll,
+      mfaChallenge,
+      mfaVerify,
     ]
   );
 

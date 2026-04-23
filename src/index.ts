@@ -6,6 +6,8 @@ export {
   WebAuthErrorCodes,
   DPoPError,
   DPoPErrorCodes,
+  MfaError,
+  MfaErrorCodes,
 } from './core/models';
 export { TimeoutError } from './core/utils/fetchWithTimeout';
 export { TokenType } from './types/common';
@@ -18,6 +20,7 @@ export {
   LocalAuthenticationStrategy,
 } from './types/platform-specific';
 export type { LocalAuthenticationOptions } from './types/platform-specific';
+export type { IMfaClient } from './core/interfaces/IMfaClient';
 
 // Re-export Auth0 as default
 export { default } from './Auth0';

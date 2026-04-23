@@ -23,6 +23,13 @@ import type {
   MfaChallengeResponse,
   DPoPHeadersParams,
   SessionTransferCredentials,
+  MfaAuthenticator,
+  MfaEnrollmentChallenge,
+  MfaChallengeResult,
+  MfaGetAuthenticatorsParameters,
+  MfaEnrollParameters,
+  MfaChallengeWithAuthenticatorParameters,
+  MfaVerifyParameters,
 } from '../types';
 import type { ApiCredentials } from '../core/models';
 import type {
@@ -348,6 +355,51 @@ export interface Auth0ContextInterface extends AuthState {
     headers?: Record<string, string>
   ) => Promise<SessionTransferCredentials>;
 
+  // ========= MFA Flexible Factors Grant =========
+
+  /**
+   * Lists the user's enrolled MFA authenticators.
+   *
+   * @param parameters Parameters including the MFA token and optional factor filter.
+   * @returns A promise that resolves with the list of enrolled authenticators.
+   * @throws {MfaError} If listing authenticators fails.
+   */
+  mfaGetAuthenticators: (
+    parameters: MfaGetAuthenticatorsParameters
+  ) => Promise<MfaAuthenticator[]>;
+
+  /**
+   * Enrolls a new MFA factor for the user.
+   *
+   * @param parameters Parameters specifying the factor type and any required values.
+   * @returns A promise that resolves with the enrollment challenge details.
+   * @throws {MfaError} If enrollment fails.
+   */
+  mfaEnroll: (
+    parameters: MfaEnrollParameters
+  ) => Promise<MfaEnrollmentChallenge>;
+
+  /**
+   * Requests an MFA challenge for a specific enrolled authenticator.
+   *
+   * @param parameters Parameters including the MFA token and authenticator ID.
+   * @returns A promise that resolves with the challenge details.
+   * @throws {MfaError} If the challenge request fails.
+   */
+  mfaChallenge: (
+    parameters: MfaChallengeWithAuthenticatorParameters
+  ) => Promise<MfaChallengeResult>;
+
+  /**
+   * Verifies an MFA code and returns credentials on success.
+   * On successful verification, the user state is updated automatically.
+   *
+   * @param parameters Parameters for verification (OTP, OOB, or recovery code).
+   * @returns A promise that resolves with the user's credentials.
+   * @throws {MfaError} If verification fails (e.g., invalid OTP, expired token).
+   */
+  mfaVerify: (parameters: MfaVerifyParameters) => Promise<Credentials>;
+
   /**
    * Exchanges a refresh token for session transfer credentials via the Authentication API.
    *
@@ -404,6 +456,10 @@ const initialContext: Auth0ContextInterface = {
   getDPoPHeaders: stub,
   getSSOCredentials: stub,
   ssoExchange: stub,
+  mfaGetAuthenticators: stub,
+  mfaEnroll: stub,
+  mfaChallenge: stub,
+  mfaVerify: stub,
 };
 
 export const Auth0Context =

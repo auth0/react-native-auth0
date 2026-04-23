@@ -178,8 +178,36 @@ RCT_EXPORT_METHOD(customTokenExchange:(NSString *)subjectToken
     [self.nativeBridge customTokenExchangeWithSubjectToken:subjectToken subjectTokenType:subjectTokenType audience:audience scope:scope organization:organization resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(mfaGetAuthenticators:(NSString *)mfaToken
+                  factorsAllowed:(NSArray * _Nullable)factorsAllowed
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge mfaGetAuthenticatorsWithMfaToken:mfaToken factorsAllowed:factorsAllowed resolve:resolve reject:reject];
+}
 
+RCT_EXPORT_METHOD(mfaEnroll:(NSString *)mfaToken
+                  type:(NSString *)type
+                  value:(NSString * _Nullable)value
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge mfaEnrollWithMfaToken:mfaToken type:type value:value resolve:resolve reject:reject];
+}
 
+RCT_EXPORT_METHOD(mfaChallenge:(NSString *)mfaToken
+                  authenticatorId:(NSString *)authenticatorId
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge mfaChallengeWithMfaToken:mfaToken authenticatorId:authenticatorId resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(mfaVerify:(NSString *)mfaToken
+                  type:(NSString *)type
+                  code:(NSString *)code
+                  bindingCode:(NSString * _Nullable)bindingCode
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge mfaVerifyWithMfaToken:mfaToken type:type code:code bindingCode:bindingCode resolve:resolve reject:reject];
+}
 
 
 

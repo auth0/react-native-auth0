@@ -24,6 +24,7 @@ const ClassApiTestsScreen = ({ route }: Props) => {
   const [password, setPassword] = useState('P@ssword123'); // dummy password
   const [mfaToken, setMfaToken] = useState('');
   const [otp, setOtp] = useState('');
+  const [authenticatorId, setAuthenticatorId] = useState('');
   const [refreshToken, setRefreshToken] = useState('');
 
   const runTest = async (testFn: () => Promise<any>, title: string) => {
@@ -126,12 +127,51 @@ const ClassApiTestsScreen = ({ route }: Props) => {
           />
         </Section>
 
-        <Section title="MFA & Tokens">
+        <Section title="MFA Flexible Factors Grant">
+          <Text style={styles.hint}>
+            Uses auth0.mfa() class-based API for flexible MFA operations.
+          </Text>
           <LabeledInput
             label="MFA Token"
             value={mfaToken}
             onChangeText={setMfaToken}
             placeholder="From a failed password login"
+          />
+          <Button
+            onPress={() =>
+              runTest(
+                () => auth0.mfa().getAuthenticators({ mfaToken }),
+                'List Authenticators'
+              )
+            }
+            title="mfa().getAuthenticators()"
+            disabled={!mfaToken}
+          />
+          <Button
+            onPress={() =>
+              runTest(
+                () => auth0.mfa().enroll({ mfaToken, type: 'otp' }),
+                'Enroll TOTP'
+              )
+            }
+            title="mfa().enroll(otp)"
+            disabled={!mfaToken}
+          />
+          <LabeledInput
+            label="Authenticator ID"
+            value={authenticatorId}
+            onChangeText={setAuthenticatorId}
+            placeholder="e.g. sms|dev_123"
+          />
+          <Button
+            onPress={() =>
+              runTest(
+                () => auth0.mfa().challenge({ mfaToken, authenticatorId }),
+                'Challenge'
+              )
+            }
+            title="mfa().challenge()"
+            disabled={!mfaToken || !authenticatorId}
           />
           <LabeledInput
             label="OTP Code"
@@ -139,6 +179,16 @@ const ClassApiTestsScreen = ({ route }: Props) => {
             onChangeText={setOtp}
             keyboardType="numeric"
           />
+          <Button
+            onPress={() =>
+              runTest(() => auth0.mfa().verify({ mfaToken, otp }), 'Verify OTP')
+            }
+            title="mfa().verify(otp)"
+            disabled={!mfaToken || !otp}
+          />
+        </Section>
+
+        <Section title="Legacy MFA & Tokens">
           <Button
             onPress={() =>
               runTest(
@@ -176,9 +226,6 @@ const ClassApiTestsScreen = ({ route }: Props) => {
             disabled={!refreshToken}
           />
         </Section>
-
-        {/* Other methods can be added here following the same pattern */}
-        {/* e.g., exchange, exchangeNativeSocial, other passwordless/MFA flows */}
       </ScrollView>
     </SafeAreaView>
   );
@@ -221,6 +268,7 @@ const styles = StyleSheet.create({
   buttonGroup: {
     gap: 10,
   },
+  hint: { fontSize: 12, color: '#888', fontStyle: 'italic' },
 });
 
 export default ClassApiTestsScreen;
