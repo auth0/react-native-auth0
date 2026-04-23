@@ -6032,7 +6032,7 @@ __metadata:
     babel-loader: "npm:^10.1.1"
     babel-plugin-react-native-web: "npm:^0.21.2"
     html-webpack-plugin: "npm:^5.6.6"
-    react: "npm:19.2.3"
+    react: "npm:19.2.5"
     react-native: "npm:0.84.1"
     react-native-builder-bob: "npm:^0.40.18"
     react-native-gesture-handler: "npm:^2.30.0"
@@ -15340,7 +15340,7 @@ __metadata:
     prettier: "npm:^3.8.1"
     prettier-plugin-organize-imports: "npm:4.3.0"
     pretty-quick: "npm:^4.2.2"
-    react: "npm:19.2.3"
+    react: "npm:19.2.5"
     react-dom: "npm:19.2.3"
     react-native: "npm:0.84.1"
     react-native-builder-bob: "npm:^0.40.18"
@@ -15517,10 +15517,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:19.2.3":
-  version: 19.2.3
-  resolution: "react@npm:19.2.3"
-  checksum: 10c0/094220b3ba3a76c1b668f972ace1dd15509b157aead1b40391d1c8e657e720c201d9719537375eff08f5e0514748c0319063392a6f000e31303aafc4471f1436
+"react@npm:19.2.5":
+  version: 19.2.5
+  resolution: "react@npm:19.2.5"
+  checksum: 10c0/4b5f231dbef92886f602533c9ce3bde04d99f0e71dfb5d794c43e02726efaad0421c08688f75fc98a6d6e1dc017372e1af7abbfecdc86a79968f461675931a7a
   languageName: node
   linkType: hard
 
