@@ -107,6 +107,31 @@ export const addAndroidAuth0Manifest = (
     let auth0Scheme =
       config.customScheme ?? applicationId + APPLICATION_ID_SUFFIX;
 
+    // Remove conflicting broad scheme handlers from other activities to prevent
+    // Android from showing a disambiguation dialog when both MainActivity and
+    // RedirectActivity handle the same scheme. This mirrors the iOS dedup logic
+    // in addIOSAuth0ConfigInInfoPList.
+    const activities = mainApplication.activity || [];
+    activities.forEach((activity) => {
+      if (
+        activity.$['android:name'] ===
+        'com.auth0.android.provider.RedirectActivity'
+      ) {
+        return;
+      }
+      const intentFilters = activity['intent-filter'] || [];
+      intentFilters.forEach((filter) => {
+        if (!filter.data) return;
+        filter.data = filter.data.filter((dataElement) => {
+          const scheme = dataElement.$?.['android:scheme'];
+          const host = dataElement.$?.['android:host'];
+          // Remove broad scheme matchers (no host) that would conflict
+          // with RedirectActivity's more specific intent filter
+          return !(scheme === auth0Scheme && !host);
+        });
+      });
+    });
+
     const dataElement = {
       $: {
         'android:scheme': auth0Scheme,
