@@ -7,6 +7,9 @@ import type {
   NativeClearSessionOptions,
   DPoPHeadersParams,
   SessionTransferCredentials,
+  MfaAuthenticator,
+  MfaEnrollmentChallenge,
+  MfaChallengeResult,
 } from '../../../types';
 import {
   SafariViewControllerPresentationStyle,
@@ -250,5 +253,56 @@ export class NativeBridgeManager implements INativeBridge {
         { code: 'custom_token_exchange_failed', json: e }
       );
     }
+  }
+
+  async mfaGetAuthenticators(
+    mfaToken: string,
+    factorsAllowed?: string[]
+  ): Promise<MfaAuthenticator[]> {
+    return this.a0_call(
+      Auth0NativeModule.mfaGetAuthenticators.bind(Auth0NativeModule),
+      mfaToken,
+      factorsAllowed
+    ) as Promise<MfaAuthenticator[]>;
+  }
+
+  async mfaEnroll(
+    mfaToken: string,
+    type: string,
+    value?: string
+  ): Promise<MfaEnrollmentChallenge> {
+    return this.a0_call(
+      Auth0NativeModule.mfaEnroll.bind(Auth0NativeModule),
+      mfaToken,
+      type,
+      value
+    ) as Promise<MfaEnrollmentChallenge>;
+  }
+
+  async mfaChallenge(
+    mfaToken: string,
+    authenticatorId: string
+  ): Promise<MfaChallengeResult> {
+    return this.a0_call(
+      Auth0NativeModule.mfaChallenge.bind(Auth0NativeModule),
+      mfaToken,
+      authenticatorId
+    ) as Promise<MfaChallengeResult>;
+  }
+
+  async mfaVerify(
+    mfaToken: string,
+    type: string,
+    code: string,
+    bindingCode?: string
+  ): Promise<Credentials> {
+    const credential = await this.a0_call(
+      Auth0NativeModule.mfaVerify.bind(Auth0NativeModule),
+      mfaToken,
+      type,
+      code,
+      bindingCode
+    );
+    return new CredentialsModel(credential);
   }
 }

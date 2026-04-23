@@ -2,6 +2,7 @@ import {
   WebAuthErrorCodes,
   CredentialsManagerErrorCodes,
   DPoPErrorCodes,
+  MfaErrorCodes,
 } from '../';
 
 describe('Error Code Constants', () => {
@@ -236,6 +237,27 @@ describe('Error Code Constants', () => {
       // No overlaps expected
       expect(webAuthOverlaps).toEqual([]);
       expect(credentialsOverlaps).toEqual([]);
+    });
+
+    it('should not have overlapping error codes between MFA and other error types', () => {
+      const mfaArray = Object.values(MfaErrorCodes);
+      const webAuthArray = Object.values(WebAuthErrorCodes);
+      const credentialsArray = Object.values(CredentialsManagerErrorCodes);
+      const dpopArray = Object.values(DPoPErrorCodes);
+
+      const webAuthOverlaps = mfaArray.filter((code) =>
+        webAuthArray.includes(code as any)
+      );
+      const credentialsOverlaps = mfaArray.filter((code) =>
+        credentialsArray.includes(code as any)
+      );
+      const dpopOverlaps = mfaArray.filter((code) =>
+        dpopArray.includes(code as any)
+      );
+
+      expect(webAuthOverlaps).toEqual([]);
+      expect(credentialsOverlaps).toEqual([]);
+      expect(dpopOverlaps).toEqual([]);
     });
   });
 

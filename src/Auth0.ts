@@ -1,4 +1,5 @@
 import type { IAuth0Client } from './core/interfaces/IAuth0Client';
+import type { IMfaClient } from './core/interfaces/IMfaClient';
 import type { TokenType } from './types/common';
 import { Auth0ClientFactory } from './factory/Auth0ClientFactory';
 import type {
@@ -120,6 +121,25 @@ class Auth0 {
     parameters: CustomTokenExchangeParameters
   ): Promise<Credentials> {
     return this.client.customTokenExchange(parameters);
+  }
+
+  /**
+   * Provides access to MFA operations using the Flexible Factors Grant.
+   *
+   * The MFA client provides methods to list authenticators, enroll new MFA
+   * factors, challenge existing factors, and verify MFA codes.
+   *
+   * @example
+   * ```typescript
+   * // List enrolled authenticators
+   * const authenticators = await auth0.mfa.getAuthenticators({ mfaToken });
+   *
+   * // Verify with OTP
+   * const credentials = await auth0.mfa.verify({ mfaToken, otp: '123456' });
+   * ```
+   */
+  get mfa(): IMfaClient {
+    return this.client.mfa;
   }
 }
 

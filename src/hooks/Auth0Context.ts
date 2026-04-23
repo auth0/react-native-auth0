@@ -24,6 +24,7 @@ import type {
   DPoPHeadersParams,
   SessionTransferCredentials,
 } from '../types';
+import type { IMfaClient } from '../core/interfaces/IMfaClient';
 import type { ApiCredentials } from '../core/models';
 import type {
   NativeAuthorizeOptions,
@@ -349,6 +350,27 @@ export interface Auth0ContextInterface extends AuthState {
   ) => Promise<SessionTransferCredentials>;
 
   /**
+   * Provides access to MFA operations using the Flexible Factors Grant.
+   *
+   * The MFA client provides methods to list authenticators, enroll new MFA
+   * factors, challenge existing factors, and verify MFA codes.
+   *
+   * On successful verification via `mfa.verify()`, the user state is updated automatically.
+   *
+   * @example
+   * ```typescript
+   * const { mfa } = useAuth0();
+   *
+   * // List enrolled authenticators
+   * const authenticators = await mfa.getAuthenticators({ mfaToken });
+   *
+   * // Verify with OTP
+   * const credentials = await mfa.verify({ mfaToken, otp: '123456' });
+   * ```
+   */
+  mfa: IMfaClient;
+
+  /**
    * Exchanges a refresh token for session transfer credentials via the Authentication API.
    *
    * @remarks
@@ -404,6 +426,12 @@ const initialContext: Auth0ContextInterface = {
   getDPoPHeaders: stub,
   getSSOCredentials: stub,
   ssoExchange: stub,
+  mfa: {
+    getAuthenticators: stub,
+    enroll: stub,
+    challenge: stub,
+    verify: stub,
+  },
 };
 
 export const Auth0Context =

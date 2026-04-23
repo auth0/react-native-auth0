@@ -712,6 +712,57 @@ try {
 | `NO_NETWORK`          | `NO_NETWORK`                                                                                                                                                                                                                                                                                                                                     |                    |                                                             |
 | `API_ERROR`           | `API_ERROR`                                                                                                                                                                                                                                                                                                                                      |                    |                                                             |
 
+### MFA errors
+
+All MFA operations (via `auth0.mfa` or the `mfa` property from `useAuth0()`) throw `MfaError` with a normalized `type` property:
+
+```js
+import { MfaError, MfaErrorCodes } from 'react-native-auth0';
+
+try {
+  const credentials = await auth0.mfa.verify({ mfaToken, otp: '123456' });
+} catch (error) {
+  if (error instanceof MfaError) {
+    switch (error.type) {
+      case MfaErrorCodes.INVALID_OTP:
+        console.log('Incorrect OTP code.');
+        break;
+      case MfaErrorCodes.EXPIRED_MFA_TOKEN:
+        console.log('MFA session expired. Please start over.');
+        break;
+      case MfaErrorCodes.TOO_MANY_ATTEMPTS:
+        console.log('Too many attempts. Please wait.');
+        break;
+      case MfaErrorCodes.ENROLLMENT_FAILED:
+        console.log('MFA enrollment failed.');
+        break;
+      default:
+        console.error('MFA error:', error.message);
+    }
+  }
+}
+```
+
+| Generic Error Code        | Description                            | Auth0 API Code                 |
+| ------------------------- | -------------------------------------- | ------------------------------ |
+| `INVALID_OTP`             | OTP code is incorrect                  | `invalid_otp`, `invalid_grant` |
+| `INVALID_OOB_CODE`        | OOB code is incorrect                  | `invalid_oob_code`             |
+| `INVALID_BINDING_CODE`    | Binding code is incorrect              | `invalid_binding_code`         |
+| `INVALID_RECOVERY_CODE`   | Recovery code is incorrect             | `invalid_recovery_code`        |
+| `ENROLLMENT_FAILED`       | MFA enrollment failed                  | `mfa_enrollment_failed`        |
+| `INVALID_PHONE_NUMBER`    | Phone number is invalid for enrollment | `invalid_phone_number`         |
+| `INVALID_EMAIL`           | Email is invalid for enrollment        | `invalid_email`                |
+| `EXPIRED_MFA_TOKEN`       | MFA token has expired                  | `expired_token`                |
+| `INVALID_MFA_TOKEN`       | MFA token is invalid                   | `mfa_token_invalid`            |
+| `TOO_MANY_ATTEMPTS`       | Rate limited                           | `too_many_attempts`            |
+| `CHALLENGE_FAILED`        | MFA challenge failed                   | `mfa_challenge_failed`         |
+| `AUTHENTICATOR_NOT_FOUND` | Authenticator not found                |                                |
+| `UNSUPPORTED_FACTOR`      | Factor type not supported              | `unsupported_challenge_type`   |
+| `ASSOCIATION_REQUIRED`    | User must enroll first                 | `association_required`         |
+| `UNKNOWN_MFA_ERROR`       | Unknown MFA error                      |                                |
+
+For detailed MFA usage examples, see [EXAMPLES.md](EXAMPLES.md#mfa-flexible-factors-grant) and [EXAMPLES-WEB.md](EXAMPLES-WEB.md#3-mfa-flexible-factors-grant-web).
+
 ### WebAuth errors
 
 **Before (Platform-Specific Codes)**
@@ -826,6 +877,11 @@ This library provides a unified API across Native (iOS/Android) and Web platform
 | `auth.createUser()`                        |          ✅          |      ✅       | Calls the `/dbconnections/signup` endpoint. Works on both platforms.                                                                                                     |
 | `auth.resetPassword()`                     |          ✅          |      ✅       | Calls the `/dbconnections/change_password` endpoint. Works on both platforms.                                                                                            |
 | `users(token).patchUser()`                 |          ✅          |      ✅       | Calls the Management API. Works on any platform with a valid token, but use with caution in the browser.                                                                 |
+| **MFA Flexible Factors Grant**             |                      |               | ---                                                                                                                                                                      |
+| `mfa.getAuthenticators()`                  |          ✅          |      ✅       | Lists enrolled MFA authenticators for the user.                                                                                                                          |
+| `mfa.enroll()`                             |          ✅          |      ✅       | Enrolls a new MFA factor (OTP, SMS, email, voice, push).                                                                                                                 |
+| `mfa.challenge()`                          |          ✅          |      ✅       | Triggers an MFA challenge for an enrolled authenticator.                                                                                                                 |
+| `mfa.verify()`                             |          ✅          |      ✅       | Verifies an MFA code (OTP, OOB, recovery) and returns credentials.                                                                                                       |
 
 ## Troubleshooting
 

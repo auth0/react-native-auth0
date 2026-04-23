@@ -158,14 +158,120 @@ const App = () => {
 };
 ```
 
-## Unsupported Web Features
+## 3. MFA Flexible Factors Grant (Web)
 
-For security reasons, the web platform **does not support** direct authentication grants. The following methods from the `auth` provider will throw a `NotImplemented` error:
+The MFA Flexible Factors Grant is fully supported on the web platform. It uses the `@auth0/auth0-spa-js` MFA API under the hood.
 
-- `auth.passwordRealm()`
-- `auth.loginWithOTP()`
-- `auth.loginWithSMS()`
-- `auth.loginWithEmail()`
-- `auth.refreshToken()`
+### Using MFA with Hooks
 
-All these flows should be configured in your [Auth0 Universal Login](https://auth0.com/docs/universal-login) page and initiated via the `authorize()` method.
+```tsx
+import React, { useState } from 'react';
+import { View, Button, TextInput, Text } from 'react-native';
+import { useAuth0, MfaError, MfaErrorCodes } from 'react-native-auth0';
+
+function MfaScreen({ mfaToken }: { mfaToken: string }) {
+  const { mfa } = useAuth0();
+  const [otp, setOtp] = useState('');
+
+  const listAuthenticators = async () => {
+    try {
+      const authenticators = await mfa.getAuthenticators({ mfaToken });
+      console.log('Authenticators:', authenticators);
+    } catch (error) {
+      if (error instanceof MfaError) {
+        console.error('MFA error:', error.type, error.message);
+      }
+    }
+  };
+
+  const enrollTotp = async () => {
+    try {
+      const challenge = await mfa.enroll({ mfaToken, type: 'otp' });
+      if (challenge.type === 'totp') {
+        console.log('Scan QR:', challenge.barcodeUri);
+        console.log('Secret:', challenge.secret);
+      }
+    } catch (error) {
+      if (error instanceof MfaError) {
+        console.error('Enrollment error:', error.type);
+      }
+    }
+  };
+
+  const verifyOtp = async () => {
+    try {
+      const credentials = await mfa.verify({ mfaToken, otp });
+      console.log('Authenticated!', credentials.accessToken);
+    } catch (error) {
+      if (error instanceof MfaError) {
+        switch (error.type) {
+          case MfaErrorCodes.INVALID_OTP:
+            console.log('Incorrect code');
+            break;
+          case MfaErrorCodes.TOO_MANY_ATTEMPTS:
+            console.log('Too many attempts');
+            break;
+          case MfaErrorCodes.EXPIRED_MFA_TOKEN:
+            console.log('Session expired');
+            break;
+        }
+      }
+    }
+  };
+
+  return (
+    <View>
+      <Button title="List Authenticators" onPress={listAuthenticators} />
+      <Button title="Enroll TOTP" onPress={enrollTotp} />
+      <TextInput placeholder="Enter OTP" value={otp} onChangeText={setOtp} />
+      <Button title="Verify" onPress={verifyOtp} />
+    </View>
+  );
+}
+```
+
+### Using MFA with Auth0 Class
+
+```typescript
+import Auth0, { MfaError, MfaErrorCodes } from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+});
+
+// List authenticators
+const authenticators = await auth0.mfa.getAuthenticators({
+  mfaToken: 'mfa_token',
+});
+
+// Enroll TOTP
+const challenge = await auth0.mfa.enroll({
+  mfaToken: 'mfa_token',
+  type: 'otp',
+});
+
+// Enroll SMS
+const smsChallenge = await auth0.mfa.enroll({
+  mfaToken: 'mfa_token',
+  phoneNumber: '+12025550135',
+});
+
+// Challenge an authenticator
+const challengeResult = await auth0.mfa.challenge({
+  mfaToken: 'mfa_token',
+  authenticatorId: 'sms|dev_123',
+});
+
+// Verify OTP
+const credentials = await auth0.mfa.verify({
+  mfaToken: 'mfa_token',
+  otp: '123456',
+});
+```
+
+## Web Platform Notes
+
+The web platform supports direct authentication grants including `auth.passwordRealm()`, `auth.createUser()`, `auth.resetPassword()`, and the MFA Flexible Factors Grant. These methods make direct HTTP calls to the Auth0 API.
+
+Token refresh is handled automatically by `credentialsManager.getCredentials()` on the web. The `auth.refreshToken()` method is not available.

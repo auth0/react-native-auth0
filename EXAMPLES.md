@@ -58,6 +58,10 @@
     - [Using SSO Exchange with Hooks](#using-sso-exchange-with-hooks)
     - [Using SSO Exchange with Auth0 Class](#using-sso-exchange-with-auth0-class)
   - [Sending the Session Transfer Token](#sending-the-session-transfer-token)
+- [MFA Flexible Factors Grant](#mfa-flexible-factors-grant)
+  - [Using MFA with Hooks](#using-mfa-with-hooks)
+  - [Using MFA with Auth0 Class](#using-mfa-with-auth0-class)
+  - [MFA Error Handling](#mfa-error-handling)
 - [Bot Protection](#bot-protection)
   - [Domain Switching](#domain-switching)
     - [Android](#android)
@@ -1242,6 +1246,275 @@ function WebAppView() {
 ```
 
 > **Note**: Cookie injection is platform-specific and may require additional configuration. The query parameter method is generally more straightforward and recommended for most use cases.
+
+## MFA Flexible Factors Grant
+
+The MFA Flexible Factors Grant provides programmatic control over Multi-Factor Authentication flows. Instead of relying solely on Universal Login, you can build custom MFA experiences — listing enrolled authenticators, enrolling new factors, triggering challenges, and verifying codes — all from your own UI.
+
+This feature works across all platforms (iOS, Android, and Web).
+
+### Using MFA with Hooks
+
+```tsx
+import React, { useState } from 'react';
+import { View, Button, TextInput, Text, Alert } from 'react-native';
+import { useAuth0, MfaError, MfaErrorCodes } from 'react-native-auth0';
+
+function MfaScreen({ mfaToken }: { mfaToken: string }) {
+  const { mfa } = useAuth0();
+  const [otp, setOtp] = useState('');
+
+  // List enrolled authenticators
+  const listAuthenticators = async () => {
+    try {
+      const authenticators = await mfa.getAuthenticators({ mfaToken });
+      console.log('Enrolled authenticators:', authenticators);
+    } catch (error) {
+      if (error instanceof MfaError) {
+        console.error('MFA error:', error.type, error.message);
+      }
+    }
+  };
+
+  // Enroll a new TOTP authenticator
+  const enrollTotp = async () => {
+    try {
+      const challenge = await mfa.enroll({ mfaToken, type: 'otp' });
+      if (challenge.type === 'totp') {
+        console.log('Scan this barcode:', challenge.barcodeUri);
+        console.log('Or enter this secret:', challenge.secret);
+      }
+    } catch (error) {
+      if (error instanceof MfaError) {
+        switch (error.type) {
+          case MfaErrorCodes.ENROLLMENT_FAILED:
+            Alert.alert('Error', 'Enrollment failed. Please try again.');
+            break;
+          case MfaErrorCodes.EXPIRED_MFA_TOKEN:
+            Alert.alert('Error', 'MFA session expired. Please start over.');
+            break;
+        }
+      }
+    }
+  };
+
+  // Enroll an SMS factor
+  const enrollSms = async () => {
+    try {
+      const challenge = await mfa.enroll({
+        mfaToken,
+        phoneNumber: '+12025550135',
+      });
+      console.log('OOB code:', challenge.oobCode);
+    } catch (error) {
+      if (
+        error instanceof MfaError &&
+        error.type === MfaErrorCodes.INVALID_PHONE_NUMBER
+      ) {
+        Alert.alert('Error', 'Invalid phone number.');
+      }
+    }
+  };
+
+  // Trigger a challenge for an existing authenticator
+  const triggerChallenge = async (authenticatorId: string) => {
+    try {
+      const result = await mfa.challenge({ mfaToken, authenticatorId });
+      console.log('Challenge type:', result.challengeType);
+      console.log('OOB code:', result.oobCode);
+    } catch (error) {
+      if (error instanceof MfaError) {
+        console.error('Challenge failed:', error.type);
+      }
+    }
+  };
+
+  // Verify an OTP code - this completes authentication
+  const verifyOtp = async () => {
+    try {
+      const credentials = await mfa.verify({ mfaToken, otp });
+      console.log('Authentication complete!', credentials.accessToken);
+      // User is now logged in - state is automatically updated
+    } catch (error) {
+      if (error instanceof MfaError) {
+        switch (error.type) {
+          case MfaErrorCodes.INVALID_OTP:
+            Alert.alert('Error', 'Incorrect code. Please try again.');
+            break;
+          case MfaErrorCodes.TOO_MANY_ATTEMPTS:
+            Alert.alert('Error', 'Too many attempts. Please wait.');
+            break;
+          case MfaErrorCodes.EXPIRED_MFA_TOKEN:
+            Alert.alert('Error', 'Session expired. Please start over.');
+            break;
+        }
+      }
+    }
+  };
+
+  return (
+    <View>
+      <Button title="List Authenticators" onPress={listAuthenticators} />
+      <Button title="Enroll TOTP" onPress={enrollTotp} />
+      <Button title="Enroll SMS" onPress={enrollSms} />
+      <TextInput
+        placeholder="Enter OTP code"
+        value={otp}
+        onChangeText={setOtp}
+        keyboardType="number-pad"
+      />
+      <Button title="Verify OTP" onPress={verifyOtp} />
+    </View>
+  );
+}
+```
+
+### Using MFA with Auth0 Class
+
+```typescript
+import Auth0, { MfaError, MfaErrorCodes } from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+});
+
+// List enrolled authenticators
+const authenticators = await auth0.mfa.getAuthenticators({
+  mfaToken: 'mfa_token_from_login',
+  factorsAllowed: ['otp', 'oob'], // Optional: filter by factor type
+});
+
+// Enroll a TOTP authenticator
+const totpChallenge = await auth0.mfa.enroll({
+  mfaToken: 'mfa_token',
+  type: 'otp',
+});
+// totpChallenge.type === 'totp'
+// totpChallenge.barcodeUri - QR code URI
+// totpChallenge.secret - Manual entry secret
+
+// Enroll via SMS
+const smsChallenge = await auth0.mfa.enroll({
+  mfaToken: 'mfa_token',
+  phoneNumber: '+12025550135',
+});
+
+// Enroll via email
+const emailChallenge = await auth0.mfa.enroll({
+  mfaToken: 'mfa_token',
+  email: 'user@example.com',
+});
+
+// Enroll via voice call
+const voiceChallenge = await auth0.mfa.enroll({
+  mfaToken: 'mfa_token',
+  phoneNumber: '+12025550135',
+  voice: true,
+});
+
+// Trigger an OOB challenge
+const challenge = await auth0.mfa.challenge({
+  mfaToken: 'mfa_token',
+  authenticatorId: 'sms|dev_123',
+});
+
+// Verify with OTP
+const credentials = await auth0.mfa.verify({
+  mfaToken: 'mfa_token',
+  otp: '123456',
+});
+
+// Verify with OOB code
+const credentialsOob = await auth0.mfa.verify({
+  mfaToken: 'mfa_token',
+  oobCode: 'oob_code_from_challenge',
+  bindingCode: '654321', // Optional, for SMS/email OOB
+});
+
+// Verify with recovery code
+const credentialsRecovery = await auth0.mfa.verify({
+  mfaToken: 'mfa_token',
+  recoveryCode: 'ABCDEF123456',
+});
+```
+
+### MFA Error Handling
+
+All MFA operations throw `MfaError` with a normalized, platform-agnostic `type` property:
+
+```typescript
+import { MfaError, MfaErrorCodes } from 'react-native-auth0';
+
+try {
+  await auth0.mfa.verify({ mfaToken, otp: '123456' });
+} catch (error) {
+  if (error instanceof MfaError) {
+    switch (error.type) {
+      case MfaErrorCodes.INVALID_OTP:
+        // OTP code is incorrect
+        break;
+      case MfaErrorCodes.INVALID_OOB_CODE:
+        // OOB code is incorrect
+        break;
+      case MfaErrorCodes.INVALID_RECOVERY_CODE:
+        // Recovery code is incorrect
+        break;
+      case MfaErrorCodes.EXPIRED_MFA_TOKEN:
+        // MFA token has expired - restart the MFA flow
+        break;
+      case MfaErrorCodes.INVALID_MFA_TOKEN:
+        // MFA token is invalid
+        break;
+      case MfaErrorCodes.TOO_MANY_ATTEMPTS:
+        // Rate limited - wait before retrying
+        break;
+      case MfaErrorCodes.ENROLLMENT_FAILED:
+        // Enrollment operation failed
+        break;
+      case MfaErrorCodes.INVALID_PHONE_NUMBER:
+        // Phone number is invalid for enrollment
+        break;
+      case MfaErrorCodes.INVALID_EMAIL:
+        // Email is invalid for enrollment
+        break;
+      case MfaErrorCodes.CHALLENGE_FAILED:
+        // Challenge request failed
+        break;
+      case MfaErrorCodes.AUTHENTICATOR_NOT_FOUND:
+        // Authenticator not found or not enrolled
+        break;
+      case MfaErrorCodes.UNSUPPORTED_FACTOR:
+        // MFA factor type is not supported
+        break;
+      case MfaErrorCodes.ASSOCIATION_REQUIRED:
+        // User must enroll before using the authenticator
+        break;
+      default:
+        console.error('MFA error:', error.message);
+    }
+  }
+}
+```
+
+| Error Code                | Description                                     | Auth0 API Code                 | Native Bridge Code     |
+| ------------------------- | ----------------------------------------------- | ------------------------------ | ---------------------- |
+| `INVALID_OTP`             | OTP code is incorrect                           | `invalid_otp`, `invalid_grant` |                        |
+| `INVALID_OOB_CODE`        | OOB code is incorrect                           | `invalid_oob_code`             |                        |
+| `INVALID_BINDING_CODE`    | Binding code is incorrect                       | `invalid_binding_code`         |                        |
+| `INVALID_RECOVERY_CODE`   | Recovery code is incorrect                      | `invalid_recovery_code`        |                        |
+| `ENROLLMENT_FAILED`       | MFA enrollment failed                           | `mfa_enrollment_failed`        | `MFA_ENROLLMENT_ERROR` |
+| `INVALID_PHONE_NUMBER`    | Phone number is invalid for enrollment          | `invalid_phone_number`         |                        |
+| `INVALID_EMAIL`           | Email is invalid for enrollment                 | `invalid_email`                |                        |
+| `EXPIRED_MFA_TOKEN`       | MFA token has expired                           | `expired_token`                |                        |
+| `INVALID_MFA_TOKEN`       | MFA token is invalid                            | `mfa_token_invalid`            |                        |
+| `TOO_MANY_ATTEMPTS`       | Rate limited - too many verification attempts   | `too_many_attempts`            |                        |
+| `CHALLENGE_FAILED`        | MFA challenge request failed                    | `mfa_challenge_failed`         | `MFA_CHALLENGE_ERROR`  |
+| `AUTHENTICATOR_NOT_FOUND` | Authenticator not found or not enrolled         |                                |                        |
+| `UNSUPPORTED_FACTOR`      | MFA factor type is not supported                | `unsupported_challenge_type`   |                        |
+| `ASSOCIATION_REQUIRED`    | User must enroll before using the authenticator | `association_required`         |                        |
+| `MFA_ERROR`               | Generic MFA error                               |                                | `MFA_VERIFY_ERROR`     |
+| `UNKNOWN_MFA_ERROR`       | Unknown or uncategorized MFA error              |                                |                        |
 
 ## Bot Protection
 

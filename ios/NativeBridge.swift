@@ -44,6 +44,9 @@ public class NativeBridge: NSObject {
     var domain: String
     var useDPoP: Bool
     var maxRetries: Int
+    private(set) lazy var mfaBridge: A0MfaBridge = {
+        A0MfaBridge(clientId: self.clientId, domain: self.domain, useDPoP: self.useDPoP)
+    }()
     
     @objc public init(clientId: String, domain: String, localAuthenticationOptions: [String: Any]?, useDPoP: Bool, maxRetries: Int, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         var auth0 = Auth0
@@ -404,10 +407,28 @@ public class NativeBridge: NSObject {
         }
     }
     
+    // MARK: - MFA Flexible Factors Grant
+
+    @objc public func mfaGetAuthenticators(mfaToken: String, factorsAllowed: [String]?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        mfaBridge.getAuthenticators(mfaToken: mfaToken, factorsAllowed: factorsAllowed, resolve: resolve, reject: reject)
+    }
+
+    @objc public func mfaEnroll(mfaToken: String, type: String, value: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        mfaBridge.enroll(mfaToken: mfaToken, type: type, value: value, resolve: resolve, reject: reject)
+    }
+
+    @objc public func mfaChallenge(mfaToken: String, authenticatorId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        mfaBridge.challenge(mfaToken: mfaToken, authenticatorId: authenticatorId, resolve: resolve, reject: reject)
+    }
+
+    @objc public func mfaVerify(mfaToken: String, type: String, code: String, bindingCode: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        mfaBridge.verify(mfaToken: mfaToken, type: type, code: code, bindingCode: bindingCode, resolve: resolve, reject: reject)
+    }
+
     @objc public func getClientId() -> String {
         return clientId
     }
-    
+
     @objc public func getDomain() -> String {
         return domain
     }

@@ -189,6 +189,64 @@ export type MfaChallengeResponse =
   | MfaChallengeOobResponse
   | MfaChallengeOobWithBindingResponse;
 
+// ========= MFA Flexible Factors Grant Types =========
+
+/** Represents an enrolled MFA authenticator. */
+export type MfaAuthenticator = {
+  id: string;
+  authenticatorType: string;
+  name?: string;
+  active: boolean;
+  oobChannel?: string;
+};
+
+/** Represents the response from an MFA challenge request via the MFA API. */
+export type MfaChallengeResult = {
+  challengeType: string;
+  oobCode?: string;
+  bindingMethod?: string;
+};
+
+/** Base enrollment challenge response. */
+export type MfaOobEnrollmentChallenge = {
+  type: 'oob';
+  oobCode: string;
+  bindingMethod?: string;
+  recoveryCodes?: string[];
+};
+
+/** Enrollment challenge for TOTP (authenticator app). */
+export type MfaTotpEnrollmentChallenge = {
+  type: 'totp';
+  barcodeUri: string;
+  secret: string;
+  recoveryCodes?: string[];
+};
+
+/** Union type for all possible enrollment challenge responses. */
+export type MfaEnrollmentChallenge =
+  | MfaOobEnrollmentChallenge
+  | MfaTotpEnrollmentChallenge;
+
+/** Structured payload extracted from an MFA_REQUIRED error. */
+export type MfaRequiredErrorPayload = {
+  mfaToken: string;
+  error: string;
+  errorDescription?: string;
+  mfaRequirements?: MfaRequirements;
+};
+
+/** Describes which MFA factors are available for enrollment and challenge. */
+export type MfaRequirements = {
+  enroll?: MfaFactor[];
+  challenge?: MfaFactor[];
+};
+
+/** Describes a single MFA factor type. */
+export type MfaFactor = {
+  type: string;
+};
+
 // ========= DPoP Types =========
 
 /**
