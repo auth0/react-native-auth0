@@ -303,6 +303,39 @@ https://{YOUR_AUTH0_DOMAIN}/ios/{PRODUCT_BUNDLE_IDENTIFIER}/callback
 
 > Replace `{PRODUCT_BUNDLE_IDENTIFIER}` and `{YOUR_AUTH0_DOMAIN}` with your actual product bundle identifier and Auth0 domain. Ensure that {PRODUCT_BUNDLE_IDENTIFIER} is all lowercase.
 
+#### Expo
+
+When using Expo, the callback URL format depends on whether you provide a `customScheme` in your `app.json` plugin configuration.
+
+##### With `customScheme`
+
+If you set a `customScheme` (e.g., `"auth0sample"`) in your `app.json`:
+
+```text
+{YOUR_CUSTOM_SCHEME}://{YOUR_AUTH0_DOMAIN}/ios/{BUNDLE_IDENTIFIER}/callback,
+{YOUR_CUSTOM_SCHEME}://{YOUR_AUTH0_DOMAIN}/android/{PACKAGE_NAME}/callback
+```
+
+**Example:** If your custom scheme is `auth0sample`, your Auth0 domain is `example.us.auth0.com`, your iOS bundle identifier is `com.example.myapp`, and your Android package name is `com.example.myapp`:
+
+```text
+auth0sample://example.us.auth0.com/ios/com.example.myapp/callback,
+auth0sample://example.us.auth0.com/android/com.example.myapp/callback
+```
+
+> **Note:** The URL scheme uses `customScheme`, but the path always contains the bundle identifier (iOS) or package name (Android), **not** the custom scheme.
+
+##### Without `customScheme`
+
+If you do not provide a `customScheme`, the SDK defaults to `{BUNDLE_IDENTIFIER}.auth0` / `{PACKAGE_NAME}.auth0`:
+
+```text
+{BUNDLE_IDENTIFIER}.auth0://{YOUR_AUTH0_DOMAIN}/ios/{BUNDLE_IDENTIFIER}/callback,
+{PACKAGE_NAME}.auth0://{YOUR_AUTH0_DOMAIN}/android/{PACKAGE_NAME}/callback
+```
+
+> All values must be **lowercase** with **no trailing slash**.
+
 #### Configure an associated domain for iOS
 
 > [!IMPORTANT]
