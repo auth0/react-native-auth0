@@ -255,12 +255,12 @@ export class NativeBridgeManager implements INativeBridge {
     }
   }
 
-  async mfaGetAuthenticators(
+  async getMfaAuthenticators(
     mfaToken: string,
     factorsAllowed?: string[]
   ): Promise<MfaAuthenticator[]> {
     return this.a0_call(
-      Auth0NativeModule.mfaGetAuthenticators.bind(Auth0NativeModule),
+      Auth0NativeModule.getMfaAuthenticators.bind(Auth0NativeModule),
       mfaToken,
       factorsAllowed
     ) as Promise<MfaAuthenticator[]>;

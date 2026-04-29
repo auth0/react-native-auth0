@@ -3,7 +3,7 @@ import type { INativeBridge } from '../../bridge';
 import { AuthError, MfaError, MfaErrorCodes } from '../../../../core/models';
 
 const mockBridge: jest.Mocked<INativeBridge> = {
-  mfaGetAuthenticators: jest.fn(),
+  getMfaAuthenticators: jest.fn(),
   mfaEnroll: jest.fn(),
   mfaChallenge: jest.fn(),
   mfaVerify: jest.fn(),
@@ -44,14 +44,14 @@ describe('NativeMfaClient', () => {
           oobChannel: 'sms',
         },
       ];
-      mockBridge.mfaGetAuthenticators.mockResolvedValueOnce(authenticators);
+      mockBridge.getMfaAuthenticators.mockResolvedValueOnce(authenticators);
 
       const result = await client.getAuthenticators({
         mfaToken: 'mfa_token_123',
         factorsAllowed: ['otp', 'oob'],
       });
 
-      expect(mockBridge.mfaGetAuthenticators).toHaveBeenCalledWith(
+      expect(mockBridge.getMfaAuthenticators).toHaveBeenCalledWith(
         'mfa_token_123',
         ['otp', 'oob']
       );
@@ -59,11 +59,11 @@ describe('NativeMfaClient', () => {
     });
 
     it('should call bridge with undefined factorsAllowed when not provided', async () => {
-      mockBridge.mfaGetAuthenticators.mockResolvedValueOnce([]);
+      mockBridge.getMfaAuthenticators.mockResolvedValueOnce([]);
 
       await client.getAuthenticators({ mfaToken: 'mfa_token_123' });
 
-      expect(mockBridge.mfaGetAuthenticators).toHaveBeenCalledWith(
+      expect(mockBridge.getMfaAuthenticators).toHaveBeenCalledWith(
         'mfa_token_123',
         undefined
       );
@@ -73,7 +73,7 @@ describe('NativeMfaClient', () => {
       const authError = new AuthError('invalid_grant', 'Token expired', {
         code: 'expired_token',
       });
-      mockBridge.mfaGetAuthenticators.mockRejectedValueOnce(authError);
+      mockBridge.getMfaAuthenticators.mockRejectedValueOnce(authError);
 
       await expect(
         client.getAuthenticators({ mfaToken: 'mfa_token_123' })
@@ -85,7 +85,7 @@ describe('NativeMfaClient', () => {
         // Re-mock since first call consumed it
       }
       // Use a fresh mock to verify type
-      mockBridge.mfaGetAuthenticators.mockRejectedValueOnce(authError);
+      mockBridge.getMfaAuthenticators.mockRejectedValueOnce(authError);
       try {
         await client.getAuthenticators({ mfaToken: 'mfa_token_123' });
       } catch (e) {
@@ -96,7 +96,7 @@ describe('NativeMfaClient', () => {
 
     it('should rethrow non-AuthError errors as-is', async () => {
       const error = new Error('Network error');
-      mockBridge.mfaGetAuthenticators.mockRejectedValueOnce(error);
+      mockBridge.getMfaAuthenticators.mockRejectedValueOnce(error);
 
       await expect(
         client.getAuthenticators({ mfaToken: 'mfa_token_123' })

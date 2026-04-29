@@ -91,7 +91,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     private var useDPoP: Boolean = true
 
     private var auth0: Auth0? = null
-    private var mfaBridge: MfaBridge? = null
+    private var mfaClient: MfaClient? = null
     private lateinit var secureCredentialsManager: SecureCredentialsManager
     private var webAuthPromise: Promise? = null
 
@@ -181,7 +181,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         
         this.useDPoP = useDPoP ?: true
         auth0 = Auth0.getInstance(clientId, domain)
-        mfaBridge = MfaBridge(auth0!!, this.useDPoP, reactContext)
+        mfaClient = MfaClient(auth0!!, this.useDPoP, reactContext)
 
         val authAPI = AuthenticationAPIClient(auth0!!)
         if (this.useDPoP) {
@@ -513,26 +513,26 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     }
 
     @ReactMethod
-    override fun mfaGetAuthenticators(mfaToken: String, factorsAllowed: ReadableArray?, promise: Promise) {
-        mfaBridge?.getAuthenticators(mfaToken, factorsAllowed, promise)
+    override fun getMfaAuthenticators(mfaToken: String, factorsAllowed: ReadableArray?, promise: Promise) {
+        mfaClient?.getAuthenticators(mfaToken, factorsAllowed, promise)
             ?: promise.reject("NOT_INITIALIZED", "Auth0 not initialized")
     }
 
     @ReactMethod
     override fun mfaEnroll(mfaToken: String, type: String, value: String?, promise: Promise) {
-        mfaBridge?.enroll(mfaToken, type, value, promise)
+        mfaClient?.enroll(mfaToken, type, value, promise)
             ?: promise.reject("NOT_INITIALIZED", "Auth0 not initialized")
     }
 
     @ReactMethod
     override fun mfaChallenge(mfaToken: String, authenticatorId: String, promise: Promise) {
-        mfaBridge?.challenge(mfaToken, authenticatorId, promise)
+        mfaClient?.challenge(mfaToken, authenticatorId, promise)
             ?: promise.reject("NOT_INITIALIZED", "Auth0 not initialized")
     }
 
     @ReactMethod
     override fun mfaVerify(mfaToken: String, type: String, code: String, bindingCode: String?, promise: Promise) {
-        mfaBridge?.verify(mfaToken, type, code, bindingCode, promise)
+        mfaClient?.verify(mfaToken, type, code, bindingCode, promise)
             ?: promise.reject("NOT_INITIALIZED", "Auth0 not initialized")
     }
 

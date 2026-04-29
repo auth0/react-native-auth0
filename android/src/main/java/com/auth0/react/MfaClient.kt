@@ -17,27 +17,46 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.bridge.WritableNativeMap
 
-/**
- * A dedicated bridge class for MFA (Multi-Factor Authentication) operations.
- * Encapsulates all MFA-related native SDK interactions, keeping them separate
- * from the main A0Auth0Module for better organization and maintainability.
- */
-class MfaBridge(
+enum class MfaFactorType(val value: String) {
+    PHONE("phone"),
+    EMAIL("email"),
+    OTP("otp"),
+    PUSH("push"),
+    VOICE("voice");
+
+    companion object {
+        fun fromString(type: String): MfaFactorType? =
+            entries.find { it.value == type }
+    }
+}
+
+enum class MfaVerifyType(val value: String) {
+    OTP("otp"),
+    OOB("oob"),
+    RECOVERY_CODE("recoveryCode");
+
+    companion object {
+        fun fromString(type: String): MfaVerifyType? =
+            entries.find { it.value == type }
+    }
+}
+
+class MfaClient(
     private val auth0: Auth0,
     private val useDPoP: Boolean,
     private val reactContext: ReactApplicationContext
 ) {
 
-    private fun createAuthClient(): AuthenticationAPIClient {
-        val client = AuthenticationAPIClient(auth0)
-        if (useDPoP) {
-            client.useDPoP(reactContext)
+    private val client: AuthenticationAPIClient by lazy {
+        AuthenticationAPIClient(auth0).apply {
+            if (useDPoP) {
+                useDPoP(reactContext)
+            }
         }
-        return client
     }
 
     fun getAuthenticators(mfaToken: String, factorsAllowed: ReadableArray?, promise: Promise) {
-        val mfaClient = createAuthClient().mfaClient(mfaToken)
+        val mfaClient = client.mfaClient(mfaToken)
 
         val factors = mutableListOf<String>()
         factorsAllowed?.let {
@@ -71,28 +90,37 @@ class MfaBridge(
     }
 
     fun enroll(mfaToken: String, type: String, value: String?, promise: Promise) {
-        val mfaClient = createAuthClient().mfaClient(mfaToken)
+        val mfaClient = client.mfaClient(mfaToken)
 
-        val enrollmentType = when (type) {
-            "phone" -> {
+        val factorType = MfaFactorType.fromString(type)
+        if (factorType == null) {
+            promise.reject("MFA_ENROLLMENT_ERROR", "Unsupported enrollment type: $type")
+            return
+        }
+
+        val enrollmentType = when (factorType) {
+            MfaFactorType.PHONE -> {
                 if (value == null) {
                     promise.reject("MFA_ENROLLMENT_ERROR", "Phone number is required for phone enrollment")
                     return
                 }
                 MfaEnrollmentType.Phone(value)
             }
-            "email" -> {
+            MfaFactorType.EMAIL -> {
                 if (value == null) {
                     promise.reject("MFA_ENROLLMENT_ERROR", "Email is required for email enrollment")
                     return
                 }
                 MfaEnrollmentType.Email(value)
             }
-            "otp" -> MfaEnrollmentType.Otp
-            "push" -> MfaEnrollmentType.Push
-            else -> {
-                promise.reject("MFA_ENROLLMENT_ERROR", "Unsupported enrollment type: $type")
-                return
+            MfaFactorType.OTP -> MfaEnrollmentType.Otp
+            MfaFactorType.PUSH -> MfaEnrollmentType.Push
+            MfaFactorType.VOICE -> {
+                if (value == null) {
+                    promise.reject("MFA_ENROLLMENT_ERROR", "Phone number is required for voice enrollment")
+                    return
+                }
+                MfaEnrollmentType.Phone(value)
             }
         }
 
@@ -130,7 +158,7 @@ class MfaBridge(
     }
 
     fun challenge(mfaToken: String, authenticatorId: String, promise: Promise) {
-        val mfaClient = createAuthClient().mfaClient(mfaToken)
+        val mfaClient = client.mfaClient(mfaToken)
 
         mfaClient.challenge(authenticatorId).start(
             object : com.auth0.android.callback.Callback<com.auth0.android.result.Challenge, MfaException.MfaChallengeException> {
@@ -151,16 +179,18 @@ class MfaBridge(
     }
 
     fun verify(mfaToken: String, type: String, code: String, bindingCode: String?, promise: Promise) {
-        val mfaClient = createAuthClient().mfaClient(mfaToken)
+        val verifyType = MfaVerifyType.fromString(type)
+        if (verifyType == null) {
+            promise.reject("MFA_VERIFY_ERROR", "Unsupported verification type: $type")
+            return
+        }
 
-        val verificationType = when (type) {
-            "otp" -> MfaVerificationType.Otp(code)
-            "oob" -> MfaVerificationType.Oob(oobCode = code, bindingCode = bindingCode)
-            "recoveryCode" -> MfaVerificationType.RecoveryCode(code)
-            else -> {
-                promise.reject("MFA_VERIFY_ERROR", "Unsupported verification type: $type")
-                return
-            }
+        val mfaClient = client.mfaClient(mfaToken)
+
+        val verificationType = when (verifyType) {
+            MfaVerifyType.OTP -> MfaVerificationType.Otp(code)
+            MfaVerifyType.OOB -> MfaVerificationType.Oob(oobCode = code, bindingCode = bindingCode)
+            MfaVerifyType.RECOVERY_CODE -> MfaVerificationType.RecoveryCode(code)
         }
 
         mfaClient.verify(verificationType).start(

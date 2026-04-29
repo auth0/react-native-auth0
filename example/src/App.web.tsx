@@ -6,6 +6,7 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import Auth0, {
   Auth0Provider,
@@ -14,12 +15,27 @@ import Auth0, {
   MfaError,
   MfaErrorCodes,
 } from 'react-native-auth0';
+import type {
+  MfaAuthenticator,
+  MfaEnrollmentChallenge,
+  MfaChallengeResult,
+} from 'react-native-auth0';
 
 import config from './auth0-configuration';
 import Button from './components/Button';
 import Header from './components/Header';
 import Result from './components/Result';
 import LabeledInput from './components/LabeledInput';
+
+type MfaStep =
+  | 'idle'
+  | 'list'
+  | 'enroll-select'
+  | 'enroll-details'
+  | 'verify'
+  | 'complete';
+
+type EnrollType = 'otp' | 'phone' | 'email' | 'push';
 
 // ========================================================================
 // --- 1. HOOKS-BASED IMPLEMENTATION (Recommended) ---
@@ -36,10 +52,7 @@ const HooksAuthContent = (): React.JSX.Element => {
     createUser,
     resetPassword,
     loginWithPasswordRealm,
-    mfaGetAuthenticators,
-    mfaEnroll,
-    mfaChallenge,
-    mfaVerify,
+    mfa,
     users,
   } = useAuth0();
 
@@ -48,13 +61,36 @@ const HooksAuthContent = (): React.JSX.Element => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // MFA state
+  // MFA wizard state
   const [mfaToken, setMfaToken] = useState('');
-  const [mfaOtp, setMfaOtp] = useState('');
-  const [mfaOobCode, setMfaOobCode] = useState('');
-  const [mfaBindingCode, setMfaBindingCode] = useState('');
-  const [mfaRecoveryCode, setMfaRecoveryCode] = useState('');
-  const [mfaAuthenticatorId, setMfaAuthenticatorId] = useState('');
+  const [mfaStep, setMfaStep] = useState<MfaStep>('idle');
+  const [mfaLoading, setMfaLoading] = useState(false);
+  const [authenticators, setAuthenticators] = useState<MfaAuthenticator[]>([]);
+  const [selectedAuthenticator, setSelectedAuthenticator] =
+    useState<MfaAuthenticator | null>(null);
+  const [enrollType, setEnrollType] = useState<EnrollType | null>(null);
+  const [enrollPhoneNumber, setEnrollPhoneNumber] = useState('');
+  const [enrollEmail, setEnrollEmail] = useState('');
+  const [enrollmentChallenge, setEnrollmentChallenge] =
+    useState<MfaEnrollmentChallenge | null>(null);
+  const [challengeResult, setChallengeResult] =
+    useState<MfaChallengeResult | null>(null);
+  const [verifyCode, setVerifyCode] = useState('');
+  const [verifyBindingCode, setVerifyBindingCode] = useState('');
+
+  const resetMfaWizard = () => {
+    setMfaStep('idle');
+    setAuthenticators([]);
+    setSelectedAuthenticator(null);
+    setEnrollType(null);
+    setEnrollPhoneNumber('');
+    setEnrollEmail('');
+    setEnrollmentChallenge(null);
+    setChallengeResult(null);
+    setVerifyCode('');
+    setVerifyBindingCode('');
+    setMfaLoading(false);
+  };
 
   const runDemo = async (action: () => Promise<any>) => {
     setResult(null);
@@ -68,6 +104,115 @@ const HooksAuthContent = (): React.JSX.Element => {
         return;
       }
       setApiError(e as Error);
+    }
+  };
+
+  const handleMfaError = (e: unknown, fallbackMsg: string) => {
+    if (e instanceof MfaError) {
+      if (
+        e.type === MfaErrorCodes.EXPIRED_MFA_TOKEN ||
+        e.type === MfaErrorCodes.INVALID_MFA_TOKEN
+      ) {
+        setMfaToken('');
+        resetMfaWizard();
+      }
+      setApiError(e);
+    } else {
+      setApiError(e as Error);
+    }
+  };
+
+  const onMfaStart = async () => {
+    setMfaLoading(true);
+    setApiError(null);
+    try {
+      const list = await mfa.getAuthenticators({ mfaToken });
+      setAuthenticators(list);
+      setMfaStep('list');
+    } catch (e) {
+      handleMfaError(e, 'Failed to list authenticators.');
+    } finally {
+      setMfaLoading(false);
+    }
+  };
+
+  const onMfaSelectAuthenticator = async (auth: MfaAuthenticator) => {
+    setSelectedAuthenticator(auth);
+    setMfaLoading(true);
+    try {
+      const res = await mfa.challenge({ mfaToken, authenticatorId: auth.id });
+      setChallengeResult(res);
+      setMfaStep('verify');
+    } catch (e) {
+      handleMfaError(e, 'Challenge failed.');
+      setMfaStep('list');
+    } finally {
+      setMfaLoading(false);
+    }
+  };
+
+  const onMfaSelectEnrollType = (type: EnrollType) => {
+    setEnrollType(type);
+    if (type === 'otp' || type === 'push') {
+      onMfaEnroll(type);
+    } else {
+      setMfaStep('enroll-details');
+    }
+  };
+
+  const onMfaEnroll = async (type?: EnrollType) => {
+    const factorType = type || enrollType;
+    if (!factorType) return;
+    setMfaLoading(true);
+    try {
+      let challenge: MfaEnrollmentChallenge;
+      if (factorType === 'phone') {
+        challenge = await mfa.enroll({
+          mfaToken,
+          phoneNumber: enrollPhoneNumber,
+        });
+      } else if (factorType === 'email') {
+        challenge = await mfa.enroll({ mfaToken, email: enrollEmail });
+      } else {
+        challenge = await mfa.enroll({ mfaToken, type: factorType });
+      }
+      setEnrollmentChallenge(challenge);
+      setMfaStep('verify');
+    } catch (e) {
+      handleMfaError(e, 'Enrollment failed.');
+    } finally {
+      setMfaLoading(false);
+    }
+  };
+
+  const onMfaVerify = async () => {
+    setMfaLoading(true);
+    try {
+      let credentials;
+      const oobCode =
+        challengeResult?.oobCode ||
+        (enrollmentChallenge?.type === 'oob'
+          ? enrollmentChallenge.oobCode
+          : undefined);
+
+      if (oobCode) {
+        credentials = await mfa.verify({
+          mfaToken,
+          oobCode,
+          bindingCode: verifyBindingCode || undefined,
+        });
+      } else {
+        credentials = await mfa.verify({ mfaToken, otp: verifyCode });
+      }
+      setResult({
+        success: true,
+        accessToken: credentials.accessToken.substring(0, 20) + '...',
+      });
+      setMfaStep('complete');
+    } catch (e) {
+      handleMfaError(e, 'Verification failed.');
+    } finally {
+      setMfaLoading(false);
     }
   };
 
@@ -175,121 +320,175 @@ const HooksAuthContent = (): React.JSX.Element => {
             />
           </Section>
           <Section title="MFA Flexible Factors Grant">
-            <Text style={styles.hint}>
-              Get an mfa_token from your Auth0 tenant, then test MFA flows
-              below.
-            </Text>
-            <LabeledInput
-              label="MFA Token"
-              value={mfaToken}
-              onChangeText={setMfaToken}
-              placeholder="Paste mfa_token here"
-            />
-            <Button
-              onPress={() => runDemo(() => mfaGetAuthenticators({ mfaToken }))}
-              title="List Authenticators"
-              disabled={!mfaToken}
-            />
-            <Button
-              onPress={() =>
-                runDemo(async () => {
-                  const challenge = await mfaEnroll({ mfaToken, type: 'otp' });
-                  return challenge;
-                })
-              }
-              title="Enroll TOTP"
-              disabled={!mfaToken}
-            />
-            <LabeledInput
-              label="Authenticator ID"
-              value={mfaAuthenticatorId}
-              onChangeText={setMfaAuthenticatorId}
-              placeholder="e.g. sms|dev_123"
-            />
-            <Button
-              onPress={() =>
-                runDemo(async () => {
-                  const challengeResult = await mfaChallenge({
-                    mfaToken,
-                    authenticatorId: mfaAuthenticatorId,
-                  });
-                  if (challengeResult.oobCode) {
-                    setMfaOobCode(challengeResult.oobCode);
-                  }
-                  return challengeResult;
-                })
-              }
-              title="Challenge"
-              disabled={!mfaToken || !mfaAuthenticatorId}
-            />
-            <LabeledInput
-              label="OTP Code"
-              value={mfaOtp}
-              onChangeText={setMfaOtp}
-              placeholder="6-digit code"
-            />
-            <Button
-              onPress={() =>
-                runDemo(async () => {
-                  const creds = await mfaVerify({ mfaToken, otp: mfaOtp });
-                  return {
-                    success: true,
-                    accessToken: creds.accessToken.substring(0, 20) + '...',
-                  };
-                })
-              }
-              title="Verify OTP"
-              disabled={!mfaToken || !mfaOtp}
-            />
-            <LabeledInput
-              label="OOB Code"
-              value={mfaOobCode}
-              onChangeText={setMfaOobCode}
-              placeholder="Auto-filled from challenge"
-            />
-            <LabeledInput
-              label="Binding Code (optional)"
-              value={mfaBindingCode}
-              onChangeText={setMfaBindingCode}
-              placeholder="Code sent via SMS/email"
-            />
-            <Button
-              onPress={() =>
-                runDemo(async () => {
-                  const params: any = { mfaToken, oobCode: mfaOobCode };
-                  if (mfaBindingCode) params.bindingCode = mfaBindingCode;
-                  const creds = await mfaVerify(params);
-                  return {
-                    success: true,
-                    accessToken: creds.accessToken.substring(0, 20) + '...',
-                  };
-                })
-              }
-              title="Verify OOB"
-              disabled={!mfaToken || !mfaOobCode}
-            />
-            <LabeledInput
-              label="Recovery Code"
-              value={mfaRecoveryCode}
-              onChangeText={setMfaRecoveryCode}
-              placeholder="e.g. ABCDEF123456"
-            />
-            <Button
-              onPress={() =>
-                runDemo(async () => {
-                  const creds = await mfaVerify({
-                    mfaToken,
-                    recoveryCode: mfaRecoveryCode,
-                  });
-                  return {
-                    success: true,
-                    accessToken: creds.accessToken.substring(0, 20) + '...',
-                  };
-                })
-              }
-              title="Verify Recovery Code"
-              disabled={!mfaToken || !mfaRecoveryCode}
-            />
+            {mfaStep === 'idle' && (
+              <>
+                <Text style={styles.hint}>
+                  Get an mfa_token from a password login with MFA enabled.
+                </Text>
+                <LabeledInput
+                  label="MFA Token"
+                  value={mfaToken}
+                  onChangeText={setMfaToken}
+                  placeholder="Paste mfa_token here"
+                />
+                <Button
+                  onPress={onMfaStart}
+                  title="Start MFA"
+                  disabled={!mfaToken || mfaLoading}
+                />
+              </>
+            )}
+            {mfaStep === 'list' && (
+              <>
+                <Text style={styles.sectionTitle}>
+                  Step 1: Select Authenticator
+                </Text>
+                {authenticators.length > 0 ? (
+                  authenticators.map((auth) => (
+                    <TouchableOpacity
+                      key={auth.id}
+                      style={webStyles.authItem}
+                      onPress={() => onMfaSelectAuthenticator(auth)}
+                    >
+                      <Text style={webStyles.authItemTitle}>
+                        {auth.authenticatorType}
+                        {auth.oobChannel ? ` (${auth.oobChannel})` : ''}
+                      </Text>
+                      <Text style={webStyles.authItemSub}>{auth.id}</Text>
+                    </TouchableOpacity>
+                  ))
+                ) : (
+                  <Text style={styles.hint}>No authenticators enrolled.</Text>
+                )}
+                <Button
+                  onPress={() => setMfaStep('enroll-select')}
+                  title="Enroll New Authenticator"
+                />
+                <Button onPress={resetMfaWizard} title="Back" />
+              </>
+            )}
+            {mfaStep === 'enroll-select' && (
+              <>
+                <Text style={styles.sectionTitle}>
+                  Step 2: Choose Factor Type
+                </Text>
+                <Button
+                  onPress={() => onMfaSelectEnrollType('otp')}
+                  title="TOTP (Authenticator App)"
+                  disabled={mfaLoading}
+                />
+                <Button
+                  onPress={() => onMfaSelectEnrollType('phone')}
+                  title="SMS"
+                  disabled={mfaLoading}
+                />
+                <Button
+                  onPress={() => onMfaSelectEnrollType('email')}
+                  title="Email"
+                  disabled={mfaLoading}
+                />
+                <Button
+                  onPress={() => onMfaSelectEnrollType('push')}
+                  title="Push Notification"
+                  disabled={mfaLoading}
+                />
+                <Button onPress={() => setMfaStep('list')} title="Back" />
+              </>
+            )}
+            {mfaStep === 'enroll-details' && (
+              <>
+                <Text style={styles.sectionTitle}>Step 2: Enter Details</Text>
+                {enrollType === 'phone' && (
+                  <>
+                    <LabeledInput
+                      label="Phone Number"
+                      value={enrollPhoneNumber}
+                      onChangeText={setEnrollPhoneNumber}
+                      placeholder="+12025550135"
+                    />
+                    <Button
+                      onPress={() => onMfaEnroll()}
+                      title="Enroll SMS"
+                      disabled={!enrollPhoneNumber || mfaLoading}
+                    />
+                  </>
+                )}
+                {enrollType === 'email' && (
+                  <>
+                    <LabeledInput
+                      label="Email"
+                      value={enrollEmail}
+                      onChangeText={setEnrollEmail}
+                      placeholder="user@example.com"
+                    />
+                    <Button
+                      onPress={() => onMfaEnroll()}
+                      title="Enroll Email"
+                      disabled={!enrollEmail || mfaLoading}
+                    />
+                  </>
+                )}
+                <Button
+                  onPress={() => setMfaStep('enroll-select')}
+                  title="Back"
+                />
+              </>
+            )}
+            {mfaStep === 'verify' && (
+              <>
+                <Text style={styles.sectionTitle}>Step 3: Verify</Text>
+                {enrollmentChallenge?.type === 'totp' && (
+                  <View style={webStyles.infoBox}>
+                    <Text>Secret: {enrollmentChallenge.secret}</Text>
+                  </View>
+                )}
+                {challengeResult?.challengeType === 'oob' ||
+                enrollmentChallenge?.type === 'oob' ? (
+                  <>
+                    <Text style={styles.hint}>
+                      A code has been sent. Enter the binding code below.
+                    </Text>
+                    <LabeledInput
+                      label="Binding Code"
+                      value={verifyBindingCode}
+                      onChangeText={setVerifyBindingCode}
+                      placeholder="Code from SMS/email"
+                    />
+                    <Button
+                      onPress={onMfaVerify}
+                      title="Verify"
+                      disabled={!verifyBindingCode || mfaLoading}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <LabeledInput
+                      label="OTP Code"
+                      value={verifyCode}
+                      onChangeText={setVerifyCode}
+                      placeholder="6-digit code"
+                    />
+                    <Button
+                      onPress={onMfaVerify}
+                      title="Verify"
+                      disabled={!verifyCode || mfaLoading}
+                    />
+                  </>
+                )}
+                <Button onPress={() => setMfaStep('list')} title="Back" />
+              </>
+            )}
+            {mfaStep === 'complete' && (
+              <>
+                <Text style={webStyles.successText}>
+                  Authentication successful!
+                </Text>
+                {result && (
+                  <Result title="Credentials" error={null} result={result} />
+                )}
+                <Button onPress={resetMfaWizard} title="Done" />
+              </>
+            )}
           </Section>
         </>
       )}
@@ -316,11 +515,16 @@ interface ClassAppState {
   email: string;
   password: string;
   mfaToken: string;
-  mfaOtp: string;
-  mfaOobCode: string;
-  mfaBindingCode: string;
-  mfaRecoveryCode: string;
-  mfaAuthenticatorId: string;
+  mfaStep: MfaStep;
+  mfaLoading: boolean;
+  authenticators: MfaAuthenticator[];
+  enrollType: EnrollType | null;
+  enrollPhoneNumber: string;
+  enrollEmail: string;
+  enrollmentChallenge: MfaEnrollmentChallenge | null;
+  challengeResult: MfaChallengeResult | null;
+  verifyCode: string;
+  verifyBindingCode: string;
 }
 
 class ClassApp extends React.Component<{}, ClassAppState> {
@@ -333,11 +537,16 @@ class ClassApp extends React.Component<{}, ClassAppState> {
     email: '',
     password: '',
     mfaToken: '',
-    mfaOtp: '',
-    mfaOobCode: '',
-    mfaBindingCode: '',
-    mfaRecoveryCode: '',
-    mfaAuthenticatorId: '',
+    mfaStep: 'idle',
+    mfaLoading: false,
+    authenticators: [],
+    enrollType: null,
+    enrollPhoneNumber: '',
+    enrollEmail: '',
+    enrollmentChallenge: null,
+    challengeResult: null,
+    verifyCode: '',
+    verifyBindingCode: '',
   };
 
   componentDidMount() {
@@ -403,6 +612,124 @@ class ClassApp extends React.Component<{}, ClassAppState> {
     }
   };
 
+  resetMfaWizard = () => {
+    this.setState({
+      mfaStep: 'idle',
+      authenticators: [],
+      enrollType: null,
+      enrollPhoneNumber: '',
+      enrollEmail: '',
+      enrollmentChallenge: null,
+      challengeResult: null,
+      verifyCode: '',
+      verifyBindingCode: '',
+      mfaLoading: false,
+    });
+  };
+
+  onMfaStart = async () => {
+    this.setState({ mfaLoading: true, apiError: null });
+    try {
+      const list = await this.state.auth0
+        .mfa()
+        .getAuthenticators({ mfaToken: this.state.mfaToken });
+      this.setState({ authenticators: list, mfaStep: 'list' });
+    } catch (e) {
+      this.setState({ apiError: e as Error });
+    } finally {
+      this.setState({ mfaLoading: false });
+    }
+  };
+
+  onMfaChallenge = async (auth: MfaAuthenticator) => {
+    this.setState({ mfaLoading: true });
+    try {
+      const res = await this.state.auth0
+        .mfa()
+        .challenge({ mfaToken: this.state.mfaToken, authenticatorId: auth.id });
+      this.setState({ challengeResult: res, mfaStep: 'verify' });
+    } catch (e) {
+      this.setState({ apiError: e as Error, mfaStep: 'list' });
+    } finally {
+      this.setState({ mfaLoading: false });
+    }
+  };
+
+  onMfaEnroll = async (type?: EnrollType) => {
+    const factorType = type || this.state.enrollType;
+    if (!factorType) return;
+    this.setState({ mfaLoading: true });
+    try {
+      let challenge: MfaEnrollmentChallenge;
+      const {
+        mfaToken,
+        enrollPhoneNumber: phone,
+        enrollEmail: em,
+      } = this.state;
+      if (factorType === 'phone') {
+        challenge = await this.state.auth0
+          .mfa()
+          .enroll({ mfaToken, phoneNumber: phone });
+      } else if (factorType === 'email') {
+        challenge = await this.state.auth0
+          .mfa()
+          .enroll({ mfaToken, email: em });
+      } else {
+        challenge = await this.state.auth0
+          .mfa()
+          .enroll({ mfaToken, type: factorType });
+      }
+      this.setState({ enrollmentChallenge: challenge, mfaStep: 'verify' });
+    } catch (e) {
+      this.setState({ apiError: e as Error });
+    } finally {
+      this.setState({ mfaLoading: false });
+    }
+  };
+
+  onMfaVerify = async () => {
+    this.setState({ mfaLoading: true });
+    try {
+      const {
+        mfaToken,
+        challengeResult,
+        enrollmentChallenge,
+        verifyCode,
+        verifyBindingCode,
+      } = this.state;
+      let credentials;
+      const oobCode =
+        challengeResult?.oobCode ||
+        (enrollmentChallenge?.type === 'oob'
+          ? enrollmentChallenge.oobCode
+          : undefined);
+      if (oobCode) {
+        credentials = await this.state.auth0
+          .mfa()
+          .verify({
+            mfaToken,
+            oobCode,
+            bindingCode: verifyBindingCode || undefined,
+          });
+      } else {
+        credentials = await this.state.auth0
+          .mfa()
+          .verify({ mfaToken, otp: verifyCode });
+      }
+      this.setState({
+        result: {
+          success: true,
+          accessToken: credentials.accessToken.substring(0, 20) + '...',
+        },
+        mfaStep: 'complete',
+      });
+    } catch (e) {
+      this.setState({ apiError: e as Error });
+    } finally {
+      this.setState({ mfaLoading: false });
+    }
+  };
+
   render() {
     const {
       user,
@@ -412,11 +739,16 @@ class ClassApp extends React.Component<{}, ClassAppState> {
       email,
       password,
       mfaToken,
-      mfaOtp,
-      mfaOobCode,
-      mfaBindingCode,
-      mfaRecoveryCode,
-      mfaAuthenticatorId,
+      mfaStep,
+      mfaLoading,
+      authenticators,
+      enrollType,
+      enrollPhoneNumber,
+      enrollEmail,
+      enrollmentChallenge,
+      challengeResult,
+      verifyCode,
+      verifyBindingCode,
     } = this.state;
     if (isLoading) {
       return (
@@ -522,134 +854,207 @@ class ClassApp extends React.Component<{}, ClassAppState> {
               />
             </Section>
             <Section title="MFA Flexible Factors Grant">
-              <Text style={styles.hint}>
-                Uses auth0.mfa() class-based API for MFA operations.
-              </Text>
-              <LabeledInput
-                label="MFA Token"
-                value={mfaToken}
-                onChangeText={(val: string) => this.setState({ mfaToken: val })}
-                placeholder="Paste mfa_token here"
-              />
-              <Button
-                onPress={() =>
-                  this.runDemo(() =>
-                    this.state.auth0.mfa().getAuthenticators({ mfaToken })
-                  )
-                }
-                title="List Authenticators"
-                disabled={!mfaToken}
-              />
-              <Button
-                onPress={() =>
-                  this.runDemo(() =>
-                    this.state.auth0.mfa().enroll({ mfaToken, type: 'otp' })
-                  )
-                }
-                title="Enroll TOTP"
-                disabled={!mfaToken}
-              />
-              <LabeledInput
-                label="Authenticator ID"
-                value={mfaAuthenticatorId}
-                onChangeText={(val: string) =>
-                  this.setState({ mfaAuthenticatorId: val })
-                }
-                placeholder="e.g. sms|dev_123"
-              />
-              <Button
-                onPress={() =>
-                  this.runDemo(async () => {
-                    const challengeResult = await this.state.auth0
-                      .mfa()
-                      .challenge({
-                        mfaToken,
-                        authenticatorId: mfaAuthenticatorId,
-                      });
-                    if (challengeResult.oobCode) {
-                      this.setState({ mfaOobCode: challengeResult.oobCode });
+              {mfaStep === 'idle' && (
+                <>
+                  <Text style={styles.hint}>
+                    Get an mfa_token from a password login with MFA enabled.
+                  </Text>
+                  <LabeledInput
+                    label="MFA Token"
+                    value={mfaToken}
+                    onChangeText={(val: string) =>
+                      this.setState({ mfaToken: val })
                     }
-                    return challengeResult;
-                  })
-                }
-                title="Challenge"
-                disabled={!mfaToken || !mfaAuthenticatorId}
-              />
-              <LabeledInput
-                label="OTP Code"
-                value={mfaOtp}
-                onChangeText={(val: string) => this.setState({ mfaOtp: val })}
-                placeholder="6-digit code"
-              />
-              <Button
-                onPress={() =>
-                  this.runDemo(async () => {
-                    const creds = await this.state.auth0
-                      .mfa()
-                      .verify({ mfaToken, otp: mfaOtp });
-                    return {
-                      success: true,
-                      accessToken: creds.accessToken.substring(0, 20) + '...',
-                    };
-                  })
-                }
-                title="Verify OTP"
-                disabled={!mfaToken || !mfaOtp}
-              />
-              <LabeledInput
-                label="OOB Code"
-                value={mfaOobCode}
-                onChangeText={(val: string) =>
-                  this.setState({ mfaOobCode: val })
-                }
-                placeholder="Auto-filled from challenge"
-              />
-              <LabeledInput
-                label="Binding Code (optional)"
-                value={mfaBindingCode}
-                onChangeText={(val: string) =>
-                  this.setState({ mfaBindingCode: val })
-                }
-                placeholder="Code sent via SMS/email"
-              />
-              <Button
-                onPress={() =>
-                  this.runDemo(async () => {
-                    const params: any = { mfaToken, oobCode: mfaOobCode };
-                    if (mfaBindingCode) params.bindingCode = mfaBindingCode;
-                    const creds = await this.state.auth0.mfa().verify(params);
-                    return {
-                      success: true,
-                      accessToken: creds.accessToken.substring(0, 20) + '...',
-                    };
-                  })
-                }
-                title="Verify OOB"
-                disabled={!mfaToken || !mfaOobCode}
-              />
-              <LabeledInput
-                label="Recovery Code"
-                value={mfaRecoveryCode}
-                onChangeText={(val: string) =>
-                  this.setState({ mfaRecoveryCode: val })
-                }
-                placeholder="e.g. ABCDEF123456"
-              />
-              <Button
-                onPress={() =>
-                  this.runDemo(async () => {
-                    const creds = await this.state.auth0
-                      .mfa()
-                      .verify({ mfaToken, recoveryCode: mfaRecoveryCode });
-                    return {
-                      success: true,
-                      accessToken: creds.accessToken.substring(0, 20) + '...',
-                    };
-                  })
-                }
-                title="Verify Recovery Code"
-                disabled={!mfaToken || !mfaRecoveryCode}
-              />
+                    placeholder="Paste mfa_token here"
+                  />
+                  <Button
+                    onPress={this.onMfaStart}
+                    title="Start MFA"
+                    disabled={!mfaToken || mfaLoading}
+                  />
+                </>
+              )}
+              {mfaStep === 'list' && (
+                <>
+                  <Text style={styles.sectionTitle}>
+                    Step 1: Select Authenticator
+                  </Text>
+                  {authenticators.length > 0 ? (
+                    authenticators.map((auth) => (
+                      <TouchableOpacity
+                        key={auth.id}
+                        style={webStyles.authItem}
+                        onPress={() => this.onMfaChallenge(auth)}
+                      >
+                        <Text style={webStyles.authItemTitle}>
+                          {auth.authenticatorType}
+                          {auth.oobChannel ? ` (${auth.oobChannel})` : ''}
+                        </Text>
+                        <Text style={webStyles.authItemSub}>{auth.id}</Text>
+                      </TouchableOpacity>
+                    ))
+                  ) : (
+                    <Text style={styles.hint}>No authenticators enrolled.</Text>
+                  )}
+                  <Button
+                    onPress={() => this.setState({ mfaStep: 'enroll-select' })}
+                    title="Enroll New Authenticator"
+                  />
+                  <Button onPress={this.resetMfaWizard} title="Back" />
+                </>
+              )}
+              {mfaStep === 'enroll-select' && (
+                <>
+                  <Text style={styles.sectionTitle}>
+                    Step 2: Choose Factor Type
+                  </Text>
+                  <Button
+                    onPress={() => {
+                      this.setState({ enrollType: 'otp' });
+                      this.onMfaEnroll('otp');
+                    }}
+                    title="TOTP (Authenticator App)"
+                    disabled={mfaLoading}
+                  />
+                  <Button
+                    onPress={() =>
+                      this.setState({
+                        enrollType: 'phone',
+                        mfaStep: 'enroll-details',
+                      })
+                    }
+                    title="SMS"
+                    disabled={mfaLoading}
+                  />
+                  <Button
+                    onPress={() =>
+                      this.setState({
+                        enrollType: 'email',
+                        mfaStep: 'enroll-details',
+                      })
+                    }
+                    title="Email"
+                    disabled={mfaLoading}
+                  />
+                  <Button
+                    onPress={() => {
+                      this.setState({ enrollType: 'push' });
+                      this.onMfaEnroll('push');
+                    }}
+                    title="Push Notification"
+                    disabled={mfaLoading}
+                  />
+                  <Button
+                    onPress={() => this.setState({ mfaStep: 'list' })}
+                    title="Back"
+                  />
+                </>
+              )}
+              {mfaStep === 'enroll-details' && (
+                <>
+                  <Text style={styles.sectionTitle}>Step 2: Enter Details</Text>
+                  {enrollType === 'phone' && (
+                    <>
+                      <LabeledInput
+                        label="Phone Number"
+                        value={enrollPhoneNumber}
+                        onChangeText={(val: string) =>
+                          this.setState({ enrollPhoneNumber: val })
+                        }
+                        placeholder="+12025550135"
+                      />
+                      <Button
+                        onPress={() => this.onMfaEnroll()}
+                        title="Enroll SMS"
+                        disabled={!enrollPhoneNumber || mfaLoading}
+                      />
+                    </>
+                  )}
+                  {enrollType === 'email' && (
+                    <>
+                      <LabeledInput
+                        label="Email"
+                        value={enrollEmail}
+                        onChangeText={(val: string) =>
+                          this.setState({ enrollEmail: val })
+                        }
+                        placeholder="user@example.com"
+                      />
+                      <Button
+                        onPress={() => this.onMfaEnroll()}
+                        title="Enroll Email"
+                        disabled={!enrollEmail || mfaLoading}
+                      />
+                    </>
+                  )}
+                  <Button
+                    onPress={() => this.setState({ mfaStep: 'enroll-select' })}
+                    title="Back"
+                  />
+                </>
+              )}
+              {mfaStep === 'verify' && (
+                <>
+                  <Text style={styles.sectionTitle}>Step 3: Verify</Text>
+                  {enrollmentChallenge?.type === 'totp' && (
+                    <View style={webStyles.infoBox}>
+                      <Text>Secret: {enrollmentChallenge.secret}</Text>
+                    </View>
+                  )}
+                  {challengeResult?.challengeType === 'oob' ||
+                  enrollmentChallenge?.type === 'oob' ? (
+                    <>
+                      <Text style={styles.hint}>
+                        A code has been sent. Enter the binding code below.
+                      </Text>
+                      <LabeledInput
+                        label="Binding Code"
+                        value={verifyBindingCode}
+                        onChangeText={(val: string) =>
+                          this.setState({ verifyBindingCode: val })
+                        }
+                        placeholder="Code from SMS/email"
+                      />
+                      <Button
+                        onPress={this.onMfaVerify}
+                        title="Verify"
+                        disabled={!verifyBindingCode || mfaLoading}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <LabeledInput
+                        label="OTP Code"
+                        value={verifyCode}
+                        onChangeText={(val: string) =>
+                          this.setState({ verifyCode: val })
+                        }
+                        placeholder="6-digit code"
+                      />
+                      <Button
+                        onPress={this.onMfaVerify}
+                        title="Verify"
+                        disabled={!verifyCode || mfaLoading}
+                      />
+                    </>
+                  )}
+                  <Button
+                    onPress={() => this.setState({ mfaStep: 'list' })}
+                    title="Back"
+                  />
+                </>
+              )}
+              {mfaStep === 'complete' && (
+                <>
+                  <Text style={webStyles.successText}>
+                    Authentication successful!
+                  </Text>
+                  {result && (
+                    <Result title="Credentials" error={null} result={result} />
+                  )}
+                  <Button onPress={this.resetMfaWizard} title="Done" />
+                </>
+              )}
             </Section>
           </>
         )}
@@ -727,6 +1132,32 @@ const styles = StyleSheet.create({
     backgroundColor: '#fafafa',
   },
   toggleButton: { backgroundColor: '#6c757d' },
+});
+
+const webStyles = StyleSheet.create({
+  authItem: {
+    borderWidth: 1,
+    borderColor: '#CCC',
+    borderRadius: 6,
+    padding: 12,
+    backgroundColor: '#F9F9F9',
+    marginBottom: 8,
+  },
+  authItemTitle: { fontSize: 14, fontWeight: '600' },
+  authItemSub: { fontSize: 11, color: '#666', marginTop: 2 },
+  infoBox: {
+    backgroundColor: '#F0F4FF',
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 8,
+  },
+  successText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#2E7D32',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
 });
 
 export default App;

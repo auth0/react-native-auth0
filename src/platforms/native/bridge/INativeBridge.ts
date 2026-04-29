@@ -216,7 +216,7 @@ export interface INativeBridge {
    * @param factorsAllowed Optional list of factor types to filter by.
    * @returns A promise that resolves with the list of enrolled authenticators.
    */
-  mfaGetAuthenticators(
+  getMfaAuthenticators(
     mfaToken: string,
     factorsAllowed?: string[]
   ): Promise<MfaAuthenticator[]>;

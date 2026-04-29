@@ -30,7 +30,7 @@ export class NativeMfaClient implements IMfaClient {
     parameters: MfaGetAuthenticatorsParameters
   ): Promise<MfaAuthenticator[]> {
     try {
-      return await this.bridge.mfaGetAuthenticators(
+      return await this.bridge.getMfaAuthenticators(
         parameters.mfaToken,
         parameters.factorsAllowed
       );

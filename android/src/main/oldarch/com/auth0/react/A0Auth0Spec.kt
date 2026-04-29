@@ -123,7 +123,7 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
 
     @ReactMethod
     @DoNotStrip
-    abstract fun mfaGetAuthenticators(
+    abstract fun getMfaAuthenticators(
         mfaToken: String,
         factorsAllowed: com.facebook.react.bridge.ReadableArray?,
         promise: Promise

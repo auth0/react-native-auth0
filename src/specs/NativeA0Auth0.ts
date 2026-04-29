@@ -161,7 +161,7 @@ export interface Spec extends TurboModule {
   /**
    * Get enrolled MFA authenticators.
    */
-  mfaGetAuthenticators(
+  getMfaAuthenticators(
     mfaToken: string,
     factorsAllowed: string[] | undefined
   ): Promise<Object[]>;
