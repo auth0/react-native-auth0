@@ -1,5 +1,14 @@
 # Change Log
 
+## [v5.5.1](https://github.com/auth0/react-native-auth0/tree/v5.5.1) (2026-04-23)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.5.0...v5.5.1)
+
+**Fixed**
+
+- fix: remove conflicting broad scheme from MainActivity to prevent Android disambiguation dialog [\#1514](https://github.com/auth0/react-native-auth0/pull/1514) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix: filter universal link callbacks by Auth0 domain in iOS [\#1512](https://github.com/auth0/react-native-auth0/pull/1512) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.5.0](https://github.com/auth0/react-native-auth0/tree/v5.5.0) (2026-04-09)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.4.1...v5.5.0)
