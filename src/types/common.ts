@@ -247,6 +247,44 @@ export type MfaFactor = {
   type: string;
 };
 
+// ========= MFA Factor Type Constants =========
+
+/**
+ * Supported MFA factor types.
+ * Use these constants when enrolling factors, filtering authenticators, or identifying challenge types.
+ *
+ * @example
+ * ```ts
+ * import { MfaFactorType } from 'react-native-auth0';
+ *
+ * // Enroll TOTP authenticator
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.OTP });
+ *
+ * // Enroll SMS
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.SMS, phoneNumber: '+1234567890' });
+ *
+ * // Enroll Email
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.EMAIL, email: 'user@example.com' });
+ *
+ * // Filter authenticators
+ * const smsAuths = authenticators.filter(a => a.oobChannel === MfaFactorType.SMS);
+ * ```
+ */
+export const MfaFactorType = {
+  /** Time-based One-Time Password (authenticator app like Google Authenticator, Authy) */
+  OTP: 'otp',
+  /** SMS-based verification */
+  SMS: 'sms',
+  /** Voice call verification */
+  VOICE: 'voice',
+  /** Email-based verification */
+  EMAIL: 'email',
+  /** Push notification (Auth0 Guardian) */
+  PUSH: 'push',
+} as const;
+
+export type MfaFactorType = (typeof MfaFactorType)[keyof typeof MfaFactorType];
+
 // ========= DPoP Types =========
 
 /**

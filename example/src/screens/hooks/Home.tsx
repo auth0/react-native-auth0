@@ -7,6 +7,8 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
+  Image,
+  Linking,
 } from 'react-native';
 import {
   useAuth0,
@@ -14,6 +16,7 @@ import {
   WebAuthErrorCodes,
   MfaError,
   MfaErrorCodes,
+  MfaFactorType,
 } from 'react-native-auth0';
 import type {
   MfaAuthenticator,
@@ -35,7 +38,7 @@ type MfaStep =
   | 'verify'
   | 'complete';
 
-type EnrollType = 'otp' | 'phone' | 'email' | 'push';
+type EnrollType = MfaFactorType;
 
 const HomeScreen = () => {
   const {
@@ -215,7 +218,7 @@ const HomeScreen = () => {
 
   const onSelectEnrollType = (type: EnrollType) => {
     setEnrollType(type);
-    if (type === 'otp' || type === 'push') {
+    if (type === MfaFactorType.OTP || type === MfaFactorType.PUSH) {
       onEnroll(type);
     } else {
       setMfaStep('enroll-details');
@@ -223,21 +226,26 @@ const HomeScreen = () => {
   };
 
   const onEnroll = async (type?: EnrollType) => {
-    const factorType = type || enrollType;
-    if (!factorType) return;
+    const factor = type || enrollType;
+    if (!factor) return;
 
     setMfaLoading(true);
     try {
       let challenge: MfaEnrollmentChallenge;
-      if (factorType === 'phone') {
+      if (factor === MfaFactorType.SMS) {
         challenge = await mfa.enroll({
           mfaToken,
+          factorType: MfaFactorType.SMS,
           phoneNumber: enrollPhoneNumber,
         });
-      } else if (factorType === 'email') {
-        challenge = await mfa.enroll({ mfaToken, email: enrollEmail });
+      } else if (factor === MfaFactorType.EMAIL) {
+        challenge = await mfa.enroll({
+          mfaToken,
+          factorType: MfaFactorType.EMAIL,
+          email: enrollEmail,
+        });
       } else {
-        challenge = await mfa.enroll({ mfaToken, type: factorType });
+        challenge = await mfa.enroll({ mfaToken, factorType: factor });
       }
       setEnrollmentChallenge(challenge);
       setMfaStep('verify');
@@ -346,22 +354,22 @@ const HomeScreen = () => {
           <>
             <Text style={styles.stepTitle}>Step 2: Choose Factor Type</Text>
             <Button
-              onPress={() => onSelectEnrollType('otp')}
+              onPress={() => onSelectEnrollType(MfaFactorType.OTP)}
               title="TOTP (Authenticator App)"
               disabled={mfaLoading}
             />
             <Button
-              onPress={() => onSelectEnrollType('phone')}
+              onPress={() => onSelectEnrollType(MfaFactorType.SMS)}
               title="SMS"
               disabled={mfaLoading}
             />
             <Button
-              onPress={() => onSelectEnrollType('email')}
+              onPress={() => onSelectEnrollType(MfaFactorType.EMAIL)}
               title="Email"
               disabled={mfaLoading}
             />
             <Button
-              onPress={() => onSelectEnrollType('push')}
+              onPress={() => onSelectEnrollType(MfaFactorType.PUSH)}
               title="Push Notification"
               disabled={mfaLoading}
             />
@@ -373,7 +381,7 @@ const HomeScreen = () => {
         return (
           <>
             <Text style={styles.stepTitle}>Step 2: Enter Details</Text>
-            {enrollType === 'phone' && (
+            {enrollType === MfaFactorType.SMS && (
               <>
                 <LabeledInput
                   label="Phone Number"
@@ -389,7 +397,7 @@ const HomeScreen = () => {
                 />
               </>
             )}
-            {enrollType === 'email' && (
+            {enrollType === MfaFactorType.EMAIL && (
               <>
                 <LabeledInput
                   label="Email"
@@ -416,13 +424,27 @@ const HomeScreen = () => {
             <Text style={styles.stepTitle}>Step 3: Verify</Text>
             {enrollmentChallenge?.type === 'totp' && (
               <View style={styles.infoBox}>
+                {enrollmentChallenge.barcodeUri && (
+                  <>
+                    <View style={styles.qrContainer}>
+                      <Image
+                        source={{
+                          uri: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(enrollmentChallenge.barcodeUri)}`,
+                        }}
+                        style={styles.qrImage}
+                      />
+                    </View>
+                    <Button
+                      onPress={() =>
+                        Linking.openURL(enrollmentChallenge.barcodeUri!)
+                      }
+                      title="Open in Authenticator App"
+                    />
+                  </>
+                )}
                 <Text style={styles.infoLabel}>Secret:</Text>
                 <Text style={styles.infoValue} selectable>
                   {enrollmentChallenge.secret}
-                </Text>
-                <Text style={styles.infoLabel}>Barcode URI:</Text>
-                <Text style={styles.infoValue} selectable numberOfLines={2}>
-                  {enrollmentChallenge.barcodeUri}
                 </Text>
               </View>
             )}
@@ -621,6 +643,8 @@ const styles = StyleSheet.create({
   },
   infoLabel: { fontSize: 12, fontWeight: '600', color: '#444' },
   infoValue: { fontSize: 12, color: '#333', fontFamily: 'monospace' },
+  qrContainer: { alignItems: 'center', marginVertical: 12 },
+  qrImage: { width: 200, height: 200 },
   successText: {
     fontSize: 16,
     fontWeight: '600',

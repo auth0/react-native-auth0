@@ -7,10 +7,9 @@ import type {
   MfaChallengeResult,
   MfaGetAuthenticatorsParameters,
   MfaEnrollParameters,
-  MfaEnrollPhoneParameters,
+  MfaEnrollSmsParameters,
   MfaEnrollVoiceParameters,
   MfaEnrollEmailParameters,
-  MfaEnrollTypeParameters,
   MfaChallengeWithAuthenticatorParameters,
   MfaVerifyParameters,
 } from '../../../types';
@@ -70,35 +69,18 @@ export class WebMfaClient implements IMfaClient {
   ): Promise<MfaEnrollmentChallenge> {
     try {
       this.ensureMfaContext(parameters.mfaToken);
-      let spaParams: any;
+      const { factorType } = parameters;
+      let spaParams: any = {
+        mfaToken: parameters.mfaToken,
+        factorType,
+      };
 
-      if (
-        'voice' in parameters &&
-        (parameters as MfaEnrollVoiceParameters).voice
-      ) {
-        spaParams = {
-          mfaToken: parameters.mfaToken,
-          factorType: 'voice' as const,
-          phoneNumber: (parameters as MfaEnrollVoiceParameters).phoneNumber,
-        };
-      } else if ('phoneNumber' in parameters) {
-        spaParams = {
-          mfaToken: parameters.mfaToken,
-          factorType: 'sms' as const,
-          phoneNumber: (parameters as MfaEnrollPhoneParameters).phoneNumber,
-        };
-      } else if ('email' in parameters) {
-        spaParams = {
-          mfaToken: parameters.mfaToken,
-          factorType: 'email' as const,
-          email: (parameters as MfaEnrollEmailParameters).email,
-        };
-      } else {
-        const typeParam = parameters as MfaEnrollTypeParameters;
-        spaParams = {
-          mfaToken: typeParam.mfaToken,
-          factorType: typeParam.type as 'otp' | 'push',
-        };
+      if (factorType === 'sms' || factorType === 'voice') {
+        spaParams.phoneNumber = (
+          parameters as MfaEnrollSmsParameters | MfaEnrollVoiceParameters
+        ).phoneNumber;
+      } else if (factorType === 'email') {
+        spaParams.email = (parameters as MfaEnrollEmailParameters).email;
       }
 
       const response = await this.spaMfa.enroll(spaParams);

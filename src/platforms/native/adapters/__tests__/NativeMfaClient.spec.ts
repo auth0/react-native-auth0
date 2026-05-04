@@ -105,12 +105,13 @@ describe('NativeMfaClient', () => {
   });
 
   describe('enroll', () => {
-    it('should enroll phone factor with phoneNumber', async () => {
+    it('should enroll sms factor with phoneNumber', async () => {
       const challenge = { type: 'oob' as const, oobCode: 'oob_123' };
       mockBridge.mfaEnroll.mockResolvedValueOnce(challenge);
 
       const result = await client.enroll({
         mfaToken: 'mfa_token_123',
+        factorType: 'sms',
         phoneNumber: '+12025550135',
       });
 
@@ -122,14 +123,14 @@ describe('NativeMfaClient', () => {
       expect(result).toEqual(challenge);
     });
 
-    it('should enroll voice factor with phoneNumber and voice flag', async () => {
+    it('should enroll voice factor with phoneNumber', async () => {
       const challenge = { type: 'oob' as const, oobCode: 'oob_voice' };
       mockBridge.mfaEnroll.mockResolvedValueOnce(challenge);
 
       const result = await client.enroll({
         mfaToken: 'mfa_token_123',
+        factorType: 'voice',
         phoneNumber: '+12025550135',
-        voice: true,
       });
 
       expect(mockBridge.mfaEnroll).toHaveBeenCalledWith(
@@ -146,6 +147,7 @@ describe('NativeMfaClient', () => {
 
       const result = await client.enroll({
         mfaToken: 'mfa_token_123',
+        factorType: 'email',
         email: 'user@example.com',
       });
 
@@ -167,7 +169,7 @@ describe('NativeMfaClient', () => {
 
       const result = await client.enroll({
         mfaToken: 'mfa_token_123',
-        type: 'otp',
+        factorType: 'otp',
       });
 
       expect(mockBridge.mfaEnroll).toHaveBeenCalledWith(
@@ -184,7 +186,7 @@ describe('NativeMfaClient', () => {
 
       const result = await client.enroll({
         mfaToken: 'mfa_token_123',
-        type: 'push',
+        factorType: 'push',
       });
 
       expect(mockBridge.mfaEnroll).toHaveBeenCalledWith(
@@ -202,7 +204,7 @@ describe('NativeMfaClient', () => {
       mockBridge.mfaEnroll.mockRejectedValueOnce(authError);
 
       try {
-        await client.enroll({ mfaToken: 'mfa_token_123', type: 'otp' });
+        await client.enroll({ mfaToken: 'mfa_token_123', factorType: 'otp' });
         fail('Should have thrown');
       } catch (e) {
         expect(e).toBeInstanceOf(MfaError);
@@ -215,7 +217,7 @@ describe('NativeMfaClient', () => {
       mockBridge.mfaEnroll.mockRejectedValueOnce(error);
 
       await expect(
-        client.enroll({ mfaToken: 'mfa_token_123', type: 'otp' })
+        client.enroll({ mfaToken: 'mfa_token_123', factorType: 'otp' })
       ).rejects.toThrow(error);
     });
   });

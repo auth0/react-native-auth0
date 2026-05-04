@@ -7,6 +7,8 @@ import {
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
+  Image,
+  Linking,
 } from 'react-native';
 import Auth0, {
   Auth0Provider,
@@ -14,6 +16,7 @@ import Auth0, {
   User,
   MfaError,
   MfaErrorCodes,
+  MfaFactorType,
 } from 'react-native-auth0';
 import type {
   MfaAuthenticator,
@@ -35,7 +38,7 @@ type MfaStep =
   | 'verify'
   | 'complete';
 
-type EnrollType = 'otp' | 'phone' | 'email' | 'push';
+type EnrollType = MfaFactorType;
 
 // ========================================================================
 // --- 1. HOOKS-BASED IMPLEMENTATION (Recommended) ---
@@ -153,7 +156,7 @@ const HooksAuthContent = (): React.JSX.Element => {
 
   const onMfaSelectEnrollType = (type: EnrollType) => {
     setEnrollType(type);
-    if (type === 'otp' || type === 'push') {
+    if (type === MfaFactorType.OTP || type === MfaFactorType.PUSH) {
       onMfaEnroll(type);
     } else {
       setMfaStep('enroll-details');
@@ -161,20 +164,25 @@ const HooksAuthContent = (): React.JSX.Element => {
   };
 
   const onMfaEnroll = async (type?: EnrollType) => {
-    const factorType = type || enrollType;
-    if (!factorType) return;
+    const factor = type || enrollType;
+    if (!factor) return;
     setMfaLoading(true);
     try {
       let challenge: MfaEnrollmentChallenge;
-      if (factorType === 'phone') {
+      if (factor === MfaFactorType.SMS) {
         challenge = await mfa.enroll({
           mfaToken,
+          factorType: MfaFactorType.SMS,
           phoneNumber: enrollPhoneNumber,
         });
-      } else if (factorType === 'email') {
-        challenge = await mfa.enroll({ mfaToken, email: enrollEmail });
+      } else if (factor === MfaFactorType.EMAIL) {
+        challenge = await mfa.enroll({
+          mfaToken,
+          factorType: MfaFactorType.EMAIL,
+          email: enrollEmail,
+        });
       } else {
-        challenge = await mfa.enroll({ mfaToken, type: factorType });
+        challenge = await mfa.enroll({ mfaToken, factorType: factor });
       }
       setEnrollmentChallenge(challenge);
       setMfaStep('verify');
@@ -373,22 +381,22 @@ const HooksAuthContent = (): React.JSX.Element => {
                   Step 2: Choose Factor Type
                 </Text>
                 <Button
-                  onPress={() => onMfaSelectEnrollType('otp')}
+                  onPress={() => onMfaSelectEnrollType(MfaFactorType.OTP)}
                   title="TOTP (Authenticator App)"
                   disabled={mfaLoading}
                 />
                 <Button
-                  onPress={() => onMfaSelectEnrollType('phone')}
+                  onPress={() => onMfaSelectEnrollType(MfaFactorType.SMS)}
                   title="SMS"
                   disabled={mfaLoading}
                 />
                 <Button
-                  onPress={() => onMfaSelectEnrollType('email')}
+                  onPress={() => onMfaSelectEnrollType(MfaFactorType.EMAIL)}
                   title="Email"
                   disabled={mfaLoading}
                 />
                 <Button
-                  onPress={() => onMfaSelectEnrollType('push')}
+                  onPress={() => onMfaSelectEnrollType(MfaFactorType.PUSH)}
                   title="Push Notification"
                   disabled={mfaLoading}
                 />
@@ -398,7 +406,7 @@ const HooksAuthContent = (): React.JSX.Element => {
             {mfaStep === 'enroll-details' && (
               <>
                 <Text style={styles.sectionTitle}>Step 2: Enter Details</Text>
-                {enrollType === 'phone' && (
+                {enrollType === MfaFactorType.SMS && (
                   <>
                     <LabeledInput
                       label="Phone Number"
@@ -413,7 +421,7 @@ const HooksAuthContent = (): React.JSX.Element => {
                     />
                   </>
                 )}
-                {enrollType === 'email' && (
+                {enrollType === MfaFactorType.EMAIL && (
                   <>
                     <LabeledInput
                       label="Email"
@@ -439,6 +447,24 @@ const HooksAuthContent = (): React.JSX.Element => {
                 <Text style={styles.sectionTitle}>Step 3: Verify</Text>
                 {enrollmentChallenge?.type === 'totp' && (
                   <View style={webStyles.infoBox}>
+                    {enrollmentChallenge.barcodeUri && (
+                      <>
+                        <View style={webStyles.qrContainer}>
+                          <Image
+                            source={{
+                              uri: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(enrollmentChallenge.barcodeUri)}`,
+                            }}
+                            style={webStyles.qrImage}
+                          />
+                        </View>
+                        <Button
+                          onPress={() =>
+                            Linking.openURL(enrollmentChallenge.barcodeUri!)
+                          }
+                          title="Open in Authenticator App"
+                        />
+                      </>
+                    )}
                     <Text>Secret: {enrollmentChallenge.secret}</Text>
                   </View>
                 )}
@@ -656,8 +682,8 @@ class ClassApp extends React.Component<{}, ClassAppState> {
   };
 
   onMfaEnroll = async (type?: EnrollType) => {
-    const factorType = type || this.state.enrollType;
-    if (!factorType) return;
+    const factor = type || this.state.enrollType;
+    if (!factor) return;
     this.setState({ mfaLoading: true });
     try {
       let challenge: MfaEnrollmentChallenge;
@@ -666,18 +692,22 @@ class ClassApp extends React.Component<{}, ClassAppState> {
         enrollPhoneNumber: phone,
         enrollEmail: em,
       } = this.state;
-      if (factorType === 'phone') {
+      if (factor === MfaFactorType.SMS) {
         challenge = await this.state.auth0
           .mfa()
-          .enroll({ mfaToken, phoneNumber: phone });
-      } else if (factorType === 'email') {
+          .enroll({
+            mfaToken,
+            factorType: MfaFactorType.SMS,
+            phoneNumber: phone,
+          });
+      } else if (factor === MfaFactorType.EMAIL) {
         challenge = await this.state.auth0
           .mfa()
-          .enroll({ mfaToken, email: em });
+          .enroll({ mfaToken, factorType: MfaFactorType.EMAIL, email: em });
       } else {
         challenge = await this.state.auth0
           .mfa()
-          .enroll({ mfaToken, type: factorType });
+          .enroll({ mfaToken, factorType: factor });
       }
       this.setState({ enrollmentChallenge: challenge, mfaStep: 'verify' });
     } catch (e) {
@@ -704,13 +734,11 @@ class ClassApp extends React.Component<{}, ClassAppState> {
           ? enrollmentChallenge.oobCode
           : undefined);
       if (oobCode) {
-        credentials = await this.state.auth0
-          .mfa()
-          .verify({
-            mfaToken,
-            oobCode,
-            bindingCode: verifyBindingCode || undefined,
-          });
+        credentials = await this.state.auth0.mfa().verify({
+          mfaToken,
+          oobCode,
+          bindingCode: verifyBindingCode || undefined,
+        });
       } else {
         credentials = await this.state.auth0
           .mfa()
@@ -910,8 +938,8 @@ class ClassApp extends React.Component<{}, ClassAppState> {
                   </Text>
                   <Button
                     onPress={() => {
-                      this.setState({ enrollType: 'otp' });
-                      this.onMfaEnroll('otp');
+                      this.setState({ enrollType: MfaFactorType.OTP });
+                      this.onMfaEnroll(MfaFactorType.OTP);
                     }}
                     title="TOTP (Authenticator App)"
                     disabled={mfaLoading}
@@ -919,7 +947,7 @@ class ClassApp extends React.Component<{}, ClassAppState> {
                   <Button
                     onPress={() =>
                       this.setState({
-                        enrollType: 'phone',
+                        enrollType: MfaFactorType.SMS,
                         mfaStep: 'enroll-details',
                       })
                     }
@@ -929,7 +957,7 @@ class ClassApp extends React.Component<{}, ClassAppState> {
                   <Button
                     onPress={() =>
                       this.setState({
-                        enrollType: 'email',
+                        enrollType: MfaFactorType.EMAIL,
                         mfaStep: 'enroll-details',
                       })
                     }
@@ -938,8 +966,8 @@ class ClassApp extends React.Component<{}, ClassAppState> {
                   />
                   <Button
                     onPress={() => {
-                      this.setState({ enrollType: 'push' });
-                      this.onMfaEnroll('push');
+                      this.setState({ enrollType: MfaFactorType.PUSH });
+                      this.onMfaEnroll(MfaFactorType.PUSH);
                     }}
                     title="Push Notification"
                     disabled={mfaLoading}
@@ -953,7 +981,7 @@ class ClassApp extends React.Component<{}, ClassAppState> {
               {mfaStep === 'enroll-details' && (
                 <>
                   <Text style={styles.sectionTitle}>Step 2: Enter Details</Text>
-                  {enrollType === 'phone' && (
+                  {enrollType === MfaFactorType.SMS && (
                     <>
                       <LabeledInput
                         label="Phone Number"
@@ -970,7 +998,7 @@ class ClassApp extends React.Component<{}, ClassAppState> {
                       />
                     </>
                   )}
-                  {enrollType === 'email' && (
+                  {enrollType === MfaFactorType.EMAIL && (
                     <>
                       <LabeledInput
                         label="Email"
@@ -998,6 +1026,24 @@ class ClassApp extends React.Component<{}, ClassAppState> {
                   <Text style={styles.sectionTitle}>Step 3: Verify</Text>
                   {enrollmentChallenge?.type === 'totp' && (
                     <View style={webStyles.infoBox}>
+                      {enrollmentChallenge.barcodeUri && (
+                        <>
+                          <View style={webStyles.qrContainer}>
+                            <Image
+                              source={{
+                                uri: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(enrollmentChallenge.barcodeUri)}`,
+                              }}
+                              style={webStyles.qrImage}
+                            />
+                          </View>
+                          <Button
+                            onPress={() =>
+                              Linking.openURL(enrollmentChallenge.barcodeUri!)
+                            }
+                            title="Open in Authenticator App"
+                          />
+                        </>
+                      )}
                       <Text>Secret: {enrollmentChallenge.secret}</Text>
                     </View>
                   )}
@@ -1158,6 +1204,8 @@ const webStyles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 12,
   },
+  qrContainer: { alignItems: 'center', marginVertical: 12 },
+  qrImage: { width: 200, height: 200 },
 });
 
 export default App;

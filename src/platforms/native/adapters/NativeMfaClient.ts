@@ -7,10 +7,9 @@ import type {
   MfaChallengeResult,
   MfaGetAuthenticatorsParameters,
   MfaEnrollParameters,
-  MfaEnrollPhoneParameters,
+  MfaEnrollSmsParameters,
   MfaEnrollVoiceParameters,
   MfaEnrollEmailParameters,
-  MfaEnrollTypeParameters,
   MfaChallengeWithAuthenticatorParameters,
   MfaVerifyParameters,
   MfaVerifyOtpParameters,
@@ -42,24 +41,16 @@ export class NativeMfaClient implements IMfaClient {
   async enroll(
     parameters: MfaEnrollParameters
   ): Promise<MfaEnrollmentChallenge> {
-    const { mfaToken } = parameters;
-    let type: string;
+    const { mfaToken, factorType } = parameters;
+    let type: string = factorType;
     let value: string | undefined;
 
-    if (
-      'voice' in parameters &&
-      (parameters as MfaEnrollVoiceParameters).voice
-    ) {
-      type = 'voice';
-      value = (parameters as MfaEnrollVoiceParameters).phoneNumber;
-    } else if ('phoneNumber' in parameters) {
-      type = 'phone';
-      value = (parameters as MfaEnrollPhoneParameters).phoneNumber;
-    } else if ('email' in parameters) {
-      type = 'email';
+    if (factorType === 'sms' || factorType === 'voice') {
+      type = factorType === 'sms' ? 'phone' : 'voice';
+      value = (parameters as MfaEnrollSmsParameters | MfaEnrollVoiceParameters)
+        .phoneNumber;
+    } else if (factorType === 'email') {
       value = (parameters as MfaEnrollEmailParameters).email;
-    } else {
-      type = (parameters as MfaEnrollTypeParameters).type;
     }
 
     try {

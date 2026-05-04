@@ -288,37 +288,108 @@ export interface MfaGetAuthenticatorsParameters {
   factorsAllowed?: string[];
 }
 
-/** Parameters for enrolling a phone (SMS) MFA factor. */
-export interface MfaEnrollPhoneParameters {
+/**
+ * Enroll an OTP (TOTP) authenticator.
+ *
+ * @example
+ * ```ts
+ * import { MfaFactorType } from 'react-native-auth0';
+ * const result = await mfa.enroll({ mfaToken, factorType: MfaFactorType.OTP });
+ * // result.secret, result.barcodeUri
+ * ```
+ */
+export interface MfaEnrollOtpParameters {
   mfaToken: string;
+  factorType: 'otp';
+}
+
+/**
+ * Enroll an SMS MFA factor.
+ * Requires a phone number in E.164 format.
+ *
+ * @example
+ * ```ts
+ * import { MfaFactorType } from 'react-native-auth0';
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.SMS, phoneNumber: '+12025550135' });
+ * ```
+ */
+export interface MfaEnrollSmsParameters {
+  mfaToken: string;
+  factorType: 'sms';
   phoneNumber: string;
 }
 
-/** Parameters for enrolling a voice call MFA factor. */
+/**
+ * Enroll a voice call MFA factor.
+ * Requires a phone number in E.164 format.
+ *
+ * @example
+ * ```ts
+ * import { MfaFactorType } from 'react-native-auth0';
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.VOICE, phoneNumber: '+12025550135' });
+ * ```
+ */
 export interface MfaEnrollVoiceParameters {
   mfaToken: string;
+  factorType: 'voice';
   phoneNumber: string;
-  voice: true;
 }
 
-/** Parameters for enrolling an email MFA factor. */
+/**
+ * Enroll an email MFA factor.
+ *
+ * @example
+ * ```ts
+ * import { MfaFactorType } from 'react-native-auth0';
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.EMAIL, email: 'user@example.com' });
+ * ```
+ */
 export interface MfaEnrollEmailParameters {
   mfaToken: string;
+  factorType: 'email';
   email: string;
 }
 
-/** Parameters for enrolling a TOTP (authenticator app) or push notification MFA factor. */
-export interface MfaEnrollTypeParameters {
+/**
+ * Enroll a push notification MFA factor (Auth0 Guardian).
+ *
+ * @example
+ * ```ts
+ * import { MfaFactorType } from 'react-native-auth0';
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.PUSH });
+ * ```
+ */
+export interface MfaEnrollPushParameters {
   mfaToken: string;
-  type: 'otp' | 'push';
+  factorType: 'push';
 }
 
-/** Union type for all MFA enrollment parameter types. */
+/**
+ * Union type for all MFA enrollment parameter types.
+ * Each variant is discriminated by the `factorType` field.
+ *
+ * @example
+ * ```ts
+ * import { MfaFactorType } from 'react-native-auth0';
+ *
+ * // OTP
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.OTP });
+ * // SMS
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.SMS, phoneNumber: '+1...' });
+ * // Voice
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.VOICE, phoneNumber: '+1...' });
+ * // Email
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.EMAIL, email: 'user@example.com' });
+ * // Push
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.PUSH });
+ * ```
+ */
 export type MfaEnrollParameters =
-  | MfaEnrollPhoneParameters
+  | MfaEnrollOtpParameters
+  | MfaEnrollSmsParameters
   | MfaEnrollVoiceParameters
   | MfaEnrollEmailParameters
-  | MfaEnrollTypeParameters;
+  | MfaEnrollPushParameters;
 
 /** Parameters for requesting an MFA challenge via the MFA API. */
 export interface MfaChallengeWithAuthenticatorParameters {
