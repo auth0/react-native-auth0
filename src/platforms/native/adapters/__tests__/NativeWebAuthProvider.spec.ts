@@ -139,11 +139,48 @@ describe('NativeWebAuthProvider', () => {
         // We don't await this, as it would "hang" until the listener is called.
         provider.authorize({});
 
-        // Simulate the deep link event.
-        const resumeUrl = 'my-app://callback?code=123';
+        // Simulate the deep link event with a URL matching the Auth0 domain.
+        const resumeUrl = `https://${domain}/ios/com.my-app/callback?code=123`;
         await listenerCallback({ url: resumeUrl });
 
         expect(mockBridge.resumeWebAuth).toHaveBeenCalledWith(resumeUrl);
+      });
+
+      it('should ignore URLs whose hostname does not match the Auth0 domain', async () => {
+        let listenerCallback: (event: { url: string }) => void = () => {};
+        const mockSubscription = { remove: jest.fn() };
+        mockAddEventListener.mockImplementation((_event, callback) => {
+          listenerCallback = callback;
+          return mockSubscription;
+        });
+
+        provider.authorize({});
+
+        // Simulate a universal link from a different domain.
+        await listenerCallback({
+          url: 'https://app.example.com/some-path',
+        });
+
+        expect(mockBridge.resumeWebAuth).not.toHaveBeenCalled();
+        // The subscription should NOT be removed, so it can still catch the real callback.
+        expect(mockSubscription.remove).not.toHaveBeenCalled();
+      });
+
+      it('should ignore URLs that cannot be parsed', async () => {
+        let listenerCallback: (event: { url: string }) => void = () => {};
+        const mockSubscription = { remove: jest.fn() };
+        mockAddEventListener.mockImplementation((_event, callback) => {
+          listenerCallback = callback;
+          return mockSubscription;
+        });
+
+        provider.authorize({});
+
+        // Simulate a malformed URL.
+        await listenerCallback({ url: 'not-a-valid-url' });
+
+        expect(mockBridge.resumeWebAuth).not.toHaveBeenCalled();
+        expect(mockSubscription.remove).not.toHaveBeenCalled();
       });
     });
 

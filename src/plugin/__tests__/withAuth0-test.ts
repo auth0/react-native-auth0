@@ -213,6 +213,159 @@ describe(addAndroidAuth0Manifest, () => {
     expect(dataElement?.$['android:host']).toBe('sample.auth0.com');
   });
 
+  it(`should remove conflicting broad scheme from other activity intent filter`, () => {
+    const config = getConfig();
+    const mainApp = AndroidConfig.Manifest.getMainApplicationOrThrow(
+      config.modResults
+    );
+    mainApp.activity = mainApp.activity || [];
+    mainApp.activity.push({
+      '$': {
+        'android:name': '.MainActivity',
+      },
+      'intent-filter': [
+        {
+          action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }],
+          category: [
+            { $: { 'android:name': 'android.intent.category.DEFAULT' } },
+            {
+              $: { 'android:name': 'android.intent.category.BROWSABLE' },
+            },
+          ],
+          data: [
+            { $: { 'android:scheme': 'smtest' } },
+            { $: { 'android:scheme': 'exp+smtest' } },
+          ],
+        },
+      ],
+    } as AndroidConfig.Manifest.ManifestActivity);
+
+    const result = addAndroidAuth0Manifest(
+      [{ domain: 'sample.auth0.com', customScheme: 'smtest' }],
+      config,
+      'com.sample.app'
+    );
+
+    const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(
+      result.modResults
+    );
+
+    // MainActivity should have 'smtest' removed but keep 'exp+smtest'
+    const mainActivity = mainApplication.activity?.find(
+      (a) => a.$['android:name'] === '.MainActivity'
+    );
+    const mainIntentFilter = mainActivity?.['intent-filter']?.[0];
+    const schemes = mainIntentFilter?.data?.map((d) => d.$['android:scheme']);
+    expect(schemes).toEqual(['exp+smtest']);
+    expect(schemes).not.toContain('smtest');
+
+    // RedirectActivity should still have the auth0 scheme
+    const redirectActivity = mainApplication.activity?.find(
+      (a) =>
+        a.$['android:name'] === 'com.auth0.android.provider.RedirectActivity'
+    );
+    const redirectIntentFilter = redirectActivity?.['intent-filter']?.[0];
+    const redirectData = redirectIntentFilter?.data?.[0];
+    expect(redirectData?.$['android:scheme']).toBe('smtest');
+    expect(redirectData?.$['android:host']).toBe('sample.auth0.com');
+    expect(redirectData?.$['android:pathPrefix']).toBe(
+      '/android/com.sample.app/callback'
+    );
+  });
+
+  it(`should not modify other activities when no scheme conflict exists`, () => {
+    const config = getConfig();
+    const mainApp = AndroidConfig.Manifest.getMainApplicationOrThrow(
+      config.modResults
+    );
+    mainApp.activity = mainApp.activity || [];
+    mainApp.activity.push({
+      '$': {
+        'android:name': '.MainActivity',
+      },
+      'intent-filter': [
+        {
+          action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }],
+          category: [
+            { $: { 'android:name': 'android.intent.category.DEFAULT' } },
+            {
+              $: { 'android:name': 'android.intent.category.BROWSABLE' },
+            },
+          ],
+          data: [
+            { $: { 'android:scheme': 'myapp' } },
+            { $: { 'android:scheme': 'exp+myapp' } },
+          ],
+        },
+      ],
+    } as AndroidConfig.Manifest.ManifestActivity);
+
+    const result = addAndroidAuth0Manifest(
+      [{ domain: 'sample.auth0.com', customScheme: 'smtest' }],
+      config,
+      'com.sample.app'
+    );
+
+    const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(
+      result.modResults
+    );
+    const mainActivity = mainApplication.activity?.find(
+      (a) => a.$['android:name'] === '.MainActivity'
+    );
+    const mainIntentFilter = mainActivity?.['intent-filter']?.[0];
+    const schemes = mainIntentFilter?.data?.map((d) => d.$['android:scheme']);
+    expect(schemes).toEqual(['myapp', 'exp+myapp']);
+  });
+
+  it(`should not remove scheme data that has a host (specific match)`, () => {
+    const config = getConfig();
+    const mainApp = AndroidConfig.Manifest.getMainApplicationOrThrow(
+      config.modResults
+    );
+    mainApp.activity = mainApp.activity || [];
+    mainApp.activity.push({
+      '$': {
+        'android:name': '.MainActivity',
+      },
+      'intent-filter': [
+        {
+          action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }],
+          category: [
+            { $: { 'android:name': 'android.intent.category.DEFAULT' } },
+            {
+              $: { 'android:name': 'android.intent.category.BROWSABLE' },
+            },
+          ],
+          data: [
+            {
+              $: {
+                'android:scheme': 'smtest',
+                'android:host': 'myapp.example.com',
+              },
+            },
+          ],
+        },
+      ],
+    } as AndroidConfig.Manifest.ManifestActivity);
+
+    const result = addAndroidAuth0Manifest(
+      [{ domain: 'sample.auth0.com', customScheme: 'smtest' }],
+      config,
+      'com.sample.app'
+    );
+
+    const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(
+      result.modResults
+    );
+    const mainActivity = mainApplication.activity?.find(
+      (a) => a.$['android:name'] === '.MainActivity'
+    );
+    const mainIntentFilter = mainActivity?.['intent-filter']?.[0];
+    const schemes = mainIntentFilter?.data?.map((d) => d.$['android:scheme']);
+    // Should keep the data element because it has a host (specific match, won't cause disambiguation)
+    expect(schemes).toEqual(['smtest']);
+  });
+
   it(`should add android:autoVerify="true" when customScheme is https`, () => {
     const config = getConfig();
     const result = addAndroidAuth0Manifest(
