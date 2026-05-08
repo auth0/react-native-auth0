@@ -369,8 +369,7 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
       headers
     );
     if (!response.ok) throw AuthError.fromResponse(response, json);
-    // The response is already camelCased by the API, so we can cast it directly.
-    return json as MfaChallengeResponse;
+    return deepCamelCase<MfaChallengeResponse>(json);
   }
 
   async revoke(parameters: RevokeOptions): Promise<void> {
