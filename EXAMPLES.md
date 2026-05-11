@@ -63,6 +63,7 @@
     - [Android](#android)
     - [iOS](#ios)
     - [Expo](#expo)
+- [Allowed Browsers (Android)](#allowed-browsers-android)
 
 ## Authentication API
 
@@ -1386,6 +1387,66 @@ If you want to support multiple domains, you would have to pass an array of obje
 ```
 
 You can skip sending the `customScheme` property if you do not want to customize it.
+
+## Allowed Browsers (Android)
+
+On Android, some browsers do not correctly handle App Link redirects. For example, Firefox renders the callback URL as a web page instead of handing the redirect back to your app, causing the authentication flow to fail silently.
+
+You can restrict which browsers are allowed to handle the web authentication flow by passing `allowedBrowserPackages` in the options object. When set, only browsers whose package names appear in the list will be used.
+
+**Behaviour:**
+- If the user's default browser is in the list, it is used.
+- If the user's default browser is not in the list but another allowed browser is installed, that browser is used instead.
+- If no allowed browser is installed, an `a0.browser_not_available` error is returned.
+
+> **Platform Support:** Android only. This option is ignored on iOS.
+
+### Using with Hooks
+
+```typescript
+import { useAuth0 } from 'react-native-auth0';
+
+const { authorize } = useAuth0();
+
+await authorize(
+  { scope: 'openid profile email' },
+  {
+    allowedBrowserPackages: [
+      'com.android.chrome',
+      'com.chrome.beta',
+      'com.microsoft.emmx',       // Edge
+      'com.brave.browser',
+      'com.sec.android.app.sbrowser', // Samsung Internet
+    ],
+  }
+);
+```
+
+### Using with Auth0 Class
+
+```typescript
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+});
+
+await auth0.webAuth.authorize(
+  { scope: 'openid profile email' },
+  {
+    allowedBrowserPackages: [
+      'com.android.chrome',
+      'com.chrome.beta',
+      'com.microsoft.emmx',       // Edge
+      'com.brave.browser',
+      'com.sec.android.app.sbrowser', // Samsung Internet
+    ],
+  }
+);
+```
+
+The same `allowedBrowserPackages` option is also accepted by `clearSession` to restrict which browser handles the logout flow.
 
 ## DPoP (Demonstrating Proof-of-Possession)
 
