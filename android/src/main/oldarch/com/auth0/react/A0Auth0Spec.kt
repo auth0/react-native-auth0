@@ -122,4 +122,28 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
         organization: String?,
         promise: Promise
     )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun signupWithPasskey(
+        email: String?,
+        phoneNumber: String?,
+        username: String?,
+        name: String?,
+        realm: String?,
+        audience: String?,
+        scope: String?,
+        organization: String?,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun signinWithPasskey(
+        realm: String?,
+        audience: String?,
+        scope: String?,
+        organization: String?,
+        promise: Promise
+    )
 }

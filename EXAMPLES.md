@@ -49,6 +49,14 @@
   - [Using Custom Token Exchange with Auth0 Class](#using-custom-token-exchange-with-auth0-class)
   - [With Organization Context](#with-organization-context)
   - [Subject Token Type Requirements](#subject-token-type-requirements)
+- [Passkeys](#passkeys)
+  - [Overview](#passkeys-overview)
+  - [Prerequisites](#passkeys-prerequisites)
+  - [Signup with Passkey](#signup-with-passkey)
+  - [Signin with Passkey](#signin-with-passkey)
+  - [Using Passkeys with Auth0 Class](#using-passkeys-with-auth0-class)
+  - [Error Handling](#passkeys-error-handling)
+  - [Platform Support](#passkeys-platform-support)
 - [Native to Web SSO](#native-to-web-sso)
   - [Overview](#native-to-web-sso-overview)
   - [Prerequisites](#native-to-web-sso-prerequisites)
@@ -1011,6 +1019,177 @@ For detailed examples of validating different token types in Actions, see:
 - Validate token expiration, issuer, and audience claims
 - Implement rate limiting for failed validations using `api.access.rejectInvalidSubjectToken()`
 
+## Passkeys
+
+<a name="passkeys-overview"></a>
+
+### Overview
+
+Passkeys provide a passwordless authentication experience using platform biometrics (Face ID, Touch ID, fingerprint) backed by public-key cryptography. The SDK orchestrates the full passkey flow — requesting a challenge from Auth0, presenting the OS passkey UI, and completing authentication — in a single method call.
+
+> **Platform Support:** Native only (iOS 16.6+ / Android). Not supported on Web.
+
+<a name="passkeys-prerequisites"></a>
+
+### Prerequisites
+
+Before using passkeys:
+
+1. **Enable the Passkey Grant Type** for your Auth0 application in the Auth0 Dashboard
+2. **Configure a custom domain** on your Auth0 tenant (required for passkeys)
+3. **iOS:** Requires iOS 16.6 or later. Add an Associated Domain with the `webcredentials` service pointing to your Auth0 custom domain
+4. **Android:** Requires Android API 28+. Configure your app's Digital Asset Links for the Auth0 custom domain
+
+> **Important:** `signupWithPasskey` creates a **new** user account with a passkey. It will fail if the email already exists in the database connection. Use `signinWithPasskey` for existing users who have already registered a passkey.
+
+### Signup with Passkey
+
+Register a new passkey for a user and obtain Auth0 credentials:
+
+```tsx
+import { useAuth0, PasskeyError, PasskeyErrorCodes } from 'react-native-auth0';
+
+function PasskeySignupScreen() {
+  const { signupWithPasskey } = useAuth0();
+
+  const handleSignup = async () => {
+    try {
+      const credentials = await signupWithPasskey({
+        email: 'user@example.com',
+        name: 'John Doe',
+        realm: 'Username-Password-Authentication',
+        audience: 'https://api.example.com',
+        scope: 'openid profile email offline_access',
+      });
+
+      console.log('Signed up with passkey:', credentials.accessToken);
+    } catch (error) {
+      if (error instanceof PasskeyError) {
+        switch (error.type) {
+          case PasskeyErrorCodes.USER_CANCELLED:
+            console.log('User dismissed the passkey prompt');
+            break;
+          case PasskeyErrorCodes.NOT_AVAILABLE:
+            console.log('Passkeys not supported on this device');
+            break;
+          case PasskeyErrorCodes.CHALLENGE_FAILED:
+            console.log('Failed to get challenge from Auth0');
+            break;
+          default:
+            console.error('Passkey signup failed:', error.message);
+        }
+      }
+    }
+  };
+
+  return <Button title="Sign Up with Passkey" onPress={handleSignup} />;
+}
+```
+
+### Signin with Passkey
+
+Authenticate with an existing passkey:
+
+```tsx
+import { useAuth0, PasskeyError, PasskeyErrorCodes } from 'react-native-auth0';
+
+function PasskeySigninScreen() {
+  const { signinWithPasskey } = useAuth0();
+
+  const handleSignin = async () => {
+    try {
+      const credentials = await signinWithPasskey({
+        realm: 'Username-Password-Authentication',
+        audience: 'https://api.example.com',
+        scope: 'openid profile email offline_access',
+      });
+
+      console.log('Signed in with passkey:', credentials.accessToken);
+    } catch (error) {
+      if (error instanceof PasskeyError) {
+        switch (error.type) {
+          case PasskeyErrorCodes.USER_CANCELLED:
+            console.log('User dismissed the passkey prompt');
+            break;
+          case PasskeyErrorCodes.NOT_AVAILABLE:
+            console.log('Passkeys not supported on this device');
+            break;
+          default:
+            console.error('Passkey signin failed:', error.message);
+        }
+      }
+    }
+  };
+
+  return <Button title="Sign In with Passkey" onPress={handleSignin} />;
+}
+```
+
+### Using Passkeys with Auth0 Class
+
+```typescript
+import Auth0, { PasskeyError, PasskeyErrorCodes } from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+});
+
+// Signup with passkey
+const signupCredentials = await auth0.signupWithPasskey({
+  email: 'user@example.com',
+  name: 'John Doe',
+  realm: 'Username-Password-Authentication',
+});
+
+// Signin with passkey
+const signinCredentials = await auth0.signinWithPasskey({
+  realm: 'Username-Password-Authentication',
+});
+```
+
+<a name="passkeys-error-handling"></a>
+
+### Error Handling
+
+Passkey operations throw `PasskeyError` (extends `AuthError`) with a normalized `type` property. Use `PasskeyErrorCodes` for type-safe error handling:
+
+| Error Code                     | Description                                         |
+| ------------------------------ | --------------------------------------------------- |
+| `PASSKEY_SIGNUP_FAILED`        | Passkey registration failed                         |
+| `PASSKEY_SIGNIN_FAILED`        | Passkey authentication failed                       |
+| `PASSKEY_NOT_AVAILABLE`        | Device or OS does not support passkeys (iOS < 16.6) |
+| `PASSKEY_USER_CANCELLED`       | User dismissed the OS passkey prompt                |
+| `PASSKEY_CHALLENGE_FAILED`     | Auth0 challenge request failed                      |
+| `PASSKEY_UNSUPPORTED_PLATFORM` | Passkeys not supported on this platform (Web)       |
+| `PASSKEY_UNKNOWN_ERROR`        | Unknown or uncategorized passkey error              |
+
+```typescript
+import { PasskeyError, PasskeyErrorCodes } from 'react-native-auth0';
+
+try {
+  await auth0.signinWithPasskey({ realm: 'Username-Password-Authentication' });
+} catch (error) {
+  if (error instanceof PasskeyError) {
+    console.log('Error type:', error.type); // e.g. "PASSKEY_USER_CANCELLED"
+    console.log('Error message:', error.message);
+    console.log('Error code:', error.code); // Raw native error code
+  }
+}
+```
+
+<a name="passkeys-platform-support"></a>
+
+### Platform Support
+
+| Platform    | Support          | Requirements                                              |
+| ----------- | ---------------- | --------------------------------------------------------- |
+| **iOS**     | ✅ Supported     | iOS 16.6+, Associated Domains with `webcredentials`       |
+| **Android** | ✅ Supported     | Android API 28+, Digital Asset Links configured           |
+| **Web**     | ❌ Not Supported | Throws `PasskeyError` with `PASSKEY_UNSUPPORTED_PLATFORM` |
+
+> **Note:** Passkeys require a real device for the full flow. Simulators/emulators may have limited support.
+
 ## Native to Web SSO
 
 ### Native to Web SSO Overview
@@ -1395,6 +1574,7 @@ On Android, some browsers do not correctly handle App Link redirects. For exampl
 You can restrict which browsers are allowed to handle the web authentication flow by passing `allowedBrowserPackages` in the options object. When set, only browsers whose package names appear in the list will be used.
 
 **Behaviour:**
+
 - If the user's default browser is in the list, it is used.
 - If the user's default browser is not in the list but another allowed browser is installed, that browser is used instead.
 - If no allowed browser is installed, an `a0.browser_not_available` error is returned.
@@ -1414,7 +1594,7 @@ await authorize(
     allowedBrowserPackages: [
       'com.android.chrome',
       'com.chrome.beta',
-      'com.microsoft.emmx',       // Edge
+      'com.microsoft.emmx', // Edge
       'com.brave.browser',
       'com.sec.android.app.sbrowser', // Samsung Internet
     ],
@@ -1438,7 +1618,7 @@ await auth0.webAuth.authorize(
     allowedBrowserPackages: [
       'com.android.chrome',
       'com.chrome.beta',
-      'com.microsoft.emmx',       // Edge
+      'com.microsoft.emmx', // Edge
       'com.brave.browser',
       'com.sec.android.app.sbrowser', // Samsung Internet
     ],

@@ -180,8 +180,27 @@ RCT_EXPORT_METHOD(customTokenExchange:(NSString *)subjectToken
     [self.nativeBridge customTokenExchangeWithSubjectToken:subjectToken subjectTokenType:subjectTokenType audience:audience scope:scope organization:organization resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(signupWithPasskey:(NSString * _Nullable)email
+                  phoneNumber:(NSString * _Nullable)phoneNumber
+                  username:(NSString * _Nullable)username
+                  name:(NSString * _Nullable)name
+                  realm:(NSString * _Nullable)realm
+                  audience:(NSString * _Nullable)audience
+                  scope:(NSString * _Nullable)scope
+                  organization:(NSString * _Nullable)organization
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge signupWithPasskeyWithEmail:email phoneNumber:phoneNumber username:username name:name realm:realm audience:audience scope:scope organization:organization resolve:resolve reject:reject];
+}
 
-
+RCT_EXPORT_METHOD(signinWithPasskey:(NSString * _Nullable)realm
+                  audience:(NSString * _Nullable)audience
+                  scope:(NSString * _Nullable)scope
+                  organization:(NSString * _Nullable)organization
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge signinWithPasskeyWithRealm:realm audience:audience scope:scope organization:organization resolve:resolve reject:reject];
+}
 
 
 

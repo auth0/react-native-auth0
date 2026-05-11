@@ -205,4 +205,50 @@ export interface INativeBridge {
     scope?: string,
     organization?: string
   ): Promise<Credentials>;
+
+  /**
+   * Registers a new passkey and obtains Auth0 credentials.
+   *
+   * Orchestrates the full passkey signup flow: requests a signup challenge from
+   * Auth0, presents the OS passkey creation UI, and completes authentication.
+   *
+   * @param email The user's email address.
+   * @param phoneNumber The user's phone number.
+   * @param username The user's username.
+   * @param name The user's display name.
+   * @param realm The database connection name.
+   * @param audience Optional target API identifier.
+   * @param scope Optional space-separated scopes.
+   * @param organization Optional organization ID or name.
+   * @returns A promise that resolves with Auth0 credentials.
+   */
+  signupWithPasskey(
+    email?: string,
+    phoneNumber?: string,
+    username?: string,
+    name?: string,
+    realm?: string,
+    audience?: string,
+    scope?: string,
+    organization?: string
+  ): Promise<Credentials>;
+
+  /**
+   * Authenticates with an existing passkey and obtains Auth0 credentials.
+   *
+   * Orchestrates the full passkey signin flow: requests a login challenge from
+   * Auth0, presents the OS passkey assertion UI, and completes authentication.
+   *
+   * @param realm The database connection name.
+   * @param audience Optional target API identifier.
+   * @param scope Optional space-separated scopes.
+   * @param organization Optional organization ID or name.
+   * @returns A promise that resolves with Auth0 credentials.
+   */
+  signinWithPasskey(
+    realm?: string,
+    audience?: string,
+    scope?: string,
+    organization?: string
+  ): Promise<Credentials>;
 }

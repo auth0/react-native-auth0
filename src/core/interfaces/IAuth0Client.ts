@@ -6,6 +6,8 @@ import type {
   DPoPHeadersParams,
   TokenType,
   CustomTokenExchangeParameters,
+  PasskeySignupParameters,
+  PasskeySigninParameters,
   Credentials,
 } from '../../types';
 
@@ -74,4 +76,26 @@ export interface IAuth0Client {
   customTokenExchange(
     parameters: CustomTokenExchangeParameters
   ): Promise<Credentials>;
+
+  /**
+   * Registers a new passkey and obtains Auth0 credentials.
+   *
+   * Orchestrates the full passkey signup flow: requests a signup challenge,
+   * presents the OS passkey creation UI, and completes authentication.
+   *
+   * @param parameters The passkey signup parameters.
+   * @returns A promise resolving with Auth0 credentials.
+   */
+  signupWithPasskey(parameters: PasskeySignupParameters): Promise<Credentials>;
+
+  /**
+   * Authenticates with an existing passkey and obtains Auth0 credentials.
+   *
+   * Orchestrates the full passkey signin flow: requests a login challenge,
+   * presents the OS passkey assertion UI, and completes authentication.
+   *
+   * @param parameters The passkey signin parameters.
+   * @returns A promise resolving with Auth0 credentials.
+   */
+  signinWithPasskey(parameters: PasskeySigninParameters): Promise<Credentials>;
 }

@@ -12,4 +12,5 @@ export {
   WebAuthErrorCodes,
   CredentialsManagerErrorCodes,
   DPoPErrorCodes,
+  PasskeyErrorCodes,
 } from '../core/models';

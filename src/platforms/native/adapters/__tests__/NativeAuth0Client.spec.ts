@@ -277,4 +277,203 @@ describe('NativeAuth0Client', () => {
       ).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('signupWithPasskey', () => {
+    const mockCredentials = {
+      idToken: 'mock-id-token',
+      accessToken: 'mock-access-token',
+      tokenType: 'Bearer',
+      expiresAt: Math.floor(Date.now() / 1000) + 3600,
+      refreshToken: 'mock-refresh-token',
+      scope: 'openid profile email',
+    };
+
+    beforeEach(() => {
+      (mockBridgeInstance as any).signupWithPasskey = jest
+        .fn()
+        .mockResolvedValue(mockCredentials);
+    });
+
+    it('should call signupWithPasskey on the guarded bridge with all parameters', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await client.signupWithPasskey({
+        email: 'user@example.com',
+        phoneNumber: '+1234567890',
+        username: 'johndoe',
+        name: 'John Doe',
+        realm: 'Username-Password-Authentication',
+        audience: 'https://api.example.com',
+        scope: 'openid profile email',
+        organization: 'org_123',
+      });
+
+      expect(
+        (mockBridgeInstance as any).signupWithPasskey
+      ).toHaveBeenCalledWith(
+        'user@example.com',
+        '+1234567890',
+        'johndoe',
+        'John Doe',
+        'Username-Password-Authentication',
+        'https://api.example.com',
+        'openid profile email',
+        'org_123'
+      );
+    });
+
+    it('should convert empty strings to undefined', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await client.signupWithPasskey({
+        email: 'user@example.com',
+        phoneNumber: '',
+        username: '',
+        name: '',
+        realm: 'Username-Password-Authentication',
+      });
+
+      expect(
+        (mockBridgeInstance as any).signupWithPasskey
+      ).toHaveBeenCalledWith(
+        'user@example.com',
+        undefined,
+        undefined,
+        undefined,
+        'Username-Password-Authentication',
+        undefined,
+        undefined,
+        undefined
+      );
+    });
+
+    it('should return credentials from signupWithPasskey', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      const result = await client.signupWithPasskey({
+        email: 'user@example.com',
+        realm: 'Username-Password-Authentication',
+      });
+
+      expect(result).toEqual(mockCredentials);
+    });
+
+    it('should throw PasskeyError on failure', async () => {
+      const { AuthError } = require('../../../../core/models');
+      const { PasskeyError } = require('../../../../core/models');
+
+      (mockBridgeInstance as any).signupWithPasskey = jest
+        .fn()
+        .mockRejectedValue(
+          new AuthError('PASSKEY_USER_CANCELLED', 'User cancelled', {
+            code: 'PASSKEY_USER_CANCELLED',
+          })
+        );
+
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await expect(
+        client.signupWithPasskey({
+          email: 'user@example.com',
+          realm: 'Username-Password-Authentication',
+        })
+      ).rejects.toBeInstanceOf(PasskeyError);
+    });
+  });
+
+  describe('signinWithPasskey', () => {
+    const mockCredentials = {
+      idToken: 'mock-id-token',
+      accessToken: 'mock-access-token',
+      tokenType: 'Bearer',
+      expiresAt: Math.floor(Date.now() / 1000) + 3600,
+      refreshToken: 'mock-refresh-token',
+      scope: 'openid profile email',
+    };
+
+    beforeEach(() => {
+      (mockBridgeInstance as any).signinWithPasskey = jest
+        .fn()
+        .mockResolvedValue(mockCredentials);
+    });
+
+    it('should call signinWithPasskey on the guarded bridge with all parameters', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await client.signinWithPasskey({
+        realm: 'Username-Password-Authentication',
+        audience: 'https://api.example.com',
+        scope: 'openid profile email',
+        organization: 'org_123',
+      });
+
+      expect(
+        (mockBridgeInstance as any).signinWithPasskey
+      ).toHaveBeenCalledWith(
+        'Username-Password-Authentication',
+        'https://api.example.com',
+        'openid profile email',
+        'org_123'
+      );
+    });
+
+    it('should convert empty strings to undefined', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await client.signinWithPasskey({
+        realm: 'Username-Password-Authentication',
+        audience: '',
+        scope: '',
+        organization: '',
+      });
+
+      expect(
+        (mockBridgeInstance as any).signinWithPasskey
+      ).toHaveBeenCalledWith(
+        'Username-Password-Authentication',
+        undefined,
+        undefined,
+        undefined
+      );
+    });
+
+    it('should return credentials from signinWithPasskey', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      const result = await client.signinWithPasskey({
+        realm: 'Username-Password-Authentication',
+      });
+
+      expect(result).toEqual(mockCredentials);
+    });
+
+    it('should throw PasskeyError on failure', async () => {
+      const { AuthError } = require('../../../../core/models');
+      const { PasskeyError } = require('../../../../core/models');
+
+      (mockBridgeInstance as any).signinWithPasskey = jest
+        .fn()
+        .mockRejectedValue(
+          new AuthError('PASSKEY_CHALLENGE_FAILED', 'Challenge failed', {
+            code: 'PASSKEY_CHALLENGE_FAILED',
+          })
+        );
+
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await expect(
+        client.signinWithPasskey({
+          realm: 'Username-Password-Authentication',
+        })
+      ).rejects.toBeInstanceOf(PasskeyError);
+    });
+  });
 });

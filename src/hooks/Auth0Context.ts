@@ -17,6 +17,8 @@ import type {
   LoginRecoveryCodeParameters,
   ExchangeNativeSocialParameters,
   CustomTokenExchangeParameters,
+  PasskeySignupParameters,
+  PasskeySigninParameters,
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
@@ -201,6 +203,38 @@ export interface Auth0ContextInterface extends AuthState {
    */
   customTokenExchange: (
     parameters: CustomTokenExchangeParameters
+  ) => Promise<Credentials>;
+
+  /**
+   * Registers a new passkey and authenticates the user.
+   * Orchestrates the full passkey signup flow: challenge → OS passkey UI → credential exchange.
+   *
+   * @remarks
+   * **Platform specific:** This method is only available on native platforms (iOS 16.6+ / Android).
+   * On web, it will throw a `PasskeyError`.
+   *
+   * @param parameters The parameters for passkey signup.
+   * @returns A promise that resolves with the user's credentials.
+   * @throws {PasskeyError} If the passkey signup fails or is not supported.
+   */
+  signupWithPasskey: (
+    parameters: PasskeySignupParameters
+  ) => Promise<Credentials>;
+
+  /**
+   * Authenticates the user with an existing passkey.
+   * Orchestrates the full passkey signin flow: challenge → OS passkey UI → credential exchange.
+   *
+   * @remarks
+   * **Platform specific:** This method is only available on native platforms (iOS 16.6+ / Android).
+   * On web, it will throw a `PasskeyError`.
+   *
+   * @param parameters The parameters for passkey signin.
+   * @returns A promise that resolves with the user's credentials.
+   * @throws {PasskeyError} If the passkey signin fails or is not supported.
+   */
+  signinWithPasskey: (
+    parameters: PasskeySigninParameters
   ) => Promise<Credentials>;
 
   /**
@@ -392,6 +426,8 @@ const initialContext: Auth0ContextInterface = {
   authorizeWithRecoveryCode: stub,
   authorizeWithExchangeNativeSocial: stub,
   customTokenExchange: stub,
+  signupWithPasskey: stub,
+  signinWithPasskey: stub,
   sendEmailCode: stub,
   sendSMSCode: stub,
   authorizeWithEmail: stub,

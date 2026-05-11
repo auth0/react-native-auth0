@@ -253,4 +253,44 @@ export class NativeBridgeManager implements INativeBridge {
       );
     }
   }
+
+  async signupWithPasskey(
+    email?: string,
+    phoneNumber?: string,
+    username?: string,
+    name?: string,
+    realm?: string,
+    audience?: string,
+    scope?: string,
+    organization?: string
+  ): Promise<Credentials> {
+    const credential = await this.a0_call(
+      Auth0NativeModule.signupWithPasskey.bind(Auth0NativeModule),
+      email,
+      phoneNumber,
+      username,
+      name,
+      realm,
+      audience,
+      scope,
+      organization
+    );
+    return new CredentialsModel(credential);
+  }
+
+  async signinWithPasskey(
+    realm?: string,
+    audience?: string,
+    scope?: string,
+    organization?: string
+  ): Promise<Credentials> {
+    const credential = await this.a0_call(
+      Auth0NativeModule.signinWithPasskey.bind(Auth0NativeModule),
+      realm,
+      audience,
+      scope,
+      organization
+    );
+    return new CredentialsModel(credential);
+  }
 }

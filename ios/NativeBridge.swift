@@ -7,6 +7,7 @@
 //
 
 import Auth0
+import AuthenticationServices
 import Foundation
 import LocalAuthentication
 
@@ -404,6 +405,176 @@ public class NativeBridge: NSObject {
         }
     }
     
+    @objc public func signupWithPasskey(email: String?, phoneNumber: String?, username: String?, name: String?, realm: String?, audience: String?, scope: String?, organization: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        guard #available(iOS 16.6, *) else {
+            reject("PASSKEY_NOT_AVAILABLE", "Passkeys require iOS 16.6 or later", nil)
+            return
+        }
+
+        let emailValue = email?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let finalEmail = emailValue?.isEmpty == true ? nil : emailValue
+        let phoneValue = phoneNumber?.isEmpty == true ? nil : phoneNumber
+        let usernameValue = username?.isEmpty == true ? nil : username
+        let nameValue = name?.isEmpty == true ? nil : name
+        let realmValue = realm?.isEmpty == true ? nil : realm
+        let audienceValue = audience?.isEmpty == true ? nil : audience
+        let orgValue = organization?.isEmpty == true ? nil : organization
+
+        var auth = Auth0.authentication(clientId: self.clientId, domain: self.domain)
+        if self.useDPoP {
+            auth = auth.useDPoP()
+        }
+
+        let finalScope = scope?.isEmpty == true ? "openid profile email" : (scope ?? "openid profile email")
+
+        auth.passkeySignupChallenge(
+            email: finalEmail,
+            phoneNumber: phoneValue,
+            username: usernameValue,
+            name: nameValue,
+            connection: realmValue,
+            organization: orgValue
+        ).start { result in
+            switch result {
+            case .success(let challenge):
+                self.performPasskeyRegistration(
+                    challenge: challenge,
+                    auth: auth,
+                    realm: realmValue,
+                    audience: audienceValue,
+                    scope: finalScope,
+                    organization: orgValue,
+                    resolve: resolve,
+                    reject: reject
+                )
+            case .failure(let error):
+                reject("PASSKEY_CHALLENGE_FAILED", error.localizedDescription, error)
+            }
+        }
+    }
+
+    @objc public func signinWithPasskey(realm: String?, audience: String?, scope: String?, organization: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        guard #available(iOS 16.6, *) else {
+            reject("PASSKEY_NOT_AVAILABLE", "Passkeys require iOS 16.6 or later", nil)
+            return
+        }
+
+        let realmValue = realm?.isEmpty == true ? nil : realm
+        let audienceValue = audience?.isEmpty == true ? nil : audience
+        let orgValue = organization?.isEmpty == true ? nil : organization
+
+        var auth = Auth0.authentication(clientId: self.clientId, domain: self.domain)
+        if self.useDPoP {
+            auth = auth.useDPoP()
+        }
+
+        let finalScope = scope?.isEmpty == true ? "openid profile email" : (scope ?? "openid profile email")
+
+        auth.passkeyLoginChallenge(
+            connection: realmValue,
+            organization: orgValue
+        ).start { result in
+            switch result {
+            case .success(let challenge):
+                self.performPasskeyAssertion(
+                    challenge: challenge,
+                    auth: auth,
+                    realm: realmValue,
+                    audience: audienceValue,
+                    scope: finalScope,
+                    organization: orgValue,
+                    resolve: resolve,
+                    reject: reject
+                )
+            case .failure(let error):
+                reject("PASSKEY_CHALLENGE_FAILED", error.localizedDescription, error)
+            }
+        }
+    }
+
+    @available(iOS 16.6, *)
+    private func performPasskeyRegistration(challenge: PasskeySignupChallenge, auth: Authentication, realm: String?, audience: String?, scope: String, organization: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        let provider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: challenge.relyingPartyId)
+        let registrationRequest = provider.createCredentialRegistrationRequest(challenge: challenge.challengeData, name: challenge.userName, userID: challenge.userId)
+
+        let delegate = PasskeyAuthorizationDelegate { authorization, credential in
+            guard let registration = credential as? ASAuthorizationPlatformPublicKeyCredentialRegistration else {
+                reject("PASSKEY_SIGNUP_FAILED", "Unexpected credential type received", nil)
+                return
+            }
+            auth.login(
+                passkey: registration,
+                challenge: challenge,
+                connection: realm,
+                audience: audience,
+                scope: scope,
+                organization: organization
+            ).start { loginResult in
+                switch loginResult {
+                case .success(let credentials):
+                    resolve(credentials.asDictionary())
+                case .failure(let error):
+                    reject(error.code, error.localizedDescription, error)
+                }
+            }
+        } onError: { error in
+            let authError = error as? ASAuthorizationError
+            if authError?.code == .canceled {
+                reject("PASSKEY_USER_CANCELLED", "User cancelled passkey registration", error)
+            } else {
+                reject("PASSKEY_SIGNUP_FAILED", error.localizedDescription, error)
+            }
+        }
+
+        let controller = ASAuthorizationController(authorizationRequests: [registrationRequest])
+        controller.delegate = delegate
+        controller.presentationContextProvider = delegate
+        // Prevent delegate from being deallocated while the controller is presenting
+        objc_setAssociatedObject(controller, "passkeyDelegate", delegate, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        controller.performRequests()
+    }
+
+    @available(iOS 16.6, *)
+    private func performPasskeyAssertion(challenge: PasskeyLoginChallenge, auth: Authentication, realm: String?, audience: String?, scope: String, organization: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        let provider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: challenge.relyingPartyId)
+        let assertionRequest = provider.createCredentialAssertionRequest(challenge: challenge.challengeData)
+
+        let delegate = PasskeyAuthorizationDelegate { authorization, credential in
+            guard let assertion = credential as? ASAuthorizationPlatformPublicKeyCredentialAssertion else {
+                reject("PASSKEY_SIGNIN_FAILED", "Unexpected credential type received", nil)
+                return
+            }
+            auth.login(
+                passkey: assertion,
+                challenge: challenge,
+                connection: realm,
+                audience: audience,
+                scope: scope,
+                organization: organization
+            ).start { loginResult in
+                switch loginResult {
+                case .success(let credentials):
+                    resolve(credentials.asDictionary())
+                case .failure(let error):
+                    reject(error.code, error.localizedDescription, error)
+                }
+            }
+        } onError: { error in
+            let authError = error as? ASAuthorizationError
+            if authError?.code == .canceled {
+                reject("PASSKEY_USER_CANCELLED", "User cancelled passkey authentication", error)
+            } else {
+                reject("PASSKEY_SIGNIN_FAILED", error.localizedDescription, error)
+            }
+        }
+
+        let controller = ASAuthorizationController(authorizationRequests: [assertionRequest])
+        controller.delegate = delegate
+        controller.presentationContextProvider = delegate
+        objc_setAssociatedObject(controller, "passkeyDelegate", delegate, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        controller.performRequests()
+    }
+
     @objc public func getClientId() -> String {
         return clientId
     }
@@ -516,10 +687,37 @@ extension CredentialsManagerError {
                 code = cause.code
             } else {
                 code = "REVOKE_FAILED"
-            } 
+            }
             case CredentialsManagerError.largeMinTTL: code = "LARGE_MIN_TTL"
             default: code = "UNKNOWN"
         }
         return code
+    }
+}
+
+@available(iOS 16.6, *)
+private class PasskeyAuthorizationDelegate: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    private let onSuccess: (ASAuthorization, ASAuthorizationCredential) -> Void
+    private let onError: (Error) -> Void
+
+    init(onSuccess: @escaping (ASAuthorization, ASAuthorizationCredential) -> Void, onError: @escaping (Error) -> Void) {
+        self.onSuccess = onSuccess
+        self.onError = onError
+        super.init()
+    }
+
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        onSuccess(authorization, authorization.credential)
+    }
+
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        onError(error)
+    }
+
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        return UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow } ?? ASPresentationAnchor()
     }
 }

@@ -23,6 +23,8 @@ import type {
   LoginRecoveryCodeParameters,
   ExchangeNativeSocialParameters,
   CustomTokenExchangeParameters,
+  PasskeySignupParameters,
+  PasskeySigninParameters,
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
@@ -316,6 +318,18 @@ export const Auth0Provider = ({
     [client, loginFlow]
   );
 
+  const signupWithPasskey = useCallback(
+    (parameters: PasskeySignupParameters) =>
+      loginFlow(client.signupWithPasskey(parameters)),
+    [client, loginFlow]
+  );
+
+  const signinWithPasskey = useCallback(
+    (parameters: PasskeySigninParameters) =>
+      loginFlow(client.signinWithPasskey(parameters)),
+    [client, loginFlow]
+  );
+
   const sendEmailCode = useCallback(
     (parameters: PasswordlessEmailParameters) =>
       voidFlow(client.auth.passwordlessWithEmail(parameters)),
@@ -425,6 +439,8 @@ export const Auth0Provider = ({
       authorizeWithExchange,
       authorizeWithExchangeNativeSocial,
       customTokenExchange,
+      signupWithPasskey,
+      signinWithPasskey,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,
@@ -455,6 +471,8 @@ export const Auth0Provider = ({
       authorizeWithExchange,
       authorizeWithExchangeNativeSocial,
       customTokenExchange,
+      signupWithPasskey,
+      signinWithPasskey,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,

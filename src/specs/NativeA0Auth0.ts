@@ -159,6 +159,30 @@ export interface Spec extends TurboModule {
     scope: string | undefined,
     organization: string | undefined
   ): Promise<Credentials>;
+
+  /**
+   * Register a new passkey and obtain Auth0 credentials.
+   */
+  signupWithPasskey(
+    email: string | undefined,
+    phoneNumber: string | undefined,
+    username: string | undefined,
+    name: string | undefined,
+    realm: string | undefined,
+    audience: string | undefined,
+    scope: string | undefined,
+    organization: string | undefined
+  ): Promise<Credentials>;
+
+  /**
+   * Authenticate with an existing passkey and obtain Auth0 credentials.
+   */
+  signinWithPasskey(
+    realm: string | undefined,
+    audience: string | undefined,
+    scope: string | undefined,
+    organization: string | undefined
+  ): Promise<Credentials>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('A0Auth0');

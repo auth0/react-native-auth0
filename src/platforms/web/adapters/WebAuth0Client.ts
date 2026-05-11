@@ -12,6 +12,8 @@ import type { WebAuth0Options } from '../../../types/platform-specific';
 import type {
   DPoPHeadersParams,
   CustomTokenExchangeParameters,
+  PasskeySignupParameters,
+  PasskeySigninParameters,
   Credentials,
 } from '../../../types';
 import { WebWebAuthProvider } from './WebWebAuthProvider';
@@ -23,7 +25,7 @@ import {
 } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
-import { AuthError, DPoPError } from '../../../core/models';
+import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
 
 export class WebAuth0Client implements IAuth0Client {
   readonly webAuth: WebWebAuthProvider;
@@ -256,5 +258,27 @@ export class WebAuth0Client implements IAuth0Client {
         { json: e }
       );
     }
+  }
+
+  async signupWithPasskey(
+    _parameters: PasskeySignupParameters
+  ): Promise<Credentials> {
+    throw new PasskeyError(
+      new AuthError(
+        'UnsupportedOperation',
+        'Passkey signup is not supported on the web platform'
+      )
+    );
+  }
+
+  async signinWithPasskey(
+    _parameters: PasskeySigninParameters
+  ): Promise<Credentials> {
+    throw new PasskeyError(
+      new AuthError(
+        'UnsupportedOperation',
+        'Passkey signin is not supported on the web platform'
+      )
+    );
   }
 }

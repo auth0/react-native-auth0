@@ -7,6 +7,8 @@ import type { NativeAuth0Options } from '../../../types/platform-specific';
 import type {
   DPoPHeadersParams,
   CustomTokenExchangeParameters,
+  PasskeySignupParameters,
+  PasskeySigninParameters,
   Credentials,
 } from '../../../types';
 import { NativeWebAuthProvider } from './NativeWebAuthProvider';
@@ -18,7 +20,7 @@ import {
 } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
-import { AuthError, DPoPError } from '../../../core/models';
+import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
 
 export class NativeAuth0Client implements IAuth0Client {
   readonly webAuth: NativeWebAuthProvider;
@@ -185,5 +187,56 @@ export class NativeAuth0Client implements IAuth0Client {
       scope,
       organization
     );
+  }
+
+  async signupWithPasskey(
+    parameters: PasskeySignupParameters
+  ): Promise<Credentials> {
+    const {
+      email,
+      phoneNumber,
+      username,
+      name,
+      realm,
+      audience,
+      scope,
+      organization,
+    } = parameters;
+    try {
+      return await this.guardedBridge.signupWithPasskey(
+        email || undefined,
+        phoneNumber || undefined,
+        username || undefined,
+        name || undefined,
+        realm || undefined,
+        audience || undefined,
+        scope || undefined,
+        organization || undefined
+      );
+    } catch (e) {
+      if (e instanceof AuthError) {
+        throw new PasskeyError(e);
+      }
+      throw e;
+    }
+  }
+
+  async signinWithPasskey(
+    parameters: PasskeySigninParameters
+  ): Promise<Credentials> {
+    const { realm, audience, scope, organization } = parameters;
+    try {
+      return await this.guardedBridge.signinWithPasskey(
+        realm || undefined,
+        audience || undefined,
+        scope || undefined,
+        organization || undefined
+      );
+    } catch (e) {
+      if (e instanceof AuthError) {
+        throw new PasskeyError(e);
+      }
+      throw e;
+    }
   }
 }

@@ -5,6 +5,8 @@ import type {
   Auth0Options,
   DPoPHeadersParams,
   CustomTokenExchangeParameters,
+  PasskeySignupParameters,
+  PasskeySigninParameters,
   Credentials,
 } from './types';
 
@@ -120,6 +122,52 @@ class Auth0 {
     parameters: CustomTokenExchangeParameters
   ): Promise<Credentials> {
     return this.client.customTokenExchange(parameters);
+  }
+
+  /**
+   * Registers a new passkey and obtains Auth0 credentials.
+   *
+   * Orchestrates the full passkey signup flow: requests a signup challenge,
+   * presents the OS passkey creation UI, and completes authentication.
+   *
+   * @platform ios, android (not supported on web)
+   *
+   * @param parameters The passkey signup parameters.
+   * @returns A promise resolving with Auth0 credentials.
+   *
+   * @example
+   * ```typescript
+   * const credentials = await auth0.signupWithPasskey({
+   *   email: 'user@example.com',
+   *   name: 'John Doe',
+   *   realm: 'Username-Password-Authentication',
+   * });
+   * ```
+   */
+  signupWithPasskey(parameters: PasskeySignupParameters): Promise<Credentials> {
+    return this.client.signupWithPasskey(parameters);
+  }
+
+  /**
+   * Authenticates with an existing passkey and obtains Auth0 credentials.
+   *
+   * Orchestrates the full passkey signin flow: requests a login challenge,
+   * presents the OS passkey assertion UI, and completes authentication.
+   *
+   * @platform ios, android (not supported on web)
+   *
+   * @param parameters The passkey signin parameters.
+   * @returns A promise resolving with Auth0 credentials.
+   *
+   * @example
+   * ```typescript
+   * const credentials = await auth0.signinWithPasskey({
+   *   realm: 'Username-Password-Authentication',
+   * });
+   * ```
+   */
+  signinWithPasskey(parameters: PasskeySigninParameters): Promise<Credentials> {
+    return this.client.signinWithPasskey(parameters);
   }
 }
 

@@ -313,6 +313,64 @@ export interface CreateUserParameters extends RequestOptions {
   metadata?: object;
 }
 
+// ========= Passkey Parameters =========
+
+/**
+ * Parameters for registering a new passkey and obtaining Auth0 credentials.
+ *
+ * The native SDK will orchestrate the full flow: requesting a signup challenge
+ * from Auth0, presenting the OS passkey creation UI, and completing the
+ * authentication to obtain tokens.
+ *
+ * @see https://auth0.com/docs/authenticate/database-connections/passkeys
+ */
+export interface PasskeySignupParameters {
+  /** The user's email address. */
+  email?: string;
+  /** The user's phone number. */
+  phoneNumber?: string;
+  /** The user's username. */
+  username?: string;
+  /** The user's display name. */
+  name?: string;
+  /** The database connection name. */
+  realm?: string;
+  /** The target API identifier for the issued access token. */
+  audience?: string;
+  /**
+   * Space-separated list of OAuth 2.0 scopes.
+   * @default "openid profile email"
+   */
+  scope?: string;
+  /** Organization ID or name for authenticating in an organization context. */
+  organization?: string;
+}
+
+/**
+ * Parameters for authenticating with an existing passkey and obtaining Auth0 credentials.
+ *
+ * The native SDK will orchestrate the full flow: requesting a login challenge
+ * from Auth0, presenting the OS passkey assertion UI, and completing the
+ * authentication to obtain tokens.
+ *
+ * @see https://auth0.com/docs/authenticate/database-connections/passkeys
+ */
+export interface PasskeySigninParameters {
+  /** The database connection name. */
+  realm?: string;
+  /** The target API identifier for the issued access token. */
+  audience?: string;
+  /**
+   * Space-separated list of OAuth 2.0 scopes.
+   * @default "openid profile email"
+   */
+  scope?: string;
+  /** Organization ID or name for authenticating in an organization context. */
+  organization?: string;
+}
+
+// ========= User Management & Profile Parameters =========
+
 /**
  * Parameters for patching a user's metadata via the Management API.
  * Requires an access token with `update:current_user_metadata` scope.
