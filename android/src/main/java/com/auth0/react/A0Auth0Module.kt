@@ -104,7 +104,10 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         CredentialsManagerException.BIOMETRICS_INVALID_USER to "BIOMETRICS_INVALID_USER",
         CredentialsManagerException.BIOMETRIC_AUTHENTICATION_FAILED to "BIOMETRIC_AUTHENTICATION_FAILED",
         CredentialsManagerException.API_ERROR to "API_ERROR",
-        CredentialsManagerException.NO_NETWORK to "NO_NETWORK"
+        CredentialsManagerException.NO_NETWORK to "NO_NETWORK",
+        CredentialsManagerException.DPOP_KEY_MISSING to "DPOP_KEY_MISSING",
+        CredentialsManagerException.DPOP_NOT_CONFIGURED to "DPOP_NOT_CONFIGURED",
+        CredentialsManagerException.DPOP_KEY_MISMATCH to "DPOP_KEY_MISMATCH"
     )
     // DPoP enabled by default
     private var useDPoP: Boolean = true
