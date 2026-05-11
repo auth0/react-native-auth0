@@ -162,6 +162,48 @@ describe('Common Error Handling - NativeCredentialsManager', () => {
     });
   });
 
+  describe('DPoP Credential State Errors', () => {
+    const dpopErrorTestCases = [
+      {
+        code: 'DPOP_KEY_MISSING',
+        message:
+          'The stored credentials are DPoP-bound but the DPoP key pair is no longer available in the keystore.',
+        expectedType: 'DPOP_KEY_MISSING',
+      },
+      {
+        code: 'DPOP_NOT_CONFIGURED',
+        message:
+          'The stored credentials are DPoP-bound but the client was not configured with DPoP.',
+        expectedType: 'DPOP_NOT_CONFIGURED',
+      },
+      {
+        code: 'DPOP_KEY_MISMATCH',
+        message:
+          'The stored credentials are DPoP-bound but the current DPoP key pair does not match the one used when credentials were saved.',
+        expectedType: 'DPOP_KEY_MISMATCH',
+      },
+    ];
+
+    dpopErrorTestCases.forEach(({ code, message, expectedType }) => {
+      it(`should handle ${code} error`, async () => {
+        const nativeError = { code, message };
+        mockBridge.getCredentials.mockRejectedValue(nativeError);
+
+        await expect(manager.getCredentials()).rejects.toThrow(
+          CredentialsManagerError
+        );
+
+        try {
+          await manager.getCredentials();
+        } catch (e) {
+          const err = e as CredentialsManagerError;
+          expect(err.type).toBe(expectedType);
+          expect(err.message).toBe(message);
+        }
+      });
+    });
+  });
+
   describe('Android Biometric Error Mappings', () => {
     const biometricErrorTestCases = [
       'BIOMETRIC_NO_ACTIVITY',

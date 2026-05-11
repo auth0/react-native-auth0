@@ -61,6 +61,12 @@ export const CredentialsManagerErrorCodes = {
   INCOMPATIBLE_DEVICE: 'INCOMPATIBLE_DEVICE',
   /** Cryptographic operation failed */
   CRYPTO_EXCEPTION: 'CRYPTO_EXCEPTION',
+  /** DPoP key pair is no longer available in the device keystore/keychain - re-authentication required */
+  DPOP_KEY_MISSING: 'DPOP_KEY_MISSING',
+  /** Credentials are DPoP-bound but the client was not configured with DPoP */
+  DPOP_NOT_CONFIGURED: 'DPOP_NOT_CONFIGURED',
+  /** Current DPoP key pair does not match the one used when credentials were saved - re-authentication required */
+  DPOP_KEY_MISMATCH: 'DPOP_KEY_MISMATCH',
   /** Unknown or uncategorized error */
   UNKNOWN_ERROR: 'UNKNOWN_ERROR',
 } as const;
@@ -79,6 +85,11 @@ const ERROR_CODE_MAP: Record<string, string> = {
   BIOMETRICS_FAILED: CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
   NO_NETWORK: CredentialsManagerErrorCodes.NO_NETWORK,
   API_ERROR: CredentialsManagerErrorCodes.API_ERROR,
+
+  // --- DPoP credential state errors ---
+  DPOP_KEY_MISSING: CredentialsManagerErrorCodes.DPOP_KEY_MISSING,
+  DPOP_NOT_CONFIGURED: CredentialsManagerErrorCodes.DPOP_NOT_CONFIGURED,
+  DPOP_KEY_MISMATCH: CredentialsManagerErrorCodes.DPOP_KEY_MISMATCH,
 
   // --- API Credentials (MRRT) specific codes ---
   API_EXCHANGE_FAILED: CredentialsManagerErrorCodes.API_EXCHANGE_FAILED,
@@ -174,6 +185,11 @@ const ERROR_CODE_MAP: Record<string, string> = {
  * ### Network & API:
  * - `NO_NETWORK`: Network connectivity issue
  * - `API_ERROR`: Generic API error
+ *
+ * ### DPoP Credential State:
+ * - `DPOP_KEY_MISSING`: DPoP key pair no longer available in keystore/keychain
+ * - `DPOP_NOT_CONFIGURED`: Credentials are DPoP-bound but client not configured with DPoP
+ * - `DPOP_KEY_MISMATCH`: Current DPoP key pair doesn't match the one used when credentials were saved
  *
  * ### Biometric Authentication:
  * - `BIOMETRICS_FAILED`: Biometric authentication failed
@@ -285,6 +301,9 @@ export class CredentialsManagerError extends AuthError {
    * - `NO_REFRESH_TOKEN`: Refresh token is not available
    * - `RENEW_FAILED`: Token renewal failed
    * - `API_EXCHANGE_FAILED`: API credentials exchange failed (MRRT)
+   * - `DPOP_KEY_MISSING`: DPoP key pair no longer in keystore/keychain
+   * - `DPOP_NOT_CONFIGURED`: Credentials DPoP-bound but client not configured
+   * - `DPOP_KEY_MISMATCH`: DPoP key pair doesn't match saved credentials
    * - `STORE_FAILED`: Failed to store credentials
    * - `REVOKE_FAILED`: Failed to revoke refresh token
    * - `LARGE_MIN_TTL`: Requested minimum TTL exceeds token lifetime
