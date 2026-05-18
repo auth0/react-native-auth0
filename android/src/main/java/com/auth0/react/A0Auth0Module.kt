@@ -13,6 +13,8 @@ import com.auth0.android.authentication.storage.SecureCredentialsManager
 import com.auth0.android.authentication.storage.SharedPreferencesStorage
 import com.auth0.android.dpop.DPoP
 import com.auth0.android.dpop.DPoPException
+import com.auth0.android.provider.BrowserPicker
+import com.auth0.android.provider.CustomTabsOptions
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
 import com.facebook.react.bridge.ActivityEventListener
@@ -85,7 +87,10 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         CredentialsManagerException.BIOMETRICS_INVALID_USER to "BIOMETRICS_INVALID_USER",
         CredentialsManagerException.BIOMETRIC_AUTHENTICATION_FAILED to "BIOMETRIC_AUTHENTICATION_FAILED",
         CredentialsManagerException.API_ERROR to "API_ERROR",
-        CredentialsManagerException.NO_NETWORK to "NO_NETWORK"
+        CredentialsManagerException.NO_NETWORK to "NO_NETWORK",
+        CredentialsManagerException.DPOP_KEY_MISSING to "DPOP_KEY_MISSING",
+        CredentialsManagerException.DPOP_NOT_CONFIGURED to "DPOP_NOT_CONFIGURED",
+        CredentialsManagerException.DPOP_KEY_MISMATCH to "DPOP_KEY_MISMATCH"
     )
     // DPoP enabled by default
     private var useDPoP: Boolean = true
@@ -115,6 +120,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         ephemeralSession: Boolean?,
         safariViewControllerPresentationStyle: Double?,
         additionalParameters: ReadableMap?,
+        allowedBrowserPackages: ReadableArray?,
         promise: Promise
     ) {
         if(this.useDPoP) {
@@ -122,7 +128,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         }
         webAuthPromise = promise
         val cleanedParameters = mutableMapOf<String, String>()
-        
+
         additionalParameters?.let { params ->
             params.toHashMap().forEach { (key, value) ->
                 value?.let { cleanedParameters[key] = it.toString() }
@@ -130,7 +136,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         }
 
         val builder = WebAuthProvider.login(auth0!!).withScheme(scheme)
-        
+
         builder.apply {
             state?.let { withState(it) }
             nonce?.let { withNonce(it) }
@@ -142,6 +148,17 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             invitationUrl?.let { withInvitationUrl(it) }
             leeway?.let { if (it.toInt() != 0) withIdTokenVerificationLeeway(it.toInt()) }
             redirectUri?.let { withRedirectUri(it) }
+            allowedBrowserPackages?.let { packages ->
+                val packageList = (0 until packages.size()).mapNotNull { packages.getString(it) }
+                val browserPicker = BrowserPicker.newBuilder()
+                    .withAllowedPackages(packageList)
+                    .build()
+                withCustomTabsOptions(
+                    CustomTabsOptions.newBuilder()
+                        .withBrowserPicker(browserPicker)
+                        .build()
+                )
+            }
         }
         
         builder.withParameters(cleanedParameters)
@@ -350,15 +367,27 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     override fun getName(): String = NAME
 
     @ReactMethod
-    override fun webAuthLogout(scheme: String, federated: Boolean, redirectUri: String?, promise: Promise) {
+    override fun webAuthLogout(scheme: String, federated: Boolean, redirectUri: String?, allowedBrowserPackages: ReadableArray?, promise: Promise) {
         val builder = WebAuthProvider.logout(auth0!!).withScheme(scheme)
-        
+
         if (federated) {
             builder.withFederated()
         }
-        
+
         redirectUri?.let { builder.withReturnToUrl(it) }
-        
+
+        allowedBrowserPackages?.let { packages ->
+            val packageList = (0 until packages.size()).mapNotNull { packages.getString(it) }
+            val browserPicker = BrowserPicker.newBuilder()
+                .withAllowedPackages(packageList)
+                .build()
+            builder.withCustomTabsOptions(
+                CustomTabsOptions.newBuilder()
+                    .withBrowserPicker(browserPicker)
+                    .build()
+            )
+        }
+
         builder.start(reactContext.currentActivity as FragmentActivity,
             object : com.auth0.android.callback.Callback<Void?, AuthenticationException> {
                 override fun onSuccess(result: Void?) {

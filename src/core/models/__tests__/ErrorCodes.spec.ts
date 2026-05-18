@@ -109,11 +109,20 @@ describe('Error Code Constants', () => {
         'CRYPTO_EXCEPTION'
       );
       expect(CredentialsManagerErrorCodes.UNKNOWN_ERROR).toBe('UNKNOWN_ERROR');
+      expect(CredentialsManagerErrorCodes.DPOP_KEY_MISSING).toBe(
+        'DPOP_KEY_MISSING'
+      );
+      expect(CredentialsManagerErrorCodes.DPOP_NOT_CONFIGURED).toBe(
+        'DPOP_NOT_CONFIGURED'
+      );
+      expect(CredentialsManagerErrorCodes.DPOP_KEY_MISMATCH).toBe(
+        'DPOP_KEY_MISMATCH'
+      );
     });
 
-    it('should have exactly 15 error codes', () => {
+    it('should have exactly 18 error codes', () => {
       const keys = Object.keys(CredentialsManagerErrorCodes);
-      expect(keys).toHaveLength(15);
+      expect(keys).toHaveLength(18);
     });
 
     it('should be immutable (as const)', () => {
