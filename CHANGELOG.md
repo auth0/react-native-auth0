@@ -2,6 +2,8 @@
 
 ## [5.6.0](https://github.com/auth0/react-native-auth0/tree/v5.6.0) (2026-05-14)
 
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.5.1...v5.6.0)
+
 **Added**
 - feat: surface DPoP credential state errors from native SDKs [\#1529](https://github.com/auth0/react-native-auth0/pull/1529) ([@subhankarmaiti](https://github.com/subhankarmaiti))
 - feat(android): expose allowedBrowserPackages option for web authentication [\#1513](https://github.com/auth0/react-native-auth0/pull/1513) ([@mrbrentkelly](https://github.com/mrbrentkelly))
@@ -11,9 +13,9 @@
 - docs: add Expo callback URL format to README [\#1522](https://github.com/auth0/react-native-auth0/pull/1522) ([@subhankarmaiti](https://github.com/subhankarmaiti))
 
 
-## [v5.6.0](https://github.com/auth0/react-native-auth0/tree/v5.6.0) (2026-04-23)
+## [v5.5.1](https://github.com/auth0/react-native-auth0/tree/v5.5.1) (2026-04-23)
 
-[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.5.0...v5.6.0)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.5.0...v5.5.1)
 
 **Fixed**
 
