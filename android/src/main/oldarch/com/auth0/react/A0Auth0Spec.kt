@@ -125,7 +125,7 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
 
     @ReactMethod
     @DoNotStrip
-    abstract fun signupWithPasskey(
+    abstract fun passkeySignupChallenge(
         email: String?,
         phoneNumber: String?,
         username: String?,
@@ -136,6 +136,24 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
         picture: String?,
         userMetadata: ReadableMap?,
         realm: String?,
+        organization: String?,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun passkeyLoginChallenge(
+        realm: String?,
+        organization: String?,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun passkeyExchange(
+        authSession: String,
+        authResponse: String,
+        realm: String?,
         audience: String?,
         scope: String?,
         organization: String?,
@@ -144,11 +162,9 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
 
     @ReactMethod
     @DoNotStrip
-    abstract fun signinWithPasskey(
-        realm: String?,
-        audience: String?,
-        scope: String?,
-        organization: String?,
-        promise: Promise
-    )
+    abstract fun passkeyRegistration(challengeJson: String, promise: Promise)
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun passkeyAssertion(challengeJson: String, promise: Promise)
 }

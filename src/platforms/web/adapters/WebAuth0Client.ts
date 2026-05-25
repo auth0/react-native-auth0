@@ -12,8 +12,12 @@ import type { WebAuth0Options } from '../../../types/platform-specific';
 import type {
   DPoPHeadersParams,
   CustomTokenExchangeParameters,
-  PasskeySignupParameters,
-  PasskeySigninParameters,
+  PasskeySignupChallengeParameters,
+  PasskeyLoginChallengeParameters,
+  PasskeyChallengeResponse,
+  PasskeyExchangeParameters,
+  PasskeyRegistrationParameters,
+  PasskeyAssertionParameters,
   Credentials,
 } from '../../../types';
 import { WebWebAuthProvider } from './WebWebAuthProvider';
@@ -260,24 +264,57 @@ export class WebAuth0Client implements IAuth0Client {
     }
   }
 
-  async signupWithPasskey(
-    _parameters: PasskeySignupParameters
-  ): Promise<Credentials> {
+  async passkeySignupChallenge(
+    _parameters: PasskeySignupChallengeParameters
+  ): Promise<PasskeyChallengeResponse> {
     throw new PasskeyError(
       new AuthError(
         'UnsupportedOperation',
-        'Passkey signup is not supported on the web platform'
+        'Passkeys are not supported on the web platform'
       )
     );
   }
 
-  async signinWithPasskey(
-    _parameters: PasskeySigninParameters
+  async passkeyLoginChallenge(
+    _parameters: PasskeyLoginChallengeParameters
+  ): Promise<PasskeyChallengeResponse> {
+    throw new PasskeyError(
+      new AuthError(
+        'UnsupportedOperation',
+        'Passkeys are not supported on the web platform'
+      )
+    );
+  }
+
+  async passkeyExchange(
+    _parameters: PasskeyExchangeParameters
   ): Promise<Credentials> {
     throw new PasskeyError(
       new AuthError(
         'UnsupportedOperation',
-        'Passkey signin is not supported on the web platform'
+        'Passkeys are not supported on the web platform'
+      )
+    );
+  }
+
+  async passkeyRegistration(
+    _parameters: PasskeyRegistrationParameters
+  ): Promise<string> {
+    throw new PasskeyError(
+      new AuthError(
+        'UnsupportedOperation',
+        'Passkeys are not supported on the web platform'
+      )
+    );
+  }
+
+  async passkeyAssertion(
+    _parameters: PasskeyAssertionParameters
+  ): Promise<string> {
+    throw new PasskeyError(
+      new AuthError(
+        'UnsupportedOperation',
+        'Passkeys are not supported on the web platform'
       )
     );
   }

@@ -17,8 +17,12 @@ import type {
   LoginRecoveryCodeParameters,
   ExchangeNativeSocialParameters,
   CustomTokenExchangeParameters,
-  PasskeySignupParameters,
-  PasskeySigninParameters,
+  PasskeySignupChallengeParameters,
+  PasskeyLoginChallengeParameters,
+  PasskeyChallengeResponse,
+  PasskeyExchangeParameters,
+  PasskeyRegistrationParameters,
+  PasskeyAssertionParameters,
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
@@ -206,36 +210,80 @@ export interface Auth0ContextInterface extends AuthState {
   ) => Promise<Credentials>;
 
   /**
-   * Registers a new passkey and authenticates the user.
-   * Orchestrates the full passkey signup flow: challenge → OS passkey UI → credential exchange.
+   * Requests a passkey signup challenge from Auth0.
+   *
+   * Returns WebAuthn creation options that should be passed to the platform's
+   * credential manager to create a new passkey credential.
    *
    * @remarks
-   * **Platform specific:** This method is only available on native platforms (iOS 16.6+ / Android).
-   * On web, it will throw a `PasskeyError`.
+   * **Platform specific:** Only available on native platforms (iOS 16.6+ / Android).
    *
-   * @param parameters The parameters for passkey signup.
-   * @returns A promise that resolves with the user's credentials.
-   * @throws {PasskeyError} If the passkey signup fails or is not supported.
+   * @param parameters The parameters for the signup challenge.
+   * @returns A promise resolving with the challenge response containing authSession and authParamsPublicKey.
+   * @throws {PasskeyError} If the challenge request fails or is not supported.
    */
-  signupWithPasskey: (
-    parameters: PasskeySignupParameters
+  passkeySignupChallenge: (
+    parameters: PasskeySignupChallengeParameters
+  ) => Promise<PasskeyChallengeResponse>;
+
+  /**
+   * Requests a passkey login challenge from Auth0.
+   *
+   * Returns WebAuthn request options that should be passed to the platform's
+   * credential manager to assert an existing passkey.
+   *
+   * @remarks
+   * **Platform specific:** Only available on native platforms (iOS 16.6+ / Android).
+   *
+   * @param parameters The parameters for the login challenge.
+   * @returns A promise resolving with the challenge response containing authSession and authParamsPublicKey.
+   * @throws {PasskeyError} If the challenge request fails or is not supported.
+   */
+  passkeyLoginChallenge: (
+    parameters: PasskeyLoginChallengeParameters
+  ) => Promise<PasskeyChallengeResponse>;
+
+  /**
+   * Exchanges a passkey credential response for Auth0 tokens.
+   *
+   * Call this after the platform credential manager returns the passkey
+   * credential (from either signup or login flow). On success, the user
+   * state and credentials are updated automatically.
+   *
+   * @remarks
+   * **Platform specific:** Only available on native platforms (iOS 16.6+ / Android).
+   *
+   * @param parameters The exchange parameters including authSession and authResponse.
+   * @returns A promise resolving with the user's credentials.
+   * @throws {PasskeyError} If the exchange fails or is not supported.
+   */
+  passkeyExchange: (
+    parameters: PasskeyExchangeParameters
   ) => Promise<Credentials>;
 
   /**
-   * Authenticates the user with an existing passkey.
-   * Orchestrates the full passkey signin flow: challenge → OS passkey UI → credential exchange.
+   * Invokes the platform credential manager to create a new passkey (registration).
    *
-   * @remarks
-   * **Platform specific:** This method is only available on native platforms (iOS 16.6+ / Android).
-   * On web, it will throw a `PasskeyError`.
+   * Pass the `authParamsPublicKey` from `passkeySignupChallenge` as a JSON string.
+   * Returns the credential response JSON that can be passed to `passkeyExchange`.
    *
-   * @param parameters The parameters for passkey signin.
-   * @returns A promise that resolves with the user's credentials.
-   * @throws {PasskeyError} If the passkey signin fails or is not supported.
+   * @platform ios, android (not supported on web)
+   * @throws {PasskeyError} If registration fails or is not supported.
    */
-  signinWithPasskey: (
-    parameters: PasskeySigninParameters
-  ) => Promise<Credentials>;
+  passkeyRegistration: (
+    parameters: PasskeyRegistrationParameters
+  ) => Promise<string>;
+
+  /**
+   * Invokes the platform credential manager to assert an existing passkey (authentication).
+   *
+   * Pass the `authParamsPublicKey` from `passkeyLoginChallenge` as a JSON string.
+   * Returns the credential response JSON that can be passed to `passkeyExchange`.
+   *
+   * @platform ios, android (not supported on web)
+   * @throws {PasskeyError} If assertion fails or is not supported.
+   */
+  passkeyAssertion: (parameters: PasskeyAssertionParameters) => Promise<string>;
 
   /**
    * Sends a verification code to the user's email.
@@ -426,8 +474,11 @@ const initialContext: Auth0ContextInterface = {
   authorizeWithRecoveryCode: stub,
   authorizeWithExchangeNativeSocial: stub,
   customTokenExchange: stub,
-  signupWithPasskey: stub,
-  signinWithPasskey: stub,
+  passkeySignupChallenge: stub,
+  passkeyLoginChallenge: stub,
+  passkeyExchange: stub,
+  passkeyRegistration: stub,
+  passkeyAssertion: stub,
   sendEmailCode: stub,
   sendSMSCode: stub,
   authorizeWithEmail: stub,

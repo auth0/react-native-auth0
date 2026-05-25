@@ -161,9 +161,9 @@ export interface Spec extends TurboModule {
   ): Promise<Credentials>;
 
   /**
-   * Register a new passkey and obtain Auth0 credentials.
+   * Request a passkey signup challenge from Auth0.
    */
-  signupWithPasskey(
+  passkeySignupChallenge(
     email: string | undefined,
     phoneNumber: string | undefined,
     username: string | undefined,
@@ -174,20 +174,38 @@ export interface Spec extends TurboModule {
     picture: string | undefined,
     userMetadata: { [key: string]: string } | undefined,
     realm: string | undefined,
+    organization: string | undefined
+  ): Promise<{ authSession: string; authParamsPublicKey: Object }>;
+
+  /**
+   * Request a passkey login challenge from Auth0.
+   */
+  passkeyLoginChallenge(
+    realm: string | undefined,
+    organization: string | undefined
+  ): Promise<{ authSession: string; authParamsPublicKey: Object }>;
+
+  /**
+   * Exchange a passkey credential response for Auth0 tokens.
+   */
+  passkeyExchange(
+    authSession: string,
+    authResponse: string,
+    realm: string | undefined,
     audience: string | undefined,
     scope: string | undefined,
     organization: string | undefined
   ): Promise<Credentials>;
 
   /**
-   * Authenticate with an existing passkey and obtain Auth0 credentials.
+   * Invoke the platform credential manager to create a new passkey (registration).
    */
-  signinWithPasskey(
-    realm: string | undefined,
-    audience: string | undefined,
-    scope: string | undefined,
-    organization: string | undefined
-  ): Promise<Credentials>;
+  passkeyRegistration(challengeJson: string): Promise<string>;
+
+  /**
+   * Invoke the platform credential manager to assert an existing passkey (authentication).
+   */
+  passkeyAssertion(challengeJson: string): Promise<string>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('A0Auth0');

@@ -585,10 +585,329 @@ public class NativeBridge: NSObject {
         controller.performRequests()
     }
 
+    // MARK: - Separated Passkey Methods (challenge / registration / assertion / exchange)
+
+    @objc public func passkeySignupChallenge(email: String?, phoneNumber: String?, username: String?, name: String?, givenName: String?, familyName: String?, nickname: String?, picture: String?, userMetadata: [String: String]?, realm: String?, organization: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        guard #available(iOS 16.6, *) else {
+            reject("PASSKEY_NOT_AVAILABLE", "Passkeys require iOS 16.6 or later", nil)
+            return
+        }
+
+        let trimmedEmail = email?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let finalEmail = (trimmedEmail?.isEmpty == true) ? nil : trimmedEmail
+        let phoneValue = phoneNumber?.isEmpty == true ? nil : phoneNumber
+        let usernameValue = username?.isEmpty == true ? nil : username
+        let nameValue = name?.isEmpty == true ? nil : name
+        let givenNameValue = givenName?.isEmpty == true ? nil : givenName
+        let familyNameValue = familyName?.isEmpty == true ? nil : familyName
+        let nicknameValue = nickname?.isEmpty == true ? nil : nickname
+        let pictureValue = picture?.isEmpty == true ? nil : picture
+        let userMetadataValue = userMetadata?.isEmpty == true ? nil : userMetadata
+        let realmValue = realm?.isEmpty == true ? nil : realm
+        let orgValue = organization?.isEmpty == true ? nil : organization
+
+        var auth = Auth0.authentication(clientId: self.clientId, domain: self.domain)
+        if self.useDPoP {
+            auth = auth.useDPoP()
+        }
+
+        auth.passkeySignupChallenge(
+            email: finalEmail,
+            phoneNumber: phoneValue,
+            username: usernameValue,
+            name: nameValue,
+            givenName: givenNameValue,
+            familyName: familyNameValue,
+            nickname: nicknameValue,
+            picture: pictureValue,
+            userMetadata: userMetadataValue,
+            connection: realmValue,
+            organization: orgValue
+        ).start { result in
+            switch result {
+            case .success(let challenge):
+                let authParamsPublicKey: [String: Any] = [
+                    "rp": ["id": challenge.relyingPartyId],
+                    "challenge": challenge.challengeData.base64URLEncodedString(),
+                    "user": [
+                        "id": challenge.userId.base64URLEncodedString(),
+                        "name": challenge.userName
+                    ]
+                ]
+                let response: [String: Any] = [
+                    "authSession": challenge.authenticationSession,
+                    "authParamsPublicKey": authParamsPublicKey
+                ]
+                resolve(response)
+            case .failure(let error):
+                reject("PASSKEY_CHALLENGE_FAILED", error.localizedDescription, error)
+            }
+        }
+    }
+
+    @objc public func passkeyLoginChallenge(realm: String?, organization: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        guard #available(iOS 16.6, *) else {
+            reject("PASSKEY_NOT_AVAILABLE", "Passkeys require iOS 16.6 or later", nil)
+            return
+        }
+
+        let realmValue = realm?.isEmpty == true ? nil : realm
+        let orgValue = organization?.isEmpty == true ? nil : organization
+
+        var auth = Auth0.authentication(clientId: self.clientId, domain: self.domain)
+        if self.useDPoP {
+            auth = auth.useDPoP()
+        }
+
+        auth.passkeyLoginChallenge(
+            connection: realmValue,
+            organization: orgValue
+        ).start { result in
+            switch result {
+            case .success(let challenge):
+                let authParamsPublicKey: [String: Any] = [
+                    "rpId": challenge.relyingPartyId,
+                    "challenge": challenge.challengeData.base64URLEncodedString()
+                ]
+                let response: [String: Any] = [
+                    "authSession": challenge.authenticationSession,
+                    "authParamsPublicKey": authParamsPublicKey
+                ]
+                resolve(response)
+            case .failure(let error):
+                reject("PASSKEY_CHALLENGE_FAILED", error.localizedDescription, error)
+            }
+        }
+    }
+
+    @objc public func passkeyExchange(authSession: String, authResponse: String, realm: String?, audience: String?, scope: String?, organization: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        guard #available(iOS 16.6, *) else {
+            reject("PASSKEY_EXCHANGE_FAILED", "Passkeys require iOS 16.6 or later", nil)
+            return
+        }
+
+        let realmValue = realm?.isEmpty == true ? nil : realm
+        let audienceValue = audience?.isEmpty == true ? nil : audience
+        let orgValue = organization?.isEmpty == true ? nil : organization
+        let finalScope = scope?.isEmpty == true ? "openid profile email" : (scope ?? "openid profile email")
+
+        guard let responseData = authResponse.data(using: .utf8),
+              let json = try? JSONSerialization.jsonObject(with: responseData) as? [String: Any],
+              let responseDict = json["response"] as? [String: Any] else {
+            reject("PASSKEY_EXCHANGE_FAILED", "Invalid authResponse JSON", nil)
+            return
+        }
+
+        var authnResponse: [String: Any] = [
+            "id": json["id"] as? String ?? "",
+            "rawId": json["rawId"] as? String ?? json["id"] as? String ?? "",
+            "type": json["type"] as? String ?? "public-key"
+        ]
+
+        if let attestationObject = responseDict["attestationObject"] {
+            authnResponse["response"] = [
+                "clientDataJSON": responseDict["clientDataJSON"] ?? "",
+                "attestationObject": attestationObject
+            ]
+        } else {
+            authnResponse["response"] = [
+                "clientDataJSON": responseDict["clientDataJSON"] ?? "",
+                "authenticatorData": responseDict["authenticatorData"] ?? "",
+                "signature": responseDict["signature"] ?? "",
+                "userHandle": responseDict["userHandle"] ?? ""
+            ]
+        }
+
+        if let attachment = json["authenticatorAttachment"] as? String {
+            authnResponse["authenticatorAttachment"] = attachment
+        } else {
+            authnResponse["authenticatorAttachment"] = "platform"
+        }
+
+        var payload: [String: Any] = [
+            "client_id": self.clientId,
+            "grant_type": "urn:okta:params:oauth:grant-type:webauthn",
+            "auth_session": authSession,
+            "authn_response": authnResponse
+        ]
+        payload["realm"] = realmValue
+        payload["audience"] = audienceValue
+        payload["scope"] = finalScope
+        payload["organization"] = orgValue
+
+        let url = URL(string: "https://\(self.domain)/oauth/token")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONSerialization.data(withJSONObject: payload)
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                reject("PASSKEY_EXCHANGE_FAILED", error.localizedDescription, error)
+                return
+            }
+            guard let data = data,
+                  let jsonResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                reject("PASSKEY_EXCHANGE_FAILED", "Invalid response from server", nil)
+                return
+            }
+
+            if let errorCode = jsonResponse["error"] as? String {
+                let errorDesc = jsonResponse["error_description"] as? String ?? "Token exchange failed"
+                reject("PASSKEY_EXCHANGE_FAILED", "\(errorCode): \(errorDesc)", nil)
+                return
+            }
+
+            let credentialsDict: [String: Any] = [
+                "accessToken": jsonResponse["access_token"] ?? "",
+                "tokenType": jsonResponse["token_type"] ?? "Bearer",
+                "idToken": jsonResponse["id_token"] ?? "",
+                "refreshToken": jsonResponse["refresh_token"] ?? NSNull(),
+                "expiresIn": jsonResponse["expires_in"] ?? 0,
+                "scope": jsonResponse["scope"] ?? ""
+            ]
+            resolve(credentialsDict)
+        }.resume()
+    }
+
+    @objc public func passkeyRegistration(challengeJson: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        guard #available(iOS 16.6, *) else {
+            reject("PASSKEY_REGISTRATION_FAILED", "Passkeys require iOS 16.6 or later", nil)
+            return
+        }
+        guard let data = challengeJson.data(using: .utf8),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            reject("PASSKEY_REGISTRATION_FAILED", "Invalid challenge JSON", nil)
+            return
+        }
+
+        guard let rp = json["rp"] as? [String: Any],
+              let rpId = rp["id"] as? String,
+              let challengeStr = json["challenge"] as? String,
+              let challengeData = Data(base64URLEncoded: challengeStr),
+              let user = json["user"] as? [String: Any],
+              let userName = user["name"] as? String,
+              let userIdStr = user["id"] as? String,
+              let userId = Data(base64URLEncoded: userIdStr) else {
+            reject("PASSKEY_REGISTRATION_FAILED", "Missing required fields in challenge JSON (rp.id, challenge, user.id, user.name)", nil)
+            return
+        }
+
+        let provider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: rpId)
+        let request = provider.createCredentialRegistrationRequest(challenge: challengeData, name: userName, userID: userId)
+
+        let delegate = PasskeyAuthorizationDelegate { authorization, credential in
+            guard let registration = credential as? ASAuthorizationPlatformPublicKeyCredentialRegistration else {
+                reject("PASSKEY_REGISTRATION_FAILED", "Unexpected credential type received", nil)
+                return
+            }
+            let result: [String: Any] = [
+                "id": registration.credentialID.base64URLEncodedString(),
+                "rawId": registration.credentialID.base64URLEncodedString(),
+                "type": "public-key",
+                "response": [
+                    "clientDataJSON": registration.rawClientDataJSON.base64URLEncodedString(),
+                    "attestationObject": (registration.rawAttestationObject ?? Data()).base64URLEncodedString()
+                ],
+                "authenticatorAttachment": "platform"
+            ]
+            if let jsonData = try? JSONSerialization.data(withJSONObject: result),
+               let jsonString = String(data: jsonData, encoding: .utf8) {
+                resolve(jsonString)
+            } else {
+                reject("PASSKEY_REGISTRATION_FAILED", "Failed to serialize credential response", nil)
+            }
+        } onError: { error in
+            let authError = error as? ASAuthorizationError
+            if authError?.code == .canceled {
+                reject("PASSKEY_USER_CANCELLED", "User cancelled passkey registration", error)
+            } else {
+                reject("PASSKEY_REGISTRATION_FAILED", error.localizedDescription, error)
+            }
+        }
+
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+        controller.delegate = delegate
+        controller.presentationContextProvider = delegate
+        objc_setAssociatedObject(controller, "passkeyDelegate", delegate, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        controller.performRequests()
+    }
+
+    @objc public func passkeyAssertion(challengeJson: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        guard #available(iOS 16.6, *) else {
+            reject("PASSKEY_ASSERTION_FAILED", "Passkeys require iOS 16.6 or later", nil)
+            return
+        }
+        guard let data = challengeJson.data(using: .utf8),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            reject("PASSKEY_ASSERTION_FAILED", "Invalid challenge JSON", nil)
+            return
+        }
+
+        let rpId = json["rpId"] as? String ?? self.domain
+        guard let challengeStr = json["challenge"] as? String,
+              let challengeData = Data(base64URLEncoded: challengeStr) else {
+            reject("PASSKEY_ASSERTION_FAILED", "Missing required 'challenge' field in challenge JSON", nil)
+            return
+        }
+
+        let provider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: rpId)
+        let assertionRequest = provider.createCredentialAssertionRequest(challenge: challengeData)
+
+        if let allowCredentials = json["allowCredentials"] as? [[String: Any]] {
+            assertionRequest.allowedCredentials = allowCredentials.compactMap { cred in
+                guard let idStr = cred["id"] as? String,
+                      let idData = Data(base64URLEncoded: idStr) else { return nil }
+                return ASAuthorizationPlatformPublicKeyCredentialDescriptor(credentialID: idData)
+            }
+        }
+
+        let delegate = PasskeyAuthorizationDelegate { authorization, credential in
+            guard let assertion = credential as? ASAuthorizationPlatformPublicKeyCredentialAssertion else {
+                reject("PASSKEY_ASSERTION_FAILED", "Unexpected credential type received", nil)
+                return
+            }
+            var response: [String: Any] = [
+                "clientDataJSON": assertion.rawClientDataJSON.base64URLEncodedString(),
+                "authenticatorData": assertion.rawAuthenticatorData.base64URLEncodedString(),
+                "signature": assertion.signature.base64URLEncodedString()
+            ]
+            if let userHandle = assertion.userID {
+                response["userHandle"] = userHandle.base64URLEncodedString()
+            }
+            let result: [String: Any] = [
+                "id": assertion.credentialID.base64URLEncodedString(),
+                "rawId": assertion.credentialID.base64URLEncodedString(),
+                "type": "public-key",
+                "response": response,
+                "authenticatorAttachment": "platform"
+            ]
+            if let jsonData = try? JSONSerialization.data(withJSONObject: result),
+               let jsonString = String(data: jsonData, encoding: .utf8) {
+                resolve(jsonString)
+            } else {
+                reject("PASSKEY_ASSERTION_FAILED", "Failed to serialize credential response", nil)
+            }
+        } onError: { error in
+            let authError = error as? ASAuthorizationError
+            if authError?.code == .canceled {
+                reject("PASSKEY_USER_CANCELLED", "User cancelled passkey assertion", error)
+            } else {
+                reject("PASSKEY_ASSERTION_FAILED", error.localizedDescription, error)
+            }
+        }
+
+        let controller = ASAuthorizationController(authorizationRequests: [assertionRequest])
+        controller.delegate = delegate
+        controller.presentationContextProvider = delegate
+        objc_setAssociatedObject(controller, "passkeyDelegate", delegate, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        controller.performRequests()
+    }
+
     @objc public func getClientId() -> String {
         return clientId
     }
-    
+
     @objc public func getDomain() -> String {
         return domain
     }
@@ -732,5 +1051,28 @@ private class PasskeyAuthorizationDelegate: NSObject, ASAuthorizationControllerD
             .compactMap { $0 as? UIWindowScene }
             .flatMap { $0.windows }
             .first { $0.isKeyWindow } ?? ASPresentationAnchor()
+    }
+}
+
+
+// MARK: - Data Base64URL Extensions
+
+extension Data {
+    init?(base64URLEncoded string: String) {
+        var base64 = string
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        let remainder = base64.count % 4
+        if remainder > 0 {
+            base64.append(String(repeating: "=", count: 4 - remainder))
+        }
+        self.init(base64Encoded: base64)
+    }
+
+    func base64URLEncodedString() -> String {
+        return self.base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
     }
 }

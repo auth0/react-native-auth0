@@ -7,6 +7,7 @@ import type {
   NativeClearSessionOptions,
   DPoPHeadersParams,
   SessionTransferCredentials,
+  PasskeyChallengeResponse,
 } from '../../../types';
 import {
   SafariViewControllerPresentationStyle,
@@ -254,7 +255,7 @@ export class NativeBridgeManager implements INativeBridge {
     }
   }
 
-  async signupWithPasskey(
+  async passkeySignupChallenge(
     email?: string,
     phoneNumber?: string,
     username?: string,
@@ -265,12 +266,10 @@ export class NativeBridgeManager implements INativeBridge {
     picture?: string,
     userMetadata?: Record<string, string>,
     realm?: string,
-    audience?: string,
-    scope?: string,
     organization?: string
-  ): Promise<Credentials> {
-    const credential = await this.a0_call(
-      Auth0NativeModule.signupWithPasskey.bind(Auth0NativeModule),
+  ): Promise<PasskeyChallengeResponse> {
+    return this.a0_call(
+      Auth0NativeModule.passkeySignupChallenge.bind(Auth0NativeModule),
       email,
       phoneNumber,
       username,
@@ -281,6 +280,34 @@ export class NativeBridgeManager implements INativeBridge {
       picture,
       userMetadata,
       realm,
+      organization
+    );
+  }
+
+  async passkeyLoginChallenge(
+    realm?: string,
+    organization?: string
+  ): Promise<PasskeyChallengeResponse> {
+    return this.a0_call(
+      Auth0NativeModule.passkeyLoginChallenge.bind(Auth0NativeModule),
+      realm,
+      organization
+    );
+  }
+
+  async passkeyExchange(
+    authSession: string,
+    authResponse: string,
+    realm?: string,
+    audience?: string,
+    scope?: string,
+    organization?: string
+  ): Promise<Credentials> {
+    const credential = await this.a0_call(
+      Auth0NativeModule.passkeyExchange.bind(Auth0NativeModule),
+      authSession,
+      authResponse,
+      realm,
       audience,
       scope,
       organization
@@ -288,19 +315,17 @@ export class NativeBridgeManager implements INativeBridge {
     return new CredentialsModel(credential);
   }
 
-  async signinWithPasskey(
-    realm?: string,
-    audience?: string,
-    scope?: string,
-    organization?: string
-  ): Promise<Credentials> {
-    const credential = await this.a0_call(
-      Auth0NativeModule.signinWithPasskey.bind(Auth0NativeModule),
-      realm,
-      audience,
-      scope,
-      organization
+  async passkeyRegistration(challengeJson: string): Promise<string> {
+    return this.a0_call(
+      Auth0NativeModule.passkeyRegistration.bind(Auth0NativeModule),
+      challengeJson
     );
-    return new CredentialsModel(credential);
+  }
+
+  async passkeyAssertion(challengeJson: string): Promise<string> {
+    return this.a0_call(
+      Auth0NativeModule.passkeyAssertion.bind(Auth0NativeModule),
+      challengeJson
+    );
   }
 }

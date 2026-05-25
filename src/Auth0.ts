@@ -5,8 +5,12 @@ import type {
   Auth0Options,
   DPoPHeadersParams,
   CustomTokenExchangeParameters,
-  PasskeySignupParameters,
-  PasskeySigninParameters,
+  PasskeySignupChallengeParameters,
+  PasskeyLoginChallengeParameters,
+  PasskeyChallengeResponse,
+  PasskeyExchangeParameters,
+  PasskeyRegistrationParameters,
+  PasskeyAssertionParameters,
   Credentials,
 } from './types';
 
@@ -125,49 +129,84 @@ class Auth0 {
   }
 
   /**
-   * Registers a new passkey and obtains Auth0 credentials.
+   * Requests a passkey signup challenge from Auth0.
    *
-   * Orchestrates the full passkey signup flow: requests a signup challenge,
-   * presents the OS passkey creation UI, and completes authentication.
+   * Returns WebAuthn creation options that should be passed to the platform's
+   * credential manager to create a new passkey credential.
    *
    * @platform ios, android (not supported on web)
    *
-   * @param parameters The passkey signup parameters.
-   * @returns A promise resolving with Auth0 credentials.
-   *
-   * @example
-   * ```typescript
-   * const credentials = await auth0.signupWithPasskey({
-   *   email: 'user@example.com',
-   *   name: 'John Doe',
-   *   realm: 'Username-Password-Authentication',
-   * });
-   * ```
+   * @param parameters The parameters for the signup challenge.
+   * @returns A promise resolving with the challenge response containing authSession and authParamsPublicKey.
    */
-  signupWithPasskey(parameters: PasskeySignupParameters): Promise<Credentials> {
-    return this.client.signupWithPasskey(parameters);
+  passkeySignupChallenge(
+    parameters: PasskeySignupChallengeParameters
+  ): Promise<PasskeyChallengeResponse> {
+    return this.client.passkeySignupChallenge(parameters);
   }
 
   /**
-   * Authenticates with an existing passkey and obtains Auth0 credentials.
+   * Requests a passkey login challenge from Auth0.
    *
-   * Orchestrates the full passkey signin flow: requests a login challenge,
-   * presents the OS passkey assertion UI, and completes authentication.
+   * Returns WebAuthn request options that should be passed to the platform's
+   * credential manager to assert an existing passkey.
    *
    * @platform ios, android (not supported on web)
    *
-   * @param parameters The passkey signin parameters.
-   * @returns A promise resolving with Auth0 credentials.
-   *
-   * @example
-   * ```typescript
-   * const credentials = await auth0.signinWithPasskey({
-   *   realm: 'Username-Password-Authentication',
-   * });
-   * ```
+   * @param parameters The parameters for the login challenge.
+   * @returns A promise resolving with the challenge response containing authSession and authParamsPublicKey.
    */
-  signinWithPasskey(parameters: PasskeySigninParameters): Promise<Credentials> {
-    return this.client.signinWithPasskey(parameters);
+  passkeyLoginChallenge(
+    parameters: PasskeyLoginChallengeParameters
+  ): Promise<PasskeyChallengeResponse> {
+    return this.client.passkeyLoginChallenge(parameters);
+  }
+
+  /**
+   * Exchanges a passkey credential response for Auth0 tokens.
+   *
+   * Call this after the platform credential manager returns the passkey
+   * credential (from either signup or login flow).
+   *
+   * @platform ios, android (not supported on web)
+   *
+   * @param parameters The exchange parameters including authSession and authResponse.
+   * @returns A promise resolving with the user's credentials.
+   */
+  passkeyExchange(parameters: PasskeyExchangeParameters): Promise<Credentials> {
+    return this.client.passkeyExchange(parameters);
+  }
+
+  /**
+   * Invokes the platform credential manager to create a new passkey (registration).
+   *
+   * Pass the `authParamsPublicKey` from `passkeySignupChallenge` as a JSON string.
+   * Returns the credential response JSON that can be passed to `passkeyExchange`.
+   *
+   * @platform ios, android (not supported on web)
+   *
+   * @param parameters The registration parameters containing the challenge JSON.
+   * @returns A promise resolving with the credential response JSON string.
+   */
+  passkeyRegistration(
+    parameters: PasskeyRegistrationParameters
+  ): Promise<string> {
+    return this.client.passkeyRegistration(parameters);
+  }
+
+  /**
+   * Invokes the platform credential manager to assert an existing passkey (authentication).
+   *
+   * Pass the `authParamsPublicKey` from `passkeyLoginChallenge` as a JSON string.
+   * Returns the credential response JSON that can be passed to `passkeyExchange`.
+   *
+   * @platform ios, android (not supported on web)
+   *
+   * @param parameters The assertion parameters containing the challenge JSON.
+   * @returns A promise resolving with the credential response JSON string.
+   */
+  passkeyAssertion(parameters: PasskeyAssertionParameters): Promise<string> {
+    return this.client.passkeyAssertion(parameters);
   }
 }
 

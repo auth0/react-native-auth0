@@ -6,8 +6,12 @@ import type {
   DPoPHeadersParams,
   TokenType,
   CustomTokenExchangeParameters,
-  PasskeySignupParameters,
-  PasskeySigninParameters,
+  PasskeySignupChallengeParameters,
+  PasskeyLoginChallengeParameters,
+  PasskeyChallengeResponse,
+  PasskeyExchangeParameters,
+  PasskeyRegistrationParameters,
+  PasskeyAssertionParameters,
   Credentials,
 } from '../../types';
 
@@ -78,24 +82,63 @@ export interface IAuth0Client {
   ): Promise<Credentials>;
 
   /**
-   * Registers a new passkey and obtains Auth0 credentials.
+   * Requests a passkey signup challenge from Auth0.
    *
-   * Orchestrates the full passkey signup flow: requests a signup challenge,
-   * presents the OS passkey creation UI, and completes authentication.
+   * Returns WebAuthn creation options that should be passed to the platform's
+   * credential manager to create a new passkey. After the credential is created,
+   * call `passkeyExchange` with the auth session and credential response.
    *
-   * @param parameters The passkey signup parameters.
-   * @returns A promise resolving with Auth0 credentials.
+   * @param parameters The passkey signup challenge parameters.
+   * @returns A promise resolving with the challenge response.
    */
-  signupWithPasskey(parameters: PasskeySignupParameters): Promise<Credentials>;
+  passkeySignupChallenge(
+    parameters: PasskeySignupChallengeParameters
+  ): Promise<PasskeyChallengeResponse>;
 
   /**
-   * Authenticates with an existing passkey and obtains Auth0 credentials.
+   * Requests a passkey login challenge from Auth0.
    *
-   * Orchestrates the full passkey signin flow: requests a login challenge,
-   * presents the OS passkey assertion UI, and completes authentication.
+   * Returns WebAuthn request options that should be passed to the platform's
+   * credential manager to assert an existing passkey. After the assertion,
+   * call `passkeyExchange` with the auth session and credential response.
    *
-   * @param parameters The passkey signin parameters.
+   * @param parameters The passkey login challenge parameters.
+   * @returns A promise resolving with the challenge response.
+   */
+  passkeyLoginChallenge(
+    parameters: PasskeyLoginChallengeParameters
+  ): Promise<PasskeyChallengeResponse>;
+
+  /**
+   * Exchanges a passkey credential response for Auth0 tokens.
+   *
+   * Call this after the platform credential manager returns the passkey
+   * credential (either from signup or login flow).
+   *
+   * @param parameters The exchange parameters including auth session and credential response.
    * @returns A promise resolving with Auth0 credentials.
    */
-  signinWithPasskey(parameters: PasskeySigninParameters): Promise<Credentials>;
+  passkeyExchange(parameters: PasskeyExchangeParameters): Promise<Credentials>;
+
+  /**
+   * Invokes the platform credential manager to create a new passkey (registration).
+   *
+   * Pass the `authParamsPublicKey` from `passkeySignupChallenge` as a JSON string.
+   * Returns the credential response JSON that can be passed to `passkeyExchange`.
+   *
+   * @platform ios, android (not supported on web)
+   */
+  passkeyRegistration(
+    parameters: PasskeyRegistrationParameters
+  ): Promise<string>;
+
+  /**
+   * Invokes the platform credential manager to assert an existing passkey (authentication).
+   *
+   * Pass the `authParamsPublicKey` from `passkeyLoginChallenge` as a JSON string.
+   * Returns the credential response JSON that can be passed to `passkeyExchange`.
+   *
+   * @platform ios, android (not supported on web)
+   */
+  passkeyAssertion(parameters: PasskeyAssertionParameters): Promise<string>;
 }

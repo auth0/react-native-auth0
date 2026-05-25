@@ -5,6 +5,7 @@ import type {
   ClearSessionParameters,
   DPoPHeadersParams,
   SessionTransferCredentials,
+  PasskeyChallengeResponse,
 } from '../../../types';
 import type {
   LocalAuthenticationOptions,
@@ -207,10 +208,9 @@ export interface INativeBridge {
   ): Promise<Credentials>;
 
   /**
-   * Registers a new passkey and obtains Auth0 credentials.
+   * Requests a passkey signup challenge from Auth0.
    *
-   * Orchestrates the full passkey signup flow: requests a signup challenge from
-   * Auth0, presents the OS passkey creation UI, and completes authentication.
+   * Returns WebAuthn creation options to be used with the platform's credential manager.
    *
    * @param email The user's email address.
    * @param phoneNumber The user's phone number.
@@ -222,12 +222,10 @@ export interface INativeBridge {
    * @param picture URL pointing to the user's profile picture.
    * @param userMetadata Additional user metadata as key-value pairs.
    * @param realm The database connection name.
-   * @param audience Optional target API identifier.
-   * @param scope Optional space-separated scopes.
    * @param organization Optional organization ID or name.
-   * @returns A promise that resolves with Auth0 credentials.
+   * @returns A promise that resolves with the challenge response.
    */
-  signupWithPasskey(
+  passkeySignupChallenge(
     email?: string,
     phoneNumber?: string,
     username?: string,
@@ -238,27 +236,54 @@ export interface INativeBridge {
     picture?: string,
     userMetadata?: Record<string, string>,
     realm?: string,
-    audience?: string,
-    scope?: string,
     organization?: string
-  ): Promise<Credentials>;
+  ): Promise<PasskeyChallengeResponse>;
 
   /**
-   * Authenticates with an existing passkey and obtains Auth0 credentials.
+   * Requests a passkey login challenge from Auth0.
    *
-   * Orchestrates the full passkey signin flow: requests a login challenge from
-   * Auth0, presents the OS passkey assertion UI, and completes authentication.
+   * Returns WebAuthn request options to be used with the platform's credential manager.
    *
+   * @param realm The database connection name.
+   * @param organization Optional organization ID or name.
+   * @returns A promise that resolves with the challenge response.
+   */
+  passkeyLoginChallenge(
+    realm?: string,
+    organization?: string
+  ): Promise<PasskeyChallengeResponse>;
+
+  /**
+   * Exchanges a passkey credential response for Auth0 tokens.
+   *
+   * @param authSession The auth session from the challenge response.
+   * @param authResponse JSON string of the PublicKeyCredential response.
    * @param realm The database connection name.
    * @param audience Optional target API identifier.
    * @param scope Optional space-separated scopes.
    * @param organization Optional organization ID or name.
    * @returns A promise that resolves with Auth0 credentials.
    */
-  signinWithPasskey(
+  passkeyExchange(
+    authSession: string,
+    authResponse: string,
     realm?: string,
     audience?: string,
     scope?: string,
     organization?: string
   ): Promise<Credentials>;
+
+  /**
+   * Invokes the platform credential manager to create a new passkey (registration).
+   * @param challengeJson JSON string of the WebAuthn creation options (authParamsPublicKey).
+   * @returns A promise that resolves with the credential response JSON string.
+   */
+  passkeyRegistration(challengeJson: string): Promise<string>;
+
+  /**
+   * Invokes the platform credential manager to assert an existing passkey (authentication).
+   * @param challengeJson JSON string of the WebAuthn request options (authParamsPublicKey).
+   * @returns A promise that resolves with the credential response JSON string.
+   */
+  passkeyAssertion(challengeJson: string): Promise<string>;
 }

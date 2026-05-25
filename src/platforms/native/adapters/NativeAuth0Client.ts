@@ -7,8 +7,12 @@ import type { NativeAuth0Options } from '../../../types/platform-specific';
 import type {
   DPoPHeadersParams,
   CustomTokenExchangeParameters,
-  PasskeySignupParameters,
-  PasskeySigninParameters,
+  PasskeySignupChallengeParameters,
+  PasskeyLoginChallengeParameters,
+  PasskeyChallengeResponse,
+  PasskeyExchangeParameters,
+  PasskeyRegistrationParameters,
+  PasskeyAssertionParameters,
   Credentials,
 } from '../../../types';
 import { NativeWebAuthProvider } from './NativeWebAuthProvider';
@@ -189,9 +193,9 @@ export class NativeAuth0Client implements IAuth0Client {
     );
   }
 
-  async signupWithPasskey(
-    parameters: PasskeySignupParameters
-  ): Promise<Credentials> {
+  async passkeySignupChallenge(
+    parameters: PasskeySignupChallengeParameters
+  ): Promise<PasskeyChallengeResponse> {
     const {
       email,
       phoneNumber,
@@ -203,12 +207,10 @@ export class NativeAuth0Client implements IAuth0Client {
       picture,
       userMetadata,
       realm,
-      audience,
-      scope,
       organization,
     } = parameters;
     try {
-      return await this.guardedBridge.signupWithPasskey(
+      return await this.guardedBridge.passkeySignupChallenge(
         email || undefined,
         phoneNumber || undefined,
         username || undefined,
@@ -218,6 +220,43 @@ export class NativeAuth0Client implements IAuth0Client {
         nickname || undefined,
         picture || undefined,
         userMetadata || undefined,
+        realm || undefined,
+        organization || undefined
+      );
+    } catch (e) {
+      if (e instanceof AuthError) {
+        throw new PasskeyError(e);
+      }
+      throw e;
+    }
+  }
+
+  async passkeyLoginChallenge(
+    parameters: PasskeyLoginChallengeParameters
+  ): Promise<PasskeyChallengeResponse> {
+    const { realm, organization } = parameters;
+    try {
+      return await this.guardedBridge.passkeyLoginChallenge(
+        realm || undefined,
+        organization || undefined
+      );
+    } catch (e) {
+      if (e instanceof AuthError) {
+        throw new PasskeyError(e);
+      }
+      throw e;
+    }
+  }
+
+  async passkeyExchange(
+    parameters: PasskeyExchangeParameters
+  ): Promise<Credentials> {
+    const { authSession, authResponse, realm, audience, scope, organization } =
+      parameters;
+    try {
+      return await this.guardedBridge.passkeyExchange(
+        authSession,
+        authResponse,
         realm || undefined,
         audience || undefined,
         scope || undefined,
@@ -231,16 +270,27 @@ export class NativeAuth0Client implements IAuth0Client {
     }
   }
 
-  async signinWithPasskey(
-    parameters: PasskeySigninParameters
-  ): Promise<Credentials> {
-    const { realm, audience, scope, organization } = parameters;
+  async passkeyRegistration(
+    parameters: PasskeyRegistrationParameters
+  ): Promise<string> {
     try {
-      return await this.guardedBridge.signinWithPasskey(
-        realm || undefined,
-        audience || undefined,
-        scope || undefined,
-        organization || undefined
+      return await this.guardedBridge.passkeyRegistration(
+        parameters.challengeJson
+      );
+    } catch (e) {
+      if (e instanceof AuthError) {
+        throw new PasskeyError(e);
+      }
+      throw e;
+    }
+  }
+
+  async passkeyAssertion(
+    parameters: PasskeyAssertionParameters
+  ): Promise<string> {
+    try {
+      return await this.guardedBridge.passkeyAssertion(
+        parameters.challengeJson
       );
     } catch (e) {
       if (e instanceof AuthError) {

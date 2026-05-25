@@ -2,16 +2,6 @@ package com.auth0.react
 
 import android.app.Activity
 import android.content.Intent
-import androidx.credentials.CreatePublicKeyCredentialRequest
-import androidx.credentials.CreatePublicKeyCredentialResponse
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
-import androidx.credentials.GetPublicKeyCredentialOption
-import androidx.credentials.PublicKeyCredential
-import androidx.credentials.exceptions.CreateCredentialCancellationException
-import androidx.credentials.exceptions.GetCredentialCancellationException
-import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCredentialDomException
-import androidx.credentials.exceptions.publickeycredential.GetPublicKeyCredentialDomException
 import androidx.fragment.app.FragmentActivity
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
@@ -31,6 +21,17 @@ import com.auth0.android.result.APICredentials
 import com.auth0.android.result.Credentials
 import com.auth0.android.result.PasskeyChallenge
 import com.auth0.android.result.PasskeyRegistrationChallenge
+import androidx.credentials.CreatePublicKeyCredentialRequest
+import androidx.credentials.CreatePublicKeyCredentialResponse
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetPublicKeyCredentialOption
+import androidx.credentials.PublicKeyCredential
+import androidx.credentials.exceptions.CreateCredentialCancellationException
+import androidx.credentials.exceptions.CreateCredentialException
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
 import com.facebook.react.bridge.ActivityEventListener
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
@@ -42,7 +43,6 @@ import com.facebook.react.bridge.WritableNativeMap
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import java.net.MalformedURLException
 import java.net.URL
@@ -111,7 +111,6 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     )
     // DPoP enabled by default
     private var useDPoP: Boolean = true
-    private val moduleScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     private var auth0: Auth0? = null
     private lateinit var secureCredentialsManager: SecureCredentialsManager
@@ -558,7 +557,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     }
 
     @ReactMethod
-    override fun signupWithPasskey(
+    override fun passkeySignupChallenge(
         email: String?,
         phoneNumber: String?,
         username: String?,
@@ -569,8 +568,6 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         picture: String?,
         userMetadata: ReadableMap?,
         realm: String?,
-        audience: String?,
-        scope: String?,
         organization: String?,
         promise: Promise
     ) {
@@ -579,7 +576,6 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             authClient.useDPoP(reactContext)
         }
 
-        val finalScope = if (scope.isNullOrBlank()) "openid profile email" else scope
         val finalEmail = email?.trim()?.ifEmpty { null }
         val finalPhone = phoneNumber?.trim()?.ifEmpty { null }
         val finalUsername = username?.trim()?.ifEmpty { null }
@@ -590,7 +586,6 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         val finalPicture = picture?.trim()?.ifEmpty { null }
         val finalUserMetadata = userMetadata?.toHashMap()?.mapValues { it.value?.toString() ?: "" }?.ifEmpty { null }
         val finalRealm = realm?.trim()?.ifEmpty { null }
-        val finalAudience = audience?.trim()?.ifEmpty { null }
         val finalOrg = organization?.trim()?.ifEmpty { null }
         val userData = UserData(
             email = finalEmail,
@@ -607,7 +602,12 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         authClient.signupWithPasskey(userData, finalRealm, finalOrg)
             .start(object : com.auth0.android.callback.Callback<PasskeyRegistrationChallenge, AuthenticationException> {
                 override fun onSuccess(challenge: PasskeyRegistrationChallenge) {
-                    performPasskeyRegistration(challenge, authClient, finalRealm, finalAudience, finalScope, finalOrg, promise)
+                    val result = WritableNativeMap().apply {
+                        putString("authSession", challenge.authSession)
+                        val authParamsJson = Gson().toJson(challenge.authParamsPublicKey)
+                        putMap("authParamsPublicKey", JsonUtils.jsonToWritableMap(authParamsJson))
+                    }
+                    promise.resolve(result)
                 }
 
                 override fun onFailure(error: AuthenticationException) {
@@ -617,7 +617,40 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     }
 
     @ReactMethod
-    override fun signinWithPasskey(
+    override fun passkeyLoginChallenge(
+        realm: String?,
+        organization: String?,
+        promise: Promise
+    ) {
+        val authClient = AuthenticationAPIClient(auth0!!)
+        if (useDPoP) {
+            authClient.useDPoP(reactContext)
+        }
+
+        val finalRealm = realm?.trim()?.ifEmpty { null }
+        val finalOrg = organization?.trim()?.ifEmpty { null }
+
+        authClient.passkeyChallenge(finalRealm, finalOrg)
+            .start(object : com.auth0.android.callback.Callback<PasskeyChallenge, AuthenticationException> {
+                override fun onSuccess(challenge: PasskeyChallenge) {
+                    val result = WritableNativeMap().apply {
+                        putString("authSession", challenge.authSession)
+                        val authParamsJson = Gson().toJson(challenge.authParamsPublicKey)
+                        putMap("authParamsPublicKey", JsonUtils.jsonToWritableMap(authParamsJson))
+                    }
+                    promise.resolve(result)
+                }
+
+                override fun onFailure(error: AuthenticationException) {
+                    promise.reject("PASSKEY_CHALLENGE_FAILED", error.getDescription(), error)
+                }
+            })
+    }
+
+    @ReactMethod
+    override fun passkeyExchange(
+        authSession: String,
+        authResponse: String,
         realm: String?,
         audience: String?,
         scope: String?,
@@ -634,120 +667,84 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         val finalAudience = audience?.trim()?.ifEmpty { null }
         val finalOrg = organization?.trim()?.ifEmpty { null }
 
-        authClient.passkeyChallenge(finalRealm, finalOrg)
-            .start(object : com.auth0.android.callback.Callback<PasskeyChallenge, AuthenticationException> {
-                override fun onSuccess(challenge: PasskeyChallenge) {
-                    performPasskeyAssertion(challenge, authClient, finalRealm, finalAudience, finalScope, finalOrg, promise)
-                }
-
-                override fun onFailure(error: AuthenticationException) {
-                    promise.reject("PASSKEY_CHALLENGE_FAILED", error.getDescription(), error)
-                }
-            })
-    }
-
-    private fun performPasskeyRegistration(
-        challenge: PasskeyRegistrationChallenge,
-        authClient: AuthenticationAPIClient,
-        realm: String?,
-        audience: String?,
-        scope: String,
-        organization: String?,
-        promise: Promise
-    ) {
-        val activity = reactContext.currentActivity
-        if (activity == null) {
-            promise.reject("PASSKEY_SIGNUP_FAILED", "No activity available for passkey registration")
+        val publicKeyCredentials = try {
+            Gson().fromJson(authResponse, PublicKeyCredentials::class.java)
+        } catch (e: Exception) {
+            promise.reject("PASSKEY_EXCHANGE_FAILED", "Invalid authResponse JSON: ${e.message}", e)
             return
         }
 
-        val requestJson = Gson().toJson(challenge.authParamsPublicKey)
-        val createRequest = CreatePublicKeyCredentialRequest(requestJson)
-        val credentialManager = CredentialManager.create(reactContext)
+        val request = authClient.signinWithPasskey(authSession, publicKeyCredentials, finalRealm, finalOrg)
+        finalAudience?.let { request.setAudience(it) }
+        request.setScope(finalScope)
+        request.validateClaims()
 
-        moduleScope.launch {
+        request.start(object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
+            override fun onSuccess(credentials: Credentials) {
+                promise.resolve(CredentialsParser.toMap(credentials))
+            }
+
+            override fun onFailure(error: AuthenticationException) {
+                handleError(error, promise)
+            }
+        })
+    }
+
+    @ReactMethod
+    override fun passkeyRegistration(challengeJson: String, promise: Promise) {
+        val activity = reactContext.currentActivity
+        if (activity == null) {
+            promise.reject("PASSKEY_REGISTRATION_FAILED", "No current activity available")
+            return
+        }
+
+        val credentialManager = CredentialManager.create(activity)
+        val request = CreatePublicKeyCredentialRequest(challengeJson)
+
+        CoroutineScope(Dispatchers.Main).launch {
             try {
-                val result = credentialManager.createCredential(activity, createRequest)
-                val registrationResponse = result as? CreatePublicKeyCredentialResponse
-                if (registrationResponse == null) {
-                    promise.reject("PASSKEY_SIGNUP_FAILED", "No registration response received")
-                    return@launch
-                }
-
-                val publicKeyCredentials = Gson().fromJson(registrationResponse.registrationResponseJson, PublicKeyCredentials::class.java)
-                val request = authClient.signinWithPasskey(challenge.authSession, publicKeyCredentials, realm, organization)
-                audience?.let { request.setAudience(it) }
-                request.setScope(scope)
-                request.validateClaims()
-
-                request.start(object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
-                    override fun onSuccess(credentials: Credentials) {
-                        promise.resolve(CredentialsParser.toMap(credentials))
-                    }
-
-                    override fun onFailure(error: AuthenticationException) {
-                        handleError(error, promise)
-                    }
-                })
+                val result = credentialManager.createCredential(activity, request)
+                val response = result as CreatePublicKeyCredentialResponse
+                promise.resolve(response.registrationResponseJson)
             } catch (e: CreateCredentialCancellationException) {
                 promise.reject("PASSKEY_USER_CANCELLED", "User cancelled passkey registration", e)
-            } catch (e: CreatePublicKeyCredentialDomException) {
-                promise.reject("PASSKEY_SIGNUP_FAILED", e.message ?: "Passkey registration failed", e)
+            } catch (e: CreateCredentialException) {
+                promise.reject("PASSKEY_REGISTRATION_FAILED", e.message ?: "Passkey registration failed", e)
             } catch (e: Exception) {
-                promise.reject("PASSKEY_SIGNUP_FAILED", e.message ?: "Passkey registration failed", e)
+                promise.reject("PASSKEY_REGISTRATION_FAILED", e.message ?: "Unexpected error during passkey registration", e)
             }
         }
     }
 
-    private fun performPasskeyAssertion(
-        challenge: PasskeyChallenge,
-        authClient: AuthenticationAPIClient,
-        realm: String?,
-        audience: String?,
-        scope: String,
-        organization: String?,
-        promise: Promise
-    ) {
+    @ReactMethod
+    override fun passkeyAssertion(challengeJson: String, promise: Promise) {
         val activity = reactContext.currentActivity
         if (activity == null) {
-            promise.reject("PASSKEY_SIGNIN_FAILED", "No activity available for passkey authentication")
+            promise.reject("PASSKEY_ASSERTION_FAILED", "No current activity available")
             return
         }
 
-        val requestJson = Gson().toJson(challenge.authParamsPublicKey)
-        val getRequest = GetCredentialRequest(listOf(GetPublicKeyCredentialOption(requestJson)))
-        val credentialManager = CredentialManager.create(reactContext)
+        val credentialManager = CredentialManager.create(activity)
+        val option = GetPublicKeyCredentialOption(challengeJson)
+        val request = GetCredentialRequest(listOf(option))
 
-        moduleScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
             try {
-                val result = credentialManager.getCredential(activity, getRequest)
+                val result = credentialManager.getCredential(activity, request)
                 val credential = result.credential
-                if (credential !is PublicKeyCredential) {
-                    promise.reject("PASSKEY_SIGNIN_FAILED", "Received unrecognized credential type ${credential.type}")
-                    return@launch
+                if (credential is PublicKeyCredential) {
+                    promise.resolve(credential.authenticationResponseJson)
+                } else {
+                    promise.reject("PASSKEY_ASSERTION_FAILED", "Received unexpected credential type: ${credential.type}")
                 }
-
-                val publicKeyCredentials = Gson().fromJson(credential.authenticationResponseJson, PublicKeyCredentials::class.java)
-                val request = authClient.signinWithPasskey(challenge.authSession, publicKeyCredentials, realm, organization)
-                audience?.let { request.setAudience(it) }
-                request.setScope(scope)
-                request.validateClaims()
-
-                request.start(object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
-                    override fun onSuccess(credentials: Credentials) {
-                        promise.resolve(CredentialsParser.toMap(credentials))
-                    }
-
-                    override fun onFailure(error: AuthenticationException) {
-                        handleError(error, promise)
-                    }
-                })
             } catch (e: GetCredentialCancellationException) {
-                promise.reject("PASSKEY_USER_CANCELLED", "User cancelled passkey authentication", e)
-            } catch (e: GetPublicKeyCredentialDomException) {
-                promise.reject("PASSKEY_SIGNIN_FAILED", e.message ?: "Passkey authentication failed", e)
+                promise.reject("PASSKEY_USER_CANCELLED", "User cancelled passkey assertion", e)
+            } catch (e: NoCredentialException) {
+                promise.reject("PASSKEY_NOT_AVAILABLE", "No passkey credential available for this user", e)
+            } catch (e: GetCredentialException) {
+                promise.reject("PASSKEY_ASSERTION_FAILED", e.message ?: "Passkey assertion failed", e)
             } catch (e: Exception) {
-                promise.reject("PASSKEY_SIGNIN_FAILED", e.message ?: "Passkey authentication failed", e)
+                promise.reject("PASSKEY_ASSERTION_FAILED", e.message ?: "Unexpected error during passkey assertion", e)
             }
         }
     }

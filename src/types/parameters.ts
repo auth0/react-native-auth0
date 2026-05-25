@@ -316,15 +316,15 @@ export interface CreateUserParameters extends RequestOptions {
 // ========= Passkey Parameters =========
 
 /**
- * Parameters for registering a new passkey and obtaining Auth0 credentials.
+ * Parameters for requesting a passkey signup challenge from Auth0.
  *
- * The native SDK will orchestrate the full flow: requesting a signup challenge
- * from Auth0, presenting the OS passkey creation UI, and completing the
- * authentication to obtain tokens.
+ * The challenge response contains WebAuthn creation options that should
+ * be passed to the platform's credential manager (CredentialManager on Android,
+ * ASAuthorizationController on iOS) to create a new passkey credential.
  *
  * @see https://auth0.com/docs/authenticate/database-connections/passkeys
  */
-export interface PasskeySignupParameters {
+export interface PasskeySignupChallengeParameters {
   /** The user's email address. */
   email?: string;
   /** The user's phone number. */
@@ -345,6 +345,52 @@ export interface PasskeySignupParameters {
   userMetadata?: Record<string, string>;
   /** The database connection name. */
   realm?: string;
+  /** Organization ID or name for authenticating in an organization context. */
+  organization?: string;
+}
+
+/**
+ * Parameters for requesting a passkey login challenge from Auth0.
+ *
+ * The challenge response contains WebAuthn request options that should
+ * be passed to the platform's credential manager to assert an existing passkey.
+ *
+ * @see https://auth0.com/docs/authenticate/database-connections/passkeys
+ */
+export interface PasskeyLoginChallengeParameters {
+  /** The database connection name. */
+  realm?: string;
+  /** Organization ID or name for authenticating in an organization context. */
+  organization?: string;
+}
+
+/**
+ * Response from a passkey signup challenge request.
+ * Contains the auth session and WebAuthn creation options for the platform credential manager.
+ */
+export interface PasskeyChallengeResponse {
+  /** The auth session identifier to be used in the subsequent exchange call. */
+  authSession: string;
+  /** The raw WebAuthn public key credential creation/request options as JSON. */
+  authParamsPublicKey: Record<string, any>;
+}
+
+/**
+ * Parameters for exchanging a passkey credential response for Auth0 tokens.
+ *
+ * After the platform credential manager returns the credential (either a new
+ * registration or an assertion), pass the auth_session and the credential JSON
+ * response to this method to obtain Auth0 tokens.
+ *
+ * @see https://auth0.com/docs/authenticate/database-connections/passkeys
+ */
+export interface PasskeyExchangeParameters {
+  /** The auth session received from the challenge response. */
+  authSession: string;
+  /** The JSON string of the PublicKeyCredential response from the platform credential manager. */
+  authResponse: string;
+  /** The database connection name. */
+  realm?: string;
   /** The target API identifier for the issued access token. */
   audience?: string;
   /**
@@ -357,26 +403,31 @@ export interface PasskeySignupParameters {
 }
 
 /**
- * Parameters for authenticating with an existing passkey and obtaining Auth0 credentials.
+ * Parameters for invoking the platform credential manager to create a new passkey.
  *
- * The native SDK will orchestrate the full flow: requesting a login challenge
- * from Auth0, presenting the OS passkey assertion UI, and completing the
- * authentication to obtain tokens.
+ * Pass the `authParamsPublicKey` from the `passkeySignupChallenge` response as a JSON string.
+ * The native layer will present the OS credential UI (CredentialManager on Android,
+ * ASAuthorizationController on iOS) and return the resulting credential JSON.
  *
- * @see https://auth0.com/docs/authenticate/database-connections/passkeys
+ * @platform ios, android (not supported on web)
  */
-export interface PasskeySigninParameters {
-  /** The database connection name. */
-  realm?: string;
-  /** The target API identifier for the issued access token. */
-  audience?: string;
-  /**
-   * Space-separated list of OAuth 2.0 scopes.
-   * @default "openid profile email"
-   */
-  scope?: string;
-  /** Organization ID or name for authenticating in an organization context. */
-  organization?: string;
+export interface PasskeyRegistrationParameters {
+  /** JSON string of the WebAuthn PublicKeyCredentialCreationOptions (authParamsPublicKey from challenge). */
+  challengeJson: string;
+}
+
+/**
+ * Parameters for invoking the platform credential manager to assert an existing passkey.
+ *
+ * Pass the `authParamsPublicKey` from the `passkeyLoginChallenge` response as a JSON string.
+ * The native layer will present the OS credential UI (CredentialManager on Android,
+ * ASAuthorizationController on iOS) and return the resulting credential JSON.
+ *
+ * @platform ios, android (not supported on web)
+ */
+export interface PasskeyAssertionParameters {
+  /** JSON string of the WebAuthn PublicKeyCredentialRequestOptions (authParamsPublicKey from challenge). */
+  challengeJson: string;
 }
 
 // ========= User Management & Profile Parameters =========

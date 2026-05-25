@@ -97,6 +97,7 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   implementation "androidx.browser:browser:1.2.0"
   implementation 'com.auth0.android:auth0:3.17.0'
+  implementation "androidx.credentials:credentials:1.5.0"
 }
 
 if (isNewArchitectureEnabled()) {

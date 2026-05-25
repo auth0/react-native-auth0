@@ -23,8 +23,12 @@ import type {
   LoginRecoveryCodeParameters,
   ExchangeNativeSocialParameters,
   CustomTokenExchangeParameters,
-  PasskeySignupParameters,
-  PasskeySigninParameters,
+  PasskeySignupChallengeParameters,
+  PasskeyLoginChallengeParameters,
+  PasskeyChallengeResponse,
+  PasskeyExchangeParameters,
+  PasskeyRegistrationParameters,
+  PasskeyAssertionParameters,
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
@@ -318,16 +322,38 @@ export const Auth0Provider = ({
     [client, loginFlow]
   );
 
-  const signupWithPasskey = useCallback(
-    (parameters: PasskeySignupParameters) =>
-      loginFlow(client.signupWithPasskey(parameters)),
+  const passkeySignupChallenge = useCallback(
+    (
+      parameters: PasskeySignupChallengeParameters
+    ): Promise<PasskeyChallengeResponse> =>
+      client.passkeySignupChallenge(parameters),
+    [client]
+  );
+
+  const passkeyLoginChallenge = useCallback(
+    (
+      parameters: PasskeyLoginChallengeParameters
+    ): Promise<PasskeyChallengeResponse> =>
+      client.passkeyLoginChallenge(parameters),
+    [client]
+  );
+
+  const passkeyExchange = useCallback(
+    (parameters: PasskeyExchangeParameters) =>
+      loginFlow(client.passkeyExchange(parameters)),
     [client, loginFlow]
   );
 
-  const signinWithPasskey = useCallback(
-    (parameters: PasskeySigninParameters) =>
-      loginFlow(client.signinWithPasskey(parameters)),
-    [client, loginFlow]
+  const passkeyRegistration = useCallback(
+    (parameters: PasskeyRegistrationParameters): Promise<string> =>
+      client.passkeyRegistration(parameters),
+    [client]
+  );
+
+  const passkeyAssertion = useCallback(
+    (parameters: PasskeyAssertionParameters): Promise<string> =>
+      client.passkeyAssertion(parameters),
+    [client]
   );
 
   const sendEmailCode = useCallback(
@@ -439,8 +465,11 @@ export const Auth0Provider = ({
       authorizeWithExchange,
       authorizeWithExchangeNativeSocial,
       customTokenExchange,
-      signupWithPasskey,
-      signinWithPasskey,
+      passkeySignupChallenge,
+      passkeyLoginChallenge,
+      passkeyExchange,
+      passkeyRegistration,
+      passkeyAssertion,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,
@@ -471,8 +500,11 @@ export const Auth0Provider = ({
       authorizeWithExchange,
       authorizeWithExchangeNativeSocial,
       customTokenExchange,
-      signupWithPasskey,
-      signinWithPasskey,
+      passkeySignupChallenge,
+      passkeyLoginChallenge,
+      passkeyExchange,
+      passkeyRegistration,
+      passkeyAssertion,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,
