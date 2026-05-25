@@ -55,13 +55,28 @@ class MfaClient(
         }
     }
 
+    private fun mapFactorType(factor: String): String? {
+        return when (factor.lowercase()) {
+            "otp", "totp" -> "otp"
+            "sms", "phone" -> "sms"
+            "email" -> "email"
+            "push", "push-notification" -> "push-notification"
+            "oob" -> "oob"
+            "recovery-code" -> "recovery-code"
+            "voice" -> "sms"
+            else -> null
+        }
+    }
+
     fun getAuthenticators(mfaToken: String, factorsAllowed: ReadableArray?, promise: Promise) {
         val mfaClient = client.mfaClient(mfaToken)
 
         val factors = mutableListOf<String>()
         factorsAllowed?.let {
             for (i in 0 until it.size()) {
-                it.getString(i)?.let { factor -> factors.add(factor) }
+                it.getString(i)?.let { factor ->
+                    mapFactorType(factor)?.let { mapped -> factors.add(mapped) }
+                }
             }
         }
 
