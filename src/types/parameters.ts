@@ -333,6 +333,16 @@ export interface PasskeySignupParameters {
   username?: string;
   /** The user's display name. */
   name?: string;
+  /** The user's first name. */
+  givenName?: string;
+  /** The user's last name. */
+  familyName?: string;
+  /** The user's preferred nickname. */
+  nickname?: string;
+  /** URL pointing to the user's profile picture. */
+  picture?: string;
+  /** Additional user metadata as key-value pairs. */
+  userMetadata?: Record<string, string>;
   /** The database connection name. */
   realm?: string;
   /** The target API identifier for the issued access token. */

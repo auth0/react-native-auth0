@@ -563,6 +563,11 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         phoneNumber: String?,
         username: String?,
         name: String?,
+        givenName: String?,
+        familyName: String?,
+        nickname: String?,
+        picture: String?,
+        userMetadata: ReadableMap?,
         realm: String?,
         audience: String?,
         scope: String?,
@@ -579,10 +584,25 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         val finalPhone = phoneNumber?.trim()?.ifEmpty { null }
         val finalUsername = username?.trim()?.ifEmpty { null }
         val finalName = name?.trim()?.ifEmpty { null }
+        val finalGivenName = givenName?.trim()?.ifEmpty { null }
+        val finalFamilyName = familyName?.trim()?.ifEmpty { null }
+        val finalNickname = nickname?.trim()?.ifEmpty { null }
+        val finalPicture = picture?.trim()?.ifEmpty { null }
+        val finalUserMetadata = userMetadata?.toHashMap()?.mapValues { it.value?.toString() ?: "" }?.ifEmpty { null }
         val finalRealm = realm?.trim()?.ifEmpty { null }
         val finalAudience = audience?.trim()?.ifEmpty { null }
         val finalOrg = organization?.trim()?.ifEmpty { null }
-        val userData = UserData(email = finalEmail, phoneNumber = finalPhone, userName = finalUsername, name = finalName)
+        val userData = UserData(
+            email = finalEmail,
+            phoneNumber = finalPhone,
+            userName = finalUsername,
+            name = finalName,
+            givenName = finalGivenName,
+            familyName = finalFamilyName,
+            nickName = finalNickname,
+            picture = finalPicture,
+            userMetadata = finalUserMetadata
+        )
 
         authClient.signupWithPasskey(userData, finalRealm, finalOrg)
             .start(object : com.auth0.android.callback.Callback<PasskeyRegistrationChallenge, AuthenticationException> {

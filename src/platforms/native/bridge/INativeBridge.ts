@@ -216,6 +216,11 @@ export interface INativeBridge {
    * @param phoneNumber The user's phone number.
    * @param username The user's username.
    * @param name The user's display name.
+   * @param givenName The user's first name.
+   * @param familyName The user's last name.
+   * @param nickname The user's preferred nickname.
+   * @param picture URL pointing to the user's profile picture.
+   * @param userMetadata Additional user metadata as key-value pairs.
    * @param realm The database connection name.
    * @param audience Optional target API identifier.
    * @param scope Optional space-separated scopes.
@@ -227,6 +232,11 @@ export interface INativeBridge {
     phoneNumber?: string,
     username?: string,
     name?: string,
+    givenName?: string,
+    familyName?: string,
+    nickname?: string,
+    picture?: string,
+    userMetadata?: Record<string, string>,
     realm?: string,
     audience?: string,
     scope?: string,

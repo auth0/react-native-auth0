@@ -405,7 +405,7 @@ public class NativeBridge: NSObject {
         }
     }
     
-    @objc public func signupWithPasskey(email: String?, phoneNumber: String?, username: String?, name: String?, realm: String?, audience: String?, scope: String?, organization: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func signupWithPasskey(email: String?, phoneNumber: String?, username: String?, name: String?, givenName: String?, familyName: String?, nickname: String?, picture: String?, userMetadata: [String: String]?, realm: String?, audience: String?, scope: String?, organization: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         guard #available(iOS 16.6, *) else {
             reject("PASSKEY_NOT_AVAILABLE", "Passkeys require iOS 16.6 or later", nil)
             return
@@ -416,6 +416,11 @@ public class NativeBridge: NSObject {
         let phoneValue = phoneNumber?.isEmpty == true ? nil : phoneNumber
         let usernameValue = username?.isEmpty == true ? nil : username
         let nameValue = name?.isEmpty == true ? nil : name
+        let givenNameValue = givenName?.isEmpty == true ? nil : givenName
+        let familyNameValue = familyName?.isEmpty == true ? nil : familyName
+        let nicknameValue = nickname?.isEmpty == true ? nil : nickname
+        let pictureValue = picture?.isEmpty == true ? nil : picture
+        let userMetadataValue = userMetadata?.isEmpty == true ? nil : userMetadata
         let realmValue = realm?.isEmpty == true ? nil : realm
         let audienceValue = audience?.isEmpty == true ? nil : audience
         let orgValue = organization?.isEmpty == true ? nil : organization
@@ -432,6 +437,11 @@ public class NativeBridge: NSObject {
             phoneNumber: phoneValue,
             username: usernameValue,
             name: nameValue,
+            givenName: givenNameValue,
+            familyName: familyNameValue,
+            nickname: nicknameValue,
+            picture: pictureValue,
+            userMetadata: userMetadataValue,
             connection: realmValue,
             organization: orgValue
         ).start { result in
