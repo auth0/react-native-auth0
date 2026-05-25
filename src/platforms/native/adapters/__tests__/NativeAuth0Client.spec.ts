@@ -283,7 +283,11 @@ describe('NativeAuth0Client', () => {
       authSession: 'mock-auth-session-123',
       authParamsPublicKey: {
         rp: { id: 'my-tenant.auth0.com', name: 'My App' },
-        user: { id: 'dXNlci1pZA', name: 'user@example.com', displayName: 'User' },
+        user: {
+          id: 'dXNlci1pZA',
+          name: 'user@example.com',
+          displayName: 'User',
+        },
         challenge: 'Y2hhbGxlbmdl',
         pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
       },
@@ -422,10 +426,7 @@ describe('NativeAuth0Client', () => {
 
       expect(
         (mockBridgeInstance as any).passkeyLoginChallenge
-      ).toHaveBeenCalledWith(
-        'Username-Password-Authentication',
-        'org_123'
-      );
+      ).toHaveBeenCalledWith('Username-Password-Authentication', 'org_123');
     });
 
     it('should return challenge response from passkeyLoginChallenge', async () => {
@@ -491,9 +492,7 @@ describe('NativeAuth0Client', () => {
         organization: 'org_123',
       });
 
-      expect(
-        (mockBridgeInstance as any).passkeyExchange
-      ).toHaveBeenCalledWith(
+      expect((mockBridgeInstance as any).passkeyExchange).toHaveBeenCalledWith(
         'auth-session-123',
         '{"id":"cred-id","type":"public-key","response":{}}',
         'Username-Password-Authentication',
@@ -512,9 +511,7 @@ describe('NativeAuth0Client', () => {
         authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
       });
 
-      expect(
-        (mockBridgeInstance as any).passkeyExchange
-      ).toHaveBeenCalledWith(
+      expect((mockBridgeInstance as any).passkeyExchange).toHaveBeenCalledWith(
         'auth-session-123',
         '{"id":"cred-id","type":"public-key","response":{}}',
         undefined,
@@ -540,13 +537,11 @@ describe('NativeAuth0Client', () => {
       const { AuthError } = require('../../../../core/models');
       const { PasskeyError } = require('../../../../core/models');
 
-      (mockBridgeInstance as any).passkeyExchange = jest
-        .fn()
-        .mockRejectedValue(
-          new AuthError('PASSKEY_EXCHANGE_FAILED', 'Exchange failed', {
-            code: 'PASSKEY_EXCHANGE_FAILED',
-          })
-        );
+      (mockBridgeInstance as any).passkeyExchange = jest.fn().mockRejectedValue(
+        new AuthError('PASSKEY_EXCHANGE_FAILED', 'Exchange failed', {
+          code: 'PASSKEY_EXCHANGE_FAILED',
+        })
+      );
 
       const client = new NativeAuth0Client(options);
       await new Promise(process.nextTick);
@@ -561,7 +556,8 @@ describe('NativeAuth0Client', () => {
   });
 
   describe('passkeyRegistration', () => {
-    const mockResponseJson = '{"id":"cred-id","rawId":"cred-id","type":"public-key","response":{"clientDataJSON":"abc","attestationObject":"def"},"authenticatorAttachment":"platform"}';
+    const mockResponseJson =
+      '{"id":"cred-id","rawId":"cred-id","type":"public-key","response":{"clientDataJSON":"abc","attestationObject":"def"},"authenticatorAttachment":"platform"}';
 
     beforeEach(() => {
       (mockBridgeInstance as any).passkeyRegistration = jest
@@ -573,7 +569,8 @@ describe('NativeAuth0Client', () => {
       const client = new NativeAuth0Client(options);
       await new Promise(process.nextTick);
 
-      const challengeJson = '{"rp":{"id":"example.com"},"challenge":"abc","user":{"id":"123","name":"user@example.com"}}';
+      const challengeJson =
+        '{"rp":{"id":"example.com"},"challenge":"abc","user":{"id":"123","name":"user@example.com"}}';
 
       await client.passkeyRegistration({ challengeJson });
 
@@ -587,7 +584,8 @@ describe('NativeAuth0Client', () => {
       await new Promise(process.nextTick);
 
       const result = await client.passkeyRegistration({
-        challengeJson: '{"rp":{"id":"example.com"},"challenge":"abc","user":{"id":"123","name":"user@example.com"}}',
+        challengeJson:
+          '{"rp":{"id":"example.com"},"challenge":"abc","user":{"id":"123","name":"user@example.com"}}',
       });
 
       expect(result).toEqual(mockResponseJson);
@@ -610,14 +608,16 @@ describe('NativeAuth0Client', () => {
 
       await expect(
         client.passkeyRegistration({
-          challengeJson: '{"rp":{"id":"example.com"},"challenge":"abc","user":{"id":"123","name":"user@example.com"}}',
+          challengeJson:
+            '{"rp":{"id":"example.com"},"challenge":"abc","user":{"id":"123","name":"user@example.com"}}',
         })
       ).rejects.toBeInstanceOf(PasskeyError);
     });
   });
 
   describe('passkeyAssertion', () => {
-    const mockResponseJson = '{"id":"cred-id","rawId":"cred-id","type":"public-key","response":{"clientDataJSON":"abc","authenticatorData":"def","signature":"ghi","userHandle":"jkl"},"authenticatorAttachment":"platform"}';
+    const mockResponseJson =
+      '{"id":"cred-id","rawId":"cred-id","type":"public-key","response":{"clientDataJSON":"abc","authenticatorData":"def","signature":"ghi","userHandle":"jkl"},"authenticatorAttachment":"platform"}';
 
     beforeEach(() => {
       (mockBridgeInstance as any).passkeyAssertion = jest
@@ -629,13 +629,14 @@ describe('NativeAuth0Client', () => {
       const client = new NativeAuth0Client(options);
       await new Promise(process.nextTick);
 
-      const challengeJson = '{"rpId":"example.com","challenge":"abc","allowCredentials":[]}';
+      const challengeJson =
+        '{"rpId":"example.com","challenge":"abc","allowCredentials":[]}';
 
       await client.passkeyAssertion({ challengeJson });
 
-      expect(
-        (mockBridgeInstance as any).passkeyAssertion
-      ).toHaveBeenCalledWith(challengeJson);
+      expect((mockBridgeInstance as any).passkeyAssertion).toHaveBeenCalledWith(
+        challengeJson
+      );
     });
 
     it('should return credential response JSON string', async () => {
@@ -643,7 +644,8 @@ describe('NativeAuth0Client', () => {
       await new Promise(process.nextTick);
 
       const result = await client.passkeyAssertion({
-        challengeJson: '{"rpId":"example.com","challenge":"abc","allowCredentials":[]}',
+        challengeJson:
+          '{"rpId":"example.com","challenge":"abc","allowCredentials":[]}',
       });
 
       expect(result).toEqual(mockResponseJson);
@@ -666,7 +668,8 @@ describe('NativeAuth0Client', () => {
 
       await expect(
         client.passkeyAssertion({
-          challengeJson: '{"rpId":"example.com","challenge":"abc","allowCredentials":[]}',
+          challengeJson:
+            '{"rpId":"example.com","challenge":"abc","allowCredentials":[]}',
         })
       ).rejects.toBeInstanceOf(PasskeyError);
     });
