@@ -128,14 +128,65 @@ const HomeScreen = () => {
       });
     } catch (e: any) {
       if (e?.json?.mfa_token) {
-        setMfaToken(e.json.mfa_token);
-        setMfaStep('list');
+        const token = e.json.mfa_token;
+        setMfaToken(token);
         Alert.alert(
           'MFA Required',
-          'Multi-factor authentication is required. Follow the steps below.'
+          'Multi-factor authentication is required. Checking enrolled authenticators...'
         );
+        await startMfaFlow(token);
+      } else {
+        setApiError(e as Error);
       }
-      setApiError(e as Error);
+    }
+  };
+
+  const startMfaFlow = async (token: string) => {
+    setMfaLoading(true);
+    clearResult();
+    try {
+      const list = await mfa.getAuthenticators({
+        mfaToken: token,
+        factorsAllowed: [
+          MfaFactorType.OTP,
+          MfaFactorType.SMS,
+          MfaFactorType.EMAIL,
+          MfaFactorType.PUSH,
+          MfaFactorType.VOICE,
+        ],
+      });
+      setAuthenticators(list);
+
+      const activeAuthenticator = list.find((auth) => auth.active);
+      if (activeAuthenticator) {
+        setSelectedAuthenticator(activeAuthenticator);
+        setMfaStep('challenge');
+        await triggerChallenge(token, activeAuthenticator);
+      } else {
+        setMfaStep('enroll-select');
+      }
+    } catch (e) {
+      handleMfaError(e, 'Failed to list authenticators.');
+      setMfaStep('idle');
+    } finally {
+      setMfaLoading(false);
+    }
+  };
+
+  const triggerChallenge = async (token: string, auth: MfaAuthenticator) => {
+    setMfaLoading(true);
+    try {
+      const res = await mfa.challenge({
+        mfaToken: token,
+        authenticatorId: auth.id,
+      });
+      setChallengeResult(res);
+      setMfaStep('verify');
+    } catch (e) {
+      handleMfaError(e, 'Challenge failed.');
+      setMfaStep('list');
+    } finally {
+      setMfaLoading(false);
     }
   };
 
@@ -179,41 +230,14 @@ const HomeScreen = () => {
   };
 
   const onStartMfa = async () => {
-    setMfaLoading(true);
-    clearResult();
-    try {
-      const list = await mfa.getAuthenticators({ mfaToken });
-      setAuthenticators(list);
-      setMfaStep('list');
-    } catch (e) {
-      handleMfaError(e, 'Failed to list authenticators.');
-    } finally {
-      setMfaLoading(false);
-    }
+    await startMfaFlow(mfaToken);
   };
 
   const onSelectAuthenticator = (auth: MfaAuthenticator) => {
     setSelectedAuthenticator(auth);
     setChallengeResult(null);
     setMfaStep('challenge');
-    onChallenge(auth);
-  };
-
-  const onChallenge = async (auth: MfaAuthenticator) => {
-    setMfaLoading(true);
-    try {
-      const result = await mfa.challenge({
-        mfaToken,
-        authenticatorId: auth.id,
-      });
-      setChallengeResult(result);
-      setMfaStep('verify');
-    } catch (e) {
-      handleMfaError(e, 'Challenge failed.');
-      setMfaStep('list');
-    } finally {
-      setMfaLoading(false);
-    }
+    triggerChallenge(mfaToken, auth);
   };
 
   const onSelectEnrollType = (type: EnrollType) => {
