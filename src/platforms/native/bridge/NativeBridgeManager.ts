@@ -314,18 +314,4 @@ export class NativeBridgeManager implements INativeBridge {
     );
     return new CredentialsModel(credential);
   }
-
-  async passkeyRegistration(challengeJson: string): Promise<string> {
-    return this.a0_call(
-      Auth0NativeModule.passkeyRegistration.bind(Auth0NativeModule),
-      challengeJson
-    );
-  }
-
-  async passkeyAssertion(challengeJson: string): Promise<string> {
-    return this.a0_call(
-      Auth0NativeModule.passkeyAssertion.bind(Auth0NativeModule),
-      challengeJson
-    );
-  }
 }

@@ -10,8 +10,6 @@ import type {
   PasskeyLoginChallengeParameters,
   PasskeyChallengeResponse,
   PasskeyExchangeParameters,
-  PasskeyRegistrationParameters,
-  PasskeyAssertionParameters,
   Credentials,
 } from '../../types';
 
@@ -119,26 +117,4 @@ export interface IAuth0Client {
    * @returns A promise resolving with Auth0 credentials.
    */
   passkeyExchange(parameters: PasskeyExchangeParameters): Promise<Credentials>;
-
-  /**
-   * Invokes the platform credential manager to create a new passkey (registration).
-   *
-   * Pass the `authParamsPublicKey` from `passkeySignupChallenge` as a JSON string.
-   * Returns the credential response JSON that can be passed to `passkeyExchange`.
-   *
-   * @platform ios, android (not supported on web)
-   */
-  passkeyRegistration(
-    parameters: PasskeyRegistrationParameters
-  ): Promise<string>;
-
-  /**
-   * Invokes the platform credential manager to assert an existing passkey (authentication).
-   *
-   * Pass the `authParamsPublicKey` from `passkeyLoginChallenge` as a JSON string.
-   * Returns the credential response JSON that can be passed to `passkeyExchange`.
-   *
-   * @platform ios, android (not supported on web)
-   */
-  passkeyAssertion(parameters: PasskeyAssertionParameters): Promise<string>;
 }

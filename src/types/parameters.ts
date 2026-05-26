@@ -402,34 +402,6 @@ export interface PasskeyExchangeParameters {
   organization?: string;
 }
 
-/**
- * Parameters for invoking the platform credential manager to create a new passkey.
- *
- * Pass the `authParamsPublicKey` from the `passkeySignupChallenge` response as a JSON string.
- * The native layer will present the OS credential UI (CredentialManager on Android,
- * ASAuthorizationController on iOS) and return the resulting credential JSON.
- *
- * @platform ios, android (not supported on web)
- */
-export interface PasskeyRegistrationParameters {
-  /** JSON string of the WebAuthn PublicKeyCredentialCreationOptions (authParamsPublicKey from challenge). */
-  challengeJson: string;
-}
-
-/**
- * Parameters for invoking the platform credential manager to assert an existing passkey.
- *
- * Pass the `authParamsPublicKey` from the `passkeyLoginChallenge` response as a JSON string.
- * The native layer will present the OS credential UI (CredentialManager on Android,
- * ASAuthorizationController on iOS) and return the resulting credential JSON.
- *
- * @platform ios, android (not supported on web)
- */
-export interface PasskeyAssertionParameters {
-  /** JSON string of the WebAuthn PublicKeyCredentialRequestOptions (authParamsPublicKey from challenge). */
-  challengeJson: string;
-}
-
 // ========= User Management & Profile Parameters =========
 
 /**

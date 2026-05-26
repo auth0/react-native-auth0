@@ -160,11 +160,4 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
         promise: Promise
     )
 
-    @ReactMethod
-    @DoNotStrip
-    abstract fun passkeyRegistration(challengeJson: String, promise: Promise)
-
-    @ReactMethod
-    @DoNotStrip
-    abstract fun passkeyAssertion(challengeJson: String, promise: Promise)
 }

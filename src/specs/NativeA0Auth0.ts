@@ -196,16 +196,6 @@ export interface Spec extends TurboModule {
     scope: string | undefined,
     organization: string | undefined
   ): Promise<Credentials>;
-
-  /**
-   * Invoke the platform credential manager to create a new passkey (registration).
-   */
-  passkeyRegistration(challengeJson: string): Promise<string>;
-
-  /**
-   * Invoke the platform credential manager to assert an existing passkey (authentication).
-   */
-  passkeyAssertion(challengeJson: string): Promise<string>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('A0Auth0');

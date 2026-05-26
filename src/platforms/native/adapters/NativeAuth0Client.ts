@@ -11,8 +11,6 @@ import type {
   PasskeyLoginChallengeParameters,
   PasskeyChallengeResponse,
   PasskeyExchangeParameters,
-  PasskeyRegistrationParameters,
-  PasskeyAssertionParameters,
   Credentials,
 } from '../../../types';
 import { NativeWebAuthProvider } from './NativeWebAuthProvider';
@@ -261,36 +259,6 @@ export class NativeAuth0Client implements IAuth0Client {
         audience || undefined,
         scope || undefined,
         organization || undefined
-      );
-    } catch (e) {
-      if (e instanceof AuthError) {
-        throw new PasskeyError(e);
-      }
-      throw e;
-    }
-  }
-
-  async passkeyRegistration(
-    parameters: PasskeyRegistrationParameters
-  ): Promise<string> {
-    try {
-      return await this.guardedBridge.passkeyRegistration(
-        parameters.challengeJson
-      );
-    } catch (e) {
-      if (e instanceof AuthError) {
-        throw new PasskeyError(e);
-      }
-      throw e;
-    }
-  }
-
-  async passkeyAssertion(
-    parameters: PasskeyAssertionParameters
-  ): Promise<string> {
-    try {
-      return await this.guardedBridge.passkeyAssertion(
-        parameters.challengeJson
       );
     } catch (e) {
       if (e instanceof AuthError) {

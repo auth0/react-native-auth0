@@ -1026,12 +1026,12 @@ For detailed examples of validating different token types in Actions, see:
 
 ### Overview
 
-Passkeys provide a passwordless authentication experience using platform biometrics (Face ID, Touch ID, fingerprint) backed by public-key cryptography. The SDK handles the full passkey flow — challenge, platform credential manager interaction, and token exchange — so you can implement passkeys without writing any custom native code.
+Passkeys provide a passwordless authentication experience using platform biometrics (Face ID, Touch ID, fingerprint) backed by public-key cryptography. The SDK provides the Auth0 challenge and token exchange steps, while you handle the platform credential manager interaction using native modules or libraries like `react-native-passkey`.
 
 The passkey flow has three steps:
 
 1. **Challenge** — Request a WebAuthn challenge from Auth0 (`passkeySignupChallenge` or `passkeyLoginChallenge`)
-2. **Credential Manager** — Present the OS credential manager UI to create or assert a passkey (`passkeyRegistration` or `passkeyAssertion`)
+2. **Credential Manager** — Present the OS credential manager UI to create or assert a passkey (using your own native module or a library)
 3. **Exchange** — Send the credential response back to Auth0 to get tokens (`passkeyExchange`)
 
 > **Platform Support:** Native only (iOS 16.6+ / Android). Not supported on Web.
@@ -1051,14 +1051,13 @@ Before using passkeys:
 
 ### Signup with Passkey
 
-The signup flow requests a registration challenge, presents the OS credential manager UI to create a new passkey, then exchanges the result for Auth0 tokens. The SDK handles the platform credential manager interaction for you.
+The signup flow requests a registration challenge from Auth0, then you use the platform credential manager (via a native module or library like `react-native-passkey`) to create a new passkey, and finally exchange the credential for Auth0 tokens.
 
 ```tsx
 import { useAuth0, PasskeyError } from 'react-native-auth0';
 
 function PasskeySignupScreen() {
-  const { passkeySignupChallenge, passkeyRegistration, passkeyExchange } =
-    useAuth0();
+  const { passkeySignupChallenge, passkeyExchange } = useAuth0();
 
   const handleSignup = async () => {
     try {
@@ -1069,11 +1068,12 @@ function PasskeySignupScreen() {
         realm: 'Username-Password-Authentication',
       });
 
-      // Step 2: Present the OS credential manager UI to create a passkey
-      // This invokes CredentialManager on Android / ASAuthorizationController on iOS
-      const credentialJson = await passkeyRegistration({
-        challengeJson: JSON.stringify(challenge.authParamsPublicKey),
-      });
+      // Step 2: Use the platform credential manager to create a passkey
+      // challenge.authParamsPublicKey contains the WebAuthn PublicKeyCredentialCreationOptions
+      // Use your preferred library (e.g., react-native-passkey) or native module
+      const credentialJson = await yourCredentialManagerCreate(
+        challenge.authParamsPublicKey
+      );
 
       // Step 3: Exchange the credential response for Auth0 tokens
       const credentials = await passkeyExchange({
@@ -1098,14 +1098,13 @@ function PasskeySignupScreen() {
 
 ### Signin with Passkey
 
-The login flow requests an assertion challenge, presents the OS credential manager UI to assert an existing passkey, then exchanges the result for Auth0 tokens.
+The login flow requests an assertion challenge from Auth0, then you use the platform credential manager to assert an existing passkey, and finally exchange the credential for Auth0 tokens.
 
 ```tsx
 import { useAuth0, PasskeyError } from 'react-native-auth0';
 
 function PasskeySigninScreen() {
-  const { passkeyLoginChallenge, passkeyAssertion, passkeyExchange } =
-    useAuth0();
+  const { passkeyLoginChallenge, passkeyExchange } = useAuth0();
 
   const handleSignin = async () => {
     try {
@@ -1114,11 +1113,12 @@ function PasskeySigninScreen() {
         realm: 'Username-Password-Authentication',
       });
 
-      // Step 2: Present the OS credential manager UI to assert an existing passkey
-      // This invokes CredentialManager on Android / ASAuthorizationController on iOS
-      const credentialJson = await passkeyAssertion({
-        challengeJson: JSON.stringify(challenge.authParamsPublicKey),
-      });
+      // Step 2: Use the platform credential manager to assert an existing passkey
+      // challenge.authParamsPublicKey contains the WebAuthn PublicKeyCredentialRequestOptions
+      // Use your preferred library (e.g., react-native-passkey) or native module
+      const credentialJson = await yourCredentialManagerGet(
+        challenge.authParamsPublicKey
+      );
 
       // Step 3: Exchange the credential response for Auth0 tokens
       const credentials = await passkeyExchange({
@@ -1139,33 +1139,6 @@ function PasskeySigninScreen() {
 
   return <Button title="Sign In with Passkey" onPress={handleSignin} />;
 }
-```
-
-### Advanced: Manual Credential Manager Handling
-
-If you need full control over the platform credential manager interaction (e.g., custom UI, conditional mediation, or hybrid security key support), you can skip `passkeyRegistration`/`passkeyAssertion` and handle it yourself. The challenge and exchange methods give you the raw WebAuthn data:
-
-```tsx
-// Step 1: Get challenge (same as above)
-const challenge = await passkeySignupChallenge({
-  email: 'user@example.com',
-  realm: '...',
-});
-
-// Step 2: Use your own native module or library to interact with the credential manager
-// challenge.authParamsPublicKey contains the raw WebAuthn PublicKeyCredentialCreationOptions
-// You must serialize the resulting PublicKeyCredential as JSON
-
-const authResponse = await yourCustomCredentialManagerCall(
-  challenge.authParamsPublicKey
-);
-
-// Step 3: Exchange (same as above)
-const credentials = await passkeyExchange({
-  authSession: challenge.authSession,
-  authResponse: JSON.stringify(authResponse),
-  realm: '...',
-});
 ```
 
 ### Auth Response Format
@@ -1221,9 +1194,11 @@ const signupChallenge = await auth0.passkeySignupChallenge({
   realm: 'Username-Password-Authentication',
 });
 
-const registrationJson = await auth0.passkeyRegistration({
-  challengeJson: JSON.stringify(signupChallenge.authParamsPublicKey),
-});
+// Use your credential manager library to create the passkey
+// signupChallenge.authParamsPublicKey has the WebAuthn creation options
+const registrationJson = await yourCredentialManagerCreate(
+  signupChallenge.authParamsPublicKey
+);
 
 const signupCredentials = await auth0.passkeyExchange({
   authSession: signupChallenge.authSession,
@@ -1236,9 +1211,11 @@ const loginChallenge = await auth0.passkeyLoginChallenge({
   realm: 'Username-Password-Authentication',
 });
 
-const assertionJson = await auth0.passkeyAssertion({
-  challengeJson: JSON.stringify(loginChallenge.authParamsPublicKey),
-});
+// Use your credential manager library to assert the passkey
+// loginChallenge.authParamsPublicKey has the WebAuthn request options
+const assertionJson = await yourCredentialManagerGet(
+  loginChallenge.authParamsPublicKey
+);
 
 const loginCredentials = await auth0.passkeyExchange({
   authSession: loginChallenge.authSession,
@@ -1271,16 +1248,14 @@ The `passkeySignupChallenge` method accepts the following parameters to create a
 
 Passkey operations throw `PasskeyError` (extends `AuthError`) with a normalized `type` property. Use `PasskeyErrorCodes` for type-safe error handling:
 
-| Error Code                     | Description                                                      |
-| ------------------------------ | ---------------------------------------------------------------- |
-| `PASSKEY_CHALLENGE_FAILED`     | Auth0 challenge request failed                                   |
-| `PASSKEY_EXCHANGE_FAILED`      | Token exchange with credential response failed                   |
-| `PASSKEY_REGISTRATION_FAILED`  | Platform credential manager failed to create a new passkey       |
-| `PASSKEY_ASSERTION_FAILED`     | Platform credential manager failed to assert an existing passkey |
-| `PASSKEY_USER_CANCELLED`       | User cancelled the passkey OS prompt                             |
-| `PASSKEY_NOT_AVAILABLE`        | Passkeys not available on this device or OS version              |
-| `PASSKEY_UNSUPPORTED_PLATFORM` | Passkeys not supported on this platform (Web)                    |
-| `PASSKEY_UNKNOWN_ERROR`        | Unknown or uncategorized passkey error                           |
+| Error Code                     | Description                                         |
+| ------------------------------ | --------------------------------------------------- |
+| `PASSKEY_CHALLENGE_FAILED`     | Auth0 challenge request failed                      |
+| `PASSKEY_EXCHANGE_FAILED`      | Token exchange with credential response failed      |
+| `PASSKEY_USER_CANCELLED`       | User cancelled the passkey OS prompt                |
+| `PASSKEY_NOT_AVAILABLE`        | Passkeys not available on this device or OS version |
+| `PASSKEY_UNSUPPORTED_PLATFORM` | Passkeys not supported on this platform (Web)       |
+| `PASSKEY_UNKNOWN_ERROR`        | Unknown or uncategorized passkey error              |
 
 ```typescript
 import { PasskeyError, PasskeyErrorCodes } from 'react-native-auth0';

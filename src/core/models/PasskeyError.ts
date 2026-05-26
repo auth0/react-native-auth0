@@ -48,10 +48,6 @@ export const PasskeyErrorCodes = {
   CHALLENGE_FAILED: 'PASSKEY_CHALLENGE_FAILED',
   /** Token exchange with the passkey credential response failed */
   EXCHANGE_FAILED: 'PASSKEY_EXCHANGE_FAILED',
-  /** Platform credential manager failed to create a new passkey (registration) */
-  REGISTRATION_FAILED: 'PASSKEY_REGISTRATION_FAILED',
-  /** Platform credential manager failed to assert an existing passkey (authentication) */
-  ASSERTION_FAILED: 'PASSKEY_ASSERTION_FAILED',
   /** Passkeys are not supported on the web platform */
   UNSUPPORTED_PLATFORM: 'PASSKEY_UNSUPPORTED_PLATFORM',
   /** Unknown or uncategorized passkey error */
@@ -66,8 +62,6 @@ const ERROR_CODE_MAP: Record<string, string> = {
   PASSKEY_USER_CANCELLED: PasskeyErrorCodes.USER_CANCELLED,
   PASSKEY_CHALLENGE_FAILED: PasskeyErrorCodes.CHALLENGE_FAILED,
   PASSKEY_EXCHANGE_FAILED: PasskeyErrorCodes.EXCHANGE_FAILED,
-  PASSKEY_REGISTRATION_FAILED: PasskeyErrorCodes.REGISTRATION_FAILED,
-  PASSKEY_ASSERTION_FAILED: PasskeyErrorCodes.ASSERTION_FAILED,
 
   // --- Bridge-level fallback codes ---
   passkey_signup_failed: PasskeyErrorCodes.SIGNUP_FAILED,

@@ -27,8 +27,6 @@ import type {
   PasskeyLoginChallengeParameters,
   PasskeyChallengeResponse,
   PasskeyExchangeParameters,
-  PasskeyRegistrationParameters,
-  PasskeyAssertionParameters,
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
@@ -344,18 +342,6 @@ export const Auth0Provider = ({
     [client, loginFlow]
   );
 
-  const passkeyRegistration = useCallback(
-    (parameters: PasskeyRegistrationParameters): Promise<string> =>
-      client.passkeyRegistration(parameters),
-    [client]
-  );
-
-  const passkeyAssertion = useCallback(
-    (parameters: PasskeyAssertionParameters): Promise<string> =>
-      client.passkeyAssertion(parameters),
-    [client]
-  );
-
   const sendEmailCode = useCallback(
     (parameters: PasswordlessEmailParameters) =>
       voidFlow(client.auth.passwordlessWithEmail(parameters)),
@@ -468,8 +454,6 @@ export const Auth0Provider = ({
       passkeySignupChallenge,
       passkeyLoginChallenge,
       passkeyExchange,
-      passkeyRegistration,
-      passkeyAssertion,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,
@@ -503,8 +487,6 @@ export const Auth0Provider = ({
       passkeySignupChallenge,
       passkeyLoginChallenge,
       passkeyExchange,
-      passkeyRegistration,
-      passkeyAssertion,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,

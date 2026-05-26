@@ -9,8 +9,6 @@ import type {
   PasskeyLoginChallengeParameters,
   PasskeyChallengeResponse,
   PasskeyExchangeParameters,
-  PasskeyRegistrationParameters,
-  PasskeyAssertionParameters,
   Credentials,
 } from './types';
 
@@ -175,38 +173,6 @@ class Auth0 {
    */
   passkeyExchange(parameters: PasskeyExchangeParameters): Promise<Credentials> {
     return this.client.passkeyExchange(parameters);
-  }
-
-  /**
-   * Invokes the platform credential manager to create a new passkey (registration).
-   *
-   * Pass the `authParamsPublicKey` from `passkeySignupChallenge` as a JSON string.
-   * Returns the credential response JSON that can be passed to `passkeyExchange`.
-   *
-   * @platform ios, android (not supported on web)
-   *
-   * @param parameters The registration parameters containing the challenge JSON.
-   * @returns A promise resolving with the credential response JSON string.
-   */
-  passkeyRegistration(
-    parameters: PasskeyRegistrationParameters
-  ): Promise<string> {
-    return this.client.passkeyRegistration(parameters);
-  }
-
-  /**
-   * Invokes the platform credential manager to assert an existing passkey (authentication).
-   *
-   * Pass the `authParamsPublicKey` from `passkeyLoginChallenge` as a JSON string.
-   * Returns the credential response JSON that can be passed to `passkeyExchange`.
-   *
-   * @platform ios, android (not supported on web)
-   *
-   * @param parameters The assertion parameters containing the challenge JSON.
-   * @returns A promise resolving with the credential response JSON string.
-   */
-  passkeyAssertion(parameters: PasskeyAssertionParameters): Promise<string> {
-    return this.client.passkeyAssertion(parameters);
   }
 }
 

@@ -29,8 +29,6 @@ const HomeScreen = () => {
     authorizeWithEmail,
     passkeySignupChallenge,
     passkeyLoginChallenge,
-    passkeyRegistration,
-    passkeyAssertion,
     passkeyExchange,
     error,
   } = useAuth0();
@@ -115,12 +113,6 @@ const HomeScreen = () => {
         case PasskeyErrorCodes.CHALLENGE_FAILED:
           Alert.alert('Challenge Failed', e.message);
           break;
-        case PasskeyErrorCodes.REGISTRATION_FAILED:
-          Alert.alert('Registration Failed', e.message);
-          break;
-        case PasskeyErrorCodes.ASSERTION_FAILED:
-          Alert.alert('Assertion Failed', e.message);
-          break;
         case PasskeyErrorCodes.EXCHANGE_FAILED:
           Alert.alert('Exchange Failed', e.message);
           break;
@@ -129,81 +121,6 @@ const HomeScreen = () => {
       }
     }
     setApiError(e as Error);
-  };
-
-  const onPasskeySignup = async () => {
-    setApiError(null);
-    setLastResult(null);
-    setLoading(true);
-    try {
-      // Step 1: Get signup challenge from Auth0
-      const challenge = await passkeySignupChallenge({
-        email: passkeyEmail || undefined,
-        realm: 'Username-Password-Authentication',
-      });
-      console.log('Signup challenge received:', challenge.authSession);
-
-      // Step 2: Present OS credential manager to create a passkey
-      const credentialJson = await passkeyRegistration({
-        challengeJson: JSON.stringify(challenge.authParamsPublicKey),
-      });
-      console.log('Registration complete, exchanging for tokens...');
-
-      // Step 3: Exchange credential response for Auth0 tokens
-      const credentials = await passkeyExchange({
-        authSession: challenge.authSession,
-        authResponse: credentialJson,
-        realm: 'Username-Password-Authentication',
-      });
-
-      setLastResult({
-        flow: 'signup',
-        accessToken: `${credentials.accessToken.substring(0, 30)}...`,
-        tokenType: credentials.tokenType,
-      });
-      Alert.alert('Success', 'Signed up with passkey!');
-    } catch (e) {
-      handlePasskeyError(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const onPasskeyLogin = async () => {
-    setApiError(null);
-    setLastResult(null);
-    setLoading(true);
-    try {
-      // Step 1: Get login challenge from Auth0
-      const challenge = await passkeyLoginChallenge({
-        realm: 'Username-Password-Authentication',
-      });
-      console.log('Login challenge received:', challenge.authSession);
-
-      // Step 2: Present OS credential manager to assert an existing passkey
-      const credentialJson = await passkeyAssertion({
-        challengeJson: JSON.stringify(challenge.authParamsPublicKey),
-      });
-      console.log('Assertion complete, exchanging for tokens...');
-
-      // Step 3: Exchange credential response for Auth0 tokens
-      const credentials = await passkeyExchange({
-        authSession: challenge.authSession,
-        authResponse: credentialJson,
-        realm: 'Username-Password-Authentication',
-      });
-
-      setLastResult({
-        flow: 'login',
-        accessToken: `${credentials.accessToken.substring(0, 30)}...`,
-        tokenType: credentials.tokenType,
-      });
-      Alert.alert('Success', 'Signed in with passkey!');
-    } catch (e) {
-      handlePasskeyError(e);
-    } finally {
-      setLoading(false);
-    }
   };
 
   // --- Step-by-step handlers for testing individual methods ---
@@ -229,58 +146,6 @@ const HomeScreen = () => {
         authParamsPublicKey: challenge.authParamsPublicKey,
       });
       console.log(`${type} challenge:`, JSON.stringify(challenge, null, 2));
-    } catch (e) {
-      handlePasskeyError(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const onTestRegistration = async () => {
-    if (!lastResult || !(lastResult as any).authParamsPublicKey) {
-      Alert.alert('Error', 'Get a signup challenge first.');
-      return;
-    }
-    setApiError(null);
-    setLoading(true);
-    try {
-      const credentialJson = await passkeyRegistration({
-        challengeJson: JSON.stringify((lastResult as any).authParamsPublicKey),
-      });
-
-      setLastResult({
-        ...(lastResult as any),
-        step: 'registration',
-        credentialJson: credentialJson.substring(0, 100) + '...',
-        _fullCredentialJson: credentialJson,
-      });
-      console.log('Registration response:', credentialJson);
-    } catch (e) {
-      handlePasskeyError(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const onTestAssertion = async () => {
-    if (!lastResult || !(lastResult as any).authParamsPublicKey) {
-      Alert.alert('Error', 'Get a login challenge first.');
-      return;
-    }
-    setApiError(null);
-    setLoading(true);
-    try {
-      const credentialJson = await passkeyAssertion({
-        challengeJson: JSON.stringify((lastResult as any).authParamsPublicKey),
-      });
-
-      setLastResult({
-        ...(lastResult as any),
-        step: 'assertion',
-        credentialJson: credentialJson.substring(0, 100) + '...',
-        _fullCredentialJson: credentialJson,
-      });
-      console.log('Assertion response:', credentialJson);
     } catch (e) {
       handlePasskeyError(e);
     } finally {
@@ -374,95 +239,53 @@ const HomeScreen = () => {
         </Section>
 
         {Platform.OS !== 'web' && (
-          <>
-            <Section title="Passkeys — Full Flow">
-              <Text style={styles.description}>
-                Challenge + OS credential UI + token exchange in one tap.
-              </Text>
+          <Section title="Passkeys — Testing">
+            <Text style={styles.description}>
+              Test passkey challenge and exchange methods individually.
+            </Text>
 
-              <LabeledInput
-                label="Email (for signup)"
-                value={passkeyEmail}
-                onChangeText={setPasskeyEmail}
-                autoCapitalize="none"
-                keyboardType="email-address"
+            <LabeledInput
+              label="Email (for signup challenge)"
+              value={passkeyEmail}
+              onChangeText={setPasskeyEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
+
+            <View style={styles.row}>
+              <Button
+                onPress={() => onTestChallenge('signup')}
+                title="Signup Challenge"
+                loading={loading}
+                style={styles.halfButton}
               />
               <Button
-                onPress={onPasskeySignup}
-                title="Sign Up with Passkey"
+                onPress={() => onTestChallenge('login')}
+                title="Login Challenge"
                 loading={loading}
+                style={styles.halfButton}
               />
-              <Button
-                onPress={onPasskeyLogin}
-                title="Sign In with Passkey"
-                loading={loading}
-              />
-            </Section>
+            </View>
 
-            <Section title="Passkeys — Step-by-Step Testing">
-              <Text style={styles.description}>
-                Test each method individually: challenge →
-                registration/assertion → exchange.
-              </Text>
+            <Button
+              onPress={onTestExchange}
+              title="Exchange for Tokens"
+              loading={loading}
+            />
 
-              <LabeledInput
-                label="Email (for signup challenge)"
-                value={passkeyEmail}
-                onChangeText={setPasskeyEmail}
-                autoCapitalize="none"
-                keyboardType="email-address"
-              />
-
-              <View style={styles.row}>
-                <Button
-                  onPress={() => onTestChallenge('signup')}
-                  title="Signup Challenge"
-                  loading={loading}
-                  style={styles.halfButton}
-                />
-                <Button
-                  onPress={() => onTestChallenge('login')}
-                  title="Login Challenge"
-                  loading={loading}
-                  style={styles.halfButton}
-                />
+            {lastResult && (
+              <View style={styles.resultBox}>
+                <Text style={styles.resultLabel}>Last Result:</Text>
+                <Text style={styles.resultValue} numberOfLines={8}>
+                  {JSON.stringify(
+                    lastResult,
+                    (key, val) => (key.startsWith('_') ? undefined : val),
+                    2
+                  )}
+                </Text>
               </View>
-
-              <View style={styles.row}>
-                <Button
-                  onPress={onTestRegistration}
-                  title="Registration"
-                  loading={loading}
-                  style={styles.halfButton}
-                />
-                <Button
-                  onPress={onTestAssertion}
-                  title="Assertion"
-                  loading={loading}
-                  style={styles.halfButton}
-                />
-              </View>
-
-              <Button
-                onPress={onTestExchange}
-                title="Exchange for Tokens"
-                loading={loading}
-              />
-
-              {lastResult && (
-                <View style={styles.resultBox}>
-                  <Text style={styles.resultLabel}>Last Result:</Text>
-                  <Text style={styles.resultValue} numberOfLines={8}>
-                    {JSON.stringify(
-                      lastResult,
-                      (key, val) => (key.startsWith('_') ? undefined : val),
-                      2
-                    )}
-                  </Text>
-                </View>
-              )}
-            </Section>
-          </>
+            )}
+          </Section>
         )}
       </ScrollView>
     </SafeAreaView>

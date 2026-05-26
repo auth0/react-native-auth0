@@ -214,17 +214,6 @@ RCT_EXPORT_METHOD(passkeyExchange:(NSString *)authSession
     [self.nativeBridge passkeyExchangeWithAuthSession:authSession authResponse:authResponse realm:realm audience:audience scope:scope organization:organization resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(passkeyRegistration:(NSString *)challengeJson
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject) {
-    [self.nativeBridge passkeyRegistrationWithChallengeJson:challengeJson resolve:resolve reject:reject];
-}
-
-RCT_EXPORT_METHOD(passkeyAssertion:(NSString *)challengeJson
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject) {
-    [self.nativeBridge passkeyAssertionWithChallengeJson:challengeJson resolve:resolve reject:reject];
-}
 
 - (NSDictionary *)constantsToExport {
     return @{ @"bundleIdentifier": [[NSBundle mainBundle] bundleIdentifier] };

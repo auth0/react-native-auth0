@@ -21,8 +21,6 @@ import type {
   PasskeyLoginChallengeParameters,
   PasskeyChallengeResponse,
   PasskeyExchangeParameters,
-  PasskeyRegistrationParameters,
-  PasskeyAssertionParameters,
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
@@ -262,30 +260,6 @@ export interface Auth0ContextInterface extends AuthState {
   ) => Promise<Credentials>;
 
   /**
-   * Invokes the platform credential manager to create a new passkey (registration).
-   *
-   * Pass the `authParamsPublicKey` from `passkeySignupChallenge` as a JSON string.
-   * Returns the credential response JSON that can be passed to `passkeyExchange`.
-   *
-   * @platform ios, android (not supported on web)
-   * @throws {PasskeyError} If registration fails or is not supported.
-   */
-  passkeyRegistration: (
-    parameters: PasskeyRegistrationParameters
-  ) => Promise<string>;
-
-  /**
-   * Invokes the platform credential manager to assert an existing passkey (authentication).
-   *
-   * Pass the `authParamsPublicKey` from `passkeyLoginChallenge` as a JSON string.
-   * Returns the credential response JSON that can be passed to `passkeyExchange`.
-   *
-   * @platform ios, android (not supported on web)
-   * @throws {PasskeyError} If assertion fails or is not supported.
-   */
-  passkeyAssertion: (parameters: PasskeyAssertionParameters) => Promise<string>;
-
-  /**
    * Sends a verification code to the user's email.
    * @param parameters The parameters for sending the email code.
    * @throws {AuthError} If sending the email code fails.
@@ -477,8 +451,6 @@ const initialContext: Auth0ContextInterface = {
   passkeySignupChallenge: stub,
   passkeyLoginChallenge: stub,
   passkeyExchange: stub,
-  passkeyRegistration: stub,
-  passkeyAssertion: stub,
   sendEmailCode: stub,
   sendSMSCode: stub,
   authorizeWithEmail: stub,

@@ -272,18 +272,4 @@ export interface INativeBridge {
     scope?: string,
     organization?: string
   ): Promise<Credentials>;
-
-  /**
-   * Invokes the platform credential manager to create a new passkey (registration).
-   * @param challengeJson JSON string of the WebAuthn creation options (authParamsPublicKey).
-   * @returns A promise that resolves with the credential response JSON string.
-   */
-  passkeyRegistration(challengeJson: string): Promise<string>;
-
-  /**
-   * Invokes the platform credential manager to assert an existing passkey (authentication).
-   * @param challengeJson JSON string of the WebAuthn request options (authParamsPublicKey).
-   * @returns A promise that resolves with the credential response JSON string.
-   */
-  passkeyAssertion(challengeJson: string): Promise<string>;
 }

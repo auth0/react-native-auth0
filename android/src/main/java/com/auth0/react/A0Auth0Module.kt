@@ -21,17 +21,6 @@ import com.auth0.android.result.APICredentials
 import com.auth0.android.result.Credentials
 import com.auth0.android.result.PasskeyChallenge
 import com.auth0.android.result.PasskeyRegistrationChallenge
-import androidx.credentials.CreatePublicKeyCredentialRequest
-import androidx.credentials.CreatePublicKeyCredentialResponse
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
-import androidx.credentials.GetPublicKeyCredentialOption
-import androidx.credentials.PublicKeyCredential
-import androidx.credentials.exceptions.CreateCredentialCancellationException
-import androidx.credentials.exceptions.CreateCredentialException
-import androidx.credentials.exceptions.GetCredentialCancellationException
-import androidx.credentials.exceptions.GetCredentialException
-import androidx.credentials.exceptions.NoCredentialException
 import com.facebook.react.bridge.ActivityEventListener
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
@@ -41,9 +30,6 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableNativeMap
 import com.google.gson.Gson
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.net.MalformedURLException
 import java.net.URL
 
@@ -690,64 +676,6 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         })
     }
 
-    @ReactMethod
-    override fun passkeyRegistration(challengeJson: String, promise: Promise) {
-        val activity = reactContext.currentActivity
-        if (activity == null) {
-            promise.reject("PASSKEY_REGISTRATION_FAILED", "No current activity available")
-            return
-        }
-
-        val credentialManager = CredentialManager.create(activity)
-        val request = CreatePublicKeyCredentialRequest(challengeJson)
-
-        CoroutineScope(Dispatchers.Main).launch {
-            try {
-                val result = credentialManager.createCredential(activity, request)
-                val response = result as CreatePublicKeyCredentialResponse
-                promise.resolve(response.registrationResponseJson)
-            } catch (e: CreateCredentialCancellationException) {
-                promise.reject("PASSKEY_USER_CANCELLED", "User cancelled passkey registration", e)
-            } catch (e: CreateCredentialException) {
-                promise.reject("PASSKEY_REGISTRATION_FAILED", e.message ?: "Passkey registration failed", e)
-            } catch (e: Exception) {
-                promise.reject("PASSKEY_REGISTRATION_FAILED", e.message ?: "Unexpected error during passkey registration", e)
-            }
-        }
-    }
-
-    @ReactMethod
-    override fun passkeyAssertion(challengeJson: String, promise: Promise) {
-        val activity = reactContext.currentActivity
-        if (activity == null) {
-            promise.reject("PASSKEY_ASSERTION_FAILED", "No current activity available")
-            return
-        }
-
-        val credentialManager = CredentialManager.create(activity)
-        val option = GetPublicKeyCredentialOption(challengeJson)
-        val request = GetCredentialRequest(listOf(option))
-
-        CoroutineScope(Dispatchers.Main).launch {
-            try {
-                val result = credentialManager.getCredential(activity, request)
-                val credential = result.credential
-                if (credential is PublicKeyCredential) {
-                    promise.resolve(credential.authenticationResponseJson)
-                } else {
-                    promise.reject("PASSKEY_ASSERTION_FAILED", "Received unexpected credential type: ${credential.type}")
-                }
-            } catch (e: GetCredentialCancellationException) {
-                promise.reject("PASSKEY_USER_CANCELLED", "User cancelled passkey assertion", e)
-            } catch (e: NoCredentialException) {
-                promise.reject("PASSKEY_NOT_AVAILABLE", "No passkey credential available for this user", e)
-            } catch (e: GetCredentialException) {
-                promise.reject("PASSKEY_ASSERTION_FAILED", e.message ?: "Passkey assertion failed", e)
-            } catch (e: Exception) {
-                promise.reject("PASSKEY_ASSERTION_FAILED", e.message ?: "Unexpected error during passkey assertion", e)
-            }
-        }
-    }
 
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         // No-op

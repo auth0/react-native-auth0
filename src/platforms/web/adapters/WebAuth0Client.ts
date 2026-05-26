@@ -16,8 +16,6 @@ import type {
   PasskeyLoginChallengeParameters,
   PasskeyChallengeResponse,
   PasskeyExchangeParameters,
-  PasskeyRegistrationParameters,
-  PasskeyAssertionParameters,
   Credentials,
 } from '../../../types';
 import { WebWebAuthProvider } from './WebWebAuthProvider';
@@ -289,28 +287,6 @@ export class WebAuth0Client implements IAuth0Client {
   async passkeyExchange(
     _parameters: PasskeyExchangeParameters
   ): Promise<Credentials> {
-    throw new PasskeyError(
-      new AuthError(
-        'UnsupportedOperation',
-        'Passkeys are not supported on the web platform'
-      )
-    );
-  }
-
-  async passkeyRegistration(
-    _parameters: PasskeyRegistrationParameters
-  ): Promise<string> {
-    throw new PasskeyError(
-      new AuthError(
-        'UnsupportedOperation',
-        'Passkeys are not supported on the web platform'
-      )
-    );
-  }
-
-  async passkeyAssertion(
-    _parameters: PasskeyAssertionParameters
-  ): Promise<string> {
     throw new PasskeyError(
       new AuthError(
         'UnsupportedOperation',
