@@ -20,6 +20,7 @@ import Header from '../../components/Header';
 import LabeledInput from '../../components/LabeledInput';
 import Result from '../../components/Result';
 import config from '../../auth0-configuration';
+import { createPasskey, getPasskey } from '../../passkey/PasskeyModule';
 
 const HomeScreen = () => {
   const {
@@ -121,6 +122,69 @@ const HomeScreen = () => {
       }
     }
     setApiError(e as Error);
+  };
+
+  // --- Full-flow passkey handlers ---
+
+  const onPasskeySignup = async () => {
+    setApiError(null);
+    setLastResult(null);
+    setLoading(true);
+    try {
+      const challenge = await passkeySignupChallenge({
+        email: passkeyEmail || undefined,
+        realm: 'Username-Password-Authentication',
+      });
+
+      const credentialJson = await createPasskey(challenge.authParamsPublicKey);
+
+      const credentials = await passkeyExchange({
+        authSession: challenge.authSession,
+        authResponse: credentialJson,
+        realm: 'Username-Password-Authentication',
+      });
+
+      setLastResult({
+        step: 'signup-complete',
+        accessToken: `${credentials.accessToken.substring(0, 30)}...`,
+        tokenType: credentials.tokenType,
+      });
+      Alert.alert('Success', 'Passkey signup complete!');
+    } catch (e) {
+      handlePasskeyError(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onPasskeyLogin = async () => {
+    setApiError(null);
+    setLastResult(null);
+    setLoading(true);
+    try {
+      const challenge = await passkeyLoginChallenge({
+        realm: 'Username-Password-Authentication',
+      });
+
+      const credentialJson = await getPasskey(challenge.authParamsPublicKey);
+
+      const credentials = await passkeyExchange({
+        authSession: challenge.authSession,
+        authResponse: credentialJson,
+        realm: 'Username-Password-Authentication',
+      });
+
+      setLastResult({
+        step: 'login-complete',
+        accessToken: `${credentials.accessToken.substring(0, 30)}...`,
+        tokenType: credentials.tokenType,
+      });
+      Alert.alert('Success', 'Passkey login complete!');
+    } catch (e) {
+      handlePasskeyError(e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // --- Step-by-step handlers for testing individual methods ---
@@ -239,18 +303,37 @@ const HomeScreen = () => {
         </Section>
 
         {Platform.OS !== 'web' && (
-          <Section title="Passkeys — Testing">
+          <Section title="Passkeys">
             <Text style={styles.description}>
-              Test passkey challenge and exchange methods individually.
+              Full passkey flow: challenge → credential manager → exchange.
             </Text>
 
             <LabeledInput
-              label="Email (for signup challenge)"
+              label="Email (for signup)"
               value={passkeyEmail}
               onChangeText={setPasskeyEmail}
               autoCapitalize="none"
               keyboardType="email-address"
             />
+
+            <View style={styles.row}>
+              <Button
+                onPress={onPasskeySignup}
+                title="Sign Up with Passkey"
+                loading={loading}
+                style={styles.halfButton}
+              />
+              <Button
+                onPress={onPasskeyLogin}
+                title="Sign In with Passkey"
+                loading={loading}
+                style={styles.halfButton}
+              />
+            </View>
+
+            <Text style={[styles.description, { marginTop: 12 }]}>
+              Or test individual steps:
+            </Text>
 
             <View style={styles.row}>
               <Button

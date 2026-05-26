@@ -582,12 +582,15 @@ public class NativeBridge: NSObject {
                 return
             }
 
+            let expiresIn = jsonResponse["expires_in"] as? Int ?? 0
+            let expiresAt = Int(Date().timeIntervalSince1970) + expiresIn
+
             let credentialsDict: [String: Any] = [
                 "accessToken": jsonResponse["access_token"] ?? "",
                 "tokenType": jsonResponse["token_type"] ?? "Bearer",
                 "idToken": jsonResponse["id_token"] ?? "",
                 "refreshToken": jsonResponse["refresh_token"] ?? NSNull(),
-                "expiresIn": jsonResponse["expires_in"] ?? 0,
+                "expiresAt": expiresAt,
                 "scope": jsonResponse["scope"] ?? ""
             ]
             resolve(credentialsDict)
