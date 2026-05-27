@@ -36,10 +36,6 @@ import { AuthError } from './AuthError';
  * @see {@link https://auth0.com/docs/authenticate/database-connections/passkeys}
  */
 export const PasskeyErrorCodes = {
-  /** Passkey signup (registration) failed */
-  SIGNUP_FAILED: 'PASSKEY_SIGNUP_FAILED',
-  /** Passkey signin (authentication) failed */
-  SIGNIN_FAILED: 'PASSKEY_SIGNIN_FAILED',
   /** Passkeys are not available on this device or OS version */
   NOT_AVAILABLE: 'PASSKEY_NOT_AVAILABLE',
   /** User cancelled the passkey OS prompt */
@@ -55,17 +51,10 @@ export const PasskeyErrorCodes = {
 } as const;
 
 const ERROR_CODE_MAP: Record<string, string> = {
-  // --- Passkey-specific error codes (from native) ---
-  PASSKEY_SIGNUP_FAILED: PasskeyErrorCodes.SIGNUP_FAILED,
-  PASSKEY_SIGNIN_FAILED: PasskeyErrorCodes.SIGNIN_FAILED,
   PASSKEY_NOT_AVAILABLE: PasskeyErrorCodes.NOT_AVAILABLE,
   PASSKEY_USER_CANCELLED: PasskeyErrorCodes.USER_CANCELLED,
   PASSKEY_CHALLENGE_FAILED: PasskeyErrorCodes.CHALLENGE_FAILED,
   PASSKEY_EXCHANGE_FAILED: PasskeyErrorCodes.EXCHANGE_FAILED,
-
-  // --- Bridge-level fallback codes ---
-  passkey_signup_failed: PasskeyErrorCodes.SIGNUP_FAILED,
-  passkey_signin_failed: PasskeyErrorCodes.SIGNIN_FAILED,
 
   // --- Web platform ---
   UnsupportedOperation: PasskeyErrorCodes.UNSUPPORTED_PLATFORM,

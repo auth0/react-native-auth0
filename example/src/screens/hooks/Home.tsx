@@ -219,19 +219,24 @@ const HomeScreen = () => {
 
   const onTestExchange = async () => {
     const result = lastResult as any;
-    if (!result?.authSession || !result?._fullCredentialJson) {
+    if (!result?.authSession || !result?.authParamsPublicKey) {
       Alert.alert(
         'Error',
-        'Complete a challenge and registration/assertion first.'
+        'Run a challenge first (Signup Challenge or Login Challenge).'
       );
       return;
     }
     setApiError(null);
     setLoading(true);
     try {
+      const isSignup = result.step === 'signupChallenge';
+      const credentialJson = isSignup
+        ? await createPasskey(result.authParamsPublicKey)
+        : await getPasskey(result.authParamsPublicKey);
+
       const credentials = await passkeyExchange({
         authSession: result.authSession,
-        authResponse: result._fullCredentialJson,
+        authResponse: credentialJson,
         realm: 'Username-Password-Authentication',
       });
 

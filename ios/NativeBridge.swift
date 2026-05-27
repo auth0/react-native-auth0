@@ -517,84 +517,93 @@ public class NativeBridge: NSObject {
 
         guard let responseData = authResponse.data(using: .utf8),
               let json = try? JSONSerialization.jsonObject(with: responseData) as? [String: Any],
-              let responseDict = json["response"] as? [String: Any] else {
+              let responseDict = json["response"] as? [String: Any],
+              let idString = json["id"] as? String,
+              let credentialID = Data(base64URLEncoded: idString),
+              let clientDataJSONString = responseDict["clientDataJSON"] as? String,
+              let clientDataJSON = Data(base64URLEncoded: clientDataJSONString) else {
             reject("PASSKEY_EXCHANGE_FAILED", "Invalid authResponse JSON", nil)
             return
         }
 
-        var authnResponse: [String: Any] = [
-            "id": json["id"] as? String ?? "",
-            "rawId": json["rawId"] as? String ?? json["id"] as? String ?? "",
-            "type": json["type"] as? String ?? "public-key"
-        ]
+        let attachmentString = json["authenticatorAttachment"] as? String ?? "platform"
+        let attachment: ASAuthorizationPublicKeyCredentialAttachment = attachmentString == "cross-platform" ? .crossPlatform : .platform
 
-        if let attestationObject = responseDict["attestationObject"] {
-            authnResponse["response"] = [
-                "clientDataJSON": responseDict["clientDataJSON"] ?? "",
-                "attestationObject": attestationObject
-            ]
-        } else {
-            authnResponse["response"] = [
-                "clientDataJSON": responseDict["clientDataJSON"] ?? "",
-                "authenticatorData": responseDict["authenticatorData"] ?? "",
-                "signature": responseDict["signature"] ?? "",
-                "userHandle": responseDict["userHandle"] ?? ""
-            ]
+        var auth = Auth0.authentication(clientId: self.clientId, domain: self.domain)
+        if self.useDPoP {
+            auth = auth.useDPoP()
         }
 
-        if let attachment = json["authenticatorAttachment"] as? String {
-            authnResponse["authenticatorAttachment"] = attachment
+        if let attestationObjectString = responseDict["attestationObject"] as? String {
+            let attestationObject = Data(base64URLEncoded: attestationObjectString)
+            let passkey = BridgeSignupPasskey(
+                credentialID: credentialID,
+                attachment: attachment,
+                rawClientDataJSON: clientDataJSON,
+                rawAttestationObject: attestationObject
+            )
+            let challenge = PasskeySignupChallenge(
+                authenticationSession: authSession,
+                relyingPartyId: self.domain,
+                userId: Data(),
+                userName: "",
+                challengeData: Data()
+            )
+            auth.login(
+                passkey: passkey,
+                challenge: challenge,
+                connection: realmValue,
+                audience: audienceValue,
+                scope: finalScope,
+                organization: orgValue
+            ).start { result in
+                switch result {
+                case .success(let credentials):
+                    resolve(credentials.asDictionary())
+                case .failure(let error):
+                    reject("PASSKEY_EXCHANGE_FAILED", error.localizedDescription, error)
+                }
+            }
         } else {
-            authnResponse["authenticatorAttachment"] = "platform"
+            guard let authenticatorDataString = responseDict["authenticatorData"] as? String,
+                  let authenticatorData = Data(base64URLEncoded: authenticatorDataString),
+                  let signatureString = responseDict["signature"] as? String,
+                  let signature = Data(base64URLEncoded: signatureString) else {
+                reject("PASSKEY_EXCHANGE_FAILED", "Missing authenticatorData or signature in authResponse", nil)
+                return
+            }
+            let userHandleString = responseDict["userHandle"] as? String
+            let userHandle = userHandleString.flatMap { Data(base64URLEncoded: $0) }
+
+            let passkey = BridgeLoginPasskey(
+                userID: userHandle,
+                credentialID: credentialID,
+                attachment: attachment,
+                rawClientDataJSON: clientDataJSON,
+                rawAuthenticatorData: authenticatorData,
+                signature: signature
+            )
+            let challenge = PasskeyLoginChallenge(
+                authenticationSession: authSession,
+                relyingPartyId: self.domain,
+                challengeData: Data()
+            )
+            auth.login(
+                passkey: passkey,
+                challenge: challenge,
+                connection: realmValue,
+                audience: audienceValue,
+                scope: finalScope,
+                organization: orgValue
+            ).start { result in
+                switch result {
+                case .success(let credentials):
+                    resolve(credentials.asDictionary())
+                case .failure(let error):
+                    reject("PASSKEY_EXCHANGE_FAILED", error.localizedDescription, error)
+                }
+            }
         }
-
-        var payload: [String: Any] = [
-            "client_id": self.clientId,
-            "grant_type": "urn:okta:params:oauth:grant-type:webauthn",
-            "auth_session": authSession,
-            "authn_response": authnResponse
-        ]
-        payload["realm"] = realmValue
-        payload["audience"] = audienceValue
-        payload["scope"] = finalScope
-        payload["organization"] = orgValue
-
-        let url = URL(string: "https://\(self.domain)/oauth/token")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONSerialization.data(withJSONObject: payload)
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                reject("PASSKEY_EXCHANGE_FAILED", error.localizedDescription, error)
-                return
-            }
-            guard let data = data,
-                  let jsonResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-                reject("PASSKEY_EXCHANGE_FAILED", "Invalid response from server", nil)
-                return
-            }
-
-            if let errorCode = jsonResponse["error"] as? String {
-                let errorDesc = jsonResponse["error_description"] as? String ?? "Token exchange failed"
-                reject("PASSKEY_EXCHANGE_FAILED", "\(errorCode): \(errorDesc)", nil)
-                return
-            }
-
-            let expiresIn = jsonResponse["expires_in"] as? Int ?? 0
-            let expiresAt = Int(Date().timeIntervalSince1970) + expiresIn
-
-            let credentialsDict: [String: Any] = [
-                "accessToken": jsonResponse["access_token"] ?? "",
-                "tokenType": jsonResponse["token_type"] ?? "Bearer",
-                "idToken": jsonResponse["id_token"] ?? "",
-                "refreshToken": jsonResponse["refresh_token"] ?? NSNull(),
-                "expiresAt": expiresAt,
-                "scope": jsonResponse["scope"] ?? ""
-            ]
-            resolve(credentialsDict)
-        }.resume()
     }
 
 
@@ -628,6 +637,7 @@ public class NativeBridge: NSObject {
             return .default
         }
     }
+
 }
 
 
@@ -744,4 +754,24 @@ extension Data {
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "=", with: "")
     }
+}
+
+// MARK: - Passkey Bridge Types
+
+@available(iOS 16.6, macOS 13.5, *)
+struct BridgeLoginPasskey: LoginPasskey {
+    var userID: Data!
+    var credentialID: Data
+    var attachment: ASAuthorizationPublicKeyCredentialAttachment
+    var rawClientDataJSON: Data
+    var rawAuthenticatorData: Data!
+    var signature: Data!
+}
+
+@available(iOS 16.6, macOS 13.5, *)
+struct BridgeSignupPasskey: SignupPasskey {
+    var credentialID: Data
+    var attachment: ASAuthorizationPublicKeyCredentialAttachment
+    var rawClientDataJSON: Data
+    var rawAttestationObject: Data?
 }
