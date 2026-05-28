@@ -1,6 +1,7 @@
 import type {
   IAuth0Client,
   IAuthenticationProvider,
+  IMyAccountClient,
   IUsersClient,
 } from '../../../core/interfaces';
 import type { NativeAuth0Options } from '../../../types/platform-specific';
@@ -15,6 +16,7 @@ import type {
 } from '../../../types';
 import { NativeWebAuthProvider } from './NativeWebAuthProvider';
 import { NativeCredentialsManager } from './NativeCredentialsManager';
+import { NativeMyAccountClient } from './NativeMyAccountClient';
 import { type INativeBridge, NativeBridgeManager } from '../bridge';
 import {
   AuthenticationOrchestrator,
@@ -80,6 +82,7 @@ export class NativeAuth0Client implements IAuth0Client {
 
     this.webAuth = new NativeWebAuthProvider(guardedBridge, options.domain);
     this.credentialsManager = new NativeCredentialsManager(guardedBridge);
+    this.myAccount = new NativeMyAccountClient(guardedBridge);
   }
 
   private async initialize(
@@ -122,6 +125,8 @@ export class NativeAuth0Client implements IAuth0Client {
       getDPoPHeaders,
     });
   }
+
+  readonly myAccount: IMyAccountClient;
 
   async getDPoPHeaders(
     params: DPoPHeadersParams

@@ -99,6 +99,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     private var useDPoP: Boolean = true
 
     private var auth0: Auth0? = null
+    private var myAccount: MyAccount? = null
     private lateinit var secureCredentialsManager: SecureCredentialsManager
     private var webAuthPromise: Promise? = null
 
@@ -200,6 +201,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         
         this.useDPoP = useDPoP ?: true
         auth0 = Auth0.getInstance(clientId, domain)
+        myAccount = MyAccount(auth0!!, this.useDPoP, reactContext)
 
         val authAPI = AuthenticationAPIClient(auth0!!)
         if (this.useDPoP) {
@@ -676,6 +678,137 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         })
     }
 
+
+    @ReactMethod
+    override fun passkeyEnrollmentChallenge(
+        accessToken: String,
+        userIdentity: String?,
+        connection: String?,
+        promise: Promise
+    ) {
+        myAccount!!.passkeyEnrollmentChallenge(accessToken, userIdentity, connection, promise)
+    }
+
+    @ReactMethod
+    override fun enrollPasskey(
+        accessToken: String,
+        authenticationMethodId: String,
+        authSession: String,
+        authResponse: String,
+        promise: Promise
+    ) {
+        myAccount!!.enrollPasskey(accessToken, authenticationMethodId, authSession, authResponse, promise)
+    }
+
+    @ReactMethod
+    override fun getAuthenticationMethods(
+        accessToken: String,
+        type: String?,
+        promise: Promise
+    ) {
+        myAccount!!.getAuthenticationMethods(accessToken, type, promise)
+    }
+
+    @ReactMethod
+    override fun getAuthenticationMethod(
+        accessToken: String,
+        id: String,
+        promise: Promise
+    ) {
+        myAccount!!.getAuthenticationMethod(accessToken, id, promise)
+    }
+
+    @ReactMethod
+    override fun updateAuthenticationMethod(
+        accessToken: String,
+        id: String,
+        name: String?,
+        preferredAuthenticationMethod: String?,
+        promise: Promise
+    ) {
+        myAccount!!.updateAuthenticationMethod(accessToken, id, name, preferredAuthenticationMethod, promise)
+    }
+
+    @ReactMethod
+    override fun deleteAuthenticationMethod(
+        accessToken: String,
+        id: String,
+        promise: Promise
+    ) {
+        myAccount!!.deleteAuthenticationMethod(accessToken, id, promise)
+    }
+
+    @ReactMethod
+    override fun enrollPhone(
+        accessToken: String,
+        phoneNumber: String,
+        preferredAuthenticationMethod: String?,
+        promise: Promise
+    ) {
+        myAccount!!.enrollPhone(accessToken, phoneNumber, preferredAuthenticationMethod, promise)
+    }
+
+    @ReactMethod
+    override fun enrollEmail(
+        accessToken: String,
+        emailAddress: String,
+        promise: Promise
+    ) {
+        myAccount!!.enrollEmail(accessToken, emailAddress, promise)
+    }
+
+    @ReactMethod
+    override fun enrollTOTP(
+        accessToken: String,
+        promise: Promise
+    ) {
+        myAccount!!.enrollTOTP(accessToken, promise)
+    }
+
+    @ReactMethod
+    override fun enrollPushNotification(
+        accessToken: String,
+        promise: Promise
+    ) {
+        myAccount!!.enrollPushNotification(accessToken, promise)
+    }
+
+    @ReactMethod
+    override fun enrollRecoveryCode(
+        accessToken: String,
+        promise: Promise
+    ) {
+        myAccount!!.enrollRecoveryCode(accessToken, promise)
+    }
+
+    @ReactMethod
+    override fun confirmEnrollmentWithOtp(
+        accessToken: String,
+        id: String,
+        authSession: String,
+        otpCode: String,
+        promise: Promise
+    ) {
+        myAccount!!.confirmEnrollmentWithOtp(accessToken, id, authSession, otpCode, promise)
+    }
+
+    @ReactMethod
+    override fun confirmEnrollment(
+        accessToken: String,
+        id: String,
+        authSession: String,
+        promise: Promise
+    ) {
+        myAccount!!.confirmEnrollment(accessToken, id, authSession, promise)
+    }
+
+    @ReactMethod
+    override fun getFactors(
+        accessToken: String,
+        promise: Promise
+    ) {
+        myAccount!!.getFactors(accessToken, promise)
+    }
 
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         // No-op

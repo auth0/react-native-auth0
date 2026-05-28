@@ -10,3 +10,4 @@ export {
 export { WebAuthError, WebAuthErrorCodes } from './WebAuthError';
 export { DPoPError, DPoPErrorCodes } from './DPoPError';
 export { PasskeyError, PasskeyErrorCodes } from './PasskeyError';
+export { MyAccountError, MyAccountErrorCodes } from './MyAccountError';

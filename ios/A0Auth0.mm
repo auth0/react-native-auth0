@@ -25,6 +25,7 @@
 
 @interface A0Auth0 ()
 @property (strong, nonatomic) NativeBridge *nativeBridge;
+@property (strong, nonatomic) A0MyAccount *myAccount;
 @end
 
 @implementation A0Auth0
@@ -214,6 +215,108 @@ RCT_EXPORT_METHOD(passkeyExchange:(NSString *)authSession
     [self.nativeBridge passkeyExchangeWithAuthSession:authSession authResponse:authResponse realm:realm audience:audience scope:scope organization:organization resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(passkeyEnrollmentChallenge:(NSString *)accessToken
+                  userIdentity:(NSString * _Nullable)userIdentity
+                  connection:(NSString * _Nullable)connection
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.myAccount passkeyEnrollmentChallengeWithAccessToken:accessToken userIdentity:userIdentity connection:connection resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(enrollPasskey:(NSString *)accessToken
+                  authenticationMethodId:(NSString *)authenticationMethodId
+                  authSession:(NSString *)authSession
+                  authResponse:(NSString *)authResponse
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.myAccount enrollPasskeyWithAccessToken:accessToken authenticationMethodId:authenticationMethodId authSession:authSession authResponse:authResponse resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(getAuthenticationMethods:(NSString *)accessToken
+                  type:(NSString * _Nullable)type
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.myAccount getAuthenticationMethodsWithAccessToken:accessToken type:type resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(getAuthenticationMethod:(NSString *)accessToken
+                  id:(NSString *)id
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.myAccount getAuthenticationMethodWithAccessToken:accessToken id:id resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(updateAuthenticationMethod:(NSString *)accessToken
+                  id:(NSString *)id
+                  name:(NSString * _Nullable)name
+                  preferredAuthenticationMethod:(NSString * _Nullable)preferredAuthenticationMethod
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.myAccount updateAuthenticationMethodWithAccessToken:accessToken id:id name:name preferredAuthenticationMethod:preferredAuthenticationMethod resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(deleteAuthenticationMethod:(NSString *)accessToken
+                  id:(NSString *)id
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.myAccount deleteAuthenticationMethodWithAccessToken:accessToken id:id resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(enrollPhone:(NSString *)accessToken
+                  phoneNumber:(NSString *)phoneNumber
+                  preferredAuthenticationMethod:(NSString * _Nullable)preferredAuthenticationMethod
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.myAccount enrollPhoneWithAccessToken:accessToken phoneNumber:phoneNumber preferredAuthenticationMethod:preferredAuthenticationMethod resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(enrollEmail:(NSString *)accessToken
+                  emailAddress:(NSString *)emailAddress
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.myAccount enrollEmailWithAccessToken:accessToken emailAddress:emailAddress resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(enrollTOTP:(NSString *)accessToken
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.myAccount enrollTOTPWithAccessToken:accessToken resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(enrollPushNotification:(NSString *)accessToken
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.myAccount enrollPushNotificationWithAccessToken:accessToken resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(enrollRecoveryCode:(NSString *)accessToken
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.myAccount enrollRecoveryCodeWithAccessToken:accessToken resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(confirmEnrollmentWithOtp:(NSString *)accessToken
+                  id:(NSString *)id
+                  authSession:(NSString *)authSession
+                  otpCode:(NSString *)otpCode
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.myAccount confirmEnrollmentWithOtpWithAccessToken:accessToken id:id authSession:authSession otpCode:otpCode resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(confirmEnrollment:(NSString *)accessToken
+                  id:(NSString *)id
+                  authSession:(NSString *)authSession
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.myAccount confirmEnrollmentWithAccessToken:accessToken id:id authSession:authSession resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(getFactors:(NSString *)accessToken
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.myAccount getFactorsWithAccessToken:accessToken resolve:resolve reject:reject];
+}
 
 - (NSDictionary *)constantsToExport {
     return @{ @"bundleIdentifier": [[NSBundle mainBundle] bundleIdentifier] };
@@ -236,6 +339,7 @@ UIBackgroundTaskIdentifier taskId;
     BOOL useDPoPBool = [useDPoP boolValue];
     NativeBridge *bridge = [[NativeBridge alloc] initWithClientId:clientId domain:domain localAuthenticationOptions:options useDPoP:useDPoPBool maxRetries:maxRetries resolve:resolve reject:reject];
     self.nativeBridge = bridge;
+    self.myAccount = [[A0MyAccount alloc] initWithDomain:domain useDPoP:useDPoPBool];
 }
 #ifdef RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params { 

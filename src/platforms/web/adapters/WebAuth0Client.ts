@@ -6,6 +6,7 @@ import {
 import type {
   IAuth0Client,
   IAuthenticationProvider,
+  IMyAccountClient,
   IUsersClient,
 } from '../../../core/interfaces';
 import type { WebAuth0Options } from '../../../types/platform-specific';
@@ -20,6 +21,7 @@ import type {
 } from '../../../types';
 import { WebWebAuthProvider } from './WebWebAuthProvider';
 import { WebCredentialsManager } from './WebCredentialsManager';
+import { WebMyAccountClient } from './WebMyAccountClient';
 import { ssoExchangeNotSupported } from './WebAuthenticationProvider';
 import {
   AuthenticationOrchestrator,
@@ -142,6 +144,8 @@ export class WebAuth0Client implements IAuth0Client {
       getDPoPHeaders,
     });
   }
+
+  readonly myAccount: IMyAccountClient = new WebMyAccountClient();
 
   public async logout(options?: LogoutOptions): Promise<void> {
     // If a logout process has already started, do nothing.
