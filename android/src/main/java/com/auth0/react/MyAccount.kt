@@ -137,7 +137,7 @@ class MyAccount(
     ) {
         val myAccountClient = createClient(accessToken)
 
-        val methodType = if (type != null) {
+        val methodType = if (!type.isNullOrEmpty()) {
             parseAuthenticationMethodType(type) ?: run {
                 promise.reject("MY_ACCOUNT_ERROR", "Invalid authentication method type: $type", null)
                 return
@@ -190,14 +190,16 @@ class MyAccount(
     ) {
         val myAccountClient = createClient(accessToken)
 
-        val phoneMethod = if (preferredAuthenticationMethod != null) {
+        val nameValue = name?.ifEmpty { null }
+
+        val phoneMethod = if (!preferredAuthenticationMethod.isNullOrEmpty()) {
             parsePhoneAuthenticationMethodType(preferredAuthenticationMethod) ?: run {
                 promise.reject("MY_ACCOUNT_ERROR", "Invalid preferred authentication method: $preferredAuthenticationMethod", null)
                 return
             }
         } else null
 
-        myAccountClient.updateAuthenticationMethodById(id, name, phoneMethod)
+        myAccountClient.updateAuthenticationMethodById(id, nameValue, phoneMethod)
             .start(object : com.auth0.android.callback.Callback<AuthenticationMethod, MyAccountException> {
                 override fun onSuccess(method: AuthenticationMethod) {
                     val json = Gson().toJson(method)
@@ -236,7 +238,7 @@ class MyAccount(
         promise: Promise
     ) {
         val myAccountClient = createClient(accessToken)
-        val preferredMethod = if (preferredAuthenticationMethod != null) {
+        val preferredMethod = if (!preferredAuthenticationMethod.isNullOrEmpty()) {
             parsePhoneAuthenticationMethodType(preferredAuthenticationMethod) ?: run {
                 promise.reject("MY_ACCOUNT_ENROLLMENT_FAILED", "Invalid preferred authentication method: $preferredAuthenticationMethod", null)
                 return

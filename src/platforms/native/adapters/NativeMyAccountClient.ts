@@ -304,8 +304,8 @@ export class NativeMyAccountClient implements IMyAccountClient {
       return (await this.bridge.updateAuthenticationMethodById(
         accessToken,
         id,
-        name || undefined,
-        preferredAuthenticationMethod || undefined
+        name || null,
+        preferredAuthenticationMethod || null
       )) as AuthenticationMethod;
     } catch (e) {
       if (e instanceof AuthError) {

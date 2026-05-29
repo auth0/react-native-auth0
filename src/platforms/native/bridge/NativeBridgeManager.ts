@@ -374,8 +374,8 @@ export class NativeBridgeManager implements INativeBridge {
   async updateAuthenticationMethodById(
     accessToken: string,
     id: string,
-    name?: string,
-    preferredAuthenticationMethod?: string
+    name?: string | null,
+    preferredAuthenticationMethod?: string | null
   ): Promise<Record<string, any>> {
     return this.a0_call(
       Auth0NativeModule.updateAuthenticationMethodById.bind(Auth0NativeModule),

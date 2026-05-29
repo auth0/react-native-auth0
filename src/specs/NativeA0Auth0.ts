@@ -240,8 +240,8 @@ export interface Spec extends TurboModule {
   updateAuthenticationMethodById(
     accessToken: string,
     id: string,
-    name: string | undefined,
-    preferredAuthenticationMethod: string | undefined
+    name: string | null | undefined,
+    preferredAuthenticationMethod: string | null | undefined
   ): Promise<Object>;
 
   /**

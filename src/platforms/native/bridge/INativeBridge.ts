@@ -330,8 +330,8 @@ export interface INativeBridge {
   updateAuthenticationMethodById(
     accessToken: string,
     id: string,
-    name?: string,
-    preferredAuthenticationMethod?: string
+    name?: string | null,
+    preferredAuthenticationMethod?: string | null
   ): Promise<Record<string, any>>;
 
   /**
