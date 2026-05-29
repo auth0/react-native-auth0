@@ -23,6 +23,10 @@ import type {
   LoginRecoveryCodeParameters,
   ExchangeNativeSocialParameters,
   CustomTokenExchangeParameters,
+  PasskeySignupChallengeParameters,
+  PasskeyLoginChallengeParameters,
+  PasskeyChallengeResponse,
+  GetTokenByPasskeyParameters,
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
@@ -316,6 +320,28 @@ export const Auth0Provider = ({
     [client, loginFlow]
   );
 
+  const passkeySignupChallenge = useCallback(
+    (
+      parameters: PasskeySignupChallengeParameters
+    ): Promise<PasskeyChallengeResponse> =>
+      client.passkeySignupChallenge(parameters),
+    [client]
+  );
+
+  const passkeyLoginChallenge = useCallback(
+    (
+      parameters: PasskeyLoginChallengeParameters
+    ): Promise<PasskeyChallengeResponse> =>
+      client.passkeyLoginChallenge(parameters),
+    [client]
+  );
+
+  const getTokenByPasskey = useCallback(
+    (parameters: GetTokenByPasskeyParameters) =>
+      loginFlow(client.getTokenByPasskey(parameters)),
+    [client, loginFlow]
+  );
+
   const sendEmailCode = useCallback(
     (parameters: PasswordlessEmailParameters) =>
       voidFlow(client.auth.passwordlessWithEmail(parameters)),
@@ -425,6 +451,9 @@ export const Auth0Provider = ({
       authorizeWithExchange,
       authorizeWithExchangeNativeSocial,
       customTokenExchange,
+      passkeySignupChallenge,
+      passkeyLoginChallenge,
+      getTokenByPasskey,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,
@@ -455,6 +484,9 @@ export const Auth0Provider = ({
       authorizeWithExchange,
       authorizeWithExchangeNativeSocial,
       customTokenExchange,
+      passkeySignupChallenge,
+      passkeyLoginChallenge,
+      getTokenByPasskey,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,

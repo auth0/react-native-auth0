@@ -7,6 +7,7 @@ import type {
   NativeClearSessionOptions,
   DPoPHeadersParams,
   SessionTransferCredentials,
+  PasskeyChallengeResponse,
 } from '../../../types';
 import {
   SafariViewControllerPresentationStyle,
@@ -252,5 +253,65 @@ export class NativeBridgeManager implements INativeBridge {
         { code: 'custom_token_exchange_failed', json: e }
       );
     }
+  }
+
+  async passkeySignupChallenge(
+    email?: string,
+    phoneNumber?: string,
+    username?: string,
+    name?: string,
+    givenName?: string,
+    familyName?: string,
+    nickname?: string,
+    picture?: string,
+    userMetadata?: Record<string, string>,
+    realm?: string,
+    organization?: string
+  ): Promise<PasskeyChallengeResponse> {
+    return this.a0_call(
+      Auth0NativeModule.passkeySignupChallenge.bind(Auth0NativeModule),
+      email,
+      phoneNumber,
+      username,
+      name,
+      givenName,
+      familyName,
+      nickname,
+      picture,
+      userMetadata,
+      realm,
+      organization
+    );
+  }
+
+  async passkeyLoginChallenge(
+    realm?: string,
+    organization?: string
+  ): Promise<PasskeyChallengeResponse> {
+    return this.a0_call(
+      Auth0NativeModule.passkeyLoginChallenge.bind(Auth0NativeModule),
+      realm,
+      organization
+    );
+  }
+
+  async getTokenByPasskey(
+    authSession: string,
+    authResponse: string,
+    realm?: string,
+    audience?: string,
+    scope?: string,
+    organization?: string
+  ): Promise<Credentials> {
+    const credential = await this.a0_call(
+      Auth0NativeModule.getTokenByPasskey.bind(Auth0NativeModule),
+      authSession,
+      authResponse,
+      realm,
+      audience,
+      scope,
+      organization
+    );
+    return new CredentialsModel(credential);
   }
 }

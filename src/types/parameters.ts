@@ -313,6 +313,97 @@ export interface CreateUserParameters extends RequestOptions {
   metadata?: object;
 }
 
+// ========= Passkey Parameters =========
+
+/**
+ * Parameters for requesting a passkey signup challenge from Auth0.
+ *
+ * The challenge response contains WebAuthn creation options that should
+ * be passed to the platform's credential manager (CredentialManager on Android,
+ * ASAuthorizationController on iOS) to create a new passkey credential.
+ *
+ * @see https://auth0.com/docs/authenticate/database-connections/passkeys
+ */
+export interface PasskeySignupChallengeParameters {
+  /** The user's email address. */
+  email?: string;
+  /** The user's phone number. */
+  phoneNumber?: string;
+  /** The user's username. */
+  username?: string;
+  /** The user's display name. */
+  name?: string;
+  /** The user's first name. */
+  givenName?: string;
+  /** The user's last name. */
+  familyName?: string;
+  /** The user's preferred nickname. */
+  nickname?: string;
+  /** URL pointing to the user's profile picture. */
+  picture?: string;
+  /** Additional user metadata as key-value pairs. */
+  userMetadata?: Record<string, string>;
+  /** The database connection name. */
+  realm?: string;
+  /** Organization ID or name for authenticating in an organization context. */
+  organization?: string;
+}
+
+/**
+ * Parameters for requesting a passkey login challenge from Auth0.
+ *
+ * The challenge response contains WebAuthn request options that should
+ * be passed to the platform's credential manager to assert an existing passkey.
+ *
+ * @see https://auth0.com/docs/authenticate/database-connections/passkeys
+ */
+export interface PasskeyLoginChallengeParameters {
+  /** The database connection name. */
+  realm?: string;
+  /** Organization ID or name for authenticating in an organization context. */
+  organization?: string;
+}
+
+/**
+ * Response from a passkey signup challenge request.
+ * Contains the auth session and WebAuthn creation options for the platform credential manager.
+ */
+export interface PasskeyChallengeResponse {
+  /** The auth session identifier to be used in the subsequent exchange call. */
+  authSession: string;
+  /** The raw WebAuthn public key credential creation/request options as JSON. */
+  authParamsPublicKey: Record<string, any>;
+}
+
+/**
+ * Parameters for exchanging a passkey credential response for Auth0 tokens.
+ *
+ * After the platform credential manager returns the credential (either a new
+ * registration or an assertion), pass the auth_session and the credential JSON
+ * response to this method to obtain Auth0 tokens.
+ *
+ * @see https://auth0.com/docs/authenticate/database-connections/passkeys
+ */
+export interface GetTokenByPasskeyParameters {
+  /** The auth session received from the challenge response. */
+  authSession: string;
+  /** The JSON string of the PublicKeyCredential response from the platform credential manager. */
+  authResponse: string;
+  /** The database connection name. */
+  realm?: string;
+  /** The target API identifier for the issued access token. */
+  audience?: string;
+  /**
+   * Space-separated list of OAuth 2.0 scopes.
+   * @default "openid profile email"
+   */
+  scope?: string;
+  /** Organization ID or name for authenticating in an organization context. */
+  organization?: string;
+}
+
+// ========= User Management & Profile Parameters =========
+
 /**
  * Parameters for patching a user's metadata via the Management API.
  * Requires an access token with `update:current_user_metadata` scope.

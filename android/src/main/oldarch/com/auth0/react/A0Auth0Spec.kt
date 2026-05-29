@@ -122,4 +122,42 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
         organization: String?,
         promise: Promise
     )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun passkeySignupChallenge(
+        email: String?,
+        phoneNumber: String?,
+        username: String?,
+        name: String?,
+        givenName: String?,
+        familyName: String?,
+        nickname: String?,
+        picture: String?,
+        userMetadata: ReadableMap?,
+        realm: String?,
+        organization: String?,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun passkeyLoginChallenge(
+        realm: String?,
+        organization: String?,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun getTokenByPasskey(
+        authSession: String,
+        authResponse: String,
+        realm: String?,
+        audience: String?,
+        scope: String?,
+        organization: String?,
+        promise: Promise
+    )
+
 }

@@ -159,6 +159,43 @@ export interface Spec extends TurboModule {
     scope: string | undefined,
     organization: string | undefined
   ): Promise<Credentials>;
+
+  /**
+   * Request a passkey signup challenge from Auth0.
+   */
+  passkeySignupChallenge(
+    email: string | undefined,
+    phoneNumber: string | undefined,
+    username: string | undefined,
+    name: string | undefined,
+    givenName: string | undefined,
+    familyName: string | undefined,
+    nickname: string | undefined,
+    picture: string | undefined,
+    userMetadata: { [key: string]: string } | undefined,
+    realm: string | undefined,
+    organization: string | undefined
+  ): Promise<{ authSession: string; authParamsPublicKey: Object }>;
+
+  /**
+   * Request a passkey login challenge from Auth0.
+   */
+  passkeyLoginChallenge(
+    realm: string | undefined,
+    organization: string | undefined
+  ): Promise<{ authSession: string; authParamsPublicKey: Object }>;
+
+  /**
+   * Exchange a passkey credential response for Auth0 tokens.
+   */
+  getTokenByPasskey(
+    authSession: string,
+    authResponse: string,
+    realm: string | undefined,
+    audience: string | undefined,
+    scope: string | undefined,
+    organization: string | undefined
+  ): Promise<Credentials>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('A0Auth0');

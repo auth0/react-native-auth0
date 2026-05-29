@@ -17,6 +17,10 @@ import type {
   LoginRecoveryCodeParameters,
   ExchangeNativeSocialParameters,
   CustomTokenExchangeParameters,
+  PasskeySignupChallengeParameters,
+  PasskeyLoginChallengeParameters,
+  PasskeyChallengeResponse,
+  GetTokenByPasskeyParameters,
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
@@ -201,6 +205,58 @@ export interface Auth0ContextInterface extends AuthState {
    */
   customTokenExchange: (
     parameters: CustomTokenExchangeParameters
+  ) => Promise<Credentials>;
+
+  /**
+   * Requests a passkey signup challenge from Auth0.
+   *
+   * Returns WebAuthn creation options that should be passed to the platform's
+   * credential manager to create a new passkey credential.
+   *
+   * @remarks
+   * **Platform specific:** Only available on native platforms (iOS 16.6+ / Android).
+   *
+   * @param parameters The parameters for the signup challenge.
+   * @returns A promise resolving with the challenge response containing authSession and authParamsPublicKey.
+   * @throws {PasskeyError} If the challenge request fails or is not supported.
+   */
+  passkeySignupChallenge: (
+    parameters: PasskeySignupChallengeParameters
+  ) => Promise<PasskeyChallengeResponse>;
+
+  /**
+   * Requests a passkey login challenge from Auth0.
+   *
+   * Returns WebAuthn request options that should be passed to the platform's
+   * credential manager to assert an existing passkey.
+   *
+   * @remarks
+   * **Platform specific:** Only available on native platforms (iOS 16.6+ / Android).
+   *
+   * @param parameters The parameters for the login challenge.
+   * @returns A promise resolving with the challenge response containing authSession and authParamsPublicKey.
+   * @throws {PasskeyError} If the challenge request fails or is not supported.
+   */
+  passkeyLoginChallenge: (
+    parameters: PasskeyLoginChallengeParameters
+  ) => Promise<PasskeyChallengeResponse>;
+
+  /**
+   * Exchanges a passkey credential response for Auth0 tokens.
+   *
+   * Call this after the platform credential manager returns the passkey
+   * credential (from either signup or login flow). On success, the user
+   * state and credentials are updated automatically.
+   *
+   * @remarks
+   * **Platform specific:** Only available on native platforms (iOS 16.6+ / Android).
+   *
+   * @param parameters The exchange parameters including authSession and authResponse.
+   * @returns A promise resolving with the user's credentials.
+   * @throws {PasskeyError} If the exchange fails or is not supported.
+   */
+  getTokenByPasskey: (
+    parameters: GetTokenByPasskeyParameters
   ) => Promise<Credentials>;
 
   /**
@@ -392,6 +448,9 @@ const initialContext: Auth0ContextInterface = {
   authorizeWithRecoveryCode: stub,
   authorizeWithExchangeNativeSocial: stub,
   customTokenExchange: stub,
+  passkeySignupChallenge: stub,
+  passkeyLoginChallenge: stub,
+  getTokenByPasskey: stub,
   sendEmailCode: stub,
   sendSMSCode: stub,
   authorizeWithEmail: stub,

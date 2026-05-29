@@ -5,6 +5,10 @@ import type {
   Auth0Options,
   DPoPHeadersParams,
   CustomTokenExchangeParameters,
+  PasskeySignupChallengeParameters,
+  PasskeyLoginChallengeParameters,
+  PasskeyChallengeResponse,
+  GetTokenByPasskeyParameters,
   Credentials,
 } from './types';
 
@@ -120,6 +124,57 @@ class Auth0 {
     parameters: CustomTokenExchangeParameters
   ): Promise<Credentials> {
     return this.client.customTokenExchange(parameters);
+  }
+
+  /**
+   * Requests a passkey signup challenge from Auth0.
+   *
+   * Returns WebAuthn creation options that should be passed to the platform's
+   * credential manager to create a new passkey credential.
+   *
+   * @remarks Native only (iOS, Android). Not supported on web.
+   *
+   * @param parameters The parameters for the signup challenge.
+   * @returns A promise resolving with the challenge response containing authSession and authParamsPublicKey.
+   */
+  passkeySignupChallenge(
+    parameters: PasskeySignupChallengeParameters
+  ): Promise<PasskeyChallengeResponse> {
+    return this.client.passkeySignupChallenge(parameters);
+  }
+
+  /**
+   * Requests a passkey login challenge from Auth0.
+   *
+   * Returns WebAuthn request options that should be passed to the platform's
+   * credential manager to assert an existing passkey.
+   *
+   * @remarks Native only (iOS, Android). Not supported on web.
+   *
+   * @param parameters The parameters for the login challenge.
+   * @returns A promise resolving with the challenge response containing authSession and authParamsPublicKey.
+   */
+  passkeyLoginChallenge(
+    parameters: PasskeyLoginChallengeParameters
+  ): Promise<PasskeyChallengeResponse> {
+    return this.client.passkeyLoginChallenge(parameters);
+  }
+
+  /**
+   * Exchanges a passkey credential response for Auth0 tokens.
+   *
+   * Call this after the platform credential manager returns the passkey
+   * credential (from either signup or login flow).
+   *
+   * @remarks Native only (iOS, Android). Not supported on web.
+   *
+   * @param parameters The exchange parameters including authSession and authResponse.
+   * @returns A promise resolving with the user's credentials.
+   */
+  getTokenByPasskey(
+    parameters: GetTokenByPasskeyParameters
+  ): Promise<Credentials> {
+    return this.client.getTokenByPasskey(parameters);
   }
 }
 

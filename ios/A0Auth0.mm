@@ -180,9 +180,39 @@ RCT_EXPORT_METHOD(customTokenExchange:(NSString *)subjectToken
     [self.nativeBridge customTokenExchangeWithSubjectToken:subjectToken subjectTokenType:subjectTokenType audience:audience scope:scope organization:organization resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(passkeySignupChallenge:(NSString * _Nullable)email
+                  phoneNumber:(NSString * _Nullable)phoneNumber
+                  username:(NSString * _Nullable)username
+                  name:(NSString * _Nullable)name
+                  givenName:(NSString * _Nullable)givenName
+                  familyName:(NSString * _Nullable)familyName
+                  nickname:(NSString * _Nullable)nickname
+                  picture:(NSString * _Nullable)picture
+                  userMetadata:(NSDictionary * _Nullable)userMetadata
+                  realm:(NSString * _Nullable)realm
+                  organization:(NSString * _Nullable)organization
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge passkeySignupChallengeWithEmail:email phoneNumber:phoneNumber username:username name:name givenName:givenName familyName:familyName nickname:nickname picture:picture userMetadata:userMetadata realm:realm organization:organization resolve:resolve reject:reject];
+}
 
+RCT_EXPORT_METHOD(passkeyLoginChallenge:(NSString * _Nullable)realm
+                  organization:(NSString * _Nullable)organization
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge passkeyLoginChallengeWithRealm:realm organization:organization resolve:resolve reject:reject];
+}
 
-
+RCT_EXPORT_METHOD(getTokenByPasskey:(NSString *)authSession
+                  authResponse:(NSString *)authResponse
+                  realm:(NSString * _Nullable)realm
+                  audience:(NSString * _Nullable)audience
+                  scope:(NSString * _Nullable)scope
+                  organization:(NSString * _Nullable)organization
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge getTokenByPasskeyWithAuthSession:authSession authResponse:authResponse realm:realm audience:audience scope:scope organization:organization resolve:resolve reject:reject];
+}
 
 
 - (NSDictionary *)constantsToExport {

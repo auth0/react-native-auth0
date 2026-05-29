@@ -6,6 +6,10 @@ import type {
   DPoPHeadersParams,
   TokenType,
   CustomTokenExchangeParameters,
+  PasskeySignupChallengeParameters,
+  PasskeyLoginChallengeParameters,
+  PasskeyChallengeResponse,
+  GetTokenByPasskeyParameters,
   Credentials,
 } from '../../types';
 
@@ -73,5 +77,46 @@ export interface IAuth0Client {
    */
   customTokenExchange(
     parameters: CustomTokenExchangeParameters
+  ): Promise<Credentials>;
+
+  /**
+   * Requests a passkey signup challenge from Auth0.
+   *
+   * Returns WebAuthn creation options that should be passed to the platform's
+   * credential manager to create a new passkey. After the credential is created,
+   * call `getTokenByPasskey` with the auth session and credential response.
+   *
+   * @param parameters The passkey signup challenge parameters.
+   * @returns A promise resolving with the challenge response.
+   */
+  passkeySignupChallenge(
+    parameters: PasskeySignupChallengeParameters
+  ): Promise<PasskeyChallengeResponse>;
+
+  /**
+   * Requests a passkey login challenge from Auth0.
+   *
+   * Returns WebAuthn request options that should be passed to the platform's
+   * credential manager to assert an existing passkey. After the assertion,
+   * call `getTokenByPasskey` with the auth session and credential response.
+   *
+   * @param parameters The passkey login challenge parameters.
+   * @returns A promise resolving with the challenge response.
+   */
+  passkeyLoginChallenge(
+    parameters: PasskeyLoginChallengeParameters
+  ): Promise<PasskeyChallengeResponse>;
+
+  /**
+   * Exchanges a passkey credential response for Auth0 tokens.
+   *
+   * Call this after the platform credential manager returns the passkey
+   * credential (either from signup or login flow).
+   *
+   * @param parameters The exchange parameters including auth session and credential response.
+   * @returns A promise resolving with Auth0 credentials.
+   */
+  getTokenByPasskey(
+    parameters: GetTokenByPasskeyParameters
   ): Promise<Credentials>;
 }

@@ -5,6 +5,7 @@ import type {
   ClearSessionParameters,
   DPoPHeadersParams,
   SessionTransferCredentials,
+  PasskeyChallengeResponse,
 } from '../../../types';
 import type {
   LocalAuthenticationOptions,
@@ -201,6 +202,72 @@ export interface INativeBridge {
   customTokenExchange(
     subjectToken: string,
     subjectTokenType: string,
+    audience?: string,
+    scope?: string,
+    organization?: string
+  ): Promise<Credentials>;
+
+  /**
+   * Requests a passkey signup challenge from Auth0.
+   *
+   * Returns WebAuthn creation options to be used with the platform's credential manager.
+   *
+   * @param email The user's email address.
+   * @param phoneNumber The user's phone number.
+   * @param username The user's username.
+   * @param name The user's display name.
+   * @param givenName The user's first name.
+   * @param familyName The user's last name.
+   * @param nickname The user's preferred nickname.
+   * @param picture URL pointing to the user's profile picture.
+   * @param userMetadata Additional user metadata as key-value pairs.
+   * @param realm The database connection name.
+   * @param organization Optional organization ID or name.
+   * @returns A promise that resolves with the challenge response.
+   */
+  passkeySignupChallenge(
+    email?: string,
+    phoneNumber?: string,
+    username?: string,
+    name?: string,
+    givenName?: string,
+    familyName?: string,
+    nickname?: string,
+    picture?: string,
+    userMetadata?: Record<string, string>,
+    realm?: string,
+    organization?: string
+  ): Promise<PasskeyChallengeResponse>;
+
+  /**
+   * Requests a passkey login challenge from Auth0.
+   *
+   * Returns WebAuthn request options to be used with the platform's credential manager.
+   *
+   * @param realm The database connection name.
+   * @param organization Optional organization ID or name.
+   * @returns A promise that resolves with the challenge response.
+   */
+  passkeyLoginChallenge(
+    realm?: string,
+    organization?: string
+  ): Promise<PasskeyChallengeResponse>;
+
+  /**
+   * Exchanges a passkey credential response for Auth0 tokens.
+   *
+   * @param authSession The auth session from the challenge response.
+   * @param authResponse JSON string of the PublicKeyCredential response.
+   * @param realm The database connection name.
+   * @param audience Optional target API identifier.
+   * @param scope Optional space-separated scopes.
+   * @param organization Optional organization ID or name.
+   * @returns A promise that resolves with Auth0 credentials.
+   */
+  getTokenByPasskey(
+    authSession: string,
+    authResponse: string,
+    realm?: string,
     audience?: string,
     scope?: string,
     organization?: string

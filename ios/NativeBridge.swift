@@ -7,6 +7,7 @@
 //
 
 import Auth0
+import AuthenticationServices
 import Foundation
 import LocalAuthentication
 
@@ -404,10 +405,213 @@ public class NativeBridge: NSObject {
         }
     }
     
+
+
+
+
+    // MARK: - Passkey Methods (challenge / exchange)
+
+    @objc public func passkeySignupChallenge(email: String?, phoneNumber: String?, username: String?, name: String?, givenName: String?, familyName: String?, nickname: String?, picture: String?, userMetadata: [String: String]?, realm: String?, organization: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        guard #available(iOS 16.6, *) else {
+            reject("PASSKEY_NOT_AVAILABLE", "Passkeys require iOS 16.6 or later", nil)
+            return
+        }
+
+        let trimmedEmail = email?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let finalEmail = (trimmedEmail?.isEmpty == true) ? nil : trimmedEmail
+        let phoneValue = phoneNumber?.isEmpty == true ? nil : phoneNumber
+        let usernameValue = username?.isEmpty == true ? nil : username
+        let nameValue = name?.isEmpty == true ? nil : name
+        let givenNameValue = givenName?.isEmpty == true ? nil : givenName
+        let familyNameValue = familyName?.isEmpty == true ? nil : familyName
+        let nicknameValue = nickname?.isEmpty == true ? nil : nickname
+        let pictureValue = picture?.isEmpty == true ? nil : picture
+        let userMetadataValue = userMetadata?.isEmpty == true ? nil : userMetadata
+        let realmValue = realm?.isEmpty == true ? nil : realm
+        let orgValue = organization?.isEmpty == true ? nil : organization
+
+        var auth = Auth0.authentication(clientId: self.clientId, domain: self.domain)
+        if self.useDPoP {
+            auth = auth.useDPoP()
+        }
+
+        auth.passkeySignupChallenge(
+            email: finalEmail,
+            phoneNumber: phoneValue,
+            username: usernameValue,
+            name: nameValue,
+            givenName: givenNameValue,
+            familyName: familyNameValue,
+            nickname: nicknameValue,
+            picture: pictureValue,
+            userMetadata: userMetadataValue,
+            connection: realmValue,
+            organization: orgValue
+        ).start { result in
+            switch result {
+            case .success(let challenge):
+                let authParamsPublicKey: [String: Any] = [
+                    "rp": ["id": challenge.relyingPartyId],
+                    "challenge": challenge.challengeData.base64URLEncodedString(),
+                    "user": [
+                        "id": challenge.userId.base64URLEncodedString(),
+                        "name": challenge.userName
+                    ]
+                ]
+                let response: [String: Any] = [
+                    "authSession": challenge.authenticationSession,
+                    "authParamsPublicKey": authParamsPublicKey
+                ]
+                resolve(response)
+            case .failure(let error):
+                reject("PASSKEY_CHALLENGE_FAILED", error.localizedDescription, error)
+            }
+        }
+    }
+
+    @objc public func passkeyLoginChallenge(realm: String?, organization: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        guard #available(iOS 16.6, *) else {
+            reject("PASSKEY_NOT_AVAILABLE", "Passkeys require iOS 16.6 or later", nil)
+            return
+        }
+
+        let realmValue = realm?.isEmpty == true ? nil : realm
+        let orgValue = organization?.isEmpty == true ? nil : organization
+
+        var auth = Auth0.authentication(clientId: self.clientId, domain: self.domain)
+        if self.useDPoP {
+            auth = auth.useDPoP()
+        }
+
+        auth.passkeyLoginChallenge(
+            connection: realmValue,
+            organization: orgValue
+        ).start { result in
+            switch result {
+            case .success(let challenge):
+                let authParamsPublicKey: [String: Any] = [
+                    "rpId": challenge.relyingPartyId,
+                    "challenge": challenge.challengeData.base64URLEncodedString()
+                ]
+                let response: [String: Any] = [
+                    "authSession": challenge.authenticationSession,
+                    "authParamsPublicKey": authParamsPublicKey
+                ]
+                resolve(response)
+            case .failure(let error):
+                reject("PASSKEY_CHALLENGE_FAILED", error.localizedDescription, error)
+            }
+        }
+    }
+
+    @objc public func getTokenByPasskey(authSession: String, authResponse: String, realm: String?, audience: String?, scope: String?, organization: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        guard #available(iOS 16.6, *) else {
+            reject("PASSKEY_EXCHANGE_FAILED", "Passkeys require iOS 16.6 or later", nil)
+            return
+        }
+
+        let realmValue = realm?.isEmpty == true ? nil : realm
+        let audienceValue = audience?.isEmpty == true ? nil : audience
+        let orgValue = organization?.isEmpty == true ? nil : organization
+        let finalScope = scope?.isEmpty == true ? "openid profile email" : (scope ?? "openid profile email")
+
+        guard let responseData = authResponse.data(using: .utf8),
+              let json = try? JSONSerialization.jsonObject(with: responseData) as? [String: Any],
+              let responseDict = json["response"] as? [String: Any],
+              let idString = json["id"] as? String,
+              let credentialID = Data(base64URLEncoded: idString),
+              let clientDataJSONString = responseDict["clientDataJSON"] as? String,
+              let clientDataJSON = Data(base64URLEncoded: clientDataJSONString) else {
+            reject("PASSKEY_EXCHANGE_FAILED", "Invalid authResponse JSON", nil)
+            return
+        }
+
+        let attachmentString = json["authenticatorAttachment"] as? String ?? "platform"
+        let attachment: ASAuthorizationPublicKeyCredentialAttachment = attachmentString == "cross-platform" ? .crossPlatform : .platform
+
+        var auth = Auth0.authentication(clientId: self.clientId, domain: self.domain)
+        if self.useDPoP {
+            auth = auth.useDPoP()
+        }
+
+        if let attestationObjectString = responseDict["attestationObject"] as? String {
+            let attestationObject = Data(base64URLEncoded: attestationObjectString)
+            let passkey = BridgeSignupPasskey(
+                credentialID: credentialID,
+                attachment: attachment,
+                rawClientDataJSON: clientDataJSON,
+                rawAttestationObject: attestationObject
+            )
+            let challenge = PasskeySignupChallenge(
+                authenticationSession: authSession,
+                relyingPartyId: self.domain,
+                userId: Data(),
+                userName: "",
+                challengeData: Data()
+            )
+            auth.login(
+                passkey: passkey,
+                challenge: challenge,
+                connection: realmValue,
+                audience: audienceValue,
+                scope: finalScope,
+                organization: orgValue
+            ).start { result in
+                switch result {
+                case .success(let credentials):
+                    resolve(credentials.asDictionary())
+                case .failure(let error):
+                    reject("PASSKEY_EXCHANGE_FAILED", error.localizedDescription, error)
+                }
+            }
+        } else {
+            guard let authenticatorDataString = responseDict["authenticatorData"] as? String,
+                  let authenticatorData = Data(base64URLEncoded: authenticatorDataString),
+                  let signatureString = responseDict["signature"] as? String,
+                  let signature = Data(base64URLEncoded: signatureString) else {
+                reject("PASSKEY_EXCHANGE_FAILED", "Missing authenticatorData or signature in authResponse", nil)
+                return
+            }
+            let userHandleString = responseDict["userHandle"] as? String
+            let userHandle = userHandleString.flatMap { Data(base64URLEncoded: $0) }
+
+            let passkey = BridgeLoginPasskey(
+                userID: userHandle,
+                credentialID: credentialID,
+                attachment: attachment,
+                rawClientDataJSON: clientDataJSON,
+                rawAuthenticatorData: authenticatorData,
+                signature: signature
+            )
+            let challenge = PasskeyLoginChallenge(
+                authenticationSession: authSession,
+                relyingPartyId: self.domain,
+                challengeData: Data()
+            )
+            auth.login(
+                passkey: passkey,
+                challenge: challenge,
+                connection: realmValue,
+                audience: audienceValue,
+                scope: finalScope,
+                organization: orgValue
+            ).start { result in
+                switch result {
+                case .success(let credentials):
+                    resolve(credentials.asDictionary())
+                case .failure(let error):
+                    reject("PASSKEY_EXCHANGE_FAILED", error.localizedDescription, error)
+                }
+            }
+        }
+    }
+
+
+
     @objc public func getClientId() -> String {
         return clientId
     }
-    
+
     @objc public func getDomain() -> String {
         return domain
     }
@@ -433,6 +637,7 @@ public class NativeBridge: NSObject {
             return .default
         }
     }
+
 }
 
 
@@ -516,7 +721,7 @@ extension CredentialsManagerError {
                 code = cause.code
             } else {
                 code = "REVOKE_FAILED"
-            } 
+            }
             case CredentialsManagerError.largeMinTTL: code = "LARGE_MIN_TTL"
             case CredentialsManagerError.dpopKeyMissing: code = "DPOP_KEY_MISSING"
             case CredentialsManagerError.dpopKeyMismatch: code = "DPOP_KEY_MISMATCH"
@@ -525,4 +730,48 @@ extension CredentialsManagerError {
         }
         return code
     }
+}
+
+
+
+// MARK: - Data Base64URL Extensions
+
+extension Data {
+    init?(base64URLEncoded string: String) {
+        var base64 = string
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        let remainder = base64.count % 4
+        if remainder > 0 {
+            base64.append(String(repeating: "=", count: 4 - remainder))
+        }
+        self.init(base64Encoded: base64)
+    }
+
+    func base64URLEncodedString() -> String {
+        return self.base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
+    }
+}
+
+// MARK: - Passkey Bridge Types
+
+@available(iOS 16.6, macOS 13.5, *)
+struct BridgeLoginPasskey: LoginPasskey {
+    var userID: Data!
+    var credentialID: Data
+    var attachment: ASAuthorizationPublicKeyCredentialAttachment
+    var rawClientDataJSON: Data
+    var rawAuthenticatorData: Data!
+    var signature: Data!
+}
+
+@available(iOS 16.6, macOS 13.5, *)
+struct BridgeSignupPasskey: SignupPasskey {
+    var credentialID: Data
+    var attachment: ASAuthorizationPublicKeyCredentialAttachment
+    var rawClientDataJSON: Data
+    var rawAttestationObject: Data?
 }

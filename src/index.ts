@@ -6,6 +6,8 @@ export {
   WebAuthErrorCodes,
   DPoPError,
   DPoPErrorCodes,
+  PasskeyError,
+  PasskeyErrorCodes,
 } from './core/models';
 export { TimeoutError } from './core/utils/fetchWithTimeout';
 export { TokenType } from './types/common';

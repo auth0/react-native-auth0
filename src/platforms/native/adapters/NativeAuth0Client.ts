@@ -7,6 +7,10 @@ import type { NativeAuth0Options } from '../../../types/platform-specific';
 import type {
   DPoPHeadersParams,
   CustomTokenExchangeParameters,
+  PasskeySignupChallengeParameters,
+  PasskeyLoginChallengeParameters,
+  PasskeyChallengeResponse,
+  GetTokenByPasskeyParameters,
   Credentials,
 } from '../../../types';
 import { NativeWebAuthProvider } from './NativeWebAuthProvider';
@@ -18,7 +22,7 @@ import {
 } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
-import { AuthError, DPoPError } from '../../../core/models';
+import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
 
 export class NativeAuth0Client implements IAuth0Client {
   readonly webAuth: NativeWebAuthProvider;
@@ -185,5 +189,82 @@ export class NativeAuth0Client implements IAuth0Client {
       scope,
       organization
     );
+  }
+
+  async passkeySignupChallenge(
+    parameters: PasskeySignupChallengeParameters
+  ): Promise<PasskeyChallengeResponse> {
+    const {
+      email,
+      phoneNumber,
+      username,
+      name,
+      givenName,
+      familyName,
+      nickname,
+      picture,
+      userMetadata,
+      realm,
+      organization,
+    } = parameters;
+    try {
+      return await this.guardedBridge.passkeySignupChallenge(
+        email || undefined,
+        phoneNumber || undefined,
+        username || undefined,
+        name || undefined,
+        givenName || undefined,
+        familyName || undefined,
+        nickname || undefined,
+        picture || undefined,
+        userMetadata || undefined,
+        realm || undefined,
+        organization || undefined
+      );
+    } catch (e) {
+      if (e instanceof AuthError) {
+        throw new PasskeyError(e);
+      }
+      throw e;
+    }
+  }
+
+  async passkeyLoginChallenge(
+    parameters: PasskeyLoginChallengeParameters
+  ): Promise<PasskeyChallengeResponse> {
+    const { realm, organization } = parameters;
+    try {
+      return await this.guardedBridge.passkeyLoginChallenge(
+        realm || undefined,
+        organization || undefined
+      );
+    } catch (e) {
+      if (e instanceof AuthError) {
+        throw new PasskeyError(e);
+      }
+      throw e;
+    }
+  }
+
+  async getTokenByPasskey(
+    parameters: GetTokenByPasskeyParameters
+  ): Promise<Credentials> {
+    const { authSession, authResponse, realm, audience, scope, organization } =
+      parameters;
+    try {
+      return await this.guardedBridge.getTokenByPasskey(
+        authSession,
+        authResponse,
+        realm || undefined,
+        audience || undefined,
+        scope || undefined,
+        organization || undefined
+      );
+    } catch (e) {
+      if (e instanceof AuthError) {
+        throw new PasskeyError(e);
+      }
+      throw e;
+    }
   }
 }
