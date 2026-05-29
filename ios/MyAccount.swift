@@ -58,7 +58,7 @@ public class A0MyAccount: NSObject {
         }
     }
 
-    @objc public func enrollPasskey(accessToken: String, authenticationMethodId: String, authSession: String, authResponse: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func enrollPasskey(accessToken: String, authenticationMethodId: String, authSession: String, authResponse: String, authParamsPublicKey: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         guard #available(iOS 16.6, *) else {
             reject("MY_ACCOUNT_ERROR", "Passkeys require iOS 16.6 or later", nil)
             return
@@ -90,13 +90,36 @@ public class A0MyAccount: NSObject {
             rawAttestationObject: attestationObject
         )
 
+        guard let authParamsData = authParamsPublicKey.data(using: .utf8),
+              let authParams = try? JSONSerialization.jsonObject(with: authParamsData) as? [String: Any] else {
+            reject("MY_ACCOUNT_ERROR", "Invalid authParamsPublicKey JSON", nil)
+            return
+        }
+
+        let relyingPartyId = (authParams["rp"] as? [String: Any])?["id"] as? String ?? self.domain
+        var challengeData = Data()
+        var userId = Data()
+        var userName = ""
+
+        if let challengeStr = authParams["challenge"] as? String, let data = Data(base64URLEncoded: challengeStr) {
+            challengeData = data
+        }
+        if let user = authParams["user"] as? [String: Any] {
+            if let userIdStr = user["id"] as? String, let data = Data(base64URLEncoded: userIdStr) {
+                userId = data
+            }
+            if let name = user["name"] as? String {
+                userName = name
+            }
+        }
+
         let challenge = PasskeyEnrollmentChallenge(
             authenticationMethodId: authenticationMethodId,
             authenticationSession: authSession,
-            relyingPartyId: self.domain,
-            userId: Data(),
-            userName: "",
-            challengeData: Data()
+            relyingPartyId: relyingPartyId,
+            userId: userId,
+            userName: userName,
+            challengeData: challengeData
         )
 
         myAccount.authenticationMethods.enroll(passkey: passkey, challenge: challenge).start { result in

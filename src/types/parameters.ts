@@ -451,6 +451,8 @@ export interface EnrollPasskeyParameters {
   authSession: string;
   /** JSON string of the PublicKeyCredential response from the platform credential manager. */
   authResponse: string;
+  /** The public key parameters from the enrollment challenge response. */
+  authParamsPublicKey: Record<string, any>;
 }
 
 /**

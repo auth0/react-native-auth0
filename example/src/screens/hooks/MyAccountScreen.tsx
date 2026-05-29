@@ -131,6 +131,7 @@ const MyAccountScreen = () => {
         authenticationMethodId: challengeState.authenticationMethodId,
         authSession: challengeState.authSession,
         authResponse: credentialJson,
+        authParamsPublicKey: challengeState.authParamsPublicKey,
       });
 
       setChallengeState(null);

@@ -73,6 +73,7 @@ class MyAccount(
         authenticationMethodId: String,
         authSession: String,
         authResponse: String,
+        authParamsPublicKey: String,
         promise: Promise
     ) {
         val myAccountClient = createClient(accessToken)
@@ -84,15 +85,13 @@ class MyAccount(
             return
         }
 
-        val dummyAuthParams = AuthnParamsPublicKey(
-            AuthenticatorSelection("required", "preferred"),
-            "",
-            emptyList(),
-            RelyingParty(auth0.domain, auth0.domain),
-            60000,
-            PasskeyUser("", "", "")
-        )
-        val challenge = PasskeyEnrollmentChallenge(authenticationMethodId, authSession, dummyAuthParams)
+        val authParams = try {
+            Gson().fromJson(authParamsPublicKey, AuthnParamsPublicKey::class.java)
+        } catch (e: Exception) {
+            promise.reject("MY_ACCOUNT_ERROR", "Invalid authParamsPublicKey JSON: ${e.message}", e)
+            return
+        }
+        val challenge = PasskeyEnrollmentChallenge(authenticationMethodId, authSession, authParams)
 
         myAccountClient.enroll(publicKeyCredentials, challenge)
             .start(object : com.auth0.android.callback.Callback<PasskeyAuthenticationMethod, MyAccountException> {

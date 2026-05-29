@@ -304,7 +304,8 @@ export interface INativeBridge {
     accessToken: string,
     authenticationMethodId: string,
     authSession: string,
-    authResponse: string
+    authResponse: string,
+    authParamsPublicKey: string
   ): Promise<Record<string, any>>;
 
   /**

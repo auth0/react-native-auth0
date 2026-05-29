@@ -227,9 +227,10 @@ RCT_EXPORT_METHOD(enrollPasskey:(NSString *)accessToken
                   authenticationMethodId:(NSString *)authenticationMethodId
                   authSession:(NSString *)authSession
                   authResponse:(NSString *)authResponse
+                  authParamsPublicKey:(NSString *)authParamsPublicKey
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-    [self.myAccount enrollPasskeyWithAccessToken:accessToken authenticationMethodId:authenticationMethodId authSession:authSession authResponse:authResponse resolve:resolve reject:reject];
+    [self.myAccount enrollPasskeyWithAccessToken:accessToken authenticationMethodId:authenticationMethodId authSession:authSession authResponse:authResponse authParamsPublicKey:authParamsPublicKey resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(getAuthenticationMethods:(NSString *)accessToken

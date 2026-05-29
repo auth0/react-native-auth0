@@ -695,9 +695,10 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         authenticationMethodId: String,
         authSession: String,
         authResponse: String,
+        authParamsPublicKey: String,
         promise: Promise
     ) {
-        myAccount!!.enrollPasskey(accessToken, authenticationMethodId, authSession, authResponse, promise)
+        myAccount!!.enrollPasskey(accessToken, authenticationMethodId, authSession, authResponse, authParamsPublicKey, promise)
     }
 
     @ReactMethod

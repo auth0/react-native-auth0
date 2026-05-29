@@ -1284,6 +1284,209 @@ try {
 
 > **Note:** Passkeys require a real device for the full flow. Simulators/emulators may have limited support.
 
+## My Account API
+
+### Overview
+
+The My Account API allows authenticated users to manage their own authentication methods (passkeys, phone, email, TOTP, push notifications, recovery codes). It provides endpoints for enrolling new factors, confirming enrollments with OTP, listing/updating/deleting authentication methods, and querying available factors.
+
+Access the My Account client via the `myAccount` property from `useAuth0()` or the `Auth0` class instance.
+
+### Prerequisites
+
+- The user must be authenticated
+- An access token with the appropriate My Account API scopes is required:
+  - `read:me:authentication_methods`
+  - `create:me:authentication_methods`
+  - `update:me:authentication_methods`
+  - `delete:me:authentication_methods`
+  - `read:me:factors`
+
+Use `getApiCredentials` with the `https://<domain>/me/` audience to obtain a scoped token:
+
+```typescript
+const credentials = await getApiCredentials(
+  `https://${domain}/me/`,
+  'read:me:authentication_methods create:me:authentication_methods delete:me:authentication_methods update:me:authentication_methods read:me:factors'
+);
+const accessToken = credentials.accessToken;
+```
+
+### Passkey Enrollment
+
+Passkey enrollment is a two-step process: request a challenge, then verify with the credential response.
+
+```typescript
+import { useAuth0 } from 'react-native-auth0';
+import { createPasskey } from './PasskeyModule'; // Your native passkey module
+
+const { myAccount, getApiCredentials } = useAuth0();
+
+// Step 1: Request the enrollment challenge
+const accessToken = (await getApiCredentials(`https://${domain}/me/`, scopes))
+  .accessToken;
+const challenge = await myAccount.passkeyEnrollmentChallenge({ accessToken });
+
+// Step 2: Create a passkey using the platform credential manager
+const credentialJson = await createPasskey(challenge.authParamsPublicKey);
+
+// Step 3: Verify the enrollment
+const method = await myAccount.enrollPasskey({
+  accessToken,
+  authenticationMethodId: challenge.authenticationMethodId,
+  authSession: challenge.authSession,
+  authResponse: credentialJson,
+  authParamsPublicKey: challenge.authParamsPublicKey,
+});
+
+console.log('Enrolled passkey:', method.id, method.keyId);
+```
+
+### Phone Enrollment
+
+```typescript
+const { myAccount } = useAuth0();
+
+// Step 1: Enroll the phone number (sends OTP)
+const challenge = await myAccount.enrollPhone({
+  accessToken,
+  phoneNumber: '+1234567890',
+  preferredAuthenticationMethod: 'sms', // or 'voice'
+});
+
+// Step 2: Confirm with OTP
+const method = await myAccount.confirmPhoneEnrollment({
+  accessToken,
+  id: challenge.id,
+  authSession: challenge.authSession,
+  otpCode: '123456',
+});
+```
+
+### Email Enrollment
+
+```typescript
+// Step 1: Enroll the email (sends OTP)
+const challenge = await myAccount.enrollEmail({
+  accessToken,
+  emailAddress: 'user@example.com',
+});
+
+// Step 2: Confirm with OTP
+const method = await myAccount.confirmEmailEnrollment({
+  accessToken,
+  id: challenge.id,
+  authSession: challenge.authSession,
+  otpCode: '123456',
+});
+```
+
+### TOTP Enrollment
+
+```typescript
+// Step 1: Enroll TOTP (returns QR code / manual code)
+const challenge = await myAccount.enrollTOTP({ accessToken });
+// Display challenge.barcodeUri as a QR code, or show challenge.manualInputCode
+
+// Step 2: Confirm with OTP from authenticator app
+const method = await myAccount.confirmTOTPEnrollment({
+  accessToken,
+  id: challenge.id,
+  authSession: challenge.authSession,
+  otpCode: '123456',
+});
+```
+
+### Recovery Code Enrollment
+
+```typescript
+// Step 1: Enroll recovery code
+const challenge = await myAccount.enrollRecoveryCode({ accessToken });
+// Store challenge.recoveryCode securely
+
+// Step 2: Confirm enrollment
+const method = await myAccount.confirmRecoveryCodeEnrollment({
+  accessToken,
+  id: challenge.id,
+  authSession: challenge.authSession,
+});
+```
+
+### Managing Authentication Methods
+
+```typescript
+// List all methods
+const methods = await myAccount.getAuthenticationMethods({ accessToken });
+
+// Get a specific method
+const method = await myAccount.getAuthenticationMethod({
+  accessToken,
+  id: 'authentication-method-id',
+});
+
+// Update a method name
+const updated = await myAccount.updateAuthenticationMethod({
+  accessToken,
+  id: 'authentication-method-id',
+  name: 'My Work Phone',
+});
+
+// Delete a method
+await myAccount.deleteAuthenticationMethod({
+  accessToken,
+  id: 'authentication-method-id',
+});
+```
+
+### Getting Available Factors
+
+```typescript
+const factors = await myAccount.getFactors({ accessToken });
+// Returns available factor types (e.g., sms, email, totp, push-notification, webauthn-platform)
+```
+
+### Error Handling
+
+```typescript
+import { MyAccountError, MyAccountErrorCodes, PasskeyError, PasskeyErrorCodes } from 'react-native-auth0';
+
+try {
+  await myAccount.enrollPasskey({ ... });
+} catch (e) {
+  if (e instanceof PasskeyError) {
+    switch (e.type) {
+      case PasskeyErrorCodes.NOT_AVAILABLE:
+        // Passkeys not supported on this device
+        break;
+      default:
+        console.error(`Passkey error: [${e.type}] ${e.message}`);
+    }
+  } else if (e instanceof MyAccountError) {
+    switch (e.type) {
+      case MyAccountErrorCodes.ENROLLMENT_FAILED:
+        // Enrollment failed
+        break;
+      case MyAccountErrorCodes.VERIFICATION_FAILED:
+        // OTP verification failed
+        break;
+      case MyAccountErrorCodes.UNAUTHORIZED:
+        // Token expired or insufficient scopes
+        break;
+      default:
+        console.error(`My Account error: [${e.type}] ${e.message}`);
+    }
+  }
+}
+```
+
+### Platform Support
+
+| Platform    | Support          | Notes                                                     |
+| ----------- | ---------------- | --------------------------------------------------------- |
+| **iOS**     | ✅ Supported     | Passkey enrollment requires iOS 16.6+                     |
+| **Android** | ✅ Supported     | Passkey enrollment requires Android API 28+               |
+| **Web**     | ❌ Not Supported | Throws `PasskeyError` with `PASSKEY_UNSUPPORTED_PLATFORM` |
+
 ## Native to Web SSO
 
 ### Native to Web SSO Overview

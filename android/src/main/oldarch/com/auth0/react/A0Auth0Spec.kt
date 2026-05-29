@@ -176,6 +176,7 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
         authenticationMethodId: String,
         authSession: String,
         authResponse: String,
+        authParamsPublicKey: String,
         promise: Promise
     )
 

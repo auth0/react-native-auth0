@@ -336,14 +336,16 @@ export class NativeBridgeManager implements INativeBridge {
     accessToken: string,
     authenticationMethodId: string,
     authSession: string,
-    authResponse: string
+    authResponse: string,
+    authParamsPublicKey: string
   ): Promise<Record<string, any>> {
     return this.a0_call(
       Auth0NativeModule.enrollPasskey.bind(Auth0NativeModule),
       accessToken,
       authenticationMethodId,
       authSession,
-      authResponse
+      authResponse,
+      authParamsPublicKey
     );
   }
 

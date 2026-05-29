@@ -56,14 +56,20 @@ export class NativeMyAccountClient implements IMyAccountClient {
   async enrollPasskey(
     parameters: EnrollPasskeyParameters
   ): Promise<PasskeyAuthenticationMethod> {
-    const { accessToken, authenticationMethodId, authSession, authResponse } =
-      parameters;
+    const {
+      accessToken,
+      authenticationMethodId,
+      authSession,
+      authResponse,
+      authParamsPublicKey,
+    } = parameters;
     try {
       return (await this.bridge.enrollPasskey(
         accessToken,
         authenticationMethodId,
         authSession,
-        authResponse
+        authResponse,
+        JSON.stringify(authParamsPublicKey)
       )) as PasskeyAuthenticationMethod;
     } catch (e) {
       if (e instanceof AuthError) {

@@ -217,7 +217,8 @@ export interface Spec extends TurboModule {
     accessToken: string,
     authenticationMethodId: string,
     authSession: string,
-    authResponse: string
+    authResponse: string,
+    authParamsPublicKey: string
   ): Promise<Object>;
 
   /**
