@@ -126,7 +126,12 @@ class MyAccount(
     ) {
         val myAccountClient = createClient(accessToken)
 
-        val methodType = type?.let { parseAuthenticationMethodType(it) }
+        val methodType = if (type != null) {
+            parseAuthenticationMethodType(type) ?: run {
+                promise.reject("MY_ACCOUNT_ERROR", "Invalid authentication method type: $type", null)
+                return
+            }
+        } else null
 
         myAccountClient.getAuthenticationMethods(methodType)
             .start(object : com.auth0.android.callback.Callback<List<AuthenticationMethod>, MyAccountException> {
@@ -174,7 +179,12 @@ class MyAccount(
     ) {
         val myAccountClient = createClient(accessToken)
 
-        val phoneMethod = preferredAuthenticationMethod?.let { parsePhoneAuthenticationMethodType(it) }
+        val phoneMethod = if (preferredAuthenticationMethod != null) {
+            parsePhoneAuthenticationMethodType(preferredAuthenticationMethod) ?: run {
+                promise.reject("MY_ACCOUNT_ERROR", "Invalid preferred authentication method: $preferredAuthenticationMethod", null)
+                return
+            }
+        } else null
 
         myAccountClient.updateAuthenticationMethodById(id, name, phoneMethod)
             .start(object : com.auth0.android.callback.Callback<AuthenticationMethod, MyAccountException> {
@@ -215,8 +225,12 @@ class MyAccount(
         promise: Promise
     ) {
         val myAccountClient = createClient(accessToken)
-        val preferredMethod = parsePhoneAuthenticationMethodType(preferredAuthenticationMethod ?: "sms")
-            ?: PhoneAuthenticationMethodType.SMS
+        val preferredMethod = if (preferredAuthenticationMethod != null) {
+            parsePhoneAuthenticationMethodType(preferredAuthenticationMethod) ?: run {
+                promise.reject("MY_ACCOUNT_ENROLLMENT_FAILED", "Invalid preferred authentication method: $preferredAuthenticationMethod", null)
+                return
+            }
+        } else PhoneAuthenticationMethodType.SMS
 
         myAccountClient.enrollPhone(phoneNumber, preferredMethod)
             .start(object : com.auth0.android.callback.Callback<EnrollmentChallenge, MyAccountException> {

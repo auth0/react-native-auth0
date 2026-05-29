@@ -1345,13 +1345,15 @@ console.log('Enrolled passkey:', method.id, method.keyId);
 ### Phone Enrollment
 
 ```typescript
+import { PreferredAuthenticationMethods } from 'react-native-auth0';
+
 const { myAccount } = useAuth0();
 
 // Step 1: Enroll the phone number (sends OTP)
 const challenge = await myAccount.enrollPhone({
   accessToken,
   phoneNumber: '+1234567890',
-  preferredAuthenticationMethod: 'sms', // or 'voice'
+  preferredAuthenticationMethod: PreferredAuthenticationMethods.SMS, // or VOICE
 });
 
 // Step 2: Confirm with OTP
@@ -1415,8 +1417,16 @@ const method = await myAccount.confirmRecoveryCodeEnrollment({
 ### Managing Authentication Methods
 
 ```typescript
+import { AuthenticationMethodTypes } from 'react-native-auth0';
+
 // List all methods
 const methods = await myAccount.getAuthenticationMethods({ accessToken });
+
+// List only passkey methods
+const passkeys = await myAccount.getAuthenticationMethods({
+  accessToken,
+  type: AuthenticationMethodTypes.PASSKEY,
+});
 
 // Get a specific method
 const method = await myAccount.getAuthenticationMethod({

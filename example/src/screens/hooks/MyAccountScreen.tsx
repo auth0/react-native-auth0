@@ -15,6 +15,7 @@ import {
   MyAccountErrorCodes,
   PasskeyError,
   PasskeyErrorCodes,
+  PreferredAuthenticationMethods,
 } from 'react-native-auth0';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
@@ -169,7 +170,7 @@ const MyAccountScreen = () => {
       const challenge = await myAccount.enrollPhone({
         accessToken,
         phoneNumber: phoneNumber.trim(),
-        preferredAuthenticationMethod: 'sms',
+        preferredAuthenticationMethod: PreferredAuthenticationMethods.SMS,
       });
       setEnrollmentState(challenge);
       setApiResult({ step: 'enrollPhone', ...challenge });

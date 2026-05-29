@@ -149,7 +149,14 @@ public class A0MyAccount: NSObject {
     @objc public func getAuthenticationMethods(accessToken: String, type: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let myAccount = createClient(accessToken: accessToken)
 
-        let methodType = type.flatMap { AuthenticationMethodType(rawValue: $0) }
+        var methodType: AuthenticationMethodType? = nil
+        if let typeStr = type, !typeStr.isEmpty {
+            guard let parsed = AuthenticationMethodType(rawValue: typeStr) else {
+                reject("MY_ACCOUNT_ERROR", "Invalid authentication method type: \(typeStr)", nil)
+                return
+            }
+            methodType = parsed
+        }
 
         myAccount.authenticationMethods.getAuthenticationMethods(type: methodType).start { result in
             switch result {
@@ -179,7 +186,14 @@ public class A0MyAccount: NSObject {
         let myAccount = createClient(accessToken: accessToken)
 
         let nameValue = name?.isEmpty == true ? nil : name
-        let preferredMethod = preferredAuthenticationMethod.flatMap { PreferredAuthenticationMethod(rawValue: $0) }
+        var preferredMethod: PreferredAuthenticationMethod? = nil
+        if let methodStr = preferredAuthenticationMethod, !methodStr.isEmpty {
+            guard let parsed = PreferredAuthenticationMethod(rawValue: methodStr) else {
+                reject("MY_ACCOUNT_ERROR", "Invalid preferred authentication method: \(methodStr)", nil)
+                return
+            }
+            preferredMethod = parsed
+        }
 
         myAccount.authenticationMethods.updateAuthenticationMethod(by: id, name: nameValue, preferredAuthenticationMethod: preferredMethod).start { result in
             switch result {
@@ -208,7 +222,15 @@ public class A0MyAccount: NSObject {
 
     @objc public func enrollPhone(accessToken: String, phoneNumber: String, preferredAuthenticationMethod: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let myAccount = createClient(accessToken: accessToken)
-        let preferredMethod = preferredAuthenticationMethod.flatMap { PreferredAuthenticationMethod(rawValue: $0) }
+
+        var preferredMethod: PreferredAuthenticationMethod? = nil
+        if let methodStr = preferredAuthenticationMethod, !methodStr.isEmpty {
+            guard let parsed = PreferredAuthenticationMethod(rawValue: methodStr) else {
+                reject("MY_ACCOUNT_ENROLLMENT_FAILED", "Invalid preferred authentication method: \(methodStr)", nil)
+                return
+            }
+            preferredMethod = parsed
+        }
 
         myAccount.authenticationMethods.enrollPhone(phoneNumber: phoneNumber, preferredAuthenticationMethod: preferredMethod).start { result in
             switch result {

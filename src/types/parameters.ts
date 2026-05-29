@@ -503,6 +503,50 @@ export type AuthenticationMethodType =
   | 'password';
 
 /**
+ * Runtime constants for authentication method types.
+ *
+ * @example
+ * ```typescript
+ * import { AuthenticationMethodTypes } from 'react-native-auth0';
+ *
+ * const methods = await myAccount.getAuthenticationMethods({
+ *   accessToken,
+ *   type: AuthenticationMethodTypes.PASSKEY,
+ * });
+ * ```
+ */
+export const AuthenticationMethodTypes = {
+  PASSKEY: 'passkey',
+  PHONE: 'phone',
+  EMAIL: 'email',
+  TOTP: 'totp',
+  PUSH_NOTIFICATION: 'push-notification',
+  RECOVERY_CODE: 'recovery-code',
+  WEBAUTHN_PLATFORM: 'webauthn-platform',
+  WEBAUTHN_ROAMING: 'webauthn-roaming',
+  PASSWORD: 'password',
+} as const;
+
+/**
+ * Runtime constants for preferred phone authentication methods.
+ *
+ * @example
+ * ```typescript
+ * import { PreferredAuthenticationMethods } from 'react-native-auth0';
+ *
+ * await myAccount.enrollPhone({
+ *   accessToken,
+ *   phoneNumber: '+1234567890',
+ *   preferredAuthenticationMethod: PreferredAuthenticationMethods.SMS,
+ * });
+ * ```
+ */
+export const PreferredAuthenticationMethods = {
+  SMS: 'sms',
+  VOICE: 'voice',
+} as const;
+
+/**
  * Parameters for listing authentication methods from the My Account API.
  */
 export interface GetAuthenticationMethodsParameters {
