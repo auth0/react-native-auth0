@@ -21,6 +21,24 @@ public class A0MyAccount: NSObject {
         return client
     }
 
+    private func rejectWithMyAccountError(reject: @escaping RCTPromiseRejectBlock, error: MyAccountError) {
+        let code = error.code
+        let info: [String: Any] = [
+            "type": error.code,
+            "title": error.title,
+            "detail": error.detail,
+            "statusCode": error.statusCode
+        ]
+        let message: String
+        if let data = try? JSONSerialization.data(withJSONObject: info),
+           let json = String(data: data, encoding: .utf8) {
+            message = json
+        } else {
+            message = error.localizedDescription
+        }
+        reject(code, message, error)
+    }
+
     @objc public func passkeyEnrollmentChallenge(accessToken: String, userIdentity: String?, connection: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         guard #available(iOS 16.6, *) else {
             reject("MY_ACCOUNT_ERROR", "Passkeys require iOS 16.6 or later", nil)
@@ -53,7 +71,7 @@ public class A0MyAccount: NSObject {
                 ]
                 resolve(response)
             case .failure(let error):
-                reject("MY_ACCOUNT_ERROR", error.localizedDescription, error)
+                self.rejectWithMyAccountError(reject: reject, error: error)
             }
         }
     }
@@ -141,7 +159,7 @@ public class A0MyAccount: NSObject {
                 ]
                 resolve(response)
             case .failure(let error):
-                reject("MY_ACCOUNT_ERROR", error.localizedDescription, error)
+                self.rejectWithMyAccountError(reject: reject, error: error)
             }
         }
     }
@@ -164,7 +182,7 @@ public class A0MyAccount: NSObject {
                 let response = methods.map { self.authenticationMethodToDict($0) }
                 resolve(response)
             case .failure(let error):
-                reject("MY_ACCOUNT_ERROR", error.localizedDescription, error)
+                self.rejectWithMyAccountError(reject: reject, error: error)
             }
         }
     }
@@ -177,7 +195,7 @@ public class A0MyAccount: NSObject {
             case .success(let method):
                 resolve(self.authenticationMethodToDict(method))
             case .failure(let error):
-                reject("MY_ACCOUNT_ERROR", error.localizedDescription, error)
+                self.rejectWithMyAccountError(reject: reject, error: error)
             }
         }
     }
@@ -200,7 +218,7 @@ public class A0MyAccount: NSObject {
             case .success(let method):
                 resolve(self.authenticationMethodToDict(method))
             case .failure(let error):
-                reject("MY_ACCOUNT_ERROR", error.localizedDescription, error)
+                self.rejectWithMyAccountError(reject: reject, error: error)
             }
         }
     }
@@ -213,7 +231,7 @@ public class A0MyAccount: NSObject {
             case .success:
                 resolve(nil)
             case .failure(let error):
-                reject("MY_ACCOUNT_ERROR", error.localizedDescription, error)
+                self.rejectWithMyAccountError(reject: reject, error: error)
             }
         }
     }
@@ -241,7 +259,7 @@ public class A0MyAccount: NSObject {
                 ]
                 resolve(response)
             case .failure(let error):
-                reject("MY_ACCOUNT_ENROLLMENT_FAILED", error.localizedDescription, error)
+                self.rejectWithMyAccountError(reject: reject, error: error)
             }
         }
     }
@@ -258,7 +276,7 @@ public class A0MyAccount: NSObject {
                 ]
                 resolve(response)
             case .failure(let error):
-                reject("MY_ACCOUNT_ENROLLMENT_FAILED", error.localizedDescription, error)
+                self.rejectWithMyAccountError(reject: reject, error: error)
             }
         }
     }
@@ -279,7 +297,7 @@ public class A0MyAccount: NSObject {
                 }
                 resolve(response)
             case .failure(let error):
-                reject("MY_ACCOUNT_ENROLLMENT_FAILED", error.localizedDescription, error)
+                self.rejectWithMyAccountError(reject: reject, error: error)
             }
         }
     }
@@ -300,7 +318,7 @@ public class A0MyAccount: NSObject {
                 }
                 resolve(response)
             case .failure(let error):
-                reject("MY_ACCOUNT_ENROLLMENT_FAILED", error.localizedDescription, error)
+                self.rejectWithMyAccountError(reject: reject, error: error)
             }
         }
     }
@@ -318,7 +336,7 @@ public class A0MyAccount: NSObject {
                 ]
                 resolve(response)
             case .failure(let error):
-                reject("MY_ACCOUNT_ENROLLMENT_FAILED", error.localizedDescription, error)
+                self.rejectWithMyAccountError(reject: reject, error: error)
             }
         }
     }
@@ -333,7 +351,7 @@ public class A0MyAccount: NSObject {
             case .success(let method):
                 resolve(self.authenticationMethodToDict(method))
             case .failure(let error):
-                reject("MY_ACCOUNT_VERIFICATION_FAILED", error.localizedDescription, error)
+                self.rejectWithMyAccountError(reject: reject, error: error)
             }
         }
     }
@@ -346,7 +364,7 @@ public class A0MyAccount: NSObject {
             case .success(let method):
                 resolve(self.authenticationMethodToDict(method))
             case .failure(let error):
-                reject("MY_ACCOUNT_VERIFICATION_FAILED", error.localizedDescription, error)
+                self.rejectWithMyAccountError(reject: reject, error: error)
             }
         }
     }
@@ -367,7 +385,7 @@ public class A0MyAccount: NSObject {
                 }
                 resolve(response)
             case .failure(let error):
-                reject("MY_ACCOUNT_ERROR", error.localizedDescription, error)
+                self.rejectWithMyAccountError(reject: reject, error: error)
             }
         }
     }

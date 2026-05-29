@@ -39,6 +39,17 @@ class MyAccount(
         return client
     }
 
+    private fun rejectWithMyAccountError(promise: Promise, error: MyAccountException) {
+        val code = error.type ?: "MY_ACCOUNT_ERROR"
+        val message = Gson().toJson(mapOf(
+            "type" to error.type,
+            "title" to error.title,
+            "detail" to error.detail,
+            "statusCode" to error.statusCode
+        ))
+        promise.reject(code, message, error)
+    }
+
     fun passkeyEnrollmentChallenge(
         accessToken: String,
         userIdentity: String?,
@@ -63,7 +74,7 @@ class MyAccount(
                 }
 
                 override fun onFailure(error: MyAccountException) {
-                    promise.reject("MY_ACCOUNT_ERROR", error.message, error)
+                    rejectWithMyAccountError(promise, error)
                 }
             })
     }
@@ -114,7 +125,7 @@ class MyAccount(
                 }
 
                 override fun onFailure(error: MyAccountException) {
-                    promise.reject("MY_ACCOUNT_ERROR", error.message, error)
+                    rejectWithMyAccountError(promise, error)
                 }
             })
     }
@@ -145,7 +156,7 @@ class MyAccount(
                 }
 
                 override fun onFailure(error: MyAccountException) {
-                    promise.reject("MY_ACCOUNT_ERROR", error.message, error)
+                    rejectWithMyAccountError(promise, error)
                 }
             })
     }
@@ -165,7 +176,7 @@ class MyAccount(
                 }
 
                 override fun onFailure(error: MyAccountException) {
-                    promise.reject("MY_ACCOUNT_ERROR", error.message, error)
+                    rejectWithMyAccountError(promise, error)
                 }
             })
     }
@@ -194,7 +205,7 @@ class MyAccount(
                 }
 
                 override fun onFailure(error: MyAccountException) {
-                    promise.reject("MY_ACCOUNT_ERROR", error.message, error)
+                    rejectWithMyAccountError(promise, error)
                 }
             })
     }
@@ -213,7 +224,7 @@ class MyAccount(
                 }
 
                 override fun onFailure(error: MyAccountException) {
-                    promise.reject("MY_ACCOUNT_ERROR", error.message, error)
+                    rejectWithMyAccountError(promise, error)
                 }
             })
     }
@@ -243,7 +254,7 @@ class MyAccount(
                 }
 
                 override fun onFailure(error: MyAccountException) {
-                    promise.reject("MY_ACCOUNT_ENROLLMENT_FAILED", error.message, error)
+                    rejectWithMyAccountError(promise, error)
                 }
             })
     }
@@ -266,7 +277,7 @@ class MyAccount(
                 }
 
                 override fun onFailure(error: MyAccountException) {
-                    promise.reject("MY_ACCOUNT_ENROLLMENT_FAILED", error.message, error)
+                    rejectWithMyAccountError(promise, error)
                 }
             })
     }
@@ -290,7 +301,7 @@ class MyAccount(
                 }
 
                 override fun onFailure(error: MyAccountException) {
-                    promise.reject("MY_ACCOUNT_ENROLLMENT_FAILED", error.message, error)
+                    rejectWithMyAccountError(promise, error)
                 }
             })
     }
@@ -314,7 +325,7 @@ class MyAccount(
                 }
 
                 override fun onFailure(error: MyAccountException) {
-                    promise.reject("MY_ACCOUNT_ENROLLMENT_FAILED", error.message, error)
+                    rejectWithMyAccountError(promise, error)
                 }
             })
     }
@@ -337,7 +348,7 @@ class MyAccount(
                 }
 
                 override fun onFailure(error: MyAccountException) {
-                    promise.reject("MY_ACCOUNT_ENROLLMENT_FAILED", error.message, error)
+                    rejectWithMyAccountError(promise, error)
                 }
             })
     }
@@ -359,7 +370,7 @@ class MyAccount(
                 }
 
                 override fun onFailure(error: MyAccountException) {
-                    promise.reject("MY_ACCOUNT_VERIFICATION_FAILED", error.message, error)
+                    rejectWithMyAccountError(promise, error)
                 }
             })
     }
@@ -380,7 +391,7 @@ class MyAccount(
                 }
 
                 override fun onFailure(error: MyAccountException) {
-                    promise.reject("MY_ACCOUNT_VERIFICATION_FAILED", error.message, error)
+                    rejectWithMyAccountError(promise, error)
                 }
             })
     }
@@ -410,7 +421,7 @@ class MyAccount(
                 }
 
                 override fun onFailure(error: MyAccountException) {
-                    promise.reject("MY_ACCOUNT_ERROR", error.message, error)
+                    rejectWithMyAccountError(promise, error)
                 }
             })
     }

@@ -12,7 +12,6 @@ import {
 import {
   useAuth0,
   MyAccountError,
-  MyAccountErrorCodes,
   PasskeyError,
   PasskeyErrorCodes,
   PreferredAuthenticationMethods,
@@ -60,19 +59,7 @@ const MyAccountScreen = () => {
           Alert.alert('Passkey Error', `[${e.type}] ${e.message}`);
       }
     } else if (e instanceof MyAccountError) {
-      switch (e.type) {
-        case MyAccountErrorCodes.ENROLLMENT_FAILED:
-          Alert.alert('Enrollment Failed', e.message);
-          break;
-        case MyAccountErrorCodes.VERIFICATION_FAILED:
-          Alert.alert('Verification Failed', e.message);
-          break;
-        case MyAccountErrorCodes.UNAUTHORIZED:
-          Alert.alert('Unauthorized', e.message);
-          break;
-        default:
-          Alert.alert('My Account Error', `[${e.type}] ${e.message}`);
-      }
+      Alert.alert(e.title || 'My Account Error', e.detail || e.message);
     } else {
       Alert.alert('Error', (e as Error).message);
     }
