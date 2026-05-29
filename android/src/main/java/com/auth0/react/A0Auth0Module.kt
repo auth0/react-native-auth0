@@ -671,7 +671,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             }
 
             override fun onFailure(error: AuthenticationException) {
-                handleError(error, promise)
+                promise.reject("PASSKEY_EXCHANGE_FAILED", error.getDescription(), error)
             }
         })
     }

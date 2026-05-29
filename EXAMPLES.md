@@ -1252,7 +1252,6 @@ Passkey operations throw `PasskeyError` (extends `AuthError`) with a normalized 
 | ------------------------------ | --------------------------------------------------- |
 | `PASSKEY_CHALLENGE_FAILED`     | Auth0 challenge request failed                      |
 | `PASSKEY_EXCHANGE_FAILED`      | Token exchange with credential response failed      |
-| `PASSKEY_USER_CANCELLED`       | User cancelled the passkey OS prompt                |
 | `PASSKEY_NOT_AVAILABLE`        | Passkeys not available on this device or OS version |
 | `PASSKEY_UNSUPPORTED_PLATFORM` | Passkeys not supported on this platform (Web)       |
 | `PASSKEY_UNKNOWN_ERROR`        | Unknown or uncategorized passkey error              |

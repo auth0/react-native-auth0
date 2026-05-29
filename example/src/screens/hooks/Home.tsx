@@ -20,7 +20,11 @@ import Header from '../../components/Header';
 import LabeledInput from '../../components/LabeledInput';
 import Result from '../../components/Result';
 import config from '../../auth0-configuration';
-import { createPasskey, getPasskey } from '../../passkey/PasskeyModule';
+import {
+  createPasskey,
+  getPasskey,
+  PasskeyModuleErrorCodes,
+} from '../../passkey/PasskeyModule';
 
 const HomeScreen = () => {
   const {
@@ -100,11 +104,13 @@ const HomeScreen = () => {
   // --- Passkey Handlers ---
 
   const handlePasskeyError = (e: any) => {
+    if (e?.code === PasskeyModuleErrorCodes.USER_CANCELLED) {
+      Alert.alert('Cancelled', 'You dismissed the passkey prompt.');
+      setApiError(e as Error);
+      return;
+    }
     if (e instanceof PasskeyError) {
       switch (e.type) {
-        case PasskeyErrorCodes.USER_CANCELLED:
-          Alert.alert('Cancelled', 'You dismissed the passkey prompt.');
-          break;
         case PasskeyErrorCodes.NOT_AVAILABLE:
           Alert.alert(
             'Not Available',
