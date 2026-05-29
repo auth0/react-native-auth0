@@ -1032,7 +1032,7 @@ The passkey flow has three steps:
 
 1. **Challenge** — Request a WebAuthn challenge from Auth0 (`passkeySignupChallenge` or `passkeyLoginChallenge`)
 2. **Credential Manager** — Present the OS credential manager UI to create or assert a passkey (using your own native module or a library)
-3. **Exchange** — Send the credential response back to Auth0 to get tokens (`passkeyExchange`)
+3. **Exchange** — Send the credential response back to Auth0 to get tokens (`getTokenByPasskey`)
 
 > **Platform Support:** Native only (iOS 16.6+ / Android). Not supported on Web.
 
@@ -1057,7 +1057,7 @@ The signup flow requests a registration challenge from Auth0, then you use the p
 import { useAuth0, PasskeyError } from 'react-native-auth0';
 
 function PasskeySignupScreen() {
-  const { passkeySignupChallenge, passkeyExchange } = useAuth0();
+  const { passkeySignupChallenge, getTokenByPasskey } = useAuth0();
 
   const handleSignup = async () => {
     try {
@@ -1076,7 +1076,7 @@ function PasskeySignupScreen() {
       );
 
       // Step 3: Exchange the credential response for Auth0 tokens
-      const credentials = await passkeyExchange({
+      const credentials = await getTokenByPasskey({
         authSession: challenge.authSession,
         authResponse: credentialJson,
         realm: 'Username-Password-Authentication',
@@ -1104,7 +1104,7 @@ The login flow requests an assertion challenge from Auth0, then you use the plat
 import { useAuth0, PasskeyError } from 'react-native-auth0';
 
 function PasskeySigninScreen() {
-  const { passkeyLoginChallenge, passkeyExchange } = useAuth0();
+  const { passkeyLoginChallenge, getTokenByPasskey } = useAuth0();
 
   const handleSignin = async () => {
     try {
@@ -1121,7 +1121,7 @@ function PasskeySigninScreen() {
       );
 
       // Step 3: Exchange the credential response for Auth0 tokens
-      const credentials = await passkeyExchange({
+      const credentials = await getTokenByPasskey({
         authSession: challenge.authSession,
         authResponse: credentialJson,
         realm: 'Username-Password-Authentication',
@@ -1143,7 +1143,7 @@ function PasskeySigninScreen() {
 
 ### Auth Response Format
 
-The `authResponse` parameter passed to `passkeyExchange` must be a JSON string representing the [PublicKeyCredential](https://www.w3.org/TR/webauthn-2/#publickeycredential) response from the platform credential manager.
+The `authResponse` parameter passed to `getTokenByPasskey` must be a JSON string representing the [PublicKeyCredential](https://www.w3.org/TR/webauthn-2/#publickeycredential) response from the platform credential manager.
 
 **For registration (signup):**
 
@@ -1200,7 +1200,7 @@ const registrationJson = await yourCredentialManagerCreate(
   signupChallenge.authParamsPublicKey
 );
 
-const signupCredentials = await auth0.passkeyExchange({
+const signupCredentials = await auth0.getTokenByPasskey({
   authSession: signupChallenge.authSession,
   authResponse: registrationJson,
   realm: 'Username-Password-Authentication',
@@ -1217,7 +1217,7 @@ const assertionJson = await yourCredentialManagerGet(
   loginChallenge.authParamsPublicKey
 );
 
-const loginCredentials = await auth0.passkeyExchange({
+const loginCredentials = await auth0.getTokenByPasskey({
   authSession: loginChallenge.authSession,
   authResponse: assertionJson,
   realm: 'Username-Password-Authentication',

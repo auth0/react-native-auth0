@@ -26,7 +26,7 @@ import type {
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
   PasskeyChallengeResponse,
-  PasskeyExchangeParameters,
+  GetTokenByPasskeyParameters,
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
@@ -336,9 +336,9 @@ export const Auth0Provider = ({
     [client]
   );
 
-  const passkeyExchange = useCallback(
-    (parameters: PasskeyExchangeParameters) =>
-      loginFlow(client.passkeyExchange(parameters)),
+  const getTokenByPasskey = useCallback(
+    (parameters: GetTokenByPasskeyParameters) =>
+      loginFlow(client.getTokenByPasskey(parameters)),
     [client, loginFlow]
   );
 
@@ -453,7 +453,7 @@ export const Auth0Provider = ({
       customTokenExchange,
       passkeySignupChallenge,
       passkeyLoginChallenge,
-      passkeyExchange,
+      getTokenByPasskey,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,
@@ -486,7 +486,7 @@ export const Auth0Provider = ({
       customTokenExchange,
       passkeySignupChallenge,
       passkeyLoginChallenge,
-      passkeyExchange,
+      getTokenByPasskey,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,

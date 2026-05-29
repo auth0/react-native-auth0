@@ -384,7 +384,7 @@ export interface PasskeyChallengeResponse {
  *
  * @see https://auth0.com/docs/authenticate/database-connections/passkeys
  */
-export interface PasskeyExchangeParameters {
+export interface GetTokenByPasskeyParameters {
   /** The auth session received from the challenge response. */
   authSession: string;
   /** The JSON string of the PublicKeyCredential response from the platform credential manager. */

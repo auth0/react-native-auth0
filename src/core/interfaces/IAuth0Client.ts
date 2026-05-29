@@ -9,7 +9,7 @@ import type {
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
   PasskeyChallengeResponse,
-  PasskeyExchangeParameters,
+  GetTokenByPasskeyParameters,
   Credentials,
 } from '../../types';
 
@@ -84,7 +84,7 @@ export interface IAuth0Client {
    *
    * Returns WebAuthn creation options that should be passed to the platform's
    * credential manager to create a new passkey. After the credential is created,
-   * call `passkeyExchange` with the auth session and credential response.
+   * call `getTokenByPasskey` with the auth session and credential response.
    *
    * @param parameters The passkey signup challenge parameters.
    * @returns A promise resolving with the challenge response.
@@ -98,7 +98,7 @@ export interface IAuth0Client {
    *
    * Returns WebAuthn request options that should be passed to the platform's
    * credential manager to assert an existing passkey. After the assertion,
-   * call `passkeyExchange` with the auth session and credential response.
+   * call `getTokenByPasskey` with the auth session and credential response.
    *
    * @param parameters The passkey login challenge parameters.
    * @returns A promise resolving with the challenge response.
@@ -116,5 +116,7 @@ export interface IAuth0Client {
    * @param parameters The exchange parameters including auth session and credential response.
    * @returns A promise resolving with Auth0 credentials.
    */
-  passkeyExchange(parameters: PasskeyExchangeParameters): Promise<Credentials>;
+  getTokenByPasskey(
+    parameters: GetTokenByPasskeyParameters
+  ): Promise<Credentials>;
 }

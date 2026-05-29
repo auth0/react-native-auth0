@@ -20,7 +20,7 @@ import type {
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
   PasskeyChallengeResponse,
-  PasskeyExchangeParameters,
+  GetTokenByPasskeyParameters,
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
@@ -255,8 +255,8 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise resolving with the user's credentials.
    * @throws {PasskeyError} If the exchange fails or is not supported.
    */
-  passkeyExchange: (
-    parameters: PasskeyExchangeParameters
+  getTokenByPasskey: (
+    parameters: GetTokenByPasskeyParameters
   ) => Promise<Credentials>;
 
   /**
@@ -450,7 +450,7 @@ const initialContext: Auth0ContextInterface = {
   customTokenExchange: stub,
   passkeySignupChallenge: stub,
   passkeyLoginChallenge: stub,
-  passkeyExchange: stub,
+  getTokenByPasskey: stub,
   sendEmailCode: stub,
   sendSMSCode: stub,
   authorizeWithEmail: stub,

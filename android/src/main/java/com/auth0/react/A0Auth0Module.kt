@@ -634,7 +634,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     }
 
     @ReactMethod
-    override fun passkeyExchange(
+    override fun getTokenByPasskey(
         authSession: String,
         authResponse: String,
         realm: String?,

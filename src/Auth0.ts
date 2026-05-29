@@ -8,7 +8,7 @@ import type {
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
   PasskeyChallengeResponse,
-  PasskeyExchangeParameters,
+  GetTokenByPasskeyParameters,
   Credentials,
 } from './types';
 
@@ -171,8 +171,10 @@ class Auth0 {
    * @param parameters The exchange parameters including authSession and authResponse.
    * @returns A promise resolving with the user's credentials.
    */
-  passkeyExchange(parameters: PasskeyExchangeParameters): Promise<Credentials> {
-    return this.client.passkeyExchange(parameters);
+  getTokenByPasskey(
+    parameters: GetTokenByPasskeyParameters
+  ): Promise<Credentials> {
+    return this.client.getTokenByPasskey(parameters);
   }
 }
 

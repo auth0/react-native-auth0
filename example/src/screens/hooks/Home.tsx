@@ -30,7 +30,7 @@ const HomeScreen = () => {
     authorizeWithEmail,
     passkeySignupChallenge,
     passkeyLoginChallenge,
-    passkeyExchange,
+    getTokenByPasskey,
     error,
   } = useAuth0();
 
@@ -138,7 +138,7 @@ const HomeScreen = () => {
 
       const credentialJson = await createPasskey(challenge.authParamsPublicKey);
 
-      const credentials = await passkeyExchange({
+      const credentials = await getTokenByPasskey({
         authSession: challenge.authSession,
         authResponse: credentialJson,
         realm: 'Username-Password-Authentication',
@@ -168,7 +168,7 @@ const HomeScreen = () => {
 
       const credentialJson = await getPasskey(challenge.authParamsPublicKey);
 
-      const credentials = await passkeyExchange({
+      const credentials = await getTokenByPasskey({
         authSession: challenge.authSession,
         authResponse: credentialJson,
         realm: 'Username-Password-Authentication',
@@ -234,7 +234,7 @@ const HomeScreen = () => {
         ? await createPasskey(result.authParamsPublicKey)
         : await getPasskey(result.authParamsPublicKey);
 
-      const credentials = await passkeyExchange({
+      const credentials = await getTokenByPasskey({
         authSession: result.authSession,
         authResponse: credentialJson,
         realm: 'Username-Password-Authentication',

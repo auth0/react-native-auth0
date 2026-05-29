@@ -264,7 +264,7 @@ export interface INativeBridge {
    * @param organization Optional organization ID or name.
    * @returns A promise that resolves with Auth0 credentials.
    */
-  passkeyExchange(
+  getTokenByPasskey(
     authSession: string,
     authResponse: string,
     realm?: string,

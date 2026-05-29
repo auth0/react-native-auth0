@@ -150,7 +150,7 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
 
     @ReactMethod
     @DoNotStrip
-    abstract fun passkeyExchange(
+    abstract fun getTokenByPasskey(
         authSession: String,
         authResponse: String,
         realm: String?,
