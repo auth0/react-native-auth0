@@ -606,9 +606,6 @@ public class NativeBridge: NSObject {
         }
     }
 
-
-
-
     @objc public func getClientId() -> String {
         return clientId
     }
