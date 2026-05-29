@@ -204,7 +204,7 @@ RCT_EXPORT_METHOD(passkeyLoginChallenge:(NSString * _Nullable)realm
     [self.nativeBridge passkeyLoginChallengeWithRealm:realm organization:organization resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(passkeyExchange:(NSString *)authSession
+RCT_EXPORT_METHOD(getTokenByPasskey:(NSString *)authSession
                   authResponse:(NSString *)authResponse
                   realm:(NSString * _Nullable)realm
                   audience:(NSString * _Nullable)audience
@@ -212,7 +212,7 @@ RCT_EXPORT_METHOD(passkeyExchange:(NSString *)authSession
                   organization:(NSString * _Nullable)organization
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-    [self.nativeBridge passkeyExchangeWithAuthSession:authSession authResponse:authResponse realm:realm audience:audience scope:scope organization:organization resolve:resolve reject:reject];
+    [self.nativeBridge getTokenByPasskeyWithAuthSession:authSession authResponse:authResponse realm:realm audience:audience scope:scope organization:organization resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(passkeyEnrollmentChallenge:(NSString *)accessToken

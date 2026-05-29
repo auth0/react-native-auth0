@@ -463,7 +463,7 @@ describe('NativeAuth0Client', () => {
     });
   });
 
-  describe('passkeyExchange', () => {
+  describe('getTokenByPasskey', () => {
     const mockCredentials = {
       idToken: 'mock-id-token',
       accessToken: 'mock-access-token',
@@ -474,16 +474,16 @@ describe('NativeAuth0Client', () => {
     };
 
     beforeEach(() => {
-      (mockBridgeInstance as any).passkeyExchange = jest
+      (mockBridgeInstance as any).getTokenByPasskey = jest
         .fn()
         .mockResolvedValue(mockCredentials);
     });
 
-    it('should call passkeyExchange on the guarded bridge with all parameters', async () => {
+    it('should call getTokenByPasskey on the guarded bridge with all parameters', async () => {
       const client = new NativeAuth0Client(options);
       await new Promise(process.nextTick);
 
-      await client.passkeyExchange({
+      await client.getTokenByPasskey({
         authSession: 'auth-session-123',
         authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
         realm: 'Username-Password-Authentication',
@@ -492,7 +492,9 @@ describe('NativeAuth0Client', () => {
         organization: 'org_123',
       });
 
-      expect((mockBridgeInstance as any).passkeyExchange).toHaveBeenCalledWith(
+      expect(
+        (mockBridgeInstance as any).getTokenByPasskey
+      ).toHaveBeenCalledWith(
         'auth-session-123',
         '{"id":"cred-id","type":"public-key","response":{}}',
         'Username-Password-Authentication',
@@ -502,16 +504,18 @@ describe('NativeAuth0Client', () => {
       );
     });
 
-    it('should call passkeyExchange with only required parameters', async () => {
+    it('should call getTokenByPasskey with only required parameters', async () => {
       const client = new NativeAuth0Client(options);
       await new Promise(process.nextTick);
 
-      await client.passkeyExchange({
+      await client.getTokenByPasskey({
         authSession: 'auth-session-123',
         authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
       });
 
-      expect((mockBridgeInstance as any).passkeyExchange).toHaveBeenCalledWith(
+      expect(
+        (mockBridgeInstance as any).getTokenByPasskey
+      ).toHaveBeenCalledWith(
         'auth-session-123',
         '{"id":"cred-id","type":"public-key","response":{}}',
         undefined,
@@ -521,11 +525,11 @@ describe('NativeAuth0Client', () => {
       );
     });
 
-    it('should return credentials from passkeyExchange', async () => {
+    it('should return credentials from getTokenByPasskey', async () => {
       const client = new NativeAuth0Client(options);
       await new Promise(process.nextTick);
 
-      const result = await client.passkeyExchange({
+      const result = await client.getTokenByPasskey({
         authSession: 'auth-session-123',
         authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
       });
@@ -537,17 +541,19 @@ describe('NativeAuth0Client', () => {
       const { AuthError } = require('../../../../core/models');
       const { PasskeyError } = require('../../../../core/models');
 
-      (mockBridgeInstance as any).passkeyExchange = jest.fn().mockRejectedValue(
-        new AuthError('PASSKEY_EXCHANGE_FAILED', 'Exchange failed', {
-          code: 'PASSKEY_EXCHANGE_FAILED',
-        })
-      );
+      (mockBridgeInstance as any).getTokenByPasskey = jest
+        .fn()
+        .mockRejectedValue(
+          new AuthError('PASSKEY_EXCHANGE_FAILED', 'Exchange failed', {
+            code: 'PASSKEY_EXCHANGE_FAILED',
+          })
+        );
 
       const client = new NativeAuth0Client(options);
       await new Promise(process.nextTick);
 
       await expect(
-        client.passkeyExchange({
+        client.getTokenByPasskey({
           authSession: 'auth-session-123',
           authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
         })

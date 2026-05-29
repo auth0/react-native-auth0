@@ -11,7 +11,7 @@ import type {
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
   PasskeyChallengeResponse,
-  PasskeyExchangeParameters,
+  GetTokenByPasskeyParameters,
   Credentials,
 } from '../../../types';
 import { NativeWebAuthProvider } from './NativeWebAuthProvider';
@@ -251,13 +251,13 @@ export class NativeAuth0Client implements IAuth0Client {
     }
   }
 
-  async passkeyExchange(
-    parameters: PasskeyExchangeParameters
+  async getTokenByPasskey(
+    parameters: GetTokenByPasskeyParameters
   ): Promise<Credentials> {
     const { authSession, authResponse, realm, audience, scope, organization } =
       parameters;
     try {
-      return await this.guardedBridge.passkeyExchange(
+      return await this.guardedBridge.getTokenByPasskey(
         authSession,
         authResponse,
         realm || undefined,

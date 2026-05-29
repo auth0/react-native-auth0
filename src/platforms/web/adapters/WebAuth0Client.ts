@@ -16,7 +16,7 @@ import type {
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
   PasskeyChallengeResponse,
-  PasskeyExchangeParameters,
+  GetTokenByPasskeyParameters,
   Credentials,
 } from '../../../types';
 import { WebWebAuthProvider } from './WebWebAuthProvider';
@@ -288,8 +288,8 @@ export class WebAuth0Client implements IAuth0Client {
     );
   }
 
-  async passkeyExchange(
-    _parameters: PasskeyExchangeParameters
+  async getTokenByPasskey(
+    _parameters: GetTokenByPasskeyParameters
   ): Promise<Credentials> {
     throw new PasskeyError(
       new AuthError(

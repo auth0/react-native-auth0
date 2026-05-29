@@ -188,7 +188,7 @@ export interface Spec extends TurboModule {
   /**
    * Exchange a passkey credential response for Auth0 tokens.
    */
-  passkeyExchange(
+  getTokenByPasskey(
     authSession: string,
     authResponse: string,
     realm: string | undefined,

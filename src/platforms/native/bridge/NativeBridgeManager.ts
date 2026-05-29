@@ -295,7 +295,7 @@ export class NativeBridgeManager implements INativeBridge {
     );
   }
 
-  async passkeyExchange(
+  async getTokenByPasskey(
     authSession: string,
     authResponse: string,
     realm?: string,
@@ -304,7 +304,7 @@ export class NativeBridgeManager implements INativeBridge {
     organization?: string
   ): Promise<Credentials> {
     const credential = await this.a0_call(
-      Auth0NativeModule.passkeyExchange.bind(Auth0NativeModule),
+      Auth0NativeModule.getTokenByPasskey.bind(Auth0NativeModule),
       authSession,
       authResponse,
       realm,

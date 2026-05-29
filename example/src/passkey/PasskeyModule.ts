@@ -2,6 +2,10 @@ import { NativeModules, Platform } from 'react-native';
 
 const { PasskeyModule } = NativeModules;
 
+export const PasskeyModuleErrorCodes = {
+  USER_CANCELLED: 'USER_CANCELLED',
+} as const;
+
 export async function createPasskey(
   options: Record<string, any>
 ): Promise<string> {

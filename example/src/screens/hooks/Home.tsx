@@ -20,7 +20,11 @@ import Header from '../../components/Header';
 import LabeledInput from '../../components/LabeledInput';
 import Result from '../../components/Result';
 import config from '../../auth0-configuration';
-import { createPasskey, getPasskey } from '../../passkey/PasskeyModule';
+import {
+  createPasskey,
+  getPasskey,
+  PasskeyModuleErrorCodes,
+} from '../../passkey/PasskeyModule';
 
 const HomeScreen = () => {
   const {
@@ -30,7 +34,7 @@ const HomeScreen = () => {
     authorizeWithEmail,
     passkeySignupChallenge,
     passkeyLoginChallenge,
-    passkeyExchange,
+    getTokenByPasskey,
     error,
   } = useAuth0();
 
@@ -100,11 +104,13 @@ const HomeScreen = () => {
   // --- Passkey Handlers ---
 
   const handlePasskeyError = (e: any) => {
+    if (e?.code === PasskeyModuleErrorCodes.USER_CANCELLED) {
+      Alert.alert('Cancelled', 'You dismissed the passkey prompt.');
+      setApiError(e as Error);
+      return;
+    }
     if (e instanceof PasskeyError) {
       switch (e.type) {
-        case PasskeyErrorCodes.USER_CANCELLED:
-          Alert.alert('Cancelled', 'You dismissed the passkey prompt.');
-          break;
         case PasskeyErrorCodes.NOT_AVAILABLE:
           Alert.alert(
             'Not Available',
@@ -138,7 +144,7 @@ const HomeScreen = () => {
 
       const credentialJson = await createPasskey(challenge.authParamsPublicKey);
 
-      const credentials = await passkeyExchange({
+      const credentials = await getTokenByPasskey({
         authSession: challenge.authSession,
         authResponse: credentialJson,
         realm: 'Username-Password-Authentication',
@@ -168,7 +174,7 @@ const HomeScreen = () => {
 
       const credentialJson = await getPasskey(challenge.authParamsPublicKey);
 
-      const credentials = await passkeyExchange({
+      const credentials = await getTokenByPasskey({
         authSession: challenge.authSession,
         authResponse: credentialJson,
         realm: 'Username-Password-Authentication',
@@ -234,7 +240,7 @@ const HomeScreen = () => {
         ? await createPasskey(result.authParamsPublicKey)
         : await getPasskey(result.authParamsPublicKey);
 
-      const credentials = await passkeyExchange({
+      const credentials = await getTokenByPasskey({
         authSession: result.authSession,
         authResponse: credentialJson,
         realm: 'Username-Password-Authentication',

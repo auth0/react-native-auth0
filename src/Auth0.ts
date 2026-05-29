@@ -8,7 +8,7 @@ import type {
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
   PasskeyChallengeResponse,
-  PasskeyExchangeParameters,
+  GetTokenByPasskeyParameters,
   Credentials,
 } from './types';
 
@@ -145,7 +145,7 @@ class Auth0 {
    * Returns WebAuthn creation options that should be passed to the platform's
    * credential manager to create a new passkey credential.
    *
-   * @platform ios, android (not supported on web)
+   * @remarks Native only (iOS, Android). Not supported on web.
    *
    * @param parameters The parameters for the signup challenge.
    * @returns A promise resolving with the challenge response containing authSession and authParamsPublicKey.
@@ -162,7 +162,7 @@ class Auth0 {
    * Returns WebAuthn request options that should be passed to the platform's
    * credential manager to assert an existing passkey.
    *
-   * @platform ios, android (not supported on web)
+   * @remarks Native only (iOS, Android). Not supported on web.
    *
    * @param parameters The parameters for the login challenge.
    * @returns A promise resolving with the challenge response containing authSession and authParamsPublicKey.
@@ -179,13 +179,15 @@ class Auth0 {
    * Call this after the platform credential manager returns the passkey
    * credential (from either signup or login flow).
    *
-   * @platform ios, android (not supported on web)
+   * @remarks Native only (iOS, Android). Not supported on web.
    *
    * @param parameters The exchange parameters including authSession and authResponse.
    * @returns A promise resolving with the user's credentials.
    */
-  passkeyExchange(parameters: PasskeyExchangeParameters): Promise<Credentials> {
-    return this.client.passkeyExchange(parameters);
+  getTokenByPasskey(
+    parameters: GetTokenByPasskeyParameters
+  ): Promise<Credentials> {
+    return this.client.getTokenByPasskey(parameters);
   }
 }
 

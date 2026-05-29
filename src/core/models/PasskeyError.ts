@@ -38,8 +38,6 @@ import { AuthError } from './AuthError';
 export const PasskeyErrorCodes = {
   /** Passkeys are not available on this device or OS version */
   NOT_AVAILABLE: 'PASSKEY_NOT_AVAILABLE',
-  /** User cancelled the passkey OS prompt */
-  USER_CANCELLED: 'PASSKEY_USER_CANCELLED',
   /** Auth0 passkey challenge request failed */
   CHALLENGE_FAILED: 'PASSKEY_CHALLENGE_FAILED',
   /** Token exchange with the passkey credential response failed */
@@ -52,7 +50,6 @@ export const PasskeyErrorCodes = {
 
 const ERROR_CODE_MAP: Record<string, string> = {
   PASSKEY_NOT_AVAILABLE: PasskeyErrorCodes.NOT_AVAILABLE,
-  PASSKEY_USER_CANCELLED: PasskeyErrorCodes.USER_CANCELLED,
   PASSKEY_CHALLENGE_FAILED: PasskeyErrorCodes.CHALLENGE_FAILED,
   PASSKEY_EXCHANGE_FAILED: PasskeyErrorCodes.EXCHANGE_FAILED,
 
@@ -67,7 +64,6 @@ const ERROR_CODE_MAP: Record<string, string> = {
  * - Passkey signup (registration) failures
  * - Passkey signin (authentication) failures
  * - Challenge request failures
- * - User cancellation of the OS passkey prompt
  * - Device/OS compatibility issues
  *
  * The `type` property provides a normalized, platform-agnostic error code that
