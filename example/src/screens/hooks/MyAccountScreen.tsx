@@ -365,12 +365,12 @@ const MyAccountScreen = () => {
     setLoading(true);
     try {
       const accessToken = await getMyAccountAccessToken();
-      const method = await myAccount.updateAuthenticationMethod({
+      const method = await myAccount.updateAuthenticationMethodById({
         accessToken,
         id: methodId.trim(),
         name: methodName.trim() || undefined,
       });
-      setApiResult({ step: 'updateAuthenticationMethod', ...method });
+      setApiResult({ step: 'updateAuthenticationMethodById', ...method });
       Alert.alert('Success', 'Authentication method updated!');
     } catch (e) {
       handleError(e);
@@ -400,12 +400,12 @@ const MyAccountScreen = () => {
             setLoading(true);
             try {
               const accessToken = await getMyAccountAccessToken();
-              await myAccount.deleteAuthenticationMethod({
+              await myAccount.deleteAuthenticationMethodById({
                 accessToken,
                 id: methodId.trim(),
               });
               setApiResult({
-                step: 'deleteAuthenticationMethod',
+                step: 'deleteAuthenticationMethodById',
                 deleted: methodId.trim(),
               });
               setMethodId('');

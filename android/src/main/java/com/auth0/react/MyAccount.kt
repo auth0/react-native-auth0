@@ -161,7 +161,7 @@ class MyAccount(
             })
     }
 
-    fun getAuthenticationMethod(
+    fun getAuthenticationMethodById(
         accessToken: String,
         id: String,
         promise: Promise
@@ -181,7 +181,7 @@ class MyAccount(
             })
     }
 
-    fun updateAuthenticationMethod(
+    fun updateAuthenticationMethodById(
         accessToken: String,
         id: String,
         name: String?,
@@ -210,7 +210,7 @@ class MyAccount(
             })
     }
 
-    fun deleteAuthenticationMethod(
+    fun deleteAuthenticationMethodById(
         accessToken: String,
         id: String,
         promise: Promise

@@ -5,16 +5,16 @@ import type {
   EnrollPasskeyParameters,
   PasskeyAuthenticationMethod,
   GetAuthenticationMethodsParameters,
-  GetAuthenticationMethodParameters,
-  UpdateAuthenticationMethodParameters,
-  DeleteAuthenticationMethodParameters,
+  GetAuthenticationMethodByIdParameters,
+  UpdateAuthenticationMethodByIdParameters,
+  DeleteAuthenticationMethodByIdParameters,
   AuthenticationMethod,
   EnrollPhoneParameters,
   EnrollEmailParameters,
   EnrollTOTPParameters,
   EnrollPushNotificationParameters,
   EnrollRecoveryCodeParameters,
-  ConfirmEnrollmentParameters,
+  ConfirmOTPEnrollmentParameters,
   ConfirmRecoveryCodeEnrollmentParameters,
   ConfirmPushNotificationEnrollmentParameters,
   GetFactorsParameters,
@@ -168,7 +168,7 @@ export class NativeMyAccountClient implements IMyAccountClient {
   // --- Enrollment Confirmation (uses MyAccountError) ---
 
   async confirmPhoneEnrollment(
-    parameters: ConfirmEnrollmentParameters
+    parameters: ConfirmOTPEnrollmentParameters
   ): Promise<AuthenticationMethod> {
     const { accessToken, id, authSession, otpCode } = parameters;
     try {
@@ -187,7 +187,7 @@ export class NativeMyAccountClient implements IMyAccountClient {
   }
 
   async confirmEmailEnrollment(
-    parameters: ConfirmEnrollmentParameters
+    parameters: ConfirmOTPEnrollmentParameters
   ): Promise<AuthenticationMethod> {
     const { accessToken, id, authSession, otpCode } = parameters;
     try {
@@ -206,7 +206,7 @@ export class NativeMyAccountClient implements IMyAccountClient {
   }
 
   async confirmTOTPEnrollment(
-    parameters: ConfirmEnrollmentParameters
+    parameters: ConfirmOTPEnrollmentParameters
   ): Promise<AuthenticationMethod> {
     const { accessToken, id, authSession, otpCode } = parameters;
     try {
@@ -279,12 +279,12 @@ export class NativeMyAccountClient implements IMyAccountClient {
     }
   }
 
-  async getAuthenticationMethod(
-    parameters: GetAuthenticationMethodParameters
+  async getAuthenticationMethodById(
+    parameters: GetAuthenticationMethodByIdParameters
   ): Promise<AuthenticationMethod> {
     const { accessToken, id } = parameters;
     try {
-      return (await this.bridge.getAuthenticationMethod(
+      return (await this.bridge.getAuthenticationMethodById(
         accessToken,
         id
       )) as AuthenticationMethod;
@@ -296,12 +296,12 @@ export class NativeMyAccountClient implements IMyAccountClient {
     }
   }
 
-  async updateAuthenticationMethod(
-    parameters: UpdateAuthenticationMethodParameters
+  async updateAuthenticationMethodById(
+    parameters: UpdateAuthenticationMethodByIdParameters
   ): Promise<AuthenticationMethod> {
     const { accessToken, id, name, preferredAuthenticationMethod } = parameters;
     try {
-      return (await this.bridge.updateAuthenticationMethod(
+      return (await this.bridge.updateAuthenticationMethodById(
         accessToken,
         id,
         name || undefined,
@@ -315,12 +315,12 @@ export class NativeMyAccountClient implements IMyAccountClient {
     }
   }
 
-  async deleteAuthenticationMethod(
-    parameters: DeleteAuthenticationMethodParameters
+  async deleteAuthenticationMethodById(
+    parameters: DeleteAuthenticationMethodByIdParameters
   ): Promise<void> {
     const { accessToken, id } = parameters;
     try {
-      await this.bridge.deleteAuthenticationMethod(accessToken, id);
+      await this.bridge.deleteAuthenticationMethodById(accessToken, id);
     } catch (e) {
       if (e instanceof AuthError) {
         throw new MyAccountError(e);

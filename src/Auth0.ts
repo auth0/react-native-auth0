@@ -71,7 +71,7 @@ class Auth0 {
    * @example
    * ```typescript
    * const methods = await auth0.myAccount.getAuthenticationMethods({ accessToken });
-   * await auth0.myAccount.deleteAuthenticationMethod({ accessToken, id: 'auth_method_123' });
+   * await auth0.myAccount.deleteAuthenticationMethodById({ accessToken, id: 'auth_method_123' });
    * ```
    */
   get myAccount() {

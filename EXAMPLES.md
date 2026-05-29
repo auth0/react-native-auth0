@@ -1318,6 +1318,9 @@ Access the My Account client via the `myAccount` property from `useAuth0()` or t
 
 ### Prerequisites
 
+- A [custom domain](https://auth0.com/docs/customize/custom-domains) must be configured on your Auth0 tenant
+- **iOS**: Associated Domains entitlement must be configured with `webcredentials:<your-custom-domain>` for passkey support
+- **Android**: App Links must be set up with your custom domain via an `assetlinks.json` file for passkey support
 - The user must be authenticated
 - An access token with the appropriate My Account API scopes is required:
   - `read:me:authentication_methods`
@@ -1453,20 +1456,20 @@ const passkeys = await myAccount.getAuthenticationMethods({
 });
 
 // Get a specific method
-const method = await myAccount.getAuthenticationMethod({
+const method = await myAccount.getAuthenticationMethodById({
   accessToken,
   id: 'authentication-method-id',
 });
 
 // Update a method name
-const updated = await myAccount.updateAuthenticationMethod({
+const updated = await myAccount.updateAuthenticationMethodById({
   accessToken,
   id: 'authentication-method-id',
   name: 'My Work Phone',
 });
 
 // Delete a method
-await myAccount.deleteAuthenticationMethod({
+await myAccount.deleteAuthenticationMethodById({
   accessToken,
   id: 'authentication-method-id',
 });

@@ -240,27 +240,27 @@ RCT_EXPORT_METHOD(getAuthenticationMethods:(NSString *)accessToken
     [self.myAccount getAuthenticationMethodsWithAccessToken:accessToken type:type resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(getAuthenticationMethod:(NSString *)accessToken
+RCT_EXPORT_METHOD(getAuthenticationMethodById:(NSString *)accessToken
                   id:(NSString *)id
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-    [self.myAccount getAuthenticationMethodWithAccessToken:accessToken id:id resolve:resolve reject:reject];
+    [self.myAccount getAuthenticationMethodByIdWithAccessToken:accessToken id:id resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(updateAuthenticationMethod:(NSString *)accessToken
+RCT_EXPORT_METHOD(updateAuthenticationMethodById:(NSString *)accessToken
                   id:(NSString *)id
                   name:(NSString * _Nullable)name
                   preferredAuthenticationMethod:(NSString * _Nullable)preferredAuthenticationMethod
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-    [self.myAccount updateAuthenticationMethodWithAccessToken:accessToken id:id name:name preferredAuthenticationMethod:preferredAuthenticationMethod resolve:resolve reject:reject];
+    [self.myAccount updateAuthenticationMethodByIdWithAccessToken:accessToken id:id name:name preferredAuthenticationMethod:preferredAuthenticationMethod resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(deleteAuthenticationMethod:(NSString *)accessToken
+RCT_EXPORT_METHOD(deleteAuthenticationMethodById:(NSString *)accessToken
                   id:(NSString *)id
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-    [self.myAccount deleteAuthenticationMethodWithAccessToken:accessToken id:id resolve:resolve reject:reject];
+    [self.myAccount deleteAuthenticationMethodByIdWithAccessToken:accessToken id:id resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(enrollPhone:(NSString *)accessToken

@@ -5,16 +5,16 @@ import type {
   EnrollPasskeyParameters,
   PasskeyAuthenticationMethod,
   GetAuthenticationMethodsParameters,
-  GetAuthenticationMethodParameters,
-  UpdateAuthenticationMethodParameters,
-  DeleteAuthenticationMethodParameters,
+  GetAuthenticationMethodByIdParameters,
+  UpdateAuthenticationMethodByIdParameters,
+  DeleteAuthenticationMethodByIdParameters,
   AuthenticationMethod,
   EnrollPhoneParameters,
   EnrollEmailParameters,
   EnrollTOTPParameters,
   EnrollPushNotificationParameters,
   EnrollRecoveryCodeParameters,
-  ConfirmEnrollmentParameters,
+  ConfirmOTPEnrollmentParameters,
   ConfirmRecoveryCodeEnrollmentParameters,
   ConfirmPushNotificationEnrollmentParameters,
   GetFactorsParameters,
@@ -104,7 +104,7 @@ export class WebMyAccountClient implements IMyAccountClient {
   }
 
   async confirmPhoneEnrollment(
-    _parameters: ConfirmEnrollmentParameters
+    _parameters: ConfirmOTPEnrollmentParameters
   ): Promise<AuthenticationMethod> {
     throw new MyAccountError(
       new AuthError(
@@ -115,7 +115,7 @@ export class WebMyAccountClient implements IMyAccountClient {
   }
 
   async confirmEmailEnrollment(
-    _parameters: ConfirmEnrollmentParameters
+    _parameters: ConfirmOTPEnrollmentParameters
   ): Promise<AuthenticationMethod> {
     throw new MyAccountError(
       new AuthError(
@@ -126,7 +126,7 @@ export class WebMyAccountClient implements IMyAccountClient {
   }
 
   async confirmTOTPEnrollment(
-    _parameters: ConfirmEnrollmentParameters
+    _parameters: ConfirmOTPEnrollmentParameters
   ): Promise<AuthenticationMethod> {
     throw new MyAccountError(
       new AuthError(
@@ -169,8 +169,8 @@ export class WebMyAccountClient implements IMyAccountClient {
     );
   }
 
-  async getAuthenticationMethod(
-    _parameters: GetAuthenticationMethodParameters
+  async getAuthenticationMethodById(
+    _parameters: GetAuthenticationMethodByIdParameters
   ): Promise<AuthenticationMethod> {
     throw new MyAccountError(
       new AuthError(
@@ -180,8 +180,8 @@ export class WebMyAccountClient implements IMyAccountClient {
     );
   }
 
-  async updateAuthenticationMethod(
-    _parameters: UpdateAuthenticationMethodParameters
+  async updateAuthenticationMethodById(
+    _parameters: UpdateAuthenticationMethodByIdParameters
   ): Promise<AuthenticationMethod> {
     throw new MyAccountError(
       new AuthError(
@@ -191,8 +191,8 @@ export class WebMyAccountClient implements IMyAccountClient {
     );
   }
 
-  async deleteAuthenticationMethod(
-    _parameters: DeleteAuthenticationMethodParameters
+  async deleteAuthenticationMethodById(
+    _parameters: DeleteAuthenticationMethodByIdParameters
   ): Promise<void> {
     throw new MyAccountError(
       new AuthError(

@@ -360,25 +360,25 @@ export class NativeBridgeManager implements INativeBridge {
     );
   }
 
-  async getAuthenticationMethod(
+  async getAuthenticationMethodById(
     accessToken: string,
     id: string
   ): Promise<Record<string, any>> {
     return this.a0_call(
-      Auth0NativeModule.getAuthenticationMethod.bind(Auth0NativeModule),
+      Auth0NativeModule.getAuthenticationMethodById.bind(Auth0NativeModule),
       accessToken,
       id
     );
   }
 
-  async updateAuthenticationMethod(
+  async updateAuthenticationMethodById(
     accessToken: string,
     id: string,
     name?: string,
     preferredAuthenticationMethod?: string
   ): Promise<Record<string, any>> {
     return this.a0_call(
-      Auth0NativeModule.updateAuthenticationMethod.bind(Auth0NativeModule),
+      Auth0NativeModule.updateAuthenticationMethodById.bind(Auth0NativeModule),
       accessToken,
       id,
       name,
@@ -386,12 +386,12 @@ export class NativeBridgeManager implements INativeBridge {
     );
   }
 
-  async deleteAuthenticationMethod(
+  async deleteAuthenticationMethodById(
     accessToken: string,
     id: string
   ): Promise<void> {
     return this.a0_call(
-      Auth0NativeModule.deleteAuthenticationMethod.bind(Auth0NativeModule),
+      Auth0NativeModule.deleteAuthenticationMethodById.bind(Auth0NativeModule),
       accessToken,
       id
     );

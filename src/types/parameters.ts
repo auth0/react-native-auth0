@@ -559,7 +559,7 @@ export interface GetAuthenticationMethodsParameters {
 /**
  * Parameters for retrieving a single authentication method by ID.
  */
-export interface GetAuthenticationMethodParameters {
+export interface GetAuthenticationMethodByIdParameters {
   /** Access token with My Account API scopes. */
   accessToken: string;
   /** The ID of the authentication method to retrieve. */
@@ -567,9 +567,9 @@ export interface GetAuthenticationMethodParameters {
 }
 
 /**
- * Parameters for updating an authentication method.
+ * Parameters for updating an authentication method by ID.
  */
-export interface UpdateAuthenticationMethodParameters {
+export interface UpdateAuthenticationMethodByIdParameters {
   /** Access token with My Account API scopes. */
   accessToken: string;
   /** The ID of the authentication method to update. */
@@ -581,9 +581,9 @@ export interface UpdateAuthenticationMethodParameters {
 }
 
 /**
- * Parameters for deleting an authentication method.
+ * Parameters for deleting an authentication method by ID.
  */
-export interface DeleteAuthenticationMethodParameters {
+export interface DeleteAuthenticationMethodByIdParameters {
   /** Access token with My Account API scopes. */
   accessToken: string;
   /** The ID of the authentication method to delete. */
@@ -698,7 +698,7 @@ export interface EnrollRecoveryCodeParameters {
  * Parameters for confirming an enrollment that requires an OTP code.
  * Used for phone, email, and TOTP enrollments.
  */
-export interface ConfirmEnrollmentParameters {
+export interface ConfirmOTPEnrollmentParameters {
   /** Access token with My Account API scopes. */
   accessToken: string;
   /** The authentication method ID from the enrollment challenge response. */

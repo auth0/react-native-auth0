@@ -190,7 +190,7 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
 
     @ReactMethod
     @DoNotStrip
-    abstract fun getAuthenticationMethod(
+    abstract fun getAuthenticationMethodById(
         accessToken: String,
         id: String,
         promise: Promise
@@ -198,7 +198,7 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
 
     @ReactMethod
     @DoNotStrip
-    abstract fun updateAuthenticationMethod(
+    abstract fun updateAuthenticationMethodById(
         accessToken: String,
         id: String,
         name: String?,
@@ -208,7 +208,7 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
 
     @ReactMethod
     @DoNotStrip
-    abstract fun deleteAuthenticationMethod(
+    abstract fun deleteAuthenticationMethodById(
         accessToken: String,
         id: String,
         promise: Promise

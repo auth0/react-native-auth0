@@ -232,12 +232,12 @@ export interface Spec extends TurboModule {
   /**
    * Get a single authentication method by ID.
    */
-  getAuthenticationMethod(accessToken: string, id: string): Promise<Object>;
+  getAuthenticationMethodById(accessToken: string, id: string): Promise<Object>;
 
   /**
    * Update an authentication method by ID.
    */
-  updateAuthenticationMethod(
+  updateAuthenticationMethodById(
     accessToken: string,
     id: string,
     name: string | undefined,
@@ -247,7 +247,10 @@ export interface Spec extends TurboModule {
   /**
    * Delete an authentication method by ID.
    */
-  deleteAuthenticationMethod(accessToken: string, id: string): Promise<void>;
+  deleteAuthenticationMethodById(
+    accessToken: string,
+    id: string
+  ): Promise<void>;
 
   /**
    * Enroll a phone number as an authentication method.

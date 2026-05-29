@@ -4,16 +4,16 @@ import type {
   EnrollPasskeyParameters,
   PasskeyAuthenticationMethod,
   GetAuthenticationMethodsParameters,
-  GetAuthenticationMethodParameters,
-  UpdateAuthenticationMethodParameters,
-  DeleteAuthenticationMethodParameters,
+  GetAuthenticationMethodByIdParameters,
+  UpdateAuthenticationMethodByIdParameters,
+  DeleteAuthenticationMethodByIdParameters,
   AuthenticationMethod,
   EnrollPhoneParameters,
   EnrollEmailParameters,
   EnrollTOTPParameters,
   EnrollPushNotificationParameters,
   EnrollRecoveryCodeParameters,
-  ConfirmEnrollmentParameters,
+  ConfirmOTPEnrollmentParameters,
   ConfirmRecoveryCodeEnrollmentParameters,
   ConfirmPushNotificationEnrollmentParameters,
   GetFactorsParameters,
@@ -55,15 +55,15 @@ export interface IMyAccountClient {
   // --- Enrollment Confirmation ---
 
   confirmPhoneEnrollment(
-    parameters: ConfirmEnrollmentParameters
+    parameters: ConfirmOTPEnrollmentParameters
   ): Promise<AuthenticationMethod>;
 
   confirmEmailEnrollment(
-    parameters: ConfirmEnrollmentParameters
+    parameters: ConfirmOTPEnrollmentParameters
   ): Promise<AuthenticationMethod>;
 
   confirmTOTPEnrollment(
-    parameters: ConfirmEnrollmentParameters
+    parameters: ConfirmOTPEnrollmentParameters
   ): Promise<AuthenticationMethod>;
 
   confirmPushNotificationEnrollment(
@@ -80,16 +80,16 @@ export interface IMyAccountClient {
     parameters: GetAuthenticationMethodsParameters
   ): Promise<AuthenticationMethod[]>;
 
-  getAuthenticationMethod(
-    parameters: GetAuthenticationMethodParameters
+  getAuthenticationMethodById(
+    parameters: GetAuthenticationMethodByIdParameters
   ): Promise<AuthenticationMethod>;
 
-  updateAuthenticationMethod(
-    parameters: UpdateAuthenticationMethodParameters
+  updateAuthenticationMethodById(
+    parameters: UpdateAuthenticationMethodByIdParameters
   ): Promise<AuthenticationMethod>;
 
-  deleteAuthenticationMethod(
-    parameters: DeleteAuthenticationMethodParameters
+  deleteAuthenticationMethodById(
+    parameters: DeleteAuthenticationMethodByIdParameters
   ): Promise<void>;
 
   // --- Factors ---

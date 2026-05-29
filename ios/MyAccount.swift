@@ -41,7 +41,7 @@ public class A0MyAccount: NSObject {
 
     @objc public func passkeyEnrollmentChallenge(accessToken: String, userIdentity: String?, connection: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         guard #available(iOS 16.6, *) else {
-            reject("MY_ACCOUNT_ERROR", "Passkeys require iOS 16.6 or later", nil)
+            reject("PASSKEYS_NOT_SUPPORTED", "Passkeys require iOS 16.6 or later", nil)
             return
         }
 
@@ -78,7 +78,7 @@ public class A0MyAccount: NSObject {
 
     @objc public func enrollPasskey(accessToken: String, authenticationMethodId: String, authSession: String, authResponse: String, authParamsPublicKey: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         guard #available(iOS 16.6, *) else {
-            reject("MY_ACCOUNT_ERROR", "Passkeys require iOS 16.6 or later", nil)
+            reject("PASSKEYS_NOT_SUPPORTED", "Passkeys require iOS 16.6 or later", nil)
             return
         }
 
@@ -187,7 +187,7 @@ public class A0MyAccount: NSObject {
         }
     }
 
-    @objc public func getAuthenticationMethod(accessToken: String, id: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func getAuthenticationMethodById(accessToken: String, id: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let myAccount = createClient(accessToken: accessToken)
 
         myAccount.authenticationMethods.getAuthenticationMethod(by: id).start { result in
@@ -200,7 +200,7 @@ public class A0MyAccount: NSObject {
         }
     }
 
-    @objc public func updateAuthenticationMethod(accessToken: String, id: String, name: String?, preferredAuthenticationMethod: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func updateAuthenticationMethodById(accessToken: String, id: String, name: String?, preferredAuthenticationMethod: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let myAccount = createClient(accessToken: accessToken)
 
         let nameValue = name?.isEmpty == true ? nil : name
@@ -223,7 +223,7 @@ public class A0MyAccount: NSObject {
         }
     }
 
-    @objc public func deleteAuthenticationMethod(accessToken: String, id: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func deleteAuthenticationMethodById(accessToken: String, id: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let myAccount = createClient(accessToken: accessToken)
 
         myAccount.authenticationMethods.deleteAuthenticationMethod(by: id).start { result in

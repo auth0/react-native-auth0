@@ -2,6 +2,7 @@ package com.auth0.react
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import androidx.fragment.app.FragmentActivity
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
@@ -686,6 +687,10 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         connection: String?,
         promise: Promise
     ) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            promise.reject("PASSKEYS_NOT_SUPPORTED", "Passkeys require Android API 28 or higher", null)
+            return
+        }
         myAccount!!.passkeyEnrollmentChallenge(accessToken, userIdentity, connection, promise)
     }
 
@@ -698,6 +703,10 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         authParamsPublicKey: String,
         promise: Promise
     ) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            promise.reject("PASSKEYS_NOT_SUPPORTED", "Passkeys require Android API 28 or higher", null)
+            return
+        }
         myAccount!!.enrollPasskey(accessToken, authenticationMethodId, authSession, authResponse, authParamsPublicKey, promise)
     }
 
@@ -711,32 +720,32 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     }
 
     @ReactMethod
-    override fun getAuthenticationMethod(
+    override fun getAuthenticationMethodById(
         accessToken: String,
         id: String,
         promise: Promise
     ) {
-        myAccount!!.getAuthenticationMethod(accessToken, id, promise)
+        myAccount!!.getAuthenticationMethodById(accessToken, id, promise)
     }
 
     @ReactMethod
-    override fun updateAuthenticationMethod(
+    override fun updateAuthenticationMethodById(
         accessToken: String,
         id: String,
         name: String?,
         preferredAuthenticationMethod: String?,
         promise: Promise
     ) {
-        myAccount!!.updateAuthenticationMethod(accessToken, id, name, preferredAuthenticationMethod, promise)
+        myAccount!!.updateAuthenticationMethodById(accessToken, id, name, preferredAuthenticationMethod, promise)
     }
 
     @ReactMethod
-    override fun deleteAuthenticationMethod(
+    override fun deleteAuthenticationMethodById(
         accessToken: String,
         id: String,
         promise: Promise
     ) {
-        myAccount!!.deleteAuthenticationMethod(accessToken, id, promise)
+        myAccount!!.deleteAuthenticationMethodById(accessToken, id, promise)
     }
 
     @ReactMethod
