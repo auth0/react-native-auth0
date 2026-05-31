@@ -1,7 +1,20 @@
 import { TurboModuleRegistry, type TurboModule } from 'react-native';
-import type { ApiCredentials, Credentials } from '../types';
 
-type Int32 = number;
+// NOTE: This spec uses only Codegen-compatible inline types (primitives, `Object`,
+// inline object literals). It must not import / reference type aliases such as
+// `Credentials`, `ApiCredentials`, or `Int32`, because RN 0.85+ Codegen rejects
+// any `TSTypeReference` to imported / aliased types in NativeModule specs:
+//
+//   UnsupportedTypeAnnotationParserError: Module NativeA0Auth0:
+//   TypeScript type annotation 'TSTypeReference' is unsupported in NativeModule specs.
+//
+// The native iOS / Android implementations already coerce numbers to NSInteger /
+// Double and treat option dictionaries as untyped maps, so this is a type-level
+// change only — no runtime behavior shifts. The `Credentials` / `ApiCredentials`
+// types remain part of the public JS API surface and are used by the
+// CredentialsManager / WebAuth wrappers that consume this bridge.
+//
+// See https://github.com/auth0/react-native-auth0/issues/1553 for context.
 export interface Spec extends TurboModule {
   /**
    * Get the bundle identifier
@@ -22,34 +35,30 @@ export interface Spec extends TurboModule {
   initializeAuth0WithConfiguration(
     clientId: string,
     domain: string,
-    localAuthenticationOptions:
-      | { [key: string]: string | Int32 | boolean }
-      | undefined,
+    localAuthenticationOptions: Object | undefined,
     useDPoP: boolean | undefined,
-    maxRetries: Int32
+    maxRetries: number
   ): Promise<void>;
 
   /**
    * Save credentials
    */
-  saveCredentials(credentials: {
-    [key: string]: string | Int32;
-  }): Promise<void>;
+  saveCredentials(credentials: Object): Promise<void>;
 
   /**
    * Get credentials with the given scope
    */
   getCredentials(
     scope: string | undefined,
-    minTTL: Int32,
+    minTTL: number,
     parameters: Object,
     forceRefresh: boolean
-  ): Promise<Credentials>;
+  ): Promise<Object>;
 
   /**
    * Check if there are valid credentials
    */
-  hasValidCredentials(minTTL: Int32): Promise<boolean>;
+  hasValidCredentials(minTTL: number): Promise<boolean>;
 
   /**
    * Clear credentials
@@ -62,9 +71,9 @@ export interface Spec extends TurboModule {
   getApiCredentials(
     audience: string,
     scope: string | undefined,
-    minTTL: Int32,
+    minTTL: number,
     parameters: Object
-  ): Promise<ApiCredentials>;
+  ): Promise<Object>;
 
   /**
    * Clear API credentials for a specific audience. Optionally filter by scope.
@@ -87,15 +96,15 @@ export interface Spec extends TurboModule {
     audience: string | undefined,
     scope: string | undefined,
     connection: string | undefined,
-    maxAge: Int32 | undefined,
+    maxAge: number | undefined,
     organization: string | undefined,
     invitationUrl: string | undefined,
-    leeway: Int32 | undefined,
+    leeway: number | undefined,
     ephemeralSession: boolean | undefined,
-    safariViewControllerPresentationStyle: Int32 | undefined,
-    additionalParameters: { [key: string]: string } | undefined,
+    safariViewControllerPresentationStyle: number | undefined,
+    additionalParameters: Object | undefined,
     allowedBrowserPackages: string[] | undefined
-  ): Promise<Credentials>;
+  ): Promise<Object>;
 
   /**
    * Logout from web authentication
@@ -126,7 +135,7 @@ export interface Spec extends TurboModule {
     accessToken: string,
     tokenType: string,
     nonce?: string
-  ): Promise<{ [key: string]: string }>;
+  ): Promise<Object>;
 
   /**
    * Clear the DPoP key
@@ -137,16 +146,7 @@ export interface Spec extends TurboModule {
   /**
    * Get session transfer credentials for Native to Web SSO
    */
-  getSSOCredentials(
-    parameters: Object,
-    headers: Object
-  ): Promise<{
-    sessionTransferToken: string;
-    tokenType: string;
-    expiresIn: Int32;
-    idToken?: string;
-    refreshToken?: string;
-  }>;
+  getSSOCredentials(parameters: Object, headers: Object): Promise<Object>;
 
   /**
    * Perform Custom Token Exchange (RFC 8693)
@@ -158,7 +158,7 @@ export interface Spec extends TurboModule {
     audience: string | undefined,
     scope: string | undefined,
     organization: string | undefined
-  ): Promise<Credentials>;
+  ): Promise<Object>;
 
   /**
    * Request a passkey signup challenge from Auth0.
@@ -172,10 +172,10 @@ export interface Spec extends TurboModule {
     familyName: string | undefined,
     nickname: string | undefined,
     picture: string | undefined,
-    userMetadata: { [key: string]: string } | undefined,
+    userMetadata: Object | undefined,
     realm: string | undefined,
     organization: string | undefined
-  ): Promise<{ authSession: string; authParamsPublicKey: Object }>;
+  ): Promise<Object>;
 
   /**
    * Request a passkey login challenge from Auth0.
@@ -183,7 +183,7 @@ export interface Spec extends TurboModule {
   passkeyLoginChallenge(
     realm: string | undefined,
     organization: string | undefined
-  ): Promise<{ authSession: string; authParamsPublicKey: Object }>;
+  ): Promise<Object>;
 
   /**
    * Exchange a passkey credential response for Auth0 tokens.
@@ -195,7 +195,7 @@ export interface Spec extends TurboModule {
     audience: string | undefined,
     scope: string | undefined,
     organization: string | undefined
-  ): Promise<Credentials>;
+  ): Promise<Object>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('A0Auth0');
@@ -220,7 +220,7 @@ export interface LocalAuthenticationOptions {
   /**
    * The evaluation policy to use when prompting the user for authentication. Defaults to LocalAuthenticationStrategy.deviceOwnerWithBiometrics. **Applicable for iOS only.**
    */
-  evaluationPolicy: Int32 | undefined;
+  evaluationPolicy: number | undefined;
   /**
    * The fallback button title of the authentication prompt. **Applicable for iOS only.**
    */
@@ -228,7 +228,7 @@ export interface LocalAuthenticationOptions {
   /**
    * The authentication level to use when prompting the user for authentication. Defaults to LocalAuthenticationLevel.strong. **Applicable for Android only.**
    */
-  authenticationLevel: Int32 | undefined;
+  authenticationLevel: number | undefined;
   /**
    * Should the user be given the option to authenticate with their device PIN, pattern, or password instead of a biometric. **Applicable for Android only.**
    */
@@ -240,5 +240,5 @@ export interface LocalAuthenticationOptions {
   /**
    * Timeout in seconds for session and appLifecycle policies. Defaults to 3600 seconds (1 hour). **Applicable for both Android and iOS.**
    */
-  biometricTimeout: Int32 | undefined;
+  biometricTimeout: number | undefined;
 }
