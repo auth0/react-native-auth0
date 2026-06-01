@@ -160,4 +160,122 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
         promise: Promise
     )
 
+    @ReactMethod
+    @DoNotStrip
+    abstract fun passkeyEnrollmentChallenge(
+        accessToken: String,
+        userIdentity: String?,
+        connection: String?,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun enrollPasskey(
+        accessToken: String,
+        authenticationMethodId: String,
+        authSession: String,
+        authResponse: String,
+        authParamsPublicKey: String,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun getAuthenticationMethods(
+        accessToken: String,
+        type: String?,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun getAuthenticationMethodById(
+        accessToken: String,
+        id: String,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun updateAuthenticationMethodById(
+        accessToken: String,
+        id: String,
+        name: String?,
+        preferredAuthenticationMethod: String?,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun deleteAuthenticationMethodById(
+        accessToken: String,
+        id: String,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun enrollPhone(
+        accessToken: String,
+        phoneNumber: String,
+        preferredAuthenticationMethod: String?,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun enrollEmail(
+        accessToken: String,
+        emailAddress: String,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun enrollTOTP(
+        accessToken: String,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun enrollPushNotification(
+        accessToken: String,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun enrollRecoveryCode(
+        accessToken: String,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun confirmEnrollmentWithOtp(
+        accessToken: String,
+        id: String,
+        authSession: String,
+        otpCode: String,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun confirmEnrollment(
+        accessToken: String,
+        id: String,
+        authSession: String,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun getFactors(
+        accessToken: String,
+        promise: Promise
+    )
+
 }

@@ -66,6 +66,19 @@ class Auth0 {
   }
 
   /**
+   * Provides access to the My Account API for managing authentication methods.
+   *
+   * @example
+   * ```typescript
+   * const methods = await auth0.myAccount.getAuthenticationMethods({ accessToken });
+   * await auth0.myAccount.deleteAuthenticationMethodById({ accessToken, id: 'auth_method_123' });
+   * ```
+   */
+  get myAccount() {
+    return this.client.myAccount;
+  }
+
+  /**
    * Provides access to the Management API (e.g., for user patching).
    * @param token An access token with the required permissions for the management operations.
    * @param tokenType Optional token type ('Bearer' or 'DPoP'). Defaults to the client's configured token type.

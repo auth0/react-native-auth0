@@ -28,6 +28,7 @@ import type {
   DPoPHeadersParams,
   SessionTransferCredentials,
 } from '../types';
+import type { IMyAccountClient } from '../core/interfaces';
 import type { ApiCredentials } from '../core/models';
 import type {
   NativeAuthorizeOptions,
@@ -260,6 +261,17 @@ export interface Auth0ContextInterface extends AuthState {
   ) => Promise<Credentials>;
 
   /**
+   * Provides access to the My Account API for managing authentication methods.
+   *
+   * @example
+   * ```typescript
+   * const { myAccount } = useAuth0();
+   * const methods = await myAccount.getAuthenticationMethods({ accessToken });
+   * ```
+   */
+  myAccount: IMyAccountClient;
+
+  /**
    * Sends a verification code to the user's email.
    * @param parameters The parameters for sending the email code.
    * @throws {AuthError} If sending the email code fails.
@@ -451,6 +463,25 @@ const initialContext: Auth0ContextInterface = {
   passkeySignupChallenge: stub,
   passkeyLoginChallenge: stub,
   getTokenByPasskey: stub,
+  myAccount: {
+    passkeyEnrollmentChallenge: stub,
+    enrollPasskey: stub,
+    enrollPhone: stub,
+    enrollEmail: stub,
+    enrollTOTP: stub,
+    enrollPushNotification: stub,
+    enrollRecoveryCode: stub,
+    confirmPhoneEnrollment: stub,
+    confirmEmailEnrollment: stub,
+    confirmTOTPEnrollment: stub,
+    confirmPushNotificationEnrollment: stub,
+    confirmRecoveryCodeEnrollment: stub,
+    getAuthenticationMethods: stub,
+    getAuthenticationMethodById: stub,
+    updateAuthenticationMethodById: stub,
+    deleteAuthenticationMethodById: stub,
+    getFactors: stub,
+  },
   sendEmailCode: stub,
   sendSMSCode: stub,
   authorizeWithEmail: stub,

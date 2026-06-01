@@ -8,6 +8,7 @@ export {
   DPoPErrorCodes,
   PasskeyError,
   PasskeyErrorCodes,
+  MyAccountError,
 } from './core/models';
 export { TimeoutError } from './core/utils/fetchWithTimeout';
 export { TokenType } from './types/common';

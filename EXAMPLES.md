@@ -14,17 +14,19 @@
     - [Using custom headers with Auth0Provider component](#using-custom-headers-with-auth0provider-component)
     - [Set request-specific headers](#set-request-specific-headers)
 - [Credential Renewal Retry](#credential-renewal-retry)
-  - [Overview](#credential-renewal-retry-overview)
-  - [Prerequisites](#credential-renewal-retry-prerequisites)
+  - [Overview](#overview)
+  - [Prerequisites](#prerequisites)
   - [Using Retry with Hooks](#using-retry-with-hooks)
   - [Using Retry with Auth0 Class](#using-retry-with-auth0-class)
-  - [Platform Support](#credential-renewal-retry-platform-support)
-  - [Error Handling](#credential-renewal-retry-error-handling)
+  - [Platform Support](#platform-support)
+  - [Error Handling](#error-handling)
 - [Biometric Authentication](#biometric-authentication)
   - [Biometric Policy Types](#biometric-policy-types)
   - [Using with Auth0Provider (Hooks)](#using-with-auth0provider-hooks)
   - [Using with Auth0 Class](#using-with-auth0-class)
   - [Platform-Specific Behavior](#platform-specific-behavior)
+    - [Android](#android)
+    - [iOS](#ios)
   - [Migration from Previous Behavior](#migration-from-previous-behavior)
 - [Management API (Users)](#management-api-users)
   - [Patch user with user_metadata](#patch-user-with-user_metadata)
@@ -32,15 +34,9 @@
 - [Organizations](#organizations)
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
-- [DPoP (Demonstrating Proof-of-Possession)](#dpop-demonstrating-proof-of-possession)
-  - [Enabling DPoP](#enabling-dpop)
-  - [Making API calls with DPoP](#making-api-calls-with-dpop)
-  - [Handling DPoP token migration](#handling-dpop-token-migration)
-  - [Checking token type](#checking-token-type)
-  - [Handling nonce errors](#handling-nonce-errors)
 - [Multi-Resource Refresh Tokens (MRRT)](#multi-resource-refresh-tokens-mrrt)
-  - [Overview](#mrrt-overview)
-  - [Prerequisites](#mrrt-prerequisites)
+  - [MRRT Overview](#mrrt-overview)
+  - [MRRT Prerequisites](#mrrt-prerequisites)
   - [Using MRRT with Hooks](#using-mrrt-with-hooks)
   - [Using MRRT with Auth0 Class](#using-mrrt-with-auth0-class)
   - [Web Platform Configuration](#web-platform-configuration)
@@ -49,30 +45,58 @@
   - [Using Custom Token Exchange with Auth0 Class](#using-custom-token-exchange-with-auth0-class)
   - [With Organization Context](#with-organization-context)
   - [Subject Token Type Requirements](#subject-token-type-requirements)
+    - [Valid Token Type Patterns](#valid-token-type-patterns)
+    - [Reserved Namespaces (Forbidden)](#reserved-namespaces-forbidden)
+    - [Common Use Cases](#common-use-cases)
+  - [Error Codes Reference](#error-codes-reference)
+  - [Auth0 Actions Validation](#auth0-actions-validation)
 - [Passkeys](#passkeys)
-  - [Overview](#passkeys-overview)
-  - [Prerequisites](#passkeys-prerequisites)
+  - [Overview](#overview-1)
+  - [Prerequisites](#prerequisites-1)
   - [Signup with Passkey](#signup-with-passkey)
   - [Signin with Passkey](#signin-with-passkey)
-  - [Advanced: Manual Credential Manager Handling](#advanced-manual-credential-manager-handling)
+  - [Auth Response Format](#auth-response-format)
   - [Using Passkeys with Auth0 Class](#using-passkeys-with-auth0-class)
-  - [Error Handling](#passkeys-error-handling)
-  - [Platform Support](#passkeys-platform-support)
+  - [Signup Challenge Parameters](#signup-challenge-parameters)
+  - [Error Handling](#error-handling-1)
+  - [Platform Support](#platform-support-1)
+- [My Account API](#my-account-api)
+  - [Overview](#overview-2)
+  - [Prerequisites](#prerequisites-2)
+  - [Passkey Enrollment](#passkey-enrollment)
+  - [Phone Enrollment](#phone-enrollment)
+  - [Email Enrollment](#email-enrollment)
+  - [TOTP Enrollment](#totp-enrollment)
+  - [Recovery Code Enrollment](#recovery-code-enrollment)
+  - [Managing Authentication Methods](#managing-authentication-methods)
+  - [Getting Available Factors](#getting-available-factors)
+  - [Error Handling](#error-handling-2)
+  - [Platform Support](#platform-support-2)
 - [Native to Web SSO](#native-to-web-sso)
-  - [Overview](#native-to-web-sso-overview)
-  - [Prerequisites](#native-to-web-sso-prerequisites)
+  - [Native to Web SSO Overview](#native-to-web-sso-overview)
+  - [Native to Web SSO Prerequisites](#native-to-web-sso-prerequisites)
   - [Using Native to Web SSO with Hooks](#using-native-to-web-sso-with-hooks)
   - [Using Native to Web SSO with Auth0 Class](#using-native-to-web-sso-with-auth0-class)
   - [SSO Exchange via Authentication API](#sso-exchange-via-authentication-api)
     - [Using SSO Exchange with Hooks](#using-sso-exchange-with-hooks)
     - [Using SSO Exchange with Auth0 Class](#using-sso-exchange-with-auth0-class)
   - [Sending the Session Transfer Token](#sending-the-session-transfer-token)
+    - [Option 1: As a Query Parameter](#option-1-as-a-query-parameter)
+    - [Option 2: As a Cookie (WebView only)](#option-2-as-a-cookie-webview-only)
 - [Bot Protection](#bot-protection)
   - [Domain Switching](#domain-switching)
-    - [Android](#android)
-    - [iOS](#ios)
+    - [Android](#android-1)
+    - [iOS](#ios-1)
     - [Expo](#expo)
 - [Allowed Browsers (Android)](#allowed-browsers-android)
+  - [Using with Hooks](#using-with-hooks)
+  - [Using with Auth0 Class](#using-with-auth0-class-1)
+- [DPoP (Demonstrating Proof-of-Possession)](#dpop-demonstrating-proof-of-possession)
+  - [Enabling DPoP](#enabling-dpop)
+  - [Making API calls with DPoP](#making-api-calls-with-dpop)
+  - [Handling DPoP token migration](#handling-dpop-token-migration)
+  - [Checking token type](#checking-token-type)
+  - [Handling nonce errors](#handling-nonce-errors)
 
 ## Authentication API
 
@@ -1283,6 +1307,222 @@ try {
 | **Web**     | ❌ Not Supported | Throws `PasskeyError` with `PASSKEY_UNSUPPORTED_PLATFORM` |
 
 > **Note:** Passkeys require a real device for the full flow. Simulators/emulators may have limited support.
+
+## My Account API
+
+### Overview
+
+The My Account API allows authenticated users to manage their own authentication methods (passkeys, phone, email, TOTP, push notifications, recovery codes). It provides endpoints for enrolling new factors, confirming enrollments with OTP, listing/updating/deleting authentication methods, and querying available factors.
+
+Access the My Account client via the `myAccount` property from `useAuth0()` or the `Auth0` class instance.
+
+### Prerequisites
+
+- A [custom domain](https://auth0.com/docs/customize/custom-domains) must be configured on your Auth0 tenant
+- **iOS**: Associated Domains entitlement must be configured with `webcredentials:<your-custom-domain>` for passkey support
+- **Android**: App Links must be set up with your custom domain via an `assetlinks.json` file for passkey support
+- The user must be authenticated
+- An access token with the appropriate My Account API scopes is required:
+  - `read:me:authentication_methods`
+  - `create:me:authentication_methods`
+  - `update:me:authentication_methods`
+  - `delete:me:authentication_methods`
+  - `read:me:factors`
+
+Use `getApiCredentials` with the `https://<domain>/me/` audience to obtain a scoped token:
+
+```typescript
+const credentials = await getApiCredentials(
+  `https://${domain}/me/`,
+  'read:me:authentication_methods create:me:authentication_methods delete:me:authentication_methods update:me:authentication_methods read:me:factors'
+);
+const accessToken = credentials.accessToken;
+```
+
+### Passkey Enrollment
+
+Passkey enrollment is a two-step process: request a challenge, then verify with the credential response.
+
+```typescript
+import { useAuth0 } from 'react-native-auth0';
+import { createPasskey } from './PasskeyModule'; // Your native passkey module
+
+const { myAccount, getApiCredentials } = useAuth0();
+
+// Step 1: Request the enrollment challenge
+const accessToken = (await getApiCredentials(`https://${domain}/me/`, scopes))
+  .accessToken;
+const challenge = await myAccount.passkeyEnrollmentChallenge({ accessToken });
+
+// Step 2: Create a passkey using the platform credential manager
+const credentialJson = await createPasskey(challenge.authParamsPublicKey);
+
+// Step 3: Verify the enrollment
+const method = await myAccount.enrollPasskey({
+  accessToken,
+  authenticationMethodId: challenge.authenticationMethodId,
+  authSession: challenge.authSession,
+  authResponse: credentialJson,
+  authParamsPublicKey: challenge.authParamsPublicKey,
+});
+
+console.log('Enrolled passkey:', method.id, method.keyId);
+```
+
+### Phone Enrollment
+
+```typescript
+import { PreferredAuthenticationMethods } from 'react-native-auth0';
+
+const { myAccount } = useAuth0();
+
+// Step 1: Enroll the phone number (sends OTP)
+const challenge = await myAccount.enrollPhone({
+  accessToken,
+  phoneNumber: '+1234567890',
+  preferredAuthenticationMethod: PreferredAuthenticationMethods.SMS, // or VOICE
+});
+
+// Step 2: Confirm with OTP
+const method = await myAccount.confirmPhoneEnrollment({
+  accessToken,
+  id: challenge.id,
+  authSession: challenge.authSession,
+  otpCode: '123456',
+});
+```
+
+### Email Enrollment
+
+```typescript
+// Step 1: Enroll the email (sends OTP)
+const challenge = await myAccount.enrollEmail({
+  accessToken,
+  emailAddress: 'user@example.com',
+});
+
+// Step 2: Confirm with OTP
+const method = await myAccount.confirmEmailEnrollment({
+  accessToken,
+  id: challenge.id,
+  authSession: challenge.authSession,
+  otpCode: '123456',
+});
+```
+
+### TOTP Enrollment
+
+```typescript
+// Step 1: Enroll TOTP (returns QR code / manual code)
+const challenge = await myAccount.enrollTOTP({ accessToken });
+// Display challenge.barcodeUri as a QR code, or show challenge.manualInputCode
+
+// Step 2: Confirm with OTP from authenticator app
+const method = await myAccount.confirmTOTPEnrollment({
+  accessToken,
+  id: challenge.id,
+  authSession: challenge.authSession,
+  otpCode: '123456',
+});
+```
+
+### Recovery Code Enrollment
+
+```typescript
+// Step 1: Enroll recovery code
+const challenge = await myAccount.enrollRecoveryCode({ accessToken });
+// Store challenge.recoveryCode securely
+
+// Step 2: Confirm enrollment
+const method = await myAccount.confirmRecoveryCodeEnrollment({
+  accessToken,
+  id: challenge.id,
+  authSession: challenge.authSession,
+});
+```
+
+### Managing Authentication Methods
+
+```typescript
+import { AuthenticationMethodTypes } from 'react-native-auth0';
+
+// List all methods
+const methods = await myAccount.getAuthenticationMethods({ accessToken });
+
+// List only passkey methods
+const passkeys = await myAccount.getAuthenticationMethods({
+  accessToken,
+  type: AuthenticationMethodTypes.PASSKEY,
+});
+
+// Get a specific method
+const method = await myAccount.getAuthenticationMethodById({
+  accessToken,
+  id: 'authentication-method-id',
+});
+
+// Update a method name
+const updated = await myAccount.updateAuthenticationMethodById({
+  accessToken,
+  id: 'authentication-method-id',
+  name: 'My Work Phone',
+});
+
+// Delete a method
+await myAccount.deleteAuthenticationMethodById({
+  accessToken,
+  id: 'authentication-method-id',
+});
+```
+
+### Getting Available Factors
+
+```typescript
+const factors = await myAccount.getFactors({ accessToken });
+// Returns available factor types (e.g., sms, email, totp, push-notification, webauthn-platform)
+```
+
+### Error Handling
+
+```typescript
+import { MyAccountError, MyAccountErrorCodes, PasskeyError, PasskeyErrorCodes } from 'react-native-auth0';
+
+try {
+  await myAccount.enrollPasskey({ ... });
+} catch (e) {
+  if (e instanceof PasskeyError) {
+    switch (e.type) {
+      case PasskeyErrorCodes.NOT_AVAILABLE:
+        // Passkeys not supported on this device
+        break;
+      default:
+        console.error(`Passkey error: [${e.type}] ${e.message}`);
+    }
+  } else if (e instanceof MyAccountError) {
+    switch (e.type) {
+      case MyAccountErrorCodes.ENROLLMENT_FAILED:
+        // Enrollment failed
+        break;
+      case MyAccountErrorCodes.VERIFICATION_FAILED:
+        // OTP verification failed
+        break;
+      case MyAccountErrorCodes.UNAUTHORIZED:
+        // Token expired or insufficient scopes
+        break;
+      default:
+        console.error(`My Account error: [${e.type}] ${e.message}`);
+    }
+  }
+}
+```
+
+### Platform Support
+
+| Platform    | Support          | Notes                                                     |
+| ----------- | ---------------- | --------------------------------------------------------- |
+| **iOS**     | ✅ Supported     | Passkey enrollment requires iOS 16.6+                     |
+| **Android** | ✅ Supported     | Passkey enrollment requires Android API 28+               |
+| **Web**     | ❌ Not Supported | Throws `PasskeyError` with `PASSKEY_UNSUPPORTED_PLATFORM` |
 
 ## Native to Web SSO
 

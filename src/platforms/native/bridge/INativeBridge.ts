@@ -272,4 +272,129 @@ export interface INativeBridge {
     scope?: string,
     organization?: string
   ): Promise<Credentials>;
+
+  /**
+   * Request a passkey enrollment challenge from the My Account API.
+   *
+   * @param accessToken Access token for My Account API.
+   * @param userIdentity Optional user identity ID (for linked accounts).
+   * @param connection Optional database connection name.
+   * @returns A promise that resolves with the enrollment challenge response.
+   */
+  passkeyEnrollmentChallenge(
+    accessToken: string,
+    userIdentity?: string,
+    connection?: string
+  ): Promise<{
+    authenticationMethodId: string;
+    authSession: string;
+    authParamsPublicKey: Record<string, any>;
+  }>;
+
+  /**
+   * Verify a passkey enrollment with the My Account API.
+   *
+   * @param accessToken Access token for My Account API.
+   * @param authenticationMethodId The authentication method ID from the challenge.
+   * @param authSession The auth session from the challenge.
+   * @param authResponse JSON string of the PublicKeyCredential response.
+   * @returns A promise that resolves with the enrolled authentication method.
+   */
+  enrollPasskey(
+    accessToken: string,
+    authenticationMethodId: string,
+    authSession: string,
+    authResponse: string,
+    authParamsPublicKey: string
+  ): Promise<Record<string, any>>;
+
+  /**
+   * Get all authentication methods for the authenticated user.
+   */
+  getAuthenticationMethods(
+    accessToken: string,
+    type?: string
+  ): Promise<Record<string, any>[]>;
+
+  /**
+   * Get a single authentication method by ID.
+   */
+  getAuthenticationMethodById(
+    accessToken: string,
+    id: string
+  ): Promise<Record<string, any>>;
+
+  /**
+   * Update an authentication method by ID.
+   */
+  updateAuthenticationMethodById(
+    accessToken: string,
+    id: string,
+    name?: string | null,
+    preferredAuthenticationMethod?: string | null
+  ): Promise<Record<string, any>>;
+
+  /**
+   * Delete an authentication method by ID.
+   */
+  deleteAuthenticationMethodById(
+    accessToken: string,
+    id: string
+  ): Promise<void>;
+
+  /**
+   * Enroll a phone number as an authentication method.
+   */
+  enrollPhone(
+    accessToken: string,
+    phoneNumber: string,
+    preferredAuthenticationMethod?: string
+  ): Promise<Record<string, any>>;
+
+  /**
+   * Enroll an email address as an authentication method.
+   */
+  enrollEmail(
+    accessToken: string,
+    emailAddress: string
+  ): Promise<Record<string, any>>;
+
+  /**
+   * Enroll TOTP as an authentication method.
+   */
+  enrollTOTP(accessToken: string): Promise<Record<string, any>>;
+
+  /**
+   * Enroll push notification as an authentication method.
+   */
+  enrollPushNotification(accessToken: string): Promise<Record<string, any>>;
+
+  /**
+   * Enroll a recovery code as an authentication method.
+   */
+  enrollRecoveryCode(accessToken: string): Promise<Record<string, any>>;
+
+  /**
+   * Confirm an enrollment that requires an OTP code (phone, email, TOTP).
+   */
+  confirmEnrollmentWithOtp(
+    accessToken: string,
+    id: string,
+    authSession: string,
+    otpCode: string
+  ): Promise<Record<string, any>>;
+
+  /**
+   * Confirm an enrollment that does not require an OTP code (recovery code, push notification).
+   */
+  confirmEnrollment(
+    accessToken: string,
+    id: string,
+    authSession: string
+  ): Promise<Record<string, any>>;
+
+  /**
+   * Get available authentication factors.
+   */
+  getFactors(accessToken: string): Promise<Record<string, any>[]>;
 }

@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useMemo, useCallback } from 'react';
+import { useEffect, useReducer, useCallback, useMemo } from 'react';
 import type { PropsWithChildren } from 'react';
 import type { ApiCredentials } from '../core/models';
 import { Auth0Context, type Auth0ContextInterface } from './Auth0Context';
@@ -342,6 +342,8 @@ export const Auth0Provider = ({
     [client, loginFlow]
   );
 
+  const myAccount = useMemo(() => client.myAccount, [client]);
+
   const sendEmailCode = useCallback(
     (parameters: PasswordlessEmailParameters) =>
       voidFlow(client.auth.passwordlessWithEmail(parameters)),
@@ -454,6 +456,7 @@ export const Auth0Provider = ({
       passkeySignupChallenge,
       passkeyLoginChallenge,
       getTokenByPasskey,
+      myAccount,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,
@@ -487,6 +490,7 @@ export const Auth0Provider = ({
       passkeySignupChallenge,
       passkeyLoginChallenge,
       getTokenByPasskey,
+      myAccount,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,
