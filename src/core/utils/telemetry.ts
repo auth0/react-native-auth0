@@ -1,6 +1,6 @@
 export const telemetry = {
   name: 'react-native-auth0',
-  version: '5.6.0',
+  version: '5.7.0',
 };
 
 export type Telemetry = {
