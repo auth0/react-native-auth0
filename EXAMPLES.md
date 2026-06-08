@@ -137,6 +137,21 @@ auth0.auth
 
 This endpoint requires an access token that was granted the `/userinfo` audience. Check that the authentication request that returned the access token included an audience value of `https://{YOUR_AUTH0_DOMAIN}.auth0.com/userinfo`.
 
+### Parse user profile from an ID token locally
+
+If you already have credentials (e.g. from `webAuth.authorize()` or `credentialsManager.getCredentials()`), you can extract the user profile from the ID token without a network request:
+
+```js
+import Auth0, { parseIdToken } from 'react-native-auth0';
+
+const auth0 = new Auth0({ domain, clientId });
+const credentials = await auth0.webAuth.authorize({ scope: 'openid profile email' });
+const user = parseIdToken(credentials.idToken);
+// user.sub, user.name, user.email, etc.
+```
+
+This is the same parsing that `Auth0Provider` performs internally. It's useful when you manage auth state yourself via the `Auth0` class and want to avoid the network round-trip of `auth.userInfo()`.
+
 ### Getting new access token with refresh token
 
 ```js
