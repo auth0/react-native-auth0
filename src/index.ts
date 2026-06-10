@@ -11,6 +11,7 @@ export {
   MyAccountError,
 } from './core/models';
 export { TimeoutError } from './core/utils/fetchWithTimeout';
+export { parseIdToken } from './core/utils';
 export { TokenType } from './types/common';
 export { Auth0Provider } from './hooks/Auth0Provider';
 export { useAuth0 } from './hooks/useAuth0';
