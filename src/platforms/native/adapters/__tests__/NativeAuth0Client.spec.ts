@@ -560,4 +560,49 @@ describe('NativeAuth0Client', () => {
       ).rejects.toBeInstanceOf(PasskeyError);
     });
   });
+
+  describe('native config re-sync (multi-tenant)', () => {
+    it('re-points the native singleton when its config has drifted to a sibling client', async () => {
+      // Simulate the native singleton currently belonging to a different
+      // domain/clientId (overwritten by a sibling Auth0 instance).
+      mockBridgeInstance.hasValidInstance.mockResolvedValue(false);
+
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      // Constructor initialization re-pointed the native side once.
+      expect(mockBridgeInstance.initialize).toHaveBeenCalledTimes(1);
+      const initCallsAfterConstruct =
+        mockBridgeInstance.initialize.mock.calls.length;
+
+      await client.webAuth.authorize();
+
+      // The guarded path re-asserts this client's config before dispatching to
+      // the native module, so a drifted singleton gets re-initialized to the
+      // correct tenant rather than authorizing against the wrong domain.
+      expect(mockBridgeInstance.initialize.mock.calls.length).toBeGreaterThan(
+        initCallsAfterConstruct
+      );
+      expect(mockBridgeInstance.initialize).toHaveBeenLastCalledWith(
+        options.clientId,
+        options.domain,
+        undefined,
+        true,
+        undefined
+      );
+      expect(mockBridgeInstance.authorize).toHaveBeenCalledTimes(1);
+    });
+
+    it('does NOT re-initialize when the native singleton already matches', async () => {
+      // Default mock: hasValidInstance returns true (native already matches).
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await client.webAuth.authorize();
+
+      // No re-initialization needed; the common single-client path stays cheap.
+      expect(mockBridgeInstance.initialize).not.toHaveBeenCalled();
+      expect(mockBridgeInstance.authorize).toHaveBeenCalledTimes(1);
+    });
+  });
 });

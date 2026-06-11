@@ -45,8 +45,18 @@ export const Auth0Provider = ({
   children,
   ...options
 }: PropsWithChildren<Auth0Options>) => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const client = useMemo(() => new Auth0(options), []);
+  // Recreate the client when the tenant configuration changes so that
+  // `domain`/`clientId` prop updates take effect (e.g. domain switching).
+  // The factory caches clients per domain|clientId, so unchanged configs
+  // still reuse the same underlying instance and its in-flight state.
+  const client = useMemo(
+    () => new Auth0(options),
+    // Intentionally key only on the tenant identity. `options` is a fresh
+    // object every render, so depending on it would recreate the client
+    // (and reset auth state) on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [options.domain, options.clientId]
+  );
   const [state, dispatch] = useReducer(reducer, {
     user: null,
     error: null,

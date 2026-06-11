@@ -35,12 +35,15 @@ export class NativeAuth0Client implements IAuth0Client {
   private readonly tokenType: TokenType;
   private readonly bridge: INativeBridge;
   private readonly baseUrl: string;
+  private readonly options: NativeAuth0Options;
+  private syncLock: Promise<void> = Promise.resolve();
   private guardedBridge!: INativeBridge;
   private readonly getDPoPHeadersForOrchestrator?: (
     params: DPoPHeadersParams
   ) => Promise<Record<string, string>>;
 
   constructor(options: NativeAuth0Options) {
+    this.options = options;
     const baseUrl = `https://${options.domain}`;
     this.baseUrl = baseUrl;
     const useDPoP = options.useDPoP ?? true;
@@ -108,6 +111,25 @@ export class NativeAuth0Client implements IAuth0Client {
     }
   }
 
+  /**
+   * Re-points the native singleton at this client's configuration.
+   *
+   * The native module (iOS/Android) keeps a single active Auth0 instance, but
+   * the JS factory caches one client per domain|clientId. When multiple clients
+   * coexist (or a client is reused after another was initialized), the native
+   * instance may belong to a sibling client, so bridge calls would otherwise
+   * target the wrong domain/clientId. Re-initializing only happens when the
+   * native config has drifted, so the common single-client path stays a cheap
+   * `hasValidInstance` check. Serialized via `syncLock` to avoid interleaving
+   * re-initializations from concurrent calls.
+   */
+  private syncNativeConfig(): Promise<void> {
+    this.syncLock = this.syncLock
+      .catch(() => undefined)
+      .then(() => this.initialize(this.bridge, this.options));
+    return this.syncLock;
+  }
+
   users(token: string, tokenType?: TokenType): IUsersClient {
     // Use provided tokenType or fall back to client's default
     const effectiveTokenType = tokenType ?? this.tokenType;
@@ -165,6 +187,10 @@ export class NativeAuth0Client implements IAuth0Client {
       guarded[methodName] = async (...args: any[]) => {
         // This is the "guard": wait for the initialization promise to resolve.
         await this.ready;
+        // Re-point the native singleton at this client's config in case a
+        // sibling client (different domain/clientId) overwrote it. No-op when
+        // the native instance already matches.
+        await this.syncNativeConfig();
         // Call the original method with the correct 'this' context.
         return originalMethod.apply(bridge, args);
       };

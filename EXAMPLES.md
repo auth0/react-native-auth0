@@ -145,7 +145,9 @@ If you already have credentials (e.g. from `webAuth.authorize()` or `credentials
 import Auth0, { parseIdToken } from 'react-native-auth0';
 
 const auth0 = new Auth0({ domain, clientId });
-const credentials = await auth0.webAuth.authorize({ scope: 'openid profile email' });
+const credentials = await auth0.webAuth.authorize({
+  scope: 'openid profile email',
+});
 const user = parseIdToken(credentials.idToken);
 // user.sub, user.name, user.email, etc.
 ```
@@ -1915,6 +1917,62 @@ If you want to support multiple domains, you would have to pass an array of obje
 ```
 
 You can skip sending the `customScheme` property if you do not want to customize it.
+
+#### Switching tenants at runtime
+
+The configuration above is **build-time** setup: it registers the redirect callback for every domain you intend to use. Switching the _active_ tenant while the app is running is done in JavaScript by changing the `domain`/`clientId` you pass to the SDK.
+
+When you change the `domain` or `clientId` prop on `Auth0Provider`, the provider rebuilds its underlying client so subsequent calls target the newly selected tenant. Keep the props in state and update them to switch:
+
+```jsx
+import React, { useState } from 'react';
+import { Auth0Provider, useAuth0 } from 'react-native-auth0';
+
+const TENANTS = [
+  { domain: 'tenant-a.us.auth0.com', clientId: 'CLIENT_ID_A' },
+  { domain: 'tenant-b.us.auth0.com', clientId: 'CLIENT_ID_B' },
+];
+
+const App = () => {
+  const [index, setIndex] = useState(0);
+  const tenant = TENANTS[index];
+
+  return (
+    // Changing domain/clientId recreates the client for the new tenant.
+    <Auth0Provider domain={tenant.domain} clientId={tenant.clientId}>
+      <Button
+        title="Switch Tenant"
+        onPress={() => setIndex((i) => (i + 1) % TENANTS.length)}
+      />
+      <LoginScreen />
+    </Auth0Provider>
+  );
+};
+```
+
+After switching, the next `authorize()` call opens the login page for the newly selected tenant and the redirect resolves correctly, provided that tenant's domain/scheme was registered using the build-time configuration shown above.
+
+> Note: Switching tenants does not immediately clear the displayed auth state. The provider re-runs its initialization for the new tenant and updates `user` once that check completes, so the previously shown user may briefly remain until then. Persisted credentials are stored per tenant, so a user already logged in to the target tenant is restored on initialization; otherwise `user` becomes `null`.
+
+If you are using the `Auth0` class directly instead of the hooks, simply create (or reuse) an instance per tenant and call the one matching the active tenant:
+
+```js
+import Auth0 from 'react-native-auth0';
+
+const clients = {
+  tenantA: new Auth0({
+    domain: 'tenant-a.us.auth0.com',
+    clientId: 'CLIENT_ID_A',
+  }),
+  tenantB: new Auth0({
+    domain: 'tenant-b.us.auth0.com',
+    clientId: 'CLIENT_ID_B',
+  }),
+};
+
+// Use whichever client corresponds to the active tenant.
+const credentials = await clients[activeTenant].webAuth.authorize();
+```
 
 ## Allowed Browsers (Android)
 
