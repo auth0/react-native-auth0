@@ -126,4 +126,9 @@ export class WebWebAuthProvider implements IWebAuthProvider {
     // Web-based flows cannot be programmatically cancelled. This is a no-op.
     return Promise.resolve();
   }
+
+  async resumeSession(): Promise<null> {
+    // Process-death recovery is an Android-only concern. No-op on web.
+    return Promise.resolve(null);
+  }
 }

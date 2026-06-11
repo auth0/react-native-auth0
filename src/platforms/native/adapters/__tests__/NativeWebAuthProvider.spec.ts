@@ -17,6 +17,7 @@ const mockBridge: jest.Mocked<INativeBridge> = {
   authorize: jest.fn(),
   clearSession: jest.fn(),
   cancelWebAuth: jest.fn(),
+  resumeSession: jest.fn(),
   getBundleIdentifier: jest.fn().mockResolvedValue('com.my-app'),
   resumeWebAuth: jest.fn(),
   // Add stubs for other bridge methods
@@ -225,6 +226,37 @@ describe('NativeWebAuthProvider', () => {
     it('should call the bridge to cancel the web auth flow', async () => {
       await provider.cancelWebAuth();
       expect(mockBridge.cancelWebAuth).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('resumeSession', () => {
+    it('should return recovered credentials from the bridge', async () => {
+      const credentials = {
+        accessToken: 'a',
+        idToken: 'id',
+        tokenType: 'Bearer',
+        expiresAt: 1700000000,
+      };
+      mockBridge.resumeSession.mockResolvedValue(credentials as any);
+
+      const result = await provider.resumeSession();
+
+      expect(mockBridge.resumeSession).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(credentials);
+    });
+
+    it('should return null when there is nothing to recover', async () => {
+      mockBridge.resumeSession.mockResolvedValue(null);
+
+      const result = await provider.resumeSession();
+
+      expect(result).toBeNull();
+    });
+
+    it('should wrap bridge errors in a WebAuthError', async () => {
+      mockBridge.resumeSession.mockRejectedValue(new Error('boom'));
+
+      await expect(provider.resumeSession()).rejects.toThrow();
     });
   });
 });

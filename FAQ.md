@@ -18,6 +18,7 @@
 16. [What happens if I disable DPoP after enabling it?](#16-what-happens-if-i-disable-dpop-after-enabling-it)
 17. [Why does the app hang or freeze during Social Login (Google, Facebook, etc.)?](#17-why-does-the-app-hang-or-freeze-during-social-login-google-facebook-etc)
 18. [How do I refresh the user profile (e.g. `emailVerified`) after it changes on the server?](#18-how-do-i-refresh-the-user-profile-eg-emailverified-after-it-changes-on-the-server)
+19. [Why does login fail after the Android system kills my app during the browser step?](#19-why-does-login-fail-after-the-android-system-kills-my-app-during-the-browser-step)
 
 ## 1. How can I have separate Auth0 domains for each environment on Android?
 
@@ -1021,3 +1022,70 @@ function VerifyEmailScreen() {
 | `getCredentials` promise never resolves | Missing refresh token or network issue                       | Ensure `offline_access` is included during login, and check network connectivity.                                       |
 
 > **Note**: This behavior differs from the web SDK (`@auth0/auth0-spa-js`), where token refresh is handled automatically via silent authentication using iframes. On native platforms (iOS/Android), a refresh token is explicitly required.
+
+## 19. Why does login fail after the Android system kills my app during the browser step?
+
+### The problem
+
+On Android, while the user is in the Auth0 login browser (Chrome Custom Tabs), the OS may kill your app's process to reclaim memory. This is common on low-memory devices, and it happens **every time** when the developer option **Settings → Developer options → Don't keep activities** is enabled.
+
+When the user finishes logging in, the deep link cold-starts your app. The SDK recovers the login automatically and the user ends up logged in — but only if your `MainActivity` is set up to survive the restart. If it is not, the app can crash on restore (`java.lang.IllegalStateException: Screen fragments should never be restored`) before recovery can run, and the user is left logged out.
+
+### The solution
+
+If your app uses `react-native-screens` (which React Navigation does by default), your `MainActivity` must discard the saved view state by passing `null` to `super.onCreate`. This is a general requirement of `react-native-screens`, which cannot restore its fragment hierarchy after process death — it is not specific to Auth0. Apps that do not use `react-native-screens` are unaffected.
+
+This applies to **both bare React Native and Expo** (for Expo, edit the generated file after `expo prebuild`). Edit `android/app/src/main/java/.../MainActivity.kt` (or `.java`) so `onCreate` passes `null`:
+
+```diff
++ import android.os.Bundle
+
+  class MainActivity : ReactActivity() {
+    override fun getMainComponentName(): String = "YourApp"
+
++   override fun onCreate(savedInstanceState: Bundle?) {
++     super.onCreate(null)
++   }
+  }
+```
+
+For Java:
+
+```diff
++ import android.os.Bundle;
+
+  public class MainActivity extends ReactActivity {
++   @Override
++   protected void onCreate(Bundle savedInstanceState) {
++     super.onCreate(null);
++   }
+  }
+```
+
+### How the login continues after the app restarts
+
+When the process was killed mid-login, the original `authorize()` promise no longer exists — the app has cold-started. The recovered credentials are cached natively and handed back to your app on the next launch through `resumeSession()`. How you consume them depends on which API you use:
+
+**Hooks API (`Auth0Provider` / `useAuth0`):** Nothing to do. `Auth0Provider` automatically calls `resumeSession()` while it initializes, stores the recovered credentials, and populates `user`. After the restart the user simply appears logged in:
+
+```jsx
+const { user, isLoading } = useAuth0();
+// After process-death recovery, `user` is populated once `isLoading` becomes false —
+// exactly as if a normal login had completed.
+```
+
+**Imperative API (`new Auth0(...)`):** Call `resumeSession()` yourself once on app launch, before deciding whether the user is logged in. It resolves the recovered credentials, or `null` when there is nothing to recover (the normal case on every other launch and on iOS/web):
+
+```js
+const auth0 = new Auth0({ domain, clientId });
+
+// On app launch, before routing to your logged-in/logged-out screens:
+const recovered = await auth0.webAuth.resumeSession();
+if (recovered) {
+  // A login that was interrupted by process death just completed.
+  await auth0.credentialsManager.saveCredentials(recovered);
+}
+const isLoggedIn = await auth0.credentialsManager.hasValidCredentials();
+```
+
+> **Note:** This recovery also relies on a fix in the underlying `Auth0.Android` SDK. Ensure you are on a version that includes it (see the changelog). On iOS and web `resumeSession()` always resolves `null`, since they do not have this class of failure.

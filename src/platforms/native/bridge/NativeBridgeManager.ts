@@ -130,6 +130,13 @@ export class NativeBridgeManager implements INativeBridge {
     );
   }
 
+  async resumeSession(): Promise<Credentials | null> {
+    const credential = await this.a0_call(
+      Auth0NativeModule.resumeSession.bind(Auth0NativeModule)
+    );
+    return credential ? new CredentialsModel(credential) : null;
+  }
+
   async saveCredentials(credentials: Credentials): Promise<void> {
     return this.a0_call(
       Auth0NativeModule.saveCredentials.bind(Auth0NativeModule),

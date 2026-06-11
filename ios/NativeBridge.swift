@@ -175,6 +175,12 @@ public class NativeBridge: NSObject {
     @objc public func cancelWebAuth(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         resolve(WebAuthentication.cancel())
     }
+
+    // iOS does not lose the in-flight web auth result to process death the way Android can,
+    // so there is never a session to recover here. Resolve nil to satisfy the shared contract.
+    @objc public func resumeSession(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        resolve(nil)
+    }
     
     @objc public func saveCredentials(credentialsDict: [String: Any], resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         

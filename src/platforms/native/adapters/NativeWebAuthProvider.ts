@@ -133,6 +133,14 @@ export class NativeWebAuthProvider implements IWebAuthProvider {
     }
   }
 
+  async resumeSession(): Promise<Credentials | null> {
+    try {
+      return await this.bridge.resumeSession();
+    } catch (error) {
+      throw new WebAuthError(error as AuthError);
+    }
+  }
+
   private async getDefaultScheme(useLegacy: boolean = false): Promise<string> {
     const bundleId = (await this.bridge.getBundleIdentifier()).toLowerCase();
     return useLegacy ? bundleId : `${bundleId}.auth0`;

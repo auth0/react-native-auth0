@@ -58,6 +58,7 @@ jest.mock('react-native', () => ({
       getBundleIdentifier: jest.fn().mockResolvedValue('com.test.app'),
       cancelWebAuth: jest.fn(),
       resumeWebAuth: jest.fn(),
+      resumeSession: jest.fn().mockResolvedValue(null),
     })),
   },
 }));
@@ -93,6 +94,7 @@ const createMockClient = () => {
       handleRedirectCallback: jest.fn().mockResolvedValue(undefined),
       checkWebSession: jest.fn().mockResolvedValue(null),
       getWebUser: jest.fn().mockResolvedValue(null),
+      resumeSession: jest.fn().mockResolvedValue(null),
     },
     credentialsManager: {
       hasValidCredentials: jest.fn().mockResolvedValue(false),
@@ -283,6 +285,47 @@ describe('Auth0Provider', () => {
     });
     // Ensure fromIdToken was called with the correct ID token
     expect(MockAuth0User.fromIdToken).toHaveBeenCalledWith('a.b.c');
+  });
+
+  it('should log in by recovering a session after process death', async () => {
+    // No stored credentials, but a Universal Login result was recovered after
+    // the process was killed mid-login (Android process death).
+    mockClientInstance.credentialsManager.hasValidCredentials.mockResolvedValue(
+      false
+    );
+    mockClientInstance.webAuth.resumeSession.mockResolvedValueOnce({
+      idToken: 'recovered.id.token',
+      accessToken: 'recovered-token',
+      tokenType: 'Bearer',
+      expiresAt: Date.now() / 1000 + 3600,
+    } as any);
+
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('user-status')).toHaveTextContent(
+        'Logged in as: Test User'
+      );
+    });
+    // Recovered credentials are persisted so the rest of the app sees a normal login.
+    expect(
+      mockClientInstance.credentialsManager.saveCredentials
+    ).toHaveBeenCalledWith(
+      expect.objectContaining({ accessToken: 'recovered-token' })
+    );
+    expect(MockAuth0User.fromIdToken).toHaveBeenCalledWith(
+      'recovered.id.token'
+    );
+    // A stored-credentials lookup is unnecessary once recovery succeeds.
+    expect(
+      mockClientInstance.credentialsManager.getCredentials
+    ).not.toHaveBeenCalled();
   });
 
   // Note: Platform-specific initialization behavior is covered by existing tests

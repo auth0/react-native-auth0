@@ -3,6 +3,8 @@ package com.auth0.react
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.FragmentActivity
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
@@ -38,6 +40,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
     companion object {
         const val NAME = "A0Auth0"
+        private const val RESUME_SESSION_TIMEOUT_MS = 10_000L
         private const val CREDENTIAL_MANAGER_ERROR_CODE = "CREDENTIAL_MANAGER_ERROR"
         private const val BIOMETRICS_AUTHENTICATION_ERROR_CODE = "BIOMETRICS_CONFIGURATION_ERROR"
         
@@ -131,6 +134,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             WebAuthProvider.useDPoP(reactContext)
         }
         webAuthPromise = promise
+        WebAuthRecovery.markFlowInProgress(reactContext)
         val cleanedParameters = mutableMapOf<String, String>()
 
         additionalParameters?.let { params ->
@@ -169,12 +173,14 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         builder.start(reactContext.currentActivity as Activity,
             object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
                 override fun onSuccess(result: Credentials) {
+                    WebAuthRecovery.clearFlowInProgress(reactContext)
                     val map = CredentialsParser.toMap(result)
                     promise.resolve(map)
                     webAuthPromise = null
                 }
 
                 override fun onFailure(error: AuthenticationException) {
+                    WebAuthRecovery.clearFlowInProgress(reactContext)
                     handleError(error, promise)
                     webAuthPromise = null
                 }
@@ -826,11 +832,72 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
     override fun onNewIntent(intent: Intent) {
         webAuthPromise?.let { promise ->
+            WebAuthRecovery.clearFlowInProgress(reactContext)
             promise.reject(
                 "a0.session.browser_terminated",
                 "The browser window was closed by a new instance of the application"
             )
             webAuthPromise = null
+        }
+    }
+
+    /**
+     * Drains a Universal Login result recovered after Android process death.
+     *
+     * After process death the OS recreates `AuthenticationActivity`, restores the
+     * `OAuthManager`, and completes the token exchange before the React bridge boots.
+     * That result is delivered to `WebAuthProvider.addCallback` subscribers, never to the
+     * `start()` callback in [webAuth], whose JS Promise no longer exists. `WebAuthProvider`
+     * buffers a recovered result until the first callback is registered, so JS can claim it
+     * by registering here on launch — even though the bridge boots long after the exchange.
+     *
+     * Resolves the recovered credentials, rejects with the recovered error, or resolves
+     * `null` when there is nothing to recover. When a flow was in progress but its token
+     * exchange hasn't finished yet, the callback stays registered until the result arrives
+     * or a timeout elapses (resolving `null`) so JS never hangs.
+     */
+    override fun resumeSession(promise: Promise) {
+        // A normal launch (no interactive login was pending) has nothing to recover. Resolve
+        // immediately so JS doesn't wait out the timeout on every cold start.
+        if (!WebAuthRecovery.isFlowInProgress(reactContext)) {
+            promise.resolve(null)
+            return
+        }
+
+        val settled = java.util.concurrent.atomic.AtomicBoolean(false)
+        val timeoutHandler = Handler(Looper.getMainLooper())
+
+        val callback = object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
+            override fun onSuccess(result: Credentials) {
+                finish { promise.resolve(CredentialsParser.toMap(result)) }
+            }
+
+            override fun onFailure(error: AuthenticationException) {
+                finish { handleError(error, promise) }
+            }
+
+            private fun finish(resolve: () -> Unit) {
+                if (!settled.compareAndSet(false, true)) return
+                timeoutHandler.removeCallbacksAndMessages(null)
+                WebAuthProvider.removeCallback(this)
+                WebAuthRecovery.clearFlowInProgress(reactContext)
+                resolve()
+            }
+        }
+
+        // If a result is already buffered in WebAuthProvider, addCallback fires synchronously
+        // (settling before the line below). Otherwise the callback waits for the in-flight
+        // restore exchange to complete.
+        WebAuthProvider.addCallback(callback)
+
+        if (!settled.get()) {
+            timeoutHandler.postDelayed({
+                if (settled.compareAndSet(false, true)) {
+                    WebAuthProvider.removeCallback(callback)
+                    WebAuthRecovery.clearFlowInProgress(reactContext)
+                    promise.resolve(null)
+                }
+            }, RESUME_SESSION_TIMEOUT_MS)
         }
     }
 

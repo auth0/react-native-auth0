@@ -79,4 +79,19 @@ export interface IWebAuthProvider {
    * @returns A promise that resolves when the operation is complete.
    */
   cancelWebAuth(): Promise<void>;
+
+  /**
+   * Recovers a Universal Login result that completed after the OS killed the app
+   * process mid-login (Android process death).
+   *
+   * @remarks
+   * **Platform specific:** On Android, if the process is killed while the user is in
+   * the login browser, the original `authorize()` promise is lost. The recovered
+   * credentials are cached natively; call this on app launch to claim them. Resolves
+   * `null` when there is nothing to recover. On iOS and web this is a no-op that
+   * resolves `null`, since they do not have this class of failure.
+   *
+   * @returns A promise that resolves with the recovered credentials, or null.
+   */
+  resumeSession(): Promise<Credentials | null>;
 }

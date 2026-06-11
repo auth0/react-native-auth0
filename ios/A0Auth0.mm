@@ -42,8 +42,14 @@ RCT_EXPORT_METHOD(getBundleIdentifier:(nonnull RCTPromiseResolveBlock)resolve re
 }
 
 RCT_EXPORT_METHOD(cancelWebAuth:(RCTPromiseResolveBlock)resolve
-               reject:(RCTPromiseRejectBlock)reject) { 
+               reject:(RCTPromiseRejectBlock)reject) {
     [self.nativeBridge cancelWebAuthWithResolve:resolve reject:reject];
+}
+
+
+RCT_EXPORT_METHOD(resumeSession:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge resumeSessionWithResolve:resolve reject:reject];
 }
 
 

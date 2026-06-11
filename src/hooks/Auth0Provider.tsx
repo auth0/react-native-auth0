@@ -82,15 +82,32 @@ export const Auth0Provider = ({
           await client.webAuth.checkWebSession();
           user = await client.webAuth.getWebUser();
         }
-      } else if (await client.credentialsManager.hasValidCredentials()) {
+      } else {
+        // Recover a Universal Login result that completed after the OS killed the
+        // app process mid-login (Android process death). On other platforms this
+        // resolves null. If credentials are recovered, persist them so the rest of
+        // the app treats this exactly like a normal login.
         try {
-          const credentials = await client.credentialsManager.getCredentials();
-          user = credentials
-            ? Auth0User.fromIdToken(credentials.idToken)
-            : null;
+          const recovered = await client.webAuth.resumeSession();
+          if (recovered) {
+            await client.credentialsManager.saveCredentials(recovered);
+            user = Auth0User.fromIdToken(recovered.idToken);
+          }
         } catch (e) {
-          if ((e as AuthError).code !== 'no_credentials') {
-            dispatch({ type: 'ERROR', error: e as AuthError });
+          dispatch({ type: 'ERROR', error: e as AuthError });
+        }
+
+        if (!user && (await client.credentialsManager.hasValidCredentials())) {
+          try {
+            const credentials =
+              await client.credentialsManager.getCredentials();
+            user = credentials
+              ? Auth0User.fromIdToken(credentials.idToken)
+              : null;
+          } catch (e) {
+            if ((e as AuthError).code !== 'no_credentials') {
+              dispatch({ type: 'ERROR', error: e as AuthError });
+            }
           }
         }
       }

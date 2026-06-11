@@ -14,6 +14,7 @@ jest.mock('../../../../specs/NativeA0Auth0', () => ({
   hasValidCredentials: jest.fn(),
   clearCredentials: jest.fn(),
   cancelWebAuth: jest.fn(),
+  resumeSession: jest.fn(),
   resumeWebAuth: jest.fn(),
   getDPoPHeaders: jest.fn(),
   clearDPoPKey: jest.fn(),
@@ -205,6 +206,28 @@ describe('NativeBridgeManager', () => {
         parameters.returnToUrl,
         allowedBrowserPackages
       );
+    });
+  });
+
+  describe('resumeSession', () => {
+    it('should wrap recovered native credentials in a Credentials model', async () => {
+      MockedAuth0NativeModule.resumeSession.mockResolvedValueOnce(
+        nativeSuccessCredentials as any
+      );
+
+      const result = await bridge.resumeSession();
+
+      expect(MockedAuth0NativeModule.resumeSession).toHaveBeenCalledTimes(1);
+      expect(result).toBeInstanceOf(Credentials);
+      expect(result?.accessToken).toBe(nativeSuccessCredentials.accessToken);
+    });
+
+    it('should return null when native reports nothing to recover', async () => {
+      MockedAuth0NativeModule.resumeSession.mockResolvedValueOnce(null as any);
+
+      const result = await bridge.resumeSession();
+
+      expect(result).toBeNull();
     });
   });
 

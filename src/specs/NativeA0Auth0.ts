@@ -118,6 +118,12 @@ export interface Spec extends TurboModule {
   cancelWebAuth(): Promise<void>;
 
   /**
+   * Drain a web authentication result recovered after Android process death.
+   * Resolves the recovered credentials, or null when there is nothing to recover.
+   */
+  resumeSession(): Promise<Credentials | null>;
+
+  /**
    * Get the DPoP headers for a request
    */
   getDPoPHeaders(
