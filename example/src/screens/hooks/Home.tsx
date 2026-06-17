@@ -29,6 +29,7 @@ import {
 const HomeScreen = () => {
   const {
     authorize,
+    resumeSession,
     loginWithPasswordRealm,
     sendEmailCode,
     authorizeWithEmail,
@@ -68,6 +69,19 @@ const HomeScreen = () => {
       } else {
         Alert.alert('Error', 'An unexpected error occurred during login.');
       }
+    }
+  };
+
+  const onResumeSession = async () => {
+    try {
+      const credentials = await resumeSession();
+      if (credentials) {
+        Alert.alert('Recovered', 'Login was recovered after process death.');
+      } else {
+        Alert.alert('Nothing to recover', 'No pending login was found.');
+      }
+    } catch (e) {
+      setApiError(e as Error);
     }
   };
 
@@ -272,6 +286,15 @@ const HomeScreen = () => {
 
         <Section title="Web Auth (Recommended)">
           <Button onPress={onLogin} title="Log In" />
+          {Platform.OS === 'android' && (
+            <>
+              <Text style={styles.description}>
+                Recovers a login that completed after the OS killed the app
+                process. No-op on iOS/web.
+              </Text>
+              <Button onPress={onResumeSession} title="Resume Session" />
+            </>
+          )}
         </Section>
 
         <Section title="Database Login">

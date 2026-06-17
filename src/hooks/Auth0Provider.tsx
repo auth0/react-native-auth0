@@ -245,6 +245,23 @@ export const Auth0Provider = ({
     [client, voidFlow]
   );
 
+  const resumeSession = useCallback(async (): Promise<Credentials | null> => {
+    try {
+      const credentials = await client.webAuth.resumeSession();
+      if (!credentials) {
+        return null;
+      }
+      const user = Auth0User.fromIdToken(credentials.idToken);
+      await client.credentialsManager.saveCredentials(credentials);
+      dispatch({ type: 'LOGIN_COMPLETE', user });
+      return credentials;
+    } catch (e) {
+      const error = e as AuthError;
+      dispatch({ type: 'ERROR', error });
+      throw error;
+    }
+  }, [client]);
+
   const getApiCredentials = useCallback(
     async (
       audience: string,
@@ -447,6 +464,7 @@ export const Auth0Provider = ({
       getApiCredentials,
       clearApiCredentials,
       cancelWebAuth,
+      resumeSession,
       loginWithPasswordRealm,
       createUser,
       resetPassword,
@@ -481,6 +499,7 @@ export const Auth0Provider = ({
       getApiCredentials,
       clearApiCredentials,
       cancelWebAuth,
+      resumeSession,
       loginWithPasswordRealm,
       createUser,
       resetPassword,

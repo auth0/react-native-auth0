@@ -81,6 +81,13 @@ export interface INativeBridge {
   cancelWebAuth(): Promise<void>;
 
   /**
+   * Recovers a login result that completed after Android process death.
+   * Resolves with the recovered credentials, or `null` if there was nothing to recover.
+   * @platform android
+   */
+  resumeSession(): Promise<Credentials | null>;
+
+  /**
    * Saves credentials to the native secure storage (Keychain/EncryptedSharedPreferences).
    * @param credentials The credentials to save.
    */

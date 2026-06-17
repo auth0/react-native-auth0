@@ -3,7 +3,10 @@ package com.auth0.react
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.LifecycleOwner
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
@@ -38,6 +41,11 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
     companion object {
         const val NAME = "A0Auth0"
+
+        // Grace window (ms) for an in-flight restored token exchange to complete before
+        // resumeWebAuthSession resolves null.
+        private const val RESUME_SESSION_GRACE_MS = 1500L
+
         private const val CREDENTIAL_MANAGER_ERROR_CODE = "CREDENTIAL_MANAGER_ERROR"
         private const val BIOMETRICS_AUTHENTICATION_ERROR_CODE = "BIOMETRICS_CONFIGURATION_ERROR"
         
@@ -166,19 +174,72 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         }
         
         builder.withParameters(cleanedParameters)
-        builder.start(reactContext.currentActivity as Activity,
-            object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
+        // start() registers a LifecycleObserver internally (Auth0.Android 3.19.0+ for
+        // process-death recovery), which must happen on the main thread.
+        UiThreadUtil.runOnUiThread {
+            builder.start(reactContext.currentActivity as Activity,
+                object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
+                    override fun onSuccess(result: Credentials) {
+                        val map = CredentialsParser.toMap(result)
+                        promise.resolve(map)
+                        webAuthPromise = null
+                    }
+
+                    override fun onFailure(error: AuthenticationException) {
+                        handleError(error, promise)
+                        webAuthPromise = null
+                    }
+                })
+        }
+    }
+
+    @ReactMethod
+    override fun resumeWebAuthSession(promise: Promise) {
+        val activity = reactContext.currentActivity
+        if (activity !is LifecycleOwner) {
+            // No lifecycle owner to register against; nothing to recover.
+            promise.resolve(null)
+            return
+        }
+        val lifecycleOwner = activity as LifecycleOwner
+
+        UiThreadUtil.runOnUiThread {
+            val resolved = java.util.concurrent.atomic.AtomicBoolean(false)
+            val loginCallback = object :
+                com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
                 override fun onSuccess(result: Credentials) {
-                    val map = CredentialsParser.toMap(result)
-                    promise.resolve(map)
-                    webAuthPromise = null
+                    if (resolved.compareAndSet(false, true)) {
+                        promise.resolve(CredentialsParser.toMap(result))
+                    }
                 }
 
                 override fun onFailure(error: AuthenticationException) {
-                    handleError(error, promise)
-                    webAuthPromise = null
+                    if (resolved.compareAndSet(false, true)) {
+                        handleError(error, promise)
+                    }
                 }
-            })
+            }
+            // Logout recovery is out of scope; provide a no-op logout callback.
+            val logoutCallback = object :
+                com.auth0.android.callback.Callback<Void?, AuthenticationException> {
+                override fun onSuccess(result: Void?) {}
+                override fun onFailure(error: AuthenticationException) {}
+            }
+
+            // Registering against an already-RESUMED owner synchronously replays onResume,
+            // draining any result buffered after process-death recovery.
+            WebAuthProvider.registerCallbacks(lifecycleOwner, loginCallback, logoutCallback)
+
+            // Safety net for the rare case where the restored token exchange is still in
+            // flight: give it a short grace window, then resolve null if nothing arrived.
+            if (!resolved.get()) {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    if (resolved.compareAndSet(false, true)) {
+                        promise.resolve(null)
+                    }
+                }, RESUME_SESSION_GRACE_MS)
+            }
+        }
     }
 
     @ReactMethod
@@ -392,16 +453,20 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             )
         }
 
-        builder.start(reactContext.currentActivity as FragmentActivity,
-            object : com.auth0.android.callback.Callback<Void?, AuthenticationException> {
-                override fun onSuccess(result: Void?) {
-                    promise.resolve(true)
-                }
+        // start() registers a LifecycleObserver internally (Auth0.Android 3.19.0+),
+        // which must happen on the main thread.
+        UiThreadUtil.runOnUiThread {
+            builder.start(reactContext.currentActivity as FragmentActivity,
+                object : com.auth0.android.callback.Callback<Void?, AuthenticationException> {
+                    override fun onSuccess(result: Void?) {
+                        promise.resolve(true)
+                    }
 
-                override fun onFailure(e: AuthenticationException) {
-                    handleError(e, promise)
-                }
-            })
+                    override fun onFailure(e: AuthenticationException) {
+                        handleError(e, promise)
+                    }
+                })
+        }
     }
 
     @ReactMethod
