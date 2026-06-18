@@ -205,16 +205,22 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
         UiThreadUtil.runOnUiThread {
             val resolved = java.util.concurrent.atomic.AtomicBoolean(false)
+            // Holds the pending grace-window timeout so a callback that settles the promise
+            // first can cancel it, releasing the retained promise/activity references instead
+            // of leaking them until the delay elapses.
+            val timeoutHandler = Handler(Looper.getMainLooper())
             val loginCallback = object :
                 com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
                 override fun onSuccess(result: Credentials) {
                     if (resolved.compareAndSet(false, true)) {
+                        timeoutHandler.removeCallbacksAndMessages(null)
                         promise.resolve(CredentialsParser.toMap(result))
                     }
                 }
 
                 override fun onFailure(error: AuthenticationException) {
                     if (resolved.compareAndSet(false, true)) {
+                        timeoutHandler.removeCallbacksAndMessages(null)
                         handleError(error, promise)
                     }
                 }
@@ -232,8 +238,9 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
             // Safety net for the rare case where the restored token exchange is still in
             // flight: give it a short grace window, then resolve null if nothing arrived.
+            // The login callback cancels this timeout if it settles first.
             if (!resolved.get()) {
-                Handler(Looper.getMainLooper()).postDelayed({
+                timeoutHandler.postDelayed({
                     if (resolved.compareAndSet(false, true)) {
                         promise.resolve(null)
                     }
