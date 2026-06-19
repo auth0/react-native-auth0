@@ -44,7 +44,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
         // Grace window (ms) for an in-flight restored token exchange to complete before
         // resumeWebAuthSession resolves null.
-        private const val RESUME_SESSION_GRACE_MS = 1500L
+        private const val RESUME_SESSION_GRACE_MS = 5000L
 
         private const val CREDENTIAL_MANAGER_ERROR_CODE = "CREDENTIAL_MANAGER_ERROR"
         private const val BIOMETRICS_AUTHENTICATION_ERROR_CODE = "BIOMETRICS_CONFIGURATION_ERROR"
@@ -174,10 +174,17 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         }
         
         builder.withParameters(cleanedParameters)
+
+        val activity = reactContext.currentActivity
+        if (activity == null) {
+            promise.reject("a0.activity_not_available", "Current Activity is not available")
+            webAuthPromise = null
+            return
+        }
         // start() registers a LifecycleObserver internally (Auth0.Android 3.19.0+ for
         // process-death recovery), which must happen on the main thread.
         UiThreadUtil.runOnUiThread {
-            builder.start(reactContext.currentActivity as Activity,
+            builder.start(activity,
                 object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
                     override fun onSuccess(result: Credentials) {
                         val map = CredentialsParser.toMap(result)
@@ -460,10 +467,15 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             )
         }
 
+        val activity = reactContext.currentActivity
+        if (activity !is FragmentActivity) {
+            promise.reject("a0.activity_not_available", "Current Activity is not a FragmentActivity")
+            return
+        }
         // start() registers a LifecycleObserver internally (Auth0.Android 3.19.0+),
         // which must happen on the main thread.
         UiThreadUtil.runOnUiThread {
-            builder.start(reactContext.currentActivity as FragmentActivity,
+            builder.start(activity,
                 object : com.auth0.android.callback.Callback<Void?, AuthenticationException> {
                     override fun onSuccess(result: Void?) {
                         promise.resolve(true)
