@@ -108,8 +108,16 @@ RCT_EXPORT_METHOD(initializeAuth0WithConfiguration:(NSString *)clientId
 
 RCT_EXPORT_METHOD(resumeWebAuth:(NSString *)url
               resolve:(RCTPromiseResolveBlock)resolve
-               reject:(RCTPromiseRejectBlock)reject) { 
+               reject:(RCTPromiseRejectBlock)reject) {
     [self.nativeBridge resumeWebAuthWithUrl:url resolve:resolve reject:reject];
+}
+
+
+RCT_EXPORT_METHOD(resumeWebAuthSession:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject) {
+    // Android-only process-death recovery. iOS uses ASWebAuthenticationSession,
+    // which has no equivalent failure mode, so this resolves null.
+    resolve([NSNull null]);
 }
 
 
