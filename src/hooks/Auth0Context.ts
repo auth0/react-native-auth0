@@ -138,6 +138,21 @@ export interface Auth0ContextInterface extends AuthState {
   cancelWebAuth: () => Promise<void>;
 
   /**
+   * Recovers a login that completed after Android process death.
+   *
+   * @remarks
+   * On Android, the OS may kill the app while the user completes login in the browser.
+   * The native SDK can still finish the token exchange on restart; call this once on
+   * cold start to drain that recovered result. On success the user is logged in and the
+   * credentials are persisted. On iOS and web this resolves with `null`, so it is safe to
+   * call unconditionally.
+   *
+   * @returns A promise that resolves with the recovered credentials, or `null` if there
+   * was nothing to recover.
+   */
+  resumeSession: () => Promise<Credentials | null>;
+
+  /**
    * Authenticates a user with their username and password.
    * @remarks This method is not supported on the web platform.
    * @param parameters The parameters for the password-realm grant.
@@ -455,6 +470,7 @@ const initialContext: Auth0ContextInterface = {
   clearApiCredentials: stub,
   loginWithPasswordRealm: stub,
   cancelWebAuth: stub,
+  resumeSession: stub,
   authorizeWithExchange: stub,
   createUser: stub,
   authorizeWithRecoveryCode: stub,

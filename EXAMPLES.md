@@ -91,6 +91,9 @@
 - [Allowed Browsers (Android)](#allowed-browsers-android)
   - [Using with Hooks](#using-with-hooks)
   - [Using with Auth0 Class](#using-with-auth0-class-1)
+- [Recovering Login After Process Death (Android)](#recovering-login-after-process-death-android)
+  - [Using with Hooks](#recovering-login-using-hooks)
+  - [Using with Auth0 Class](#recovering-login-using-the-auth0-class)
 - [DPoP (Demonstrating Proof-of-Possession)](#dpop-demonstrating-proof-of-possession)
   - [Enabling DPoP](#enabling-dpop)
   - [Making API calls with DPoP](#making-api-calls-with-dpop)
@@ -2034,6 +2037,60 @@ await auth0.webAuth.authorize(
 ```
 
 The same `allowedBrowserPackages` option is also accepted by `clearSession` to restrict which browser handles the logout flow.
+
+## Recovering Login After Process Death (Android)
+
+On Android, the OS can kill your app's process while the user is completing login in the browser — this is common on devices with aggressive memory management (e.g. Samsung One UI, Xiaomi MIUI), especially during MFA when the user switches apps to fetch a code. When the user finishes and the browser redirects back, the app cold-starts and, without recovery, the in-flight login is lost and the user lands back on the login screen.
+
+`resumeSession()` recovers that login. The underlying native SDK finishes the token exchange after the process restarts and buffers the result; calling `resumeSession()` once on cold start drains it and returns the recovered `Credentials` (or `null` if there was nothing to recover).
+
+> This is an Android-only concern. On iOS and web `resumeSession()` is a no-op that resolves with `null`, so it is safe to call unconditionally. It requires `react-native-auth0` bundling Auth0.Android 3.19.0+ (included). No native `MainActivity` changes are needed, so it works the same in bare React Native and Expo.
+
+### Recovering Login Using Hooks
+
+Call `resumeSession()` once when your app mounts. If it returns credentials, the hook updates the auth state and persists them automatically, so `user` becomes populated.
+
+```js
+import { useEffect } from 'react';
+import { useAuth0 } from 'react-native-auth0';
+
+const App = () => {
+  const { resumeSession } = useAuth0();
+
+  useEffect(() => {
+    resumeSession()
+      .then((credentials) => {
+        if (credentials) {
+          // A login interrupted by process death was recovered.
+          console.log('Recovered session', credentials.accessToken);
+        }
+      })
+      .catch((error) => {
+        console.log('Failed to recover session', error);
+      });
+  }, [resumeSession]);
+
+  // ...
+};
+```
+
+### Recovering Login Using the Auth0 Class
+
+```js
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+});
+
+// Call once on cold start, before showing the login screen.
+const credentials = await auth0.webAuth.resumeSession();
+if (credentials) {
+  await auth0.credentialsManager.saveCredentials(credentials);
+  // The user is logged in — route them into the app.
+}
+```
 
 ## DPoP (Demonstrating Proof-of-Possession)
 

@@ -113,6 +113,13 @@ export interface Spec extends TurboModule {
   resumeWebAuth(url: string): Promise<void>;
 
   /**
+   * Recover a web authentication result after Android process death.
+   * Resolves with Credentials if a post-process-death login was recovered,
+   * or null if there was nothing to recover. No-op (resolves null) on iOS.
+   */
+  resumeWebAuthSession(): Promise<Credentials | null>;
+
+  /**
    * Cancel web authentication
    */
   cancelWebAuth(): Promise<void>;

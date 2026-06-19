@@ -98,6 +98,10 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
 
     @ReactMethod
     @DoNotStrip
+    abstract fun resumeWebAuthSession(promise: Promise)
+
+    @ReactMethod
+    @DoNotStrip
     abstract fun cancelWebAuth(promise: Promise)
 
     @ReactMethod
