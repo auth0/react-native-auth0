@@ -38,6 +38,7 @@ import type {
   NativeClearSessionOptions,
 } from '../types/platform-specific';
 import { Auth0User, AuthError } from '../core/models';
+import { getConfigSignature } from '../core/utils';
 import Auth0 from '../Auth0';
 import { Platform } from 'react-native';
 
@@ -45,17 +46,14 @@ export const Auth0Provider = ({
   children,
   ...options
 }: PropsWithChildren<Auth0Options>) => {
-  // Recreate the client when the tenant configuration changes so that
-  // `domain`/`clientId` prop updates take effect (e.g. domain switching).
-  // The factory caches clients per domain|clientId, so unchanged configs
-  // still reuse the same underlying instance and its in-flight state.
+  // Recreate the client when the config changes; the factory reuses the same
+  // instance for an unchanged signature.
+  const configSignature = getConfigSignature(options);
   const client = useMemo(
     () => new Auth0(options),
-    // Intentionally key only on the tenant identity. `options` is a fresh
-    // object every render, so depending on it would recreate the client
-    // (and reset auth state) on every render.
+    // Key on the signature, not `options` (a fresh object every render).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [options.domain, options.clientId]
+    [configSignature]
   );
   const [state, dispatch] = useReducer(reducer, {
     user: null,

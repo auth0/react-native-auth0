@@ -1,5 +1,5 @@
 PODS:
-  - A0Auth0 (5.6.0):
+  - A0Auth0 (5.7.0):
     - Auth0 (= 2.21.2)
     - hermes-engine
     - RCTRequired
@@ -2197,7 +2197,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  A0Auth0: 7017e8ccdeda46385612e0b9ab231d81de53d128
+  A0Auth0: 607c4269584a26bac8cc81dda180427306352d89
   Auth0: e15bc9c1e39a53efc8853d16460b9be409d5346f
   FBLazyVector: e97c19a5a442429d1988f182a1940fb08df514da
   hermes-engine: 5a6d36f29e9659a4242ae9acfdaafa16c394a162

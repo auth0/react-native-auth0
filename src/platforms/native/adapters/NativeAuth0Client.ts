@@ -25,6 +25,7 @@ import {
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
 import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
+import { getConfigSignature } from '../../../core/utils';
 
 export class NativeAuth0Client implements IAuth0Client {
   readonly webAuth: NativeWebAuthProvider;
@@ -36,14 +37,21 @@ export class NativeAuth0Client implements IAuth0Client {
   private readonly bridge: INativeBridge;
   private readonly baseUrl: string;
   private readonly options: NativeAuth0Options;
+  private readonly configSignature: string;
   private syncLock: Promise<void> = Promise.resolve();
   private guardedBridge!: INativeBridge;
   private readonly getDPoPHeadersForOrchestrator?: (
     params: DPoPHeadersParams
   ) => Promise<Record<string, string>>;
 
+  // Signature last applied to the shared native singleton. `hasValidInstance`
+  // only checks domain/clientId, so this tracks other identity options
+  // (useDPoP, localAuthenticationOptions) to detect drift and re-init.
+  private static appliedNativeSignature: string | null = null;
+
   constructor(options: NativeAuth0Options) {
     this.options = options;
+    this.configSignature = getConfigSignature(options);
     const baseUrl = `https://${options.domain}`;
     this.baseUrl = baseUrl;
     const useDPoP = options.useDPoP ?? true;
@@ -99,8 +107,15 @@ export class NativeAuth0Client implements IAuth0Client {
       useDPoP = true,
       maxRetries,
     } = options;
+    // Re-init when domain/clientId differ (hasValidInstance) or any other
+    // identity option drifted from what was last applied to the native side.
     const hasValidInstance = await bridge.hasValidInstance(clientId, domain);
-    if (!hasValidInstance) {
+    // Null signature means nothing applied yet, so defer to hasValidInstance
+    // and let genuine remounts reuse the existing native instance.
+    const signatureDrifted =
+      NativeAuth0Client.appliedNativeSignature !== null &&
+      NativeAuth0Client.appliedNativeSignature !== this.configSignature;
+    if (!hasValidInstance || signatureDrifted) {
       await bridge.initialize(
         clientId,
         domain,
@@ -109,20 +124,14 @@ export class NativeAuth0Client implements IAuth0Client {
         maxRetries
       );
     }
+    // Record even on the skip path so siblings differing only in a
+    // native-invisible option (e.g. useDPoP) can detect drift.
+    NativeAuth0Client.appliedNativeSignature = this.configSignature;
   }
 
-  /**
-   * Re-points the native singleton at this client's configuration.
-   *
-   * The native module (iOS/Android) keeps a single active Auth0 instance, but
-   * the JS factory caches one client per domain|clientId. When multiple clients
-   * coexist (or a client is reused after another was initialized), the native
-   * instance may belong to a sibling client, so bridge calls would otherwise
-   * target the wrong domain/clientId. Re-initializing only happens when the
-   * native config has drifted, so the common single-client path stays a cheap
-   * `hasValidInstance` check. Serialized via `syncLock` to avoid interleaving
-   * re-initializations from concurrent calls.
-   */
+  // Re-points the shared native singleton at this client's config before a
+  // bridge call, in case a sibling client overwrote it. Re-init only on drift,
+  // so the single-client path stays cheap. Serialized via syncLock.
   private syncNativeConfig(): Promise<void> {
     this.syncLock = this.syncLock
       .catch(() => undefined)

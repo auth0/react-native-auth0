@@ -1925,7 +1925,7 @@ You can skip sending the `customScheme` property if you do not want to customize
 
 The configuration above is **build-time** setup: it registers the redirect callback for every domain you intend to use. Switching the _active_ tenant while the app is running is done in JavaScript by changing the `domain`/`clientId` you pass to the SDK.
 
-When you change the `domain` or `clientId` prop on `Auth0Provider`, the provider rebuilds its underlying client so subsequent calls target the newly selected tenant. Keep the props in state and update them to switch:
+When you change an identity-defining prop on `Auth0Provider` — `domain`, `clientId`, `localAuthenticationOptions`, `timeout`, or `useDPoP` — the provider rebuilds its underlying client so subsequent calls target the newly selected configuration. An unchanged config (or a change limited to options like `headers` or `maxRetries`) reuses the same client instance. Keep the props in state and update them to switch:
 
 ```jsx
 import React, { useState } from 'react';
