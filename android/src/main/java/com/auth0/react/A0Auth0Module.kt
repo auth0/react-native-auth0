@@ -305,7 +305,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                     secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authAPI, storage)
                     promise.reject(
                         BIOMETRICS_AUTHENTICATION_ERROR_CODE,
-                        "Failed to parse the Local Authentication Options, hence proceeding without Biometrics Authentication for handling Credentials"
+                        "Failed to parse the Local Authentication Options, hence proceeding without Biometrics Authentication for handling Credentials",
+                        e
                     )
                     return
                 }

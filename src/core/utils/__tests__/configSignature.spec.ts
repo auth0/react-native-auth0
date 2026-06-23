@@ -79,8 +79,8 @@ describe('getConfigSignature', () => {
     );
   });
 
-  it('is unaffected by maxRetries (not part of client identity)', () => {
-    expect(getConfigSignature({ ...base, maxRetries: 0 })).toBe(
+  it('differs when maxRetries changes', () => {
+    expect(getConfigSignature({ ...base, maxRetries: 0 })).not.toBe(
       getConfigSignature({ ...base, maxRetries: 3 })
     );
   });

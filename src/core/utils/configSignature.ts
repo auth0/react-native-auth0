@@ -7,6 +7,7 @@ const SIGNIFICANT_KEYS = [
   'localAuthenticationOptions',
   'timeout',
   'useDPoP',
+  'maxRetries',
   'credentialsManagerStorageKey',
 ] as const satisfies ReadonlyArray<keyof Auth0Options>;
 

@@ -24,7 +24,11 @@ describe('NativeAuth0Client', () => {
 
     // Reset the cross-instance static that tracks the config last applied to
     // the shared native singleton, so tests don't leak state into each other.
-    (NativeAuth0Client as any).appliedNativeSignature = null;
+    (
+      NativeAuth0Client as unknown as {
+        appliedNativeSignature: string | null;
+      }
+    ).appliedNativeSignature = null;
 
     // Create the mock functions that can be shared and overridden
     const mockMethods = {

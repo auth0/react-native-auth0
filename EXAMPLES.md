@@ -1956,7 +1956,7 @@ const App = () => {
 After switching, the next `authorize()` call opens the login page for the newly selected tenant and the redirect resolves correctly, provided that tenant's domain/scheme was registered using the build-time configuration shown above.
 
 > Note: Switching tenants does not immediately clear the displayed auth state. The provider re-runs its initialization for the new tenant and updates `user` once that check completes, so the previously shown user may briefly remain until then.
-
+>
 > **Important — credentials are shared across tenants by default.** The native credentials store (Android `SharedPreferences`, iOS Keychain) is **not** keyed by `domain`/`clientId`. With no extra configuration, every client reads and writes the **same** store, so after switching tenants `getCredentials()` / `hasValidCredentials()` return whatever was saved last — i.e. the _previous_ tenant's session — and a fresh login on the new tenant overwrites it. To give each tenant its own isolated store, set [`credentialsManagerStorageKey`](#isolating-credentials-per-tenant-credentialsmanagerstoragekey) (below).
 
 If you are using the `Auth0` class directly instead of the hooks, simply create (or reuse) an instance per tenant and call the one matching the active tenant:

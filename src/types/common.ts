@@ -170,6 +170,7 @@ export interface Auth0Options {
    * primary client to keep the default shared store; set a distinct value per
    * additional client (e.g. another tenant) to isolate its credentials so
    * switching clients does not surface or evict another's session.
+   * @remarks Native only (iOS/Android). Has no effect on the web platform.
    */
   credentialsManagerStorageKey?: string;
   // Telemetry and localAuthenticationOptions are platform-specific extensions
