@@ -115,10 +115,31 @@ describe('NativeAuth0Client', () => {
       options.domain,
       undefined, // No local auth options provided in this test
       true, // useDPoP defaults to true
-      undefined // maxRetries not provided
+      undefined, // maxRetries not provided
+      undefined // credentialsManagerStorageKey not provided
     );
 
     // Use client to avoid unused variable warning
+    expect(client).toBeDefined();
+  });
+
+  it('should pass credentialsManagerStorageKey to initialize when provided', async () => {
+    mockBridgeInstance.hasValidInstance.mockResolvedValue(false);
+
+    const client = new NativeAuth0Client({
+      ...options,
+      credentialsManagerStorageKey: 'tenant-b',
+    });
+    await new Promise(process.nextTick);
+
+    expect(mockBridgeInstance.initialize).toHaveBeenCalledWith(
+      options.clientId,
+      options.domain,
+      undefined,
+      true,
+      undefined,
+      'tenant-b'
+    );
     expect(client).toBeDefined();
   });
 
@@ -137,7 +158,8 @@ describe('NativeAuth0Client', () => {
       options.domain,
       localAuthOptions,
       true, // useDPoP defaults to true
-      undefined // maxRetries not provided
+      undefined, // maxRetries not provided
+      undefined // credentialsManagerStorageKey not provided
     );
 
     // Use client to avoid unused variable warning
@@ -592,6 +614,7 @@ describe('NativeAuth0Client', () => {
         options.domain,
         undefined,
         true,
+        undefined,
         undefined
       );
       expect(mockBridgeInstance.authorize).toHaveBeenCalledTimes(1);
@@ -634,6 +657,7 @@ describe('NativeAuth0Client', () => {
         options.domain,
         undefined,
         false, // useDPoP flipped to false
+        undefined,
         undefined
       );
     });

@@ -7,6 +7,7 @@ const SIGNIFICANT_KEYS = [
   'localAuthenticationOptions',
   'timeout',
   'useDPoP',
+  'credentialsManagerStorageKey',
 ] as const satisfies ReadonlyArray<keyof Auth0Options>;
 
 // Stable, order-independent identity string for a config: keys the factory cache, the provider memo, and the native re-init decision. Object values are sorted so key order doesn't matter.

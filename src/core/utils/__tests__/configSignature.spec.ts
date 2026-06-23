@@ -65,6 +65,14 @@ describe('getConfigSignature', () => {
     );
   });
 
+  it('differs when credentialsManagerStorageKey changes', () => {
+    expect(
+      getConfigSignature({ ...base, credentialsManagerStorageKey: 'a' })
+    ).not.toBe(
+      getConfigSignature({ ...base, credentialsManagerStorageKey: 'b' })
+    );
+  });
+
   it('is unaffected by headers (not part of client identity)', () => {
     expect(getConfigSignature({ ...base, headers: { A: '1' } })).toBe(
       getConfigSignature({ ...base, headers: { A: '2' } })

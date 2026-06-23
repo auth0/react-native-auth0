@@ -106,6 +106,7 @@ export class NativeAuth0Client implements IAuth0Client {
       localAuthenticationOptions,
       useDPoP = true,
       maxRetries,
+      credentialsManagerStorageKey,
     } = options;
     // Re-init when domain/clientId differ (hasValidInstance) or any other
     // identity option drifted from what was last applied to the native side.
@@ -121,7 +122,8 @@ export class NativeAuth0Client implements IAuth0Client {
         domain,
         localAuthenticationOptions,
         useDPoP,
-        maxRetries
+        maxRetries,
+        credentialsManagerStorageKey
       );
     }
     // Record even on the skip path so siblings differing only in a
