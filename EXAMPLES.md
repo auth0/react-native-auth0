@@ -1955,7 +1955,9 @@ const App = () => {
 
 After switching, the next `authorize()` call opens the login page for the newly selected tenant and the redirect resolves correctly, provided that tenant's domain/scheme was registered using the build-time configuration shown above.
 
-> Note: Switching tenants does not immediately clear the displayed auth state. The provider re-runs its initialization for the new tenant and updates `user` once that check completes, so the previously shown user may briefly remain until then. Persisted credentials are stored per tenant, so a user already logged in to the target tenant is restored on initialization; otherwise `user` becomes `null`.
+> Note: Switching tenants does not immediately clear the displayed auth state. The provider re-runs its initialization for the new tenant and updates `user` once that check completes, so the previously shown user may briefly remain until then.
+
+> **Important — credentials are shared across tenants by default.** The native credentials store (Android `SharedPreferences`, iOS Keychain) is **not** keyed by `domain`/`clientId`. With no extra configuration, every client reads and writes the **same** store, so after switching tenants `getCredentials()` / `hasValidCredentials()` return whatever was saved last — i.e. the _previous_ tenant's session — and a fresh login on the new tenant overwrites it. To give each tenant its own isolated store, set [`credentialsManagerStorageKey`](#isolating-credentials-per-tenant-credentialsmanagerstoragekey) (below).
 
 If you are using the `Auth0` class directly instead of the hooks, simply create (or reuse) an instance per tenant and call the one matching the active tenant:
 
@@ -1976,6 +1978,63 @@ const clients = {
 // Use whichever client corresponds to the active tenant.
 const credentials = await clients[activeTenant].webAuth.authorize();
 ```
+
+#### Isolating credentials per tenant (`credentialsManagerStorageKey`)
+
+By default all clients share a single native credentials store, so credentials from one tenant are visible to another after a switch (see the important note above). To keep each tenant's session separate, pass a unique `credentialsManagerStorageKey`. It maps to the **Android `SharedPreferences` file name** and the **iOS Keychain service**, so a distinct value gives that client its own physically separate store for `saveCredentials` / `getCredentials` / `hasValidCredentials` / `clearCredentials`.
+
+```jsx
+const TENANTS = [
+  // No key → uses the default shared store (keeps any existing logged-in user).
+  { domain: 'tenant-a.us.auth0.com', clientId: 'CLIENT_ID_A' },
+  // Distinct key → isolated store for this tenant.
+  {
+    domain: 'tenant-b.us.auth0.com',
+    clientId: 'CLIENT_ID_B',
+    credentialsManagerStorageKey: 'tenant-b',
+  },
+];
+
+// Hooks: pass it as a prop. Changing it rebuilds the client.
+<Auth0Provider
+  domain={tenant.domain}
+  clientId={tenant.clientId}
+  credentialsManagerStorageKey={tenant.credentialsManagerStorageKey}
+>
+  <LoginScreen />
+</Auth0Provider>;
+```
+
+```js
+// Auth0 class: pass it in the constructor options.
+const auth0 = new Auth0({
+  domain: 'tenant-b.us.auth0.com',
+  clientId: 'CLIENT_ID_B',
+  credentialsManagerStorageKey: 'tenant-b',
+});
+```
+
+With the keys above, logging in to Tenant A and switching to Tenant B no longer surfaces Tenant A's credentials, and each tenant's login persists independently. Switching back to Tenant A restores its session without re-login.
+
+**Recommended usage**
+
+- Leave the **primary/default** tenant **without** a key so existing installs keep using the store they already wrote to — those users are not logged out on upgrade.
+- Give every **additional** tenant a **unique, stable** key (e.g. the tenant slug or client ID).
+- Treat the key as permanent: it is the address of the store, not data inside it.
+
+**When does this make existing users log in again?**
+
+There is **no automatic migration** between stores — a client only ever reads the store its key points to. Changing which store a client uses therefore makes it start from an _empty_ store, requiring a fresh login:
+
+| Scenario                                                                                  | Existing logged-in user re-login required?                                                    |
+| ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Upgrade to this version, **no** `credentialsManagerStorageKey` set anywhere               | **No** — still the default shared store.                                                      |
+| Add a key to a client that previously had **none** (e.g. you now key your primary tenant) | **Yes** — its old session lives in the default store, which the keyed client no longer reads. |
+| **Change** an existing key to a different value                                           | **Yes** — points at a different (empty) store.                                                |
+| **Remove** a key that was previously set                                                  | **Yes** — falls back to the default store, not the keyed one.                                 |
+| Add a **new** tenant with its **own new** key (others unchanged)                          | **No** for the others; the new tenant simply starts logged out.                               |
+
+> Because changing or removing a key strands the credentials saved under the old key, choose each tenant's key once and keep it stable across releases. If you must change it, call `clearCredentials()` on the old configuration first (or accept that those credentials become orphaned in the old store).
 
 ## Allowed Browsers (Android)
 
