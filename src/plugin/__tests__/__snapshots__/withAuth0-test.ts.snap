@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`addAndroidAuth0Manifest should throw if domain is not present when config sent as array 1`] = `"No auth0 domain specified in expo config"`;
 

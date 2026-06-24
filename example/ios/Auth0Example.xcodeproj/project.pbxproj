@@ -417,8 +417,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0example;
 				PRODUCT_NAME = Auth0Example;
-				SWIFT_OBJC_BRIDGING_HEADER = "Auth0Example/Auth0Example-Bridging-Header.h";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OBJC_BRIDGING_HEADER = "Auth0Example/Auth0Example-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -446,8 +446,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0example;
 				PRODUCT_NAME = Auth0Example;
-				SWIFT_OBJC_BRIDGING_HEADER = "Auth0Example/Auth0Example-Bridging-Header.h";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OBJC_BRIDGING_HEADER = "Auth0Example/Auth0Example-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -530,6 +530,7 @@
 					"$(inherited)",
 					" ",
 				);
+				PODFILE_DIR = "$(SRCROOT)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -606,6 +607,7 @@
 					"$(inherited)",
 					" ",
 				);
+				PODFILE_DIR = "$(SRCROOT)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
