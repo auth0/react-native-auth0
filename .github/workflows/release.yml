@@ -20,7 +20,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged && startsWith(github.event.pull_request.head.ref, 'release/'))
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
 
@@ -41,7 +41,7 @@ jobs:
           echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Run RL Scanner
-        uses: auth0/devsecops-tooling/.github/actions/rl-scan@main
+        uses: auth0/devsecops-tooling/.github/actions/rl-scan@e29f26478db18ff0bcbe4bc447a8fbd54fbeec9e # main on 2026-06-09, TODO: use a release instead
         with:
           artifact-name: "react-native-auth0"
           artifact-path: "${{ github.workspace }}/react-native-auth0.tgz"
