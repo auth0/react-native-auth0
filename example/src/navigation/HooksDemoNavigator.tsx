@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Auth0Provider,
   useAuth0,
@@ -8,7 +8,7 @@ import {
 } from 'react-native-auth0';
 import AuthStackNavigator from './AuthStackNavigator';
 import MainTabNavigator from './MainTabNavigator';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, View, StyleSheet, Platform } from 'react-native';
 import config from '../auth0-configuration';
 
 const AUTH0_DOMAIN = config.domain;
@@ -20,7 +20,26 @@ const AUTH0_CLIENT_ID = config.clientId;
  * It's rendered inside the Auth0Provider so it can use the useAuth0 hook.
  */
 const AppContent = () => {
-  const { user, isLoading } = useAuth0();
+  const { user, isLoading, resumeSession } = useAuth0();
+
+  // On Android the OS can kill the app process while the user is completing
+  // login in the browser. When the app cold-starts, resumeSession() recovers
+  // any login that finished after the process was killed. It is a safe no-op
+  // that resolves null on iOS and web, so it can be called unconditionally.
+  useEffect(() => {
+    if (Platform.OS !== 'android') {
+      return;
+    }
+    resumeSession()
+      .then((credentials) => {
+        if (credentials) {
+          console.log('Recovered login after process death');
+        }
+      })
+      .catch((e) => {
+        console.warn('resumeSession failed', e);
+      });
+  }, [resumeSession]);
 
   if (isLoading) {
     return (

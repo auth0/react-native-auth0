@@ -8,8 +8,12 @@ export {
   DPoPErrorCodes,
   MfaError,
   MfaErrorCodes,
+  PasskeyError,
+  PasskeyErrorCodes,
+  MyAccountError,
 } from './core/models';
 export { TimeoutError } from './core/utils/fetchWithTimeout';
+export { parseIdToken } from './core/utils';
 export { TokenType, MfaFactorType } from './types/common';
 export { Auth0Provider } from './hooks/Auth0Provider';
 export { useAuth0 } from './hooks/useAuth0';

@@ -455,6 +455,489 @@ export interface CreateUserParameters extends RequestOptions {
   metadata?: object;
 }
 
+// ========= Passkey Parameters =========
+
+/**
+ * Parameters for requesting a passkey signup challenge from Auth0.
+ *
+ * The challenge response contains WebAuthn creation options that should
+ * be passed to the platform's credential manager (CredentialManager on Android,
+ * ASAuthorizationController on iOS) to create a new passkey credential.
+ *
+ * @see https://auth0.com/docs/authenticate/database-connections/passkeys
+ */
+export interface PasskeySignupChallengeParameters {
+  /** The user's email address. */
+  email?: string;
+  /** The user's phone number. */
+  phoneNumber?: string;
+  /** The user's username. */
+  username?: string;
+  /** The user's display name. */
+  name?: string;
+  /** The user's first name. */
+  givenName?: string;
+  /** The user's last name. */
+  familyName?: string;
+  /** The user's preferred nickname. */
+  nickname?: string;
+  /** URL pointing to the user's profile picture. */
+  picture?: string;
+  /** Additional user metadata as key-value pairs. */
+  userMetadata?: Record<string, string>;
+  /** The database connection name. */
+  realm?: string;
+  /** Organization ID or name for authenticating in an organization context. */
+  organization?: string;
+}
+
+/**
+ * Parameters for requesting a passkey login challenge from Auth0.
+ *
+ * The challenge response contains WebAuthn request options that should
+ * be passed to the platform's credential manager to assert an existing passkey.
+ *
+ * @see https://auth0.com/docs/authenticate/database-connections/passkeys
+ */
+export interface PasskeyLoginChallengeParameters {
+  /** The database connection name. */
+  realm?: string;
+  /** Organization ID or name for authenticating in an organization context. */
+  organization?: string;
+}
+
+/**
+ * Response from a passkey signup challenge request.
+ * Contains the auth session and WebAuthn creation options for the platform credential manager.
+ */
+export interface PasskeyChallengeResponse {
+  /** The auth session identifier to be used in the subsequent exchange call. */
+  authSession: string;
+  /** The raw WebAuthn public key credential creation/request options as JSON. */
+  authParamsPublicKey: Record<string, any>;
+}
+
+/**
+ * Parameters for exchanging a passkey credential response for Auth0 tokens.
+ *
+ * After the platform credential manager returns the credential (either a new
+ * registration or an assertion), pass the auth_session and the credential JSON
+ * response to this method to obtain Auth0 tokens.
+ *
+ * @see https://auth0.com/docs/authenticate/database-connections/passkeys
+ */
+export interface GetTokenByPasskeyParameters {
+  /** The auth session received from the challenge response. */
+  authSession: string;
+  /** The JSON string of the PublicKeyCredential response from the platform credential manager. */
+  authResponse: string;
+  /** The database connection name. */
+  realm?: string;
+  /** The target API identifier for the issued access token. */
+  audience?: string;
+  /**
+   * Space-separated list of OAuth 2.0 scopes.
+   * @default "openid profile email"
+   */
+  scope?: string;
+  /** Organization ID or name for authenticating in an organization context. */
+  organization?: string;
+}
+
+// ========= Passkey Enrollment Parameters =========
+
+/**
+ * Parameters for requesting a passkey enrollment challenge from the My Account API.
+ *
+ * Passkey enrollment adds a passkey to an already-authenticated user's account.
+ * Requires an access token with audience `https://{domain}/me/v1` and
+ * scope `create:me:authentication_methods`.
+ *
+ * @see https://auth0.com/docs/authenticate/database-connections/passkeys
+ */
+export interface PasskeyEnrollmentChallengeParameters {
+  /** Access token with My Account API scopes. */
+  accessToken: string;
+  /** Unique identifier of user's identity (for linked accounts). */
+  userIdentity?: string;
+  /** Database connection name. */
+  connection?: string;
+}
+
+/**
+ * Response from a passkey enrollment challenge request.
+ * Contains the authentication method ID, auth session, and WebAuthn creation options.
+ */
+export interface PasskeyEnrollmentChallengeResponse {
+  /** Authentication method ID (needed for the verify step). */
+  authenticationMethodId: string;
+  /** Auth session identifier for the verify step. */
+  authSession: string;
+  /** WebAuthn PublicKeyCredentialCreationOptions for the platform credential manager. */
+  authParamsPublicKey: Record<string, any>;
+}
+
+/**
+ * Parameters for verifying a passkey enrollment with the My Account API.
+ *
+ * After the platform credential manager returns the credential registration,
+ * pass the auth session and the credential JSON response to this method
+ * to complete the enrollment.
+ */
+export interface EnrollPasskeyParameters {
+  /** Access token with My Account API scopes. */
+  accessToken: string;
+  /** Authentication method ID from the challenge response. */
+  authenticationMethodId: string;
+  /** Auth session from the challenge response. */
+  authSession: string;
+  /** JSON string of the PublicKeyCredential response from the platform credential manager. */
+  authResponse: string;
+  /** The public key parameters from the enrollment challenge response. */
+  authParamsPublicKey: Record<string, any>;
+}
+
+/**
+ * Represents an enrolled passkey authentication method.
+ * Returned after successful enrollment verification.
+ */
+export interface PasskeyAuthenticationMethod {
+  /** Authentication method ID. */
+  id: string;
+  /** Type (always "passkey"). */
+  type: string;
+  /** User identity ID. */
+  userIdentityId: string;
+  /** User agent of the device used to enroll. */
+  userAgent?: string;
+  /** Credential key ID. */
+  keyId: string;
+  /** Public key (base64-encoded). */
+  publicKey: string;
+  /** User handle (base64url-encoded). */
+  userHandle: string;
+  /** Device type: "single_device" or "multi_device". */
+  credentialDeviceType: string;
+  /** Whether the credential is backed up. */
+  credentialBackedUp: boolean;
+  /** Creation timestamp (ISO 8601). */
+  createdAt: string;
+  /** Authenticator Attestation GUID. */
+  aaguid: string;
+  /** Relying party identifier. */
+  relyingPartyId: string;
+}
+
+// ========= My Account — Authentication Method Management =========
+
+/**
+ * Supported authentication method types for filtering.
+ */
+export type AuthenticationMethodType =
+  | 'passkey'
+  | 'phone'
+  | 'email'
+  | 'totp'
+  | 'push-notification'
+  | 'recovery-code'
+  | 'webauthn-platform'
+  | 'webauthn-roaming'
+  | 'password';
+
+/**
+ * Runtime constants for authentication method types.
+ *
+ * @example
+ * ```typescript
+ * import { AuthenticationMethodTypes } from 'react-native-auth0';
+ *
+ * const methods = await myAccount.getAuthenticationMethods({
+ *   accessToken,
+ *   type: AuthenticationMethodTypes.PASSKEY,
+ * });
+ * ```
+ */
+export const AuthenticationMethodTypes = {
+  PASSKEY: 'passkey',
+  PHONE: 'phone',
+  EMAIL: 'email',
+  TOTP: 'totp',
+  PUSH_NOTIFICATION: 'push-notification',
+  RECOVERY_CODE: 'recovery-code',
+  WEBAUTHN_PLATFORM: 'webauthn-platform',
+  WEBAUTHN_ROAMING: 'webauthn-roaming',
+  PASSWORD: 'password',
+} as const;
+
+/**
+ * Runtime constants for preferred phone authentication methods.
+ *
+ * @example
+ * ```typescript
+ * import { PreferredAuthenticationMethods } from 'react-native-auth0';
+ *
+ * await myAccount.enrollPhone({
+ *   accessToken,
+ *   phoneNumber: '+1234567890',
+ *   preferredAuthenticationMethod: PreferredAuthenticationMethods.SMS,
+ * });
+ * ```
+ */
+export const PreferredAuthenticationMethods = {
+  SMS: 'sms',
+  VOICE: 'voice',
+} as const;
+
+/**
+ * Parameters for listing authentication methods from the My Account API.
+ */
+export interface GetAuthenticationMethodsParameters {
+  /** Access token with My Account API scopes. */
+  accessToken: string;
+  /** Optional type filter to retrieve only methods of a specific type. */
+  type?: AuthenticationMethodType;
+}
+
+/**
+ * Parameters for retrieving a single authentication method by ID.
+ */
+export interface GetAuthenticationMethodByIdParameters {
+  /** Access token with My Account API scopes. */
+  accessToken: string;
+  /** The ID of the authentication method to retrieve. */
+  id: string;
+}
+
+/**
+ * Parameters for updating an authentication method by ID.
+ */
+export interface UpdateAuthenticationMethodByIdParameters {
+  /** Access token with My Account API scopes. */
+  accessToken: string;
+  /** The ID of the authentication method to update. */
+  id: string;
+  /** The friendly name of the authentication method. */
+  name?: string;
+  /** The preferred communication method for phone authenticators. */
+  preferredAuthenticationMethod?: 'sms' | 'voice';
+}
+
+/**
+ * Parameters for deleting an authentication method by ID.
+ */
+export interface DeleteAuthenticationMethodByIdParameters {
+  /** Access token with My Account API scopes. */
+  accessToken: string;
+  /** The ID of the authentication method to delete. */
+  id: string;
+}
+
+/**
+ * Represents a generic authentication method returned by the My Account API.
+ */
+export interface AuthenticationMethod {
+  /** Authentication method ID. */
+  id: string;
+  /** The type of authentication method (e.g., "passkey", "phone", "email", "totp"). */
+  type: string;
+  /** Creation timestamp (ISO 8601). */
+  createdAt: string;
+  /** Usage classification (e.g., "mfa", "first_factor"). */
+  usage: string[];
+  /** Whether the method has been confirmed/verified. */
+  confirmed?: boolean;
+  /** Friendly name of the authentication method. */
+  name?: string;
+  /** Credential key ID (passkey/webauthn). */
+  keyId?: string;
+  /** Public key (passkey/webauthn). */
+  publicKey?: string;
+  /** User handle (passkey). */
+  userHandle?: string;
+  /** Device type: "single_device" or "multi_device" (passkey). */
+  credentialDeviceType?: string;
+  /** Whether the credential is backed up (passkey). */
+  credentialBackedUp?: boolean;
+  /** User agent of the device used to enroll (passkey). */
+  userAgent?: string;
+  /** Authenticator Attestation GUID (passkey). */
+  aaguid?: string;
+  /** Relying party identifier (passkey/webauthn). */
+  relyingPartyId?: string;
+  /** User identity ID. */
+  identityUserId?: string;
+  /** Transports used by the authenticator (passkey). */
+  transports?: string[];
+  /** Phone number (phone method). */
+  phoneNumber?: string;
+  /** Preferred communication method (phone method). */
+  preferredAuthenticationMethod?: string;
+  /** Email address (email method). */
+  email?: string;
+  /** Date of last password reset (password method). */
+  lastPasswordReset?: string;
+}
+
+// ========= My Account — Factor Enrollment Parameters =========
+
+/**
+ * Parameters for enrolling a phone number as an authentication method.
+ * After enrollment, an OTP code will be sent to the phone number which must
+ * be confirmed via `confirmPhoneEnrollment`.
+ */
+export interface EnrollPhoneParameters {
+  /** Access token with My Account API scopes. */
+  accessToken: string;
+  /** The phone number to enroll (E.164 format, e.g., "+1234567890"). */
+  phoneNumber: string;
+  /** The preferred communication method for sending OTP codes. */
+  preferredAuthenticationMethod?: 'sms' | 'voice';
+}
+
+/**
+ * Parameters for enrolling an email address as an authentication method.
+ * After enrollment, an OTP code will be sent to the email which must
+ * be confirmed via `confirmEmailEnrollment`.
+ */
+export interface EnrollEmailParameters {
+  /** Access token with My Account API scopes. */
+  accessToken: string;
+  /** The email address to enroll. */
+  emailAddress: string;
+}
+
+/**
+ * Parameters for enrolling a TOTP authenticator app.
+ * Returns a QR code URI and optional manual input code.
+ * Must be confirmed with an OTP code from the authenticator app via `confirmTOTPEnrollment`.
+ */
+export interface EnrollTOTPParameters {
+  /** Access token with My Account API scopes. */
+  accessToken: string;
+}
+
+/**
+ * Parameters for enrolling push notification as an authentication method.
+ * Returns a QR code URI for pairing with a push notification app.
+ * Must be confirmed via `confirmPushNotificationEnrollment`.
+ */
+export interface EnrollPushNotificationParameters {
+  /** Access token with My Account API scopes. */
+  accessToken: string;
+}
+
+/**
+ * Parameters for enrolling a recovery code as an authentication method.
+ * Returns a recovery code that the user should store securely.
+ * Must be confirmed via `confirmRecoveryCodeEnrollment`.
+ */
+export interface EnrollRecoveryCodeParameters {
+  /** Access token with My Account API scopes. */
+  accessToken: string;
+}
+
+/**
+ * Parameters for confirming an enrollment that requires an OTP code.
+ * Used for phone, email, and TOTP enrollments.
+ */
+export interface ConfirmOTPEnrollmentParameters {
+  /** Access token with My Account API scopes. */
+  accessToken: string;
+  /** The authentication method ID from the enrollment challenge response. */
+  id: string;
+  /** The auth session from the enrollment challenge response. */
+  authSession: string;
+  /** The one-time password code sent to the user or generated by the authenticator app. */
+  otpCode: string;
+}
+
+/**
+ * Parameters for confirming a recovery code enrollment.
+ * Does not require an OTP code.
+ */
+export interface ConfirmRecoveryCodeEnrollmentParameters {
+  /** Access token with My Account API scopes. */
+  accessToken: string;
+  /** The authentication method ID from the enrollment challenge response. */
+  id: string;
+  /** The auth session from the enrollment challenge response. */
+  authSession: string;
+}
+
+/**
+ * Parameters for confirming a push notification enrollment.
+ * Does not require an OTP code.
+ */
+export interface ConfirmPushNotificationEnrollmentParameters {
+  /** Access token with My Account API scopes. */
+  accessToken: string;
+  /** The authentication method ID from the enrollment challenge response. */
+  id: string;
+  /** The auth session from the enrollment challenge response. */
+  authSession: string;
+}
+
+/**
+ * Parameters for retrieving available factors from the My Account API.
+ */
+export interface GetFactorsParameters {
+  /** Access token with My Account API scopes. */
+  accessToken: string;
+}
+
+// ========= My Account — Factor Enrollment Responses =========
+
+/**
+ * Response from a phone or email enrollment challenge.
+ * Contains the authentication method ID and auth session needed for confirmation.
+ */
+export interface EnrollmentChallenge {
+  /** The unique identifier for the authentication method. */
+  id: string;
+  /** The unique session identifier for the enrollment (needed for confirmation). */
+  authSession: string;
+}
+
+/**
+ * Response from a TOTP or push notification enrollment challenge.
+ * Contains the QR code URI for pairing with an authenticator app.
+ */
+export interface TOTPEnrollmentChallenge {
+  /** The unique identifier for the authentication method. */
+  id: string;
+  /** The unique session identifier for the enrollment (needed for confirmation). */
+  authSession: string;
+  /** The URI for the QR code to be scanned by the authenticator app. */
+  barcodeUri: string;
+  /** The manual input code as an alternative to scanning the QR code. */
+  manualInputCode?: string;
+}
+
+/**
+ * Response from a recovery code enrollment challenge.
+ * Contains the recovery code that the user must store securely.
+ */
+export interface RecoveryCodeEnrollmentChallenge {
+  /** The unique identifier for the authentication method. */
+  id: string;
+  /** The unique session identifier for the enrollment (needed for confirmation). */
+  authSession: string;
+  /** The recovery code value that the user should store securely. */
+  recoveryCode: string;
+}
+
+/**
+ * Represents an available authentication factor from the My Account API.
+ */
+export interface Factor {
+  /** The authentication method type (e.g., "phone", "email", "totp", "push-notification", "recovery-code"). */
+  type: string;
+  /** Usage classification (e.g., ["mfa"], ["first_factor", "mfa"]). */
+  usage?: string[];
+}
+
+// ========= User Management & Profile Parameters =========
+
 /**
  * Parameters for patching a user's metadata via the Management API.
  * Requires an access token with `update:current_user_metadata` scope.

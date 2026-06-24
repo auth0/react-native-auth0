@@ -14,17 +14,19 @@
     - [Using custom headers with Auth0Provider component](#using-custom-headers-with-auth0provider-component)
     - [Set request-specific headers](#set-request-specific-headers)
 - [Credential Renewal Retry](#credential-renewal-retry)
-  - [Overview](#credential-renewal-retry-overview)
-  - [Prerequisites](#credential-renewal-retry-prerequisites)
+  - [Overview](#overview)
+  - [Prerequisites](#prerequisites)
   - [Using Retry with Hooks](#using-retry-with-hooks)
   - [Using Retry with Auth0 Class](#using-retry-with-auth0-class)
-  - [Platform Support](#credential-renewal-retry-platform-support)
-  - [Error Handling](#credential-renewal-retry-error-handling)
+  - [Platform Support](#platform-support)
+  - [Error Handling](#error-handling)
 - [Biometric Authentication](#biometric-authentication)
   - [Biometric Policy Types](#biometric-policy-types)
   - [Using with Auth0Provider (Hooks)](#using-with-auth0provider-hooks)
   - [Using with Auth0 Class](#using-with-auth0-class)
   - [Platform-Specific Behavior](#platform-specific-behavior)
+    - [Android](#android)
+    - [iOS](#ios)
   - [Migration from Previous Behavior](#migration-from-previous-behavior)
 - [Management API (Users)](#management-api-users)
   - [Patch user with user_metadata](#patch-user-with-user_metadata)
@@ -32,15 +34,9 @@
 - [Organizations](#organizations)
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
-- [DPoP (Demonstrating Proof-of-Possession)](#dpop-demonstrating-proof-of-possession)
-  - [Enabling DPoP](#enabling-dpop)
-  - [Making API calls with DPoP](#making-api-calls-with-dpop)
-  - [Handling DPoP token migration](#handling-dpop-token-migration)
-  - [Checking token type](#checking-token-type)
-  - [Handling nonce errors](#handling-nonce-errors)
 - [Multi-Resource Refresh Tokens (MRRT)](#multi-resource-refresh-tokens-mrrt)
-  - [Overview](#mrrt-overview)
-  - [Prerequisites](#mrrt-prerequisites)
+  - [MRRT Overview](#mrrt-overview)
+  - [MRRT Prerequisites](#mrrt-prerequisites)
   - [Using MRRT with Hooks](#using-mrrt-with-hooks)
   - [Using MRRT with Auth0 Class](#using-mrrt-with-auth0-class)
   - [Web Platform Configuration](#web-platform-configuration)
@@ -49,25 +45,65 @@
   - [Using Custom Token Exchange with Auth0 Class](#using-custom-token-exchange-with-auth0-class)
   - [With Organization Context](#with-organization-context)
   - [Subject Token Type Requirements](#subject-token-type-requirements)
+    - [Valid Token Type Patterns](#valid-token-type-patterns)
+    - [Reserved Namespaces (Forbidden)](#reserved-namespaces-forbidden)
+    - [Common Use Cases](#common-use-cases)
+  - [Error Codes Reference](#error-codes-reference)
+  - [Auth0 Actions Validation](#auth0-actions-validation)
+- [Passkeys](#passkeys)
+  - [Overview](#overview-1)
+  - [Prerequisites](#prerequisites-1)
+  - [Signup with Passkey](#signup-with-passkey)
+  - [Signin with Passkey](#signin-with-passkey)
+  - [Auth Response Format](#auth-response-format)
+  - [Using Passkeys with Auth0 Class](#using-passkeys-with-auth0-class)
+  - [Signup Challenge Parameters](#signup-challenge-parameters)
+  - [Error Handling](#error-handling-1)
+  - [Platform Support](#platform-support-1)
+- [My Account API](#my-account-api)
+  - [Overview](#overview-2)
+  - [Prerequisites](#prerequisites-2)
+  - [Passkey Enrollment](#passkey-enrollment)
+  - [Phone Enrollment](#phone-enrollment)
+  - [Email Enrollment](#email-enrollment)
+  - [TOTP Enrollment](#totp-enrollment)
+  - [Recovery Code Enrollment](#recovery-code-enrollment)
+  - [Managing Authentication Methods](#managing-authentication-methods)
+  - [Getting Available Factors](#getting-available-factors)
+  - [Error Handling](#error-handling-2)
+  - [Platform Support](#platform-support-2)
 - [Native to Web SSO](#native-to-web-sso)
-  - [Overview](#native-to-web-sso-overview)
-  - [Prerequisites](#native-to-web-sso-prerequisites)
+  - [Native to Web SSO Overview](#native-to-web-sso-overview)
+  - [Native to Web SSO Prerequisites](#native-to-web-sso-prerequisites)
   - [Using Native to Web SSO with Hooks](#using-native-to-web-sso-with-hooks)
   - [Using Native to Web SSO with Auth0 Class](#using-native-to-web-sso-with-auth0-class)
   - [SSO Exchange via Authentication API](#sso-exchange-via-authentication-api)
     - [Using SSO Exchange with Hooks](#using-sso-exchange-with-hooks)
     - [Using SSO Exchange with Auth0 Class](#using-sso-exchange-with-auth0-class)
   - [Sending the Session Transfer Token](#sending-the-session-transfer-token)
+    - [Option 1: As a Query Parameter](#option-1-as-a-query-parameter)
+    - [Option 2: As a Cookie (WebView only)](#option-2-as-a-cookie-webview-only)
 - [MFA Flexible Factors Grant](#mfa-flexible-factors-grant)
   - [Using MFA with Hooks](#using-mfa-with-hooks)
   - [Using MFA with Auth0 Class](#using-mfa-with-auth0-class)
   - [MFA Error Handling](#mfa-error-handling)
 - [Bot Protection](#bot-protection)
   - [Domain Switching](#domain-switching)
-    - [Android](#android)
-    - [iOS](#ios)
+    - [Android](#android-1)
+    - [iOS](#ios-1)
     - [Expo](#expo)
 - [Allowed Browsers (Android)](#allowed-browsers-android)
+  - [Using with Hooks](#using-with-hooks)
+  - [Using with Auth0 Class](#using-with-auth0-class-1)
+- [Recovering Login After Process Death (Android)](#recovering-login-after-process-death-android)
+  - [Using with Hooks](#recovering-login-using-hooks)
+  - [Using with Auth0 Class](#recovering-login-using-the-auth0-class)
+- [DPoP (Demonstrating Proof-of-Possession)](#dpop-demonstrating-proof-of-possession)
+  - [Enabling DPoP](#enabling-dpop)
+  - [Making API calls with DPoP](#making-api-calls-with-dpop)
+  - [Handling DPoP token migration](#handling-dpop-token-migration)
+  - [Checking token type](#checking-token-type)
+  - [Handling nonce errors](#handling-nonce-errors)
 
 ## Authentication API
 
@@ -107,6 +143,23 @@ auth0.auth
 ```
 
 This endpoint requires an access token that was granted the `/userinfo` audience. Check that the authentication request that returned the access token included an audience value of `https://{YOUR_AUTH0_DOMAIN}.auth0.com/userinfo`.
+
+### Parse user profile from an ID token locally
+
+If you already have credentials (e.g. from `webAuth.authorize()` or `credentialsManager.getCredentials()`), you can extract the user profile from the ID token without a network request:
+
+```js
+import Auth0, { parseIdToken } from 'react-native-auth0';
+
+const auth0 = new Auth0({ domain, clientId });
+const credentials = await auth0.webAuth.authorize({
+  scope: 'openid profile email',
+});
+const user = parseIdToken(credentials.idToken);
+// user.sub, user.name, user.email, etc.
+```
+
+This is the same parsing that `Auth0Provider` performs internally. It's useful when you manage auth state yourself via the `Auth0` class and want to avoid the network round-trip of `auth.userInfo()`.
 
 ### Getting new access token with refresh token
 
@@ -1015,6 +1068,486 @@ For detailed examples of validating different token types in Actions, see:
 - Validate token expiration, issuer, and audience claims
 - Implement rate limiting for failed validations using `api.access.rejectInvalidSubjectToken()`
 
+## Passkeys
+
+<a name="passkeys-overview"></a>
+
+### Overview
+
+Passkeys provide a passwordless authentication experience using platform biometrics (Face ID, Touch ID, fingerprint) backed by public-key cryptography. The SDK provides the Auth0 challenge and token exchange steps, while you handle the platform credential manager interaction using native modules or libraries like `react-native-passkey`.
+
+The passkey flow has three steps:
+
+1. **Challenge** — Request a WebAuthn challenge from Auth0 (`passkeySignupChallenge` or `passkeyLoginChallenge`)
+2. **Credential Manager** — Present the OS credential manager UI to create or assert a passkey (using your own native module or a library)
+3. **Exchange** — Send the credential response back to Auth0 to get tokens (`getTokenByPasskey`)
+
+> **Platform Support:** Native only (iOS 16.6+ / Android). Not supported on Web.
+
+<a name="passkeys-prerequisites"></a>
+
+### Prerequisites
+
+Before using passkeys:
+
+1. **Enable the Passkey Grant Type** for your Auth0 application in the Auth0 Dashboard
+2. **Configure a custom domain** on your Auth0 tenant (required for passkeys)
+3. **iOS:** Requires iOS 16.6 or later. Add an Associated Domain with the `webcredentials` service pointing to your Auth0 custom domain
+4. **Android:** Requires Android API 28+. Configure your app's Digital Asset Links for the Auth0 custom domain
+
+> **Important:** `passkeySignupChallenge` is for creating **new** user accounts with a passkey. It will fail if the email already exists in the database connection. Use `passkeyLoginChallenge` for existing users who have already registered a passkey.
+
+### Signup with Passkey
+
+The signup flow requests a registration challenge from Auth0, then you use the platform credential manager (via a native module or library like `react-native-passkey`) to create a new passkey, and finally exchange the credential for Auth0 tokens.
+
+```tsx
+import { useAuth0, PasskeyError } from 'react-native-auth0';
+
+function PasskeySignupScreen() {
+  const { passkeySignupChallenge, getTokenByPasskey } = useAuth0();
+
+  const handleSignup = async () => {
+    try {
+      // Step 1: Get the signup challenge from Auth0
+      const challenge = await passkeySignupChallenge({
+        email: 'user@example.com',
+        name: 'John Doe',
+        realm: 'Username-Password-Authentication',
+      });
+
+      // Step 2: Use the platform credential manager to create a passkey
+      // challenge.authParamsPublicKey contains the WebAuthn PublicKeyCredentialCreationOptions
+      // Use your preferred library (e.g., react-native-passkey) or native module
+      const credentialJson = await yourCredentialManagerCreate(
+        challenge.authParamsPublicKey
+      );
+
+      // Step 3: Exchange the credential response for Auth0 tokens
+      const credentials = await getTokenByPasskey({
+        authSession: challenge.authSession,
+        authResponse: credentialJson,
+        realm: 'Username-Password-Authentication',
+        audience: 'https://api.example.com',
+        scope: 'openid profile email offline_access',
+      });
+
+      console.log('Signed up with passkey:', credentials.accessToken);
+    } catch (error) {
+      if (error instanceof PasskeyError) {
+        console.error('Passkey signup failed:', error.type, error.message);
+      }
+    }
+  };
+
+  return <Button title="Sign Up with Passkey" onPress={handleSignup} />;
+}
+```
+
+### Signin with Passkey
+
+The login flow requests an assertion challenge from Auth0, then you use the platform credential manager to assert an existing passkey, and finally exchange the credential for Auth0 tokens.
+
+```tsx
+import { useAuth0, PasskeyError } from 'react-native-auth0';
+
+function PasskeySigninScreen() {
+  const { passkeyLoginChallenge, getTokenByPasskey } = useAuth0();
+
+  const handleSignin = async () => {
+    try {
+      // Step 1: Get the login challenge from Auth0
+      const challenge = await passkeyLoginChallenge({
+        realm: 'Username-Password-Authentication',
+      });
+
+      // Step 2: Use the platform credential manager to assert an existing passkey
+      // challenge.authParamsPublicKey contains the WebAuthn PublicKeyCredentialRequestOptions
+      // Use your preferred library (e.g., react-native-passkey) or native module
+      const credentialJson = await yourCredentialManagerGet(
+        challenge.authParamsPublicKey
+      );
+
+      // Step 3: Exchange the credential response for Auth0 tokens
+      const credentials = await getTokenByPasskey({
+        authSession: challenge.authSession,
+        authResponse: credentialJson,
+        realm: 'Username-Password-Authentication',
+        audience: 'https://api.example.com',
+        scope: 'openid profile email offline_access',
+      });
+
+      console.log('Signed in with passkey:', credentials.accessToken);
+    } catch (error) {
+      if (error instanceof PasskeyError) {
+        console.error('Passkey signin failed:', error.type, error.message);
+      }
+    }
+  };
+
+  return <Button title="Sign In with Passkey" onPress={handleSignin} />;
+}
+```
+
+### Auth Response Format
+
+The `authResponse` parameter passed to `getTokenByPasskey` must be a JSON string representing the [PublicKeyCredential](https://www.w3.org/TR/webauthn-2/#publickeycredential) response from the platform credential manager.
+
+**For registration (signup):**
+
+```json
+{
+  "id": "<base64url-encoded credential ID>",
+  "rawId": "<base64url-encoded credential ID>",
+  "type": "public-key",
+  "response": {
+    "clientDataJSON": "<base64url-encoded>",
+    "attestationObject": "<base64url-encoded>"
+  },
+  "authenticatorAttachment": "platform"
+}
+```
+
+**For assertion (login):**
+
+```json
+{
+  "id": "<base64url-encoded credential ID>",
+  "rawId": "<base64url-encoded credential ID>",
+  "type": "public-key",
+  "response": {
+    "clientDataJSON": "<base64url-encoded>",
+    "authenticatorData": "<base64url-encoded>",
+    "signature": "<base64url-encoded>",
+    "userHandle": "<base64url-encoded>"
+  },
+  "authenticatorAttachment": "platform"
+}
+```
+
+### Using Passkeys with Auth0 Class
+
+```typescript
+import Auth0, { PasskeyError } from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+});
+
+// Signup flow
+const signupChallenge = await auth0.passkeySignupChallenge({
+  email: 'user@example.com',
+  name: 'John Doe',
+  realm: 'Username-Password-Authentication',
+});
+
+// Use your credential manager library to create the passkey
+// signupChallenge.authParamsPublicKey has the WebAuthn creation options
+const registrationJson = await yourCredentialManagerCreate(
+  signupChallenge.authParamsPublicKey
+);
+
+const signupCredentials = await auth0.getTokenByPasskey({
+  authSession: signupChallenge.authSession,
+  authResponse: registrationJson,
+  realm: 'Username-Password-Authentication',
+});
+
+// Login flow
+const loginChallenge = await auth0.passkeyLoginChallenge({
+  realm: 'Username-Password-Authentication',
+});
+
+// Use your credential manager library to assert the passkey
+// loginChallenge.authParamsPublicKey has the WebAuthn request options
+const assertionJson = await yourCredentialManagerGet(
+  loginChallenge.authParamsPublicKey
+);
+
+const loginCredentials = await auth0.getTokenByPasskey({
+  authSession: loginChallenge.authSession,
+  authResponse: assertionJson,
+  realm: 'Username-Password-Authentication',
+});
+```
+
+### Signup Challenge Parameters
+
+The `passkeySignupChallenge` method accepts the following parameters to create a user profile along with the passkey:
+
+| Parameter      | Type                      | Description                          |
+| -------------- | ------------------------- | ------------------------------------ |
+| `email`        | `string?`                 | User's email address                 |
+| `phoneNumber`  | `string?`                 | User's phone number                  |
+| `username`     | `string?`                 | Username                             |
+| `name`         | `string?`                 | Full name                            |
+| `givenName`    | `string?`                 | First/given name                     |
+| `familyName`   | `string?`                 | Last/family name                     |
+| `nickname`     | `string?`                 | Nickname                             |
+| `picture`      | `string?`                 | Profile picture URL                  |
+| `userMetadata` | `Record<string, string>?` | Custom user metadata key-value pairs |
+| `realm`        | `string?`                 | Database connection name             |
+| `organization` | `string?`                 | Auth0 organization ID                |
+
+<a name="passkeys-error-handling"></a>
+
+### Error Handling
+
+Passkey operations throw `PasskeyError` (extends `AuthError`) with a normalized `type` property. Use `PasskeyErrorCodes` for type-safe error handling:
+
+| Error Code                     | Description                                         |
+| ------------------------------ | --------------------------------------------------- |
+| `PASSKEY_CHALLENGE_FAILED`     | Auth0 challenge request failed                      |
+| `PASSKEY_EXCHANGE_FAILED`      | Token exchange with credential response failed      |
+| `PASSKEY_NOT_AVAILABLE`        | Passkeys not available on this device or OS version |
+| `PASSKEY_UNSUPPORTED_PLATFORM` | Passkeys not supported on this platform (Web)       |
+| `PASSKEY_UNKNOWN_ERROR`        | Unknown or uncategorized passkey error              |
+
+```typescript
+import { PasskeyError, PasskeyErrorCodes } from 'react-native-auth0';
+
+try {
+  const challenge = await auth0.passkeyLoginChallenge({
+    realm: 'Username-Password-Authentication',
+  });
+} catch (error) {
+  if (error instanceof PasskeyError) {
+    console.log('Error type:', error.type); // e.g. "PASSKEY_CHALLENGE_FAILED"
+    console.log('Error message:', error.message);
+    console.log('Error code:', error.code); // Raw native error code
+  }
+}
+```
+
+<a name="passkeys-platform-support"></a>
+
+### Platform Support
+
+| Platform    | Support          | Requirements                                              |
+| ----------- | ---------------- | --------------------------------------------------------- |
+| **iOS**     | ✅ Supported     | iOS 16.6+, Associated Domains with `webcredentials`       |
+| **Android** | ✅ Supported     | Android API 28+, Digital Asset Links configured           |
+| **Web**     | ❌ Not Supported | Throws `PasskeyError` with `PASSKEY_UNSUPPORTED_PLATFORM` |
+
+> **Note:** Passkeys require a real device for the full flow. Simulators/emulators may have limited support.
+
+## My Account API
+
+### Overview
+
+The My Account API allows authenticated users to manage their own authentication methods (passkeys, phone, email, TOTP, push notifications, recovery codes). It provides endpoints for enrolling new factors, confirming enrollments with OTP, listing/updating/deleting authentication methods, and querying available factors.
+
+Access the My Account client via the `myAccount` property from `useAuth0()` or the `Auth0` class instance.
+
+### Prerequisites
+
+- A [custom domain](https://auth0.com/docs/customize/custom-domains) must be configured on your Auth0 tenant
+- **iOS**: Associated Domains entitlement must be configured with `webcredentials:<your-custom-domain>` for passkey support
+- **Android**: App Links must be set up with your custom domain via an `assetlinks.json` file for passkey support
+- The user must be authenticated
+- An access token with the appropriate My Account API scopes is required:
+  - `read:me:authentication_methods`
+  - `create:me:authentication_methods`
+  - `update:me:authentication_methods`
+  - `delete:me:authentication_methods`
+  - `read:me:factors`
+
+Use `getApiCredentials` with the `https://<domain>/me/` audience to obtain a scoped token:
+
+```typescript
+const credentials = await getApiCredentials(
+  `https://${domain}/me/`,
+  'read:me:authentication_methods create:me:authentication_methods delete:me:authentication_methods update:me:authentication_methods read:me:factors'
+);
+const accessToken = credentials.accessToken;
+```
+
+### Passkey Enrollment
+
+Passkey enrollment is a two-step process: request a challenge, then verify with the credential response.
+
+```typescript
+import { useAuth0 } from 'react-native-auth0';
+import { createPasskey } from './PasskeyModule'; // Your native passkey module
+
+const { myAccount, getApiCredentials } = useAuth0();
+
+// Step 1: Request the enrollment challenge
+const accessToken = (await getApiCredentials(`https://${domain}/me/`, scopes))
+  .accessToken;
+const challenge = await myAccount.passkeyEnrollmentChallenge({ accessToken });
+
+// Step 2: Create a passkey using the platform credential manager
+const credentialJson = await createPasskey(challenge.authParamsPublicKey);
+
+// Step 3: Verify the enrollment
+const method = await myAccount.enrollPasskey({
+  accessToken,
+  authenticationMethodId: challenge.authenticationMethodId,
+  authSession: challenge.authSession,
+  authResponse: credentialJson,
+  authParamsPublicKey: challenge.authParamsPublicKey,
+});
+
+console.log('Enrolled passkey:', method.id, method.keyId);
+```
+
+### Phone Enrollment
+
+```typescript
+import { PreferredAuthenticationMethods } from 'react-native-auth0';
+
+const { myAccount } = useAuth0();
+
+// Step 1: Enroll the phone number (sends OTP)
+const challenge = await myAccount.enrollPhone({
+  accessToken,
+  phoneNumber: '+1234567890',
+  preferredAuthenticationMethod: PreferredAuthenticationMethods.SMS, // or VOICE
+});
+
+// Step 2: Confirm with OTP
+const method = await myAccount.confirmPhoneEnrollment({
+  accessToken,
+  id: challenge.id,
+  authSession: challenge.authSession,
+  otpCode: '123456',
+});
+```
+
+### Email Enrollment
+
+```typescript
+// Step 1: Enroll the email (sends OTP)
+const challenge = await myAccount.enrollEmail({
+  accessToken,
+  emailAddress: 'user@example.com',
+});
+
+// Step 2: Confirm with OTP
+const method = await myAccount.confirmEmailEnrollment({
+  accessToken,
+  id: challenge.id,
+  authSession: challenge.authSession,
+  otpCode: '123456',
+});
+```
+
+### TOTP Enrollment
+
+```typescript
+// Step 1: Enroll TOTP (returns QR code / manual code)
+const challenge = await myAccount.enrollTOTP({ accessToken });
+// Display challenge.barcodeUri as a QR code, or show challenge.manualInputCode
+
+// Step 2: Confirm with OTP from authenticator app
+const method = await myAccount.confirmTOTPEnrollment({
+  accessToken,
+  id: challenge.id,
+  authSession: challenge.authSession,
+  otpCode: '123456',
+});
+```
+
+### Recovery Code Enrollment
+
+```typescript
+// Step 1: Enroll recovery code
+const challenge = await myAccount.enrollRecoveryCode({ accessToken });
+// Store challenge.recoveryCode securely
+
+// Step 2: Confirm enrollment
+const method = await myAccount.confirmRecoveryCodeEnrollment({
+  accessToken,
+  id: challenge.id,
+  authSession: challenge.authSession,
+});
+```
+
+### Managing Authentication Methods
+
+```typescript
+import { AuthenticationMethodTypes } from 'react-native-auth0';
+
+// List all methods
+const methods = await myAccount.getAuthenticationMethods({ accessToken });
+
+// List only passkey methods
+const passkeys = await myAccount.getAuthenticationMethods({
+  accessToken,
+  type: AuthenticationMethodTypes.PASSKEY,
+});
+
+// Get a specific method
+const method = await myAccount.getAuthenticationMethodById({
+  accessToken,
+  id: 'authentication-method-id',
+});
+
+// Update a method name
+const updated = await myAccount.updateAuthenticationMethodById({
+  accessToken,
+  id: 'authentication-method-id',
+  name: 'My Work Phone',
+});
+
+// Delete a method
+await myAccount.deleteAuthenticationMethodById({
+  accessToken,
+  id: 'authentication-method-id',
+});
+```
+
+### Getting Available Factors
+
+```typescript
+const factors = await myAccount.getFactors({ accessToken });
+// Returns available factor types (e.g., sms, email, totp, push-notification, webauthn-platform)
+```
+
+### Error Handling
+
+```typescript
+import { MyAccountError, MyAccountErrorCodes, PasskeyError, PasskeyErrorCodes } from 'react-native-auth0';
+
+try {
+  await myAccount.enrollPasskey({ ... });
+} catch (e) {
+  if (e instanceof PasskeyError) {
+    switch (e.type) {
+      case PasskeyErrorCodes.NOT_AVAILABLE:
+        // Passkeys not supported on this device
+        break;
+      default:
+        console.error(`Passkey error: [${e.type}] ${e.message}`);
+    }
+  } else if (e instanceof MyAccountError) {
+    switch (e.type) {
+      case MyAccountErrorCodes.ENROLLMENT_FAILED:
+        // Enrollment failed
+        break;
+      case MyAccountErrorCodes.VERIFICATION_FAILED:
+        // OTP verification failed
+        break;
+      case MyAccountErrorCodes.UNAUTHORIZED:
+        // Token expired or insufficient scopes
+        break;
+      default:
+        console.error(`My Account error: [${e.type}] ${e.message}`);
+    }
+  }
+}
+```
+
+### Platform Support
+
+| Platform    | Support          | Notes                                                     |
+| ----------- | ---------------- | --------------------------------------------------------- |
+| **iOS**     | ✅ Supported     | Passkey enrollment requires iOS 16.6+                     |
+| **Android** | ✅ Supported     | Passkey enrollment requires Android API 28+               |
+| **Web**     | ❌ Not Supported | Throws `PasskeyError` with `PASSKEY_UNSUPPORTED_PLATFORM` |
+
 ## Native to Web SSO
 
 ### Native to Web SSO Overview
@@ -1661,6 +2194,121 @@ If you want to support multiple domains, you would have to pass an array of obje
 
 You can skip sending the `customScheme` property if you do not want to customize it.
 
+#### Switching tenants at runtime
+
+The configuration above is **build-time** setup: it registers the redirect callback for every domain you intend to use. Switching the _active_ tenant while the app is running is done in JavaScript by changing the `domain`/`clientId` you pass to the SDK.
+
+When you change an identity-defining prop on `Auth0Provider` — `domain`, `clientId`, `localAuthenticationOptions`, `timeout`, or `useDPoP` — the provider rebuilds its underlying client so subsequent calls target the newly selected configuration. An unchanged config (or a change limited to options like `headers` or `maxRetries`) reuses the same client instance. Keep the props in state and update them to switch:
+
+```jsx
+import React, { useState } from 'react';
+import { Auth0Provider, useAuth0 } from 'react-native-auth0';
+
+const TENANTS = [
+  { domain: 'tenant-a.us.auth0.com', clientId: 'CLIENT_ID_A' },
+  { domain: 'tenant-b.us.auth0.com', clientId: 'CLIENT_ID_B' },
+];
+
+const App = () => {
+  const [index, setIndex] = useState(0);
+  const tenant = TENANTS[index];
+
+  return (
+    // Changing domain/clientId recreates the client for the new tenant.
+    <Auth0Provider domain={tenant.domain} clientId={tenant.clientId}>
+      <Button
+        title="Switch Tenant"
+        onPress={() => setIndex((i) => (i + 1) % TENANTS.length)}
+      />
+      <LoginScreen />
+    </Auth0Provider>
+  );
+};
+```
+
+After switching, the next `authorize()` call opens the login page for the newly selected tenant and the redirect resolves correctly, provided that tenant's domain/scheme was registered using the build-time configuration shown above.
+
+> Note: Switching tenants does not immediately clear the displayed auth state. The provider re-runs its initialization for the new tenant and updates `user` once that check completes, so the previously shown user may briefly remain until then.
+>
+> **Important — credentials are shared across tenants by default.** The native credentials store (Android `SharedPreferences`, iOS Keychain) is **not** keyed by `domain`/`clientId`. With no extra configuration, every client reads and writes the **same** store, so after switching tenants `getCredentials()` / `hasValidCredentials()` return whatever was saved last — i.e. the _previous_ tenant's session — and a fresh login on the new tenant overwrites it. To give each tenant its own isolated store, set [`credentialsManagerStorageKey`](#isolating-credentials-per-tenant-credentialsmanagerstoragekey) (below).
+
+If you are using the `Auth0` class directly instead of the hooks, simply create (or reuse) an instance per tenant and call the one matching the active tenant:
+
+```js
+import Auth0 from 'react-native-auth0';
+
+const clients = {
+  tenantA: new Auth0({
+    domain: 'tenant-a.us.auth0.com',
+    clientId: 'CLIENT_ID_A',
+  }),
+  tenantB: new Auth0({
+    domain: 'tenant-b.us.auth0.com',
+    clientId: 'CLIENT_ID_B',
+  }),
+};
+
+// Use whichever client corresponds to the active tenant.
+const credentials = await clients[activeTenant].webAuth.authorize();
+```
+
+#### Isolating credentials per tenant (`credentialsManagerStorageKey`)
+
+By default all clients share a single native credentials store, so credentials from one tenant are visible to another after a switch (see the important note above). To keep each tenant's session separate, pass a unique `credentialsManagerStorageKey`. It maps to the **Android `SharedPreferences` file name** and the **iOS Keychain service**, so a distinct value gives that client its own physically separate store for `saveCredentials` / `getCredentials` / `hasValidCredentials` / `clearCredentials`.
+
+```jsx
+const TENANTS = [
+  // No key → uses the default shared store (keeps any existing logged-in user).
+  { domain: 'tenant-a.us.auth0.com', clientId: 'CLIENT_ID_A' },
+  // Distinct key → isolated store for this tenant.
+  {
+    domain: 'tenant-b.us.auth0.com',
+    clientId: 'CLIENT_ID_B',
+    credentialsManagerStorageKey: 'tenant-b',
+  },
+];
+
+// Hooks: pass it as a prop. Changing it rebuilds the client.
+<Auth0Provider
+  domain={tenant.domain}
+  clientId={tenant.clientId}
+  credentialsManagerStorageKey={tenant.credentialsManagerStorageKey}
+>
+  <LoginScreen />
+</Auth0Provider>;
+```
+
+```js
+// Auth0 class: pass it in the constructor options.
+const auth0 = new Auth0({
+  domain: 'tenant-b.us.auth0.com',
+  clientId: 'CLIENT_ID_B',
+  credentialsManagerStorageKey: 'tenant-b',
+});
+```
+
+With the keys above, logging in to Tenant A and switching to Tenant B no longer surfaces Tenant A's credentials, and each tenant's login persists independently. Switching back to Tenant A restores its session without re-login.
+
+**Recommended usage**
+
+- Leave the **primary/default** tenant **without** a key so existing installs keep using the store they already wrote to — those users are not logged out on upgrade.
+- Give every **additional** tenant a **unique, stable** key (e.g. the tenant slug or client ID).
+- Treat the key as permanent: it is the address of the store, not data inside it.
+
+**When does this make existing users log in again?**
+
+There is **no automatic migration** between stores — a client only ever reads the store its key points to. Changing which store a client uses therefore makes it start from an _empty_ store, requiring a fresh login:
+
+| Scenario                                                                                  | Existing logged-in user re-login required?                                                    |
+| ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Upgrade to this version, **no** `credentialsManagerStorageKey` set anywhere               | **No** — still the default shared store.                                                      |
+| Add a key to a client that previously had **none** (e.g. you now key your primary tenant) | **Yes** — its old session lives in the default store, which the keyed client no longer reads. |
+| **Change** an existing key to a different value                                           | **Yes** — points at a different (empty) store.                                                |
+| **Remove** a key that was previously set                                                  | **Yes** — falls back to the default store, not the keyed one.                                 |
+| Add a **new** tenant with its **own new** key (others unchanged)                          | **No** for the others; the new tenant simply starts logged out.                               |
+
+> Because changing or removing a key strands the credentials saved under the old key, choose each tenant's key once and keep it stable across releases. If you must change it, call `clearCredentials()` on the old configuration first (or accept that those credentials become orphaned in the old store).
+
 ## Allowed Browsers (Android)
 
 On Android, some browsers do not correctly handle App Link redirects. For example, Firefox renders the callback URL as a web page instead of handing the redirect back to your app, causing the authentication flow to fail silently.
@@ -1721,6 +2369,60 @@ await auth0.webAuth.authorize(
 ```
 
 The same `allowedBrowserPackages` option is also accepted by `clearSession` to restrict which browser handles the logout flow.
+
+## Recovering Login After Process Death (Android)
+
+On Android, the OS can kill your app's process while the user is completing login in the browser — this is common on devices with aggressive memory management (e.g. Samsung One UI, Xiaomi MIUI), especially during MFA when the user switches apps to fetch a code. When the user finishes and the browser redirects back, the app cold-starts and, without recovery, the in-flight login is lost and the user lands back on the login screen.
+
+`resumeSession()` recovers that login. The underlying native SDK finishes the token exchange after the process restarts and buffers the result; calling `resumeSession()` once on cold start drains it and returns the recovered `Credentials` (or `null` if there was nothing to recover).
+
+> This is an Android-only concern. On iOS and web `resumeSession()` is a no-op that resolves with `null`, so it is safe to call unconditionally. It requires `react-native-auth0` bundling Auth0.Android 3.19.0+ (included). No native `MainActivity` changes are needed, so it works the same in bare React Native and Expo.
+
+### Recovering Login Using Hooks
+
+Call `resumeSession()` once when your app mounts. If it returns credentials, the hook updates the auth state and persists them automatically, so `user` becomes populated.
+
+```js
+import { useEffect } from 'react';
+import { useAuth0 } from 'react-native-auth0';
+
+const App = () => {
+  const { resumeSession } = useAuth0();
+
+  useEffect(() => {
+    resumeSession()
+      .then((credentials) => {
+        if (credentials) {
+          // A login interrupted by process death was recovered.
+          console.log('Recovered session', credentials.accessToken);
+        }
+      })
+      .catch((error) => {
+        console.log('Failed to recover session', error);
+      });
+  }, [resumeSession]);
+
+  // ...
+};
+```
+
+### Recovering Login Using the Auth0 Class
+
+```js
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+});
+
+// Call once on cold start, before showing the login screen.
+const credentials = await auth0.webAuth.resumeSession();
+if (credentials) {
+  await auth0.credentialsManager.saveCredentials(credentials);
+  // The user is logged in — route them into the app.
+}
+```
 
 ## DPoP (Demonstrating Proof-of-Possession)
 

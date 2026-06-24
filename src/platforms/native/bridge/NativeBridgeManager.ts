@@ -10,6 +10,7 @@ import type {
   MfaAuthenticator,
   MfaEnrollmentChallenge,
   MfaChallengeResult,
+  PasskeyChallengeResponse,
 } from '../../../types';
 import {
   SafariViewControllerPresentationStyle,
@@ -58,7 +59,8 @@ export class NativeBridgeManager implements INativeBridge {
     domain: string,
     localAuthenticationOptions?: LocalAuthenticationOptions,
     useDPoP: boolean = true,
-    maxRetries: number = 0
+    maxRetries: number = 0,
+    credentialsManagerStorageKey?: string
   ): Promise<void> {
     // This is a new method we'd add to the native side to ensure the
     // underlying Auth0.swift/Auth0.android SDKs are configured.
@@ -70,7 +72,8 @@ export class NativeBridgeManager implements INativeBridge {
       domain,
       localAuthenticationOptions,
       useDPoP,
-      maxRetries
+      maxRetries,
+      credentialsManagerStorageKey
     );
   }
 
@@ -130,6 +133,13 @@ export class NativeBridgeManager implements INativeBridge {
     return this.a0_call(
       Auth0NativeModule.cancelWebAuth.bind(Auth0NativeModule)
     );
+  }
+
+  async resumeSession(): Promise<Credentials | null> {
+    const credential = await this.a0_call(
+      Auth0NativeModule.resumeWebAuthSession.bind(Auth0NativeModule)
+    );
+    return credential ? new CredentialsModel(credential) : null;
   }
 
   async saveCredentials(credentials: Credentials): Promise<void> {
@@ -306,5 +316,229 @@ export class NativeBridgeManager implements INativeBridge {
       bindingCode
     );
     return new CredentialsModel(credential);
+  }
+
+  async passkeySignupChallenge(
+    email?: string,
+    phoneNumber?: string,
+    username?: string,
+    name?: string,
+    givenName?: string,
+    familyName?: string,
+    nickname?: string,
+    picture?: string,
+    userMetadata?: Record<string, string>,
+    realm?: string,
+    organization?: string
+  ): Promise<PasskeyChallengeResponse> {
+    return this.a0_call(
+      Auth0NativeModule.passkeySignupChallenge.bind(Auth0NativeModule),
+      email,
+      phoneNumber,
+      username,
+      name,
+      givenName,
+      familyName,
+      nickname,
+      picture,
+      userMetadata,
+      realm,
+      organization
+    );
+  }
+
+  async passkeyLoginChallenge(
+    realm?: string,
+    organization?: string
+  ): Promise<PasskeyChallengeResponse> {
+    return this.a0_call(
+      Auth0NativeModule.passkeyLoginChallenge.bind(Auth0NativeModule),
+      realm,
+      organization
+    );
+  }
+
+  async getTokenByPasskey(
+    authSession: string,
+    authResponse: string,
+    realm?: string,
+    audience?: string,
+    scope?: string,
+    organization?: string
+  ): Promise<Credentials> {
+    const credential = await this.a0_call(
+      Auth0NativeModule.getTokenByPasskey.bind(Auth0NativeModule),
+      authSession,
+      authResponse,
+      realm,
+      audience,
+      scope,
+      organization
+    );
+    return new CredentialsModel(credential);
+  }
+
+  async passkeyEnrollmentChallenge(
+    accessToken: string,
+    userIdentity?: string,
+    connection?: string
+  ): Promise<{
+    authenticationMethodId: string;
+    authSession: string;
+    authParamsPublicKey: Record<string, any>;
+  }> {
+    return this.a0_call(
+      Auth0NativeModule.passkeyEnrollmentChallenge.bind(Auth0NativeModule),
+      accessToken,
+      userIdentity,
+      connection
+    );
+  }
+
+  async enrollPasskey(
+    accessToken: string,
+    authenticationMethodId: string,
+    authSession: string,
+    authResponse: string,
+    authParamsPublicKey: string
+  ): Promise<Record<string, any>> {
+    return this.a0_call(
+      Auth0NativeModule.enrollPasskey.bind(Auth0NativeModule),
+      accessToken,
+      authenticationMethodId,
+      authSession,
+      authResponse,
+      authParamsPublicKey
+    );
+  }
+
+  async getAuthenticationMethods(
+    accessToken: string,
+    type?: string
+  ): Promise<Record<string, any>[]> {
+    return this.a0_call(
+      Auth0NativeModule.getAuthenticationMethods.bind(Auth0NativeModule),
+      accessToken,
+      type
+    );
+  }
+
+  async getAuthenticationMethodById(
+    accessToken: string,
+    id: string
+  ): Promise<Record<string, any>> {
+    return this.a0_call(
+      Auth0NativeModule.getAuthenticationMethodById.bind(Auth0NativeModule),
+      accessToken,
+      id
+    );
+  }
+
+  async updateAuthenticationMethodById(
+    accessToken: string,
+    id: string,
+    name?: string | null,
+    preferredAuthenticationMethod?: string | null
+  ): Promise<Record<string, any>> {
+    return this.a0_call(
+      Auth0NativeModule.updateAuthenticationMethodById.bind(Auth0NativeModule),
+      accessToken,
+      id,
+      name,
+      preferredAuthenticationMethod
+    );
+  }
+
+  async deleteAuthenticationMethodById(
+    accessToken: string,
+    id: string
+  ): Promise<void> {
+    return this.a0_call(
+      Auth0NativeModule.deleteAuthenticationMethodById.bind(Auth0NativeModule),
+      accessToken,
+      id
+    );
+  }
+
+  async enrollPhone(
+    accessToken: string,
+    phoneNumber: string,
+    preferredAuthenticationMethod?: string
+  ): Promise<Record<string, any>> {
+    return this.a0_call(
+      Auth0NativeModule.enrollPhone.bind(Auth0NativeModule),
+      accessToken,
+      phoneNumber,
+      preferredAuthenticationMethod
+    );
+  }
+
+  async enrollEmail(
+    accessToken: string,
+    emailAddress: string
+  ): Promise<Record<string, any>> {
+    return this.a0_call(
+      Auth0NativeModule.enrollEmail.bind(Auth0NativeModule),
+      accessToken,
+      emailAddress
+    );
+  }
+
+  async enrollTOTP(accessToken: string): Promise<Record<string, any>> {
+    return this.a0_call(
+      Auth0NativeModule.enrollTOTP.bind(Auth0NativeModule),
+      accessToken
+    );
+  }
+
+  async enrollPushNotification(
+    accessToken: string
+  ): Promise<Record<string, any>> {
+    return this.a0_call(
+      Auth0NativeModule.enrollPushNotification.bind(Auth0NativeModule),
+      accessToken
+    );
+  }
+
+  async enrollRecoveryCode(accessToken: string): Promise<Record<string, any>> {
+    return this.a0_call(
+      Auth0NativeModule.enrollRecoveryCode.bind(Auth0NativeModule),
+      accessToken
+    );
+  }
+
+  async confirmEnrollmentWithOtp(
+    accessToken: string,
+    id: string,
+    authSession: string,
+    otpCode: string
+  ): Promise<Record<string, any>> {
+    return this.a0_call(
+      Auth0NativeModule.confirmEnrollmentWithOtp.bind(Auth0NativeModule),
+      accessToken,
+      id,
+      authSession,
+      otpCode
+    );
+  }
+
+  async confirmEnrollment(
+    accessToken: string,
+    id: string,
+    authSession: string
+  ): Promise<Record<string, any>> {
+    return this.a0_call(
+      Auth0NativeModule.confirmEnrollment.bind(Auth0NativeModule),
+      accessToken,
+      id,
+      authSession
+    );
+  }
+
+  async getFactors(accessToken: string): Promise<Record<string, any>[]> {
+    return this.a0_call(
+      Auth0NativeModule.getFactors.bind(Auth0NativeModule),
+      accessToken
+    );
   }
 }

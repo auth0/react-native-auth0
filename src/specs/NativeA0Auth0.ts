@@ -26,7 +26,8 @@ export interface Spec extends TurboModule {
       | { [key: string]: string | Int32 | boolean }
       | undefined,
     useDPoP: boolean | undefined,
-    maxRetries: Int32
+    maxRetries: Int32,
+    credentialsManagerStorageKey: string | undefined
   ): Promise<void>;
 
   /**
@@ -111,6 +112,13 @@ export interface Spec extends TurboModule {
    * Resume web authentication
    */
   resumeWebAuth(url: string): Promise<void>;
+
+  /**
+   * Recover a web authentication result after Android process death.
+   * Resolves with Credentials if a post-process-death login was recovered,
+   * or null if there was nothing to recover. No-op (resolves null) on iOS.
+   */
+  resumeWebAuthSession(): Promise<Credentials | null>;
 
   /**
    * Cancel web authentication
@@ -198,6 +206,151 @@ export interface Spec extends TurboModule {
     code: string,
     bindingCode: string | undefined
   ): Promise<Credentials>;
+
+  /**
+   * Request a passkey signup challenge from Auth0.
+   */
+  passkeySignupChallenge(
+    email: string | undefined,
+    phoneNumber: string | undefined,
+    username: string | undefined,
+    name: string | undefined,
+    givenName: string | undefined,
+    familyName: string | undefined,
+    nickname: string | undefined,
+    picture: string | undefined,
+    userMetadata: { [key: string]: string } | undefined,
+    realm: string | undefined,
+    organization: string | undefined
+  ): Promise<{ authSession: string; authParamsPublicKey: Object }>;
+
+  /**
+   * Request a passkey login challenge from Auth0.
+   */
+  passkeyLoginChallenge(
+    realm: string | undefined,
+    organization: string | undefined
+  ): Promise<{ authSession: string; authParamsPublicKey: Object }>;
+
+  /**
+   * Exchange a passkey credential response for Auth0 tokens.
+   */
+  getTokenByPasskey(
+    authSession: string,
+    authResponse: string,
+    realm: string | undefined,
+    audience: string | undefined,
+    scope: string | undefined,
+    organization: string | undefined
+  ): Promise<Credentials>;
+
+  /**
+   * Request a passkey enrollment challenge from the My Account API.
+   */
+  passkeyEnrollmentChallenge(
+    accessToken: string,
+    userIdentity: string | undefined,
+    connection: string | undefined
+  ): Promise<{
+    authenticationMethodId: string;
+    authSession: string;
+    authParamsPublicKey: Object;
+  }>;
+
+  /**
+   * Verify a passkey enrollment with the My Account API.
+   */
+  enrollPasskey(
+    accessToken: string,
+    authenticationMethodId: string,
+    authSession: string,
+    authResponse: string,
+    authParamsPublicKey: string
+  ): Promise<Object>;
+
+  /**
+   * Get all authentication methods for the authenticated user.
+   */
+  getAuthenticationMethods(
+    accessToken: string,
+    type: string | undefined
+  ): Promise<Object[]>;
+
+  /**
+   * Get a single authentication method by ID.
+   */
+  getAuthenticationMethodById(accessToken: string, id: string): Promise<Object>;
+
+  /**
+   * Update an authentication method by ID.
+   */
+  updateAuthenticationMethodById(
+    accessToken: string,
+    id: string,
+    name: string | null | undefined,
+    preferredAuthenticationMethod: string | null | undefined
+  ): Promise<Object>;
+
+  /**
+   * Delete an authentication method by ID.
+   */
+  deleteAuthenticationMethodById(
+    accessToken: string,
+    id: string
+  ): Promise<void>;
+
+  /**
+   * Enroll a phone number as an authentication method.
+   */
+  enrollPhone(
+    accessToken: string,
+    phoneNumber: string,
+    preferredAuthenticationMethod: string | undefined
+  ): Promise<Object>;
+
+  /**
+   * Enroll an email address as an authentication method.
+   */
+  enrollEmail(accessToken: string, emailAddress: string): Promise<Object>;
+
+  /**
+   * Enroll TOTP as an authentication method.
+   */
+  enrollTOTP(accessToken: string): Promise<Object>;
+
+  /**
+   * Enroll push notification as an authentication method.
+   */
+  enrollPushNotification(accessToken: string): Promise<Object>;
+
+  /**
+   * Enroll a recovery code as an authentication method.
+   */
+  enrollRecoveryCode(accessToken: string): Promise<Object>;
+
+  /**
+   * Confirm an enrollment that requires an OTP code.
+   */
+  confirmEnrollmentWithOtp(
+    accessToken: string,
+    id: string,
+    authSession: string,
+    otpCode: string
+  ): Promise<Object>;
+
+  /**
+   * Confirm an enrollment without an OTP code (recovery code, push notification).
+   */
+  confirmEnrollment(
+    accessToken: string,
+    id: string,
+    authSession: string
+  ): Promise<Object>;
+
+  /**
+   * Get available authentication factors.
+   */
+  getFactors(accessToken: string): Promise<Object[]>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('A0Auth0');

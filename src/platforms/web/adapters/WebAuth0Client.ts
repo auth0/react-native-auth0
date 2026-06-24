@@ -6,6 +6,7 @@ import {
 import type {
   IAuth0Client,
   IAuthenticationProvider,
+  IMyAccountClient,
   IUsersClient,
   IMfaClient,
 } from '../../../core/interfaces';
@@ -13,11 +14,16 @@ import type { WebAuth0Options } from '../../../types/platform-specific';
 import type {
   DPoPHeadersParams,
   CustomTokenExchangeParameters,
+  PasskeySignupChallengeParameters,
+  PasskeyLoginChallengeParameters,
+  PasskeyChallengeResponse,
+  GetTokenByPasskeyParameters,
   Credentials,
 } from '../../../types';
 import { WebWebAuthProvider } from './WebWebAuthProvider';
 import { WebCredentialsManager } from './WebCredentialsManager';
 import { WebMfaClient } from './WebMfaClient';
+import { WebMyAccountClient } from './WebMyAccountClient';
 import { ssoExchangeNotSupported } from './WebAuthenticationProvider';
 import {
   AuthenticationOrchestrator,
@@ -25,7 +31,7 @@ import {
 } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
-import { AuthError, DPoPError } from '../../../core/models';
+import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
 
 export class WebAuth0Client implements IAuth0Client {
   readonly webAuth: WebWebAuthProvider;
@@ -142,6 +148,8 @@ export class WebAuth0Client implements IAuth0Client {
       getDPoPHeaders,
     });
   }
+
+  readonly myAccount: IMyAccountClient = new WebMyAccountClient();
 
   public async logout(options?: LogoutOptions): Promise<void> {
     // If a logout process has already started, do nothing.
@@ -260,5 +268,38 @@ export class WebAuth0Client implements IAuth0Client {
         { json: e }
       );
     }
+  }
+
+  async passkeySignupChallenge(
+    _parameters: PasskeySignupChallengeParameters
+  ): Promise<PasskeyChallengeResponse> {
+    throw new PasskeyError(
+      new AuthError(
+        'UnsupportedOperation',
+        'Passkeys are not supported on the web platform'
+      )
+    );
+  }
+
+  async passkeyLoginChallenge(
+    _parameters: PasskeyLoginChallengeParameters
+  ): Promise<PasskeyChallengeResponse> {
+    throw new PasskeyError(
+      new AuthError(
+        'UnsupportedOperation',
+        'Passkeys are not supported on the web platform'
+      )
+    );
+  }
+
+  async getTokenByPasskey(
+    _parameters: GetTokenByPasskeyParameters
+  ): Promise<Credentials> {
+    throw new PasskeyError(
+      new AuthError(
+        'UnsupportedOperation',
+        'Passkeys are not supported on the web platform'
+      )
+    );
   }
 }

@@ -10,3 +10,5 @@ export {
 export { WebAuthError, WebAuthErrorCodes } from './WebAuthError';
 export { DPoPError, DPoPErrorCodes } from './DPoPError';
 export { MfaError, MfaErrorCodes } from './MfaError';
+export { PasskeyError, PasskeyErrorCodes } from './PasskeyError';
+export { MyAccountError } from './MyAccountError';

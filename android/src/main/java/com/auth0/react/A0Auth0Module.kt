@@ -2,9 +2,12 @@ package com.auth0.react
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.LifecycleOwner
 import com.auth0.android.Auth0
-import com.auth0.android.result.APICredentials
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.authentication.storage.CredentialsManagerException
@@ -16,7 +19,12 @@ import com.auth0.android.dpop.DPoPException
 import com.auth0.android.provider.BrowserPicker
 import com.auth0.android.provider.CustomTabsOptions
 import com.auth0.android.provider.WebAuthProvider
+import com.auth0.android.request.PublicKeyCredentials
+import com.auth0.android.request.UserData
+import com.auth0.android.result.APICredentials
 import com.auth0.android.result.Credentials
+import com.auth0.android.result.PasskeyChallenge
+import com.auth0.android.result.PasskeyRegistrationChallenge
 import com.facebook.react.bridge.ActivityEventListener
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
@@ -27,6 +35,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.bridge.WritableNativeMap
+import com.google.gson.Gson
 import java.net.MalformedURLException
 import java.net.URL
 
@@ -34,6 +43,11 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
     companion object {
         const val NAME = "A0Auth0"
+
+        // Grace window (ms) for an in-flight restored token exchange to complete before
+        // resumeWebAuthSession resolves null.
+        private const val RESUME_SESSION_GRACE_MS = 5000L
+
         private const val CREDENTIAL_MANAGER_ERROR_CODE = "CREDENTIAL_MANAGER_ERROR"
         private const val BIOMETRICS_AUTHENTICATION_ERROR_CODE = "BIOMETRICS_CONFIGURATION_ERROR"
         
@@ -97,6 +111,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
     private var auth0: Auth0? = null
     private var mfaClient: MfaClient? = null
+    private var myAccount: MyAccount? = null
     private lateinit var secureCredentialsManager: SecureCredentialsManager
     private var webAuthPromise: Promise? = null
 
@@ -162,19 +177,86 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         }
         
         builder.withParameters(cleanedParameters)
-        builder.start(reactContext.currentActivity as Activity,
-            object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
+
+        val activity = reactContext.currentActivity
+        if (activity == null) {
+            promise.reject("a0.activity_not_available", "Current Activity is not available")
+            webAuthPromise = null
+            return
+        }
+        // start() registers a LifecycleObserver internally (Auth0.Android 3.19.0+ for
+        // process-death recovery), which must happen on the main thread.
+        UiThreadUtil.runOnUiThread {
+            builder.start(activity,
+                object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
+                    override fun onSuccess(result: Credentials) {
+                        val map = CredentialsParser.toMap(result)
+                        promise.resolve(map)
+                        webAuthPromise = null
+                    }
+
+                    override fun onFailure(error: AuthenticationException) {
+                        handleError(error, promise)
+                        webAuthPromise = null
+                    }
+                })
+        }
+    }
+
+    @ReactMethod
+    override fun resumeWebAuthSession(promise: Promise) {
+        val activity = reactContext.currentActivity
+        if (activity !is LifecycleOwner) {
+            // No lifecycle owner to register against; nothing to recover.
+            promise.resolve(null)
+            return
+        }
+        val lifecycleOwner = activity as LifecycleOwner
+
+        UiThreadUtil.runOnUiThread {
+            val resolved = java.util.concurrent.atomic.AtomicBoolean(false)
+            // Holds the pending grace-window timeout so a callback that settles the promise
+            // first can cancel it, releasing the retained promise/activity references instead
+            // of leaking them until the delay elapses.
+            val timeoutHandler = Handler(Looper.getMainLooper())
+            val loginCallback = object :
+                com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
                 override fun onSuccess(result: Credentials) {
-                    val map = CredentialsParser.toMap(result)
-                    promise.resolve(map)
-                    webAuthPromise = null
+                    if (resolved.compareAndSet(false, true)) {
+                        timeoutHandler.removeCallbacksAndMessages(null)
+                        promise.resolve(CredentialsParser.toMap(result))
+                    }
                 }
 
                 override fun onFailure(error: AuthenticationException) {
-                    handleError(error, promise)
-                    webAuthPromise = null
+                    if (resolved.compareAndSet(false, true)) {
+                        timeoutHandler.removeCallbacksAndMessages(null)
+                        handleError(error, promise)
+                    }
                 }
-            })
+            }
+            // Logout recovery is out of scope; provide a no-op logout callback.
+            val logoutCallback = object :
+                com.auth0.android.callback.Callback<Void?, AuthenticationException> {
+                override fun onSuccess(result: Void?) {}
+                override fun onFailure(error: AuthenticationException) {}
+            }
+
+            // Registering against an already-RESUMED owner synchronously replays onResume,
+            // draining any result buffered after process-death recovery.
+            WebAuthProvider.registerCallbacks(lifecycleOwner, loginCallback, logoutCallback)
+
+            // Safety net for the rare case where the restored token exchange is still in
+            // flight: give it a short grace window, then resolve null if nothing arrived.
+            // The login callback cancels this timeout if it settles first.
+            if (!resolved.get()) {
+                timeoutHandler.postDelayed({
+                    if (resolved.compareAndSet(false, true)) {
+                        promise.resolve(null)
+                    }
+                }, RESUME_SESSION_GRACE_MS)
+            }
+        }
     }
 
     @ReactMethod
@@ -190,21 +272,24 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         localAuthenticationOptions: ReadableMap?,
         useDPoP: Boolean?,
         maxRetries: Double,
+        credentialsManagerStorageKey: String?,
         promise: Promise
     ) {
         // Note: maxRetries parameter is ignored on Android as the Auth0.Android SDK
         // does not currently support retry configuration for credential renewal.
         // This parameter is accepted for API compatibility with iOS.
-        
+
         this.useDPoP = useDPoP ?: true
         auth0 = Auth0.getInstance(clientId, domain)
         mfaClient = MfaClient(auth0!!, this.useDPoP, reactContext)
+        myAccount = MyAccount(auth0!!, this.useDPoP, reactContext)
 
         val authAPI = AuthenticationAPIClient(auth0!!)
         if (this.useDPoP) {
             authAPI.useDPoP(reactContext)
         }
-        
+        val storage = buildStorage(credentialsManagerStorageKey)
+
         localAuthenticationOptions?.let { options ->
             val activity = reactContext.currentActivity
             if (activity is FragmentActivity) {
@@ -214,22 +299,23 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                         authAPI,
                         reactContext,
                         auth0!!,
-                        SharedPreferencesStorage(reactContext),
+                        storage,
                         activity,
                         localAuthOptions
                     )
                     promise.resolve(true)
                     return
                 } catch (e: Exception) {
-                    secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authAPI)
+                    secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authAPI, storage)
                     promise.reject(
                         BIOMETRICS_AUTHENTICATION_ERROR_CODE,
-                        "Failed to parse the Local Authentication Options, hence proceeding without Biometrics Authentication for handling Credentials"
+                        "Failed to parse the Local Authentication Options, hence proceeding without Biometrics Authentication for handling Credentials",
+                        e
                     )
                     return
                 }
             } else {
-                secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authAPI)
+                secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authAPI, storage)
                 promise.reject(
                     BIOMETRICS_AUTHENTICATION_ERROR_CODE,
                     "Biometrics Authentication for Handling Credentials are supported only on FragmentActivity, since a different activity is supplied, proceeding without it"
@@ -237,10 +323,17 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 return
             }
         }
-        
-        secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authAPI)
+
+        secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authAPI, storage)
         promise.resolve(true)
     }
+
+    // Use a per-client SharedPreferences file when a storage key is provided, else the library default shared store.
+    private fun buildStorage(credentialsManagerStorageKey: String?): SharedPreferencesStorage =
+        if (credentialsManagerStorageKey.isNullOrEmpty())
+            SharedPreferencesStorage(reactContext)
+        else
+            SharedPreferencesStorage(reactContext, credentialsManagerStorageKey)
 
     @ReactMethod
     override fun hasValidAuth0InstanceWithConfiguration(clientId: String, domain: String, promise: Promise) {
@@ -388,16 +481,25 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             )
         }
 
-        builder.start(reactContext.currentActivity as FragmentActivity,
-            object : com.auth0.android.callback.Callback<Void?, AuthenticationException> {
-                override fun onSuccess(result: Void?) {
-                    promise.resolve(true)
-                }
+        val activity = reactContext.currentActivity
+        if (activity !is FragmentActivity) {
+            promise.reject("a0.activity_not_available", "Current Activity is not a FragmentActivity")
+            return
+        }
+        // start() registers a LifecycleObserver internally (Auth0.Android 3.19.0+),
+        // which must happen on the main thread.
+        UiThreadUtil.runOnUiThread {
+            builder.start(activity,
+                object : com.auth0.android.callback.Callback<Void?, AuthenticationException> {
+                    override fun onSuccess(result: Void?) {
+                        promise.resolve(true)
+                    }
 
-                override fun onFailure(e: AuthenticationException) {
-                    handleError(e, promise)
-                }
-            })
+                    override fun onFailure(e: AuthenticationException) {
+                        handleError(e, promise)
+                    }
+                })
+        }
     }
 
     @ReactMethod
@@ -565,6 +667,281 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             ?: promise.reject("NOT_INITIALIZED", "Auth0 not initialized")
     }
 
+    @ReactMethod
+    override fun passkeySignupChallenge(
+        email: String?,
+        phoneNumber: String?,
+        username: String?,
+        name: String?,
+        givenName: String?,
+        familyName: String?,
+        nickname: String?,
+        picture: String?,
+        userMetadata: ReadableMap?,
+        realm: String?,
+        organization: String?,
+        promise: Promise
+    ) {
+        val authClient = AuthenticationAPIClient(auth0!!)
+        if (useDPoP) {
+            authClient.useDPoP(reactContext)
+        }
+
+        val finalEmail = email?.trim()?.ifEmpty { null }
+        val finalPhone = phoneNumber?.trim()?.ifEmpty { null }
+        val finalUsername = username?.trim()?.ifEmpty { null }
+        val finalName = name?.trim()?.ifEmpty { null }
+        val finalGivenName = givenName?.trim()?.ifEmpty { null }
+        val finalFamilyName = familyName?.trim()?.ifEmpty { null }
+        val finalNickname = nickname?.trim()?.ifEmpty { null }
+        val finalPicture = picture?.trim()?.ifEmpty { null }
+        val finalUserMetadata = userMetadata?.toHashMap()?.mapValues { it.value?.toString() ?: "" }?.ifEmpty { null }
+        val finalRealm = realm?.trim()?.ifEmpty { null }
+        val finalOrg = organization?.trim()?.ifEmpty { null }
+        val userData = UserData(
+            email = finalEmail,
+            phoneNumber = finalPhone,
+            userName = finalUsername,
+            name = finalName,
+            givenName = finalGivenName,
+            familyName = finalFamilyName,
+            nickName = finalNickname,
+            picture = finalPicture,
+            userMetadata = finalUserMetadata
+        )
+
+        authClient.signupWithPasskey(userData, finalRealm, finalOrg)
+            .start(object : com.auth0.android.callback.Callback<PasskeyRegistrationChallenge, AuthenticationException> {
+                override fun onSuccess(challenge: PasskeyRegistrationChallenge) {
+                    val result = WritableNativeMap().apply {
+                        putString("authSession", challenge.authSession)
+                        val authParamsJson = Gson().toJson(challenge.authParamsPublicKey)
+                        putMap("authParamsPublicKey", JsonUtils.jsonToWritableMap(authParamsJson))
+                    }
+                    promise.resolve(result)
+                }
+
+                override fun onFailure(error: AuthenticationException) {
+                    promise.reject("PASSKEY_CHALLENGE_FAILED", error.getDescription(), error)
+                }
+            })
+    }
+
+    @ReactMethod
+    override fun passkeyLoginChallenge(
+        realm: String?,
+        organization: String?,
+        promise: Promise
+    ) {
+        val authClient = AuthenticationAPIClient(auth0!!)
+        if (useDPoP) {
+            authClient.useDPoP(reactContext)
+        }
+
+        val finalRealm = realm?.trim()?.ifEmpty { null }
+        val finalOrg = organization?.trim()?.ifEmpty { null }
+
+        authClient.passkeyChallenge(finalRealm, finalOrg)
+            .start(object : com.auth0.android.callback.Callback<PasskeyChallenge, AuthenticationException> {
+                override fun onSuccess(challenge: PasskeyChallenge) {
+                    val result = WritableNativeMap().apply {
+                        putString("authSession", challenge.authSession)
+                        val authParamsJson = Gson().toJson(challenge.authParamsPublicKey)
+                        putMap("authParamsPublicKey", JsonUtils.jsonToWritableMap(authParamsJson))
+                    }
+                    promise.resolve(result)
+                }
+
+                override fun onFailure(error: AuthenticationException) {
+                    promise.reject("PASSKEY_CHALLENGE_FAILED", error.getDescription(), error)
+                }
+            })
+    }
+
+    @ReactMethod
+    override fun getTokenByPasskey(
+        authSession: String,
+        authResponse: String,
+        realm: String?,
+        audience: String?,
+        scope: String?,
+        organization: String?,
+        promise: Promise
+    ) {
+        val authClient = AuthenticationAPIClient(auth0!!)
+        if (useDPoP) {
+            authClient.useDPoP(reactContext)
+        }
+
+        val finalScope = if (scope.isNullOrBlank()) "openid profile email" else scope
+        val finalRealm = realm?.trim()?.ifEmpty { null }
+        val finalAudience = audience?.trim()?.ifEmpty { null }
+        val finalOrg = organization?.trim()?.ifEmpty { null }
+
+        val publicKeyCredentials = try {
+            Gson().fromJson(authResponse, PublicKeyCredentials::class.java)
+        } catch (e: Exception) {
+            promise.reject("PASSKEY_EXCHANGE_FAILED", "Invalid authResponse JSON: ${e.message}", e)
+            return
+        }
+
+        val request = authClient.signinWithPasskey(authSession, publicKeyCredentials, finalRealm, finalOrg)
+        finalAudience?.let { request.setAudience(it) }
+        request.setScope(finalScope)
+        request.validateClaims()
+
+        request.start(object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
+            override fun onSuccess(credentials: Credentials) {
+                promise.resolve(CredentialsParser.toMap(credentials))
+            }
+
+            override fun onFailure(error: AuthenticationException) {
+                promise.reject("PASSKEY_EXCHANGE_FAILED", error.getDescription(), error)
+            }
+        })
+    }
+
+
+    @ReactMethod
+    override fun passkeyEnrollmentChallenge(
+        accessToken: String,
+        userIdentity: String?,
+        connection: String?,
+        promise: Promise
+    ) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            promise.reject("PASSKEYS_NOT_SUPPORTED", "Passkeys require Android API 28 or higher", null)
+            return
+        }
+        myAccount!!.passkeyEnrollmentChallenge(accessToken, userIdentity, connection, promise)
+    }
+
+    @ReactMethod
+    override fun enrollPasskey(
+        accessToken: String,
+        authenticationMethodId: String,
+        authSession: String,
+        authResponse: String,
+        authParamsPublicKey: String,
+        promise: Promise
+    ) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            promise.reject("PASSKEYS_NOT_SUPPORTED", "Passkeys require Android API 28 or higher", null)
+            return
+        }
+        myAccount!!.enrollPasskey(accessToken, authenticationMethodId, authSession, authResponse, authParamsPublicKey, promise)
+    }
+
+    @ReactMethod
+    override fun getAuthenticationMethods(
+        accessToken: String,
+        type: String?,
+        promise: Promise
+    ) {
+        myAccount!!.getAuthenticationMethods(accessToken, type, promise)
+    }
+
+    @ReactMethod
+    override fun getAuthenticationMethodById(
+        accessToken: String,
+        id: String,
+        promise: Promise
+    ) {
+        myAccount!!.getAuthenticationMethodById(accessToken, id, promise)
+    }
+
+    @ReactMethod
+    override fun updateAuthenticationMethodById(
+        accessToken: String,
+        id: String,
+        name: String?,
+        preferredAuthenticationMethod: String?,
+        promise: Promise
+    ) {
+        myAccount!!.updateAuthenticationMethodById(accessToken, id, name, preferredAuthenticationMethod, promise)
+    }
+
+    @ReactMethod
+    override fun deleteAuthenticationMethodById(
+        accessToken: String,
+        id: String,
+        promise: Promise
+    ) {
+        myAccount!!.deleteAuthenticationMethodById(accessToken, id, promise)
+    }
+
+    @ReactMethod
+    override fun enrollPhone(
+        accessToken: String,
+        phoneNumber: String,
+        preferredAuthenticationMethod: String?,
+        promise: Promise
+    ) {
+        myAccount!!.enrollPhone(accessToken, phoneNumber, preferredAuthenticationMethod, promise)
+    }
+
+    @ReactMethod
+    override fun enrollEmail(
+        accessToken: String,
+        emailAddress: String,
+        promise: Promise
+    ) {
+        myAccount!!.enrollEmail(accessToken, emailAddress, promise)
+    }
+
+    @ReactMethod
+    override fun enrollTOTP(
+        accessToken: String,
+        promise: Promise
+    ) {
+        myAccount!!.enrollTOTP(accessToken, promise)
+    }
+
+    @ReactMethod
+    override fun enrollPushNotification(
+        accessToken: String,
+        promise: Promise
+    ) {
+        myAccount!!.enrollPushNotification(accessToken, promise)
+    }
+
+    @ReactMethod
+    override fun enrollRecoveryCode(
+        accessToken: String,
+        promise: Promise
+    ) {
+        myAccount!!.enrollRecoveryCode(accessToken, promise)
+    }
+
+    @ReactMethod
+    override fun confirmEnrollmentWithOtp(
+        accessToken: String,
+        id: String,
+        authSession: String,
+        otpCode: String,
+        promise: Promise
+    ) {
+        myAccount!!.confirmEnrollmentWithOtp(accessToken, id, authSession, otpCode, promise)
+    }
+
+    @ReactMethod
+    override fun confirmEnrollment(
+        accessToken: String,
+        id: String,
+        authSession: String,
+        promise: Promise
+    ) {
+        myAccount!!.confirmEnrollment(accessToken, id, authSession, promise)
+    }
+
+    @ReactMethod
+    override fun getFactors(
+        accessToken: String,
+        promise: Promise
+    ) {
+        myAccount!!.getFactors(accessToken, promise)
+    }
+
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         // No-op
     }
@@ -589,12 +966,15 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         promise.resolve(true)
     }
 
-    private fun getSecureCredentialsManagerWithoutBiometrics(authAPI: AuthenticationAPIClient): SecureCredentialsManager {
+    private fun getSecureCredentialsManagerWithoutBiometrics(
+        authAPI: AuthenticationAPIClient,
+        storage: SharedPreferencesStorage
+    ): SecureCredentialsManager {
         return SecureCredentialsManager(
             authAPI,
             reactContext,
             auth0!!,
-            SharedPreferencesStorage(reactContext)
+            storage
         )
     }
 

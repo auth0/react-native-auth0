@@ -1,5 +1,18 @@
 # Change Log
 
+## [v5.7.0](https://github.com/auth0/react-native-auth0/tree/v5.7.0) (2026-06-01)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.6.0...v5.7.0)
+
+**Added**
+
+- feat: Add My Account API support for managing authentication methods [\#1552](https://github.com/auth0/react-native-auth0/pull/1552) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: add passkeys support for signup and signin [\#1530](https://github.com/auth0/react-native-auth0/pull/1530) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Fixed**
+
+- fix: fixing incorrectly created CHANGELOG.md [\#1539](https://github.com/auth0/react-native-auth0/pull/1539) ([nandan-bhat](https://github.com/nandan-bhat))
+
 ## [5.6.0](https://github.com/auth0/react-native-auth0/tree/v5.6.0) (2026-05-14)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.5.1...v5.6.0)

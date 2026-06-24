@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Image,
   Linking,
+  Platform,
 } from 'react-native';
 import {
   useAuth0,
@@ -17,6 +18,8 @@ import {
   MfaError,
   MfaErrorCodes,
   MfaFactorType,
+  PasskeyError,
+  PasskeyErrorCodes,
 } from 'react-native-auth0';
 import type {
   MfaAuthenticator,
@@ -28,6 +31,11 @@ import Header from '../../components/Header';
 import LabeledInput from '../../components/LabeledInput';
 import Result from '../../components/Result';
 import config from '../../auth0-configuration';
+import {
+  createPasskey,
+  getPasskey,
+  PasskeyModuleErrorCodes,
+} from '../../passkey/PasskeyModule';
 
 type MfaStep =
   | 'idle'
@@ -43,10 +51,14 @@ type EnrollType = MfaFactorType;
 const HomeScreen = () => {
   const {
     authorize,
+    resumeSession,
     loginWithPasswordRealm,
     sendEmailCode,
     authorizeWithEmail,
     mfa,
+    passkeySignupChallenge,
+    passkeyLoginChallenge,
+    getTokenByPasskey,
     error,
   } = useAuth0();
 
@@ -56,6 +68,9 @@ const HomeScreen = () => {
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [apiError, setApiError] = useState<Error | null>(null);
   const [result, setResult] = useState<object | null>(null);
+  const [passkeyEmail, setPasskeyEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [lastResult, setLastResult] = useState<object | null>(null);
 
   // MFA wizard state
   const [mfaToken, setMfaToken] = useState('');
@@ -115,6 +130,19 @@ const HomeScreen = () => {
       } else {
         Alert.alert('Error', 'An unexpected error occurred during login.');
       }
+    }
+  };
+
+  const onResumeSession = async () => {
+    try {
+      const credentials = await resumeSession();
+      if (credentials) {
+        Alert.alert('Recovered', 'Login was recovered after process death.');
+      } else {
+        Alert.alert('Nothing to recover', 'No pending login was found.');
+      }
+    } catch (e) {
+      setApiError(e as Error);
     }
   };
 
@@ -543,6 +571,164 @@ const HomeScreen = () => {
     }
   };
 
+  // --- Passkey Handlers ---
+
+  const handlePasskeyError = (e: any) => {
+    if (e?.code === PasskeyModuleErrorCodes.USER_CANCELLED) {
+      Alert.alert('Cancelled', 'You dismissed the passkey prompt.');
+      setApiError(e as Error);
+      return;
+    }
+    if (e instanceof PasskeyError) {
+      switch (e.type) {
+        case PasskeyErrorCodes.NOT_AVAILABLE:
+          Alert.alert(
+            'Not Available',
+            'Passkeys are not supported on this device.'
+          );
+          break;
+        case PasskeyErrorCodes.CHALLENGE_FAILED:
+          Alert.alert('Challenge Failed', e.message);
+          break;
+        case PasskeyErrorCodes.EXCHANGE_FAILED:
+          Alert.alert('Exchange Failed', e.message);
+          break;
+        default:
+          Alert.alert('Passkey Error', `[${e.type}] ${e.message}`);
+      }
+    }
+    setApiError(e as Error);
+  };
+
+  // --- Full-flow passkey handlers ---
+
+  const onPasskeySignup = async () => {
+    setApiError(null);
+    setLastResult(null);
+    setLoading(true);
+    try {
+      const challenge = await passkeySignupChallenge({
+        email: passkeyEmail || undefined,
+        realm: 'Username-Password-Authentication',
+      });
+
+      const credentialJson = await createPasskey(challenge.authParamsPublicKey);
+
+      const credentials = await getTokenByPasskey({
+        authSession: challenge.authSession,
+        authResponse: credentialJson,
+        realm: 'Username-Password-Authentication',
+      });
+
+      setLastResult({
+        step: 'signup-complete',
+        accessToken: `${credentials.accessToken.substring(0, 30)}...`,
+        tokenType: credentials.tokenType,
+      });
+      Alert.alert('Success', 'Passkey signup complete!');
+    } catch (e) {
+      handlePasskeyError(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onPasskeyLogin = async () => {
+    setApiError(null);
+    setLastResult(null);
+    setLoading(true);
+    try {
+      const challenge = await passkeyLoginChallenge({
+        realm: 'Username-Password-Authentication',
+      });
+
+      const credentialJson = await getPasskey(challenge.authParamsPublicKey);
+
+      const credentials = await getTokenByPasskey({
+        authSession: challenge.authSession,
+        authResponse: credentialJson,
+        realm: 'Username-Password-Authentication',
+      });
+
+      setLastResult({
+        step: 'login-complete',
+        accessToken: `${credentials.accessToken.substring(0, 30)}...`,
+        tokenType: credentials.tokenType,
+      });
+      Alert.alert('Success', 'Passkey login complete!');
+    } catch (e) {
+      handlePasskeyError(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --- Step-by-step handlers for testing individual methods ---
+
+  const onTestChallenge = async (type: 'signup' | 'login') => {
+    setApiError(null);
+    setLastResult(null);
+    setLoading(true);
+    try {
+      const challenge =
+        type === 'signup'
+          ? await passkeySignupChallenge({
+              email: passkeyEmail || undefined,
+              realm: 'Username-Password-Authentication',
+            })
+          : await passkeyLoginChallenge({
+              realm: 'Username-Password-Authentication',
+            });
+
+      setLastResult({
+        step: `${type}Challenge`,
+        authSession: challenge.authSession,
+        authParamsPublicKey: challenge.authParamsPublicKey,
+      });
+      console.log(`${type} challenge:`, JSON.stringify(challenge, null, 2));
+    } catch (e) {
+      handlePasskeyError(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onTestExchange = async () => {
+    const result = lastResult as any;
+    if (!result?.authSession || !result?.authParamsPublicKey) {
+      Alert.alert(
+        'Error',
+        'Run a challenge first (Signup Challenge or Login Challenge).'
+      );
+      return;
+    }
+    setApiError(null);
+    setLoading(true);
+    try {
+      const isSignup = result.step === 'signupChallenge';
+      const credentialJson = isSignup
+        ? await createPasskey(result.authParamsPublicKey)
+        : await getPasskey(result.authParamsPublicKey);
+
+      const credentials = await getTokenByPasskey({
+        authSession: result.authSession,
+        authResponse: credentialJson,
+        realm: 'Username-Password-Authentication',
+      });
+
+      setLastResult({
+        step: 'exchange',
+        accessToken: `${credentials.accessToken.substring(0, 30)}...`,
+        tokenType: credentials.tokenType,
+      });
+      Alert.alert('Success', 'Token exchange complete!');
+    } catch (e) {
+      handlePasskeyError(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Header title="Welcome" />
@@ -556,6 +742,15 @@ const HomeScreen = () => {
 
         <Section title="Web Auth (Recommended)">
           <Button onPress={onLogin} title="Log In" />
+          {Platform.OS === 'android' && (
+            <>
+              <Text style={styles.description}>
+                Recovers a login that completed after the OS killed the app
+                process. No-op on iOS/web.
+              </Text>
+              <Button onPress={onResumeSession} title="Resume Session" />
+            </>
+          )}
         </Section>
 
         <Section title="Database Login">
@@ -603,6 +798,75 @@ const HomeScreen = () => {
         <Section title="MFA Flexible Factors Grant">
           {renderMfaWizard()}
         </Section>
+
+        {Platform.OS !== 'web' && (
+          <Section title="Passkeys">
+            <Text style={styles.description}>
+              Full passkey flow: challenge → credential manager → exchange.
+            </Text>
+
+            <LabeledInput
+              label="Email (for signup)"
+              value={passkeyEmail}
+              onChangeText={setPasskeyEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
+
+            <View style={styles.row}>
+              <Button
+                onPress={onPasskeySignup}
+                title="Sign Up with Passkey"
+                loading={loading}
+                style={styles.halfButton}
+              />
+              <Button
+                onPress={onPasskeyLogin}
+                title="Sign In with Passkey"
+                loading={loading}
+                style={styles.halfButton}
+              />
+            </View>
+
+            <Text style={[styles.description, { marginTop: 12 }]}>
+              Or test individual steps:
+            </Text>
+
+            <View style={styles.row}>
+              <Button
+                onPress={() => onTestChallenge('signup')}
+                title="Signup Challenge"
+                loading={loading}
+                style={styles.halfButton}
+              />
+              <Button
+                onPress={() => onTestChallenge('login')}
+                title="Login Challenge"
+                loading={loading}
+                style={styles.halfButton}
+              />
+            </View>
+
+            <Button
+              onPress={onTestExchange}
+              title="Exchange for Tokens"
+              loading={loading}
+            />
+
+            {lastResult && (
+              <View style={styles.resultBox}>
+                <Text style={styles.resultLabel}>Last Result:</Text>
+                <Text style={styles.resultValue} numberOfLines={8}>
+                  {JSON.stringify(
+                    lastResult,
+                    (key, val) => (key.startsWith('_') ? undefined : val),
+                    2
+                  )}
+                </Text>
+              </View>
+            )}
+          </Section>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -665,6 +929,15 @@ const styles = StyleSheet.create({
     padding: 10,
     gap: 4,
   },
+  description: { fontSize: 13, color: '#666', marginBottom: 4 },
+  row: { flexDirection: 'row', gap: 8 },
+  halfButton: { flex: 1, minWidth: 0 },
+  resultBox: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 6,
+    padding: 10,
+    gap: 4,
+  },
   infoLabel: { fontSize: 12, fontWeight: '600', color: '#444' },
   infoValue: { fontSize: 12, color: '#333', fontFamily: 'monospace' },
   qrContainer: { alignItems: 'center', marginVertical: 12 },
@@ -675,6 +948,8 @@ const styles = StyleSheet.create({
     color: '#2E7D32',
     textAlign: 'center',
   },
+  resultLabel: { fontSize: 12, fontWeight: '600', color: '#333' },
+  resultValue: { fontSize: 11, color: '#555', fontFamily: 'monospace' },
 });
 
 export default HomeScreen;

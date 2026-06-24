@@ -31,12 +31,12 @@ class A0MfaClient {
     private let domain: String
     private let useDPoP: Bool
 
-    private lazy var authentication: Authentication = {
-        var auth = Auth0.authentication(clientId: clientId, domain: domain)
+    private lazy var mfaClient: MFAClient = {
+        var client = Auth0.mfa(clientId: clientId, domain: domain)
         if useDPoP {
-            auth = auth.useDPoP()
+            client = client.useDPoP()
         }
-        return auth
+        return client
     }()
 
     init(clientId: String, domain: String, useDPoP: Bool) {
@@ -46,10 +46,9 @@ class A0MfaClient {
     }
 
     func getAuthenticators(mfaToken: String, factorsAllowed: [String]?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        let mfaClient = authentication.mfa(mfaToken: mfaToken)
         let allowedFactors = factorsAllowed ?? []
 
-        mfaClient.getAuthenticators(factorsAllowed: allowedFactors).start { result in
+        mfaClient.getAuthenticators(mfaToken: mfaToken, factorsAllowed: allowedFactors).start { result in
             switch result {
             case .success(let authenticators):
                 let list = authenticators.map { authenticator -> [String: Any] in
@@ -75,8 +74,6 @@ class A0MfaClient {
             return
         }
 
-        let mfaClient = authentication.mfa(mfaToken: mfaToken)
-
         switch factorType {
         case .phone, .voice:
             guard let phoneNumber = value else {
@@ -88,7 +85,7 @@ class A0MfaClient {
                 case .success(let challenge):
                     var dict: [String: Any] = ["type": "oob"]
                     dict["oobCode"] = challenge.oobCode
-                    if let bindingMethod = challenge.bindingMethod { dict["bindingMethod"] = bindingMethod }
+                    dict["bindingMethod"] = challenge.bindingMethod
                     if let recoveryCodes = challenge.recoveryCodes { dict["recoveryCodes"] = recoveryCodes }
                     resolve(dict)
                 case .failure(let error):
@@ -105,7 +102,7 @@ class A0MfaClient {
                 case .success(let challenge):
                     var dict: [String: Any] = ["type": "oob"]
                     dict["oobCode"] = challenge.oobCode
-                    if let bindingMethod = challenge.bindingMethod { dict["bindingMethod"] = bindingMethod }
+                    dict["bindingMethod"] = challenge.bindingMethod
                     if let recoveryCodes = challenge.recoveryCodes { dict["recoveryCodes"] = recoveryCodes }
                     resolve(dict)
                 case .failure(let error):
@@ -113,11 +110,12 @@ class A0MfaClient {
                 }
             }
         case .otp:
-            mfaClient.enroll(mfaToken: mfaToken).start { result in
+            let request: Request<OTPMFAEnrollmentChallenge, MfaEnrollmentError> = mfaClient.enroll(mfaToken: mfaToken)
+            request.start { result in
                 switch result {
                 case .success(let challenge):
                     var dict: [String: Any] = ["type": "totp"]
-                    dict["barcodeUri"] = challenge.barcode
+                    dict["barcodeUri"] = challenge.barcodeUri
                     dict["secret"] = challenge.secret
                     if let recoveryCodes = challenge.recoveryCodes { dict["recoveryCodes"] = recoveryCodes }
                     resolve(dict)
@@ -126,12 +124,13 @@ class A0MfaClient {
                 }
             }
         case .push:
-            mfaClient.enroll(mfaToken: mfaToken).start { result in
+            let request: Request<PushMFAEnrollmentChallenge, MfaEnrollmentError> = mfaClient.enroll(mfaToken: mfaToken)
+            request.start { result in
                 switch result {
                 case .success(let challenge):
                     var dict: [String: Any] = ["type": "oob"]
                     dict["oobCode"] = challenge.oobCode
-                    if let bindingMethod = challenge.bindingMethod { dict["bindingMethod"] = bindingMethod }
+                    dict["oobChannel"] = challenge.oobChannel
                     if let recoveryCodes = challenge.recoveryCodes { dict["recoveryCodes"] = recoveryCodes }
                     resolve(dict)
                 case .failure(let error):
@@ -142,15 +141,13 @@ class A0MfaClient {
     }
 
     func challenge(mfaToken: String, authenticatorId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        let mfaClient = authentication.mfa(mfaToken: mfaToken)
-
         mfaClient.challenge(with: authenticatorId, mfaToken: mfaToken).start { result in
             switch result {
             case .success(let challenge):
                 var dict: [String: Any] = [
                     "challengeType": challenge.challengeType
                 ]
-                if let oobCode = challenge.oobCode { dict["oobCode"] = oobCode }
+                dict["oobCode"] = challenge.oobCode
                 if let bindingMethod = challenge.bindingMethod { dict["bindingMethod"] = bindingMethod }
                 resolve(dict)
             case .failure(let error):
@@ -164,8 +161,6 @@ class A0MfaClient {
             reject("MFA_VERIFY_ERROR", "Unsupported verification type: \(type)", nil)
             return
         }
-
-        let mfaClient = authentication.mfa(mfaToken: mfaToken)
 
         switch verificationType {
         case .otp:

@@ -8,6 +8,7 @@ import type {
   MfaAuthenticator,
   MfaEnrollmentChallenge,
   MfaChallengeResult,
+  PasskeyChallengeResponse,
 } from '../../../types';
 import type {
   LocalAuthenticationOptions,
@@ -37,13 +38,15 @@ export interface INativeBridge {
    * @param localAuthenticationOptions Options for local authentication.
    * @param useDPoP Whether to enable DPoP (Demonstrating Proof-of-Possession) for token requests.
    * @param maxRetries The maximum number of retry attempts for transient errors during credential renewal. **iOS only** - ignored on Android. Defaults to 0.
+   * @param credentialsManagerStorageKey Namespaces the credentials store. **Android only** SharedPreferences file name. **iOS only** Keychain service name. Defaults to the shared store when omitted.
    */
   initialize(
     clientId: string,
     domain: string,
     localAuthenticationOptions?: LocalAuthenticationOptions,
     useDPoP?: boolean,
-    maxRetries?: number
+    maxRetries?: number,
+    credentialsManagerStorageKey?: string
   ): Promise<void>;
 
   /**
@@ -81,6 +84,13 @@ export interface INativeBridge {
    * @platform ios
    */
   cancelWebAuth(): Promise<void>;
+
+  /**
+   * Recovers a login result that completed after Android process death.
+   * Resolves with the recovered credentials, or `null` if there was nothing to recover.
+   * @platform android
+   */
+  resumeSession(): Promise<Credentials | null>;
 
   /**
    * Saves credentials to the native secure storage (Keychain/EncryptedSharedPreferences).
@@ -262,4 +272,195 @@ export interface INativeBridge {
     code: string,
     bindingCode?: string
   ): Promise<Credentials>;
+
+  /**
+   * Requests a passkey signup challenge from Auth0.
+   *
+   * Returns WebAuthn creation options to be used with the platform's credential manager.
+   *
+   * @param email The user's email address.
+   * @param phoneNumber The user's phone number.
+   * @param username The user's username.
+   * @param name The user's display name.
+   * @param givenName The user's first name.
+   * @param familyName The user's last name.
+   * @param nickname The user's preferred nickname.
+   * @param picture URL pointing to the user's profile picture.
+   * @param userMetadata Additional user metadata as key-value pairs.
+   * @param realm The database connection name.
+   * @param organization Optional organization ID or name.
+   * @returns A promise that resolves with the challenge response.
+   */
+  passkeySignupChallenge(
+    email?: string,
+    phoneNumber?: string,
+    username?: string,
+    name?: string,
+    givenName?: string,
+    familyName?: string,
+    nickname?: string,
+    picture?: string,
+    userMetadata?: Record<string, string>,
+    realm?: string,
+    organization?: string
+  ): Promise<PasskeyChallengeResponse>;
+
+  /**
+   * Requests a passkey login challenge from Auth0.
+   *
+   * Returns WebAuthn request options to be used with the platform's credential manager.
+   *
+   * @param realm The database connection name.
+   * @param organization Optional organization ID or name.
+   * @returns A promise that resolves with the challenge response.
+   */
+  passkeyLoginChallenge(
+    realm?: string,
+    organization?: string
+  ): Promise<PasskeyChallengeResponse>;
+
+  /**
+   * Exchanges a passkey credential response for Auth0 tokens.
+   *
+   * @param authSession The auth session from the challenge response.
+   * @param authResponse JSON string of the PublicKeyCredential response.
+   * @param realm The database connection name.
+   * @param audience Optional target API identifier.
+   * @param scope Optional space-separated scopes.
+   * @param organization Optional organization ID or name.
+   * @returns A promise that resolves with Auth0 credentials.
+   */
+  getTokenByPasskey(
+    authSession: string,
+    authResponse: string,
+    realm?: string,
+    audience?: string,
+    scope?: string,
+    organization?: string
+  ): Promise<Credentials>;
+
+  /**
+   * Request a passkey enrollment challenge from the My Account API.
+   *
+   * @param accessToken Access token for My Account API.
+   * @param userIdentity Optional user identity ID (for linked accounts).
+   * @param connection Optional database connection name.
+   * @returns A promise that resolves with the enrollment challenge response.
+   */
+  passkeyEnrollmentChallenge(
+    accessToken: string,
+    userIdentity?: string,
+    connection?: string
+  ): Promise<{
+    authenticationMethodId: string;
+    authSession: string;
+    authParamsPublicKey: Record<string, any>;
+  }>;
+
+  /**
+   * Verify a passkey enrollment with the My Account API.
+   *
+   * @param accessToken Access token for My Account API.
+   * @param authenticationMethodId The authentication method ID from the challenge.
+   * @param authSession The auth session from the challenge.
+   * @param authResponse JSON string of the PublicKeyCredential response.
+   * @returns A promise that resolves with the enrolled authentication method.
+   */
+  enrollPasskey(
+    accessToken: string,
+    authenticationMethodId: string,
+    authSession: string,
+    authResponse: string,
+    authParamsPublicKey: string
+  ): Promise<Record<string, any>>;
+
+  /**
+   * Get all authentication methods for the authenticated user.
+   */
+  getAuthenticationMethods(
+    accessToken: string,
+    type?: string
+  ): Promise<Record<string, any>[]>;
+
+  /**
+   * Get a single authentication method by ID.
+   */
+  getAuthenticationMethodById(
+    accessToken: string,
+    id: string
+  ): Promise<Record<string, any>>;
+
+  /**
+   * Update an authentication method by ID.
+   */
+  updateAuthenticationMethodById(
+    accessToken: string,
+    id: string,
+    name?: string | null,
+    preferredAuthenticationMethod?: string | null
+  ): Promise<Record<string, any>>;
+
+  /**
+   * Delete an authentication method by ID.
+   */
+  deleteAuthenticationMethodById(
+    accessToken: string,
+    id: string
+  ): Promise<void>;
+
+  /**
+   * Enroll a phone number as an authentication method.
+   */
+  enrollPhone(
+    accessToken: string,
+    phoneNumber: string,
+    preferredAuthenticationMethod?: string
+  ): Promise<Record<string, any>>;
+
+  /**
+   * Enroll an email address as an authentication method.
+   */
+  enrollEmail(
+    accessToken: string,
+    emailAddress: string
+  ): Promise<Record<string, any>>;
+
+  /**
+   * Enroll TOTP as an authentication method.
+   */
+  enrollTOTP(accessToken: string): Promise<Record<string, any>>;
+
+  /**
+   * Enroll push notification as an authentication method.
+   */
+  enrollPushNotification(accessToken: string): Promise<Record<string, any>>;
+
+  /**
+   * Enroll a recovery code as an authentication method.
+   */
+  enrollRecoveryCode(accessToken: string): Promise<Record<string, any>>;
+
+  /**
+   * Confirm an enrollment that requires an OTP code (phone, email, TOTP).
+   */
+  confirmEnrollmentWithOtp(
+    accessToken: string,
+    id: string,
+    authSession: string,
+    otpCode: string
+  ): Promise<Record<string, any>>;
+
+  /**
+   * Confirm an enrollment that does not require an OTP code (recovery code, push notification).
+   */
+  confirmEnrollment(
+    accessToken: string,
+    id: string,
+    authSession: string
+  ): Promise<Record<string, any>>;
+
+  /**
+   * Get available authentication factors.
+   */
+  getFactors(accessToken: string): Promise<Record<string, any>[]>;
 }

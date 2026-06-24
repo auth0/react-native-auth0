@@ -1,6 +1,7 @@
 import type {
   IAuth0Client,
   IAuthenticationProvider,
+  IMyAccountClient,
   IUsersClient,
   IMfaClient,
 } from '../../../core/interfaces';
@@ -8,11 +9,16 @@ import type { NativeAuth0Options } from '../../../types/platform-specific';
 import type {
   DPoPHeadersParams,
   CustomTokenExchangeParameters,
+  PasskeySignupChallengeParameters,
+  PasskeyLoginChallengeParameters,
+  PasskeyChallengeResponse,
+  GetTokenByPasskeyParameters,
   Credentials,
 } from '../../../types';
 import { NativeWebAuthProvider } from './NativeWebAuthProvider';
 import { NativeCredentialsManager } from './NativeCredentialsManager';
 import { NativeMfaClient } from './NativeMfaClient';
+import { NativeMyAccountClient } from './NativeMyAccountClient';
 import { type INativeBridge, NativeBridgeManager } from '../bridge';
 import {
   AuthenticationOrchestrator,
@@ -20,7 +26,8 @@ import {
 } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
-import { AuthError, DPoPError } from '../../../core/models';
+import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
+import { getConfigSignature } from '../../../core/utils';
 
 export class NativeAuth0Client implements IAuth0Client {
   readonly webAuth: NativeWebAuthProvider;
@@ -32,12 +39,22 @@ export class NativeAuth0Client implements IAuth0Client {
   private readonly tokenType: TokenType;
   private readonly bridge: INativeBridge;
   private readonly baseUrl: string;
+  private readonly options: NativeAuth0Options;
+  private readonly configSignature: string;
+  private syncLock: Promise<void> = Promise.resolve();
   private guardedBridge!: INativeBridge;
   private readonly getDPoPHeadersForOrchestrator?: (
     params: DPoPHeadersParams
   ) => Promise<Record<string, string>>;
 
+  // Signature last applied to the shared native singleton. `hasValidInstance`
+  // only checks domain/clientId, so this tracks other identity options
+  // (useDPoP, localAuthenticationOptions) to detect drift and re-init.
+  private static appliedNativeSignature: string | null = null;
+
   constructor(options: NativeAuth0Options) {
+    this.options = options;
+    this.configSignature = getConfigSignature(options);
     const baseUrl = `https://${options.domain}`;
     this.baseUrl = baseUrl;
     const useDPoP = options.useDPoP ?? true;
@@ -80,6 +97,7 @@ export class NativeAuth0Client implements IAuth0Client {
     this.webAuth = new NativeWebAuthProvider(guardedBridge, options.domain);
     this.credentialsManager = new NativeCredentialsManager(guardedBridge);
     this.mfa = new NativeMfaClient(guardedBridge);
+    this.myAccount = new NativeMyAccountClient(guardedBridge);
   }
 
   private async initialize(
@@ -92,17 +110,39 @@ export class NativeAuth0Client implements IAuth0Client {
       localAuthenticationOptions,
       useDPoP = true,
       maxRetries,
+      credentialsManagerStorageKey,
     } = options;
+    // Re-init when domain/clientId differ (hasValidInstance) or any other
+    // identity option drifted from what was last applied to the native side.
     const hasValidInstance = await bridge.hasValidInstance(clientId, domain);
-    if (!hasValidInstance) {
+    // Null signature means nothing applied yet, so defer to hasValidInstance
+    // and let genuine remounts reuse the existing native instance.
+    const signatureDrifted =
+      NativeAuth0Client.appliedNativeSignature !== null &&
+      NativeAuth0Client.appliedNativeSignature !== this.configSignature;
+    if (!hasValidInstance || signatureDrifted) {
       await bridge.initialize(
         clientId,
         domain,
         localAuthenticationOptions,
         useDPoP,
-        maxRetries
+        maxRetries,
+        credentialsManagerStorageKey
       );
     }
+    // Record even on the skip path so siblings differing only in a
+    // native-invisible option (e.g. useDPoP) can detect drift.
+    NativeAuth0Client.appliedNativeSignature = this.configSignature;
+  }
+
+  // Re-points the shared native singleton at this client's config before a
+  // bridge call, in case a sibling client overwrote it. Re-init only on drift,
+  // so the single-client path stays cheap. Serialized via syncLock.
+  private syncNativeConfig(): Promise<void> {
+    this.syncLock = this.syncLock
+      .catch(() => undefined)
+      .then(() => this.initialize(this.bridge, this.options));
+    return this.syncLock;
   }
 
   users(token: string, tokenType?: TokenType): IUsersClient {
@@ -122,6 +162,8 @@ export class NativeAuth0Client implements IAuth0Client {
       getDPoPHeaders,
     });
   }
+
+  readonly myAccount: IMyAccountClient;
 
   async getDPoPHeaders(
     params: DPoPHeadersParams
@@ -160,6 +202,10 @@ export class NativeAuth0Client implements IAuth0Client {
       guarded[methodName] = async (...args: any[]) => {
         // This is the "guard": wait for the initialization promise to resolve.
         await this.ready;
+        // Re-point the native singleton at this client's config in case a
+        // sibling client (different domain/clientId) overwrote it. No-op when
+        // the native instance already matches.
+        await this.syncNativeConfig();
         // Call the original method with the correct 'this' context.
         return originalMethod.apply(bridge, args);
       };
@@ -189,5 +235,82 @@ export class NativeAuth0Client implements IAuth0Client {
       scope,
       organization
     );
+  }
+
+  async passkeySignupChallenge(
+    parameters: PasskeySignupChallengeParameters
+  ): Promise<PasskeyChallengeResponse> {
+    const {
+      email,
+      phoneNumber,
+      username,
+      name,
+      givenName,
+      familyName,
+      nickname,
+      picture,
+      userMetadata,
+      realm,
+      organization,
+    } = parameters;
+    try {
+      return await this.guardedBridge.passkeySignupChallenge(
+        email || undefined,
+        phoneNumber || undefined,
+        username || undefined,
+        name || undefined,
+        givenName || undefined,
+        familyName || undefined,
+        nickname || undefined,
+        picture || undefined,
+        userMetadata || undefined,
+        realm || undefined,
+        organization || undefined
+      );
+    } catch (e) {
+      if (e instanceof AuthError) {
+        throw new PasskeyError(e);
+      }
+      throw e;
+    }
+  }
+
+  async passkeyLoginChallenge(
+    parameters: PasskeyLoginChallengeParameters
+  ): Promise<PasskeyChallengeResponse> {
+    const { realm, organization } = parameters;
+    try {
+      return await this.guardedBridge.passkeyLoginChallenge(
+        realm || undefined,
+        organization || undefined
+      );
+    } catch (e) {
+      if (e instanceof AuthError) {
+        throw new PasskeyError(e);
+      }
+      throw e;
+    }
+  }
+
+  async getTokenByPasskey(
+    parameters: GetTokenByPasskeyParameters
+  ): Promise<Credentials> {
+    const { authSession, authResponse, realm, audience, scope, organization } =
+      parameters;
+    try {
+      return await this.guardedBridge.getTokenByPasskey(
+        authSession,
+        authResponse,
+        realm || undefined,
+        audience || undefined,
+        scope || undefined,
+        organization || undefined
+      );
+    } catch (e) {
+      if (e instanceof AuthError) {
+        throw new PasskeyError(e);
+      }
+      throw e;
+    }
   }
 }

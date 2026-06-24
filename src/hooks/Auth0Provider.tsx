@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useMemo, useCallback } from 'react';
+import { useEffect, useReducer, useCallback, useMemo } from 'react';
 import type { PropsWithChildren } from 'react';
 import type { ApiCredentials } from '../core/models';
 import { Auth0Context, type Auth0ContextInterface } from './Auth0Context';
@@ -23,6 +23,10 @@ import type {
   LoginRecoveryCodeParameters,
   ExchangeNativeSocialParameters,
   CustomTokenExchangeParameters,
+  PasskeySignupChallengeParameters,
+  PasskeyLoginChallengeParameters,
+  PasskeyChallengeResponse,
+  GetTokenByPasskeyParameters,
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
@@ -35,6 +39,7 @@ import type {
   NativeClearSessionOptions,
 } from '../types/platform-specific';
 import { Auth0User, AuthError } from '../core/models';
+import { getConfigSignature } from '../core/utils';
 import Auth0 from '../Auth0';
 import { Platform } from 'react-native';
 
@@ -42,8 +47,15 @@ export const Auth0Provider = ({
   children,
   ...options
 }: PropsWithChildren<Auth0Options>) => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const client = useMemo(() => new Auth0(options), []);
+  // Recreate the client when the config changes; the factory reuses the same
+  // instance for an unchanged signature.
+  const configSignature = getConfigSignature(options);
+  const client = useMemo(
+    () => new Auth0(options),
+    // Key on the signature, not `options` (a fresh object every render).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [configSignature]
+  );
   const [state, dispatch] = useReducer(reducer, {
     user: null,
     error: null,
@@ -242,6 +254,23 @@ export const Auth0Provider = ({
     [client, voidFlow]
   );
 
+  const resumeSession = useCallback(async (): Promise<Credentials | null> => {
+    try {
+      const credentials = await client.webAuth.resumeSession();
+      if (!credentials) {
+        return null;
+      }
+      const user = Auth0User.fromIdToken(credentials.idToken);
+      await client.credentialsManager.saveCredentials(credentials);
+      dispatch({ type: 'LOGIN_COMPLETE', user });
+      return credentials;
+    } catch (e) {
+      const error = e as AuthError;
+      dispatch({ type: 'ERROR', error });
+      throw error;
+    }
+  }, [client]);
+
   const getApiCredentials = useCallback(
     async (
       audience: string,
@@ -316,6 +345,30 @@ export const Auth0Provider = ({
       loginFlow(client.customTokenExchange(parameters)),
     [client, loginFlow]
   );
+
+  const passkeySignupChallenge = useCallback(
+    (
+      parameters: PasskeySignupChallengeParameters
+    ): Promise<PasskeyChallengeResponse> =>
+      client.passkeySignupChallenge(parameters),
+    [client]
+  );
+
+  const passkeyLoginChallenge = useCallback(
+    (
+      parameters: PasskeyLoginChallengeParameters
+    ): Promise<PasskeyChallengeResponse> =>
+      client.passkeyLoginChallenge(parameters),
+    [client]
+  );
+
+  const getTokenByPasskey = useCallback(
+    (parameters: GetTokenByPasskeyParameters) =>
+      loginFlow(client.getTokenByPasskey(parameters)),
+    [client, loginFlow]
+  );
+
+  const myAccount = useMemo(() => client.myAccount, [client]);
 
   const sendEmailCode = useCallback(
     (parameters: PasswordlessEmailParameters) =>
@@ -466,12 +519,17 @@ export const Auth0Provider = ({
       getApiCredentials,
       clearApiCredentials,
       cancelWebAuth,
+      resumeSession,
       loginWithPasswordRealm,
       createUser,
       resetPassword,
       authorizeWithExchange,
       authorizeWithExchangeNativeSocial,
       customTokenExchange,
+      passkeySignupChallenge,
+      passkeyLoginChallenge,
+      getTokenByPasskey,
+      myAccount,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,
@@ -497,12 +555,17 @@ export const Auth0Provider = ({
       getApiCredentials,
       clearApiCredentials,
       cancelWebAuth,
+      resumeSession,
       loginWithPasswordRealm,
       createUser,
       resetPassword,
       authorizeWithExchange,
       authorizeWithExchangeNativeSocial,
       customTokenExchange,
+      passkeySignupChallenge,
+      passkeyLoginChallenge,
+      getTokenByPasskey,
+      myAccount,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,

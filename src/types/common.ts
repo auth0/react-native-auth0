@@ -160,10 +160,19 @@ export interface Auth0Options {
    * Helps handle network failures and transient errors when using refresh token rotation.
    * **iOS only** - This parameter is accepted on Android for API compatibility but has no effect
    * as the Auth0.Android SDK does not currently support retry configuration.
+   * @remarks iOS only.
    * @default 0 (no retries)
-   * @platform ios
    */
   maxRetries?: number;
+  /**
+   * Namespaces this client's credentials store. Maps to the Android
+   * SharedPreferences file name and the iOS keychain service. Omit it for the
+   * primary client to keep the default shared store; set a distinct value per
+   * additional client (e.g. another tenant) to isolate its credentials so
+   * switching clients does not surface or evict another's session.
+   * @remarks Native only (iOS/Android). Has no effect on the web platform.
+   */
+  credentialsManagerStorageKey?: string;
   // Telemetry and localAuthenticationOptions are platform-specific extensions
 }
 

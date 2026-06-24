@@ -5,12 +5,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ProfileScreen from '../screens/hooks/Profile';
 import MoreScreen from '../screens/hooks/More';
 import CredentialsScreen from '../screens/hooks/CredentialsScreen';
+import MyAccountScreen from '../screens/hooks/MyAccountScreen';
 
 export type MainTabParamList = {
   Profile: undefined;
   Api: undefined;
   More: undefined;
   Credentials: undefined;
+  MyAccount: undefined;
 };
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -33,6 +35,11 @@ const MainTabNavigator = () => {
         // You can add icons here if desired
       />
       <Tab.Screen name="Credentials" component={CredentialsScreen} />
+      <Tab.Screen
+        name="MyAccount"
+        component={MyAccountScreen}
+        options={{ title: 'My Account' }}
+      />
       <Tab.Screen name="More" component={MoreScreen} />
     </Tab.Navigator>
   );
