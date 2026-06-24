@@ -17,6 +17,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency 'Auth0', '2.21.2'
-  
+  s.dependency 'SimpleKeychain', '1.3.0'
+
   install_modules_dependencies(s)
 end

@@ -35,13 +35,15 @@ export interface INativeBridge {
    * @param localAuthenticationOptions Options for local authentication.
    * @param useDPoP Whether to enable DPoP (Demonstrating Proof-of-Possession) for token requests.
    * @param maxRetries The maximum number of retry attempts for transient errors during credential renewal. **iOS only** - ignored on Android. Defaults to 0.
+   * @param credentialsManagerStorageKey Namespaces the credentials store. **Android only** SharedPreferences file name. **iOS only** Keychain service name. Defaults to the shared store when omitted.
    */
   initialize(
     clientId: string,
     domain: string,
     localAuthenticationOptions?: LocalAuthenticationOptions,
     useDPoP?: boolean,
-    maxRetries?: number
+    maxRetries?: number,
+    credentialsManagerStorageKey?: string
   ): Promise<void>;
 
   /**
@@ -79,6 +81,13 @@ export interface INativeBridge {
    * @platform ios
    */
   cancelWebAuth(): Promise<void>;
+
+  /**
+   * Recovers a login result that completed after Android process death.
+   * Resolves with the recovered credentials, or `null` if there was nothing to recover.
+   * @platform android
+   */
+  resumeSession(): Promise<Credentials | null>;
 
   /**
    * Saves credentials to the native secure storage (Keychain/EncryptedSharedPreferences).

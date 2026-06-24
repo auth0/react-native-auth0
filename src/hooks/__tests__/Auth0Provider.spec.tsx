@@ -90,6 +90,7 @@ const createMockClient = () => {
       authorize: jest.fn().mockResolvedValue(mockCredentials),
       clearSession: jest.fn().mockResolvedValue(undefined),
       cancelWebAuth: jest.fn().mockResolvedValue(undefined),
+      resumeSession: jest.fn().mockResolvedValue(null),
       handleRedirectCallback: jest.fn().mockResolvedValue(undefined),
       checkWebSession: jest.fn().mockResolvedValue(null),
       getWebUser: jest.fn().mockResolvedValue(null),

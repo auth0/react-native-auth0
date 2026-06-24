@@ -54,6 +54,36 @@ describe('Auth0ClientFactory (Native)', () => {
     expect(MockNativeAuth0Client).toHaveBeenCalledTimes(2);
   });
 
+  it('should create separate clients when a non-domain/clientId option changes', () => {
+    const client1 = Auth0ClientFactory.createClient({
+      ...options,
+      useDPoP: true,
+    });
+    const client2 = Auth0ClientFactory.createClient({
+      ...options,
+      useDPoP: false,
+    });
+
+    expect(client1).not.toBe(client2);
+    expect(MockNativeAuth0Client).toHaveBeenCalledTimes(2);
+  });
+
+  it('should reuse the cached client when config is identical regardless of key order', () => {
+    const client1 = Auth0ClientFactory.createClient({
+      domain: 'my-tenant.auth0.com',
+      clientId: 'MyClientId123',
+      headers: { A: '1', B: '2' },
+    });
+    const client2 = Auth0ClientFactory.createClient({
+      headers: { B: '2', A: '1' },
+      clientId: 'MyClientId123',
+      domain: 'my-tenant.auth0.com',
+    });
+
+    expect(client1).toBe(client2);
+    expect(MockNativeAuth0Client).toHaveBeenCalledTimes(1);
+  });
+
   it('should create a new client after cache is reset', () => {
     const client1 = Auth0ClientFactory.createClient(options);
     Auth0ClientFactory.resetClientCache();

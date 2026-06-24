@@ -10,6 +10,7 @@ import Auth0
 import AuthenticationServices
 import Foundation
 import LocalAuthentication
+import SimpleKeychain
 
 @objc
 public class NativeBridge: NSObject {
@@ -46,7 +47,7 @@ public class NativeBridge: NSObject {
     var useDPoP: Bool
     var maxRetries: Int
     
-    @objc public init(clientId: String, domain: String, localAuthenticationOptions: [String: Any]?, useDPoP: Bool, maxRetries: Int, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public init(clientId: String, domain: String, localAuthenticationOptions: [String: Any]?, useDPoP: Bool, maxRetries: Int, credentialsManagerStorageKey: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         var auth0 = Auth0
             .authentication(clientId: clientId, domain: domain)
         self.clientId = clientId
@@ -56,7 +57,12 @@ public class NativeBridge: NSObject {
         if self.useDPoP {
             auth0 = auth0.useDPoP()
         }
-        self.credentialsManager = CredentialsManager(authentication: auth0, maxRetries: maxRetries)
+        // Namespace the keychain per client when a storage key is provided, else use the default service.
+        if let key = credentialsManagerStorageKey, !key.isEmpty {
+            self.credentialsManager = CredentialsManager(authentication: auth0, storage: SimpleKeychain(service: key), maxRetries: maxRetries)
+        } else {
+            self.credentialsManager = CredentialsManager(authentication: auth0, maxRetries: maxRetries)
+        }
         super.init()
         if let localAuthenticationOptions = localAuthenticationOptions {
             if let title = localAuthenticationOptions["title"] as? String {

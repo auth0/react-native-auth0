@@ -159,7 +159,24 @@ See these issues for more information:
 - [possibility to run with launchMode:singleTop?](https://github.com/auth0/react-native-auth0/issues/170)
 - [Android singleTask launch mode is required for react-native deep links](https://github.com/auth0/react-native-auth0/issues/556)
 
-### The solution
+### Recovering the login (recommended)
+
+If the OS kills your app's process entirely while the browser is open (rather than just pausing the activity), the SDK can still complete the login on restart. Call `resumeSession()` once on cold start to recover it:
+
+```js
+// With the Auth0 class
+const credentials = await auth0.webAuth.resumeSession();
+
+// Or with hooks
+const { resumeSession } = useAuth0();
+useEffect(() => {
+  resumeSession();
+}, [resumeSession]);
+```
+
+If a login was interrupted by process death, `resumeSession()` returns the recovered `Credentials`; otherwise it returns `null`. It is Android-only (a no-op resolving `null` on iOS/web) and requires no `MainActivity` changes, so it works in both bare React Native and Expo. See [Recovering Login After Process Death (Android)](EXAMPLES.md#recovering-login-after-process-death-android) for full examples.
+
+### The solution (for `singleTask` launch mode)
 
 If your Android `launchMode` is set to `singleTask` (check your `AndroidManifest.xml`), that's why this is occurring. Unfortunately, this is not addressable by the react-native-auth0 library.
 

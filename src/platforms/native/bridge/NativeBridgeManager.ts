@@ -56,7 +56,8 @@ export class NativeBridgeManager implements INativeBridge {
     domain: string,
     localAuthenticationOptions?: LocalAuthenticationOptions,
     useDPoP: boolean = true,
-    maxRetries: number = 0
+    maxRetries: number = 0,
+    credentialsManagerStorageKey?: string
   ): Promise<void> {
     // This is a new method we'd add to the native side to ensure the
     // underlying Auth0.swift/Auth0.android SDKs are configured.
@@ -68,7 +69,8 @@ export class NativeBridgeManager implements INativeBridge {
       domain,
       localAuthenticationOptions,
       useDPoP,
-      maxRetries
+      maxRetries,
+      credentialsManagerStorageKey
     );
   }
 
@@ -128,6 +130,13 @@ export class NativeBridgeManager implements INativeBridge {
     return this.a0_call(
       Auth0NativeModule.cancelWebAuth.bind(Auth0NativeModule)
     );
+  }
+
+  async resumeSession(): Promise<Credentials | null> {
+    const credential = await this.a0_call(
+      Auth0NativeModule.resumeWebAuthSession.bind(Auth0NativeModule)
+    );
+    return credential ? new CredentialsModel(credential) : null;
   }
 
   async saveCredentials(credentials: Credentials): Promise<void> {

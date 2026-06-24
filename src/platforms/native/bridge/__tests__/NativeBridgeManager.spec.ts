@@ -15,6 +15,7 @@ jest.mock('../../../../specs/NativeA0Auth0', () => ({
   clearCredentials: jest.fn(),
   cancelWebAuth: jest.fn(),
   resumeWebAuth: jest.fn(),
+  resumeWebAuthSession: jest.fn(),
   getDPoPHeaders: jest.fn(),
   clearDPoPKey: jest.fn(),
   getSSOCredentials: jest.fn(),
@@ -173,6 +174,64 @@ describe('NativeBridgeManager', () => {
     });
   });
 
+  describe('initialize', () => {
+    // The native init call builds the credentials manager; the storage key
+    // namespaces its store. No native test harness exists, so we assert the
+    // key threads through here.
+    it('forwards credentialsManagerStorageKey to the native module when provided', async () => {
+      const localAuthenticationOptions = undefined;
+
+      await bridge.initialize(
+        'client-id',
+        'tenant-b.auth0.com',
+        localAuthenticationOptions,
+        true,
+        0,
+        'tenant-b'
+      );
+
+      expect(
+        MockedAuth0NativeModule.initializeAuth0WithConfiguration
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        MockedAuth0NativeModule.initializeAuth0WithConfiguration
+      ).toHaveBeenCalledWith(
+        'client-id',
+        'tenant-b.auth0.com',
+        undefined,
+        true,
+        0,
+        'tenant-b'
+      );
+    });
+
+    it('forwards undefined for credentialsManagerStorageKey when omitted (shared default store)', async () => {
+      await bridge.initialize('client-id', 'tenant-a.auth0.com');
+
+      expect(
+        MockedAuth0NativeModule.initializeAuth0WithConfiguration
+      ).toHaveBeenCalledWith(
+        'client-id',
+        'tenant-a.auth0.com',
+        undefined, // localAuthenticationOptions
+        true, // useDPoP default
+        0, // maxRetries default
+        undefined // credentialsManagerStorageKey
+      );
+    });
+
+    it('wraps a native initialization error in an AuthError', async () => {
+      const nativeError = { code: 'a0.initialize.failed', message: 'boom' };
+      MockedAuth0NativeModule.initializeAuth0WithConfiguration.mockRejectedValueOnce(
+        nativeError
+      );
+
+      await expect(
+        bridge.initialize('client-id', 'tenant-b.auth0.com')
+      ).rejects.toBeInstanceOf(AuthError);
+    });
+  });
+
   describe('clearSession', () => {
     it('should call the native webAuthLogout method with all parameters', async () => {
       const parameters = { federated: true, returnToUrl: 'com.myapp://logout' };
@@ -205,6 +264,41 @@ describe('NativeBridgeManager', () => {
         parameters.returnToUrl,
         allowedBrowserPackages
       );
+    });
+  });
+
+  describe('resumeSession', () => {
+    it('should wrap recovered credentials in a Credentials model', async () => {
+      MockedAuth0NativeModule.resumeWebAuthSession.mockResolvedValueOnce(
+        nativeSuccessCredentials as any
+      );
+
+      const result = await bridge.resumeSession();
+
+      expect(
+        MockedAuth0NativeModule.resumeWebAuthSession
+      ).toHaveBeenCalledTimes(1);
+      expect(result).toBeInstanceOf(Credentials);
+      expect(result?.accessToken).toBe(nativeSuccessCredentials.accessToken);
+    });
+
+    it('should resolve null when there is nothing to recover', async () => {
+      MockedAuth0NativeModule.resumeWebAuthSession.mockResolvedValueOnce(
+        null as any
+      );
+
+      const result = await bridge.resumeSession();
+
+      expect(result).toBeNull();
+    });
+
+    it('should wrap a native error in an AuthError', async () => {
+      const nativeError = { code: 'a0.session.failed', message: 'boom' };
+      MockedAuth0NativeModule.resumeWebAuthSession.mockRejectedValueOnce(
+        nativeError
+      );
+
+      await expect(bridge.resumeSession()).rejects.toBeInstanceOf(AuthError);
     });
   });
 

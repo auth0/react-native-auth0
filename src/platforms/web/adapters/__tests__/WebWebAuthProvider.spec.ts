@@ -259,4 +259,10 @@ describe('WebWebAuthProvider', () => {
       expect(mockSpaClient.logout).not.toHaveBeenCalled();
     });
   });
+
+  describe('resumeSession', () => {
+    it('should resolve null as it is a no-op on the web', async () => {
+      await expect(provider.resumeSession()).resolves.toBeNull();
+    });
+  });
 });

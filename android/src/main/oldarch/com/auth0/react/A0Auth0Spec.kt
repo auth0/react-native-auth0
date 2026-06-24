@@ -28,6 +28,7 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
         localAuthenticationOptions: ReadableMap?,
         useDPoP: Boolean?,
         maxRetries: Double,
+        credentialsManagerStorageKey: String?,
         promise: Promise
     )
 
@@ -95,6 +96,10 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
     @ReactMethod
     @DoNotStrip
     abstract fun resumeWebAuth(url: String, promise: Promise)
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun resumeWebAuthSession(promise: Promise)
 
     @ReactMethod
     @DoNotStrip
