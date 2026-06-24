@@ -26,7 +26,8 @@ export interface Spec extends TurboModule {
       | { [key: string]: string | Int32 | boolean }
       | undefined,
     useDPoP: boolean | undefined,
-    maxRetries: Int32
+    maxRetries: Int32,
+    credentialsManagerStorageKey: string | undefined
   ): Promise<void>;
 
   /**

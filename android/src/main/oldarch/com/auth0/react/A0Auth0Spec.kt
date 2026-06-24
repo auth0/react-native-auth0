@@ -28,6 +28,7 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
         localAuthenticationOptions: ReadableMap?,
         useDPoP: Boolean?,
         maxRetries: Double,
+        credentialsManagerStorageKey: String?,
         promise: Promise
     )
 

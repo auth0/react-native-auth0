@@ -38,6 +38,7 @@ import type {
   NativeClearSessionOptions,
 } from '../types/platform-specific';
 import { Auth0User, AuthError } from '../core/models';
+import { getConfigSignature } from '../core/utils';
 import Auth0 from '../Auth0';
 import { Platform } from 'react-native';
 
@@ -45,8 +46,15 @@ export const Auth0Provider = ({
   children,
   ...options
 }: PropsWithChildren<Auth0Options>) => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const client = useMemo(() => new Auth0(options), []);
+  // Recreate the client when the config changes; the factory reuses the same
+  // instance for an unchanged signature.
+  const configSignature = getConfigSignature(options);
+  const client = useMemo(
+    () => new Auth0(options),
+    // Key on the signature, not `options` (a fresh object every render).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [configSignature]
+  );
   const [state, dispatch] = useReducer(reducer, {
     user: null,
     error: null,

@@ -35,13 +35,15 @@ export interface INativeBridge {
    * @param localAuthenticationOptions Options for local authentication.
    * @param useDPoP Whether to enable DPoP (Demonstrating Proof-of-Possession) for token requests.
    * @param maxRetries The maximum number of retry attempts for transient errors during credential renewal. **iOS only** - ignored on Android. Defaults to 0.
+   * @param credentialsManagerStorageKey Namespaces the credentials store. **Android only** SharedPreferences file name. **iOS only** Keychain service name. Defaults to the shared store when omitted.
    */
   initialize(
     clientId: string,
     domain: string,
     localAuthenticationOptions?: LocalAuthenticationOptions,
     useDPoP?: boolean,
-    maxRetries?: number
+    maxRetries?: number,
+    credentialsManagerStorageKey?: string
   ): Promise<void>;
 
   /**

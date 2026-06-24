@@ -22,6 +22,14 @@ describe('NativeAuth0Client', () => {
     // Reset mocks for each test
     jest.clearAllMocks();
 
+    // Reset the cross-instance static that tracks the config last applied to
+    // the shared native singleton, so tests don't leak state into each other.
+    (
+      NativeAuth0Client as unknown as {
+        appliedNativeSignature: string | null;
+      }
+    ).appliedNativeSignature = null;
+
     // Create the mock functions that can be shared and overridden
     const mockMethods = {
       hasValidInstance: jest.fn().mockResolvedValue(true),
@@ -111,10 +119,31 @@ describe('NativeAuth0Client', () => {
       options.domain,
       undefined, // No local auth options provided in this test
       true, // useDPoP defaults to true
-      undefined // maxRetries not provided
+      undefined, // maxRetries not provided
+      undefined // credentialsManagerStorageKey not provided
     );
 
     // Use client to avoid unused variable warning
+    expect(client).toBeDefined();
+  });
+
+  it('should pass credentialsManagerStorageKey to initialize when provided', async () => {
+    mockBridgeInstance.hasValidInstance.mockResolvedValue(false);
+
+    const client = new NativeAuth0Client({
+      ...options,
+      credentialsManagerStorageKey: 'tenant-b',
+    });
+    await new Promise(process.nextTick);
+
+    expect(mockBridgeInstance.initialize).toHaveBeenCalledWith(
+      options.clientId,
+      options.domain,
+      undefined,
+      true,
+      undefined,
+      'tenant-b'
+    );
     expect(client).toBeDefined();
   });
 
@@ -133,7 +162,8 @@ describe('NativeAuth0Client', () => {
       options.domain,
       localAuthOptions,
       true, // useDPoP defaults to true
-      undefined // maxRetries not provided
+      undefined, // maxRetries not provided
+      undefined // credentialsManagerStorageKey not provided
     );
 
     // Use client to avoid unused variable warning
@@ -558,6 +588,103 @@ describe('NativeAuth0Client', () => {
           authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
         })
       ).rejects.toBeInstanceOf(PasskeyError);
+    });
+  });
+
+  describe('native config re-sync (multi-tenant)', () => {
+    it('re-points the native singleton when its config has drifted to a sibling client', async () => {
+      // Simulate the native singleton currently belonging to a different
+      // domain/clientId (overwritten by a sibling Auth0 instance).
+      mockBridgeInstance.hasValidInstance.mockResolvedValue(false);
+
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      // Constructor initialization re-pointed the native side once.
+      expect(mockBridgeInstance.initialize).toHaveBeenCalledTimes(1);
+      const initCallsAfterConstruct =
+        mockBridgeInstance.initialize.mock.calls.length;
+
+      await client.webAuth.authorize();
+
+      // The guarded path re-asserts this client's config before dispatching to
+      // the native module, so a drifted singleton gets re-initialized to the
+      // correct tenant rather than authorizing against the wrong domain.
+      expect(mockBridgeInstance.initialize.mock.calls.length).toBeGreaterThan(
+        initCallsAfterConstruct
+      );
+      expect(mockBridgeInstance.initialize).toHaveBeenLastCalledWith(
+        options.clientId,
+        options.domain,
+        undefined,
+        true,
+        undefined,
+        undefined
+      );
+      expect(mockBridgeInstance.authorize).toHaveBeenCalledTimes(1);
+    });
+
+    it('does NOT re-initialize when the native singleton already matches', async () => {
+      // Default mock: hasValidInstance returns true (native already matches).
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await client.webAuth.authorize();
+
+      // No re-initialization needed; the common single-client path stays cheap.
+      expect(mockBridgeInstance.initialize).not.toHaveBeenCalled();
+      expect(mockBridgeInstance.authorize).toHaveBeenCalledTimes(1);
+    });
+
+    it('re-initializes when a non-domain/clientId option changed, even if hasValidInstance reports valid', async () => {
+      // hasValidInstance only compares domain/clientId, so it reports `true`
+      // here. A sibling client with the SAME domain/clientId but a different
+      // `useDPoP` previously applied its config to the native singleton.
+      mockBridgeInstance.hasValidInstance.mockResolvedValue(true);
+
+      // First client (DPoP enabled) applies its signature to the native side.
+      const first = new NativeAuth0Client({ ...options, useDPoP: true });
+      await new Promise(process.nextTick);
+      await first.webAuth.authorize();
+      mockBridgeInstance.initialize.mockClear();
+
+      // Second client shares domain/clientId but flips useDPoP. Despite
+      // hasValidInstance being true, the changed signature must force a re-init
+      // so the native module reflects the new configuration.
+      const second = new NativeAuth0Client({ ...options, useDPoP: false });
+      await new Promise(process.nextTick);
+      await second.webAuth.authorize();
+
+      expect(mockBridgeInstance.initialize).toHaveBeenCalled();
+      expect(mockBridgeInstance.initialize).toHaveBeenLastCalledWith(
+        options.clientId,
+        options.domain,
+        undefined,
+        false, // useDPoP flipped to false
+        undefined,
+        undefined
+      );
+    });
+
+    it('does NOT re-initialize a remounted client with an identical config', async () => {
+      // hasValidInstance returns true (native instance already exists from a
+      // prior mount), and the signature matches because the config is unchanged.
+      mockBridgeInstance.hasValidInstance.mockResolvedValue(true);
+
+      // Simulate a previous client of the same config having applied to native.
+      const first = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+      await first.webAuth.authorize();
+      mockBridgeInstance.initialize.mockClear();
+      mockBridgeInstance.authorize.mockClear();
+
+      // A remount with an identical config must reuse the native instance.
+      const second = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+      await second.webAuth.authorize();
+
+      expect(mockBridgeInstance.initialize).not.toHaveBeenCalled();
+      expect(mockBridgeInstance.authorize).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -269,12 +269,13 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         localAuthenticationOptions: ReadableMap?,
         useDPoP: Boolean?,
         maxRetries: Double,
+        credentialsManagerStorageKey: String?,
         promise: Promise
     ) {
         // Note: maxRetries parameter is ignored on Android as the Auth0.Android SDK
         // does not currently support retry configuration for credential renewal.
         // This parameter is accepted for API compatibility with iOS.
-        
+
         this.useDPoP = useDPoP ?: true
         auth0 = Auth0.getInstance(clientId, domain)
         myAccount = MyAccount(auth0!!, this.useDPoP, reactContext)
@@ -283,7 +284,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         if (this.useDPoP) {
             authAPI.useDPoP(reactContext)
         }
-        
+        val storage = buildStorage(credentialsManagerStorageKey)
+
         localAuthenticationOptions?.let { options ->
             val activity = reactContext.currentActivity
             if (activity is FragmentActivity) {
@@ -293,22 +295,23 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                         authAPI,
                         reactContext,
                         auth0!!,
-                        SharedPreferencesStorage(reactContext),
+                        storage,
                         activity,
                         localAuthOptions
                     )
                     promise.resolve(true)
                     return
                 } catch (e: Exception) {
-                    secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authAPI)
+                    secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authAPI, storage)
                     promise.reject(
                         BIOMETRICS_AUTHENTICATION_ERROR_CODE,
-                        "Failed to parse the Local Authentication Options, hence proceeding without Biometrics Authentication for handling Credentials"
+                        "Failed to parse the Local Authentication Options, hence proceeding without Biometrics Authentication for handling Credentials",
+                        e
                     )
                     return
                 }
             } else {
-                secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authAPI)
+                secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authAPI, storage)
                 promise.reject(
                     BIOMETRICS_AUTHENTICATION_ERROR_CODE,
                     "Biometrics Authentication for Handling Credentials are supported only on FragmentActivity, since a different activity is supplied, proceeding without it"
@@ -316,10 +319,17 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 return
             }
         }
-        
-        secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authAPI)
+
+        secureCredentialsManager = getSecureCredentialsManagerWithoutBiometrics(authAPI, storage)
         promise.resolve(true)
     }
+
+    // Use a per-client SharedPreferences file when a storage key is provided, else the library default shared store.
+    private fun buildStorage(credentialsManagerStorageKey: String?): SharedPreferencesStorage =
+        if (credentialsManagerStorageKey.isNullOrEmpty())
+            SharedPreferencesStorage(reactContext)
+        else
+            SharedPreferencesStorage(reactContext, credentialsManagerStorageKey)
 
     @ReactMethod
     override fun hasValidAuth0InstanceWithConfiguration(clientId: String, domain: String, promise: Promise) {
@@ -928,12 +938,15 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         promise.resolve(true)
     }
 
-    private fun getSecureCredentialsManagerWithoutBiometrics(authAPI: AuthenticationAPIClient): SecureCredentialsManager {
+    private fun getSecureCredentialsManagerWithoutBiometrics(
+        authAPI: AuthenticationAPIClient,
+        storage: SharedPreferencesStorage
+    ): SecureCredentialsManager {
         return SecureCredentialsManager(
             authAPI,
             reactContext,
             auth0!!,
-            SharedPreferencesStorage(reactContext)
+            storage
         )
     }
 
