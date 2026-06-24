@@ -174,6 +174,64 @@ describe('NativeBridgeManager', () => {
     });
   });
 
+  describe('initialize', () => {
+    // The native init call builds the credentials manager; the storage key
+    // namespaces its store. No native test harness exists, so we assert the
+    // key threads through here.
+    it('forwards credentialsManagerStorageKey to the native module when provided', async () => {
+      const localAuthenticationOptions = undefined;
+
+      await bridge.initialize(
+        'client-id',
+        'tenant-b.auth0.com',
+        localAuthenticationOptions,
+        true,
+        0,
+        'tenant-b'
+      );
+
+      expect(
+        MockedAuth0NativeModule.initializeAuth0WithConfiguration
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        MockedAuth0NativeModule.initializeAuth0WithConfiguration
+      ).toHaveBeenCalledWith(
+        'client-id',
+        'tenant-b.auth0.com',
+        undefined,
+        true,
+        0,
+        'tenant-b'
+      );
+    });
+
+    it('forwards undefined for credentialsManagerStorageKey when omitted (shared default store)', async () => {
+      await bridge.initialize('client-id', 'tenant-a.auth0.com');
+
+      expect(
+        MockedAuth0NativeModule.initializeAuth0WithConfiguration
+      ).toHaveBeenCalledWith(
+        'client-id',
+        'tenant-a.auth0.com',
+        undefined, // localAuthenticationOptions
+        true, // useDPoP default
+        0, // maxRetries default
+        undefined // credentialsManagerStorageKey
+      );
+    });
+
+    it('wraps a native initialization error in an AuthError', async () => {
+      const nativeError = { code: 'a0.initialize.failed', message: 'boom' };
+      MockedAuth0NativeModule.initializeAuth0WithConfiguration.mockRejectedValueOnce(
+        nativeError
+      );
+
+      await expect(
+        bridge.initialize('client-id', 'tenant-b.auth0.com')
+      ).rejects.toBeInstanceOf(AuthError);
+    });
+  });
+
   describe('clearSession', () => {
     it('should call the native webAuthLogout method with all parameters', async () => {
       const parameters = { federated: true, returnToUrl: 'com.myapp://logout' };
