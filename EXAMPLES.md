@@ -1841,7 +1841,7 @@ function MfaScreen({ mfaToken }: { mfaToken: string }) {
         phoneNumber: '+12025550135',
       });
       if (challenge.type === 'oob') {
-        console.log('OOB code:', challenge.oobCode);
+        // Keep challenge.oobCode in component state if you need it for verify().
       }
     } catch (error) {
       if (
