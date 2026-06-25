@@ -73,7 +73,10 @@ const ERROR_CODE_MAP: Record<string, string> = {
   invalid_oob_code: MfaErrorCodes.INVALID_OOB_CODE,
   invalid_binding_code: MfaErrorCodes.INVALID_BINDING_CODE,
   invalid_recovery_code: MfaErrorCodes.INVALID_RECOVERY_CODE,
-  invalid_grant: MfaErrorCodes.INVALID_OTP,
+  // invalid_grant is returned by the /oauth/token MFA grants for any rejected
+  // code (wrong otp, oob, or recovery), so it cannot be narrowed to INVALID_OTP.
+  // Keep it generic and let callers inspect the originating verify call.
+  invalid_grant: MfaErrorCodes.MFA_ERROR,
   mfa_token_invalid: MfaErrorCodes.INVALID_MFA_TOKEN,
   expired_token: MfaErrorCodes.EXPIRED_MFA_TOKEN,
   too_many_attempts: MfaErrorCodes.TOO_MANY_ATTEMPTS,
@@ -92,6 +95,10 @@ const ERROR_CODE_MAP: Record<string, string> = {
   mfa_list_authenticators_failed: MfaErrorCodes.MFA_ERROR,
   mfa_challenge_failed: MfaErrorCodes.CHALLENGE_FAILED,
   mfa_verify_failed: MfaErrorCodes.MFA_ERROR,
+  // spa-js raises mfa_context_not_found when no stored MFA context matches the
+  // supplied mfaToken (unknown/stale token); treat it as an invalid MFA token.
+  mfa_context_not_found: MfaErrorCodes.INVALID_MFA_TOKEN,
+  invalid_request: MfaErrorCodes.MFA_ERROR,
 
   // --- Generic fallbacks ---
   UNKNOWN: MfaErrorCodes.UNKNOWN_MFA_ERROR,

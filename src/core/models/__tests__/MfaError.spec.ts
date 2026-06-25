@@ -40,7 +40,11 @@ describe('MfaError', () => {
         'INVALID_RECOVERY_CODE',
         'Auth0 API recovery code error',
       ],
-      ['invalid_grant', 'INVALID_OTP', 'Auth0 API generic grant error for MFA'],
+      [
+        'invalid_grant',
+        'MFA_ERROR',
+        'Auth0 API generic grant error for MFA (ambiguous across otp/oob/recovery)',
+      ],
       ['mfa_token_invalid', 'INVALID_MFA_TOKEN', 'invalid MFA token'],
       ['expired_token', 'EXPIRED_MFA_TOKEN', 'expired MFA token'],
       ['too_many_attempts', 'TOO_MANY_ATTEMPTS', 'rate limit'],
@@ -59,6 +63,12 @@ describe('MfaError', () => {
       ['mfa_list_authenticators_failed', 'MFA_ERROR', 'web list error'],
       ['mfa_challenge_failed', 'CHALLENGE_FAILED', 'web challenge error'],
       ['mfa_verify_failed', 'MFA_ERROR', 'web verify error'],
+      [
+        'mfa_context_not_found',
+        'INVALID_MFA_TOKEN',
+        'spa-js stale/unknown MFA token',
+      ],
+      ['invalid_request', 'MFA_ERROR', 'spa-js invalid request'],
     ];
 
     it.each(testCases)(

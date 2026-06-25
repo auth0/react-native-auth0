@@ -19,36 +19,108 @@ export class WebMfaClient implements IMfaClient {
   private readonly spaMfa: MfaApiClient;
   private readonly tokenType: string;
 
-  private static readonly ALL_CHALLENGE_TYPES = [
-    { type: 'otp' },
-    { type: 'oob' },
-    { type: 'recovery-code' },
-  ];
-
   constructor(spaMfa: MfaApiClient, tokenType: string) {
     this.spaMfa = spaMfa;
     this.tokenType = tokenType;
   }
 
-  private ensureMfaContext(mfaToken: string): void {
-    this.spaMfa.setMFAAuthDetails(mfaToken, undefined, undefined, {
-      challenge: WebMfaClient.ALL_CHALLENGE_TYPES,
-    });
+  // Auth0 authenticator IDs are prefixed with their type (e.g. "otp|dev_x",
+  // "sms|dev_x", "push|dev_x"). Authenticator apps use the 'otp' challenge type;
+  // all out-of-band factors (sms/voice/email/push) use 'oob'.
+  private static challengeTypeFor(authenticatorId: string): 'otp' | 'oob' {
+    const prefix = authenticatorId.split('|')[0];
+    return prefix === 'otp' || prefix === 'totp' ? 'otp' : 'oob';
   }
+
+  // Decide whether an authenticator matches one of the requested
+  // MfaFactorType values. spa-js exposes `authenticatorType` (otp/oob) plus an
+  // `oobChannels` array; the public MfaFactorType vocabulary maps onto those.
+  private static matchesFactor(
+    authenticator: { authenticatorType: string; oobChannels?: string[] },
+    factor: string
+  ): boolean {
+    const oobChannels = authenticator.oobChannels ?? [];
+    switch (factor) {
+      case 'otp':
+        return authenticator.authenticatorType === 'otp';
+      case 'sms':
+        return oobChannels.includes('sms');
+      case 'voice':
+        return oobChannels.includes('voice');
+      case 'email':
+        return oobChannels.includes('email');
+      // Guardian push enrolls as an OOB authenticator on the `auth0` channel.
+      case 'push':
+        return oobChannels.includes('auth0');
+      default:
+        return false;
+    }
+  }
+
+  // spa-js filters authenticators by the challenge types stored in its MFA
+  // context, which is only auto-populated when spa-js's own login flow hits
+  // mfa_required. In this SDK the mfa_token comes from outside spa-js (e.g. a
+  // native/password-realm login), so the context is empty and getAuthenticators
+  // throws "challengeType is required". We seed a permissive context covering
+  // every challenge type so spa-js returns all authenticators, then apply our
+  // own factorsAllowed filter on top.
+  private static readonly ALL_CHALLENGE_TYPES = [
+    { type: 'otp' },
+    { type: 'totp' },
+    { type: 'phone' },
+    { type: 'email' },
+    { type: 'push-notification' },
+    { type: 'recovery-code' },
+  ];
 
   async getAuthenticators(
     parameters: MfaGetAuthenticatorsParameters
   ): Promise<MfaAuthenticator[]> {
     try {
-      this.ensureMfaContext(parameters.mfaToken);
-      const authenticators = await this.spaMfa.getAuthenticators(
-        parameters.mfaToken
-      );
-      return authenticators.map((a) => ({
+      let authenticators;
+      try {
+        authenticators = await this.spaMfa.getAuthenticators(
+          parameters.mfaToken
+        );
+      } catch (inner: any) {
+        // Only synthesize a context when spa-js reports it is missing; this
+        // preserves a real context populated by spa-js's own login flow.
+        if (inner?.error !== 'invalid_request') throw inner;
+        this.spaMfa.setMFAAuthDetails(
+          parameters.mfaToken,
+          undefined,
+          undefined,
+          {
+            challenge: WebMfaClient.ALL_CHALLENGE_TYPES,
+          }
+        );
+        authenticators = await this.spaMfa.getAuthenticators(
+          parameters.mfaToken
+        );
+      }
+
+      const { factorsAllowed } = parameters;
+      const filtered =
+        factorsAllowed && factorsAllowed.length > 0
+          ? authenticators.filter((a) =>
+              factorsAllowed.some((factor) =>
+                WebMfaClient.matchesFactor(
+                  a as {
+                    authenticatorType: string;
+                    oobChannels?: string[];
+                  },
+                  factor
+                )
+              )
+            )
+          : authenticators;
+
+      return filtered.map((a) => ({
         id: a.id,
         authenticatorType: a.authenticatorType,
         active: a.active,
         name: a.name,
+        oobChannel: (a as { oobChannels?: string[] }).oobChannels?.[0],
       }));
     } catch (e: any) {
       const authError = new AuthError(
@@ -68,7 +140,6 @@ export class WebMfaClient implements IMfaClient {
     parameters: MfaEnrollParameters
   ): Promise<MfaEnrollmentChallenge> {
     try {
-      this.ensureMfaContext(parameters.mfaToken);
       const { factorType } = parameters;
       let spaParams: any = {
         mfaToken: parameters.mfaToken,
@@ -90,6 +161,18 @@ export class WebMfaClient implements IMfaClient {
           type: 'totp',
           barcodeUri: response.barcodeUri,
           secret: response.secret,
+          recoveryCodes: response.recoveryCodes,
+        };
+      }
+
+      // Push (Auth0 Guardian) enrolls as an OOB authenticator but additionally
+      // returns a barcodeUri for QR pairing. Surface it as a dedicated push type.
+      if (factorType === 'push') {
+        return {
+          type: 'push',
+          barcodeUri: response.barcodeUri ?? '',
+          oobCode: response.oobCode,
+          oobChannel: response.oobChannel,
           recoveryCodes: response.recoveryCodes,
         };
       }
@@ -119,10 +202,11 @@ export class WebMfaClient implements IMfaClient {
     parameters: MfaChallengeWithAuthenticatorParameters
   ): Promise<MfaChallengeResult> {
     try {
-      this.ensureMfaContext(parameters.mfaToken);
       const response = await this.spaMfa.challenge({
         mfaToken: parameters.mfaToken,
-        challengeType: 'oob',
+        challengeType: WebMfaClient.challengeTypeFor(
+          parameters.authenticatorId
+        ),
         authenticatorId: parameters.authenticatorId,
       });
 
@@ -148,7 +232,6 @@ export class WebMfaClient implements IMfaClient {
 
   async verify(parameters: MfaVerifyParameters): Promise<Credentials> {
     try {
-      this.ensureMfaContext(parameters.mfaToken);
       const spaParams: any = { mfaToken: parameters.mfaToken };
 
       if ('otp' in parameters) {

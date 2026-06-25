@@ -199,7 +199,8 @@ const HooksAuthContent = (): React.JSX.Element => {
       let credentials;
       const oobCode =
         challengeResult?.oobCode ||
-        (enrollmentChallenge?.type === 'oob'
+        (enrollmentChallenge?.type === 'oob' ||
+        enrollmentChallenge?.type === 'push'
           ? enrollmentChallenge.oobCode
           : undefined);
 
@@ -468,6 +469,29 @@ const HooksAuthContent = (): React.JSX.Element => {
                     <Text>Secret: {enrollmentChallenge.secret}</Text>
                   </View>
                 )}
+                {enrollmentChallenge?.type === 'push' && (
+                  <View style={webStyles.infoBox}>
+                    <Text style={styles.hint}>
+                      Scan this QR with the Auth0 Guardian app to pair, then
+                      approve the push notification on your device.
+                    </Text>
+                    {enrollmentChallenge.barcodeUri ? (
+                      <View style={webStyles.qrContainer}>
+                        <Image
+                          source={{
+                            uri: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(enrollmentChallenge.barcodeUri)}`,
+                          }}
+                          style={webStyles.qrImage}
+                        />
+                      </View>
+                    ) : null}
+                    <Button
+                      onPress={onMfaVerify}
+                      title="I've approved the push"
+                      disabled={mfaLoading}
+                    />
+                  </View>
+                )}
                 {challengeResult?.challengeType === 'oob' ||
                 enrollmentChallenge?.type === 'oob' ? (
                   <>
@@ -693,13 +717,11 @@ class ClassApp extends React.Component<{}, ClassAppState> {
         enrollEmail: em,
       } = this.state;
       if (factor === MfaFactorType.SMS) {
-        challenge = await this.state.auth0
-          .mfa()
-          .enroll({
-            mfaToken,
-            factorType: MfaFactorType.SMS,
-            phoneNumber: phone,
-          });
+        challenge = await this.state.auth0.mfa().enroll({
+          mfaToken,
+          factorType: MfaFactorType.SMS,
+          phoneNumber: phone,
+        });
       } else if (factor === MfaFactorType.EMAIL) {
         challenge = await this.state.auth0
           .mfa()
@@ -730,7 +752,8 @@ class ClassApp extends React.Component<{}, ClassAppState> {
       let credentials;
       const oobCode =
         challengeResult?.oobCode ||
-        (enrollmentChallenge?.type === 'oob'
+        (enrollmentChallenge?.type === 'oob' ||
+        enrollmentChallenge?.type === 'push'
           ? enrollmentChallenge.oobCode
           : undefined);
       if (oobCode) {
@@ -1045,6 +1068,29 @@ class ClassApp extends React.Component<{}, ClassAppState> {
                         </>
                       )}
                       <Text>Secret: {enrollmentChallenge.secret}</Text>
+                    </View>
+                  )}
+                  {enrollmentChallenge?.type === 'push' && (
+                    <View style={webStyles.infoBox}>
+                      <Text style={styles.hint}>
+                        Scan this QR with the Auth0 Guardian app to pair, then
+                        approve the push notification on your device.
+                      </Text>
+                      {enrollmentChallenge.barcodeUri ? (
+                        <View style={webStyles.qrContainer}>
+                          <Image
+                            source={{
+                              uri: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(enrollmentChallenge.barcodeUri)}`,
+                            }}
+                            style={webStyles.qrImage}
+                          />
+                        </View>
+                      ) : null}
+                      <Button
+                        onPress={this.onMfaVerify}
+                        title="I've approved the push"
+                        disabled={mfaLoading}
+                      />
                     </View>
                   )}
                   {challengeResult?.challengeType === 'oob' ||

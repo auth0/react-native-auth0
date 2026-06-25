@@ -232,10 +232,33 @@ export type MfaTotpEnrollmentChallenge = {
   recoveryCodes?: string[];
 };
 
+/**
+ * Enrollment challenge for push notification (Auth0 Guardian).
+ *
+ * Push enrollment returns a `barcodeUri` to render as a QR code for pairing the
+ * Guardian app, alongside an `oobCode` used to poll/verify the enrollment.
+ *
+ * @remarks
+ * On Android, the underlying Auth0.Android SDK deserializes the push response as
+ * a TOTP challenge (it keys off `barcode_uri`), so `oobCode` is not available
+ * there; `barcodeUri` is always present for pairing.
+ */
+export type MfaPushEnrollmentChallenge = {
+  type: 'push';
+  /** QR code URI to display for pairing the Auth0 Guardian app. */
+  barcodeUri: string;
+  /** Out-of-band code used to verify the enrollment. Not available on Android. */
+  oobCode?: string;
+  /** The out-of-band channel, typically `"auth0"` for Guardian push. */
+  oobChannel?: string;
+  recoveryCodes?: string[];
+};
+
 /** Union type for all possible enrollment challenge responses. */
 export type MfaEnrollmentChallenge =
   | MfaOobEnrollmentChallenge
-  | MfaTotpEnrollmentChallenge;
+  | MfaTotpEnrollmentChallenge
+  | MfaPushEnrollmentChallenge;
 
 /** Structured payload extracted from an MFA_REQUIRED error. */
 export type MfaRequiredErrorPayload = {
@@ -284,7 +307,7 @@ export const MfaFactorType = {
   OTP: 'otp',
   /** SMS-based verification */
   SMS: 'sms',
-  /** Voice call verification */
+  /** Voice call verification. Native (iOS/Android) enrolls this as SMS; only web supports a distinct voice channel. */
   VOICE: 'voice',
   /** Email-based verification */
   EMAIL: 'email',

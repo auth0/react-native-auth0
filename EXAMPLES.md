@@ -1813,7 +1813,7 @@ function MfaScreen({ mfaToken }: { mfaToken: string }) {
   // Enroll a new TOTP authenticator
   const enrollTotp = async () => {
     try {
-      const challenge = await mfa.enroll({ mfaToken, type: 'otp' });
+      const challenge = await mfa.enroll({ mfaToken, factorType: 'otp' });
       if (challenge.type === 'totp') {
         console.log('Scan this barcode:', challenge.barcodeUri);
         console.log('Or enter this secret:', challenge.secret);
@@ -1837,9 +1837,12 @@ function MfaScreen({ mfaToken }: { mfaToken: string }) {
     try {
       const challenge = await mfa.enroll({
         mfaToken,
+        factorType: 'sms',
         phoneNumber: '+12025550135',
       });
-      console.log('OOB code:', challenge.oobCode);
+      if (challenge.type === 'oob') {
+        console.log('OOB code:', challenge.oobCode);
+      }
     } catch (error) {
       if (
         error instanceof MfaError &&
@@ -1922,7 +1925,7 @@ const authenticators = await auth0.mfa.getAuthenticators({
 // Enroll a TOTP authenticator
 const totpChallenge = await auth0.mfa.enroll({
   mfaToken: 'mfa_token',
-  type: 'otp',
+  factorType: 'otp',
 });
 // totpChallenge.type === 'totp'
 // totpChallenge.barcodeUri - QR code URI
@@ -1931,21 +1934,34 @@ const totpChallenge = await auth0.mfa.enroll({
 // Enroll via SMS
 const smsChallenge = await auth0.mfa.enroll({
   mfaToken: 'mfa_token',
+  factorType: 'sms',
   phoneNumber: '+12025550135',
 });
 
 // Enroll via email
 const emailChallenge = await auth0.mfa.enroll({
   mfaToken: 'mfa_token',
+  factorType: 'email',
   email: 'user@example.com',
 });
 
 // Enroll via voice call
+// Note: native (iOS/Android) enrolls voice as SMS on the same number;
+// only the web platform supports a distinct voice channel.
 const voiceChallenge = await auth0.mfa.enroll({
   mfaToken: 'mfa_token',
+  factorType: 'voice',
   phoneNumber: '+12025550135',
-  voice: true,
 });
+
+// Enroll push notification (Auth0 Guardian)
+const pushChallenge = await auth0.mfa.enroll({
+  mfaToken: 'mfa_token',
+  factorType: 'push',
+});
+// pushChallenge.type === 'push'
+// pushChallenge.barcodeUri - QR code URI to pair the Guardian app
+// pushChallenge.oobCode - used to verify the enrollment (not available on Android)
 
 // Trigger an OOB challenge
 const challenge = await auth0.mfa.challenge({

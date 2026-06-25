@@ -314,7 +314,8 @@ const HomeScreen = () => {
       let credentials;
       const oobCode =
         challengeResult?.oobCode ||
-        (enrollmentChallenge?.type === 'oob'
+        (enrollmentChallenge?.type === 'oob' ||
+        enrollmentChallenge?.type === 'push'
           ? enrollmentChallenge.oobCode
           : undefined);
 
@@ -498,6 +499,29 @@ const HomeScreen = () => {
                 <Text style={styles.infoValue} selectable>
                   {enrollmentChallenge.secret}
                 </Text>
+              </View>
+            )}
+            {enrollmentChallenge?.type === 'push' && (
+              <View style={styles.infoBox}>
+                <Text style={styles.hint}>
+                  Scan this QR code with the Auth0 Guardian app to pair, then
+                  approve the push notification on your device.
+                </Text>
+                {enrollmentChallenge.barcodeUri ? (
+                  <View style={styles.qrContainer}>
+                    <Image
+                      source={{
+                        uri: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(enrollmentChallenge.barcodeUri)}`,
+                      }}
+                      style={styles.qrImage}
+                    />
+                  </View>
+                ) : null}
+                <Button
+                  onPress={onVerify}
+                  title="I've approved the push"
+                  disabled={mfaLoading}
+                />
               </View>
             )}
             {challengeResult && (

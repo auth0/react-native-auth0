@@ -45,13 +45,48 @@ class A0MfaClient {
         self.useDPoP = useDPoP
     }
 
+    // Maps the public MfaFactorType vocabulary (otp/sms/voice/email/push) onto
+    // the challenge-type tokens Auth0.swift filters `authenticator.type` against.
+    // Note: iOS cannot distinguish sms from voice — both are the `phone` type.
+    private func mapFactorType(_ factor: String) -> [String] {
+        switch factor.lowercased() {
+        case "otp": return ["otp", "totp"]
+        case "sms", "voice": return ["phone"]
+        case "email": return ["email"]
+        case "push": return ["push-notification"]
+        default: return []
+        }
+    }
+
     func getAuthenticators(mfaToken: String, factorsAllowed: [String]?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        let allowedFactors = factorsAllowed ?? []
+        let requested = (factorsAllowed ?? []).map { $0.lowercased() }
+        var allowedFactors = requested.flatMap { mapFactorType($0) }
+
+        // Auth0.swift rejects an empty factorsAllowed list, so default to every
+        // recognized challenge-type token to match Android/web "return all" behaviour.
+        if allowedFactors.isEmpty {
+            allowedFactors = ["otp", "totp", "phone", "email", "push-notification", "recovery-code"]
+        }
+
+        // Auth0.swift filters only on `authenticator.type`, where sms and voice
+        // both surface as "phone" — so an sms-only (or voice-only) request still
+        // returns the other channel. Narrow phone-type results by oobChannel when
+        // the caller asked for one but not both. Empty set = no narrowing (covers
+        // the return-all default and requests that don't mention sms/voice).
+        var wantedPhoneChannels = Set<String>()
+        if requested.contains("sms") { wantedPhoneChannels.insert("sms") }
+        if requested.contains("voice") { wantedPhoneChannels.insert("voice") }
+        let narrowPhoneChannels = wantedPhoneChannels.count == 1
 
         mfaClient.getAuthenticators(mfaToken: mfaToken, factorsAllowed: allowedFactors).start { result in
             switch result {
             case .success(let authenticators):
-                let list = authenticators.map { authenticator -> [String: Any] in
+                let list = authenticators.compactMap { authenticator -> [String: Any]? in
+                    if narrowPhoneChannels, authenticator.type == "phone",
+                       let channel = authenticator.oobChannel,
+                       !wantedPhoneChannels.contains(channel) {
+                        return nil
+                    }
                     var dict: [String: Any] = [
                         "id": authenticator.id,
                         "authenticatorType": authenticator.authenticatorType,
@@ -128,7 +163,8 @@ class A0MfaClient {
             request.start { result in
                 switch result {
                 case .success(let challenge):
-                    var dict: [String: Any] = ["type": "oob"]
+                    var dict: [String: Any] = ["type": "push"]
+                    dict["barcodeUri"] = challenge.barcodeUri
                     dict["oobCode"] = challenge.oobCode
                     dict["oobChannel"] = challenge.oobChannel
                     if let recoveryCodes = challenge.recoveryCodes { dict["recoveryCodes"] = recoveryCodes }

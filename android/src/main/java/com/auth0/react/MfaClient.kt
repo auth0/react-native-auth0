@@ -55,15 +55,17 @@ class MfaClient(
         }
     }
 
+    // Maps the public MfaFactorType vocabulary (otp/sms/voice/email/push) onto
+    // the effective-type tokens Auth0.Android filters authenticators against.
+    // Note: Android cannot isolate push — Guardian's effective channel is
+    // `auth0`, so a push-only filter may not match the SDK's push-notification token.
     private fun mapFactorType(factor: String): String? {
         return when (factor.lowercase()) {
-            "otp", "totp" -> "otp"
-            "sms", "phone" -> "sms"
+            "otp" -> "otp"
+            "sms" -> "sms"
+            "voice" -> "voice"
             "email" -> "email"
-            "push", "push-notification" -> "push-notification"
-            "oob" -> "oob"
-            "recovery-code" -> "recovery-code"
-            "voice" -> "sms"
+            "push" -> "push-notification"
             else -> null
         }
     }
@@ -78,6 +80,23 @@ class MfaClient(
                     mapFactorType(factor)?.let { mapped -> factors.add(mapped) }
                 }
             }
+        }
+
+        // Auth0.Android rejects an empty factorsAllowed list, so default to every
+        // recognized factor token to match iOS/web "return all" behaviour.
+        if (factors.isEmpty()) {
+            factors.addAll(
+                listOf(
+                    "otp",
+                    "totp",
+                    "sms",
+                    "phone",
+                    "email",
+                    "push-notification",
+                    "oob",
+                    "recovery-code"
+                )
+            )
         }
 
         mfaClient.getAuthenticators(factors).start(
@@ -145,9 +164,18 @@ class MfaClient(
                     val map = WritableNativeMap()
                     when (result) {
                         is TotpEnrollmentChallenge -> {
-                            map.putString("type", "totp")
-                            map.putString("barcodeUri", result.barcodeUri)
-                            map.putString("secret", result.manualInputCode)
+                            // Push (Guardian) enrollment is deserialized by the SDK as a
+                            // TOTP challenge because the response carries barcode_uri.
+                            // Disambiguate using the requested factor type so the JS layer
+                            // receives a dedicated push challenge with the pairing QR.
+                            if (factorType == MfaFactorType.PUSH) {
+                                map.putString("type", "push")
+                                map.putString("barcodeUri", result.barcodeUri)
+                            } else {
+                                map.putString("type", "totp")
+                                map.putString("barcodeUri", result.barcodeUri)
+                                map.putString("secret", result.manualInputCode)
+                            }
                         }
                         is OobEnrollmentChallenge -> {
                             map.putString("type", "oob")

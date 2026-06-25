@@ -150,7 +150,7 @@ const ClassApiTestsScreen = ({ route }: Props) => {
           <Button
             onPress={() =>
               runTest(
-                () => auth0.mfa().enroll({ mfaToken, type: 'otp' }),
+                () => auth0.mfa().enroll({ mfaToken, factorType: 'otp' }),
                 'Enroll TOTP'
               )
             }

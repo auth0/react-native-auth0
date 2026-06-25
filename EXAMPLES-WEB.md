@@ -186,7 +186,7 @@ function MfaScreen({ mfaToken }: { mfaToken: string }) {
 
   const enrollTotp = async () => {
     try {
-      const challenge = await mfa.enroll({ mfaToken, type: 'otp' });
+      const challenge = await mfa.enroll({ mfaToken, factorType: 'otp' });
       if (challenge.type === 'totp') {
         console.log('Scan QR:', challenge.barcodeUri);
         console.log('Secret:', challenge.secret);
@@ -248,13 +248,20 @@ const authenticators = await auth0.mfa.getAuthenticators({
 // Enroll TOTP
 const challenge = await auth0.mfa.enroll({
   mfaToken: 'mfa_token',
-  type: 'otp',
+  factorType: 'otp',
 });
 
 // Enroll SMS
 const smsChallenge = await auth0.mfa.enroll({
   mfaToken: 'mfa_token',
+  factorType: 'sms',
   phoneNumber: '+12025550135',
+});
+
+// Enroll push notification (Auth0 Guardian) — web returns barcodeUri + oobCode
+const pushChallenge = await auth0.mfa.enroll({
+  mfaToken: 'mfa_token',
+  factorType: 'push',
 });
 
 // Challenge an authenticator
