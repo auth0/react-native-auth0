@@ -1,13 +1,33 @@
 # Change Log
 
+## [v5.8.0](https://github.com/auth0/react-native-auth0/tree/v5.8.0) (2026-06-26)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.7.0...v5.8.0)
+
+**Added**
+
+- feat: Add resumeSession() to recover Web Auth logins after Android process death [\#1566](https://github.com/auth0/react-native-auth0/pull/1566) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: Add parseIdToken utility to public API [\#1537](https://github.com/auth0/react-native-auth0/pull/1537) ([opfeffer](https://github.com/opfeffer))
+
+**Changed**
+
+- docs: clarify passwordless code vs magic link flows in EXAMPLES.md [\#1580](https://github.com/auth0/react-native-auth0/pull/1580) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Fixed**
+
+- fix: support runtime tenant/domain switching with per-client credential isolation [\#1564](https://github.com/auth0/react-native-auth0/pull/1564) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.7.0](https://github.com/auth0/react-native-auth0/tree/v5.7.0) (2026-06-01)
+
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.6.0...v5.7.0)
 
 **Added**
+
 - feat: Add My Account API support for managing authentication methods [\#1552](https://github.com/auth0/react-native-auth0/pull/1552) ([subhankarmaiti](https://github.com/subhankarmaiti))
 - feat: add passkeys support for signup and signin [\#1530](https://github.com/auth0/react-native-auth0/pull/1530) ([subhankarmaiti](https://github.com/subhankarmaiti))
 
 **Fixed**
+
 - fix: fixing incorrectly created CHANGELOG.md [\#1539](https://github.com/auth0/react-native-auth0/pull/1539) ([nandan-bhat](https://github.com/nandan-bhat))
 
 ## [5.6.0](https://github.com/auth0/react-native-auth0/tree/v5.6.0) (2026-05-14)
@@ -15,13 +35,14 @@
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.5.1...v5.6.0)
 
 **Added**
+
 - feat: surface DPoP credential state errors from native SDKs [\#1529](https://github.com/auth0/react-native-auth0/pull/1529) ([@subhankarmaiti](https://github.com/subhankarmaiti))
 - feat(android): expose allowedBrowserPackages option for web authentication [\#1513](https://github.com/auth0/react-native-auth0/pull/1513) ([@mrbrentkelly](https://github.com/mrbrentkelly))
 
 **Fixed**
+
 - fix: apply deepCamelCase to MFA challenge response [\#1510](https://github.com/auth0/react-native-auth0/pull/1510) ([@AkhtarZaman7](https://github.com/AkhtarZaman7))
 - docs: add Expo callback URL format to README [\#1522](https://github.com/auth0/react-native-auth0/pull/1522) ([@subhankarmaiti](https://github.com/subhankarmaiti))
-
 
 ## [v5.5.1](https://github.com/auth0/react-native-auth0/tree/v5.5.1) (2026-04-23)
 
