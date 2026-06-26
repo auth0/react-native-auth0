@@ -196,13 +196,23 @@ auth0.auth
 
 Passwordless is a two-step authentication flow that makes use of this type of connection. The **Passwordless OTP** grant is required to be enabled in your Auth0 application beforehand. Check [our guide](https://auth0.com/docs/dashboard/guides/applications/update-grant-types) to learn how to enable it.
 
-To start the flow, you request a code to be sent to the user's email or phone number. For email scenarios only, a link can be sent in place of the code.
+The `send` option controls how the user receives the challenge, and the two options complete differently. Make sure you use the one that matches how you started the flow:
+
+- **`send: 'code'`** — the user receives a 6-digit one-time code that you collect in your app and exchange for tokens with `loginWithEmail` / `loginWithSMS`. This is fully handled by the SDK and is the recommended option for React Native / Expo.
+- **`send: 'link'`** — the user receives a magic link (typically by email). Tapping it completes authentication server-side and redirects to your app's callback URL with the tokens already in the URL fragment (e.g. `myapp://callback#access_token=...`). There is **no** code to pass back to `loginWithEmail` in this case; instead your app must listen for the deep link and parse the tokens from the fragment yourself (see [Handling the magic link callback](#handling-the-magic-link-callback) below).
+
+> [!NOTE]
+> This SDK accepts only `'code'` or `'link'` for `send`. The underlying native SDKs (Auth0.swift / Auth0.Android) additionally expose platform-specific link types such as `link_ios` / `link_android`, but those are not surfaced through `react-native-auth0`.
+
+#### Code flow (recommended)
+
+To start the flow, request a code to be sent to the user's email or phone number:
 
 ```js
 auth0.auth
   .passwordlessWithEmail({
     email: 'info@auth0.com',
-    send: 'link',
+    send: 'code',
   })
   .then(console.log)
   .catch(console.error);
@@ -219,7 +229,7 @@ auth0.auth
   .catch(console.error);
 ```
 
-Then, in order to complete the authentication, you must send back that received code value along with the email or phone number used:
+Then, to complete the authentication, send back the received code along with the email or phone number used:
 
 ```js
 auth0.auth
@@ -242,6 +252,63 @@ auth0.auth
   .then(console.log)
   .catch(console.error);
 ```
+
+#### Magic link flow
+
+To start the flow, request a link to be sent to the user's email:
+
+```js
+auth0.auth
+  .passwordlessWithEmail({
+    email: 'info@auth0.com',
+    send: 'link',
+  })
+  .then(console.log)
+  .catch(console.error);
+```
+
+##### Handling the magic link callback
+
+With `send: 'link'`, tapping the link in the email completes authentication on the Auth0 server and redirects to your registered callback URL with the tokens in the URL fragment:
+
+```text
+myapp://callback#access_token=...&scope=openid%20profile%20email%20offline_access&expires_in=7200&token_type=Bearer
+```
+
+The SDK does not intercept this redirect, so do **not** call `loginWithEmail` here — there is no code to send back. Instead, listen for the incoming deep link in your app using React Native's [`Linking`](https://reactnative.dev/docs/linking) API (or [`expo-linking`](https://docs.expo.dev/versions/latest/sdk/linking/) on Expo) and parse the tokens from the URL fragment yourself:
+
+```js
+import { Linking } from 'react-native';
+
+function parseTokensFromUrl(url) {
+  const fragment = url.split('#')[1] ?? '';
+  const params = new URLSearchParams(fragment);
+  return {
+    idToken: params.get('id_token'),
+    accessToken: params.get('access_token'),
+    expiresIn: params.get('expires_in'),
+    scope: params.get('scope'),
+    tokenType: params.get('token_type'),
+  };
+}
+
+// Handle the case where the app is opened from a cold start by the link
+Linking.getInitialURL().then((url) => {
+  if (url) {
+    const tokens = parseTokensFromUrl(url);
+    // store / use the tokens
+  }
+});
+
+// Handle the case where the app is already running
+const subscription = Linking.addEventListener('url', ({ url }) => {
+  const tokens = parseTokensFromUrl(url);
+  // store / use the tokens
+});
+```
+
+> [!NOTE]
+> For native and Expo apps, the **code flow is recommended** because the SDK handles the full exchange for you. Use the magic link flow only if your use case specifically requires magic links, and be aware that you are responsible for handling the deep link and securely storing the returned tokens.
 
 ### Create user in database connection
 
