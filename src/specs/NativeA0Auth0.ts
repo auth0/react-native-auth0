@@ -169,6 +169,45 @@ export interface Spec extends TurboModule {
   ): Promise<Credentials>;
 
   /**
+   * Get enrolled MFA authenticators.
+   */
+  getMfaAuthenticators(
+    mfaToken: string,
+    factorsAllowed: string[] | undefined
+  ): Promise<Object[]>;
+
+  /**
+   * Enroll a new MFA factor.
+   * @param mfaToken The MFA token from an MFA_REQUIRED error.
+   * @param type The type of factor to enroll: 'phone', 'email', 'otp', or 'push'.
+   * @param value The phone number or email address (required for 'phone' and 'email' types).
+   */
+  mfaEnroll(
+    mfaToken: string,
+    type: string,
+    value: string | undefined
+  ): Promise<Object>;
+
+  /**
+   * Request an MFA challenge for an enrolled authenticator.
+   */
+  mfaChallenge(mfaToken: string, authenticatorId: string): Promise<Object>;
+
+  /**
+   * Verify an MFA code and obtain credentials.
+   * @param mfaToken The MFA token.
+   * @param type The verification type: 'otp', 'oob', or 'recoveryCode'.
+   * @param code The OTP code, OOB code, or recovery code.
+   * @param bindingCode The binding code for OOB verification (optional).
+   */
+  mfaVerify(
+    mfaToken: string,
+    type: string,
+    code: string,
+    bindingCode: string | undefined
+  ): Promise<Credentials>;
+
+  /**
    * Request a passkey signup challenge from Auth0.
    */
   passkeySignupChallenge(

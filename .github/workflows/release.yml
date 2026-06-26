@@ -43,8 +43,8 @@ jobs:
       - name: Run RL Scanner
         uses: auth0/devsecops-tooling/.github/actions/rl-scan@e29f26478db18ff0bcbe4bc447a8fbd54fbeec9e # main on 2026-06-09, TODO: use a release instead
         with:
-          artifact-name: "react-native-auth0"
-          artifact-path: "${{ github.workspace }}/react-native-auth0.tgz"
+          artifact-name: 'react-native-auth0'
+          artifact-path: '${{ github.workspace }}/react-native-auth0.tgz'
           version: ${{ steps.get_version.outputs.version }}
           RLSECURE_LICENSE: ${{ secrets.RLSECURE_LICENSE }}
           RLSECURE_SITE_KEY: ${{ secrets.RLSECURE_SITE_KEY }}

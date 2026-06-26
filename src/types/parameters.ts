@@ -1,4 +1,4 @@
-import type { TokenType } from './common';
+import type { TokenType, MfaFactorType } from './common';
 
 /** A base interface for API calls that allow passing custom headers.
  * @hidden
@@ -279,6 +279,166 @@ export interface MfaChallengeParameters extends RequestOptions {
   challengeType?: 'oob' | 'otp';
   authenticatorId?: string;
 }
+
+// ========= MFA Flexible Factors Grant Parameters =========
+
+/** Parameters for listing enrolled MFA authenticators. */
+export interface MfaGetAuthenticatorsParameters {
+  mfaToken: string;
+  /**
+   * Restrict the returned authenticators to the given factor types. Use the
+   * {@link MfaFactorType} constants as the single, platform-agnostic vocabulary;
+   * each platform maps these to its native filtering tokens. Omit or pass an
+   * empty array to return all enrolled authenticators (the SDK supplies the
+   * full set of factor types on every platform).
+   *
+   * @remarks
+   * - **Android** cannot isolate `push` — its effective channel is `auth0`,
+   *   so a `push`-only filter may not match Guardian authenticators.
+   */
+  factorsAllowed?: MfaFactorType[];
+}
+
+/**
+ * Enroll an OTP (TOTP) authenticator.
+ *
+ * @example
+ * ```ts
+ * import { MfaFactorType } from 'react-native-auth0';
+ * const result = await mfa.enroll({ mfaToken, factorType: MfaFactorType.OTP });
+ * // result.secret, result.barcodeUri
+ * ```
+ */
+export interface MfaEnrollOtpParameters {
+  mfaToken: string;
+  factorType: 'otp';
+}
+
+/**
+ * Enroll an SMS MFA factor.
+ * Requires a phone number in E.164 format.
+ *
+ * @example
+ * ```ts
+ * import { MfaFactorType } from 'react-native-auth0';
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.SMS, phoneNumber: '+12025550135' });
+ * ```
+ */
+export interface MfaEnrollSmsParameters {
+  mfaToken: string;
+  factorType: 'sms';
+  phoneNumber: string;
+}
+
+/**
+ * Enroll a voice call MFA factor.
+ * Requires a phone number in E.164 format.
+ *
+ * @remarks
+ * Voice is only enrolled as a distinct factor on the **web** platform. On the
+ * **native** platforms (iOS/Android), the underlying Auth0.swift and
+ * Auth0.Android SDKs do not expose a voice OOB channel, so a voice request is
+ * enrolled as **SMS** on the same phone number. Use {@link MfaEnrollSmsParameters}
+ * directly on native if SMS is the intended factor.
+ *
+ * @example
+ * ```ts
+ * import { MfaFactorType } from 'react-native-auth0';
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.VOICE, phoneNumber: '+12025550135' });
+ * ```
+ */
+export interface MfaEnrollVoiceParameters {
+  mfaToken: string;
+  factorType: 'voice';
+  phoneNumber: string;
+}
+
+/**
+ * Enroll an email MFA factor.
+ *
+ * @example
+ * ```ts
+ * import { MfaFactorType } from 'react-native-auth0';
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.EMAIL, email: 'user@example.com' });
+ * ```
+ */
+export interface MfaEnrollEmailParameters {
+  mfaToken: string;
+  factorType: 'email';
+  email: string;
+}
+
+/**
+ * Enroll a push notification MFA factor (Auth0 Guardian).
+ *
+ * @example
+ * ```ts
+ * import { MfaFactorType } from 'react-native-auth0';
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.PUSH });
+ * ```
+ */
+export interface MfaEnrollPushParameters {
+  mfaToken: string;
+  factorType: 'push';
+}
+
+/**
+ * Union type for all MFA enrollment parameter types.
+ * Each variant is discriminated by the `factorType` field.
+ *
+ * @example
+ * ```ts
+ * import { MfaFactorType } from 'react-native-auth0';
+ *
+ * // OTP
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.OTP });
+ * // SMS
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.SMS, phoneNumber: '+1...' });
+ * // Voice
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.VOICE, phoneNumber: '+1...' });
+ * // Email
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.EMAIL, email: 'user@example.com' });
+ * // Push
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.PUSH });
+ * ```
+ */
+export type MfaEnrollParameters =
+  | MfaEnrollOtpParameters
+  | MfaEnrollSmsParameters
+  | MfaEnrollVoiceParameters
+  | MfaEnrollEmailParameters
+  | MfaEnrollPushParameters;
+
+/** Parameters for requesting an MFA challenge via the MFA API. */
+export interface MfaChallengeWithAuthenticatorParameters {
+  mfaToken: string;
+  authenticatorId: string;
+}
+
+/** Parameters for verifying an MFA OTP code (authenticator app). */
+export interface MfaVerifyOtpParameters {
+  mfaToken: string;
+  otp: string;
+}
+
+/** Parameters for verifying an MFA OOB code (SMS/Email/Push). */
+export interface MfaVerifyOobParameters {
+  mfaToken: string;
+  oobCode: string;
+  bindingCode?: string;
+}
+
+/** Parameters for verifying with a recovery code. */
+export interface MfaVerifyRecoveryCodeParameters {
+  mfaToken: string;
+  recoveryCode: string;
+}
+
+/** Union type for all MFA verification parameter types. */
+export type MfaVerifyParameters =
+  | MfaVerifyOtpParameters
+  | MfaVerifyOobParameters
+  | MfaVerifyRecoveryCodeParameters;
 
 // ========= User Management & Profile Parameters =========
 

@@ -5,3 +5,4 @@ export * from './ICredentialsManager';
 export * from './IMyAccountClient';
 export * from './IWebAuthProvider';
 export * from './IUsersClient';
+export * from './IMfaClient';
