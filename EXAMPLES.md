@@ -284,6 +284,7 @@ function parseTokensFromUrl(url) {
   const fragment = url.split('#')[1] ?? '';
   const params = new URLSearchParams(fragment);
   return {
+    idToken: params.get('id_token'),
     accessToken: params.get('access_token'),
     expiresIn: params.get('expires_in'),
     scope: params.get('scope'),
