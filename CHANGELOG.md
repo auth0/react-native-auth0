@@ -1,5 +1,22 @@
 # Change Log
 
+## [v5.8.0](https://github.com/auth0/react-native-auth0/tree/v5.8.0) (2026-06-26)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.7.0...v5.8.0)
+
+**Added**
+
+- feat: Add resumeSession() to recover Web Auth logins after Android process death [\#1566](https://github.com/auth0/react-native-auth0/pull/1566) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: Add parseIdToken utility to public API [\#1537](https://github.com/auth0/react-native-auth0/pull/1537) ([opfeffer](https://github.com/opfeffer))
+
+**Changed**
+
+- docs: clarify passwordless code vs magic link flows in EXAMPLES.md [\#1580](https://github.com/auth0/react-native-auth0/pull/1580) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Fixed**
+
+- fix: support runtime tenant/domain switching with per-client credential isolation [\#1564](https://github.com/auth0/react-native-auth0/pull/1564) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.7.0](https://github.com/auth0/react-native-auth0/tree/v5.7.0) (2026-06-01)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.6.0...v5.7.0)

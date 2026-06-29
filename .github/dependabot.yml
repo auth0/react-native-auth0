@@ -12,3 +12,12 @@ updates:
     ignore:
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
+  - package-ecosystem: gradle
+    directory: android
+    schedule:
+      interval: daily
+    allow:
+      - dependency-name: 'com.auth0.android:auth0'
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
