@@ -117,6 +117,7 @@ export class WebMfaClient implements IMfaClient {
 
       return filtered.map((a) => ({
         id: a.id,
+        type: (a as { type?: string }).type,
         authenticatorType: a.authenticatorType,
         active: a.active,
         name: a.name,
@@ -232,6 +233,18 @@ export class WebMfaClient implements IMfaClient {
 
   async verify(parameters: MfaVerifyParameters): Promise<Credentials> {
     try {
+      // spa-js reads scope/audience from the stored MFA context rather than
+      // from verify() params, so seed the context when the caller supplies
+      // either. Omitting both preserves whatever context spa-js's own login
+      // flow populated.
+      if (parameters.scope !== undefined || parameters.audience !== undefined) {
+        this.spaMfa.setMFAAuthDetails(
+          parameters.mfaToken,
+          parameters.scope,
+          parameters.audience
+        );
+      }
+
       const spaParams: any = { mfaToken: parameters.mfaToken };
 
       if ('otp' in parameters) {

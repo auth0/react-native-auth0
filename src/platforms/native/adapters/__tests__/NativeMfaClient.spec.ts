@@ -292,7 +292,10 @@ describe('NativeMfaClient', () => {
       expect(mockBridge.mfaVerify).toHaveBeenCalledWith(
         'mfa_token_123',
         'otp',
-        '123456'
+        '123456',
+        undefined,
+        undefined,
+        undefined
       );
       expect(result).toEqual(mockCredentials);
     });
@@ -309,6 +312,8 @@ describe('NativeMfaClient', () => {
         'mfa_token_123',
         'oob',
         'oob_code_123',
+        undefined,
+        undefined,
         undefined
       );
       expect(result).toEqual(mockCredentials);
@@ -327,7 +332,9 @@ describe('NativeMfaClient', () => {
         'mfa_token_123',
         'oob',
         'oob_code_123',
-        '654321'
+        '654321',
+        undefined,
+        undefined
       );
       expect(result).toEqual(mockCredentials);
     });
@@ -343,7 +350,31 @@ describe('NativeMfaClient', () => {
       expect(mockBridge.mfaVerify).toHaveBeenCalledWith(
         'mfa_token_123',
         'recoveryCode',
-        'RECOVERY_CODE_123'
+        'RECOVERY_CODE_123',
+        undefined,
+        undefined,
+        undefined
+      );
+      expect(result).toEqual(mockCredentials);
+    });
+
+    it('should forward scope and audience to the bridge', async () => {
+      mockBridge.mfaVerify.mockResolvedValueOnce(mockCredentials);
+
+      const result = await client.verify({
+        mfaToken: 'mfa_token_123',
+        otp: '123456',
+        scope: 'openid profile',
+        audience: 'https://api.example.com',
+      });
+
+      expect(mockBridge.mfaVerify).toHaveBeenCalledWith(
+        'mfa_token_123',
+        'otp',
+        '123456',
+        undefined,
+        'openid profile',
+        'https://api.example.com'
       );
       expect(result).toEqual(mockCredentials);
     });

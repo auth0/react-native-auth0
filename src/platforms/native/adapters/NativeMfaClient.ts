@@ -74,14 +74,17 @@ export class NativeMfaClient implements IMfaClient {
   }
 
   async verify(parameters: MfaVerifyParameters): Promise<Credentials> {
-    const { mfaToken } = parameters;
+    const { mfaToken, scope, audience } = parameters;
 
     try {
       if ('otp' in parameters) {
         return await this.bridge.mfaVerify(
           mfaToken,
           'otp',
-          (parameters as MfaVerifyOtpParameters).otp
+          (parameters as MfaVerifyOtpParameters).otp,
+          undefined,
+          scope,
+          audience
         );
       }
 
@@ -91,7 +94,9 @@ export class NativeMfaClient implements IMfaClient {
           mfaToken,
           'oob',
           oobParams.oobCode,
-          oobParams.bindingCode
+          oobParams.bindingCode,
+          scope,
+          audience
         );
       }
 
@@ -99,7 +104,10 @@ export class NativeMfaClient implements IMfaClient {
       return await this.bridge.mfaVerify(
         mfaToken,
         'recoveryCode',
-        recoveryParams.recoveryCode
+        recoveryParams.recoveryCode,
+        undefined,
+        scope,
+        audience
       );
     } catch (e) {
       throw e instanceof AuthError ? new MfaError(e) : e;

@@ -306,14 +306,18 @@ export class NativeBridgeManager implements INativeBridge {
     mfaToken: string,
     type: string,
     code: string,
-    bindingCode?: string
+    bindingCode?: string,
+    scope?: string,
+    audience?: string
   ): Promise<Credentials> {
     const credential = await this.a0_call(
       Auth0NativeModule.mfaVerify.bind(Auth0NativeModule),
       mfaToken,
       type,
       code,
-      bindingCode
+      bindingCode,
+      scope,
+      audience
     );
     return new CredentialsModel(credential);
   }

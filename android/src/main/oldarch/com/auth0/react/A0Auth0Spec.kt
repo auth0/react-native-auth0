@@ -161,6 +161,8 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
         type: String,
         code: String,
         bindingCode: String?,
+        scope: String?,
+        audience: String?,
         promise: Promise
     )
     

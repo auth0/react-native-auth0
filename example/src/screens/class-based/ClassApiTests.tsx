@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
+import { MfaFactorType } from 'react-native-auth0';
 import auth0 from '../../api/auth0';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
@@ -26,6 +27,13 @@ const ClassApiTestsScreen = ({ route }: Props) => {
   const [otp, setOtp] = useState('');
   const [authenticatorId, setAuthenticatorId] = useState('');
   const [refreshToken, setRefreshToken] = useState('');
+  const [enrollPhone, setEnrollPhone] = useState('');
+  const [enrollEmailMfa, setEnrollEmailMfa] = useState('');
+  const [oobCode, setOobCode] = useState('');
+  const [bindingCode, setBindingCode] = useState('');
+  const [recoveryCode, setRecoveryCode] = useState('');
+  const [verifyScope, setVerifyScope] = useState('');
+  const [verifyAudience, setVerifyAudience] = useState('');
 
   const runTest = async (testFn: () => Promise<any>, title: string) => {
     setError(null);
@@ -42,6 +50,9 @@ const ClassApiTestsScreen = ({ route }: Props) => {
       // If we got credentials, update our state for subsequent tests
       if (res?.mfa_token) setMfaToken(res.mfa_token);
       if (res?.refreshToken) setRefreshToken(res.refreshToken);
+      // Carry an oobCode forward from a challenge/enroll result so the verify
+      // call below can use it without manual copy/paste.
+      if (res?.oobCode) setOobCode(res.oobCode);
     } catch (e) {
       console.log('Error:', e);
       setError(e as Error);
@@ -129,7 +140,7 @@ const ClassApiTestsScreen = ({ route }: Props) => {
 
         <Section title="MFA Flexible Factors Grant">
           <Text style={styles.hint}>
-            Uses auth0.mfa() class-based API for flexible MFA operations.
+            Uses auth0.mfa class-based API for flexible MFA operations.
           </Text>
           <LabeledInput
             label="MFA Token"
@@ -140,23 +151,120 @@ const ClassApiTestsScreen = ({ route }: Props) => {
           <Button
             onPress={() =>
               runTest(
-                () => auth0.mfa().getAuthenticators({ mfaToken }),
+                () =>
+                  auth0.mfa.getAuthenticators({
+                    mfaToken,
+                    factorsAllowed: [
+                      MfaFactorType.OTP,
+                      MfaFactorType.SMS,
+                      MfaFactorType.VOICE,
+                      MfaFactorType.EMAIL,
+                      MfaFactorType.PUSH,
+                    ],
+                  }),
                 'List Authenticators'
               )
             }
-            title="mfa().getAuthenticators()"
+            title="mfa.getAuthenticators()"
+            disabled={!mfaToken}
+          />
+          <Text style={styles.hint}>
+            Each authenticator carries a `type` (otp/phone/email/push) alongside
+            `authenticatorType` and `oobChannel`.
+          </Text>
+
+          <Text style={styles.subTitle}>Enroll a factor</Text>
+          <Button
+            onPress={() =>
+              runTest(
+                () =>
+                  auth0.mfa.enroll({ mfaToken, factorType: MfaFactorType.OTP }),
+                'Enroll TOTP'
+              )
+            }
+            title="mfa.enroll(otp)"
             disabled={!mfaToken}
           />
           <Button
             onPress={() =>
               runTest(
-                () => auth0.mfa().enroll({ mfaToken, factorType: 'otp' }),
-                'Enroll TOTP'
+                () =>
+                  auth0.mfa.enroll({
+                    mfaToken,
+                    factorType: MfaFactorType.PUSH,
+                  }),
+                'Enroll Push'
               )
             }
-            title="mfa().enroll(otp)"
+            title="mfa.enroll(push)"
             disabled={!mfaToken}
           />
+          <LabeledInput
+            label="Phone Number (SMS / Voice)"
+            value={enrollPhone}
+            onChangeText={setEnrollPhone}
+            placeholder="+12025550135"
+            keyboardType="phone-pad"
+          />
+          <Button
+            onPress={() =>
+              runTest(
+                () =>
+                  auth0.mfa.enroll({
+                    mfaToken,
+                    factorType: MfaFactorType.SMS,
+                    phoneNumber: enrollPhone,
+                  }),
+                'Enroll SMS'
+              )
+            }
+            title="mfa.enroll(sms)"
+            disabled={!mfaToken || !enrollPhone}
+          />
+          <Button
+            onPress={() =>
+              runTest(
+                () =>
+                  auth0.mfa.enroll({
+                    mfaToken,
+                    factorType: MfaFactorType.VOICE,
+                    phoneNumber: enrollPhone,
+                  }),
+                'Enroll Voice'
+              )
+            }
+            title="mfa.enroll(voice)"
+            disabled={!mfaToken || !enrollPhone}
+          />
+          <Text style={styles.hint}>
+            Voice is a distinct channel on web only. On native it falls back to
+            SMS on the same number.
+          </Text>
+          <LabeledInput
+            label="Email (MFA enroll)"
+            value={enrollEmailMfa}
+            onChangeText={setEnrollEmailMfa}
+            placeholder="user@example.com"
+            autoCapitalize="none"
+            keyboardType="email-address"
+          />
+          <Button
+            onPress={() =>
+              runTest(
+                () =>
+                  auth0.mfa.enroll({
+                    mfaToken,
+                    factorType: MfaFactorType.EMAIL,
+                    email: enrollEmailMfa,
+                  }),
+                'Enroll Email'
+              )
+            }
+            title="mfa.enroll(email)"
+            disabled={!mfaToken || !enrollEmailMfa}
+          />
+
+          <Text style={styles.subTitle}>Challenge</Text>
           <LabeledInput
             label="Authenticator ID"
             value={authenticatorId}
@@ -166,12 +274,32 @@ const ClassApiTestsScreen = ({ route }: Props) => {
           <Button
             onPress={() =>
               runTest(
-                () => auth0.mfa().challenge({ mfaToken, authenticatorId }),
+                () => auth0.mfa.challenge({ mfaToken, authenticatorId }),
                 'Challenge'
               )
             }
-            title="mfa().challenge()"
+            title="mfa.challenge()"
             disabled={!mfaToken || !authenticatorId}
+          />
+
+          <Text style={styles.subTitle}>Verify</Text>
+          <Text style={styles.hint}>
+            Scope/audience are optional; supply them to mint an API access token
+            on successful verification.
+          </Text>
+          <LabeledInput
+            label="Scope (optional)"
+            value={verifyScope}
+            onChangeText={setVerifyScope}
+            placeholder="openid profile email"
+            autoCapitalize="none"
+          />
+          <LabeledInput
+            label="Audience (optional)"
+            value={verifyAudience}
+            onChangeText={setVerifyAudience}
+            placeholder="https://your-api/"
+            autoCapitalize="none"
           />
           <LabeledInput
             label="OTP Code"
@@ -181,10 +309,72 @@ const ClassApiTestsScreen = ({ route }: Props) => {
           />
           <Button
             onPress={() =>
-              runTest(() => auth0.mfa().verify({ mfaToken, otp }), 'Verify OTP')
+              runTest(
+                () =>
+                  auth0.mfa.verify({
+                    mfaToken,
+                    otp,
+                    scope: verifyScope || undefined,
+                    audience: verifyAudience || undefined,
+                  }),
+                'Verify OTP'
+              )
             }
-            title="mfa().verify(otp)"
+            title="mfa.verify(otp)"
             disabled={!mfaToken || !otp}
+          />
+          <LabeledInput
+            label="OOB Code"
+            value={oobCode}
+            onChangeText={setOobCode}
+            placeholder="From challenge/enroll result"
+          />
+          <LabeledInput
+            label="Binding Code (SMS/Voice/Email)"
+            value={bindingCode}
+            onChangeText={setBindingCode}
+            keyboardType="numeric"
+            placeholder="Code from SMS/email/voice"
+          />
+          <Button
+            onPress={() =>
+              runTest(
+                () =>
+                  auth0.mfa.verify({
+                    mfaToken,
+                    oobCode,
+                    bindingCode: bindingCode || undefined,
+                    scope: verifyScope || undefined,
+                    audience: verifyAudience || undefined,
+                  }),
+                'Verify OOB'
+              )
+            }
+            title="mfa.verify(oob)"
+            disabled={!mfaToken || !oobCode}
+          />
+          <LabeledInput
+            label="Recovery Code"
+            value={recoveryCode}
+            onChangeText={setRecoveryCode}
+            placeholder="Recovery code"
+            autoCapitalize="none"
+          />
+          <Button
+            onPress={() =>
+              runTest(
+                () =>
+                  auth0.mfa.verify({
+                    mfaToken,
+                    recoveryCode,
+                    scope: verifyScope || undefined,
+                    audience: verifyAudience || undefined,
+                  }),
+                'Verify Recovery Code'
+              )
+            }
+            title="mfa.verify(recoveryCode)"
+            disabled={!mfaToken || !recoveryCode}
           />
         </Section>
 
@@ -269,6 +459,12 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   hint: { fontSize: 12, color: '#888', fontStyle: 'italic' },
+  subTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#333',
+    marginTop: 8,
+  },
 });
 
 export default ClassApiTestsScreen;

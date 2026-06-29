@@ -203,6 +203,13 @@ export type MfaChallengeResponse =
 /** Represents an enrolled MFA authenticator. */
 export type MfaAuthenticator = {
   id: string;
+  /**
+   * The factor type of the authenticator, e.g. `"otp"`, `"phone"`, `"email"`,
+   * or `"push-notification"`. Use this to distinguish factors when
+   * `authenticatorType` alone is ambiguous (for example, SMS and voice both
+   * surface as the `"phone"` type — narrow further with `oobChannel`).
+   */
+  type?: string;
   authenticatorType: string;
   name?: string;
   active: boolean;
@@ -254,11 +261,25 @@ export type MfaPushEnrollmentChallenge = {
   recoveryCodes?: string[];
 };
 
+/**
+ * Enrollment challenge for a recovery code.
+ *
+ * @remarks
+ * Only emitted on Android, where the underlying Auth0.Android SDK can return a
+ * dedicated recovery-code enrollment challenge. On iOS and web, recovery codes
+ * are instead surfaced via the `recoveryCodes` array on other challenge types.
+ */
+export type MfaRecoveryCodeEnrollmentChallenge = {
+  type: 'recovery-code';
+  recoveryCode: string;
+};
+
 /** Union type for all possible enrollment challenge responses. */
 export type MfaEnrollmentChallenge =
   | MfaOobEnrollmentChallenge
   | MfaTotpEnrollmentChallenge
-  | MfaPushEnrollmentChallenge;
+  | MfaPushEnrollmentChallenge
+  | MfaRecoveryCodeEnrollmentChallenge;
 
 /** Structured payload extracted from an MFA_REQUIRED error. */
 export type MfaRequiredErrorPayload = {
@@ -307,7 +328,14 @@ export const MfaFactorType = {
   OTP: 'otp',
   /** SMS-based verification */
   SMS: 'sms',
-  /** Voice call verification. Native (iOS/Android) enrolls this as SMS; only web supports a distinct voice channel. */
+  /**
+   * Voice call verification.
+   *
+   * Only the **web** platform supports voice as a distinct channel. On
+   * **native** (iOS/Android) the underlying SDKs do not support a voice OOB
+   * channel: enrolling `voice` falls back to **SMS** on the same number, and
+   * voice cannot be isolated from SMS when filtering authenticators.
+   */
   VOICE: 'voice',
   /** Email-based verification */
   EMAIL: 'email',

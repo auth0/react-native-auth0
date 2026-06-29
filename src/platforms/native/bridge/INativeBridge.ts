@@ -264,13 +264,17 @@ export interface INativeBridge {
    * @param type The verification type: 'otp', 'oob', or 'recoveryCode'.
    * @param code The OTP code, OOB code, or recovery code.
    * @param bindingCode Optional binding code for OOB verification.
+   * @param scope Optional space-separated OAuth 2.0 scopes for the returned credentials.
+   * @param audience Optional API audience for the returned credentials.
    * @returns A promise that resolves with credentials on successful verification.
    */
   mfaVerify(
     mfaToken: string,
     type: string,
     code: string,
-    bindingCode?: string
+    bindingCode?: string,
+    scope?: string,
+    audience?: string
   ): Promise<Credentials>;
 
   /**

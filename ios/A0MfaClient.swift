@@ -89,6 +89,7 @@ class A0MfaClient {
                     }
                     var dict: [String: Any] = [
                         "id": authenticator.id,
+                        "type": authenticator.type,
                         "authenticatorType": authenticator.authenticatorType,
                         "active": authenticator.active
                     ]
@@ -192,39 +193,33 @@ class A0MfaClient {
         }
     }
 
-    func verify(mfaToken: String, type: String, code: String, bindingCode: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func verify(mfaToken: String, type: String, code: String, bindingCode: String?, scope: String?, audience: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         guard let verificationType = MfaVerificationType(rawValue: type) else {
             reject("MFA_VERIFY_ERROR", "Unsupported verification type: \(type)", nil)
             return
         }
 
+        let request: Request<Credentials, MFAVerifyError>
         switch verificationType {
         case .otp:
-            mfaClient.verify(otp: code, mfaToken: mfaToken).start { result in
-                switch result {
-                case .success(let credentials):
-                    resolve(credentials.asDictionary())
-                case .failure(let error):
-                    reject(error.code, error.localizedDescription, error)
-                }
-            }
+            request = mfaClient.verify(otp: code, mfaToken: mfaToken)
         case .oob:
-            mfaClient.verify(oobCode: code, bindingCode: bindingCode, mfaToken: mfaToken).start { result in
-                switch result {
-                case .success(let credentials):
-                    resolve(credentials.asDictionary())
-                case .failure(let error):
-                    reject(error.code, error.localizedDescription, error)
-                }
-            }
+            request = mfaClient.verify(oobCode: code, bindingCode: bindingCode, mfaToken: mfaToken)
         case .recoveryCode:
-            mfaClient.verify(recoveryCode: code, mfaToken: mfaToken).start { result in
-                switch result {
-                case .success(let credentials):
-                    resolve(credentials.asDictionary())
-                case .failure(let error):
-                    reject(error.code, error.localizedDescription, error)
-                }
+            request = mfaClient.verify(recoveryCode: code, mfaToken: mfaToken)
+        }
+
+        var extraParameters: [String: Any] = [:]
+        if let scope = scope { extraParameters["scope"] = scope }
+        if let audience = audience { extraParameters["audience"] = audience }
+        let finalRequest = extraParameters.isEmpty ? request : request.parameters(extraParameters)
+
+        finalRequest.start { result in
+            switch result {
+            case .success(let credentials):
+                resolve(credentials.asDictionary())
+            case .failure(let error):
+                reject(error.code, error.localizedDescription, error)
             }
         }
     }

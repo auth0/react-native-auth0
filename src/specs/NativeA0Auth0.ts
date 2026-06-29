@@ -199,12 +199,16 @@ export interface Spec extends TurboModule {
    * @param type The verification type: 'otp', 'oob', or 'recoveryCode'.
    * @param code The OTP code, OOB code, or recovery code.
    * @param bindingCode The binding code for OOB verification (optional).
+   * @param scope Space-separated OAuth 2.0 scopes for the returned credentials (optional).
+   * @param audience API audience for the returned credentials (optional).
    */
   mfaVerify(
     mfaToken: string,
     type: string,
     code: string,
-    bindingCode: string | undefined
+    bindingCode: string | undefined,
+    scope: string | undefined,
+    audience: string | undefined
   ): Promise<Credentials>;
 
   /**

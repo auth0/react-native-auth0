@@ -106,6 +106,7 @@ class MfaClient(
                     for (authenticator in result) {
                         val map = WritableNativeMap().apply {
                             putString("id", authenticator.id)
+                            putString("type", authenticator.type)
                             putString("authenticatorType", authenticator.authenticatorType)
                             putBoolean("active", authenticator.active)
                             authenticator.name?.let { putString("name", it) }
@@ -221,7 +222,7 @@ class MfaClient(
         )
     }
 
-    fun verify(mfaToken: String, type: String, code: String, bindingCode: String?, promise: Promise) {
+    fun verify(mfaToken: String, type: String, code: String, bindingCode: String?, scope: String?, audience: String?, promise: Promise) {
         val verifyType = MfaVerifyType.fromString(type)
         if (verifyType == null) {
             promise.reject("MFA_VERIFY_ERROR", "Unsupported verification type: $type")
@@ -236,7 +237,11 @@ class MfaClient(
             MfaVerifyType.RECOVERY_CODE -> MfaVerificationType.RecoveryCode(code)
         }
 
-        mfaClient.verify(verificationType).start(
+        val verifyRequest = mfaClient.verify(verificationType)
+        scope?.let { verifyRequest.addParameter("scope", it) }
+        audience?.let { verifyRequest.addParameter("audience", it) }
+
+        verifyRequest.start(
             object : com.auth0.android.callback.Callback<Credentials, MfaException.MfaVerifyException> {
                 override fun onSuccess(result: Credentials) {
                     val map = CredentialsParser.toMap(result)

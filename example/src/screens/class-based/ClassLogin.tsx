@@ -166,7 +166,7 @@ const ClassLoginScreen = () => {
     }
   };
 
-  const mfaClient = auth0.mfa();
+  const mfaClient = auth0.mfa;
 
   const onStartMfa = async () => {
     setMfaLoading(true);
@@ -226,6 +226,12 @@ const ClassLoginScreen = () => {
         challenge = await mfaClient.enroll({
           mfaToken,
           factorType: MfaFactorType.SMS,
+          phoneNumber: enrollPhoneNumber,
+        });
+      } else if (factor === MfaFactorType.VOICE) {
+        challenge = await mfaClient.enroll({
+          mfaToken,
+          factorType: MfaFactorType.VOICE,
           phoneNumber: enrollPhoneNumber,
         });
       } else if (factor === MfaFactorType.EMAIL) {
@@ -353,6 +359,15 @@ const ClassLoginScreen = () => {
               disabled={mfaLoading}
             />
             <Button
+              onPress={() => onSelectEnrollType(MfaFactorType.VOICE)}
+              title="Voice"
+              disabled={mfaLoading}
+            />
+            <Text style={styles.hint}>
+              Voice is a distinct channel on web only. On native (iOS/Android)
+              it falls back to SMS on the same number.
+            </Text>
+            <Button
               onPress={() => onSelectEnrollType(MfaFactorType.EMAIL)}
               title="Email"
               disabled={mfaLoading}
@@ -370,7 +385,8 @@ const ClassLoginScreen = () => {
         return (
           <>
             <Text style={styles.stepTitle}>Step 2: Enter Details</Text>
-            {enrollType === MfaFactorType.SMS && (
+            {(enrollType === MfaFactorType.SMS ||
+              enrollType === MfaFactorType.VOICE) && (
               <>
                 <LabeledInput
                   label="Phone Number"
@@ -381,7 +397,11 @@ const ClassLoginScreen = () => {
                 />
                 <Button
                   onPress={() => onEnroll()}
-                  title="Enroll SMS"
+                  title={
+                    enrollType === MfaFactorType.VOICE
+                      ? 'Enroll Voice'
+                      : 'Enroll SMS'
+                  }
                   disabled={!enrollPhoneNumber || mfaLoading}
                 />
               </>

@@ -216,9 +216,11 @@ RCT_EXPORT_METHOD(mfaVerify:(NSString *)mfaToken
                   type:(NSString *)type
                   code:(NSString *)code
                   bindingCode:(NSString * _Nullable)bindingCode
+                  scope:(NSString * _Nullable)scope
+                  audience:(NSString * _Nullable)audience
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-    [self.nativeBridge mfaVerifyWithMfaToken:mfaToken type:type code:code bindingCode:bindingCode resolve:resolve reject:reject];
+    [self.nativeBridge mfaVerifyWithMfaToken:mfaToken type:type code:code bindingCode:bindingCode scope:scope audience:audience resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(passkeySignupChallenge:(NSString * _Nullable)email

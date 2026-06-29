@@ -295,6 +295,11 @@ export interface MfaGetAuthenticatorsParameters {
    * @remarks
    * - **Android** cannot isolate `push` — its effective channel is `auth0`,
    *   so a `push`-only filter may not match Guardian authenticators.
+   * - **Android** cannot distinguish `sms` from `voice` when filtering — both
+   *   resolve to the `phone` type, so filtering by either returns both channels.
+   *   Inspect the {@link MfaAuthenticator.oobChannel} field to tell them apart.
+   *   (iOS narrows phone-type results by `oobChannel` when only one of
+   *   `sms`/`voice` is requested.)
    */
   factorsAllowed?: MfaFactorType[];
 }
@@ -419,6 +424,10 @@ export interface MfaChallengeWithAuthenticatorParameters {
 export interface MfaVerifyOtpParameters {
   mfaToken: string;
   otp: string;
+  /** Space-separated list of OAuth 2.0 scopes to request for the returned credentials. */
+  scope?: string;
+  /** API audience to request for the returned credentials. */
+  audience?: string;
 }
 
 /** Parameters for verifying an MFA OOB code (SMS/Email/Push). */
@@ -426,12 +435,20 @@ export interface MfaVerifyOobParameters {
   mfaToken: string;
   oobCode: string;
   bindingCode?: string;
+  /** Space-separated list of OAuth 2.0 scopes to request for the returned credentials. */
+  scope?: string;
+  /** API audience to request for the returned credentials. */
+  audience?: string;
 }
 
 /** Parameters for verifying with a recovery code. */
 export interface MfaVerifyRecoveryCodeParameters {
   mfaToken: string;
   recoveryCode: string;
+  /** Space-separated list of OAuth 2.0 scopes to request for the returned credentials. */
+  scope?: string;
+  /** API audience to request for the returned credentials. */
+  audience?: string;
 }
 
 /** Union type for all MFA verification parameter types. */

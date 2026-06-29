@@ -80,6 +80,8 @@ const HooksAuthContent = (): React.JSX.Element => {
     useState<MfaChallengeResult | null>(null);
   const [verifyCode, setVerifyCode] = useState('');
   const [verifyBindingCode, setVerifyBindingCode] = useState('');
+  const [verifyScope, setVerifyScope] = useState('');
+  const [verifyAudience, setVerifyAudience] = useState('');
 
   const resetMfaWizard = () => {
     setMfaStep('idle');
@@ -92,6 +94,8 @@ const HooksAuthContent = (): React.JSX.Element => {
     setChallengeResult(null);
     setVerifyCode('');
     setVerifyBindingCode('');
+    setVerifyScope('');
+    setVerifyAudience('');
     setMfaLoading(false);
   };
 
@@ -129,7 +133,16 @@ const HooksAuthContent = (): React.JSX.Element => {
     setMfaLoading(true);
     setApiError(null);
     try {
-      const list = await mfa.getAuthenticators({ mfaToken });
+      const list = await mfa.getAuthenticators({
+        mfaToken,
+        factorsAllowed: [
+          MfaFactorType.OTP,
+          MfaFactorType.SMS,
+          MfaFactorType.VOICE,
+          MfaFactorType.EMAIL,
+          MfaFactorType.PUSH,
+        ],
+      });
       setAuthenticators(list);
       setMfaStep('list');
     } catch (e) {
@@ -175,6 +188,12 @@ const HooksAuthContent = (): React.JSX.Element => {
           factorType: MfaFactorType.SMS,
           phoneNumber: enrollPhoneNumber,
         });
+      } else if (factor === MfaFactorType.VOICE) {
+        challenge = await mfa.enroll({
+          mfaToken,
+          factorType: MfaFactorType.VOICE,
+          phoneNumber: enrollPhoneNumber,
+        });
       } else if (factor === MfaFactorType.EMAIL) {
         challenge = await mfa.enroll({
           mfaToken,
@@ -197,6 +216,12 @@ const HooksAuthContent = (): React.JSX.Element => {
     setMfaLoading(true);
     try {
       let credentials;
+      // scope/audience are optional: supply them to mint an access token for a
+      // specific API once MFA succeeds.
+      const extra = {
+        scope: verifyScope || undefined,
+        audience: verifyAudience || undefined,
+      };
       const oobCode =
         challengeResult?.oobCode ||
         (enrollmentChallenge?.type === 'oob' ||
@@ -209,9 +234,16 @@ const HooksAuthContent = (): React.JSX.Element => {
           mfaToken,
           oobCode,
           bindingCode: verifyBindingCode || undefined,
+          ...extra,
+        });
+      } else if (enrollmentChallenge?.type === 'recovery-code') {
+        credentials = await mfa.verify({
+          mfaToken,
+          recoveryCode: verifyCode,
+          ...extra,
         });
       } else {
-        credentials = await mfa.verify({ mfaToken, otp: verifyCode });
+        credentials = await mfa.verify({ mfaToken, otp: verifyCode, ...extra });
       }
       setResult({
         success: true,
@@ -360,10 +392,13 @@ const HooksAuthContent = (): React.JSX.Element => {
                       onPress={() => onMfaSelectAuthenticator(auth)}
                     >
                       <Text style={webStyles.authItemTitle}>
-                        {auth.authenticatorType}
+                        {auth.type ?? auth.authenticatorType}
                         {auth.oobChannel ? ` (${auth.oobChannel})` : ''}
                       </Text>
-                      <Text style={webStyles.authItemSub}>{auth.id}</Text>
+                      <Text style={webStyles.authItemSub}>
+                        {auth.id} · authenticatorType: {auth.authenticatorType}
+                        {auth.active ? '' : ' · inactive'}
+                      </Text>
                     </TouchableOpacity>
                   ))
                 ) : (
@@ -392,6 +427,15 @@ const HooksAuthContent = (): React.JSX.Element => {
                   disabled={mfaLoading}
                 />
                 <Button
+                  onPress={() => onMfaSelectEnrollType(MfaFactorType.VOICE)}
+                  title="Voice"
+                  disabled={mfaLoading}
+                />
+                <Text style={styles.hint}>
+                  Voice is a distinct channel on web. On native it falls back to
+                  SMS on the same number.
+                </Text>
+                <Button
                   onPress={() => onMfaSelectEnrollType(MfaFactorType.EMAIL)}
                   title="Email"
                   disabled={mfaLoading}
@@ -407,7 +451,8 @@ const HooksAuthContent = (): React.JSX.Element => {
             {mfaStep === 'enroll-details' && (
               <>
                 <Text style={styles.sectionTitle}>Step 2: Enter Details</Text>
-                {enrollType === MfaFactorType.SMS && (
+                {(enrollType === MfaFactorType.SMS ||
+                  enrollType === MfaFactorType.VOICE) && (
                   <>
                     <LabeledInput
                       label="Phone Number"
@@ -417,7 +462,11 @@ const HooksAuthContent = (): React.JSX.Element => {
                     />
                     <Button
                       onPress={() => onMfaEnroll()}
-                      title="Enroll SMS"
+                      title={
+                        enrollType === MfaFactorType.VOICE
+                          ? 'Enroll Voice'
+                          : 'Enroll SMS'
+                      }
                       disabled={!enrollPhoneNumber || mfaLoading}
                     />
                   </>
@@ -492,8 +541,29 @@ const HooksAuthContent = (): React.JSX.Element => {
                     />
                   </View>
                 )}
-                {challengeResult?.challengeType === 'oob' ||
-                enrollmentChallenge?.type === 'oob' ? (
+                {enrollmentChallenge?.type === 'recovery-code' ? (
+                  <View style={webStyles.infoBox}>
+                    <Text style={styles.hint}>
+                      Save this recovery code — it is shown only once. Enter it
+                      below to complete verification.
+                    </Text>
+                    <Text selectable>
+                      Recovery Code: {enrollmentChallenge.recoveryCode}
+                    </Text>
+                    <LabeledInput
+                      label="Confirm Recovery Code"
+                      value={verifyCode}
+                      onChangeText={setVerifyCode}
+                      placeholder="Re-enter the recovery code"
+                    />
+                    <Button
+                      onPress={onMfaVerify}
+                      title="Verify"
+                      disabled={!verifyCode || mfaLoading}
+                    />
+                  </View>
+                ) : challengeResult?.challengeType === 'oob' ||
+                  enrollmentChallenge?.type === 'oob' ? (
                   <>
                     <Text style={styles.hint}>
                       A code has been sent. Enter the binding code below.
@@ -525,6 +595,22 @@ const HooksAuthContent = (): React.JSX.Element => {
                     />
                   </>
                 )}
+                <Text style={styles.hint}>
+                  Optional: request a scope/audience to mint an API access token
+                  on successful verification.
+                </Text>
+                <LabeledInput
+                  label="Scope (optional)"
+                  value={verifyScope}
+                  onChangeText={setVerifyScope}
+                  placeholder="openid profile email"
+                />
+                <LabeledInput
+                  label="Audience (optional)"
+                  value={verifyAudience}
+                  onChangeText={setVerifyAudience}
+                  placeholder={`https://${config.domain}/api/v2/`}
+                />
                 <Button onPress={() => setMfaStep('list')} title="Back" />
               </>
             )}
@@ -575,6 +661,8 @@ interface ClassAppState {
   challengeResult: MfaChallengeResult | null;
   verifyCode: string;
   verifyBindingCode: string;
+  verifyScope: string;
+  verifyAudience: string;
 }
 
 class ClassApp extends React.Component<{}, ClassAppState> {
@@ -597,6 +685,8 @@ class ClassApp extends React.Component<{}, ClassAppState> {
     challengeResult: null,
     verifyCode: '',
     verifyBindingCode: '',
+    verifyScope: '',
+    verifyAudience: '',
   };
 
   componentDidMount() {
@@ -673,6 +763,8 @@ class ClassApp extends React.Component<{}, ClassAppState> {
       challengeResult: null,
       verifyCode: '',
       verifyBindingCode: '',
+      verifyScope: '',
+      verifyAudience: '',
       mfaLoading: false,
     });
   };
@@ -680,9 +772,16 @@ class ClassApp extends React.Component<{}, ClassAppState> {
   onMfaStart = async () => {
     this.setState({ mfaLoading: true, apiError: null });
     try {
-      const list = await this.state.auth0
-        .mfa()
-        .getAuthenticators({ mfaToken: this.state.mfaToken });
+      const list = await this.state.auth0.mfa.getAuthenticators({
+        mfaToken: this.state.mfaToken,
+        factorsAllowed: [
+          MfaFactorType.OTP,
+          MfaFactorType.SMS,
+          MfaFactorType.VOICE,
+          MfaFactorType.EMAIL,
+          MfaFactorType.PUSH,
+        ],
+      });
       this.setState({ authenticators: list, mfaStep: 'list' });
     } catch (e) {
       this.setState({ apiError: e as Error });
@@ -694,9 +793,10 @@ class ClassApp extends React.Component<{}, ClassAppState> {
   onMfaChallenge = async (auth: MfaAuthenticator) => {
     this.setState({ mfaLoading: true });
     try {
-      const res = await this.state.auth0
-        .mfa()
-        .challenge({ mfaToken: this.state.mfaToken, authenticatorId: auth.id });
+      const res = await this.state.auth0.mfa.challenge({
+        mfaToken: this.state.mfaToken,
+        authenticatorId: auth.id,
+      });
       this.setState({ challengeResult: res, mfaStep: 'verify' });
     } catch (e) {
       this.setState({ apiError: e as Error, mfaStep: 'list' });
@@ -717,19 +817,28 @@ class ClassApp extends React.Component<{}, ClassAppState> {
         enrollEmail: em,
       } = this.state;
       if (factor === MfaFactorType.SMS) {
-        challenge = await this.state.auth0.mfa().enroll({
+        challenge = await this.state.auth0.mfa.enroll({
           mfaToken,
           factorType: MfaFactorType.SMS,
           phoneNumber: phone,
         });
+      } else if (factor === MfaFactorType.VOICE) {
+        challenge = await this.state.auth0.mfa.enroll({
+          mfaToken,
+          factorType: MfaFactorType.VOICE,
+          phoneNumber: phone,
+        });
       } else if (factor === MfaFactorType.EMAIL) {
-        challenge = await this.state.auth0
-          .mfa()
-          .enroll({ mfaToken, factorType: MfaFactorType.EMAIL, email: em });
+        challenge = await this.state.auth0.mfa.enroll({
+          mfaToken,
+          factorType: MfaFactorType.EMAIL,
+          email: em,
+        });
       } else {
-        challenge = await this.state.auth0
-          .mfa()
-          .enroll({ mfaToken, factorType: factor });
+        challenge = await this.state.auth0.mfa.enroll({
+          mfaToken,
+          factorType: factor,
+        });
       }
       this.setState({ enrollmentChallenge: challenge, mfaStep: 'verify' });
     } catch (e) {
@@ -748,8 +857,16 @@ class ClassApp extends React.Component<{}, ClassAppState> {
         enrollmentChallenge,
         verifyCode,
         verifyBindingCode,
+        verifyScope,
+        verifyAudience,
       } = this.state;
       let credentials;
+      // scope/audience are optional: supply them to mint an access token for a
+      // specific API once MFA succeeds.
+      const extra = {
+        scope: verifyScope || undefined,
+        audience: verifyAudience || undefined,
+      };
       const oobCode =
         challengeResult?.oobCode ||
         (enrollmentChallenge?.type === 'oob' ||
@@ -757,15 +874,24 @@ class ClassApp extends React.Component<{}, ClassAppState> {
           ? enrollmentChallenge.oobCode
           : undefined);
       if (oobCode) {
-        credentials = await this.state.auth0.mfa().verify({
+        credentials = await this.state.auth0.mfa.verify({
           mfaToken,
           oobCode,
           bindingCode: verifyBindingCode || undefined,
+          ...extra,
+        });
+      } else if (enrollmentChallenge?.type === 'recovery-code') {
+        credentials = await this.state.auth0.mfa.verify({
+          mfaToken,
+          recoveryCode: verifyCode,
+          ...extra,
         });
       } else {
-        credentials = await this.state.auth0
-          .mfa()
-          .verify({ mfaToken, otp: verifyCode });
+        credentials = await this.state.auth0.mfa.verify({
+          mfaToken,
+          otp: verifyCode,
+          ...extra,
+        });
       }
       this.setState({
         result: {
@@ -800,6 +926,8 @@ class ClassApp extends React.Component<{}, ClassAppState> {
       challengeResult,
       verifyCode,
       verifyBindingCode,
+      verifyScope,
+      verifyAudience,
     } = this.state;
     if (isLoading) {
       return (
@@ -938,10 +1066,14 @@ class ClassApp extends React.Component<{}, ClassAppState> {
                         onPress={() => this.onMfaChallenge(auth)}
                       >
                         <Text style={webStyles.authItemTitle}>
-                          {auth.authenticatorType}
+                          {auth.type ?? auth.authenticatorType}
                           {auth.oobChannel ? ` (${auth.oobChannel})` : ''}
                         </Text>
-                        <Text style={webStyles.authItemSub}>{auth.id}</Text>
+                        <Text style={webStyles.authItemSub}>
+                          {auth.id} · authenticatorType:{' '}
+                          {auth.authenticatorType}
+                          {auth.active ? '' : ' · inactive'}
+                        </Text>
                       </TouchableOpacity>
                     ))
                   ) : (
@@ -980,6 +1112,20 @@ class ClassApp extends React.Component<{}, ClassAppState> {
                   <Button
                     onPress={() =>
                       this.setState({
+                        enrollType: MfaFactorType.VOICE,
+                        mfaStep: 'enroll-details',
+                      })
+                    }
+                    title="Voice"
+                    disabled={mfaLoading}
+                  />
+                  <Text style={styles.hint}>
+                    Voice is a distinct channel on web. On native it falls back
+                    to SMS on the same number.
+                  </Text>
+                  <Button
+                    onPress={() =>
+                      this.setState({
                         enrollType: MfaFactorType.EMAIL,
                         mfaStep: 'enroll-details',
                       })
@@ -1004,7 +1150,8 @@ class ClassApp extends React.Component<{}, ClassAppState> {
               {mfaStep === 'enroll-details' && (
                 <>
                   <Text style={styles.sectionTitle}>Step 2: Enter Details</Text>
-                  {enrollType === MfaFactorType.SMS && (
+                  {(enrollType === MfaFactorType.SMS ||
+                    enrollType === MfaFactorType.VOICE) && (
                     <>
                       <LabeledInput
                         label="Phone Number"
@@ -1016,7 +1163,11 @@ class ClassApp extends React.Component<{}, ClassAppState> {
                       />
                       <Button
                         onPress={() => this.onMfaEnroll()}
-                        title="Enroll SMS"
+                        title={
+                          enrollType === MfaFactorType.VOICE
+                            ? 'Enroll Voice'
+                            : 'Enroll SMS'
+                        }
                         disabled={!enrollPhoneNumber || mfaLoading}
                       />
                     </>
@@ -1093,8 +1244,31 @@ class ClassApp extends React.Component<{}, ClassAppState> {
                       />
                     </View>
                   )}
-                  {challengeResult?.challengeType === 'oob' ||
-                  enrollmentChallenge?.type === 'oob' ? (
+                  {enrollmentChallenge?.type === 'recovery-code' ? (
+                    <View style={webStyles.infoBox}>
+                      <Text style={styles.hint}>
+                        Save this recovery code — it is shown only once. Enter
+                        it below to complete verification.
+                      </Text>
+                      <Text selectable>
+                        Recovery Code: {enrollmentChallenge.recoveryCode}
+                      </Text>
+                      <LabeledInput
+                        label="Confirm Recovery Code"
+                        value={verifyCode}
+                        onChangeText={(val: string) =>
+                          this.setState({ verifyCode: val })
+                        }
+                        placeholder="Re-enter the recovery code"
+                      />
+                      <Button
+                        onPress={this.onMfaVerify}
+                        title="Verify"
+                        disabled={!verifyCode || mfaLoading}
+                      />
+                    </View>
+                  ) : challengeResult?.challengeType === 'oob' ||
+                    enrollmentChallenge?.type === 'oob' ? (
                     <>
                       <Text style={styles.hint}>
                         A code has been sent. Enter the binding code below.
@@ -1130,6 +1304,26 @@ class ClassApp extends React.Component<{}, ClassAppState> {
                       />
                     </>
                   )}
+                  <Text style={styles.hint}>
+                    Optional: request a scope/audience to mint an API access
+                    token on successful verification.
+                  </Text>
+                  <LabeledInput
+                    label="Scope (optional)"
+                    value={verifyScope}
+                    onChangeText={(val: string) =>
+                      this.setState({ verifyScope: val })
+                    }
+                    placeholder="openid profile email"
+                  />
+                  <LabeledInput
+                    label="Audience (optional)"
+                    value={verifyAudience}
+                    onChangeText={(val: string) =>
+                      this.setState({ verifyAudience: val })
+                    }
+                    placeholder={`https://${config.domain}/api/v2/`}
+                  />
                   <Button
                     onPress={() => this.setState({ mfaStep: 'list' })}
                     title="Back"

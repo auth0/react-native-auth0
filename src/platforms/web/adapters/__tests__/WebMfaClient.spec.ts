@@ -112,6 +112,7 @@ describe('WebMfaClient', () => {
       expect(result).toEqual([
         {
           id: 'otp|dev_1',
+          type: 'otp',
           authenticatorType: 'otp',
           active: true,
           name: 'Authenticator app',
@@ -119,6 +120,7 @@ describe('WebMfaClient', () => {
         },
         {
           id: 'sms|dev_2',
+          type: 'oob',
           authenticatorType: 'oob',
           active: true,
           name: 'SMS',
@@ -126,6 +128,7 @@ describe('WebMfaClient', () => {
         },
         {
           id: 'email|dev_3',
+          type: 'oob',
           authenticatorType: 'oob',
           active: false,
           name: undefined,
@@ -389,6 +392,32 @@ describe('WebMfaClient', () => {
         mfaToken: 'MFA_TOKEN',
         oobCode: 'oob_123',
         bindingCode: '000000',
+      });
+    });
+
+    it('seeds scope and audience via setMFAAuthDetails before verifying', async () => {
+      spaMfa.verify.mockResolvedValue({
+        access_token: 'at',
+        id_token: 'it',
+        token_type: 'Bearer',
+        expires_in: 3600,
+      });
+
+      await client.verify({
+        mfaToken: 'MFA_TOKEN',
+        otp: '123',
+        scope: 'openid profile',
+        audience: 'https://api.example.com',
+      });
+
+      expect(spaMfa.setMFAAuthDetails).toHaveBeenCalledWith(
+        'MFA_TOKEN',
+        'openid profile',
+        'https://api.example.com'
+      );
+      expect(spaMfa.verify).toHaveBeenCalledWith({
+        mfaToken: 'MFA_TOKEN',
+        otp: '123',
       });
     });
 

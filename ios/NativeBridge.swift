@@ -428,8 +428,8 @@ public class NativeBridge: NSObject {
         mfaClient.challenge(mfaToken: mfaToken, authenticatorId: authenticatorId, resolve: resolve, reject: reject)
     }
 
-    @objc public func mfaVerify(mfaToken: String, type: String, code: String, bindingCode: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        mfaClient.verify(mfaToken: mfaToken, type: type, code: code, bindingCode: bindingCode, resolve: resolve, reject: reject)
+    @objc public func mfaVerify(mfaToken: String, type: String, code: String, bindingCode: String?, scope: String?, audience: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        mfaClient.verify(mfaToken: mfaToken, type: type, code: code, bindingCode: bindingCode, scope: scope, audience: audience, resolve: resolve, reject: reject)
     }
 
     // MARK: - Passkey Methods (challenge / exchange)

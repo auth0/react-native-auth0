@@ -88,6 +88,8 @@ const HomeScreen = () => {
     useState<MfaChallengeResult | null>(null);
   const [verifyCode, setVerifyCode] = useState('');
   const [verifyBindingCode, setVerifyBindingCode] = useState('');
+  const [verifyScope, setVerifyScope] = useState('');
+  const [verifyAudience, setVerifyAudience] = useState('');
 
   const clearResult = () => {
     setResult(null);
@@ -105,6 +107,8 @@ const HomeScreen = () => {
     setChallengeResult(null);
     setVerifyCode('');
     setVerifyBindingCode('');
+    setVerifyScope('');
+    setVerifyAudience('');
     setMfaLoading(false);
     clearResult();
   };
@@ -290,6 +294,12 @@ const HomeScreen = () => {
           factorType: MfaFactorType.SMS,
           phoneNumber: enrollPhoneNumber,
         });
+      } else if (factor === MfaFactorType.VOICE) {
+        challenge = await mfa.enroll({
+          mfaToken,
+          factorType: MfaFactorType.VOICE,
+          phoneNumber: enrollPhoneNumber,
+        });
       } else if (factor === MfaFactorType.EMAIL) {
         challenge = await mfa.enroll({
           mfaToken,
@@ -312,6 +322,12 @@ const HomeScreen = () => {
     setMfaLoading(true);
     try {
       let credentials;
+      // scope/audience are optional: supply them to mint an access token for a
+      // specific API once MFA succeeds.
+      const extra = {
+        scope: verifyScope || undefined,
+        audience: verifyAudience || undefined,
+      };
       const oobCode =
         challengeResult?.oobCode ||
         (enrollmentChallenge?.type === 'oob' ||
@@ -324,9 +340,16 @@ const HomeScreen = () => {
           mfaToken,
           oobCode,
           bindingCode: verifyBindingCode || undefined,
+          ...extra,
+        });
+      } else if (enrollmentChallenge?.type === 'recovery-code') {
+        credentials = await mfa.verify({
+          mfaToken,
+          recoveryCode: verifyCode,
+          ...extra,
         });
       } else {
-        credentials = await mfa.verify({ mfaToken, otp: verifyCode });
+        credentials = await mfa.verify({ mfaToken, otp: verifyCode, ...extra });
       }
       setResult({
         success: true,
@@ -381,10 +404,13 @@ const HomeScreen = () => {
                     onPress={() => onSelectAuthenticator(auth)}
                   >
                     <Text style={styles.authItemTitle}>
-                      {auth.authenticatorType}
+                      {auth.type ?? auth.authenticatorType}
                       {auth.oobChannel ? ` (${auth.oobChannel})` : ''}
                     </Text>
-                    <Text style={styles.authItemSubtitle}>{auth.id}</Text>
+                    <Text style={styles.authItemSubtitle}>
+                      {auth.id} · authenticatorType: {auth.authenticatorType}
+                      {auth.active ? '' : ' · inactive'}
+                    </Text>
                   </TouchableOpacity>
                 ))}
                 <View style={styles.divider} />
@@ -417,6 +443,15 @@ const HomeScreen = () => {
               disabled={mfaLoading}
             />
             <Button
+              onPress={() => onSelectEnrollType(MfaFactorType.VOICE)}
+              title="Voice"
+              disabled={mfaLoading}
+            />
+            <Text style={styles.hint}>
+              Voice is a distinct channel on web only. On native (iOS/Android)
+              it falls back to SMS on the same number.
+            </Text>
+            <Button
               onPress={() => onSelectEnrollType(MfaFactorType.EMAIL)}
               title="Email"
               disabled={mfaLoading}
@@ -434,7 +469,8 @@ const HomeScreen = () => {
         return (
           <>
             <Text style={styles.stepTitle}>Step 2: Enter Details</Text>
-            {enrollType === MfaFactorType.SMS && (
+            {(enrollType === MfaFactorType.SMS ||
+              enrollType === MfaFactorType.VOICE) && (
               <>
                 <LabeledInput
                   label="Phone Number"
@@ -445,7 +481,11 @@ const HomeScreen = () => {
                 />
                 <Button
                   onPress={() => onEnroll()}
-                  title="Enroll SMS"
+                  title={
+                    enrollType === MfaFactorType.VOICE
+                      ? 'Enroll Voice'
+                      : 'Enroll SMS'
+                  }
                   disabled={!enrollPhoneNumber || mfaLoading}
                 />
               </>
@@ -574,6 +614,49 @@ const HomeScreen = () => {
                 />
               </>
             )}
+            {enrollmentChallenge?.type === 'recovery-code' && (
+              <View style={styles.infoBox}>
+                <Text style={styles.hint}>
+                  Save this recovery code somewhere safe — it is shown only
+                  once. Enter it below to complete verification.
+                </Text>
+                <Text style={styles.infoLabel}>Recovery Code:</Text>
+                <Text style={styles.infoValue} selectable>
+                  {enrollmentChallenge.recoveryCode}
+                </Text>
+                <LabeledInput
+                  label="Confirm Recovery Code"
+                  value={verifyCode}
+                  onChangeText={setVerifyCode}
+                  placeholder="Re-enter the recovery code"
+                  autoCapitalize="none"
+                />
+                <Button
+                  onPress={onVerify}
+                  title="Verify"
+                  disabled={!verifyCode || mfaLoading}
+                />
+              </View>
+            )}
+            <View style={styles.divider} />
+            <Text style={styles.hint}>
+              Optional: request a scope/audience to mint an API access token on
+              successful verification.
+            </Text>
+            <LabeledInput
+              label="Scope (optional)"
+              value={verifyScope}
+              onChangeText={setVerifyScope}
+              placeholder="openid profile email"
+              autoCapitalize="none"
+            />
+            <LabeledInput
+              label="Audience (optional)"
+              value={verifyAudience}
+              onChangeText={setVerifyAudience}
+              placeholder={`https://${config.domain}/api/v2/`}
+              autoCapitalize="none"
+            />
             <Button onPress={() => setMfaStep('list')} title="Back" />
           </>
         );

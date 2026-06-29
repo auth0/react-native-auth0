@@ -662,8 +662,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     }
 
     @ReactMethod
-    override fun mfaVerify(mfaToken: String, type: String, code: String, bindingCode: String?, promise: Promise) {
-        mfaClient?.verify(mfaToken, type, code, bindingCode, promise)
+    override fun mfaVerify(mfaToken: String, type: String, code: String, bindingCode: String?, scope: String?, audience: String?, promise: Promise) {
+        mfaClient?.verify(mfaToken, type, code, bindingCode, scope, audience, promise)
             ?: promise.reject("NOT_INITIALIZED", "Auth0 not initialized")
     }
 
