@@ -10,19 +10,31 @@ describe('WebPasswordlessClient', () => {
 
   it('challengeWithEmail rejects with an UnsupportedOperation AuthError', async () => {
     await expect(
-      client.challengeWithEmail({ email: 'user@example.com' })
+      client.challengeWithEmail({
+        email: 'user@example.com',
+        connection: 'Username-Password-Authentication',
+      })
     ).rejects.toThrow(AuthError);
     await expect(
-      client.challengeWithEmail({ email: 'user@example.com' })
+      client.challengeWithEmail({
+        email: 'user@example.com',
+        connection: 'Username-Password-Authentication',
+      })
     ).rejects.toMatchObject({ name: 'UnsupportedOperation' });
   });
 
   it('challengeWithPhoneNumber rejects with an UnsupportedOperation AuthError', async () => {
     await expect(
-      client.challengeWithPhoneNumber({ phoneNumber: '+15555550123' })
+      client.challengeWithPhoneNumber({
+        phoneNumber: '+15555550123',
+        connection: 'Username-Password-Authentication',
+      })
     ).rejects.toThrow(AuthError);
     await expect(
-      client.challengeWithPhoneNumber({ phoneNumber: '+15555550123' })
+      client.challengeWithPhoneNumber({
+        phoneNumber: '+15555550123',
+        connection: 'Username-Password-Authentication',
+      })
     ).rejects.toMatchObject({ name: 'UnsupportedOperation' });
   });
 

@@ -15,6 +15,12 @@ export class NativePasswordlessClient implements IPasswordlessClient {
     this.bridge = bridge;
   }
 
+  /**
+   * Issues an OTP challenge to an email address for a database connection.
+   *
+   * @param parameters The email-challenge parameters.
+   * @returns A promise resolving with a {@link PasswordlessChallenge}.
+   */
   async challengeWithEmail(
     parameters: PasswordlessChallengeEmailParameters
   ): Promise<PasswordlessChallenge> {
@@ -26,6 +32,12 @@ export class NativePasswordlessClient implements IPasswordlessClient {
     );
   }
 
+  /**
+   * Issues an OTP challenge to a phone number for a database connection.
+   *
+   * @param parameters The phone-challenge parameters.
+   * @returns A promise resolving with a {@link PasswordlessChallenge}.
+   */
   async challengeWithPhoneNumber(
     parameters: PasswordlessChallengePhoneParameters
   ): Promise<PasswordlessChallenge> {
@@ -38,6 +50,12 @@ export class NativePasswordlessClient implements IPasswordlessClient {
     );
   }
 
+  /**
+   * Completes the OTP flow by verifying the one-time code and obtaining credentials.
+   *
+   * @param parameters The login parameters including the challenge and OTP code.
+   * @returns A promise resolving with the user's {@link Credentials}.
+   */
   async loginWithOTP(
     parameters: PasswordlessLoginOtpParameters
   ): Promise<Credentials> {
