@@ -79,6 +79,26 @@ class Auth0 {
   }
 
   /**
+   * Provides access to the passwordless OTP flow for database connections.
+   *
+   * @remarks Native only (iOS, Android). Not supported on web.
+   *
+   * @example
+   * ```typescript
+   * const challenge = await auth0.passwordless.challengeWithEmail({
+   *   email: 'user@example.com',
+   * });
+   * const credentials = await auth0.passwordless.loginWithOTP({
+   *   challenge,
+   *   otp: '123456',
+   * });
+   * ```
+   */
+  get passwordless() {
+    return this.client.passwordless;
+  }
+
+  /**
    * Provides access to the Management API (e.g., for user patching).
    * @param token An access token with the required permissions for the management operations.
    * @param tokenType Optional token type ('Bearer' or 'DPoP'). Defaults to the client's configured token type.

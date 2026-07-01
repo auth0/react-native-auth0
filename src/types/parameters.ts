@@ -1,4 +1,4 @@
-import type { TokenType } from './common';
+import type { PasswordlessChallenge, TokenType } from './common';
 
 /** A base interface for API calls that allow passing custom headers.
  * @hidden
@@ -484,6 +484,101 @@ export interface PasskeyAuthenticationMethod {
   aaguid: string;
   /** Relying party identifier. */
   relyingPartyId: string;
+}
+
+// ========= Passwordless OTP (Database Connections) =========
+
+/**
+ * Runtime constants for passwordless OTP delivery methods.
+ *
+ * `TEXT` sends the one-time code via SMS (the server default); `VOICE`
+ * delivers it through a voice call.
+ *
+ * @example
+ * ```typescript
+ * import { DeliveryMethod } from 'react-native-auth0';
+ *
+ * await auth0.passwordless.challengeWithPhoneNumber({
+ *   phoneNumber: '+15555550123',
+ *   connection: 'Username-Password-Authentication',
+ *   deliveryMethod: DeliveryMethod.VOICE,
+ * });
+ * ```
+ */
+export const DeliveryMethod = {
+  TEXT: 'text',
+  VOICE: 'voice',
+} as const;
+
+/**
+ * Delivery method for a phone-number OTP challenge.
+ *
+ * Derived from {@link DeliveryMethod} so the union and the runtime constants
+ * cannot drift apart.
+ */
+export type PasswordlessDeliveryMethod =
+  (typeof DeliveryMethod)[keyof typeof DeliveryMethod];
+
+/**
+ * Parameters for issuing a passwordless OTP challenge to an email address.
+ *
+ * @remarks Native only (iOS, Android). Not supported on web.
+ */
+export interface PasswordlessChallengeEmailParameters {
+  /** The email address to send the one-time code to. */
+  email: string;
+  /**
+   * The name of the database connection; it must have `email_otp` enabled.
+   */
+  connection: string;
+  /**
+   * Whether to allow sign-up if the user does not yet exist.
+   * @default false
+   */
+  allowSignup?: boolean;
+}
+
+/**
+ * Parameters for issuing a passwordless OTP challenge to a phone number.
+ *
+ * @remarks Native only (iOS, Android). Not supported on web.
+ */
+export interface PasswordlessChallengePhoneParameters {
+  /** The E.164 phone number to send the one-time code to (e.g. `"+15555550123"`). */
+  phoneNumber: string;
+  /**
+   * The name of the database connection; it must have `phone_otp` enabled.
+   */
+  connection: string;
+  /**
+   * How to deliver the code, by SMS or voice call.
+   * @default "text"
+   */
+  deliveryMethod?: PasswordlessDeliveryMethod;
+  /**
+   * Whether to allow sign-up if the user does not yet exist.
+   * @default false
+   */
+  allowSignup?: boolean;
+}
+
+/**
+ * Parameters for completing a passwordless OTP flow by verifying the code.
+ *
+ * @remarks Native only (iOS, Android). Not supported on web.
+ */
+export interface PasswordlessLoginOtpParameters {
+  /** The challenge returned by a prior `challengeWithEmail`/`challengeWithPhoneNumber` call. */
+  challenge: PasswordlessChallenge;
+  /** The one-time code the user received via email, SMS, or voice call. */
+  otp: string;
+  /** The target API identifier for the issued access token. */
+  audience?: string;
+  /**
+   * Space-separated list of OAuth 2.0 scopes.
+   * @default "openid profile email"
+   */
+  scope?: string;
 }
 
 // ========= My Account — Authentication Method Management =========

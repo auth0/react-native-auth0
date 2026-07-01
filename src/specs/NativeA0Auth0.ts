@@ -206,6 +206,35 @@ export interface Spec extends TurboModule {
   ): Promise<Credentials>;
 
   /**
+   * Issue a passwordless OTP challenge to an email address for a database connection.
+   */
+  passwordlessChallengeWithEmail(
+    email: string,
+    connection: string,
+    allowSignup: boolean
+  ): Promise<{ authSession: string }>;
+
+  /**
+   * Issue a passwordless OTP challenge to a phone number for a database connection.
+   */
+  passwordlessChallengeWithPhoneNumber(
+    phoneNumber: string,
+    connection: string,
+    deliveryMethod: string,
+    allowSignup: boolean
+  ): Promise<{ authSession: string }>;
+
+  /**
+   * Complete a passwordless OTP flow by verifying the code and obtaining credentials.
+   */
+  passwordlessLoginWithOTP(
+    authSession: string,
+    otp: string,
+    audience: string | undefined,
+    scope: string | undefined
+  ): Promise<Credentials>;
+
+  /**
    * Request a passkey enrollment challenge from the My Account API.
    */
   passkeyEnrollmentChallenge(

@@ -15,6 +15,7 @@ import {
   PasskeyError,
   PasskeyErrorCodes,
 } from 'react-native-auth0';
+import type { PasswordlessChallenge } from 'react-native-auth0';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
 import LabeledInput from '../../components/LabeledInput';
@@ -36,6 +37,7 @@ const HomeScreen = () => {
     passkeySignupChallenge,
     passkeyLoginChallenge,
     getTokenByPasskey,
+    passwordless,
     error,
   } = useAuth0();
 
@@ -47,6 +49,12 @@ const HomeScreen = () => {
   const [passkeyEmail, setPasskeyEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [lastResult, setLastResult] = useState<object | null>(null);
+  const [otpMethod, setOtpMethod] = useState<'email' | 'phone'>('email');
+  const [otpEmail, setOtpEmail] = useState('');
+  const [otpPhone, setOtpPhone] = useState('');
+  const [otpCode, setOtpCode] = useState('');
+  const [otpChallenge, setOtpChallenge] =
+    useState<PasswordlessChallenge | null>(null);
 
   const onLogin = async () => {
     try {
@@ -112,6 +120,59 @@ const HomeScreen = () => {
       await authorizeWithEmail({ email, code: otp });
     } catch (e) {
       setApiError(e as Error);
+    }
+  };
+
+  // --- Passwordless OTP (Database Connection) ---
+
+  const onSendOtpChallenge = async () => {
+    setApiError(null);
+    setLoading(true);
+    try {
+      const challenge =
+        otpMethod === 'email'
+          ? await passwordless.challengeWithEmail({
+              email: otpEmail,
+              connection: 'Username-Password-Authentication',
+              allowSignup: true,
+            })
+          : await passwordless.challengeWithPhoneNumber({
+              phoneNumber: otpPhone,
+              connection: 'Username-Password-Authentication',
+              deliveryMethod: 'text',
+              allowSignup: true,
+            });
+      setOtpChallenge(challenge);
+      Alert.alert(
+        'Success',
+        otpMethod === 'email'
+          ? 'Check your email for the one-time code.'
+          : 'Check your phone for the one-time code.'
+      );
+    } catch (e) {
+      setApiError(e as Error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onLoginWithOtp = async () => {
+    if (!otpChallenge) {
+      return;
+    }
+    setApiError(null);
+    setLoading(true);
+    try {
+      // A successful loginWithOTP updates the hook's auth state, which
+      // navigates the app to the authenticated stack automatically.
+      await passwordless.loginWithOTP({
+        challenge: otpChallenge,
+        otp: otpCode,
+      });
+    } catch (e) {
+      setApiError(e as Error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -337,6 +398,73 @@ const HomeScreen = () => {
         </Section>
 
         {Platform.OS !== 'web' && (
+          <Section title="Passwordless OTP (Database Connection)">
+            <Text style={styles.description}>
+              Two-step flow on a database connection with email_otp / phone_otp
+              enabled: challenge → verify code.
+            </Text>
+
+            <View style={styles.row}>
+              <Button
+                onPress={() => setOtpMethod('email')}
+                title="Email"
+                style={[
+                  styles.halfButton,
+                  otpMethod !== 'email' && styles.inactiveButton,
+                ]}
+              />
+              <Button
+                onPress={() => setOtpMethod('phone')}
+                title="Phone"
+                style={[
+                  styles.halfButton,
+                  otpMethod !== 'phone' && styles.inactiveButton,
+                ]}
+              />
+            </View>
+
+            {otpMethod === 'email' ? (
+              <LabeledInput
+                label="Email"
+                value={otpEmail}
+                onChangeText={setOtpEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+              />
+            ) : (
+              <LabeledInput
+                label="Phone Number (E.164, e.g. +15555550123)"
+                value={otpPhone}
+                onChangeText={setOtpPhone}
+                autoCapitalize="none"
+                keyboardType="phone-pad"
+              />
+            )}
+            <Button
+              onPress={onSendOtpChallenge}
+              title="Send Code"
+              loading={loading}
+            />
+
+            {otpChallenge && (
+              <>
+                <LabeledInput
+                  label="One-Time Code"
+                  value={otpCode}
+                  onChangeText={setOtpCode}
+                  keyboardType="numeric"
+                />
+                <Button
+                  onPress={onLoginWithOtp}
+                  title="Log In with Code"
+                  loading={loading}
+                />
+              </>
+            )}
+          </Section>
+        )}
+
+        {Platform.OS !== 'web' && (
           <Section title="Passkeys">
             <Text style={styles.description}>
               Full passkey flow: challenge → credential manager → exchange.
@@ -442,6 +570,7 @@ const styles = StyleSheet.create({
   description: { fontSize: 13, color: '#666', marginBottom: 4 },
   row: { flexDirection: 'row', gap: 8 },
   halfButton: { flex: 1, minWidth: 0 },
+  inactiveButton: { backgroundColor: '#BDBDBD' },
   resultBox: {
     backgroundColor: '#F5F5F5',
     borderRadius: 6,

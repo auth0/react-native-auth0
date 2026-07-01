@@ -35,6 +35,22 @@ export type Credentials = {
 };
 
 /**
+ * Result of a passwordless OTP challenge for a database connection.
+ *
+ * Holds the opaque `auth_session` token returned when a challenge is issued.
+ * Pass the whole object back to `loginWithOTP` together with the code the user
+ * received — the token is opaque and should not be inspected.
+ *
+ * @remarks Native only (iOS, Android). Not supported on web.
+ */
+export type PasswordlessChallenge = {
+  /** The opaque auth session token used to complete the OTP login. */
+  authSession: string;
+  /** Allows for additional, non-standard properties returned from the server. */
+  [key: string]: any;
+};
+
+/**
  * Represents the session transfer credentials used for Native to Web SSO.
  * These credentials are obtained by exchanging a refresh token and can be used
  * to authenticate in web contexts without requiring the user to log in again.

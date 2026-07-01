@@ -29,6 +29,12 @@ import type {
   SessionTransferCredentials,
 } from '../types';
 import type { IMyAccountClient } from '../core/interfaces';
+import type {
+  PasswordlessChallenge,
+  PasswordlessChallengeEmailParameters,
+  PasswordlessChallengePhoneParameters,
+  PasswordlessLoginOtpParameters,
+} from '../types';
 import type { ApiCredentials } from '../core/models';
 import type {
   NativeAuthorizeOptions,
@@ -287,6 +293,35 @@ export interface Auth0ContextInterface extends AuthState {
   myAccount: IMyAccountClient;
 
   /**
+   * Provides access to the Passwordless OTP flow for database connections.
+   *
+   * This is a two-step, challenge-response flow: issue a challenge to an email
+   * or phone number (which delivers a one-time code and returns an opaque
+   * `auth_session`), then complete the login by verifying the code. A successful
+   * `loginWithOTP` updates the hook's authentication state.
+   *
+   * @remarks Native only (iOS, Android). Not supported on web.
+   *
+   * @example
+   * ```typescript
+   * const { passwordless } = useAuth0();
+   * const challenge = await passwordless.challengeWithEmail({ email });
+   * await passwordless.loginWithOTP({ challenge, otp });
+   * ```
+   */
+  passwordless: {
+    challengeWithEmail: (
+      parameters: PasswordlessChallengeEmailParameters
+    ) => Promise<PasswordlessChallenge>;
+    challengeWithPhoneNumber: (
+      parameters: PasswordlessChallengePhoneParameters
+    ) => Promise<PasswordlessChallenge>;
+    loginWithOTP: (
+      parameters: PasswordlessLoginOtpParameters
+    ) => Promise<Credentials>;
+  };
+
+  /**
    * Sends a verification code to the user's email.
    * @param parameters The parameters for sending the email code.
    * @throws {AuthError} If sending the email code fails.
@@ -497,6 +532,11 @@ const initialContext: Auth0ContextInterface = {
     updateAuthenticationMethodById: stub,
     deleteAuthenticationMethodById: stub,
     getFactors: stub,
+  },
+  passwordless: {
+    challengeWithEmail: stub,
+    challengeWithPhoneNumber: stub,
+    loginWithOTP: stub,
   },
   sendEmailCode: stub,
   sendSMSCode: stub,
