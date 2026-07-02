@@ -130,6 +130,44 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
 
     @ReactMethod
     @DoNotStrip
+    abstract fun getMfaAuthenticators(
+        mfaToken: String,
+        factorsAllowed: com.facebook.react.bridge.ReadableArray?,
+        promise: Promise
+    )
+
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun mfaEnroll(
+        mfaToken: String,
+        type: String,
+        value: String?,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun mfaChallenge(
+        mfaToken: String,
+        authenticatorId: String,
+        promise: Promise
+    )
+
+    @ReactMethod
+    @DoNotStrip
+    abstract fun mfaVerify(
+        mfaToken: String,
+        type: String,
+        code: String,
+        bindingCode: String?,
+        scope: String?,
+        audience: String?,
+        promise: Promise
+    )
+    
+    @ReactMethod
+    @DoNotStrip
     abstract fun passkeySignupChallenge(
         email: String?,
         phoneNumber: String?,
@@ -165,8 +203,6 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
         promise: Promise
     )
 
-    @ReactMethod
-    @DoNotStrip
     abstract fun passkeyEnrollmentChallenge(
         accessToken: String,
         userIdentity: String?,

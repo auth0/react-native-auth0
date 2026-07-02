@@ -33,6 +33,7 @@ import type {
   MfaChallengeResponse,
   DPoPHeadersParams,
 } from '../types';
+import type { IMfaClient } from '../core/interfaces/IMfaClient';
 import type {
   NativeAuthorizeOptions,
   NativeClearSessionOptions,
@@ -459,6 +460,52 @@ export const Auth0Provider = ({
     [client]
   );
 
+  const mfa = useMemo<IMfaClient>(() => {
+    const mfaClient = client.mfa;
+    return {
+      getAuthenticators: async (parameters) => {
+        try {
+          return await mfaClient.getAuthenticators(parameters);
+        } catch (e) {
+          const error = e as AuthError;
+          dispatch({ type: 'ERROR', error });
+          throw error;
+        }
+      },
+      enroll: async (parameters) => {
+        try {
+          return await mfaClient.enroll(parameters);
+        } catch (e) {
+          const error = e as AuthError;
+          dispatch({ type: 'ERROR', error });
+          throw error;
+        }
+      },
+      challenge: async (parameters) => {
+        try {
+          return await mfaClient.challenge(parameters);
+        } catch (e) {
+          const error = e as AuthError;
+          dispatch({ type: 'ERROR', error });
+          throw error;
+        }
+      },
+      verify: async (parameters) => {
+        try {
+          const credentials = await mfaClient.verify(parameters);
+          const user = Auth0User.fromIdToken(credentials.idToken);
+          await client.credentialsManager.saveCredentials(credentials);
+          dispatch({ type: 'LOGIN_COMPLETE', user });
+          return credentials;
+        } catch (e) {
+          const error = e as AuthError;
+          dispatch({ type: 'ERROR', error });
+          throw error;
+        }
+      },
+    };
+  }, [client]);
+
   const contextValue = useMemo<Auth0ContextInterface>(
     () => ({
       ...state,
@@ -494,6 +541,7 @@ export const Auth0Provider = ({
       revokeRefreshToken,
       getDPoPHeaders,
       ssoExchange,
+      mfa,
     }),
     [
       state,
@@ -529,6 +577,7 @@ export const Auth0Provider = ({
       revokeRefreshToken,
       getDPoPHeaders,
       ssoExchange,
+      mfa,
     ]
   );
 

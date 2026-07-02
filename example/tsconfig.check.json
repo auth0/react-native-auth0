@@ -1,0 +1,13 @@
+{
+  "extends": "./node_modules/@react-native/typescript-config/tsconfig.json",
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "lib": ["esnext", "dom"],
+    "customConditions": ["react-native-strict-api"],
+    "paths": {
+      "react-native-auth0": ["../src/index"]
+    }
+  },
+  "include": ["src"]
+}

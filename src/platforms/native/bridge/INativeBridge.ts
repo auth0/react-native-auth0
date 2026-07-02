@@ -5,6 +5,9 @@ import type {
   ClearSessionParameters,
   DPoPHeadersParams,
   SessionTransferCredentials,
+  MfaAuthenticator,
+  MfaEnrollmentChallenge,
+  MfaChallengeResult,
   PasskeyChallengeResponse,
 } from '../../../types';
 import type {
@@ -214,6 +217,64 @@ export interface INativeBridge {
     audience?: string,
     scope?: string,
     organization?: string
+  ): Promise<Credentials>;
+
+  /**
+   * Lists enrolled MFA authenticators.
+   *
+   * @param mfaToken The MFA token from an MFA_REQUIRED error.
+   * @param factorsAllowed Optional list of factor types to filter by.
+   * @returns A promise that resolves with the list of enrolled authenticators.
+   */
+  getMfaAuthenticators(
+    mfaToken: string,
+    factorsAllowed?: string[]
+  ): Promise<MfaAuthenticator[]>;
+
+  /**
+   * Enrolls a new MFA factor.
+   *
+   * @param mfaToken The MFA token from an MFA_REQUIRED error.
+   * @param type The factor type: 'phone', 'email', 'otp', or 'push'.
+   * @param value The phone number or email (required for 'phone' and 'email').
+   * @returns A promise that resolves with the enrollment challenge details.
+   */
+  mfaEnroll(
+    mfaToken: string,
+    type: string,
+    value?: string
+  ): Promise<MfaEnrollmentChallenge>;
+
+  /**
+   * Requests an MFA challenge for an enrolled authenticator.
+   *
+   * @param mfaToken The MFA token from an MFA_REQUIRED error.
+   * @param authenticatorId The ID of the enrolled authenticator.
+   * @returns A promise that resolves with the challenge details.
+   */
+  mfaChallenge(
+    mfaToken: string,
+    authenticatorId: string
+  ): Promise<MfaChallengeResult>;
+
+  /**
+   * Verifies an MFA code and returns credentials on success.
+   *
+   * @param mfaToken The MFA token.
+   * @param type The verification type: 'otp', 'oob', or 'recoveryCode'.
+   * @param code The OTP code, OOB code, or recovery code.
+   * @param bindingCode Optional binding code for OOB verification.
+   * @param scope Optional space-separated OAuth 2.0 scopes for the returned credentials.
+   * @param audience Optional API audience for the returned credentials.
+   * @returns A promise that resolves with credentials on successful verification.
+   */
+  mfaVerify(
+    mfaToken: string,
+    type: string,
+    code: string,
+    bindingCode?: string,
+    scope?: string,
+    audience?: string
   ): Promise<Credentials>;
 
   /**
