@@ -22,6 +22,9 @@ jest.mock('../../../../specs/NativeA0Auth0', () => ({
   customTokenExchange: jest.fn(),
   getApiCredentials: jest.fn(),
   clearApiCredentials: jest.fn(),
+  passwordlessChallengeWithEmail: jest.fn(),
+  passwordlessChallengeWithPhoneNumber: jest.fn(),
+  passwordlessLoginWithOTP: jest.fn(),
 }));
 const MockedAuth0NativeModule = Auth0NativeModule as jest.Mocked<
   typeof Auth0NativeModule
@@ -432,6 +435,108 @@ describe('NativeBridgeManager', () => {
         expect(tokenExchangeError.message).toBe('Token exchange failed');
         expect(tokenExchangeError.code).toBe('custom_token_exchange_failed');
       }
+    });
+  });
+
+  describe('passwordlessChallengeWithEmail', () => {
+    it('forwards all parameters to the native module and returns the authSession', async () => {
+      MockedAuth0NativeModule.passwordlessChallengeWithEmail.mockResolvedValueOnce(
+        { authSession: 'session_email' } as any
+      );
+
+      const result = await bridge.passwordlessChallengeWithEmail(
+        'user@example.com',
+        'Username-Password-Authentication',
+        false
+      );
+
+      expect(
+        MockedAuth0NativeModule.passwordlessChallengeWithEmail
+      ).toHaveBeenCalledWith(
+        'user@example.com',
+        'Username-Password-Authentication',
+        false
+      );
+      expect(result).toEqual({ authSession: 'session_email' });
+    });
+
+    it('wraps a native error in an AuthError', async () => {
+      MockedAuth0NativeModule.passwordlessChallengeWithEmail.mockRejectedValue({
+        code: 'a0.passwordless.challenge_failed',
+        message: 'boom',
+      });
+
+      await expect(
+        bridge.passwordlessChallengeWithEmail(
+          'user@example.com',
+          'Username-Password-Authentication',
+          false
+        )
+      ).rejects.toThrow(AuthError);
+    });
+  });
+
+  describe('passwordlessChallengeWithPhoneNumber', () => {
+    it('forwards all parameters including delivery method to the native module', async () => {
+      MockedAuth0NativeModule.passwordlessChallengeWithPhoneNumber.mockResolvedValueOnce(
+        { authSession: 'session_phone' } as any
+      );
+
+      const result = await bridge.passwordlessChallengeWithPhoneNumber(
+        '+15555550123',
+        'Username-Password-Authentication',
+        'voice',
+        true
+      );
+
+      expect(
+        MockedAuth0NativeModule.passwordlessChallengeWithPhoneNumber
+      ).toHaveBeenCalledWith(
+        '+15555550123',
+        'Username-Password-Authentication',
+        'voice',
+        true
+      );
+      expect(result).toEqual({ authSession: 'session_phone' });
+    });
+  });
+
+  describe('passwordlessLoginWithOTP', () => {
+    it('forwards parameters and transforms the response into a Credentials model', async () => {
+      MockedAuth0NativeModule.passwordlessLoginWithOTP.mockResolvedValueOnce(
+        nativeSuccessCredentials as any
+      );
+
+      const credentials = await bridge.passwordlessLoginWithOTP(
+        'session_login',
+        '123456',
+        'https://api.example.com',
+        'openid profile'
+      );
+
+      expect(
+        MockedAuth0NativeModule.passwordlessLoginWithOTP
+      ).toHaveBeenCalledWith(
+        'session_login',
+        '123456',
+        'https://api.example.com',
+        'openid profile'
+      );
+      expect(credentials).toBeInstanceOf(Credentials);
+      expect(credentials.accessToken).toBe(
+        nativeSuccessCredentials.accessToken
+      );
+    });
+
+    it('wraps a native error in an AuthError', async () => {
+      MockedAuth0NativeModule.passwordlessLoginWithOTP.mockRejectedValue({
+        code: 'a0.passwordless.login_failed',
+        message: 'boom',
+      });
+
+      await expect(
+        bridge.passwordlessLoginWithOTP('session_login', '000000')
+      ).rejects.toThrow(AuthError);
     });
   });
 });

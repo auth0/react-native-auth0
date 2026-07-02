@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
   s.requires_arc = true
 
-  s.dependency 'Auth0', '2.21.2'
+  s.dependency 'Auth0', '2.23.0'
   s.dependency 'SimpleKeychain', '1.3.0'
 
   install_modules_dependencies(s)

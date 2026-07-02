@@ -2,6 +2,7 @@ import type { IWebAuthProvider } from './IWebAuthProvider';
 import type { ICredentialsManager } from './ICredentialsManager';
 import type { IAuthenticationProvider } from './IAuthenticationProvider';
 import type { IMyAccountClient } from './IMyAccountClient';
+import type { IPasswordlessClient } from './IPasswordlessClient';
 import type { IUsersClient } from './IUsersClient';
 import type {
   DPoPHeadersParams,
@@ -41,6 +42,13 @@ export interface IAuth0Client {
    * Provides access to methods for interacting with the My Account API for managing authentication methods.
    */
   readonly myAccount: IMyAccountClient;
+
+  /**
+   * Provides access to the passwordless OTP flow for database connections.
+   *
+   * @remarks Native only (iOS, Android). Not supported on web.
+   */
+  readonly passwordless: IPasswordlessClient;
 
   /**
    * Creates a client for interacting with the Auth0 Management API's user endpoints.

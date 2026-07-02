@@ -324,6 +324,52 @@ export class NativeBridgeManager implements INativeBridge {
     return new CredentialsModel(credential);
   }
 
+  async passwordlessChallengeWithEmail(
+    email: string,
+    connection: string,
+    allowSignup: boolean
+  ): Promise<{ authSession: string }> {
+    return this.a0_call(
+      Auth0NativeModule.passwordlessChallengeWithEmail.bind(Auth0NativeModule),
+      email,
+      connection,
+      allowSignup
+    );
+  }
+
+  async passwordlessChallengeWithPhoneNumber(
+    phoneNumber: string,
+    connection: string,
+    deliveryMethod: string,
+    allowSignup: boolean
+  ): Promise<{ authSession: string }> {
+    return this.a0_call(
+      Auth0NativeModule.passwordlessChallengeWithPhoneNumber.bind(
+        Auth0NativeModule
+      ),
+      phoneNumber,
+      connection,
+      deliveryMethod,
+      allowSignup
+    );
+  }
+
+  async passwordlessLoginWithOTP(
+    authSession: string,
+    otp: string,
+    audience?: string,
+    scope?: string
+  ): Promise<Credentials> {
+    const credential = await this.a0_call(
+      Auth0NativeModule.passwordlessLoginWithOTP.bind(Auth0NativeModule),
+      authSession,
+      otp,
+      audience,
+      scope
+    );
+    return new CredentialsModel(credential);
+  }
+
   async passkeyEnrollmentChallenge(
     accessToken: string,
     userIdentity?: string,

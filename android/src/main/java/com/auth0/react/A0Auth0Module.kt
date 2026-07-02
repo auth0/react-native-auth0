@@ -109,6 +109,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
     private var auth0: Auth0? = null
     private var myAccount: MyAccount? = null
+    private var passwordless: Passwordless? = null
     private lateinit var secureCredentialsManager: SecureCredentialsManager
     private var webAuthPromise: Promise? = null
 
@@ -279,6 +280,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         this.useDPoP = useDPoP ?: true
         auth0 = Auth0.getInstance(clientId, domain)
         myAccount = MyAccount(auth0!!, this.useDPoP, reactContext)
+        passwordless = Passwordless(auth0!!, this.useDPoP, reactContext)
 
         val authAPI = AuthenticationAPIClient(auth0!!)
         if (this.useDPoP) {
@@ -773,6 +775,38 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         })
     }
 
+
+    @ReactMethod
+    override fun passwordlessChallengeWithEmail(
+        email: String,
+        connection: String,
+        allowSignup: Boolean,
+        promise: Promise
+    ) {
+        passwordless!!.challengeWithEmail(email, connection, allowSignup, promise)
+    }
+
+    @ReactMethod
+    override fun passwordlessChallengeWithPhoneNumber(
+        phoneNumber: String,
+        connection: String,
+        deliveryMethod: String,
+        allowSignup: Boolean,
+        promise: Promise
+    ) {
+        passwordless!!.challengeWithPhoneNumber(phoneNumber, connection, deliveryMethod, allowSignup, promise)
+    }
+
+    @ReactMethod
+    override fun passwordlessLoginWithOTP(
+        authSession: String,
+        otp: String,
+        audience: String?,
+        scope: String?,
+        promise: Promise
+    ) {
+        passwordless!!.loginWithOTP(authSession, otp, audience, scope, promise)
+    }
 
     @ReactMethod
     override fun passkeyEnrollmentChallenge(

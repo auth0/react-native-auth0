@@ -283,6 +283,52 @@ export interface INativeBridge {
   ): Promise<Credentials>;
 
   /**
+   * Issue a passwordless OTP challenge to an email address for a database connection.
+   *
+   * @param email The email address to send the one-time code to.
+   * @param connection The database connection name; must have `email_otp` enabled.
+   * @param allowSignup Whether to allow sign-up if the user does not yet exist.
+   * @returns A promise that resolves with the opaque auth session.
+   */
+  passwordlessChallengeWithEmail(
+    email: string,
+    connection: string,
+    allowSignup: boolean
+  ): Promise<{ authSession: string }>;
+
+  /**
+   * Issue a passwordless OTP challenge to a phone number for a database connection.
+   *
+   * @param phoneNumber The E.164 phone number to send the one-time code to.
+   * @param connection The database connection name; must have `phone_otp` enabled.
+   * @param deliveryMethod How to deliver the code: `'text'` or `'voice'`.
+   * @param allowSignup Whether to allow sign-up if the user does not yet exist.
+   * @returns A promise that resolves with the opaque auth session.
+   */
+  passwordlessChallengeWithPhoneNumber(
+    phoneNumber: string,
+    connection: string,
+    deliveryMethod: string,
+    allowSignup: boolean
+  ): Promise<{ authSession: string }>;
+
+  /**
+   * Complete a passwordless OTP flow by verifying the code and obtaining credentials.
+   *
+   * @param authSession The opaque auth session from a prior challenge.
+   * @param otp The one-time code the user received.
+   * @param audience Optional target API identifier.
+   * @param scope Optional space-separated scopes.
+   * @returns A promise that resolves with Auth0 credentials.
+   */
+  passwordlessLoginWithOTP(
+    authSession: string,
+    otp: string,
+    audience?: string,
+    scope?: string
+  ): Promise<Credentials>;
+
+  /**
    * Request a passkey enrollment challenge from the My Account API.
    *
    * @param accessToken Access token for My Account API.
