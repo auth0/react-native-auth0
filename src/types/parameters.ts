@@ -576,6 +576,9 @@ export interface PasswordlessLoginOtpParameters {
   audience?: string;
   /**
    * Space-separated list of OAuth 2.0 scopes.
+   *
+   * An empty string is treated the same as omitting the value and falls back
+   * to the default. The `openid` scope is always included by the underlying SDK.
    * @default "openid profile email"
    */
   scope?: string;
