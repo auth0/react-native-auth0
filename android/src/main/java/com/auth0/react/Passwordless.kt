@@ -11,26 +11,24 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableNativeMap
 
 class Passwordless(
-    private val auth0: Auth0,
-    private val useDPoP: Boolean,
-    private val reactContext: ReactApplicationContext
+    auth0: Auth0,
+    useDPoP: Boolean,
+    reactContext: ReactApplicationContext
 ) {
 
-    private fun createClient(): AuthenticationAPIClient {
-        val client = AuthenticationAPIClient(auth0)
+    private val client: AuthenticationAPIClient = AuthenticationAPIClient(auth0).also {
         if (useDPoP) {
-            client.useDPoP(reactContext)
+            it.useDPoP(reactContext)
         }
-        return client
     }
 
     fun challengeWithEmail(
         email: String,
         connection: String,
-        allowSignup: Boolean,
+        allowSignup: Boolean = false,
         promise: Promise
     ) {
-        createClient().passwordlessClient()
+        client.passwordlessClient()
             .challengeWithEmail(email, connection, allowSignup)
             .start(object : com.auth0.android.callback.Callback<PasswordlessChallenge, AuthenticationException> {
                 override fun onSuccess(result: PasswordlessChallenge) {
@@ -50,12 +48,12 @@ class Passwordless(
         phoneNumber: String,
         connection: String,
         deliveryMethod: String,
-        allowSignup: Boolean,
+        allowSignup: Boolean = false,
         promise: Promise
     ) {
         val method = if (deliveryMethod == "voice") DeliveryMethod.VOICE else DeliveryMethod.TEXT
 
-        createClient().passwordlessClient()
+        client.passwordlessClient()
             .challengeWithPhoneNumber(phoneNumber, connection, method, allowSignup)
             .start(object : com.auth0.android.callback.Callback<PasswordlessChallenge, AuthenticationException> {
                 override fun onSuccess(result: PasswordlessChallenge) {
@@ -81,7 +79,7 @@ class Passwordless(
         val finalScope = if (scope.isNullOrBlank()) "openid profile email" else scope
         val finalAudience = audience?.trim()?.ifEmpty { null }
 
-        val request = createClient().passwordlessClient()
+        val request = client.passwordlessClient()
             .loginWithOTP(PasswordlessChallenge(authSession), otp)
         finalAudience?.let { request.setAudience(it) }
         request.setScope(finalScope)

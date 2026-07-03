@@ -356,6 +356,8 @@ const credentials = await auth0.passwordless.loginWithOTP({
 });
 ```
 
+Both challenge methods accept an optional `allowSignup` parameter (defaults to `false`). When set to `true`, a new user is created for the given email or phone number if one does not already exist on the connection; when `false`, the challenge is rejected for unknown identifiers.
+
 The `challenge` object returned from a challenge call is opaque — pass it as-is to `loginWithOTP`. You can optionally provide `audience` and `scope` to `loginWithOTP`.
 
 ### Create user in database connection

@@ -4,27 +4,19 @@ import Foundation
 @objc
 public class A0Passwordless: NSObject {
 
-    private let clientId: String
-    private let domain: String
-    private let useDPoP: Bool
+    private let client: Authentication
 
     @objc public init(clientId: String, domain: String, useDPoP: Bool) {
-        self.clientId = clientId
-        self.domain = domain
-        self.useDPoP = useDPoP
-    }
-
-    private func createClient() -> Authentication {
-        var client = Auth0.authentication(clientId: self.clientId, domain: self.domain)
-        if self.useDPoP {
+        var client = Auth0.authentication(clientId: clientId, domain: domain)
+        if useDPoP {
             client = client.useDPoP()
         }
-        return client
+        self.client = client
     }
 
     @objc(challengeWithEmail:connection:allowSignup:resolve:reject:)
     public func challengeWithEmail(email: String, connection: String, allowSignup: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        createClient().passwordlessChallenge(
+        client.passwordlessChallenge(
             email: email,
             connection: connection,
             allowSignup: allowSignup
@@ -42,7 +34,7 @@ public class A0Passwordless: NSObject {
     public func challengeWithPhoneNumber(phoneNumber: String, connection: String, deliveryMethod: String, allowSignup: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let method = DeliveryMethod(rawValue: deliveryMethod) ?? .text
 
-        createClient().passwordlessChallenge(
+        client.passwordlessChallenge(
             phoneNumber: phoneNumber,
             connection: connection,
             deliveryMethod: method,
@@ -70,7 +62,7 @@ public class A0Passwordless: NSObject {
             return
         }
 
-        createClient().login(
+        client.login(
             otp: otp,
             challenge: challenge,
             audience: audienceValue,
