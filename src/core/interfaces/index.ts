@@ -3,5 +3,6 @@ export * from './IAuth0Client';
 export * from './IAuthenticationProvider';
 export * from './ICredentialsManager';
 export * from './IMyAccountClient';
+export * from './IPasswordlessClient';
 export * from './IWebAuthProvider';
 export * from './IUsersClient';

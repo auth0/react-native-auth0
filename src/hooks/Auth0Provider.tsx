@@ -32,6 +32,9 @@ import type {
   ResetPasswordParameters,
   MfaChallengeResponse,
   DPoPHeadersParams,
+  PasswordlessChallengeEmailParameters,
+  PasswordlessChallengePhoneParameters,
+  PasswordlessLoginOtpParameters,
 } from '../types';
 import type {
   NativeAuthorizeOptions,
@@ -369,6 +372,36 @@ export const Auth0Provider = ({
 
   const myAccount = useMemo(() => client.myAccount, [client]);
 
+  const passwordless = useMemo(
+    () => ({
+      challengeWithEmail: async (
+        parameters: PasswordlessChallengeEmailParameters
+      ) => {
+        try {
+          return await client.passwordless.challengeWithEmail(parameters);
+        } catch (e) {
+          const error = e as AuthError;
+          dispatch({ type: 'ERROR', error });
+          throw error;
+        }
+      },
+      challengeWithPhoneNumber: async (
+        parameters: PasswordlessChallengePhoneParameters
+      ) => {
+        try {
+          return await client.passwordless.challengeWithPhoneNumber(parameters);
+        } catch (e) {
+          const error = e as AuthError;
+          dispatch({ type: 'ERROR', error });
+          throw error;
+        }
+      },
+      loginWithOTP: (parameters: PasswordlessLoginOtpParameters) =>
+        loginFlow(client.passwordless.loginWithOTP(parameters)),
+    }),
+    [client, loginFlow]
+  );
+
   const sendEmailCode = useCallback(
     (parameters: PasswordlessEmailParameters) =>
       voidFlow(client.auth.passwordlessWithEmail(parameters)),
@@ -483,6 +516,7 @@ export const Auth0Provider = ({
       passkeyLoginChallenge,
       getTokenByPasskey,
       myAccount,
+      passwordless,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,
@@ -518,6 +552,7 @@ export const Auth0Provider = ({
       passkeyLoginChallenge,
       getTokenByPasskey,
       myAccount,
+      passwordless,
       sendEmailCode,
       authorizeWithEmail,
       sendSMSCode,

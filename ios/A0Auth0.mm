@@ -26,6 +26,7 @@
 @interface A0Auth0 ()
 @property (strong, nonatomic) NativeBridge *nativeBridge;
 @property (strong, nonatomic) A0MyAccount *myAccount;
+@property (strong, nonatomic) A0Passwordless *passwordless;
 @end
 
 @implementation A0Auth0
@@ -224,6 +225,32 @@ RCT_EXPORT_METHOD(getTokenByPasskey:(NSString *)authSession
     [self.nativeBridge getTokenByPasskeyWithAuthSession:authSession authResponse:authResponse realm:realm audience:audience scope:scope organization:organization resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(passwordlessChallengeWithEmail:(NSString *)email
+                  connection:(NSString *)connection
+                  allowSignup:(BOOL)allowSignup
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.passwordless challengeWithEmail:email connection:connection allowSignup:allowSignup resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(passwordlessChallengeWithPhoneNumber:(NSString *)phoneNumber
+                  connection:(NSString *)connection
+                  deliveryMethod:(NSString *)deliveryMethod
+                  allowSignup:(BOOL)allowSignup
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.passwordless challengeWithPhoneNumber:phoneNumber connection:connection deliveryMethod:deliveryMethod allowSignup:allowSignup resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(passwordlessLoginWithOTP:(NSString *)authSession
+                  otp:(NSString *)otp
+                  audience:(NSString * _Nullable)audience
+                  scope:(NSString * _Nullable)scope
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.passwordless loginWithOTP:authSession otp:otp audience:audience scope:scope resolve:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(passkeyEnrollmentChallenge:(NSString *)accessToken
                   userIdentity:(NSString * _Nullable)userIdentity
                   connection:(NSString * _Nullable)connection
@@ -350,6 +377,7 @@ UIBackgroundTaskIdentifier taskId;
     NativeBridge *bridge = [[NativeBridge alloc] initWithClientId:clientId domain:domain localAuthenticationOptions:options useDPoP:useDPoPBool maxRetries:maxRetries credentialsManagerStorageKey:credentialsManagerStorageKey resolve:resolve reject:reject];
     self.nativeBridge = bridge;
     self.myAccount = [[A0MyAccount alloc] initWithDomain:domain useDPoP:useDPoPBool];
+    self.passwordless = [[A0Passwordless alloc] initWithClientId:clientId domain:domain useDPoP:useDPoPBool];
 }
 #ifdef RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params { 

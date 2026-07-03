@@ -7,6 +7,7 @@
   - [Using custom scheme for web authentication redirection](#using-custom-scheme-for-web-authentication-redirection)
   - [Login using MFA with One Time Password code](#login-using-mfa-with-one-time-password-code)
   - [Login with Passwordless](#login-with-passwordless)
+  - [Login with Passwordless OTP (Database Connections)](#login-with-passwordless-otp-database-connections)
   - [Create user in database connection](#create-user-in-database-connection)
   - [Using HTTPS callback URLs](#using-https-callback-urls)
   - [Using Custom Headers](#using-custom-headers)
@@ -309,6 +310,55 @@ const subscription = Linking.addEventListener('url', ({ url }) => {
 
 > [!NOTE]
 > For native and Expo apps, the **code flow is recommended** because the SDK handles the full exchange for you. Use the magic link flow only if your use case specifically requires magic links, and be aware that you are responsible for handling the deep link and securely storing the returned tokens.
+
+### Login with Passwordless OTP (Database Connections)
+
+> [!NOTE]
+> This feature is currently in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access). Reach out to Auth0 support to have it enabled for your tenant.
+>
+> Native only (iOS, Android). Calling `auth0.passwordless.*` on the web platform rejects with an `UnsupportedOperation` error.
+
+This flow lets a user authenticate with a one-time code sent to their email or phone against a standard **database** connection (`auth0` strategy) that has `email_otp` or `phone_otp` enabled. It is distinct from [Login with Passwordless](#login-with-passwordless), which targets dedicated `email` / `sms` connections.
+
+It is a two-step, challenge-response flow: request a challenge (which delivers the OTP and returns an opaque `auth_session`), then exchange the challenge and the user-entered code for credentials.
+
+#### Email challenge
+
+```js
+// 1. Request a challenge — Auth0 emails the OTP and returns the challenge.
+const challenge = await auth0.passwordless.challengeWithEmail({
+  email: 'info@auth0.com',
+  connection: 'Username-Password-Authentication', // required; must have email_otp enabled
+  // allowSignup defaults to false
+});
+
+// 2. Exchange the challenge and the code the user received for credentials.
+const credentials = await auth0.passwordless.loginWithOTP({
+  challenge,
+  otp: '123456',
+});
+```
+
+#### Phone challenge
+
+```js
+// 1. Request a challenge — delivered by SMS ('text') or voice call ('voice').
+const challenge = await auth0.passwordless.challengeWithPhoneNumber({
+  phoneNumber: '+15555550123',
+  connection: 'Username-Password-Authentication', // required; must have phone_otp enabled
+  deliveryMethod: 'text', // defaults to 'text'
+});
+
+// 2. Exchange the challenge and the code for credentials.
+const credentials = await auth0.passwordless.loginWithOTP({
+  challenge,
+  otp: '123456',
+});
+```
+
+Both challenge methods accept an optional `allowSignup` parameter (defaults to `false`). When set to `true`, a new user is created for the given email or phone number if one does not already exist on the connection; when `false`, the challenge is rejected for unknown identifiers.
+
+The `challenge` object returned from a challenge call is opaque — pass it as-is to `loginWithOTP`. You can optionally provide `audience` and `scope` to `loginWithOTP`.
 
 ### Create user in database connection
 
