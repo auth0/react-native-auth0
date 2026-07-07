@@ -1,5 +1,13 @@
 # Change Log
 
+## [v5.9.0](https://github.com/auth0/react-native-auth0/tree/v5.9.0) (2026-07-07)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.8.0...v5.9.0)
+
+**Added**
+
+- feat: add Passwordless OTP for database connections [\#1585](https://github.com/auth0/react-native-auth0/pull/1585) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.8.0](https://github.com/auth0/react-native-auth0/tree/v5.8.0) (2026-06-26)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.7.0...v5.8.0)
