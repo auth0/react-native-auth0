@@ -55,13 +55,17 @@ const HomeScreen = () => {
   const [otpCode, setOtpCode] = useState('');
   const [otpChallenge, setOtpChallenge] =
     useState<PasswordlessChallenge | null>(null);
+  const [useTrustedWebActivity, setUseTrustedWebActivity] = useState(false);
 
   const onLogin = async () => {
     try {
-      await authorize({
-        scope: 'openid profile email offline_access',
-        audience: `https://${config.domain}/api/v2/`,
-      });
+      await authorize(
+        {
+          scope: 'openid profile email offline_access',
+          audience: `https://${config.domain}/api/v2/`,
+        },
+        { useTrustedWebActivity }
+      );
     } catch (e: any) {
       if (e instanceof WebAuthError) {
         switch (e.type) {
@@ -347,15 +351,25 @@ const HomeScreen = () => {
 
         <Section title="Web Auth (Recommended)">
           <Button onPress={onLogin} title="Log In" />
-          {Platform.OS === 'android' && (
-            <>
-              <Text style={styles.description}>
-                Recovers a login that completed after the OS killed the app
-                process. No-op on iOS/web.
-              </Text>
-              <Button onPress={onResumeSession} title="Resume Session" />
-            </>
-          )}
+          <>
+            <Text style={styles.description}>
+              Trusted Web Activity opens login full-screen (no URL bar).
+              Requires registering the app's SHA-256 Key Hash in the Auth0
+              Dashboard; otherwise it falls back to a Custom Tab. Android only.
+            </Text>
+            <Button
+              onPress={() => setUseTrustedWebActivity((prev) => !prev)}
+              title={`Trusted Web Activity: ${
+                useTrustedWebActivity ? 'On' : 'Off'
+              }`}
+              style={!useTrustedWebActivity ? styles.inactiveButton : undefined}
+            />
+            <Text style={styles.description}>
+              Recovers a login that completed after the OS killed the app
+              process. No-op on iOS/web.
+            </Text>
+            <Button onPress={onResumeSession} title="Resume Session" />
+          </>
         </Section>
 
         <Section title="Database Login">

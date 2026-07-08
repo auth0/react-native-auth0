@@ -134,6 +134,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         safariViewControllerPresentationStyle: Double?,
         additionalParameters: ReadableMap?,
         allowedBrowserPackages: ReadableArray?,
+        useTrustedWebActivity: Boolean?,
         promise: Promise
     ) {
         if(this.useDPoP) {
@@ -172,8 +173,9 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                         .build()
                 )
             }
+            if (useTrustedWebActivity == true) { withTrustedWebActivity() }
         }
-        
+
         builder.withParameters(cleanedParameters)
 
         val activity = reactContext.currentActivity
@@ -458,11 +460,15 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     override fun getName(): String = NAME
 
     @ReactMethod
-    override fun webAuthLogout(scheme: String, federated: Boolean, redirectUri: String?, allowedBrowserPackages: ReadableArray?, promise: Promise) {
+    override fun webAuthLogout(scheme: String, federated: Boolean, redirectUri: String?, allowedBrowserPackages: ReadableArray?, useTrustedWebActivity: Boolean?, promise: Promise) {
         val builder = WebAuthProvider.logout(auth0!!).withScheme(scheme)
 
         if (federated) {
             builder.withFederated()
+        }
+
+        if (useTrustedWebActivity == true) {
+            builder.withTrustedWebActivity()
         }
 
         redirectUri?.let { builder.withReturnToUrl(it) }

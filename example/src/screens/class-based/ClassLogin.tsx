@@ -38,15 +38,19 @@ const ClassLoginScreen = () => {
   const [challenge, setChallenge] = useState<PasswordlessChallenge | null>(
     null
   );
+  const [useTrustedWebActivity, setUseTrustedWebActivity] = useState(false);
 
   const onLogin = async () => {
     setLoading(true);
     setError(null);
     try {
-      const credentials = await auth0.webAuth.authorize({
-        scope: 'openid profile email offline_access',
-        audience: `https://${config.domain}/api/v2/`,
-      });
+      const credentials = await auth0.webAuth.authorize(
+        {
+          scope: 'openid profile email offline_access',
+          audience: `https://${config.domain}/api/v2/`,
+        },
+        { useTrustedWebActivity }
+      );
       // On success, we save the credentials and navigate to the profile screen.
       await auth0.credentialsManager.saveCredentials(credentials);
       navigation.replace('ClassProfile', { credentials });
@@ -118,6 +122,20 @@ const ClassLoginScreen = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Web Auth</Text>
           <Button onPress={onLogin} title="Log In" loading={loading} />
+          <>
+            <Text style={styles.description}>
+              Trusted Web Activity opens login full-screen (no URL bar).
+              Requires registering the app's SHA-256 Key Hash in the Auth0
+              Dashboard; otherwise it falls back to a Custom Tab. Android only.
+            </Text>
+            <Button
+              onPress={() => setUseTrustedWebActivity((prev) => !prev)}
+              title={`Trusted Web Activity: ${
+                useTrustedWebActivity ? 'On' : 'Off'
+              }`}
+              style={!useTrustedWebActivity ? styles.inactiveButton : undefined}
+            />
+          </>
         </View>
 
         {Platform.OS !== 'web' && (

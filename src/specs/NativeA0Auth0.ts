@@ -95,7 +95,8 @@ export interface Spec extends TurboModule {
     ephemeralSession: boolean | undefined,
     safariViewControllerPresentationStyle: Int32 | undefined,
     additionalParameters: { [key: string]: string } | undefined,
-    allowedBrowserPackages: string[] | undefined
+    allowedBrowserPackages: string[] | undefined,
+    useTrustedWebActivity: boolean | undefined
   ): Promise<Credentials>;
 
   /**
@@ -105,7 +106,8 @@ export interface Spec extends TurboModule {
     scheme: string,
     federated: boolean,
     redirectUri: string,
-    allowedBrowserPackages: string[] | undefined
+    allowedBrowserPackages: string[] | undefined,
+    useTrustedWebActivity: boolean | undefined
   ): Promise<void>;
 
   /**
