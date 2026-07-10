@@ -108,7 +108,8 @@ export class NativeBridgeManager implements INativeBridge {
       presentationStyle ?? 99, // Since we can't pass null to the native layer, and we need a value to represent this parameter is not set, we are using 99.
       // //The native layer will check for this and ignore if the value is 99
       parameters.additionalParameters ?? {},
-      options.allowedBrowserPackages
+      options.allowedBrowserPackages,
+      options.useTrustedWebActivity ?? false
     );
     return new CredentialsModel(credential);
   }
@@ -122,7 +123,8 @@ export class NativeBridgeManager implements INativeBridge {
       options.customScheme,
       parameters.federated ?? false,
       parameters.returnToUrl,
-      options.allowedBrowserPackages
+      options.allowedBrowserPackages,
+      options.useTrustedWebActivity ?? false
     );
   }
 

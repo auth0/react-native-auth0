@@ -2214,6 +2214,70 @@ await auth0.webAuth.authorize(
 
 The same `allowedBrowserPackages` option is also accepted by `clearSession` to restrict which browser handles the logout flow.
 
+## Trusted Web Activity (Android)
+
+On Android, web authentication defaults to a Custom Tab, which shows a read-only URL bar at the top of the browser. A **Trusted Web Activity (TWA)** renders the login page full-screen with no address bar, giving a more integrated, app-like experience. Pass `useTrustedWebActivity: true` in the options object to opt in.
+
+**Behaviour:**
+
+- When enabled, the login (and logout) page opens in a Trusted Web Activity instead of a Custom Tab.
+- TWA relies on **Digital Asset Links** verification between your app and your Auth0 domain. If verification fails — for example because the setup below is missing — it automatically **falls back to a Custom Tab**, so login still completes (just with the URL bar visible).
+
+> **Platform Support:** Android only. This option is ignored on iOS and web.
+
+### Required setup
+
+TWA will only render full-screen if your app's signing certificate is registered with your Auth0 tenant. Without this, Digital Asset Links verification fails and the flow falls back to a Custom Tab.
+
+1. Get your app's **SHA-256 certificate fingerprint**. For a debug build:
+
+   ```bash
+   keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
+   ```
+
+   For a release build, run the same command against your release keystore. Copy the `SHA256` fingerprint.
+
+2. In the **Auth0 Dashboard**, go to **Application → Settings → Advanced → Device Settings → Key Hashes** and add:
+   - Your app's **package name** (e.g. `com.myapp`).
+   - The **SHA-256 fingerprint** from step 1.
+
+3. Save. Digital Asset Links verification now succeeds and the login page renders full-screen.
+
+You can confirm the registration by visiting `https://YOUR_AUTH0_DOMAIN/.well-known/assetlinks.json` and checking that your app's package name and SHA-256 fingerprint are listed.
+
+> Register the fingerprint for **every** signing config you ship (debug, release, and Play App Signing if you use it), otherwise TWA silently falls back to a Custom Tab for the unregistered builds.
+
+### Using with Hooks
+
+```typescript
+import { useAuth0 } from 'react-native-auth0';
+
+const { authorize } = useAuth0();
+
+await authorize(
+  { scope: 'openid profile email' },
+  { useTrustedWebActivity: true }
+);
+```
+
+### Using with Auth0 Class
+
+```typescript
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+});
+
+await auth0.webAuth.authorize(
+  { scope: 'openid profile email' },
+  { useTrustedWebActivity: true }
+);
+```
+
+The same `useTrustedWebActivity` option is also accepted by `clearSession` so the logout flow opens in a Trusted Web Activity as well.
+
 ## Recovering Login After Process Death (Android)
 
 On Android, the OS can kill your app's process while the user is completing login in the browser — this is common on devices with aggressive memory management (e.g. Samsung One UI, Xiaomi MIUI), especially during MFA when the user switches apps to fetch a code. When the user finishes and the browser redirects back, the app cold-starts and, without recovery, the in-flight login is lost and the user lands back on the login screen.

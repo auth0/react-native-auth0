@@ -166,6 +166,18 @@ export interface NativeAuthorizeOptions {
    * ```
    */
   allowedBrowserPackages?: string[];
+  /**
+   * **Android only:** Launches login as a Trusted Web Activity (full-screen, no address
+   * bar) instead of a Custom Tab. Requires the app's SHA-256 fingerprint and package name
+   * registered in the Auth0 Dashboard; falls back to a Custom Tab if Digital Asset Links
+   * verification fails. No effect on iOS or Web.
+   *
+   * @example
+   * ```typescript
+   * await authorize({}, { useTrustedWebActivity: true });
+   * ```
+   */
+  useTrustedWebActivity?: boolean;
 }
 
 /**
@@ -190,6 +202,12 @@ export interface NativeClearSessionOptions {
    * Mirrors the same option on {@link NativeAuthorizeOptions} — see that field for full details.
    */
   allowedBrowserPackages?: string[];
+
+  /**
+   * **Android only:** Launches logout as a Trusted Web Activity. See the same option on
+   * {@link NativeAuthorizeOptions} for details. No effect on iOS or Web.
+   */
+  useTrustedWebActivity?: boolean;
 }
 
 // ========= Web-Specific Options =========

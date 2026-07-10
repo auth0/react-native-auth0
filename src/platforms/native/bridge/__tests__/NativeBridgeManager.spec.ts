@@ -95,7 +95,8 @@ describe('NativeBridgeManager', () => {
         options.ephemeralSession,
         1, // presentationStyle
         parameters.additionalParameters,
-        undefined // allowedBrowserPackages
+        undefined, // allowedBrowserPackages
+        false // useTrustedWebActivity
       );
     });
 
@@ -124,7 +125,8 @@ describe('NativeBridgeManager', () => {
         false, // ephemeralSession
         99, // presentationStyle
         {}, // additionalParameters
-        undefined // allowedBrowserPackages
+        undefined, // allowedBrowserPackages
+        false // useTrustedWebActivity
       );
     });
 
@@ -157,7 +159,38 @@ describe('NativeBridgeManager', () => {
         false,
         99,
         {},
-        allowedBrowserPackages
+        allowedBrowserPackages,
+        false // useTrustedWebActivity
+      );
+    });
+
+    it('should pass useTrustedWebActivity to native webAuth when provided', async () => {
+      MockedAuth0NativeModule.webAuth.mockResolvedValueOnce(
+        nativeSuccessCredentials as any
+      );
+
+      await bridge.authorize(
+        { redirectUrl: 'com.myapp://cb' },
+        { customScheme: 'com.myapp', useTrustedWebActivity: true }
+      );
+
+      expect(MockedAuth0NativeModule.webAuth).toHaveBeenCalledWith(
+        'com.myapp',
+        'com.myapp://cb',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        0,
+        undefined,
+        undefined,
+        0,
+        false,
+        99,
+        {},
+        undefined, // allowedBrowserPackages
+        true // useTrustedWebActivity
       );
     });
 
@@ -247,7 +280,8 @@ describe('NativeBridgeManager', () => {
         options.customScheme,
         parameters.federated,
         parameters.returnToUrl,
-        undefined // allowedBrowserPackages
+        undefined, // allowedBrowserPackages
+        false // useTrustedWebActivity
       );
     });
 
@@ -265,7 +299,29 @@ describe('NativeBridgeManager', () => {
         options.customScheme,
         parameters.federated,
         parameters.returnToUrl,
-        allowedBrowserPackages
+        allowedBrowserPackages,
+        false // useTrustedWebActivity
+      );
+    });
+
+    it('should pass useTrustedWebActivity to native webAuthLogout when provided', async () => {
+      const parameters = {
+        federated: false,
+        returnToUrl: 'com.myapp://logout',
+      };
+      const options = {
+        customScheme: 'com.myapp',
+        useTrustedWebActivity: true,
+      };
+
+      await bridge.clearSession(parameters, options);
+
+      expect(MockedAuth0NativeModule.webAuthLogout).toHaveBeenCalledWith(
+        options.customScheme,
+        parameters.federated,
+        parameters.returnToUrl,
+        undefined, // allowedBrowserPackages
+        true // useTrustedWebActivity
       );
     });
   });

@@ -86,12 +86,13 @@ abstract class A0Auth0Spec(context: ReactApplicationContext) : ReactContextBaseJ
         safariViewControllerPresentationStyle: Double?,
         additionalParameters: ReadableMap?,
         allowedBrowserPackages: ReadableArray?,
+        useTrustedWebActivity: Boolean,
         promise: Promise
     )
 
     @ReactMethod
     @DoNotStrip
-    abstract fun webAuthLogout(scheme: String, federated: Boolean, redirectUri: String?, allowedBrowserPackages: ReadableArray?, promise: Promise)
+    abstract fun webAuthLogout(scheme: String, federated: Boolean, redirectUri: String?, allowedBrowserPackages: ReadableArray?, useTrustedWebActivity: Boolean, promise: Promise)
 
     @ReactMethod
     @DoNotStrip
