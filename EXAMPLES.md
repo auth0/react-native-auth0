@@ -2243,6 +2243,8 @@ TWA will only render full-screen if your app's signing certificate is registered
 
 3. Save. Digital Asset Links verification now succeeds and the login page renders full-screen.
 
+You can confirm the registration by visiting `https://YOUR_AUTH0_DOMAIN/.well-known/assetlinks.json` and checking that your app's package name and SHA-256 fingerprint are listed.
+
 > Register the fingerprint for **every** signing config you ship (debug, release, and Play App Signing if you use it), otherwise TWA silently falls back to a Custom Tab for the unregistered builds.
 
 ### Using with Hooks
