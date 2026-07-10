@@ -145,7 +145,7 @@ ephemeralSession:(nonnull NSNumber *)ephemeralSession
 safariViewControllerPresentationStyle:(nonnull NSNumber *)safariViewControllerPresentationStyle
 additionalParameters:(NSDictionary * _Nullable)additionalParameters
  allowedBrowserPackages:(NSArray * _Nullable)allowedBrowserPackages
- useTrustedWebActivity:(NSNumber *)useTrustedWebActivity
+ useTrustedWebActivity:(BOOL)useTrustedWebActivity
         resolve:(RCTPromiseResolveBlock)resolve
          reject:(RCTPromiseRejectBlock)reject) {
     NSInteger maxAgeValue = maxAge != nil ? (NSInteger)[maxAge doubleValue] : 0;
@@ -161,7 +161,7 @@ RCT_EXPORT_METHOD(webAuthLogout:(NSString *)scheme
             federated:(BOOL)federated
           redirectUri:(NSString *)redirectUri
  allowedBrowserPackages:(NSArray * _Nullable)allowedBrowserPackages
- useTrustedWebActivity:(NSNumber *)useTrustedWebActivity
+ useTrustedWebActivity:(BOOL)useTrustedWebActivity
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject) {
     [self.nativeBridge webAuthLogoutWithScheme:scheme federated:federated redirectUri:redirectUri resolve:resolve reject:reject];

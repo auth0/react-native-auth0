@@ -109,7 +109,7 @@ export class NativeBridgeManager implements INativeBridge {
       // //The native layer will check for this and ignore if the value is 99
       parameters.additionalParameters ?? {},
       options.allowedBrowserPackages,
-      options.useTrustedWebActivity
+      options.useTrustedWebActivity ?? false
     );
     return new CredentialsModel(credential);
   }
@@ -124,7 +124,7 @@ export class NativeBridgeManager implements INativeBridge {
       parameters.federated ?? false,
       parameters.returnToUrl,
       options.allowedBrowserPackages,
-      options.useTrustedWebActivity
+      options.useTrustedWebActivity ?? false
     );
   }
 

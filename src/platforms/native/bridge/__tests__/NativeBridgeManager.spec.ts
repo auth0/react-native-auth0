@@ -96,7 +96,7 @@ describe('NativeBridgeManager', () => {
         1, // presentationStyle
         parameters.additionalParameters,
         undefined, // allowedBrowserPackages
-        undefined // useTrustedWebActivity
+        false // useTrustedWebActivity
       );
     });
 
@@ -126,7 +126,7 @@ describe('NativeBridgeManager', () => {
         99, // presentationStyle
         {}, // additionalParameters
         undefined, // allowedBrowserPackages
-        undefined // useTrustedWebActivity
+        false // useTrustedWebActivity
       );
     });
 
@@ -160,7 +160,7 @@ describe('NativeBridgeManager', () => {
         99,
         {},
         allowedBrowserPackages,
-        undefined // useTrustedWebActivity
+        false // useTrustedWebActivity
       );
     });
 
@@ -281,7 +281,7 @@ describe('NativeBridgeManager', () => {
         parameters.federated,
         parameters.returnToUrl,
         undefined, // allowedBrowserPackages
-        undefined // useTrustedWebActivity
+        false // useTrustedWebActivity
       );
     });
 
@@ -300,7 +300,7 @@ describe('NativeBridgeManager', () => {
         parameters.federated,
         parameters.returnToUrl,
         allowedBrowserPackages,
-        undefined // useTrustedWebActivity
+        false // useTrustedWebActivity
       );
     });
 
