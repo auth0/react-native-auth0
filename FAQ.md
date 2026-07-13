@@ -1048,7 +1048,9 @@ A common trigger is an **interrupted authentication flow** — for example, the 
 
 ### The solution: `clearDPoPKey()`
 
-Use `clearDPoPKey()` to clear the DPoP key pair and cached state, then retry the login. This gives the next login a clean key pair and a fresh handshake.
+`clearDPoPKey()` clears the DPoP key pair and cached state so the next login starts with a clean key pair and a fresh handshake.
+
+Treat this as a **deliberate recovery action**, not automatic error handling. Do **not** wrap it around every failed `authorize()` — most login failures (user cancellation, invalid credentials, network errors) have nothing to do with DPoP, and clearing the key on those needlessly invalidates a valid DPoP-bound session. Call it only when you have specifically diagnosed a corrupted DPoP state (for example, repeated login failures following an interrupted flow):
 
 ```javascript
 import { useAuth0 } from 'react-native-auth0';
@@ -1056,15 +1058,11 @@ import { useAuth0 } from 'react-native-auth0';
 function LoginScreen() {
   const { authorize, clearDPoPKey } = useAuth0();
 
-  const handleLogin = async () => {
-    try {
-      await authorize({ scope: 'openid profile email offline_access' });
-    } catch (error) {
-      // If a login fails and you suspect corrupted DPoP state,
-      // clear the key and retry once.
-      await clearDPoPKey();
-      await authorize({ scope: 'openid profile email offline_access' });
-    }
+  // Expose recovery as an explicit user action, e.g. a "Reset and try again"
+  // button shown after the user has hit repeated, unexplained login failures.
+  const recoverAndLogin = async () => {
+    await clearDPoPKey();
+    await authorize({ scope: 'openid profile email offline_access' });
   };
 
   // ...
@@ -1074,9 +1072,9 @@ function LoginScreen() {
 Using the class-based API:
 
 ```javascript
-try {
-  await auth0.webAuth.authorize();
-} catch (error) {
+// Called deliberately when a corrupted DPoP state has been diagnosed,
+// not as a blanket catch handler around authorize().
+async function recoverAndLogin() {
   await auth0.clearDPoPKey();
   await auth0.webAuth.authorize();
 }
@@ -1087,7 +1085,3 @@ try {
 ### Platform support
 
 `clearDPoPKey()` is supported on **iOS and Android**. On the **web** platform it throws an `UnsupportedOperation` error, because `@auth0/auth0-spa-js` manages the DPoP key internally and clears it as part of `logout()`; there is no supported way to clear it independently.
-
-### Last resort: disable DPoP
-
-If you cannot recover through `clearDPoPKey()`, you can disable DPoP entirely with `useDPoP: false`. This is a **security downgrade** and should be a last resort — see [FAQ #16](#16-what-happens-if-i-disable-dpop-after-enabling-it).

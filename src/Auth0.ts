@@ -144,7 +144,12 @@ class Auth0 {
    * from a corrupted DPoP transaction state (for example, after an interrupted login
    * flow leaves stale cryptographic state that breaks subsequent logins).
    *
+   * Supported on iOS and Android. On the web platform this throws an
+   * `UnsupportedOperation` error, since the DPoP key is managed by auth0-spa-js
+   * and cleared automatically on logout.
+   *
    * @returns A promise that resolves when the key has been cleared.
+   * @throws An `AuthError` with code `UnsupportedOperation` on the web platform.
    *
    * @example
    * ```typescript
