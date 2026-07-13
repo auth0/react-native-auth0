@@ -225,6 +225,16 @@ export class WebAuth0Client implements IAuth0Client {
     }
   }
 
+  async clearDPoPKey(): Promise<void> {
+    // auth0-spa-js does not expose a public method to clear the DPoP key; its
+    // internal Dpop store is cleared as part of logout. There is no supported
+    // way to clear it independently on web.
+    throw new AuthError(
+      'UnsupportedOperation',
+      'clearDPoPKey is not supported on the web platform. The DPoP key is managed by auth0-spa-js and cleared on logout.'
+    );
+  }
+
   /**
    * Performs a Custom Token Exchange using RFC 8693.
    * Exchanges an external identity provider token for Auth0 tokens.

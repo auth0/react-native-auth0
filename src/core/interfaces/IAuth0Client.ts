@@ -83,6 +83,19 @@ export interface IAuth0Client {
   getDPoPHeaders(params: DPoPHeadersParams): Promise<Record<string, string>>;
 
   /**
+   * Clears the DPoP key pair and cached nonce from secure storage.
+   *
+   * @remarks
+   * DPoP-bound tokens are cryptographically tied to this key pair, so clearing it
+   * invalidates any existing DPoP-bound session. Call this on logout, or to recover
+   * from a corrupted DPoP transaction state (for example, after an interrupted login
+   * flow leaves stale cryptographic state that breaks subsequent logins).
+   *
+   * @returns A promise that resolves when the key has been cleared.
+   */
+  clearDPoPKey(): Promise<void>;
+
+  /**
    * Performs a Custom Token Exchange using RFC 8693.
    * Exchanges an external identity provider token for Auth0 tokens.
    *

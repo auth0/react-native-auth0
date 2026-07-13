@@ -180,6 +180,18 @@ export class NativeAuth0Client implements IAuth0Client {
     }
   }
 
+  async clearDPoPKey(): Promise<void> {
+    await this.ready;
+    try {
+      return await this.bridge.clearDPoPKey();
+    } catch (e) {
+      if (e instanceof AuthError) {
+        throw new DPoPError(e);
+      }
+      throw e;
+    }
+  }
+
   private createGuardedBridge(bridge: INativeBridge): INativeBridge {
     const guarded: any = {};
 
