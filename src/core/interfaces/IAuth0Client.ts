@@ -96,7 +96,7 @@ export interface IAuth0Client {
    * and cleared automatically on logout.
    *
    * @returns A promise that resolves when the key has been cleared.
-   * @throws An `AuthError` with code `UnsupportedOperation` on the web platform.
+   * @throws A `DPoPError` (wrapping an `AuthError` with code `UnsupportedOperation`) on the web platform.
    */
   clearDPoPKey(): Promise<void>;
 
