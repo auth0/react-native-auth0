@@ -201,6 +201,26 @@ describe('WebMfaClient', () => {
       expect(result[0].id).toBe('push|dev_4');
     });
 
+    it('matches recovery-code against the recovery-code type', async () => {
+      spaMfa.getAuthenticators.mockResolvedValue([
+        {
+          id: 'recovery-code|dev_5',
+          authenticatorType: 'recovery-code',
+          active: true,
+          name: 'Recovery code',
+          type: 'recovery-code',
+        },
+      ]);
+
+      const result = await client.getAuthenticators({
+        mfaToken: 'MFA_TOKEN',
+        factorsAllowed: ['recovery-code'],
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('recovery-code|dev_5');
+    });
+
     it('supports multiple factors at once', async () => {
       spaMfa.getAuthenticators.mockResolvedValue(authenticators);
 

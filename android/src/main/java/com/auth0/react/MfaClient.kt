@@ -59,13 +59,15 @@ class MfaClient(
     // the `Authenticator.type` tokens Auth0.Android 3.21.0 filters against with
     // exact, case-sensitive equality. Note: sms and voice both surface as the
     // `phone` type, so neither can be isolated here (narrowed later by oobChannel);
-    // otp maps to both `otp` and `totp`.
+    // otp maps to both `otp` and `totp`. `recovery-code` is listable but not
+    // enrollable, so it maps through here yet is absent from the enum.
     private fun mapFactorType(factor: String): List<String> {
         return when (factor.lowercase()) {
             "otp" -> listOf("otp", "totp")
             "sms", "voice" -> listOf("phone")
             "email" -> listOf("email")
             "push" -> listOf("push-notification")
+            "recovery-code" -> listOf("recovery-code")
             else -> emptyList()
         }
     }
@@ -112,6 +114,7 @@ class MfaClient(
                 override fun onSuccess(result: List<Authenticator>) {
                     val array = WritableNativeArray()
                     for (authenticator in result) {
+                        // Drop the phone channel the caller didn't ask for.
                         if (narrowPhoneChannels && authenticator.type == "phone") {
                             val channel = authenticator.oobChannel
                             if (channel == null || !wantedPhoneChannels.contains(channel)) {

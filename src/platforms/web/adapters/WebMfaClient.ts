@@ -95,6 +95,8 @@ export class WebMfaClient implements IMfaClient {
         return type === 'email';
       case 'push':
         return type === 'push-notification';
+      case 'recovery-code':
+        return type === 'recovery-code';
       default:
         return false;
     }

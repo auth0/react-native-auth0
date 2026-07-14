@@ -48,12 +48,15 @@ class A0MfaClient {
     // Maps the public MfaFactorType vocabulary (otp/sms/voice/email/push) onto
     // the challenge-type tokens Auth0.swift filters `authenticator.type` against.
     // Note: iOS cannot distinguish sms from voice — both are the `phone` type.
+    // `recovery-code` is listable but not enrollable, so it maps through here
+    // yet is absent from the enum.
     private func mapFactorType(_ factor: String) -> [String] {
         switch factor.lowercased() {
         case "otp": return ["otp", "totp"]
         case "sms", "voice": return ["phone"]
         case "email": return ["email"]
         case "push": return ["push-notification"]
+        case "recovery-code": return ["recovery-code"]
         default: return []
         }
     }

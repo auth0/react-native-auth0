@@ -288,9 +288,11 @@ export interface MfaGetAuthenticatorsParameters {
   /**
    * Restrict the returned authenticators to the given factor types. Use the
    * {@link MfaFactorType} constants as the single, platform-agnostic vocabulary;
-   * each platform maps these to its native filtering tokens. Omit or pass an
-   * empty array to return all enrolled authenticators (the SDK supplies the
-   * full set of factor types on every platform).
+   * each platform maps these to its native filtering tokens. `'recovery-code'`
+   * is also accepted here — it is listable but not enrollable, so it is absent
+   * from the {@link MfaFactorType} const. Omit or pass an empty array to return
+   * all enrolled authenticators (the SDK supplies the full set of factor types
+   * on every platform).
    *
    * @remarks
    * - **Android** cannot isolate `push` — its effective channel is `auth0`,
@@ -301,7 +303,7 @@ export interface MfaGetAuthenticatorsParameters {
    *   (iOS narrows phone-type results by `oobChannel` when only one of
    *   `sms`/`voice` is requested.)
    */
-  factorsAllowed?: MfaFactorType[];
+  factorsAllowed?: (MfaFactorType | 'recovery-code')[];
 }
 
 /**
