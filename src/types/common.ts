@@ -214,6 +214,153 @@ export type MfaChallengeResponse =
   | MfaChallengeOobResponse
   | MfaChallengeOobWithBindingResponse;
 
+// ========= MFA Flexible Factors Grant Types =========
+
+/** Represents an enrolled MFA authenticator. */
+export type MfaAuthenticator = {
+  id: string;
+  /**
+   * The factor type of the authenticator, e.g. `"otp"`, `"phone"`, `"email"`,
+   * or `"push-notification"`. Use this to distinguish factors when
+   * `authenticatorType` alone is ambiguous (for example, SMS and voice both
+   * surface as the `"phone"` type — narrow further with `oobChannel`).
+   */
+  type?: string;
+  authenticatorType: string;
+  name?: string;
+  active: boolean;
+  oobChannel?: string;
+};
+
+/** Represents the response from an MFA challenge request via the MFA API. */
+export type MfaChallengeResult = {
+  challengeType: string;
+  oobCode?: string;
+  bindingMethod?: string;
+};
+
+/** Base enrollment challenge response. */
+export type MfaOobEnrollmentChallenge = {
+  type: 'oob';
+  oobCode: string;
+  bindingMethod?: string;
+  recoveryCodes?: string[];
+};
+
+/** Enrollment challenge for TOTP (authenticator app). */
+export type MfaTotpEnrollmentChallenge = {
+  type: 'totp';
+  barcodeUri: string;
+  secret: string;
+  recoveryCodes?: string[];
+};
+
+/**
+ * Enrollment challenge for push notification (Auth0 Guardian).
+ *
+ * Push enrollment returns a `barcodeUri` to render as a QR code for pairing the
+ * Guardian app, alongside an `oobCode` used to poll/verify the enrollment.
+ *
+ * @remarks
+ * On Android, the underlying Auth0.Android SDK deserializes the push response as
+ * a TOTP challenge (it keys off `barcode_uri`), so `oobCode` is not available
+ * there; `barcodeUri` is always present for pairing.
+ */
+export type MfaPushEnrollmentChallenge = {
+  type: 'push';
+  /** QR code URI to display for pairing the Auth0 Guardian app. */
+  barcodeUri: string;
+  /** Out-of-band code used to verify the enrollment. Not available on Android. */
+  oobCode?: string;
+  /** The out-of-band channel, typically `"auth0"` for Guardian push. */
+  oobChannel?: string;
+  recoveryCodes?: string[];
+};
+
+/**
+ * Enrollment challenge for a recovery code.
+ *
+ * @remarks
+ * Only emitted on Android, where the underlying Auth0.Android SDK can return a
+ * dedicated recovery-code enrollment challenge. On iOS and web, recovery codes
+ * are instead surfaced via the `recoveryCodes` array on other challenge types.
+ */
+export type MfaRecoveryCodeEnrollmentChallenge = {
+  type: 'recovery-code';
+  recoveryCode: string;
+};
+
+/** Union type for all possible enrollment challenge responses. */
+export type MfaEnrollmentChallenge =
+  | MfaOobEnrollmentChallenge
+  | MfaTotpEnrollmentChallenge
+  | MfaPushEnrollmentChallenge
+  | MfaRecoveryCodeEnrollmentChallenge;
+
+/** Structured payload extracted from an MFA_REQUIRED error. */
+export type MfaRequiredErrorPayload = {
+  mfaToken: string;
+  error: string;
+  errorDescription?: string;
+  mfaRequirements?: MfaRequirements;
+};
+
+/** Describes which MFA factors are available for enrollment and challenge. */
+export type MfaRequirements = {
+  enroll?: MfaFactor[];
+  challenge?: MfaFactor[];
+};
+
+/** Describes a single MFA factor type. */
+export type MfaFactor = {
+  type: string;
+};
+
+// ========= MFA Factor Type Constants =========
+
+/**
+ * Supported MFA factor types.
+ * Use these constants when enrolling factors, filtering authenticators, or identifying challenge types.
+ *
+ * @example
+ * ```ts
+ * import { MfaFactorType } from 'react-native-auth0';
+ *
+ * // Enroll TOTP authenticator
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.OTP });
+ *
+ * // Enroll SMS
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.SMS, phoneNumber: '+1234567890' });
+ *
+ * // Enroll Email
+ * await mfa.enroll({ mfaToken, factorType: MfaFactorType.EMAIL, email: 'user@example.com' });
+ *
+ * // Filter authenticators
+ * const smsAuths = authenticators.filter(a => a.oobChannel === MfaFactorType.SMS);
+ * ```
+ */
+export const MfaFactorType = {
+  /** Time-based One-Time Password (authenticator app like Google Authenticator, Authy) */
+  OTP: 'otp',
+  /** SMS-based verification */
+  SMS: 'sms',
+  /**
+   * Voice call verification.
+   *
+   * Only the **web** platform supports voice as a distinct channel. On
+   * **native** (iOS/Android) the underlying SDKs do not support a voice OOB
+   * channel: enrolling `voice` falls back to **SMS** on the same number, and
+   * voice cannot be isolated from SMS when filtering authenticators.
+   */
+  VOICE: 'voice',
+  /** Email-based verification */
+  EMAIL: 'email',
+  /** Push notification (Auth0 Guardian) */
+  PUSH: 'push',
+} as const;
+
+export type MfaFactorType = (typeof MfaFactorType)[keyof typeof MfaFactorType];
+
 // ========= DPoP Types =========
 
 /**

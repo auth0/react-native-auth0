@@ -26,12 +26,14 @@ import com.auth0.android.result.Credentials
 import com.auth0.android.result.PasskeyChallenge
 import com.auth0.android.result.PasskeyRegistrationChallenge
 import com.facebook.react.bridge.ActivityEventListener
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.bridge.WritableNativeMap
 import com.google.gson.Gson
 import java.net.MalformedURLException
@@ -108,6 +110,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     private var useDPoP: Boolean = true
 
     private var auth0: Auth0? = null
+    private var mfaClient: MfaClient? = null
     private var myAccount: MyAccount? = null
     private var passwordless: Passwordless? = null
     private lateinit var secureCredentialsManager: SecureCredentialsManager
@@ -281,6 +284,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
         this.useDPoP = useDPoP ?: true
         auth0 = Auth0.getInstance(clientId, domain)
+        mfaClient = MfaClient(auth0!!, this.useDPoP, reactContext)
         myAccount = MyAccount(auth0!!, this.useDPoP, reactContext)
         passwordless = Passwordless(auth0!!, this.useDPoP, reactContext)
 
@@ -645,6 +649,30 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 handleError(error, promise)
             }
         })
+    }
+
+    @ReactMethod
+    override fun getMfaAuthenticators(mfaToken: String, factorsAllowed: ReadableArray?, promise: Promise) {
+        mfaClient?.getAuthenticators(mfaToken, factorsAllowed, promise)
+            ?: promise.reject("NOT_INITIALIZED", "Auth0 not initialized")
+    }
+
+    @ReactMethod
+    override fun mfaEnroll(mfaToken: String, type: String, value: String?, promise: Promise) {
+        mfaClient?.enroll(mfaToken, type, value, promise)
+            ?: promise.reject("NOT_INITIALIZED", "Auth0 not initialized")
+    }
+
+    @ReactMethod
+    override fun mfaChallenge(mfaToken: String, authenticatorId: String, promise: Promise) {
+        mfaClient?.challenge(mfaToken, authenticatorId, promise)
+            ?: promise.reject("NOT_INITIALIZED", "Auth0 not initialized")
+    }
+
+    @ReactMethod
+    override fun mfaVerify(mfaToken: String, type: String, code: String, bindingCode: String?, scope: String?, audience: String?, promise: Promise) {
+        mfaClient?.verify(mfaToken, type, code, bindingCode, scope, audience, promise)
+            ?: promise.reject("NOT_INITIALIZED", "Auth0 not initialized")
     }
 
     @ReactMethod

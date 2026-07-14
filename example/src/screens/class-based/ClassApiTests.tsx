@@ -126,7 +126,7 @@ const ClassApiTestsScreen = ({ route }: Props) => {
           />
         </Section>
 
-        <Section title="MFA & Tokens">
+        <Section title="Legacy MFA & Tokens">
           <LabeledInput
             label="MFA Token"
             value={mfaToken}
@@ -147,7 +147,7 @@ const ClassApiTestsScreen = ({ route }: Props) => {
               )
             }
             title="auth.loginWithOTP()"
-            disabled={!mfaToken}
+            disabled={!mfaToken || !otp}
           />
           <LabeledInput
             label="Refresh Token"
@@ -176,9 +176,6 @@ const ClassApiTestsScreen = ({ route }: Props) => {
             disabled={!refreshToken}
           />
         </Section>
-
-        {/* Other methods can be added here following the same pattern */}
-        {/* e.g., exchange, exchangeNativeSocial, other passwordless/MFA flows */}
       </ScrollView>
     </SafeAreaView>
   );

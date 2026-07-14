@@ -193,6 +193,39 @@ RCT_EXPORT_METHOD(customTokenExchange:(NSString *)subjectToken
     [self.nativeBridge customTokenExchangeWithSubjectToken:subjectToken subjectTokenType:subjectTokenType audience:audience scope:scope organization:organization resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(getMfaAuthenticators:(NSString *)mfaToken
+                  factorsAllowed:(NSArray * _Nullable)factorsAllowed
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge getMfaAuthenticatorsWithMfaToken:mfaToken factorsAllowed:factorsAllowed resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(mfaEnroll:(NSString *)mfaToken
+                  type:(NSString *)type
+                  value:(NSString * _Nullable)value
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge mfaEnrollWithMfaToken:mfaToken type:type value:value resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(mfaChallenge:(NSString *)mfaToken
+                  authenticatorId:(NSString *)authenticatorId
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge mfaChallengeWithMfaToken:mfaToken authenticatorId:authenticatorId resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(mfaVerify:(NSString *)mfaToken
+                  type:(NSString *)type
+                  code:(NSString *)code
+                  bindingCode:(NSString * _Nullable)bindingCode
+                  scope:(NSString * _Nullable)scope
+                  audience:(NSString * _Nullable)audience
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge mfaVerifyWithMfaToken:mfaToken type:type code:code bindingCode:bindingCode scope:scope audience:audience resolve:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(passkeySignupChallenge:(NSString * _Nullable)email
                   phoneNumber:(NSString * _Nullable)phoneNumber
                   username:(NSString * _Nullable)username

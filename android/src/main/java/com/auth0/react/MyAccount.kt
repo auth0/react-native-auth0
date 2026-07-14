@@ -294,8 +294,8 @@ class MyAccount(
             .start(object : com.auth0.android.callback.Callback<TotpEnrollmentChallenge, MyAccountException> {
                 override fun onSuccess(challenge: TotpEnrollmentChallenge) {
                     val result = WritableNativeMap().apply {
-                        putString("id", challenge.id)
-                        putString("authSession", challenge.authSession)
+                        challenge.id?.let { putString("id", it) }
+                        challenge.authSession?.let { putString("authSession", it) }
                         putString("barcodeUri", challenge.barcodeUri)
                         challenge.manualInputCode?.let { putString("manualInputCode", it) }
                     }
@@ -318,8 +318,8 @@ class MyAccount(
             .start(object : com.auth0.android.callback.Callback<TotpEnrollmentChallenge, MyAccountException> {
                 override fun onSuccess(challenge: TotpEnrollmentChallenge) {
                     val result = WritableNativeMap().apply {
-                        putString("id", challenge.id)
-                        putString("authSession", challenge.authSession)
+                        challenge.id?.let { putString("id", it) }
+                        challenge.authSession?.let { putString("authSession", it) }
                         putString("barcodeUri", challenge.barcodeUri)
                         challenge.manualInputCode?.let { putString("manualInputCode", it) }
                     }
