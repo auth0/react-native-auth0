@@ -6,13 +6,15 @@ export {
   WebAuthErrorCodes,
   DPoPError,
   DPoPErrorCodes,
+  MfaError,
+  MfaErrorCodes,
   PasskeyError,
   PasskeyErrorCodes,
   MyAccountError,
 } from './core/models';
 export { TimeoutError } from './core/utils/fetchWithTimeout';
 export { parseIdToken } from './core/utils';
-export { TokenType } from './types/common';
+export { TokenType, MfaFactorType } from './types/common';
 export { Auth0Provider } from './hooks/Auth0Provider';
 export { useAuth0 } from './hooks/useAuth0';
 export * from './types';
@@ -22,6 +24,7 @@ export {
   LocalAuthenticationStrategy,
 } from './types/platform-specific';
 export type { LocalAuthenticationOptions } from './types/platform-specific';
+export type { IMfaClient } from './core/interfaces/IMfaClient';
 
 // Re-export Auth0 as default
 export { default } from './Auth0';

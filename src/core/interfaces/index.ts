@@ -6,3 +6,4 @@ export * from './IMyAccountClient';
 export * from './IPasswordlessClient';
 export * from './IWebAuthProvider';
 export * from './IUsersClient';
+export * from './IMfaClient';

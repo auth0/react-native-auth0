@@ -6,6 +6,10 @@ buildscript {
         targetSdkVersion = 36
         ndkVersion = "27.1.12297006"
         kotlinVersion = "2.1.20"
+        // react-native-gesture-handler resolves react-native via a `node --print`
+        // fallback that is unreliable in this monorepo layout; pin the location
+        // explicitly so its build.gradle skips the fallback.
+        REACT_NATIVE_NODE_MODULES_DIR = file("$rootDir/../node_modules/react-native")
     }
     repositories {
         google()

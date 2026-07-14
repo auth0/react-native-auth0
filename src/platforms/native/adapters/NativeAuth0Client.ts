@@ -4,6 +4,7 @@ import type {
   IMyAccountClient,
   IPasswordlessClient,
   IUsersClient,
+  IMfaClient,
 } from '../../../core/interfaces';
 import type { NativeAuth0Options } from '../../../types/platform-specific';
 import type {
@@ -17,6 +18,7 @@ import type {
 } from '../../../types';
 import { NativeWebAuthProvider } from './NativeWebAuthProvider';
 import { NativeCredentialsManager } from './NativeCredentialsManager';
+import { NativeMfaClient } from './NativeMfaClient';
 import { NativeMyAccountClient } from './NativeMyAccountClient';
 import { NativePasswordlessClient } from './NativePasswordlessClient';
 import { type INativeBridge, NativeBridgeManager } from '../bridge';
@@ -33,6 +35,7 @@ export class NativeAuth0Client implements IAuth0Client {
   readonly webAuth: NativeWebAuthProvider;
   readonly credentialsManager: NativeCredentialsManager;
   readonly auth: IAuthenticationProvider;
+  readonly mfa: IMfaClient;
   readonly passwordless: IPasswordlessClient;
   private ready: Promise<void>;
   private readonly httpClient: HttpClient;
@@ -96,6 +99,7 @@ export class NativeAuth0Client implements IAuth0Client {
 
     this.webAuth = new NativeWebAuthProvider(guardedBridge, options.domain);
     this.credentialsManager = new NativeCredentialsManager(guardedBridge);
+    this.mfa = new NativeMfaClient(guardedBridge);
     this.myAccount = new NativeMyAccountClient(guardedBridge);
     this.passwordless = new NativePasswordlessClient(guardedBridge);
   }
