@@ -45,6 +45,7 @@
   - [Using Custom Token Exchange with Hooks](#using-custom-token-exchange-with-hooks)
   - [Using Custom Token Exchange with Auth0 Class](#using-custom-token-exchange-with-auth0-class)
   - [With Organization Context](#with-organization-context)
+  - [Delegation & Impersonation (Actor Token)](#delegation--impersonation-actor-token)
   - [Subject Token Type Requirements](#subject-token-type-requirements)
     - [Valid Token Type Patterns](#valid-token-type-patterns)
     - [Reserved Namespaces (Forbidden)](#reserved-namespaces-forbidden)
@@ -1060,6 +1061,45 @@ const credentials = await customTokenExchange({
   scope: 'openid profile email',
 });
 ```
+
+### Delegation & Impersonation (Actor Token)
+
+For delegation and impersonation scenarios — where an actor (such as an AI agent, support representative, or service) acts on behalf of the subject — pass an actor token alongside the subject token. This follows [RFC 8693 Section 2.1](https://datatracker.ietf.org/doc/html/rfc8693#section-2.1).
+
+```typescript
+const credentials = await customTokenExchange({
+  subjectToken: 'subject-provider-token',
+  subjectTokenType: 'urn:acme:legacy-system-token',
+  actorToken: 'actor-id-token',
+  actorTokenType: 'http://corporate-idp/id-token',
+});
+```
+
+`actorTokenType` follows the same URI validation rules as `subjectTokenType` and accepts any developer-defined URI.
+
+> ℹ️ **Prerequisites**: This flow requires the `cte_actor_token` feature flag enabled on your tenant and an [Auth0 Action](https://auth0.com/docs/customize/actions) that calls `api.authentication.setActor()` to set the `act` claim on the issued tokens.
+
+**Accessing the `act` claim**
+
+When an Action sets the actor, the issued ID token carries an `act` claim describing the acting party (which may be nested to represent a delegation chain). It is available on the parsed user profile:
+
+```typescript
+import { parseIdToken } from 'react-native-auth0';
+
+const credentials = await customTokenExchange({
+  subjectToken: 'subject-provider-token',
+  subjectTokenType: 'urn:acme:legacy-system-token',
+  actorToken: 'actor-id-token',
+  actorTokenType: 'http://corporate-idp/id-token',
+});
+
+const user = parseIdToken(credentials.idToken);
+console.log(user.act); // The acting party claim
+```
+
+> ⚠️ **Refresh token suppression**: When an actor token is present, Auth0 will **not** issue a refresh token, regardless of whether `offline_access` is in the requested scope. `credentials.refreshToken` will be `undefined` in this case.
+>
+> ⚠️ **Paired parameters**: `actorToken` and `actorTokenType` must be provided together. Supplying only one throws an `AuthError` with code `invalid_actor_token_parameters` before any network request is made.
 
 ### Subject Token Type Requirements
 

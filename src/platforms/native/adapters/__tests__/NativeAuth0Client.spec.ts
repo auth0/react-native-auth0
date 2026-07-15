@@ -237,7 +237,9 @@ describe('NativeAuth0Client', () => {
         'urn:acme:legacy-token',
         'https://api.example.com',
         'openid profile email',
-        'org_123'
+        'org_123',
+        undefined,
+        undefined
       );
     });
 
@@ -259,8 +261,51 @@ describe('NativeAuth0Client', () => {
         'urn:acme:legacy-token',
         undefined,
         undefined,
+        undefined,
+        undefined,
         undefined
       );
+    });
+
+    it('should forward actor token parameters to the bridge when provided', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await client.customTokenExchange({
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+        actorToken: 'actor-token',
+        actorTokenType: 'http://corporate-idp/id-token',
+      });
+
+      expect(
+        (mockBridgeInstance as any).customTokenExchange
+      ).toHaveBeenCalledWith(
+        'external-token',
+        'urn:acme:legacy-token',
+        undefined,
+        undefined,
+        undefined,
+        'actor-token',
+        'http://corporate-idp/id-token'
+      );
+    });
+
+    it('should throw before calling the bridge when only actorToken is provided', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await expect(
+        client.customTokenExchange({
+          subjectToken: 'external-token',
+          subjectTokenType: 'urn:acme:legacy-token',
+          actorToken: 'actor-token',
+        })
+      ).rejects.toMatchObject({ code: 'invalid_actor_token_parameters' });
+
+      expect(
+        (mockBridgeInstance as any).customTokenExchange
+      ).not.toHaveBeenCalled();
     });
 
     it('should return credentials from customTokenExchange', async () => {

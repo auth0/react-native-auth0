@@ -78,3 +78,31 @@ export function validateParameters(
     );
   }
 }
+
+/**
+ * Validates that actor token parameters used in a Custom Token Exchange
+ * delegation/impersonation flow are provided as a pair.
+ *
+ * Auth0 requires both `actor_token` and `actor_token_type` to be present when
+ * performing delegation. This surfaces a clear client-side error before the
+ * network request is made rather than relying on the server response.
+ *
+ * @param actorToken The actor token, if provided.
+ * @param actorTokenType The actor token type URI, if provided.
+ * @throws {AuthError} If exactly one of the two parameters is provided.
+ */
+export function validateActorTokenParameters(
+  actorToken?: string,
+  actorTokenType?: string
+): void {
+  const hasToken = actorToken !== undefined && actorToken !== null;
+  const hasType = actorTokenType !== undefined && actorTokenType !== null;
+
+  if (hasToken !== hasType) {
+    throw new AuthError(
+      'InvalidParameters',
+      'actorToken and actorTokenType must both be provided together for a delegation token exchange.',
+      { code: 'invalid_actor_token_parameters' }
+    );
+  }
+}

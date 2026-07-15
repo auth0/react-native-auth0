@@ -247,7 +247,9 @@ export class NativeBridgeManager implements INativeBridge {
     subjectTokenType: string,
     audience?: string,
     scope?: string,
-    organization?: string
+    organization?: string,
+    actorToken?: string,
+    actorTokenType?: string
   ): Promise<Credentials> {
     try {
       const credential = await this.a0_call(
@@ -256,7 +258,9 @@ export class NativeBridgeManager implements INativeBridge {
         subjectTokenType,
         audience,
         scope,
-        organization
+        organization,
+        actorToken,
+        actorTokenType
       );
       return new CredentialsModel(credential);
     } catch (e) {

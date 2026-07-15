@@ -209,6 +209,8 @@ export interface INativeBridge {
    * @param audience Optional target API identifier.
    * @param scope Optional space-separated scopes.
    * @param organization Optional organization ID or name.
+   * @param actorToken Optional actor token for delegation/impersonation flows.
+   * @param actorTokenType Optional actor token type URI. Required when actorToken is provided.
    * @returns A promise that resolves with Auth0 credentials.
    */
   customTokenExchange(
@@ -216,7 +218,9 @@ export interface INativeBridge {
     subjectTokenType: string,
     audience?: string,
     scope?: string,
-    organization?: string
+    organization?: string,
+    actorToken?: string,
+    actorTokenType?: string
   ): Promise<Credentials>;
 
   /**

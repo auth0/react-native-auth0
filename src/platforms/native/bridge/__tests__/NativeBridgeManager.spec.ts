@@ -432,7 +432,35 @@ describe('NativeBridgeManager', () => {
         'urn:acme:legacy-token',
         'https://api.example.com',
         'openid profile email',
-        'org_123'
+        'org_123',
+        undefined,
+        undefined
+      );
+    });
+
+    it('should forward actor token parameters to the native module', async () => {
+      MockedAuth0NativeModule.customTokenExchange.mockResolvedValueOnce(
+        mockExchangeResponse as any
+      );
+
+      await bridge.customTokenExchange(
+        'external-token',
+        'urn:acme:legacy-token',
+        undefined,
+        undefined,
+        undefined,
+        'actor-token',
+        'http://corporate-idp/id-token'
+      );
+
+      expect(MockedAuth0NativeModule.customTokenExchange).toHaveBeenCalledWith(
+        'external-token',
+        'urn:acme:legacy-token',
+        undefined,
+        undefined,
+        undefined,
+        'actor-token',
+        'http://corporate-idp/id-token'
       );
     });
 
@@ -449,6 +477,8 @@ describe('NativeBridgeManager', () => {
       expect(MockedAuth0NativeModule.customTokenExchange).toHaveBeenCalledWith(
         'external-token',
         'urn:acme:legacy-token',
+        undefined,
+        undefined,
         undefined,
         undefined,
         undefined

@@ -1,5 +1,36 @@
-import { validateAuth0Options } from '../validation';
+import {
+  validateAuth0Options,
+  validateActorTokenParameters,
+} from '../validation';
 import { AuthError } from '../../models';
+
+describe('validateActorTokenParameters', () => {
+  it('should not throw when neither parameter is provided', () => {
+    expect(() => validateActorTokenParameters()).not.toThrow();
+  });
+
+  it('should not throw when both parameters are provided', () => {
+    expect(() =>
+      validateActorTokenParameters('actor-token', 'urn:token-type')
+    ).not.toThrow();
+  });
+
+  it('should throw when only actorToken is provided', () => {
+    expect(() => validateActorTokenParameters('actor-token')).toThrow(
+      AuthError
+    );
+  });
+
+  it('should throw with the invalid_actor_token_parameters code', () => {
+    try {
+      validateActorTokenParameters(undefined, 'urn:token-type');
+      throw new Error('Expected validateActorTokenParameters to throw');
+    } catch (e) {
+      expect(e).toBeInstanceOf(AuthError);
+      expect((e as AuthError).code).toBe('invalid_actor_token_parameters');
+    }
+  });
+});
 
 describe('validateAuth0Options', () => {
   const validOptions = {

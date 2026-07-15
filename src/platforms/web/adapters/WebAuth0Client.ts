@@ -34,6 +34,7 @@ import {
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
 import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
+import { validateActorTokenParameters } from '../../../core/utils';
 
 export class WebAuth0Client implements IAuth0Client {
   readonly webAuth: WebWebAuthProvider;
@@ -239,10 +240,19 @@ export class WebAuth0Client implements IAuth0Client {
   async customTokenExchange(
     parameters: CustomTokenExchangeParameters
   ): Promise<Credentials> {
-    try {
-      const { subjectToken, subjectTokenType, audience, scope, organization } =
-        parameters;
+    const {
+      subjectToken,
+      subjectTokenType,
+      audience,
+      scope,
+      organization,
+      actorToken,
+      actorTokenType,
+    } = parameters;
 
+    validateActorTokenParameters(actorToken, actorTokenType);
+
+    try {
       // Apply default scope if not provided for consistency with native platforms
       const finalScope = scope ?? 'openid profile email';
 
@@ -252,6 +262,8 @@ export class WebAuth0Client implements IAuth0Client {
         audience,
         scope: finalScope,
         organization,
+        ...(actorToken && { actor_token: actorToken }),
+        ...(actorTokenType && { actor_token_type: actorTokenType }),
       });
 
       // Convert expiresIn (seconds from now) to expiresAt (UNIX timestamp)
