@@ -262,8 +262,10 @@ export class WebAuth0Client implements IAuth0Client {
         audience,
         scope: finalScope,
         organization,
-        ...(actorToken && { actor_token: actorToken }),
-        ...(actorTokenType && { actor_token_type: actorTokenType }),
+        ...(actorToken !== undefined && { actor_token: actorToken }),
+        ...(actorTokenType !== undefined && {
+          actor_token_type: actorTokenType,
+        }),
       });
 
       // Convert expiresIn (seconds from now) to expiresAt (UNIX timestamp)

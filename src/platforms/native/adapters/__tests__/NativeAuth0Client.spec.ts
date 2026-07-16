@@ -278,9 +278,7 @@ describe('NativeAuth0Client', () => {
         actorTokenType: 'http://corporate-idp/id-token',
       });
 
-      expect(
-        (mockBridgeInstance as any).customTokenExchange
-      ).toHaveBeenCalledWith(
+      expect(mockBridgeInstance.customTokenExchange).toHaveBeenCalledWith(
         'external-token',
         'urn:acme:legacy-token',
         undefined,
@@ -303,9 +301,7 @@ describe('NativeAuth0Client', () => {
         })
       ).rejects.toMatchObject({ code: 'invalid_actor_token_parameters' });
 
-      expect(
-        (mockBridgeInstance as any).customTokenExchange
-      ).not.toHaveBeenCalled();
+      expect(mockBridgeInstance.customTokenExchange).not.toHaveBeenCalled();
     });
 
     it('should return credentials from customTokenExchange', async () => {

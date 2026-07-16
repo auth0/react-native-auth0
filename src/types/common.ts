@@ -153,7 +153,7 @@ export type User = {
    * issued through a Custom Token Exchange delegation/impersonation flow.
    * May be nested to represent a delegation chain.
    */
-  act?: Record<string, any>;
+  act?: Record<string, unknown>;
   /** Allows for additional, non-standard claims in the user profile. */
   [key: string]: any;
 };

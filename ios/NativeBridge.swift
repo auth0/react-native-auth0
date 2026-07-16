@@ -390,7 +390,7 @@ public class NativeBridge: NSObject {
         resolve(credentialsManager.clear(forAudience: audience, scope: scope))
     }
     
-    @objc public func customTokenExchange(subjectToken: String, subjectTokenType: String, audience: String?, scope: String?, organization: String?, actorToken: String?, actorTokenType: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func customTokenExchange(subjectToken: String, subjectTokenType: String, audience: String?, scope: String?, organization: String?, actorToken actorTokenValue: String?, actorTokenType: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         var auth = Auth0.authentication(clientId: self.clientId, domain: self.domain)
         if self.useDPoP {
             auth = auth.useDPoP()
@@ -398,9 +398,9 @@ public class NativeBridge: NSObject {
 
         let finalScope = scope ?? "openid profile email"
 
-        var actor: ActorToken?
-        if let actorToken = actorToken, let actorTokenType = actorTokenType {
-            actor = ActorToken(token: actorToken, tokenType: actorTokenType)
+        var actorToken: ActorToken?
+        if let actorTokenValue = actorTokenValue, let actorTokenType = actorTokenType {
+            actorToken = ActorToken(token: actorTokenValue, tokenType: actorTokenType)
         }
 
         auth.customTokenExchange(
@@ -409,7 +409,7 @@ public class NativeBridge: NSObject {
             audience: audience,
             scope: finalScope,
             organization: organization,
-            actorToken: actor
+            actorToken: actorToken
         ).start { result in
             switch result {
             case .success(let credentials):

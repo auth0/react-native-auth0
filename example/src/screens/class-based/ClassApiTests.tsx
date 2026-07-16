@@ -15,7 +15,7 @@ type Props = {
 };
 
 const ClassApiTestsScreen = ({ route }: Props) => {
-  const { accessToken } = route.params;
+  const { accessToken, idToken } = route.params;
   const [result, setResult] = useState<object | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
@@ -25,6 +25,16 @@ const ClassApiTestsScreen = ({ route }: Props) => {
   const [mfaToken, setMfaToken] = useState('');
   const [otp, setOtp] = useState('');
   const [refreshToken, setRefreshToken] = useState('');
+
+  // State for Custom Token Exchange (RFC 8693)
+  const [subjectToken, setSubjectToken] = useState('');
+  const [subjectTokenType, setSubjectTokenType] = useState(
+    'urn:acme:external-idp-token'
+  );
+  const [actorToken, setActorToken] = useState(idToken ?? '');
+  const [actorTokenType, setActorTokenType] = useState(
+    'urn:ietf:params:oauth:token-type:id_token'
+  );
 
   const runTest = async (testFn: () => Promise<any>, title: string) => {
     setError(null);
@@ -176,6 +186,72 @@ const ClassApiTestsScreen = ({ route }: Props) => {
             disabled={!refreshToken}
           />
         </Section>
+
+        <Section title="Custom Token Exchange (RFC 8693)">
+          <LabeledInput
+            label="Subject Token"
+            value={subjectToken}
+            onChangeText={setSubjectToken}
+            placeholder="External IdP token to exchange"
+            autoCapitalize="none"
+          />
+          <LabeledInput
+            label="Subject Token Type"
+            value={subjectTokenType}
+            onChangeText={setSubjectTokenType}
+            autoCapitalize="none"
+          />
+          <Button
+            onPress={() =>
+              runTest(
+                () =>
+                  auth0.customTokenExchange({
+                    subjectToken,
+                    subjectTokenType,
+                  }),
+                'Custom Token Exchange'
+              )
+            }
+            title="customTokenExchange()"
+            disabled={!subjectToken || !subjectTokenType}
+          />
+
+          <Text style={styles.subheading}>Delegation & Impersonation</Text>
+          <LabeledInput
+            label="Actor Token"
+            value={actorToken}
+            onChangeText={setActorToken}
+            placeholder="Acting-party token"
+            autoCapitalize="none"
+          />
+          <Button
+            onPress={() => idToken && setActorToken(idToken)}
+            title="Use my ID token as actor"
+            disabled={!idToken}
+          />
+          <LabeledInput
+            label="Actor Token Type"
+            value={actorTokenType}
+            onChangeText={setActorTokenType}
+            autoCapitalize="none"
+          />
+          <Button
+            onPress={() =>
+              runTest(
+                () =>
+                  auth0.customTokenExchange({
+                    subjectToken,
+                    subjectTokenType,
+                    actorToken,
+                    actorTokenType,
+                  }),
+                'Custom Token Exchange (with Actor)'
+              )
+            }
+            title="customTokenExchange() with actor"
+            disabled={!subjectToken || !subjectTokenType || !actorToken}
+          />
+        </Section>
       </ScrollView>
     </SafeAreaView>
   );
@@ -214,6 +290,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 12,
+  },
+  subheading: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 8,
+    marginBottom: 4,
+    color: '#555555',
   },
   buttonGroup: {
     gap: 10,

@@ -413,7 +413,7 @@ describe('NativeBridgeManager', () => {
 
     it('should call the native customTokenExchange method with all parameters', async () => {
       MockedAuth0NativeModule.customTokenExchange.mockResolvedValueOnce(
-        mockExchangeResponse as any
+        mockExchangeResponse as unknown as Credentials
       );
 
       await bridge.customTokenExchange(
@@ -440,7 +440,7 @@ describe('NativeBridgeManager', () => {
 
     it('should forward actor token parameters to the native module', async () => {
       MockedAuth0NativeModule.customTokenExchange.mockResolvedValueOnce(
-        mockExchangeResponse as any
+        mockExchangeResponse as unknown as Credentials
       );
 
       await bridge.customTokenExchange(
@@ -466,7 +466,7 @@ describe('NativeBridgeManager', () => {
 
     it('should call native method with undefined for optional parameters', async () => {
       MockedAuth0NativeModule.customTokenExchange.mockResolvedValueOnce(
-        mockExchangeResponse as any
+        mockExchangeResponse as unknown as Credentials
       );
 
       await bridge.customTokenExchange(
@@ -487,7 +487,7 @@ describe('NativeBridgeManager', () => {
 
     it('should correctly transform the native response to a Credentials model', async () => {
       MockedAuth0NativeModule.customTokenExchange.mockResolvedValueOnce(
-        mockExchangeResponse as any
+        mockExchangeResponse as unknown as Credentials
       );
 
       const credentials = await bridge.customTokenExchange(
