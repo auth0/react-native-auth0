@@ -28,25 +28,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@auth0/auth0-auth-js@npm:1.6.0":
-  version: 1.6.0
-  resolution: "@auth0/auth0-auth-js@npm:1.6.0"
+"@auth0/auth0-auth-js@npm:^1.10.0":
+  version: 1.12.0
+  resolution: "@auth0/auth0-auth-js@npm:1.12.0"
   dependencies:
     jose: "npm:^6.0.8"
     openid-client: "npm:^6.8.0"
-  checksum: 10c0/0f5672ea77045d1172dac8a2571f1a7111045677191fa6105c0458a720fab3db385384b302535a6694c16dfe82ef0e9a3510d2113d5c35ca0f5ecd1bb1d96c05
+  checksum: 10c0/52cafd1a1b0bef8d44078ac36cbcf41c5e858ba32614e93ae2dd2020efd0c63dbe9a3d92af59579c1eacd60d918da622c33fe7dde92a723bb1831963a2ba6c11
   languageName: node
   linkType: hard
 
-"@auth0/auth0-spa-js@npm:2.19.3":
-  version: 2.19.3
-  resolution: "@auth0/auth0-spa-js@npm:2.19.3"
+"@auth0/auth0-spa-js@npm:^2.23.0":
+  version: 2.23.0
+  resolution: "@auth0/auth0-spa-js@npm:2.23.0"
   dependencies:
-    "@auth0/auth0-auth-js": "npm:1.6.0"
-    browser-tabs-lock: "npm:1.3.0"
-    dpop: "npm:2.1.1"
-    es-cookie: "npm:1.3.2"
-  checksum: 10c0/6449b0d47b311989baf0650f67dc3629397952af04eb5dc8303feabe10b51a695acfb7a4814052c94b89c228acccd299be7753bce41ed20986131da54a516114
+    "@auth0/auth0-auth-js": "npm:^1.10.0"
+    browser-tabs-lock: "npm:^1.3.0"
+    dpop: "npm:^2.1.1"
+    es-cookie: "npm:~1.3.2"
+  checksum: 10c0/439b9a3083b01962eeb824e475e411b6579144d2935d4d6ff77e87d172f811e183584712617507128ae56545e9d7e8884ad8fa852f9dcbb5eeeb1651bb66150f
   languageName: node
   linkType: hard
 
@@ -7264,7 +7264,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browser-tabs-lock@npm:1.3.0":
+"browser-tabs-lock@npm:^1.3.0":
   version: 1.3.0
   resolution: "browser-tabs-lock@npm:1.3.0"
   dependencies:
@@ -8768,7 +8768,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dpop@npm:2.1.1":
+"dpop@npm:^2.1.1":
   version: 2.1.1
   resolution: "dpop@npm:2.1.1"
   checksum: 10c0/e46dfd62325dd63372a17492c1867f79cdaf235645d32b87c3be8a09d4c7b03b8b44efec26688ba19e8279c77497a08deb302a9a4704b432795efd1163519611
@@ -9009,7 +9009,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es-cookie@npm:1.3.2":
+"es-cookie@npm:~1.3.2":
   version: 1.3.2
   resolution: "es-cookie@npm:1.3.2"
   checksum: 10c0/26eb6e06b25b5569d8763fcb23b5335a5098e354b0a9a7bc5122e8c8705003307187a165ddaeda5cff08fa4cc8e1675dbddd5709279fb27cfa8875514dc3eccb
@@ -14968,7 +14968,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "react-native-auth0@workspace:."
   dependencies:
-    "@auth0/auth0-spa-js": "npm:2.19.3"
+    "@auth0/auth0-spa-js": "npm:^2.23.0"
     "@commitlint/config-conventional": "npm:^21.1.0"
     "@eslint/compat": "npm:^2.1.0"
     "@eslint/eslintrc": "npm:^3.3.5"

@@ -747,6 +747,7 @@ extension CredentialsManagerError {
             case CredentialsManagerError.dpopKeyMissing: code = "DPOP_KEY_MISSING"
             case CredentialsManagerError.dpopKeyMismatch: code = "DPOP_KEY_MISMATCH"
             case CredentialsManagerError.dpopNotConfigured: code = "DPOP_NOT_CONFIGURED"
+            case CredentialsManagerError.sessionExpired: code = "SESSION_EXPIRED"
             default: code = "UNKNOWN"
         }
         return code

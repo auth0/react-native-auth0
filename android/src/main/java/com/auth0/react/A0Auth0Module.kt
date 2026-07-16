@@ -104,7 +104,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         CredentialsManagerException.NO_NETWORK to "NO_NETWORK",
         CredentialsManagerException.DPOP_KEY_MISSING to "DPOP_KEY_MISSING",
         CredentialsManagerException.DPOP_NOT_CONFIGURED to "DPOP_NOT_CONFIGURED",
-        CredentialsManagerException.DPOP_KEY_MISMATCH to "DPOP_KEY_MISMATCH"
+        CredentialsManagerException.DPOP_KEY_MISMATCH to "DPOP_KEY_MISMATCH",
+        CredentialsManagerException.SESSION_EXPIRED to "SESSION_EXPIRED"
     )
     // DPoP enabled by default
     private var useDPoP: Boolean = true

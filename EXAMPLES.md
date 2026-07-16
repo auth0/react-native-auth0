@@ -21,6 +21,7 @@
   - [Using Retry with Auth0 Class](#using-retry-with-auth0-class)
   - [Platform Support](#platform-support)
   - [Error Handling](#error-handling)
+- [IPSIE Session Expiry](#ipsie-session-expiry)
 - [Biometric Authentication](#biometric-authentication)
   - [Biometric Policy Types](#biometric-policy-types)
   - [Using with Auth0Provider (Hooks)](#using-with-auth0provider-hooks)
@@ -636,6 +637,48 @@ function MyComponent() {
 1. **Use moderate retry counts**: Recommended maximum of 2 retries to balance reliability with performance
 2. **Configure adequate overlap period**: Ensure your Auth0 tenant has at least 180 seconds token overlap configured
 3. **Test on real devices**: Simulate network instability during testing to validate retry behavior
+
+## IPSIE Session Expiry
+
+> **Platform Support:** iOS, Android, and Web.
+
+Auth0 supports the [IPSIE SL1](https://openid.github.io/ipsie-openid-sl1/draft-openid-ipsie-sl1-profile.html) `session_expiry` claim, which lets an upstream identity provider (e.g. Okta) set a hard ceiling on how long an Auth0-issued session may live. When your enterprise connection has this option enabled, Auth0 includes a `session_expiry` Unix timestamp in the ID token returned to your app after login.
+
+The underlying platform SDKs enforce this ceiling on every credential retrieval. Once the ceiling has passed, `getCredentials()` clears the stored credentials and rejects instead of attempting a token renewal — the user must re-authenticate. **No opt-in code is required**; enforcement is transparent once the connection option is active on your tenant.
+
+`react-native-auth0` surfaces this as a single, cross-platform error type: `CredentialsManagerError` with `type === 'SESSION_EXPIRED'`. Your existing "no credentials" re-login path already handles it, or you can match it explicitly:
+
+```jsx
+import { useAuth0, CredentialsManagerError } from 'react-native-auth0';
+
+function MyComponent() {
+  const { getCredentials, authorize } = useAuth0();
+
+  const fetchCredentials = async () => {
+    try {
+      const credentials = await getCredentials();
+      return credentials;
+    } catch (error) {
+      if (
+        error instanceof CredentialsManagerError &&
+        error.type === 'SESSION_EXPIRED'
+      ) {
+        // Upstream IdP session has ended — send the user back to login.
+        await authorize({ scope: 'openid profile offline_access' });
+      } else {
+        throw error;
+      }
+    }
+  };
+
+  // ...
+}
+```
+
+If you need to read the ceiling directly, it is available as the `session_expiry` claim (absolute Unix timestamp, in seconds) on the decoded ID token — see [Parse user profile from an ID token locally](#parse-user-profile-from-an-id-token-locally).
+
+> [!NOTE]
+> The `session_expiry` ceiling is pinned at the initial login and is not raised by subsequent refresh-token grants. Sessions from connections **without** the claim behave exactly as before.
 
 ## Biometric Authentication
 

@@ -47,6 +47,11 @@ export const CredentialsManagerErrorCodes = {
   REVOKE_FAILED: 'REVOKE_FAILED',
   /** Requested minimum TTL exceeds token lifetime */
   LARGE_MIN_TTL: 'LARGE_MIN_TTL',
+  /**
+   * The upstream IdP session ceiling (IPSIE `session_expiry`) has been reached.
+   * The local session is no longer valid and the user must re-authenticate.
+   */
+  SESSION_EXPIRED: 'SESSION_EXPIRED',
   /** Generic credentials manager error */
   CREDENTIAL_MANAGER_ERROR: 'CREDENTIAL_MANAGER_ERROR',
   /** Biometric authentication failed */
@@ -80,6 +85,8 @@ const ERROR_CODE_MAP: Record<string, string> = {
   STORE_FAILED: CredentialsManagerErrorCodes.STORE_FAILED,
   REVOKE_FAILED: CredentialsManagerErrorCodes.REVOKE_FAILED,
   LARGE_MIN_TTL: CredentialsManagerErrorCodes.LARGE_MIN_TTL,
+  // IPSIE session_expiry ceiling reached (Android SESSION_EXPIRED, iOS sessionExpired)
+  SESSION_EXPIRED: CredentialsManagerErrorCodes.SESSION_EXPIRED,
   CREDENTIAL_MANAGER_ERROR:
     CredentialsManagerErrorCodes.CREDENTIAL_MANAGER_ERROR,
   BIOMETRICS_FAILED: CredentialsManagerErrorCodes.BIOMETRICS_FAILED,
@@ -104,6 +111,7 @@ const ERROR_CODE_MAP: Record<string, string> = {
   invalid_scope: CredentialsManagerErrorCodes.API_ERROR,
   server_error: CredentialsManagerErrorCodes.API_ERROR,
   temporarily_unavailable: CredentialsManagerErrorCodes.NO_NETWORK,
+  session_expired: CredentialsManagerErrorCodes.SESSION_EXPIRED,
 
   // --- iOS-specific mappings ---
   renewFailed: CredentialsManagerErrorCodes.RENEW_FAILED,
@@ -112,6 +120,7 @@ const ERROR_CODE_MAP: Record<string, string> = {
   noRefreshToken: CredentialsManagerErrorCodes.NO_REFRESH_TOKEN,
   storeFailed: CredentialsManagerErrorCodes.STORE_FAILED,
   largeMinTTL: CredentialsManagerErrorCodes.LARGE_MIN_TTL,
+  sessionExpired: CredentialsManagerErrorCodes.SESSION_EXPIRED,
 
   // --- Many-to-one mapping for granular Android Biometric errors ---
   INCOMPATIBLE_DEVICE: CredentialsManagerErrorCodes.INCOMPATIBLE_DEVICE,
@@ -178,6 +187,7 @@ const ERROR_CODE_MAP: Record<string, string> = {
  * - `STORE_FAILED`: Failed to store credentials
  * - `REVOKE_FAILED`: Failed to revoke refresh token
  * - `LARGE_MIN_TTL`: Requested minimum TTL exceeds token lifetime
+ * - `SESSION_EXPIRED`: Upstream IdP session ceiling (IPSIE `session_expiry`) reached - re-authentication required
  *
  * ### API Credentials (MRRT):
  * - `API_EXCHANGE_FAILED`: Failed to exchange refresh token for API-specific credentials
@@ -307,6 +317,7 @@ export class CredentialsManagerError extends AuthError {
    * - `STORE_FAILED`: Failed to store credentials
    * - `REVOKE_FAILED`: Failed to revoke refresh token
    * - `LARGE_MIN_TTL`: Requested minimum TTL exceeds token lifetime
+   * - `SESSION_EXPIRED`: Upstream IdP session ceiling (IPSIE `session_expiry`) reached
    * - `BIOMETRICS_FAILED`: Biometric authentication failed
    * - `INCOMPATIBLE_DEVICE`: Device incompatible with secure storage
    * - `CRYPTO_EXCEPTION`: Cryptographic operation failed

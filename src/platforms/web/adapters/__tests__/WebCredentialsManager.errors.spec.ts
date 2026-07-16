@@ -70,4 +70,25 @@ describe('WebCredentialsManager Error Handling', () => {
       });
     });
   });
+
+  describe('IPSIE session_expiry ceiling', () => {
+    it('should map a silent undefined token response to SESSION_EXPIRED', async () => {
+      // spa-js enforces the session_expiry ceiling silently: past the ceiling
+      // getTokenSilently resolves without a token rather than throwing.
+      (mockSpaClient.getTokenSilently as jest.Mock).mockResolvedValue(
+        undefined
+      );
+
+      await expect(manager.getCredentials()).rejects.toThrow(
+        CredentialsManagerError
+      );
+
+      try {
+        await manager.getCredentials();
+      } catch (e) {
+        const err = e as CredentialsManagerError;
+        expect(err.type).toBe('SESSION_EXPIRED');
+      }
+    });
+  });
 });
