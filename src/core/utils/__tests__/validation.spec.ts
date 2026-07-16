@@ -22,13 +22,11 @@ describe('validateActorTokenParameters', () => {
   });
 
   it('should throw with the invalid_actor_token_parameters code', () => {
-    try {
-      validateActorTokenParameters(undefined, 'urn:token-type');
-      throw new Error('Expected validateActorTokenParameters to throw');
-    } catch (e) {
-      expect(e).toBeInstanceOf(AuthError);
-      expect((e as AuthError).code).toBe('invalid_actor_token_parameters');
-    }
+    expect(() =>
+      validateActorTokenParameters(undefined, 'urn:token-type')
+    ).toThrow(
+      expect.objectContaining({ code: 'invalid_actor_token_parameters' })
+    );
   });
 });
 

@@ -249,7 +249,12 @@ const ClassApiTestsScreen = ({ route }: Props) => {
               )
             }
             title="customTokenExchange() with actor"
-            disabled={!subjectToken || !subjectTokenType || !actorToken}
+            disabled={
+              !subjectToken ||
+              !subjectTokenType ||
+              !actorToken ||
+              !actorTokenType
+            }
           />
         </Section>
       </ScrollView>
