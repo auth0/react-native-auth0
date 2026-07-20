@@ -24,5 +24,5 @@ Tests are colocated in `__tests__/` directories beside the module they cover, na
 ## Coverage
 
 - `yarn test:ci` collects coverage (Istanbul) into `coverage/`.
-- Thresholds live in `codecov.yml`: patch target **80%**, project target auto (±1%). `src/networking/telemetry.ts` is ignored.
+- Thresholds live in `codecov.yml`: patch target **80%**, project target auto (±1%). `src/core/utils/telemetry.ts` is ignored.
 - Run a single file's coverage with `yarn test:ci path/to/file.spec.ts`.

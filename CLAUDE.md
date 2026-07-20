@@ -33,7 +33,7 @@ Apply these on every task in this repo — they keep changes correct, small, and
 
 ## Project Structure
 
-```
+```text
 react-native-auth0/
 ├── src/                       # TypeScript source (public surface)
 │   ├── index.ts               # Public API exports (entry point)
