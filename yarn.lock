@@ -13150,13 +13150,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-runtime@npm:0.84.4, metro-runtime@npm:^0.84.3, metro-runtime@npm:^0.84.4":
+"metro-runtime@npm:0.84.4, metro-runtime@npm:^0.84.3":
   version: 0.84.4
   resolution: "metro-runtime@npm:0.84.4"
   dependencies:
     "@babel/runtime": "npm:^7.25.0"
     flow-enums-runtime: "npm:^0.0.6"
   checksum: 10c0/e2b2e819027940c6bbd081e5650238d52b6c6d78561cd486b8c10cd1e7fce0213c66fa7f885e37ad5377fcd5726b1c9e473fba6de13938cdf2c966e82968c05f
+  languageName: node
+  linkType: hard
+
+"metro-runtime@npm:^0.87.0":
+  version: 0.87.0
+  resolution: "metro-runtime@npm:0.87.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.25.0"
+    flow-enums-runtime: "npm:^0.0.6"
+  checksum: 10c0/6811ee32a759dbccaa3241d98ec26f3e26fd5e4a1cdd5929c98df94fd46329c20f026759da6ca055cb068f8a57dfc7054b6cfc7bb9fb7b3280144055d2f8d67f
   languageName: node
   linkType: hard
 
@@ -15004,7 +15014,7 @@ __metadata:
     jest-environment-jsdom: "npm:^29.7.0"
     jwt-decode: "npm:^4.0.0"
     metro-config: "npm:^0.84.4"
-    metro-runtime: "npm:^0.84.4"
+    metro-runtime: "npm:^0.87.0"
     minami: "npm:^1.2.3"
     node-fetch: "npm:^3.3.2"
     pod-install: "npm:^1.0.19"
