@@ -37,6 +37,9 @@ describe('Error Code Constants', () => {
         'INVALID_INVITATION_URL'
       );
       expect(WebAuthErrorCodes.INVALID_STATE).toBe('INVALID_STATE');
+      expect(WebAuthErrorCodes.INVALID_CALLBACK_URL).toBe(
+        'INVALID_CALLBACK_URL'
+      );
       expect(WebAuthErrorCodes.TIMEOUT_ERROR).toBe('TIMEOUT_ERROR');
       expect(WebAuthErrorCodes.CONSENT_REQUIRED).toBe('CONSENT_REQUIRED');
       expect(WebAuthErrorCodes.INVALID_CONFIGURATION).toBe(
@@ -45,9 +48,9 @@ describe('Error Code Constants', () => {
       expect(WebAuthErrorCodes.UNKNOWN_ERROR).toBe('UNKNOWN_ERROR');
     });
 
-    it('should have exactly 18 error codes', () => {
+    it('should have exactly 19 error codes', () => {
       const keys = Object.keys(WebAuthErrorCodes);
-      expect(keys).toHaveLength(18);
+      expect(keys).toHaveLength(19);
     });
 
     it('should be immutable (as const)', () => {

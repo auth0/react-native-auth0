@@ -702,7 +702,12 @@ extension WebAuthError {
             } else {
                 code = "OTHER"
             }
-            default: code = "UNKNOWN"
+            default:
+                if self.errorDescription?.contains("Invalid callback URL") == true {
+                    code = "INVALID_CALLBACK_URL"
+                } else {
+                    code = "UNKNOWN"
+                }
         }
         return code
     }
