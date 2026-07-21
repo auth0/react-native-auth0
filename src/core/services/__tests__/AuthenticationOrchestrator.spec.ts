@@ -299,6 +299,48 @@ describe('AuthenticationOrchestrator', () => {
         undefined
       );
     });
+
+    it('should forward extra parameters to the token endpoint', async () => {
+      mockHttpClientInstance.post.mockResolvedValueOnce({
+        json: tokensResponse,
+        response: new Response(null, { status: 200 }),
+      });
+      await orchestrator.refreshToken({
+        ...parameters,
+        organizationId: 'org_123',
+      });
+
+      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+        '/oauth/token',
+        expect.objectContaining({
+          grant_type: 'refresh_token',
+          refresh_token: parameters.refreshToken,
+          organizationId: 'org_123',
+        }),
+        undefined
+      );
+    });
+
+    it('should not let extra parameters override the OAuth fields', async () => {
+      mockHttpClientInstance.post.mockResolvedValueOnce({
+        json: tokensResponse,
+        response: new Response(null, { status: 200 }),
+      });
+      await orchestrator.refreshToken({
+        ...parameters,
+        grant_type: 'password',
+        client_id: 'spoofed-client',
+      });
+
+      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
+        '/oauth/token',
+        expect.objectContaining({
+          grant_type: 'refresh_token',
+          client_id: clientId,
+        }),
+        undefined
+      );
+    });
   });
 
   describe('revoke token', () => {

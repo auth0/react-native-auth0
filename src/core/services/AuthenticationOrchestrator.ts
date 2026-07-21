@@ -190,13 +190,19 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
 
   async refreshToken(parameters: RefreshTokenParameters): Promise<Credentials> {
     validateParameters(parameters, ['refreshToken']);
-    const { headers, ...payload } = parameters;
+    // Forward any extra parameters to the token endpoint. `RefreshTokenParameters`
+    // accepts arbitrary keys (via RequestOptions), and custom parameters are commonly
+    // consumed by Auth0 Actions to customize the issued tokens. Extras are spread
+    // first so they can never override the OAuth-mandated fields.
+    const { headers, refreshToken, scope, audience, ...extraParameters } =
+      parameters;
     const body = {
+      ...extraParameters,
       grant_type: 'refresh_token',
       client_id: this.clientId,
-      refresh_token: payload.refreshToken,
-      scope: includeRequiredScope(payload.scope),
-      audience: payload.audience,
+      refresh_token: refreshToken,
+      scope: includeRequiredScope(scope),
+      audience: audience,
     };
     const { json, response } =
       await this.client.post<NativeCredentialsResponse>(
