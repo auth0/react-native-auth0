@@ -703,6 +703,8 @@ extension WebAuthError {
                 code = "OTHER"
             }
             default:
+                // Auth0.swift surfaces a callback-URL mismatch as `.unknown("Invalid callback URL: ...")`
+                // with no dedicated enum case, so message matching is the only available hook.
                 if self.errorDescription?.contains("Invalid callback URL") == true {
                     code = "INVALID_CALLBACK_URL"
                 } else {

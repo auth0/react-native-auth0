@@ -57,7 +57,7 @@ export const WebAuthErrorCodes = {
   INVALID_INVITATION_URL: 'INVALID_INVITATION_URL',
   /** State parameter mismatch (potential CSRF attack) */
   INVALID_STATE: 'INVALID_STATE',
-  /** Callback URL did not match the expected redirect (e.g. an in-page link captured by the browser session on iOS) */
+  /** Callback URL did not match the expected redirect, e.g. an in-page link captured by the browser session (iOS) */
   INVALID_CALLBACK_URL: 'INVALID_CALLBACK_URL',
   /** Authentication flow timed out */
   TIMEOUT_ERROR: 'TIMEOUT_ERROR',
