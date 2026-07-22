@@ -53,8 +53,13 @@ const ERROR_CODE_MAP: Record<string, string> = {
   PASSKEY_CHALLENGE_FAILED: PasskeyErrorCodes.CHALLENGE_FAILED,
   PASSKEY_EXCHANGE_FAILED: PasskeyErrorCodes.EXCHANGE_FAILED,
 
-  // --- Web platform ---
+  // --- Web platform (auth0-spa-js) ---
   UnsupportedOperation: PasskeyErrorCodes.UNSUPPORTED_PLATFORM,
+  passkey_not_supported: PasskeyErrorCodes.NOT_AVAILABLE,
+  passkey_register_error: PasskeyErrorCodes.CHALLENGE_FAILED,
+  passkey_challenge_error: PasskeyErrorCodes.CHALLENGE_FAILED,
+  passkey_get_token_error: PasskeyErrorCodes.EXCHANGE_FAILED,
+  passkey_invalid_credential: PasskeyErrorCodes.EXCHANGE_FAILED,
 };
 
 /**
