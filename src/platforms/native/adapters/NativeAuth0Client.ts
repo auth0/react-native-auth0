@@ -184,6 +184,28 @@ export class NativeAuth0Client implements IAuth0Client {
     }
   }
 
+  /**
+   * Clears the DPoP key pair and cached nonce from secure storage.
+   *
+   * @remarks
+   * DPoP-bound tokens are cryptographically tied to this key pair, so clearing it
+   * invalidates any existing DPoP-bound session. Delegates to the native SDK,
+   * which is supported on both iOS and Android.
+   *
+   * @returns A promise that resolves when the key has been cleared.
+   */
+  async clearDPoPKey(): Promise<void> {
+    await this.ready;
+    try {
+      return await this.guardedBridge.clearDPoPKey();
+    } catch (e) {
+      if (e instanceof AuthError) {
+        throw new DPoPError(e);
+      }
+      throw e;
+    }
+  }
+
   private createGuardedBridge(bridge: INativeBridge): INativeBridge {
     const guarded: any = {};
 

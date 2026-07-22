@@ -423,6 +423,24 @@ export interface Auth0ContextInterface extends AuthState {
   ) => Promise<Record<string, string>>;
 
   /**
+   * Clears the DPoP key pair and cached nonce from secure storage.
+   *
+   * @remarks
+   * DPoP-bound tokens are cryptographically tied to this key pair, so clearing it
+   * invalidates any existing DPoP-bound session. Call this on logout, or to recover
+   * from a corrupted DPoP transaction state (for example, after an interrupted login
+   * flow leaves stale cryptographic state that breaks subsequent logins).
+   *
+   * Supported on iOS and Android. On the web platform this throws an
+   * `UnsupportedOperation` error, since the DPoP key is managed by auth0-spa-js
+   * and cleared automatically on logout.
+   *
+   * @returns A promise that resolves when the key has been cleared.
+   * @throws A `DPoPError` (wrapping an `AuthError` with code `UnsupportedOperation`) on the web platform.
+   */
+  clearDPoPKey: () => Promise<void>;
+
+  /**
    * Obtains session transfer credentials for performing Native to Web SSO.
    *
    * @remarks
@@ -570,6 +588,7 @@ const initialContext: Auth0ContextInterface = {
   resetPassword: stub,
   revokeRefreshToken: stub,
   getDPoPHeaders: stub,
+  clearDPoPKey: stub,
   getSSOCredentials: stub,
   ssoExchange: stub,
   mfa: {

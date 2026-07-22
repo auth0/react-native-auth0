@@ -18,6 +18,7 @@
 16. [What happens if I disable DPoP after enabling it?](#16-what-happens-if-i-disable-dpop-after-enabling-it)
 17. [Why does the app hang or freeze during Social Login (Google, Facebook, etc.)?](#17-why-does-the-app-hang-or-freeze-during-social-login-google-facebook-etc)
 18. [How do I refresh the user profile (e.g. `emailVerified`) after it changes on the server?](#18-how-do-i-refresh-the-user-profile-eg-emailverified-after-it-changes-on-the-server)
+19. [How do I recover from a corrupted DPoP state?](#19-how-do-i-recover-from-a-corrupted-dpop-state)
 
 ## 1. How can I have separate Auth0 domains for each environment on Android?
 
@@ -1038,3 +1039,49 @@ function VerifyEmailScreen() {
 | `getCredentials` promise never resolves | Missing refresh token or network issue                       | Ensure `offline_access` is included during login, and check network connectivity.                                       |
 
 > **Note**: This behavior differs from the web SDK (`@auth0/auth0-spa-js`), where token refresh is handled automatically via silent authentication using iframes. On native platforms (iOS/Android), a refresh token is explicitly required.
+
+## 19. How do I recover from a corrupted DPoP state?
+
+When DPoP is enabled, the SDK generates a device-bound key pair and negotiates cryptographic state with Auth0 during the token exchange. In certain edge cases this state can become desynchronized, and subsequent logins fail even though credentials and configuration are correct.
+
+A common trigger is an **interrupted authentication flow** — for example, the user deep-links back into the app while an authorization transaction is still in flight (such as returning from an email password reset), orphaning the original transaction and leaving stale DPoP state behind.
+
+### The solution: `clearDPoPKey()`
+
+`clearDPoPKey()` clears the DPoP key pair and cached state so the next login starts with a clean key pair and a fresh handshake.
+
+Treat this as a **deliberate recovery action**, not automatic error handling. Do **not** wrap it around every failed `authorize()` — most login failures (user cancellation, invalid credentials, network errors) have nothing to do with DPoP, and clearing the key on those needlessly invalidates a valid DPoP-bound session. Call it only when you have specifically diagnosed a corrupted DPoP state (for example, repeated login failures following an interrupted flow):
+
+```javascript
+import { useAuth0 } from 'react-native-auth0';
+
+function LoginScreen() {
+  const { authorize, clearDPoPKey } = useAuth0();
+
+  // Expose recovery as an explicit user action, e.g. a "Reset and try again"
+  // button shown after the user has hit repeated, unexplained login failures.
+  const recoverAndLogin = async () => {
+    await clearDPoPKey();
+    await authorize({ scope: 'openid profile email offline_access' });
+  };
+
+  // ...
+}
+```
+
+Using the class-based API:
+
+```javascript
+// Called deliberately when a corrupted DPoP state has been diagnosed,
+// not as a blanket catch handler around authorize().
+async function recoverAndLogin() {
+  await auth0.clearDPoPKey();
+  await auth0.webAuth.authorize();
+}
+```
+
+> **Warning**: DPoP-bound access and refresh tokens are cryptographically tied to the key pair. Calling `clearDPoPKey()` **invalidates any existing DPoP-bound session** — the stored refresh token can no longer mint new tokens. Only call it when there is no valid authenticated session to preserve (such as before a fresh login, or as part of logout), not while an authenticated user is active. If you call it on an active session, the user will need to log in again.
+
+### Platform support
+
+`clearDPoPKey()` is supported on **iOS and Android**. On the **web** platform it throws an `UnsupportedOperation` error, because `@auth0/auth0-spa-js` manages the DPoP key internally and clears it as part of `logout()`; there is no supported way to clear it independently.
