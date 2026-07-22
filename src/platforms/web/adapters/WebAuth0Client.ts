@@ -2,6 +2,7 @@ import {
   Auth0Client,
   type Auth0ClientOptions,
   type LogoutOptions,
+  type PasskeyCredentialResponse,
 } from '@auth0/auth0-spa-js';
 import type {
   IAuth0Client,
@@ -275,35 +276,125 @@ export class WebAuth0Client implements IAuth0Client {
   }
 
   async passkeySignupChallenge(
-    _parameters: PasskeySignupChallengeParameters
+    parameters: PasskeySignupChallengeParameters
   ): Promise<PasskeyChallengeResponse> {
-    throw new PasskeyError(
-      new AuthError(
-        'UnsupportedOperation',
-        'Passkeys are not supported on the web platform'
-      )
-    );
+    try {
+      const {
+        email,
+        phoneNumber,
+        username,
+        name,
+        givenName,
+        familyName,
+        nickname,
+        picture,
+        userMetadata,
+        realm,
+        organization,
+      } = parameters;
+      const challenge = await this.client.passkey.getSignupChallenge({
+        email,
+        phoneNumber,
+        username,
+        name,
+        givenName,
+        familyName,
+        nickname,
+        picture,
+        userMetadata,
+        realm,
+        organization,
+      } as any);
+
+      return {
+        authSession: challenge.authSession,
+        authParamsPublicKey: challenge.publicKey as unknown as Record<
+          string,
+          any
+        >,
+      };
+    } catch (e: any) {
+      const authError = new AuthError(
+        e.code ?? 'passkey_signup_challenge_failed',
+        e.message ?? 'Failed to request passkey signup challenge',
+        { code: e.code, json: e.cause ?? e }
+      );
+      throw new PasskeyError(authError);
+    }
   }
 
   async passkeyLoginChallenge(
-    _parameters: PasskeyLoginChallengeParameters
+    parameters: PasskeyLoginChallengeParameters
   ): Promise<PasskeyChallengeResponse> {
-    throw new PasskeyError(
-      new AuthError(
-        'UnsupportedOperation',
-        'Passkeys are not supported on the web platform'
-      )
-    );
+    try {
+      const { realm, organization } = parameters;
+      const challenge = await this.client.passkey.getLoginChallenge({
+        realm,
+        organization,
+      });
+
+      return {
+        authSession: challenge.authSession,
+        authParamsPublicKey: challenge.publicKey as unknown as Record<
+          string,
+          any
+        >,
+      };
+    } catch (e: any) {
+      const authError = new AuthError(
+        e.code ?? 'passkey_login_challenge_failed',
+        e.message ?? 'Failed to request passkey login challenge',
+        { code: e.code, json: e.cause ?? e }
+      );
+      throw new PasskeyError(authError);
+    }
   }
 
   async getTokenByPasskey(
-    _parameters: GetTokenByPasskeyParameters
+    parameters: GetTokenByPasskeyParameters
   ): Promise<Credentials> {
-    throw new PasskeyError(
-      new AuthError(
-        'UnsupportedOperation',
-        'Passkeys are not supported on the web platform'
-      )
-    );
+    try {
+      const {
+        authSession,
+        authResponse,
+        realm,
+        audience,
+        scope,
+        organization,
+      } = parameters;
+      // `authResponse` is already a serialized (base64url) credential JSON
+      // matching the native platforms' format, not a raw WebAuthn
+      // PublicKeyCredential — so we bypass `passkey.getTokenWithPasskey()`
+      // (which expects the raw browser credential) and go straight to the
+      // token exchange with the pre-serialized shape it would have produced.
+      const credential: PasskeyCredentialResponse = JSON.parse(authResponse);
+
+      const response = await this.client._requestTokenForPasskey({
+        authSession,
+        credential,
+        realm,
+        audience,
+        scope,
+        organization,
+      });
+
+      const expiresAt = Math.floor(Date.now() / 1000) + response.expires_in;
+
+      return {
+        accessToken: response.access_token,
+        idToken: response.id_token,
+        tokenType: (response.token_type as TokenType) ?? this.tokenType,
+        expiresAt,
+        scope: response.scope,
+        refreshToken: response.refresh_token,
+      };
+    } catch (e: any) {
+      const authError = new AuthError(
+        e.code ?? 'passkey_exchange_failed',
+        e.message ?? 'Failed to exchange passkey credential for tokens',
+        { code: e.code, json: e.cause ?? e }
+      );
+      throw new PasskeyError(authError);
+    }
   }
 }

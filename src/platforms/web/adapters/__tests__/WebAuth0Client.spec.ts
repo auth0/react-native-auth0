@@ -49,9 +49,21 @@ jest.mock('../../../../core/models', () => {
     }
   }
 
+  class MockPasskeyError extends Error {
+    type: string;
+    code: string;
+    constructor(originalError: MockAuthError) {
+      super(originalError.message);
+      this.name = 'PasskeyError';
+      this.code = originalError.code;
+      this.type = originalError.code;
+    }
+  }
+
   return {
     AuthError: MockAuthError,
     AuthenticationException: MockAuthenticationException,
+    PasskeyError: MockPasskeyError,
     // Add other exports from models if needed
     Credentials: jest.fn(),
     Auth0User: jest.fn(),
@@ -109,6 +121,11 @@ describe('WebAuth0Client', () => {
       getTokenSilently: jest.fn(),
       getIdTokenClaims: jest.fn(),
       isAuthenticated: jest.fn(),
+      passkey: {
+        getSignupChallenge: jest.fn(),
+        getLoginChallenge: jest.fn(),
+      },
+      _requestTokenForPasskey: jest.fn(),
     } as any;
 
     mockHttpClient = {
@@ -483,6 +500,151 @@ describe('WebAuth0Client', () => {
       } catch (e: any) {
         expect(e.name).toBe('AuthenticationException');
       }
+    });
+  });
+
+  describe('passkeySignupChallenge method', () => {
+    const mockPublicKey = {
+      challenge: 'challenge-value',
+      rp: { id: 'test.auth0.com', name: 'Test App' },
+      user: { id: 'user-id', name: 'user@example.com', displayName: 'User' },
+    };
+
+    it('should request a signup challenge and map the response', async () => {
+      mockSpaClient.passkey.getSignupChallenge.mockResolvedValue({
+        authSession: 'auth-session-123',
+        publicKey: mockPublicKey,
+      });
+
+      const result = await client.passkeySignupChallenge({
+        email: 'user@example.com',
+        name: 'John Doe',
+        realm: 'Username-Password-Authentication',
+      });
+
+      expect(mockSpaClient.passkey.getSignupChallenge).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: 'user@example.com',
+          name: 'John Doe',
+          realm: 'Username-Password-Authentication',
+        })
+      );
+      expect(result).toEqual({
+        authSession: 'auth-session-123',
+        authParamsPublicKey: mockPublicKey,
+      });
+    });
+
+    it('should throw PasskeyError when the challenge request fails', async () => {
+      mockSpaClient.passkey.getSignupChallenge.mockRejectedValue({
+        code: 'passkey_register_error',
+        message: 'Failed to request signup challenge',
+      });
+
+      await expect(
+        client.passkeySignupChallenge({ email: 'user@example.com' })
+      ).rejects.toMatchObject({
+        name: 'PasskeyError',
+        code: 'passkey_register_error',
+      });
+    });
+  });
+
+  describe('passkeyLoginChallenge method', () => {
+    const mockPublicKey = {
+      challenge: 'challenge-value',
+      rpId: 'test.auth0.com',
+    };
+
+    it('should request a login challenge and map the response', async () => {
+      mockSpaClient.passkey.getLoginChallenge.mockResolvedValue({
+        authSession: 'auth-session-456',
+        publicKey: mockPublicKey,
+      });
+
+      const result = await client.passkeyLoginChallenge({
+        realm: 'Username-Password-Authentication',
+      });
+
+      expect(mockSpaClient.passkey.getLoginChallenge).toHaveBeenCalledWith({
+        realm: 'Username-Password-Authentication',
+        organization: undefined,
+      });
+      expect(result).toEqual({
+        authSession: 'auth-session-456',
+        authParamsPublicKey: mockPublicKey,
+      });
+    });
+
+    it('should throw PasskeyError when the challenge request fails', async () => {
+      mockSpaClient.passkey.getLoginChallenge.mockRejectedValue({
+        code: 'passkey_challenge_error',
+        message: 'Failed to request login challenge',
+      });
+
+      await expect(client.passkeyLoginChallenge({})).rejects.toMatchObject({
+        name: 'PasskeyError',
+        code: 'passkey_challenge_error',
+      });
+    });
+  });
+
+  describe('getTokenByPasskey method', () => {
+    const mockCredential = {
+      id: 'credential-id',
+      rawId: 'credential-id',
+      type: 'public-key',
+      response: {
+        clientDataJSON: 'client-data',
+        attestationObject: 'attestation-object',
+      },
+    };
+
+    it('should exchange the credential for tokens', async () => {
+      mockSpaClient._requestTokenForPasskey.mockResolvedValue({
+        access_token: 'passkey-access-token',
+        id_token: 'passkey-id-token',
+        token_type: 'Bearer',
+        expires_in: 3600,
+        scope: 'openid profile email',
+        refresh_token: 'passkey-refresh-token',
+      });
+
+      const result = await client.getTokenByPasskey({
+        authSession: 'auth-session-123',
+        authResponse: JSON.stringify(mockCredential),
+        realm: 'Username-Password-Authentication',
+      });
+
+      expect(mockSpaClient._requestTokenForPasskey).toHaveBeenCalledWith({
+        authSession: 'auth-session-123',
+        credential: mockCredential,
+        realm: 'Username-Password-Authentication',
+        audience: undefined,
+        scope: undefined,
+        organization: undefined,
+      });
+      expect(result.accessToken).toBe('passkey-access-token');
+      expect(result.idToken).toBe('passkey-id-token');
+      expect(result.refreshToken).toBe('passkey-refresh-token');
+      expect(result.expiresAt).toBeGreaterThan(Math.floor(Date.now() / 1000));
+    });
+
+    it('should throw PasskeyError when the exchange fails', async () => {
+      mockSpaClient._requestTokenForPasskey.mockRejectedValue({
+        code: 'passkey_get_token_error',
+        message: 'Failed to exchange credential',
+      });
+
+      await expect(
+        client.getTokenByPasskey({
+          authSession: 'auth-session-123',
+          authResponse: JSON.stringify(mockCredential),
+        })
+      ).rejects.toMatchObject({
+        name: 'PasskeyError',
+        code: 'passkey_get_token_error',
+      });
     });
   });
 

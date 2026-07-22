@@ -17,6 +17,7 @@ import Auth0, {
   MfaError,
   MfaErrorCodes,
   MfaFactorType,
+  PasskeyError,
 } from 'react-native-auth0';
 import type {
   MfaAuthenticator,
@@ -40,6 +41,47 @@ type MfaStep =
 
 type EnrollType = MfaFactorType;
 
+// Converts a PublicKeyCredential from navigator.credentials into the JSON
+// shape getTokenByPasskey expects (see EXAMPLES.md "Auth Response Format").
+const toBase64Url = (buffer: ArrayBuffer): string =>
+  btoa(String.fromCharCode(...new Uint8Array(buffer)))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+
+const serializePasskeyCredential = (credential: PublicKeyCredential): string => {
+  const response = credential.response;
+  const isAttestation = 'attestationObject' in response;
+
+  return JSON.stringify({
+    id: credential.id,
+    rawId: toBase64Url(credential.rawId),
+    type: credential.type,
+    authenticatorAttachment: credential.authenticatorAttachment ?? undefined,
+    response: isAttestation
+      ? {
+          clientDataJSON: toBase64Url(response.clientDataJSON),
+          attestationObject: toBase64Url(
+            (response as AuthenticatorAttestationResponse).attestationObject
+          ),
+        }
+      : {
+          clientDataJSON: toBase64Url(response.clientDataJSON),
+          authenticatorData: toBase64Url(
+            (response as AuthenticatorAssertionResponse).authenticatorData
+          ),
+          signature: toBase64Url(
+            (response as AuthenticatorAssertionResponse).signature
+          ),
+          userHandle: (response as AuthenticatorAssertionResponse).userHandle
+            ? toBase64Url(
+                (response as AuthenticatorAssertionResponse).userHandle!
+              )
+            : undefined,
+        },
+  });
+};
+
 // ========================================================================
 // --- 1. HOOKS-BASED IMPLEMENTATION (Recommended) ---
 // ========================================================================
@@ -57,12 +99,17 @@ const HooksAuthContent = (): React.JSX.Element => {
     loginWithPasswordRealm,
     mfa,
     users,
+    passkeySignupChallenge,
+    passkeyLoginChallenge,
+    getTokenByPasskey,
   } = useAuth0();
 
   const [result, setResult] = useState<object | null>(null);
   const [apiError, setApiError] = useState<Error | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passkeyEmail, setPasskeyEmail] = useState('');
+  const [passkeyLoading, setPasskeyLoading] = useState(false);
 
   // MFA wizard state
   const [mfaToken, setMfaToken] = useState('');
@@ -126,6 +173,77 @@ const HooksAuthContent = (): React.JSX.Element => {
       setApiError(e);
     } else {
       setApiError(e as Error);
+    }
+  };
+
+  const handlePasskeyError = (e: unknown) => {
+    if (e instanceof PasskeyError) {
+      setApiError(e);
+      return;
+    }
+    setApiError(e as Error);
+  };
+
+  const onPasskeySignup = async () => {
+    setResult(null);
+    setApiError(null);
+    setPasskeyLoading(true);
+    try {
+      const challenge = await passkeySignupChallenge({
+        email: passkeyEmail || undefined,
+        realm: 'Username-Password-Authentication',
+      });
+
+      const credential = (await navigator.credentials.create({
+        publicKey:
+          challenge.authParamsPublicKey as PublicKeyCredentialCreationOptions,
+      })) as PublicKeyCredential;
+
+      const credentials = await getTokenByPasskey({
+        authSession: challenge.authSession,
+        authResponse: serializePasskeyCredential(credential),
+        realm: 'Username-Password-Authentication',
+      });
+
+      setResult({
+        success: true,
+        accessToken: `${credentials.accessToken.substring(0, 30)}...`,
+      });
+    } catch (e) {
+      handlePasskeyError(e);
+    } finally {
+      setPasskeyLoading(false);
+    }
+  };
+
+  const onPasskeyLogin = async () => {
+    setResult(null);
+    setApiError(null);
+    setPasskeyLoading(true);
+    try {
+      const challenge = await passkeyLoginChallenge({
+        realm: 'Username-Password-Authentication',
+      });
+
+      const credential = (await navigator.credentials.get({
+        publicKey:
+          challenge.authParamsPublicKey as PublicKeyCredentialRequestOptions,
+      })) as PublicKeyCredential;
+
+      const credentials = await getTokenByPasskey({
+        authSession: challenge.authSession,
+        authResponse: serializePasskeyCredential(credential),
+        realm: 'Username-Password-Authentication',
+      });
+
+      setResult({
+        success: true,
+        accessToken: `${credentials.accessToken.substring(0, 30)}...`,
+      });
+    } catch (e) {
+      handlePasskeyError(e);
+    } finally {
+      setPasskeyLoading(false);
     }
   };
 
@@ -625,6 +743,29 @@ const HooksAuthContent = (): React.JSX.Element => {
                 <Button onPress={resetMfaWizard} title="Done" />
               </>
             )}
+          </Section>
+          <Section title="Passkeys">
+            <Text style={styles.hint}>
+              Uses the browser's built-in WebAuthn API (navigator.credentials)
+              via @auth0/auth0-spa-js.
+            </Text>
+            <LabeledInput
+              label="Email (for signup)"
+              value={passkeyEmail}
+              onChangeText={setPasskeyEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
+            <Button
+              onPress={onPasskeySignup}
+              title="Sign Up with Passkey"
+              disabled={!passkeyEmail || passkeyLoading}
+            />
+            <Button
+              onPress={onPasskeyLogin}
+              title="Sign In with Passkey"
+              disabled={passkeyLoading}
+            />
           </Section>
         </>
       )}
