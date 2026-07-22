@@ -27,7 +27,7 @@ Apply these on every task in this repo — they keep changes correct, small, and
 - **Tech Stack:** React Native (New Architecture / TurboModules), iOS (Swift + ObjC++), Android (Kotlin), web (auth0-spa-js)
 - **Package Manager:** Yarn (Berry, `.yarnrc.yml`); Node pinned via `.nvmrc` (v22.15.0)
 - **Minimum Platform Version:** React Native ≥ 0.78.0, React ≥ 19.0.0 (peer deps); iOS/Android minimums come from the native SDKs
-- **Dependencies:** `@auth0/auth0-spa-js` 2.19.3, `jwt-decode` 4, `base-64`, `url` · test: Jest 29 + `fetch-mock`, `@testing-library/react`. See `package.json` for the authoritative list.
+- **Dependencies:** `@auth0/auth0-spa-js` 2.24.0, `jwt-decode` 4, `base-64`, `url` · test: Jest 29 + `fetch-mock`, `@testing-library/react`. See `package.json` for the authoritative list.
 
 ---
 

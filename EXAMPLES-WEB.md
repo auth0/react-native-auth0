@@ -277,8 +277,51 @@ const credentials = await auth0.mfa.verify({
 });
 ```
 
+## 4. Passkeys (Web)
+
+Passkeys are supported on web via `@auth0/auth0-spa-js`. The flow is the same three steps as native (challenge → credential manager → exchange), but step 2 uses the browser's built-in [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) (`navigator.credentials.create()`/`.get()`) instead of a native module. See [Signup with Passkey (Web)](./EXAMPLES.md#signup-with-passkey-web) in `EXAMPLES.md` for a full example, including how to serialize the `PublicKeyCredential` returned by the browser into the JSON format `getTokenByPasskey` expects.
+
+Because `navigator.credentials.create()`/`.get()` require a user gesture, call `passkeySignupChallenge` / `passkeyLoginChallenge` from within a click handler (not, for example, from a `useEffect`).
+
+```tsx
+import { useAuth0, PasskeyError } from 'react-native-auth0';
+
+function PasskeyLoginButton() {
+  const { passkeyLoginChallenge, getTokenByPasskey } = useAuth0();
+
+  const handleLogin = async () => {
+    try {
+      const challenge = await passkeyLoginChallenge({
+        realm: 'Username-Password-Authentication',
+      });
+
+      const credential = (await navigator.credentials.get({
+        publicKey: challenge.authParamsPublicKey as PublicKeyCredentialRequestOptions,
+      })) as PublicKeyCredential;
+
+      // See EXAMPLES.md for the serializeCredential() helper.
+      const credentials = await getTokenByPasskey({
+        authSession: challenge.authSession,
+        authResponse: serializeCredential(credential),
+        realm: 'Username-Password-Authentication',
+      });
+
+      console.log('Signed in with passkey:', credentials.accessToken);
+    } catch (error) {
+      if (error instanceof PasskeyError) {
+        console.error('Passkey login failed:', error.type, error.message);
+      }
+    }
+  };
+
+  return <button onClick={handleLogin}>Sign In with Passkey</button>;
+}
+```
+
 ## Web Platform Notes
 
 The web platform supports direct authentication grants including `auth.passwordRealm()`, `auth.createUser()`, `auth.resetPassword()`, and the MFA Flexible Factors Grant. These methods make direct HTTP calls to the Auth0 API.
 
 Token refresh is handled automatically by `credentialsManager.getCredentials()` on the web. The `auth.refreshToken()` method is not available.
+
+Passkeys are supported on web, but the My Account API's passkey enrollment (`myAccount.enrollPasskey()`) is native-only.

@@ -56,7 +56,8 @@
   - [Prerequisites](#prerequisites-1)
   - [Signup with Passkey](#signup-with-passkey)
   - [Signin with Passkey](#signin-with-passkey)
-  - [Auth Response Format](#auth-response-format)
+  - [Signup with Passkey (Web)](#signup-with-passkey-web)
+  - [Auth Response Format](#passkeys-auth-response-format)
   - [Using Passkeys with Auth0 Class](#using-passkeys-with-auth0-class)
   - [Signup Challenge Parameters](#signup-challenge-parameters)
   - [Error Handling](#error-handling-1)
@@ -1191,15 +1192,15 @@ For detailed examples of validating different token types in Actions, see:
 
 ### Overview
 
-Passkeys provide a passwordless authentication experience using platform biometrics (Face ID, Touch ID, fingerprint) backed by public-key cryptography. The SDK provides the Auth0 challenge and token exchange steps, while you handle the platform credential manager interaction using native modules or libraries like `react-native-passkey`.
+Passkeys provide a passwordless authentication experience using platform biometrics (Face ID, Touch ID, fingerprint) backed by public-key cryptography. On native platforms, the SDK provides the Auth0 challenge and token exchange steps, while you handle the platform credential manager interaction using native modules or libraries like `react-native-passkey`. On web, the SDK drives the full flow — challenge, browser WebAuthn ceremony (`navigator.credentials`), and token exchange — internally via `@auth0/auth0-spa-js`, so no extra library is needed.
 
 The passkey flow has three steps:
 
 1. **Challenge** — Request a WebAuthn challenge from Auth0 (`passkeySignupChallenge` or `passkeyLoginChallenge`)
-2. **Credential Manager** — Present the OS credential manager UI to create or assert a passkey (using your own native module or a library)
+2. **Credential Manager** — Present the OS (native) or browser (web) credential manager UI to create or assert a passkey. On native, use your own native module or a library; on web, the SDK calls `navigator.credentials` for you as part of `getTokenByPasskey`.
 3. **Exchange** — Send the credential response back to Auth0 to get tokens (`getTokenByPasskey`)
 
-> **Platform Support:** Native only (iOS 16.6+ / Android). Not supported on Web.
+> **Platform Support:** iOS 16.6+, Android, and Web (modern browsers with WebAuthn support).
 
 <a name="passkeys-prerequisites"></a>
 
@@ -1211,6 +1212,7 @@ Before using passkeys:
 2. **Configure a custom domain** on your Auth0 tenant (required for passkeys)
 3. **iOS:** Requires iOS 16.6 or later. Add an Associated Domain with the `webcredentials` service pointing to your Auth0 custom domain
 4. **Android:** Requires Android API 28+. Configure your app's Digital Asset Links for the Auth0 custom domain
+5. **Web:** Requires a browser with WebAuthn support (all modern browsers). Passkeys must be triggered from a user gesture (e.g. a button click) due to browser security restrictions.
 
 > **Important:** `passkeySignupChallenge` is for creating **new** user accounts with a passkey. It will fail if the email already exists in the database connection. Use `passkeyLoginChallenge` for existing users who have already registered a passkey.
 
@@ -1306,9 +1308,95 @@ function PasskeySigninScreen() {
 }
 ```
 
+<a name="signup-with-passkey-web"></a>
+
+### Signup with Passkey (Web)
+
+On web, step 2 (the credential manager) uses the browser's built-in [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) — `navigator.credentials.create()` for signup and `navigator.credentials.get()` for login — instead of a native module or third-party library. Serialize the resulting `PublicKeyCredential` to the JSON shape described in [Auth Response Format](#passkeys-auth-response-format) before passing it to `getTokenByPasskey`.
+
+```tsx
+import { useAuth0, PasskeyError } from 'react-native-auth0';
+
+// Converts a PublicKeyCredential from navigator.credentials into the
+// JSON shape getTokenByPasskey expects (see "Auth Response Format" below).
+function serializeCredential(credential: PublicKeyCredential) {
+  const toBase64Url = (buffer: ArrayBuffer) =>
+    btoa(String.fromCharCode(...new Uint8Array(buffer)))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+  const response = credential.response;
+  const isAttestation = 'attestationObject' in response;
+
+  return JSON.stringify({
+    id: credential.id,
+    rawId: toBase64Url(credential.rawId),
+    type: credential.type,
+    authenticatorAttachment: credential.authenticatorAttachment ?? undefined,
+    response: isAttestation
+      ? {
+          clientDataJSON: toBase64Url(response.clientDataJSON),
+          attestationObject: toBase64Url(
+            (response as AuthenticatorAttestationResponse).attestationObject
+          ),
+        }
+      : {
+          clientDataJSON: toBase64Url(response.clientDataJSON),
+          authenticatorData: toBase64Url(
+            (response as AuthenticatorAssertionResponse).authenticatorData
+          ),
+          signature: toBase64Url(
+            (response as AuthenticatorAssertionResponse).signature
+          ),
+          userHandle: (response as AuthenticatorAssertionResponse).userHandle
+            ? toBase64Url(
+                (response as AuthenticatorAssertionResponse).userHandle!
+              )
+            : undefined,
+        },
+  });
+}
+
+function PasskeySignupScreenWeb() {
+  const { passkeySignupChallenge, getTokenByPasskey } = useAuth0();
+
+  // Must be called from a user gesture (e.g. an onClick handler).
+  const handleSignup = async () => {
+    try {
+      const challenge = await passkeySignupChallenge({
+        email: 'user@example.com',
+        name: 'John Doe',
+        realm: 'Username-Password-Authentication',
+      });
+
+      const credential = (await navigator.credentials.create({
+        publicKey: challenge.authParamsPublicKey as PublicKeyCredentialCreationOptions,
+      })) as PublicKeyCredential;
+
+      const credentials = await getTokenByPasskey({
+        authSession: challenge.authSession,
+        authResponse: serializeCredential(credential),
+        realm: 'Username-Password-Authentication',
+      });
+
+      console.log('Signed up with passkey:', credentials.accessToken);
+    } catch (error) {
+      if (error instanceof PasskeyError) {
+        console.error('Passkey signup failed:', error.type, error.message);
+      }
+    }
+  };
+
+  return <button onClick={handleSignup}>Sign Up with Passkey</button>;
+}
+```
+
+<a name="passkeys-auth-response-format"></a>
+
 ### Auth Response Format
 
-The `authResponse` parameter passed to `getTokenByPasskey` must be a JSON string representing the [PublicKeyCredential](https://www.w3.org/TR/webauthn-2/#publickeycredential) response from the platform credential manager.
+The `authResponse` parameter passed to `getTokenByPasskey` must be a JSON string representing the [PublicKeyCredential](https://www.w3.org/TR/webauthn-2/#publickeycredential) response from the platform credential manager (native module/library on iOS/Android, `navigator.credentials` on web).
 
 **For registration (signup):**
 
@@ -1441,13 +1529,13 @@ try {
 
 ### Platform Support
 
-| Platform    | Support          | Requirements                                              |
-| ----------- | ---------------- | --------------------------------------------------------- |
-| **iOS**     | ✅ Supported     | iOS 16.6+, Associated Domains with `webcredentials`       |
-| **Android** | ✅ Supported     | Android API 28+, Digital Asset Links configured           |
-| **Web**     | ❌ Not Supported | Throws `PasskeyError` with `PASSKEY_UNSUPPORTED_PLATFORM` |
+| Platform    | Support      | Requirements                                                 |
+| ----------- | ------------ | ------------------------------------------------------------- |
+| **iOS**     | ✅ Supported | iOS 16.6+, Associated Domains with `webcredentials`            |
+| **Android** | ✅ Supported | Android API 28+, Digital Asset Links configured                |
+| **Web**     | ✅ Supported | Modern browser with WebAuthn support; call from a user gesture |
 
-> **Note:** Passkeys require a real device for the full flow. Simulators/emulators may have limited support.
+> **Note:** On native platforms, passkeys require a real device for the full flow — simulators/emulators may have limited support. On web, the credential-manager step (step 2) uses the browser's built-in `navigator.credentials` API instead of a native module or third-party library — see [Signup with Passkey (Web)](#signup-with-passkey-web) below. Because `navigator.credentials.create()`/`.get()` require a user gesture, call `passkeySignupChallenge`/`passkeyLoginChallenge` from within a click handler.
 
 ## My Account API
 
