@@ -685,7 +685,7 @@ if (credentials.sessionExpiresAt) {
 }
 ```
 
-On native this reflects the value pinned at the initial login (the value actually enforced); on web it is decoded from the current ID token. It is also readable from the raw `session_expiry` claim on the decoded ID token — see [Parse user profile from an ID token locally](#parse-user-profile-from-an-id-token-locally).
+This value is decoded from the current ID token's `session_expiry` claim, except on Android where the credentials manager reports the ceiling pinned at the initial login (the value it actually enforces) when one is stored. It is also readable directly from the raw `session_expiry` claim on the decoded ID token — see [Parse user profile from an ID token locally](#parse-user-profile-from-an-id-token-locally).
 
 > [!NOTE]
 > The `session_expiry` ceiling is pinned at the initial login and is not raised by subsequent refresh-token grants. Sessions from connections **without** the claim behave exactly as before.
