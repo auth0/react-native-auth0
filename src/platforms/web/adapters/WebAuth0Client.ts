@@ -34,7 +34,10 @@ import {
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
 import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
-import { validateActorTokenParameters } from '../../../core/utils';
+import {
+  validateActorTokenParameters,
+  validateTokenTypeUri,
+} from '../../../core/utils';
 
 export class WebAuth0Client implements IAuth0Client {
   readonly webAuth: WebWebAuthProvider;
@@ -250,6 +253,7 @@ export class WebAuth0Client implements IAuth0Client {
       actorTokenType,
     } = parameters;
 
+    validateTokenTypeUri(subjectTokenType, 'subjectTokenType');
     validateActorTokenParameters(actorToken, actorTokenType);
 
     try {
@@ -262,10 +266,8 @@ export class WebAuth0Client implements IAuth0Client {
         audience,
         scope: finalScope,
         organization,
-        ...(actorToken !== undefined && { actor_token: actorToken }),
-        ...(actorTokenType !== undefined && {
-          actor_token_type: actorTokenType,
-        }),
+        ...(actorToken ? { actor_token: actorToken } : {}),
+        ...(actorTokenType ? { actor_token_type: actorTokenType } : {}),
       });
 
       // Convert expiresIn (seconds from now) to expiresAt (UNIX timestamp)

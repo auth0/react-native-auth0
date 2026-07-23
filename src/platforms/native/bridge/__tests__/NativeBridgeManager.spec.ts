@@ -519,7 +519,28 @@ describe('NativeBridgeManager', () => {
       } catch (e) {
         const tokenExchangeError = e as AuthError;
         expect(tokenExchangeError.message).toBe('Token exchange failed');
-        expect(tokenExchangeError.code).toBe('custom_token_exchange_failed');
+        expect(tokenExchangeError.code).toBe('a0.token_exchange_failed');
+        expect(tokenExchangeError.name).toBe('a0.token_exchange_failed');
+      }
+    });
+
+    it('preserves a specific Auth0 error code (e.g. invalid_request) instead of flattening it', async () => {
+      const nativeError = {
+        code: 'invalid_request',
+        message:
+          '"custom_authentication" Token Exchange Profile is not allowed for the client.',
+      };
+      MockedAuth0NativeModule.customTokenExchange.mockRejectedValue(
+        nativeError
+      );
+
+      try {
+        await bridge.customTokenExchange('bad-token', 'urn:acme:legacy-token');
+        throw new Error('Expected customTokenExchange to throw');
+      } catch (e) {
+        const err = e as AuthError;
+        expect(err.code).toBe('invalid_request');
+        expect(err.name).toBe('invalid_request');
       }
     });
   });

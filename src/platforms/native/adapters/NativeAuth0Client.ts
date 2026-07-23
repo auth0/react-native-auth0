@@ -32,6 +32,7 @@ import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
 import {
   getConfigSignature,
   validateActorTokenParameters,
+  validateTokenTypeUri,
 } from '../../../core/utils';
 
 export class NativeAuth0Client implements IAuth0Client {
@@ -242,6 +243,7 @@ export class NativeAuth0Client implements IAuth0Client {
       actorToken,
       actorTokenType,
     } = parameters;
+    validateTokenTypeUri(subjectTokenType, 'subjectTokenType');
     validateActorTokenParameters(actorToken, actorTokenType);
     return this.guardedBridge.customTokenExchange(
       subjectToken,

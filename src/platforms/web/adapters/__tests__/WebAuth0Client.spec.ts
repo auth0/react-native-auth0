@@ -501,6 +501,23 @@ describe('WebAuth0Client', () => {
       );
     });
 
+    it('returns an undefined refreshToken when the actor exchange omits refresh_token', async () => {
+      mockSpaClient.loginWithCustomTokenExchange.mockResolvedValueOnce({
+        ...mockExchangeResponse,
+        refresh_token: undefined,
+      });
+
+      const result = await client.customTokenExchange({
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+        actorToken: 'actor-token',
+        actorTokenType: 'http://corporate-idp/id-token',
+      });
+
+      expect(result.refreshToken).toBeUndefined();
+      expect(result.accessToken).toBe('exchanged-access-token');
+    });
+
     it('should not include actor token keys when not provided', async () => {
       await client.customTokenExchange({
         subjectToken: 'external-token',

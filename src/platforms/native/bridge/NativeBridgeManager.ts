@@ -264,9 +264,13 @@ export class NativeBridgeManager implements INativeBridge {
       );
       return new CredentialsModel(credential);
     } catch (e) {
-      // Convert to AuthError if needed, then throw directly
+      // Preserve the real Auth0 code when a0_call already produced an AuthError;
+      // only fall back to the generic code for truly unknown errors.
+      if (e instanceof AuthError) {
+        throw e;
+      }
       throw new AuthError(
-        e instanceof AuthError ? e.code : 'custom_token_exchange_failed',
+        'custom_token_exchange_failed',
         e instanceof Error ? e.message : String(e),
         { code: 'custom_token_exchange_failed', json: e }
       );
