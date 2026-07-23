@@ -53,12 +53,24 @@ export class WebCredentialsManager implements ICredentialsManager {
         );
       }
 
+      // Decode the IPSIE `session_expiry` claim (absolute Unix seconds). Reject values
+      // outside (0, 10_000_000_000) to match native: the upper bound discards
+      // millisecond-valued timestamps that would otherwise disable the ceiling.
+      const rawSessionExpiry = claims.session_expiry;
+      const sessionExpiresAt =
+        typeof rawSessionExpiry === 'number' &&
+        rawSessionExpiry > 0 &&
+        rawSessionExpiry < 10_000_000_000
+          ? Math.floor(rawSessionExpiry)
+          : undefined;
+
       return new CredentialsModel({
         idToken: tokenResponse.id_token,
         accessToken: tokenResponse.access_token,
         tokenType: tokenResponse.token_type ?? 'Bearer',
         expiresAt: claims.exp,
         scope: tokenResponse.scope,
+        sessionExpiresAt,
       });
     } catch (e: any) {
       // Rethrow errors we've already classified (e.g. the session_expiry ceiling).

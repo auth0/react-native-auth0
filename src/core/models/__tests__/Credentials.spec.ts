@@ -24,6 +24,7 @@ describe('Credentials', () => {
         expiresAt: 1672578000, // Some time in the future
         refreshToken: 'refresh_token_789',
         scope: 'openid profile email',
+        sessionExpiresAt: 1893456000,
       };
 
       const credentials = new Credentials(credsData);
@@ -34,6 +35,7 @@ describe('Credentials', () => {
       expect(credentials.expiresAt).toBe(credsData.expiresAt);
       expect(credentials.refreshToken).toBe(credsData.refreshToken);
       expect(credentials.scope).toBe(credsData.scope);
+      expect(credentials.sessionExpiresAt).toBe(credsData.sessionExpiresAt);
     });
 
     it('should handle missing optional properties', () => {
@@ -48,6 +50,7 @@ describe('Credentials', () => {
 
       expect(credentials.refreshToken).toBeUndefined();
       expect(credentials.scope).toBeUndefined();
+      expect(credentials.sessionExpiresAt).toBeUndefined();
     });
   });
 

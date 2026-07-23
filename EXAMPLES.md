@@ -675,7 +675,17 @@ function MyComponent() {
 }
 ```
 
-If you need to read the ceiling directly, it is available as the `session_expiry` claim (absolute Unix timestamp, in seconds) on the decoded ID token — see [Parse user profile from an ID token locally](#parse-user-profile-from-an-id-token-locally).
+If you need to read the ceiling directly — for example to warn the user before their session ends — it is exposed as `sessionExpiresAt` (an absolute Unix timestamp, in seconds) on the returned `Credentials`. It is `undefined` when the connection does not emit the claim:
+
+```jsx
+const credentials = await getCredentials();
+if (credentials.sessionExpiresAt) {
+  const endsAt = new Date(credentials.sessionExpiresAt * 1000);
+  console.log(`Upstream IdP session ends at: ${endsAt.toISOString()}`);
+}
+```
+
+On native this reflects the value pinned at the initial login (the value actually enforced); on web it is decoded from the current ID token. It is also readable from the raw `session_expiry` claim on the decoded ID token — see [Parse user profile from an ID token locally](#parse-user-profile-from-an-id-token-locally).
 
 > [!NOTE]
 > The `session_expiry` ceiling is pinned at the initial login and is not raised by subsequent refresh-token grants. Sessions from connections **without** the claim behave exactly as before.

@@ -30,6 +30,21 @@ export type Credentials = {
   refreshToken?: string;
   /** A space-separated list of scopes granted for the access token. */
   scope?: string;
+  /**
+   * The absolute upstream-IdP session ceiling, as a UNIX timestamp (in seconds), asserted via the
+   * IPSIE `session_expiry` claim. This is `undefined` when the connection does not emit the claim.
+   *
+   * @remarks
+   * This ceiling is independent of {@link Credentials.expiresAt} (the access-token expiry): it
+   * usually sits much further out and caps how long the local session may live regardless of
+   * access-token renewals. The underlying platform SDKs enforce it automatically — once it passes,
+   * credential retrieval fails with a `SESSION_EXPIRED` `CredentialsManagerError` and the user must
+   * re-authenticate. It is surfaced here for display purposes only.
+   *
+   * @remarks Native (iOS/Android) and web. On native it reflects the value pinned at the initial
+   * login; on web it is decoded from the current ID token.
+   */
+  sessionExpiresAt?: number;
   /** Allows for additional, non-standard properties returned from the server. */
   [key: string]: any;
 };

@@ -103,6 +103,40 @@ describe('WebCredentialsManager', () => {
       });
     });
 
+    it('should decode the session_expiry claim into sessionExpiresAt', async () => {
+      const sessionExpiry = 1893456000; // 2030-01-01, within (0, 10_000_000_000)
+      mockSpaClient.getTokenSilently.mockResolvedValue(mockTokenResponse);
+      mockSpaClient.getIdTokenClaims.mockResolvedValue({
+        ...mockIdTokenClaims,
+        session_expiry: sessionExpiry,
+      });
+
+      const result = await credentialsManager.getCredentials();
+
+      expect(result.sessionExpiresAt).toBe(sessionExpiry);
+    });
+
+    it('should leave sessionExpiresAt undefined when the claim is absent', async () => {
+      mockSpaClient.getTokenSilently.mockResolvedValue(mockTokenResponse);
+      mockSpaClient.getIdTokenClaims.mockResolvedValue(mockIdTokenClaims);
+
+      const result = await credentialsManager.getCredentials();
+
+      expect(result.sessionExpiresAt).toBeUndefined();
+    });
+
+    it('should reject a millisecond-valued session_expiry (out of range)', async () => {
+      mockSpaClient.getTokenSilently.mockResolvedValue(mockTokenResponse);
+      mockSpaClient.getIdTokenClaims.mockResolvedValue({
+        ...mockIdTokenClaims,
+        session_expiry: 1893456000000, // 13-digit ms value
+      });
+
+      const result = await credentialsManager.getCredentials();
+
+      expect(result.sessionExpiresAt).toBeUndefined();
+    });
+
     it('should get credentials with custom scope and parameters', async () => {
       mockSpaClient.getTokenSilently.mockResolvedValue(mockTokenResponse);
       mockSpaClient.getIdTokenClaims.mockResolvedValue(mockIdTokenClaims);

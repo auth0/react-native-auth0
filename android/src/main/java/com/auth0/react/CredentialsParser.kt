@@ -10,6 +10,7 @@ object CredentialsParser {
     private const val ACCESS_TOKEN_KEY = "accessToken"
     private const val ID_TOKEN_KEY = "idToken"
     private const val EXPIRES_AT_KEY = "expiresAt"
+    private const val SESSION_EXPIRES_AT_KEY = "sessionExpiresAt"
     private const val SCOPE = "scope"
     private const val REFRESH_TOKEN_KEY = "refreshToken"
     private const val TOKEN_TYPE_KEY = "tokenType"
@@ -23,6 +24,9 @@ object CredentialsParser {
         map.putString(SCOPE, credentials.scope)
         map.putString(REFRESH_TOKEN_KEY, credentials.refreshToken)
         map.putString(TOKEN_TYPE_KEY, credentials.type)
+        credentials.sessionExpiresAt?.let {
+            map.putDouble(SESSION_EXPIRES_AT_KEY, it.toDouble())
+        }
         return map
     }
 
