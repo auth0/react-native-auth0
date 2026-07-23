@@ -530,6 +530,20 @@ describe('WebAuth0Client', () => {
       expect(callArg).not.toHaveProperty('actor_token_type');
     });
 
+    it('should not forward whitespace-only actor token values', async () => {
+      await client.customTokenExchange({
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+        actorToken: '   ',
+        actorTokenType: '   ',
+      });
+
+      const callArg =
+        mockSpaClient.loginWithCustomTokenExchange.mock.calls[0][0];
+      expect(callArg).not.toHaveProperty('actor_token');
+      expect(callArg).not.toHaveProperty('actor_token_type');
+    });
+
     it('should throw before the network call when only actorToken is provided', async () => {
       await expect(
         client.customTokenExchange({

@@ -243,18 +243,14 @@ export class WebAuth0Client implements IAuth0Client {
   async customTokenExchange(
     parameters: CustomTokenExchangeParameters
   ): Promise<Credentials> {
-    const {
-      subjectToken,
-      subjectTokenType,
-      audience,
-      scope,
-      organization,
-      actorToken,
-      actorTokenType,
-    } = parameters;
+    const { subjectToken, subjectTokenType, audience, scope, organization } =
+      parameters;
 
     validateTokenTypeUri(subjectTokenType, 'subjectTokenType');
-    validateActorTokenParameters(actorToken, actorTokenType);
+    const { actorToken, actorTokenType } = validateActorTokenParameters(
+      parameters.actorToken,
+      parameters.actorTokenType
+    );
 
     try {
       // Apply default scope if not provided for consistency with native platforms
@@ -266,8 +262,10 @@ export class WebAuth0Client implements IAuth0Client {
         audience,
         scope: finalScope,
         organization,
-        ...(actorToken ? { actor_token: actorToken } : {}),
-        ...(actorTokenType ? { actor_token_type: actorTokenType } : {}),
+        ...(actorToken !== undefined && { actor_token: actorToken }),
+        ...(actorTokenType !== undefined && {
+          actor_token_type: actorTokenType,
+        }),
       });
 
       // Convert expiresIn (seconds from now) to expiresAt (UNIX timestamp)

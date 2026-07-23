@@ -234,17 +234,13 @@ export class NativeAuth0Client implements IAuth0Client {
   async customTokenExchange(
     parameters: CustomTokenExchangeParameters
   ): Promise<Credentials> {
-    const {
-      subjectToken,
-      subjectTokenType,
-      audience,
-      scope,
-      organization,
-      actorToken,
-      actorTokenType,
-    } = parameters;
+    const { subjectToken, subjectTokenType, audience, scope, organization } =
+      parameters;
     validateTokenTypeUri(subjectTokenType, 'subjectTokenType');
-    validateActorTokenParameters(actorToken, actorTokenType);
+    const { actorToken, actorTokenType } = validateActorTokenParameters(
+      parameters.actorToken,
+      parameters.actorTokenType
+    );
     return this.guardedBridge.customTokenExchange(
       subjectToken,
       subjectTokenType,

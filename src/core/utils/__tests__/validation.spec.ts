@@ -16,6 +16,22 @@ describe('validateActorTokenParameters', () => {
     ).not.toThrow();
   });
 
+  it('returns the provided values unchanged when both are valid', () => {
+    expect(
+      validateActorTokenParameters('actor-token', 'urn:token-type')
+    ).toEqual({
+      actorToken: 'actor-token',
+      actorTokenType: 'urn:token-type',
+    });
+  });
+
+  it('normalizes empty/whitespace-only values to undefined', () => {
+    expect(validateActorTokenParameters('   ', '   ')).toEqual({
+      actorToken: undefined,
+      actorTokenType: undefined,
+    });
+  });
+
   it('should throw when only actorToken is provided', () => {
     expect(() => validateActorTokenParameters('actor-token')).toThrow(
       AuthError

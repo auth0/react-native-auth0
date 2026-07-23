@@ -114,6 +114,9 @@ export function validateTokenTypeUri(
  * performing delegation. This surfaces a clear client-side error before the
  * network request is made rather than relying on the server response.
  *
+ * Returns the normalized values (with empty/whitespace-only strings collapsed
+ * to `undefined`) so callers forward clean values rather than the raw input.
+ *
  * @param actorToken The actor token, if provided.
  * @param actorTokenType The actor token type URI, if provided.
  * @throws {AuthError} If exactly one of the two parameters is provided, or if
@@ -122,7 +125,7 @@ export function validateTokenTypeUri(
 export function validateActorTokenParameters(
   actorToken?: string,
   actorTokenType?: string
-): void {
+): { actorToken?: string; actorTokenType?: string } {
   const hasToken = isProvided(actorToken);
   const hasType = isProvided(actorTokenType);
 
@@ -137,4 +140,9 @@ export function validateActorTokenParameters(
   if (hasType) {
     validateTokenTypeUri(actorTokenType, 'actorTokenType');
   }
+
+  return {
+    actorToken: hasToken ? actorToken : undefined,
+    actorTokenType: hasType ? actorTokenType : undefined,
+  };
 }
