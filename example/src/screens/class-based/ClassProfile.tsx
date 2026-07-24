@@ -77,7 +77,7 @@ class ClassProfileScreen extends Component<Props, State> {
 
   render() {
     const { user, result, error, audience, webAppUrl } = this.state;
-    const { accessToken } = this.props.route.params.credentials;
+    const { accessToken, idToken } = this.props.route.params.credentials;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -207,7 +207,10 @@ class ClassProfileScreen extends Component<Props, State> {
           <Section title="Navigation & Logout">
             <Button
               onPress={() =>
-                this.props.navigation.navigate('ClassApiTests', { accessToken })
+                this.props.navigation.navigate('ClassApiTests', {
+                  accessToken,
+                  idToken,
+                })
               }
               title="Go to API Tests"
             />

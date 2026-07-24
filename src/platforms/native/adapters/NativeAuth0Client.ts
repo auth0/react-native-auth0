@@ -29,7 +29,11 @@ import {
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
 import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
-import { getConfigSignature } from '../../../core/utils';
+import {
+  getConfigSignature,
+  validateActorTokenParameters,
+  validateTokenTypeUri,
+} from '../../../core/utils';
 
 export class NativeAuth0Client implements IAuth0Client {
   readonly webAuth: NativeWebAuthProvider;
@@ -232,12 +236,19 @@ export class NativeAuth0Client implements IAuth0Client {
   ): Promise<Credentials> {
     const { subjectToken, subjectTokenType, audience, scope, organization } =
       parameters;
+    validateTokenTypeUri(subjectTokenType, 'subjectTokenType');
+    const { actorToken, actorTokenType } = validateActorTokenParameters(
+      parameters.actorToken,
+      parameters.actorTokenType
+    );
     return this.guardedBridge.customTokenExchange(
       subjectToken,
       subjectTokenType,
       audience,
       scope,
-      organization
+      organization,
+      actorToken,
+      actorTokenType
     );
   }
 

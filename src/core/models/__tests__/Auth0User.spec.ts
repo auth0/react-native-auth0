@@ -103,6 +103,34 @@ describe('Auth0User', () => {
       expect(user.name).toBe('John Doe');
     });
 
+    it('should preserve the nested "act" claim from a delegation/impersonation flow', () => {
+      const idTokenPayload = {
+        sub: 'auth0|impersonated-user',
+        name: 'Impersonated User',
+        // RFC 8693 acting-party claim, nested to represent a delegation chain.
+        act: {
+          sub: 'auth0|acting-party',
+          act: {
+            sub: 'auth0|original-actor',
+          },
+        },
+      };
+      mockJwtDecode.mockReturnValue(idTokenPayload);
+
+      const user = Auth0User.fromIdToken('a-mock-id-token');
+
+      expect(user.act).toEqual({
+        sub: 'auth0|acting-party',
+        act: {
+          sub: 'auth0|original-actor',
+        },
+      });
+      // The claim must pass through untouched (no camel-casing, no stripping).
+      expect(user.act.sub).toBe('auth0|acting-party');
+      expect(user.act.act.sub).toBe('auth0|original-actor');
+      expect(user.sub).toBe('auth0|impersonated-user');
+    });
+
     it('should throw an error if the ID token is missing the "sub" claim', () => {
       const invalidPayload = {
         name: 'John Doe',

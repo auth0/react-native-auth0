@@ -484,6 +484,89 @@ describe('WebAuth0Client', () => {
         expect(e.name).toBe('AuthenticationException');
       }
     });
+
+    it('should forward actor token parameters as snake_case when provided', async () => {
+      await client.customTokenExchange({
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+        actorToken: 'actor-token',
+        actorTokenType: 'http://corporate-idp/id-token',
+      });
+
+      expect(mockSpaClient.loginWithCustomTokenExchange).toHaveBeenCalledWith(
+        expect.objectContaining({
+          actor_token: 'actor-token',
+          actor_token_type: 'http://corporate-idp/id-token',
+        })
+      );
+    });
+
+    it('returns an undefined refreshToken when the actor exchange omits refresh_token', async () => {
+      mockSpaClient.loginWithCustomTokenExchange.mockResolvedValueOnce({
+        ...mockExchangeResponse,
+        refresh_token: undefined,
+      });
+
+      const result = await client.customTokenExchange({
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+        actorToken: 'actor-token',
+        actorTokenType: 'http://corporate-idp/id-token',
+      });
+
+      expect(result.refreshToken).toBeUndefined();
+      expect(result.accessToken).toBe('exchanged-access-token');
+    });
+
+    it('should not include actor token keys when not provided', async () => {
+      await client.customTokenExchange({
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+      });
+
+      const callArg =
+        mockSpaClient.loginWithCustomTokenExchange.mock.calls[0][0];
+      expect(callArg).not.toHaveProperty('actor_token');
+      expect(callArg).not.toHaveProperty('actor_token_type');
+    });
+
+    it('should not forward whitespace-only actor token values', async () => {
+      await client.customTokenExchange({
+        subjectToken: 'external-token',
+        subjectTokenType: 'urn:acme:legacy-token',
+        actorToken: '   ',
+        actorTokenType: '   ',
+      });
+
+      const callArg =
+        mockSpaClient.loginWithCustomTokenExchange.mock.calls[0][0];
+      expect(callArg).not.toHaveProperty('actor_token');
+      expect(callArg).not.toHaveProperty('actor_token_type');
+    });
+
+    it('should throw before the network call when only actorToken is provided', async () => {
+      await expect(
+        client.customTokenExchange({
+          subjectToken: 'external-token',
+          subjectTokenType: 'urn:acme:legacy-token',
+          actorToken: 'actor-token',
+        })
+      ).rejects.toMatchObject({ code: 'invalid_actor_token_parameters' });
+
+      expect(mockSpaClient.loginWithCustomTokenExchange).not.toHaveBeenCalled();
+    });
+
+    it('should throw before the network call when only actorTokenType is provided', async () => {
+      await expect(
+        client.customTokenExchange({
+          subjectToken: 'external-token',
+          subjectTokenType: 'urn:acme:legacy-token',
+          actorTokenType: 'http://corporate-idp/id-token',
+        })
+      ).rejects.toMatchObject({ code: 'invalid_actor_token_parameters' });
+
+      expect(mockSpaClient.loginWithCustomTokenExchange).not.toHaveBeenCalled();
+    });
   });
 
   describe('ssoExchange', () => {

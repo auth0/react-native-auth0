@@ -247,7 +247,9 @@ export class NativeBridgeManager implements INativeBridge {
     subjectTokenType: string,
     audience?: string,
     scope?: string,
-    organization?: string
+    organization?: string,
+    actorToken?: string,
+    actorTokenType?: string
   ): Promise<Credentials> {
     try {
       const credential = await this.a0_call(
@@ -256,13 +258,19 @@ export class NativeBridgeManager implements INativeBridge {
         subjectTokenType,
         audience,
         scope,
-        organization
+        organization,
+        actorToken,
+        actorTokenType
       );
       return new CredentialsModel(credential);
     } catch (e) {
-      // Convert to AuthError if needed, then throw directly
+      // Preserve the real Auth0 code when a0_call already produced an AuthError;
+      // only fall back to the generic code for truly unknown errors.
+      if (e instanceof AuthError) {
+        throw e;
+      }
       throw new AuthError(
-        e instanceof AuthError ? e.code : 'custom_token_exchange_failed',
+        'custom_token_exchange_failed',
         e instanceof Error ? e.message : String(e),
         { code: 'custom_token_exchange_failed', json: e }
       );

@@ -10,6 +10,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.authentication.request.ActorToken
 import com.auth0.android.authentication.storage.CredentialsManagerException
 import com.auth0.android.authentication.storage.LocalAuthenticationOptions
 import com.auth0.android.authentication.storage.SecureCredentialsManager
@@ -620,19 +621,28 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         audience: String?,
         scope: String?,
         organization: String?,
+        actorToken: String?,
+        actorTokenType: String?,
         promise: Promise
     ) {
         val authClient = AuthenticationAPIClient(auth0!!)
         if (useDPoP) {
             authClient.useDPoP(reactContext)
         }
-        
+
         val finalScope = scope ?: "openid profile email"
-        
+
+        val actor = if (actorToken != null && actorTokenType != null) {
+            ActorToken(token = actorToken, tokenType = actorTokenType)
+        } else {
+            null
+        }
+
         val request = authClient.customTokenExchange(
             subjectTokenType = subjectTokenType,
             subjectToken = subjectToken,
-            organization = organization
+            organization = organization,
+            actorToken = actor
         )
         
         // Set audience and scope using the request builder methods

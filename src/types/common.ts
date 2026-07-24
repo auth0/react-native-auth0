@@ -148,6 +148,12 @@ export type User = {
   address?: string;
   /** The timestamp when the user's profile was last updated. */
   updatedAt?: string;
+  /**
+   * The acting party claim (RFC 8693 Section 4.1), present when tokens are
+   * issued through a Custom Token Exchange delegation/impersonation flow.
+   * May be nested to represent a delegation chain.
+   */
+  act?: Record<string, unknown>;
   /** Allows for additional, non-standard claims in the user profile. */
   [key: string]: any;
 };
