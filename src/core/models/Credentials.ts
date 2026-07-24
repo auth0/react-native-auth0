@@ -14,6 +14,10 @@ export class Credentials implements ICredentials {
   public expiresAt: number;
   public refreshToken?: string;
   public scope?: string;
+  /**
+   * The upstream IdP session ceiling as a UNIX timestamp (in seconds), asserted via the
+   * IPSIE `session_expiry` claim. `undefined` when the ID token lacks the claim.
+   */
   public sessionExpiresAt?: number;
 
   /**

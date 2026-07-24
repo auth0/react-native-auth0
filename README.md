@@ -730,6 +730,11 @@ try {
           'DPoP credential state error. Clear credentials and re-authenticate.'
         );
         break;
+      case CredentialsManagerErrorCodes.SESSION_EXPIRED:
+        console.log(
+          'Upstream IdP session ceiling reached. Clear credentials and restart the login flow.'
+        );
+        break;
       default:
         console.error('Credentials error:', error.message);
     }
