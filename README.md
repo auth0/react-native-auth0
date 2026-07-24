@@ -730,6 +730,11 @@ try {
           'DPoP credential state error. Clear credentials and re-authenticate.'
         );
         break;
+      case CredentialsManagerErrorCodes.SESSION_EXPIRED:
+        console.log(
+          'Upstream IdP session ceiling reached. Clear credentials and restart the login flow.'
+        );
+        break;
       default:
         console.error('Credentials error:', error.message);
     }
@@ -754,6 +759,9 @@ try {
 | `DPOP_KEY_MISSING`    | `DPOP_KEY_MISSING`                                                                                                                                                                                                                                                                                                                               | `dpopKeyMissing`    |                                                             |
 | `DPOP_NOT_CONFIGURED` | `DPOP_NOT_CONFIGURED`                                                                                                                                                                                                                                                                                                                            | `dpopNotConfigured` |                                                             |
 | `DPOP_KEY_MISMATCH`   | `DPOP_KEY_MISMATCH`                                                                                                                                                                                                                                                                                                                              | `dpopKeyMismatch`   |                                                             |
+| `SESSION_EXPIRED`     | `SESSION_EXPIRED`                                                                                                                                                                                                                                                                                                                                | `sessionExpired`    | `session_expired`                                           |
+
+> **`SESSION_EXPIRED`** is raised when the upstream IdP session ceiling (IPSIE `session_expiry` claim) has been reached. The local session is no longer valid and the user must re-authenticate. See [IPSIE Session Expiry](https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES.md#ipsie-session-expiry) for details.
 
 ### MFA errors
 

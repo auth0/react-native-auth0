@@ -204,6 +204,38 @@ describe('Common Error Handling - NativeCredentialsManager', () => {
     });
   });
 
+  describe('IPSIE session_expiry ceiling', () => {
+    const sessionExpiredTestCases = [
+      {
+        code: 'SESSION_EXPIRED',
+        message: 'The session has expired.',
+      },
+      {
+        code: 'sessionExpired',
+        message: 'The session has expired.',
+      },
+    ];
+
+    sessionExpiredTestCases.forEach(({ code, message }) => {
+      it(`should map ${code} to SESSION_EXPIRED`, async () => {
+        const nativeError = { code, message };
+        mockBridge.getCredentials.mockRejectedValue(nativeError);
+
+        await expect(manager.getCredentials()).rejects.toThrow(
+          CredentialsManagerError
+        );
+
+        try {
+          await manager.getCredentials();
+        } catch (e) {
+          const err = e as CredentialsManagerError;
+          expect(err.type).toBe('SESSION_EXPIRED');
+          expect(err.message).toBe(message);
+        }
+      });
+    });
+  });
+
   describe('Android Biometric Error Mappings', () => {
     const biometricErrorTestCases = [
       'BIOMETRIC_NO_ACTIVITY',

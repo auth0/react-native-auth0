@@ -14,6 +14,11 @@ export class Credentials implements ICredentials {
   public expiresAt: number;
   public refreshToken?: string;
   public scope?: string;
+  /**
+   * The upstream IdP session ceiling as a UNIX timestamp (in seconds), asserted via the
+   * IPSIE `session_expiry` claim. `undefined` when the ID token lacks the claim.
+   */
+  public sessionExpiresAt?: number;
 
   /**
    * Creates an instance of Credentials.
@@ -27,6 +32,7 @@ export class Credentials implements ICredentials {
     this.expiresAt = params.expiresAt;
     this.refreshToken = params.refreshToken;
     this.scope = params.scope;
+    this.sessionExpiresAt = params.sessionExpiresAt;
   }
 
   /**

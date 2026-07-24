@@ -94,6 +94,9 @@ describe('Error Code Constants', () => {
       expect(CredentialsManagerErrorCodes.STORE_FAILED).toBe('STORE_FAILED');
       expect(CredentialsManagerErrorCodes.REVOKE_FAILED).toBe('REVOKE_FAILED');
       expect(CredentialsManagerErrorCodes.LARGE_MIN_TTL).toBe('LARGE_MIN_TTL');
+      expect(CredentialsManagerErrorCodes.SESSION_EXPIRED).toBe(
+        'SESSION_EXPIRED'
+      );
       expect(CredentialsManagerErrorCodes.CREDENTIAL_MANAGER_ERROR).toBe(
         'CREDENTIAL_MANAGER_ERROR'
       );
@@ -123,9 +126,9 @@ describe('Error Code Constants', () => {
       );
     });
 
-    it('should have exactly 18 error codes', () => {
+    it('should have exactly 19 error codes', () => {
       const keys = Object.keys(CredentialsManagerErrorCodes);
-      expect(keys).toHaveLength(18);
+      expect(keys).toHaveLength(19);
     });
 
     it('should be immutable (as const)', () => {
