@@ -1,5 +1,14 @@
 # Change Log
 
+## [v5.10.0](https://github.com/auth0/react-native-auth0/tree/v5.10.0) (2026-07-17)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.9.0...v5.10.0)
+
+**Added**
+
+- feat(mfa): Implement Multi-Factor Authentication (MFA) support [\#1517](https://github.com/auth0/react-native-auth0/pull/1517) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: add useTrustedWebActivity option for Android Web Auth [\#1590](https://github.com/auth0/react-native-auth0/pull/1590) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.9.0](https://github.com/auth0/react-native-auth0/tree/v5.9.0) (2026-07-07)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.8.0...v5.9.0)

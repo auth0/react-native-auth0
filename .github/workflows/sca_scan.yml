@@ -4,6 +4,9 @@ on:
   push:
     branches: ['master', 'main', '**']
 
+
+permissions:
+  contents: read
 jobs:
   snyk-cli:
     uses: auth0/devsecops-tooling/.github/workflows/sca-scan.yml@main
