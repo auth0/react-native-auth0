@@ -1077,11 +1077,11 @@ const credentials = await customTokenExchange({
 
 `actorTokenType` follows the same URI validation rules as `subjectTokenType` and accepts any developer-defined URI.
 
-> ℹ️ **Prerequisites**: This flow requires the `cte_actor_token` feature flag enabled on your tenant and an [Auth0 Action](https://auth0.com/docs/customize/actions) that calls `api.authentication.setActor()` to set the `act` claim on the issued tokens.
+> ℹ️ **Prerequisites**: This flow requires actor token support enabled on your tenant (contact Auth0 support) and an [Auth0 Action](https://auth0.com/docs/customize/actions) that calls `api.authentication.setActor()` to set the `act` claim on the issued tokens. The `actorToken` itself must be a valid Auth0 ID token (JWT) — Auth0 validates its format, signature, expiry, and `client_id`, and rejects the exchange otherwise.
 
 **Accessing the `act` claim**
 
-When an Action sets the actor, the issued ID token carries an `act` claim describing the acting party (which may be nested to represent a delegation chain). It is available on the parsed user profile:
+When an Action sets the actor, the issued ID token carries an `act` claim describing the acting party (which may be nested to represent a delegation chain). Auth0 writes the same `act` claim onto the access token too, but the access token can be opaque, so the ID token is the reliable place to read it. It is available on the parsed user profile:
 
 ```typescript
 import { parseIdToken } from 'react-native-auth0';
@@ -1097,7 +1097,7 @@ const user = parseIdToken(credentials.idToken);
 console.log(user.act); // The acting party claim
 ```
 
-> ⚠️ **Refresh token suppression**: When an actor token is present, Auth0 will **not** issue a refresh token, regardless of whether `offline_access` is in the requested scope. `credentials.refreshToken` will be `undefined` in this case.
+> ⚠️ **Refresh token suppression**: When an actor token is present, Auth0 will **not** issue a refresh token, regardless of whether `offline_access` is in the requested scope. `credentials.refreshToken` will be `undefined` in this case. Because there is no refresh token, the `act` claim cannot be re-emitted via a later refresh-token grant — the acting party is fixed at exchange time. To act again, perform a new token exchange.
 >
 > ⚠️ **Paired parameters**: `actorToken` and `actorTokenType` must be provided together. Supplying only one throws an `AuthError` with code `invalid_actor_token_parameters` before any network request is made.
 
