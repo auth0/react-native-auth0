@@ -1497,11 +1497,14 @@ The My Account API allows authenticated users to manage their own authentication
 
 Access the My Account client via the `myAccount` property from `useAuth0()` or the `Auth0` class instance.
 
+The My Account API is supported on Native (iOS/Android) and Web. The same `myAccount` API is used on all platforms; only the passkey credential ceremony differs (native passkey module vs. the browser's WebAuthn APIs). On Web, when DPoP is enabled (the default), the supplied access token must have been issued by the same client instance, since the DPoP proof is signed with that client's keypair; when the client is not configured with DPoP, plain bearer tokens are used and any valid access token works.
+
 ### Prerequisites
 
 - A [custom domain](https://auth0.com/docs/customize/custom-domains) must be configured on your Auth0 tenant
 - **iOS**: Associated Domains entitlement must be configured with `webcredentials:<your-custom-domain>` for passkey support
 - **Android**: App Links must be set up with your custom domain via an `assetlinks.json` file for passkey support
+- **Web**: passkey enrollment uses the browser's [WebAuthn](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) APIs; no additional platform setup is required
 - The user must be authenticated
 - An access token with the appropriate My Account API scopes is required:
   - `read:me:authentication_methods`

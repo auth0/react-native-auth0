@@ -98,14 +98,26 @@ export class PasskeyError extends AuthError {
    */
   public readonly type: string;
 
-  constructor(originalError: AuthError) {
+  /**
+   * @param originalError The underlying auth error being wrapped.
+   * @param fallbackType The {@link PasskeyErrorCodes} value to use when
+   *   `originalError.code` is not a recognized passkey code. Callers that know
+   *   which phase failed — e.g. the web My Account adapter, where the error
+   *   `code` is an opaque RFC 7807 type URI rather than a passkey code — pass
+   *   the appropriate phase (`CHALLENGE_FAILED` for challenge requests,
+   *   `EXCHANGE_FAILED` for verification) so `type` is meaningful instead of
+   *   defaulting to `UNKNOWN_ERROR`.
+   */
+  constructor(
+    originalError: AuthError,
+    fallbackType: string = PasskeyErrorCodes.UNKNOWN_ERROR
+  ) {
     super(originalError.name, originalError.message, {
       status: originalError.status,
       code: originalError.code,
       json: originalError.json,
     });
 
-    this.type =
-      ERROR_CODE_MAP[originalError.code] || PasskeyErrorCodes.UNKNOWN_ERROR;
+    this.type = ERROR_CODE_MAP[originalError.code] ?? fallbackType;
   }
 }

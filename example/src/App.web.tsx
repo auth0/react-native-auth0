@@ -17,6 +17,9 @@ import Auth0, {
   MfaError,
   MfaErrorCodes,
   MfaFactorType,
+  MyAccountError,
+  PasskeyError,
+  PreferredAuthenticationMethods,
 } from 'react-native-auth0';
 import type {
   MfaAuthenticator,
@@ -29,6 +32,14 @@ import Button from './components/Button';
 import Header from './components/Header';
 import Result from './components/Result';
 import LabeledInput from './components/LabeledInput';
+import { createWebPasskey } from './passkey/webPasskey';
+
+// My Account API is served from the `/me/` audience of the tenant. MRRT
+// (Multi-Resource Refresh Tokens) lets a single web session mint an access
+// token for this audience via `getApiCredentials` without a fresh redirect.
+const MY_ACCOUNT_AUDIENCE = `https://${config.domain}/me/`;
+const MY_ACCOUNT_SCOPE =
+  'read:me:authentication_methods delete:me:authentication_methods update:me:authentication_methods read:me:factors create:me:authentication_methods';
 
 type MfaStep =
   | 'idle'
@@ -52,12 +63,14 @@ const HooksAuthContent = (): React.JSX.Element => {
     error,
     isLoading,
     getCredentials,
+    getApiCredentials,
     createUser,
     resetPassword,
     loginWithPasswordRealm,
     customTokenExchange,
     mfa,
     users,
+    myAccount,
   } = useAuth0();
 
   const [result, setResult] = useState<object | null>(null);
@@ -107,6 +120,27 @@ const HooksAuthContent = (): React.JSX.Element => {
   const [verifyBindingCode, setVerifyBindingCode] = useState('');
   const [verifyScope, setVerifyScope] = useState('');
   const [verifyAudience, setVerifyAudience] = useState('');
+
+  // My Account state
+  const [maResult, setMaResult] = useState<object | null>(null);
+  const [maError, setMaError] = useState<Error | null>(null);
+  const [maLoading, setMaLoading] = useState(false);
+  const [maToken, setMaToken] = useState<string | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [emailAddress, setEmailAddress] = useState('');
+  const [otpCode, setOtpCode] = useState('');
+  const [methodId, setMethodId] = useState('');
+  const [methodName, setMethodName] = useState('');
+  const [enrollmentState, setEnrollmentState] = useState<{
+    id: string;
+    authSession: string;
+    kind: 'phone' | 'email' | 'totp' | 'recovery';
+  } | null>(null);
+  const [passkeyChallenge, setPasskeyChallenge] = useState<{
+    authenticationMethodId: string;
+    authSession: string;
+    authParamsPublicKey: Record<string, any>;
+  } | null>(null);
 
   const resetMfaWizard = () => {
     setMfaStep('idle');
@@ -282,6 +316,222 @@ const HooksAuthContent = (): React.JSX.Element => {
     }
   };
 
+  // --- My Account helpers ---
+
+  // Mint the `/me/` access token once via MRRT and cache it in state. Every
+  // My Account call below reuses this token, so this button must be pressed
+  // before any other My Account action.
+  const onGetMyAccountToken = async () => {
+    setMaResult(null);
+    setMaError(null);
+    setMaLoading(true);
+    try {
+      const credentials = await getApiCredentials(
+        MY_ACCOUNT_AUDIENCE,
+        MY_ACCOUNT_SCOPE
+      );
+      setMaToken(credentials.accessToken);
+      setMaResult({
+        step: 'getApiCredentials',
+        audience: MY_ACCOUNT_AUDIENCE,
+        accessToken: credentials.accessToken,
+        expiresAt: credentials.expiresAt,
+        scope: credentials.scope,
+      });
+    } catch (e) {
+      setMaError(e as Error);
+    } finally {
+      setMaLoading(false);
+    }
+  };
+
+  const runMyAccount = async (
+    action: (accessToken: string) => Promise<any>
+  ) => {
+    if (!maToken) {
+      setMaResult(null);
+      setMaError(new Error('Get the My Account token (MRRT) first.'));
+      return;
+    }
+    setMaResult(null);
+    setMaError(null);
+    setMaLoading(true);
+    try {
+      const response = await action(maToken);
+      setMaResult(response ?? { success: true });
+    } catch (e) {
+      // MyAccountError / PasskeyError carry richer fields than a plain message.
+      if (e instanceof MyAccountError) {
+        setMaError(
+          new Error(
+            `[${e.statusCode ?? ''}] ${e.title ?? 'My Account Error'}: ${
+              e.detail ?? e.message
+            }`
+          )
+        );
+      } else if (e instanceof PasskeyError) {
+        setMaError(new Error(`[${e.type}] ${e.message}`));
+      } else {
+        setMaError(e as Error);
+      }
+    } finally {
+      setMaLoading(false);
+    }
+  };
+
+  const onEnrollPhone = () =>
+    runMyAccount(async (accessToken) => {
+      const challenge = await myAccount.enrollPhone({
+        accessToken,
+        phoneNumber: phoneNumber.trim(),
+        preferredAuthenticationMethod: PreferredAuthenticationMethods.SMS,
+      });
+      setEnrollmentState({ ...challenge, kind: 'phone' });
+      return { step: 'enrollPhone', ...challenge };
+    });
+
+  const onEnrollEmail = () =>
+    runMyAccount(async (accessToken) => {
+      const challenge = await myAccount.enrollEmail({
+        accessToken,
+        emailAddress: emailAddress.trim(),
+      });
+      setEnrollmentState({ ...challenge, kind: 'email' });
+      return { step: 'enrollEmail', ...challenge };
+    });
+
+  const onEnrollTOTP = () =>
+    runMyAccount(async (accessToken) => {
+      const challenge = await myAccount.enrollTOTP({ accessToken });
+      setEnrollmentState({
+        id: challenge.id,
+        authSession: challenge.authSession,
+        kind: 'totp',
+      });
+      return {
+        step: 'enrollTOTP',
+        id: challenge.id,
+        barcodeUri: challenge.barcodeUri,
+        manualInputCode: challenge.manualInputCode,
+      };
+    });
+
+  const onEnrollRecoveryCode = () =>
+    runMyAccount(async (accessToken) => {
+      const challenge = await myAccount.enrollRecoveryCode({ accessToken });
+      setEnrollmentState({
+        id: challenge.id,
+        authSession: challenge.authSession,
+        kind: 'recovery',
+      });
+      return {
+        step: 'enrollRecoveryCode',
+        id: challenge.id,
+        recoveryCode: challenge.recoveryCode,
+      };
+    });
+
+  const onConfirmEnrollment = () =>
+    runMyAccount(async (accessToken) => {
+      if (!enrollmentState) {
+        throw new Error('Start an enrollment first.');
+      }
+      let method;
+      if (enrollmentState.kind === 'recovery') {
+        method = await myAccount.confirmRecoveryCodeEnrollment({
+          accessToken,
+          id: enrollmentState.id,
+          authSession: enrollmentState.authSession,
+        });
+      } else {
+        const confirmByKind = {
+          phone: myAccount.confirmPhoneEnrollment,
+          email: myAccount.confirmEmailEnrollment,
+          totp: myAccount.confirmTOTPEnrollment,
+        };
+        method = await confirmByKind[enrollmentState.kind].call(myAccount, {
+          accessToken,
+          id: enrollmentState.id,
+          authSession: enrollmentState.authSession,
+          otpCode: otpCode.trim(),
+        });
+      }
+      setEnrollmentState(null);
+      setOtpCode('');
+      return { step: 'confirmEnrollment', ...method };
+    });
+
+  const onPasskeyChallenge = () =>
+    runMyAccount(async (accessToken) => {
+      const challenge = await myAccount.passkeyEnrollmentChallenge({
+        accessToken,
+      });
+      setPasskeyChallenge(challenge);
+      return {
+        step: 'passkeyEnrollmentChallenge',
+        authenticationMethodId: challenge.authenticationMethodId,
+        authSession: challenge.authSession,
+      };
+    });
+
+  const onPasskeyVerify = () =>
+    runMyAccount(async (accessToken) => {
+      if (!passkeyChallenge) {
+        throw new Error('Run the passkey challenge first.');
+      }
+      const authResponse = await createWebPasskey(
+        passkeyChallenge.authParamsPublicKey
+      );
+      const method = await myAccount.enrollPasskey({
+        accessToken,
+        authenticationMethodId: passkeyChallenge.authenticationMethodId,
+        authSession: passkeyChallenge.authSession,
+        authResponse,
+        authParamsPublicKey: passkeyChallenge.authParamsPublicKey,
+      });
+      setPasskeyChallenge(null);
+      return { step: 'enrollPasskey', ...method };
+    });
+
+  const onGetFactors = () =>
+    runMyAccount(async (accessToken) => {
+      const factors = await myAccount.getFactors({ accessToken });
+      return { step: 'getFactors', factors };
+    });
+
+  const onGetAuthenticationMethods = () =>
+    runMyAccount(async (accessToken) => {
+      const methods = await myAccount.getAuthenticationMethods({ accessToken });
+      return {
+        step: 'getAuthenticationMethods',
+        count: methods.length,
+        methods,
+      };
+    });
+
+  const onUpdateMethod = () =>
+    runMyAccount(async (accessToken) => {
+      const method = await myAccount.updateAuthenticationMethodById({
+        accessToken,
+        id: methodId.trim(),
+        name: methodName.trim() || undefined,
+      });
+      return { step: 'updateAuthenticationMethodById', ...method };
+    });
+
+  const onDeleteMethod = () =>
+    runMyAccount(async (accessToken) => {
+      await myAccount.deleteAuthenticationMethodById({
+        accessToken,
+        id: methodId.trim(),
+      });
+      setMethodId('');
+      return {
+        step: 'deleteAuthenticationMethodById',
+        deleted: methodId.trim(),
+      };
+    });
+
   if (isLoading) {
     return (
       <View style={styles.content}>
@@ -296,23 +546,26 @@ const HooksAuthContent = (): React.JSX.Element => {
       {error && <Result title="Hook Error" error={error} result={null} />}
       <Result title="Last Action Result" result={result} error={apiError} />
       {user ? (
-        <View style={styles.section}>
-          <Text style={styles.title}>Welcome, {user.name}!</Text>
-          <Result title="User Profile" result={user} error={null} />
-          <Button
-            onPress={() => runDemo(getCredentials)}
-            title="Get Credentials"
-          />
-          <Button
-            onPress={() =>
-              runDemo(() =>
-                users(result?.accessToken).getUser({ id: user.sub })
-              )
-            }
-            title="Get Full Profile (Mgmt API)"
-            disabled={!result?.accessToken}
-          />
-          <Button onPress={clearSession} title="Log Out" />
+        <>
+          <View style={styles.section}>
+            <Text style={styles.title}>Welcome, {user.name}!</Text>
+            <Result title="User Profile" result={user} error={null} />
+            <Button
+              onPress={() => runDemo(getCredentials)}
+              title="Get Credentials"
+            />
+            <Button
+              onPress={() =>
+                runDemo(() =>
+                  users(result?.accessToken).getUser({ id: user.sub })
+                )
+              }
+              title="Get Full Profile (Mgmt API)"
+              disabled={!result?.accessToken}
+            />
+            <Button onPress={clearSession} title="Log Out" />
+          </View>
+
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>
               Custom Token Exchange (RFC 8693)
@@ -378,13 +631,179 @@ const HooksAuthContent = (): React.JSX.Element => {
               }
             />
           </View>
-        </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>My Account API</Text>
+            <Text style={styles.hint}>
+              Uses MRRT to mint a `/me/` access token via getApiCredentials.
+            </Text>
+            <Result
+              title="My Account Result"
+              result={maResult}
+              error={maError}
+            />
+
+            <Text style={styles.subheading}>Access Token (MRRT)</Text>
+            <Text style={styles.hint}>
+              Fetch the `/me/` token before calling any My Account API below.
+            </Text>
+            <Button
+              onPress={onGetMyAccountToken}
+              title={
+                maToken ? 'Refresh My Account Token' : 'Get My Account Token'
+              }
+              loading={maLoading}
+            />
+            {maToken && (
+              <Text style={styles.hint}>Token ready — API calls enabled.</Text>
+            )}
+
+            <Text style={styles.subheading}>Query</Text>
+            <View style={styles.buttonGroup}>
+              <Button
+                onPress={onGetFactors}
+                title="Get Factors"
+                loading={maLoading}
+                disabled={!maToken}
+              />
+              <Button
+                onPress={onGetAuthenticationMethods}
+                title="Get Authentication Methods"
+                loading={maLoading}
+                disabled={!maToken}
+              />
+            </View>
+
+            <Text style={styles.subheading}>Passkey Enrollment</Text>
+            <View style={styles.buttonGroup}>
+              <Button
+                onPress={onPasskeyChallenge}
+                title="1. Passkey Challenge"
+                loading={maLoading}
+                disabled={!maToken}
+              />
+              <Button
+                onPress={onPasskeyVerify}
+                title="2. Create & Verify Passkey"
+                loading={maLoading}
+                disabled={!maToken || !passkeyChallenge}
+              />
+            </View>
+
+            <Text style={styles.subheading}>Phone Enrollment</Text>
+            <LabeledInput
+              label="Phone Number"
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              placeholder="+1234567890"
+              keyboardType="phone-pad"
+            />
+            <Button
+              onPress={onEnrollPhone}
+              title="Enroll Phone"
+              loading={maLoading}
+              disabled={!maToken}
+            />
+
+            <Text style={styles.subheading}>Email Enrollment</Text>
+            <LabeledInput
+              label="Email Address"
+              value={emailAddress}
+              onChangeText={setEmailAddress}
+              placeholder="user@example.com"
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
+            <Button
+              onPress={onEnrollEmail}
+              title="Enroll Email"
+              loading={maLoading}
+              disabled={!maToken}
+            />
+
+            <Text style={styles.subheading}>TOTP / Recovery Code</Text>
+            <View style={styles.buttonGroup}>
+              <Button
+                onPress={onEnrollTOTP}
+                title="Enroll TOTP"
+                loading={maLoading}
+                disabled={!maToken}
+              />
+              <Button
+                onPress={onEnrollRecoveryCode}
+                title="Enroll Recovery Code"
+                loading={maLoading}
+                disabled={!maToken}
+              />
+            </View>
+
+            <Text style={styles.subheading}>Confirm Enrollment</Text>
+            <Text style={styles.hint}>
+              After enrolling phone/email/TOTP enter the OTP; recovery-code
+              enrollments confirm without an OTP.
+            </Text>
+            <LabeledInput
+              label="OTP Code"
+              value={otpCode}
+              onChangeText={setOtpCode}
+              placeholder="Enter OTP code"
+              keyboardType="number-pad"
+            />
+            <Button
+              onPress={onConfirmEnrollment}
+              title="Confirm Enrollment"
+              loading={maLoading}
+              disabled={!maToken || !enrollmentState}
+            />
+            {enrollmentState && (
+              <Text style={styles.hint}>
+                Pending: {enrollmentState.kind} enrollment (id{' '}
+                {enrollmentState.id})
+              </Text>
+            )}
+
+            <Text style={styles.subheading}>Update / Delete Method</Text>
+            <LabeledInput
+              label="Authentication Method ID"
+              value={methodId}
+              onChangeText={setMethodId}
+              placeholder="auth method id"
+              autoCapitalize="none"
+            />
+            <LabeledInput
+              label="New Name (for update)"
+              value={methodName}
+              onChangeText={setMethodName}
+              placeholder="Optional new name"
+            />
+            <View style={styles.buttonGroup}>
+              <Button
+                onPress={onUpdateMethod}
+                title="Update Method"
+                loading={maLoading}
+                disabled={!maToken}
+              />
+              <Button
+                onPress={onDeleteMethod}
+                title="Delete Method"
+                loading={maLoading}
+                disabled={!maToken}
+              />
+            </View>
+          </View>
+        </>
       ) : (
         <>
           <Section title="Web Auth (Recommended Flow)">
             <Button
               onPress={() =>
-                authorize({ scope: 'openid profile email offline_access' })
+                authorize({
+                  // Request the My Account audience + scopes up front so the
+                  // refresh token carries them; getApiCredentials then resolves
+                  // from the refresh grant without an interactive step.
+                  audience: MY_ACCOUNT_AUDIENCE,
+                  scope: `openid profile email offline_access ${MY_ACCOUNT_SCOPE}`,
+                })
               }
               title="Log In"
             />
@@ -723,7 +1142,16 @@ const HooksAuthContent = (): React.JSX.Element => {
 };
 
 const HooksApp = () => (
-  <Auth0Provider domain={config.domain} clientId={config.clientId}>
+  <Auth0Provider
+    domain={config.domain}
+    clientId={config.clientId}
+    useMrrt={true}
+    // Persist tokens across reloads (memory cache is lost on refresh) and
+    // guarantee the refresh-token grant so getApiCredentials never falls back
+    // to the silent /authorize iframe (which stalls behind 3rd-party cookies).
+    cacheLocation="localstorage"
+    useRefreshTokens={true}
+  >
     <HooksAuthContent />
   </Auth0Provider>
 );
@@ -757,7 +1185,13 @@ interface ClassAppState {
 
 class ClassApp extends React.Component<{}, ClassAppState> {
   state: ClassAppState = {
-    auth0: new Auth0({ domain: config.domain, clientId: config.clientId }),
+    auth0: new Auth0({
+      domain: config.domain,
+      clientId: config.clientId,
+      useMrrt: true,
+      cacheLocation: 'localstorage',
+      useRefreshTokens: true,
+    }),
     user: null,
     result: null,
     apiError: null,
@@ -829,7 +1263,8 @@ class ClassApp extends React.Component<{}, ClassAppState> {
 
   onLogin = async () => {
     await this.state.auth0.webAuth.authorize({
-      scope: 'openid profile email offline_access',
+      audience: MY_ACCOUNT_AUDIENCE,
+      scope: `openid profile email offline_access ${MY_ACCOUNT_SCOPE}`,
     });
   };
 
@@ -997,6 +1432,17 @@ class ClassApp extends React.Component<{}, ClassAppState> {
     }
   };
 
+  onGetMyAccountFactors = async () => {
+    const credentials =
+      await this.state.auth0.credentialsManager.getApiCredentials(
+        MY_ACCOUNT_AUDIENCE,
+        MY_ACCOUNT_SCOPE
+      );
+    return this.state.auth0.myAccount.getFactors({
+      accessToken: credentials.accessToken,
+    });
+  };
+
   render() {
     const {
       user,
@@ -1053,6 +1499,10 @@ class ClassApp extends React.Component<{}, ClassAppState> {
               }
               title="Get Full Profile (Mgmt API)"
               disabled={!result?.accessToken}
+            />
+            <Button
+              onPress={() => this.runDemo(this.onGetMyAccountFactors)}
+              title="My Account: Get Factors (MRRT)"
             />
             <Button onPress={this.onLogout} title="Log Out" />
           </View>
@@ -1498,6 +1948,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 12 },
+  subheading: {
+    fontSize: 15,
+    fontWeight: '600',
+    marginTop: 16,
+    marginBottom: 8,
+  },
   buttonGroup: { gap: 10 },
   hint: { fontSize: 12, color: '#888', fontStyle: 'italic', marginBottom: 8 },
   toggleContainer: {

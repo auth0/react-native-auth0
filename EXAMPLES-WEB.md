@@ -282,3 +282,9 @@ const credentials = await auth0.mfa.verify({
 The web platform supports direct authentication grants including `auth.passwordRealm()`, `auth.createUser()`, `auth.resetPassword()`, and the MFA Flexible Factors Grant. These methods make direct HTTP calls to the Auth0 API.
 
 Token refresh is handled automatically by `credentialsManager.getCredentials()` on the web. The `auth.refreshToken()` method is not available.
+
+### My Account API (Web)
+
+The [My Account API](./EXAMPLES.md#my-account-api) is supported on the web platform. The `auth0.myAccount` client works the same way as on native, so the examples in [EXAMPLES.md](./EXAMPLES.md#my-account-api) apply. Passkey enrollment on the web uses the browser's [WebAuthn](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) APIs instead of a native passkey module.
+
+When DPoP is enabled (the default), a My Account call on the web only succeeds when the supplied access token was issued by the same client instance, because the DPoP proof is signed with that client's keypair. When the client is not configured with DPoP, plain bearer tokens are used and any valid access token works.
