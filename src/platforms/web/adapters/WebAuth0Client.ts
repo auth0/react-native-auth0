@@ -311,16 +311,13 @@ export class WebAuth0Client implements IAuth0Client {
         organization,
       } = parameters;
 
-      if (!email && !phoneNumber && !username) {
-        throw new AuthError(
-          'InvalidParameter',
-          'passkeySignupChallenge requires at least one of "email", "phoneNumber", or "username".',
-          { code: 'InvalidParameter' }
-        );
-      }
-
-      // Narrowed above: at least one of email/phoneNumber/username is
-      // present, satisfying auth0-spa-js's discriminated union type.
+      // auth0-spa-js's PasskeySignupChallengeOptions type requires at
+      // least one of email/phoneNumber/username, but which identifiers
+      // are actually accepted depends on the database connection's
+      // configuration (see Prerequisites in EXAMPLES.md) — the API
+      // rejects an unsupported/missing combination server-side, so no
+      // client-side check is duplicated here (matching native, which
+      // also forwards these fields as-is).
       const challenge = await this.client.passkey.getSignupChallenge({
         email,
         phoneNumber,

@@ -640,7 +640,15 @@ describe('WebAuth0Client', () => {
       });
     });
 
-    it('should throw PasskeyError without calling the SPA client when no identifier is provided', async () => {
+    it('should forward the request to the SPA client even without a client-side identifier check, letting the connection reject it server-side', async () => {
+      // Matches native, which also forwards these fields as-is with no
+      // client-side validation — which identifiers are accepted depends
+      // on the database connection's configuration, not a fixed SDK rule.
+      mockSpaClient.passkey.getSignupChallenge.mockRejectedValue({
+        code: 'passkey_register_error',
+        message: 'At least one of email, phone_number or username is required',
+      });
+
       await expect(
         client.passkeySignupChallenge({
           name: 'John Doe',
@@ -648,9 +656,11 @@ describe('WebAuth0Client', () => {
         })
       ).rejects.toMatchObject({
         name: 'PasskeyError',
-        code: 'InvalidParameter',
+        code: 'passkey_register_error',
       });
-      expect(mockSpaClient.passkey.getSignupChallenge).not.toHaveBeenCalled();
+      expect(mockSpaClient.passkey.getSignupChallenge).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'John Doe' })
+      );
     });
 
     it('should preserve the original message for a network failure with no .code or .error', async () => {

@@ -1534,7 +1534,7 @@ const loginCredentials = await auth0.getTokenByPasskey({
 
 ### Signup Challenge Parameters
 
-The `passkeySignupChallenge` method accepts the following parameters to create a user profile along with the passkey:
+The `passkeySignupChallenge` method accepts the following parameters to create a user profile along with the passkey. At least one of `email`, `phoneNumber`, or `username` is required — which of these your database connection actually accepts depends on its configuration (e.g. **Flexible Identifiers**). The SDK does not validate this client-side; an unsupported or missing identifier is rejected by the Auth0 API and surfaces as a `PASSKEY_CHALLENGE_FAILED` error.
 
 | Parameter      | Type                      | Description                          |
 | -------------- | ------------------------- | ------------------------------------ |
@@ -1562,7 +1562,8 @@ Passkey operations throw `PasskeyError` (extends `AuthError`) with a normalized 
 | `PASSKEY_EXCHANGE_FAILED`      | Token exchange with credential response failed                                                                     |
 | `PASSKEY_NOT_AVAILABLE`        | Passkeys not available on this device/OS version, or WebAuthn is not supported in this browser                    |
 | `PASSKEY_UNSUPPORTED_PLATFORM` | Passkeys not supported on this platform                                                                            |
-| `PASSKEY_INVALID_PARAMETER`    | The parameters provided were invalid (e.g. `passkeySignupChallenge` called with none of `email`/`phoneNumber`/`username`) |
+| `PASSKEY_INVALID_PARAMETER`    | **Native only.** `authResponse` passed to `getTokenByPasskey` was not a JSON string                                |
+| `PASSKEY_INVALID_CREDENTIAL`   | **Web only.** The credential passed to `getTokenByPasskey` is neither a valid attestation (signup) nor assertion (login) response |
 | `PASSKEY_CANCELLED`            | **Web only.** The user dismissed the passkey creation/assertion prompt                                             |
 | `PASSKEY_MFA_REQUIRED`         | **Web only.** MFA is required to complete the exchange — inspect `error.json.mfa_token` and continue with `mfa.challenge()`/`mfa.verify()` |
 | `PASSKEY_UNKNOWN_ERROR`        | Unknown or uncategorized passkey error — check `error.message` for the underlying description                     |

@@ -82,7 +82,7 @@ describe('PasskeyError', () => {
       [
         'InvalidParameter',
         'PASSKEY_INVALID_PARAMETER',
-        'SDK-level parameter validation (native authResponse guard, web signup identifier guard)',
+        'SDK-level parameter validation (native authResponse-must-be-a-string guard)',
       ],
       [
         'UnsupportedOperation',
