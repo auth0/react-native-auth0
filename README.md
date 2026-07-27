@@ -940,7 +940,7 @@ This library provides a unified API across Native (iOS/Android) and Web platform
 | `myAccount.confirmPhoneEnrollment()` (and other `confirm...`)          |          ✅          |      ✅       | Confirms an enrollment challenge and returns the enrolled authentication method.                                                                                         |
 | `myAccount.passkeyEnrollmentChallenge()` / `myAccount.enrollPasskey()` |          ✅          |      ✅       | Enrolls a passkey as an authentication method. On Web, the browser's WebAuthn APIs handle the credential ceremony.                                                       |
 
-> **Note on DPoP (Web):** When the client is configured with DPoP (the default), My Account calls on Web only succeed when the supplied access token was issued by the same client instance, because the DPoP proof is signed with that client's keypair. Bearer tokens always work.
+> **Note on DPoP (Web):** When the client is configured with DPoP (the default), My Account calls on Web only succeed when the supplied access token was issued by the same client instance, because the DPoP proof is signed with that client's keypair. When the client is not configured with DPoP, plain bearer tokens are used and any valid access token works.
 
 ## Troubleshooting
 

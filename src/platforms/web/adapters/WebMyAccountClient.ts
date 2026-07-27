@@ -65,6 +65,12 @@ export class WebMyAccountClient implements IMyAccountClient {
     this.useDPoP = useDPoP;
   }
 
+  // A fresh client is built per call because each RN method carries its own
+  // `accessToken` (parity with native, where the caller owns the token). The
+  // fetcher's `getAccessToken` closes over that token, so it must be
+  // re-instantiated for each call; reusing a single client would require
+  // mutable token state and risk interleaving concurrent calls. `createFetcher`
+  // does no I/O, so the per-call cost is negligible.
   private makeClient(accessToken: string): MyAccountApiClient {
     const fetcher = this.spaClient.createFetcher<Response>({
       getAccessToken: async () => accessToken,

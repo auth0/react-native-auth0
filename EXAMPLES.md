@@ -1457,7 +1457,7 @@ The My Account API allows authenticated users to manage their own authentication
 
 Access the My Account client via the `myAccount` property from `useAuth0()` or the `Auth0` class instance.
 
-The My Account API is supported on Native (iOS/Android) and Web. The same `myAccount` API is used on all platforms; only the passkey credential ceremony differs (native passkey module vs. the browser's WebAuthn APIs). On Web, when DPoP is enabled (the default), the supplied access token must have been issued by the same client instance, since the DPoP proof is signed with that client's keypair; bearer tokens always work.
+The My Account API is supported on Native (iOS/Android) and Web. The same `myAccount` API is used on all platforms; only the passkey credential ceremony differs (native passkey module vs. the browser's WebAuthn APIs). On Web, when DPoP is enabled (the default), the supplied access token must have been issued by the same client instance, since the DPoP proof is signed with that client's keypair; when the client is not configured with DPoP, plain bearer tokens are used and any valid access token works.
 
 ### Prerequisites
 
