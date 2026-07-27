@@ -310,6 +310,17 @@ export class WebAuth0Client implements IAuth0Client {
         realm,
         organization,
       } = parameters;
+
+      if (!email && !phoneNumber && !username) {
+        throw new AuthError(
+          'InvalidParameter',
+          'passkeySignupChallenge requires at least one of "email", "phoneNumber", or "username".',
+          { code: 'InvalidParameter' }
+        );
+      }
+
+      // Narrowed above: at least one of email/phoneNumber/username is
+      // present, satisfying auth0-spa-js's discriminated union type.
       const challenge = await this.client.passkey.getSignupChallenge({
         email,
         phoneNumber,
@@ -322,7 +333,7 @@ export class WebAuth0Client implements IAuth0Client {
         userMetadata,
         realm,
         organization,
-      } as any);
+      } as Parameters<typeof this.client.passkey.getSignupChallenge>[0]);
 
       return {
         authSession: challenge.authSession,
@@ -332,10 +343,18 @@ export class WebAuth0Client implements IAuth0Client {
         >,
       };
     } catch (e: any) {
+      if (e instanceof PasskeyError) throw e;
+      // spa-js's PasskeyRegisterError sets `.code`; the OAuth2-style
+      // GenericError family (thrown by the underlying token/discovery
+      // calls) only sets `.error` — check both so no error is silently
+      // downgraded to PASSKEY_UNKNOWN_ERROR.
+      const code = e.code ?? e.error ?? 'passkey_signup_challenge_failed';
       const authError = new AuthError(
-        e.code ?? 'passkey_signup_challenge_failed',
-        e.message ?? 'Failed to request passkey signup challenge',
-        { code: e.code, json: e.cause ?? e }
+        code,
+        e.message ??
+          e.error_description ??
+          'Failed to request passkey signup challenge',
+        { code, json: e.cause ?? e }
       );
       throw new PasskeyError(authError);
     }
@@ -359,10 +378,14 @@ export class WebAuth0Client implements IAuth0Client {
         >,
       };
     } catch (e: any) {
+      if (e instanceof PasskeyError) throw e;
+      const code = e.code ?? e.error ?? 'passkey_login_challenge_failed';
       const authError = new AuthError(
-        e.code ?? 'passkey_login_challenge_failed',
-        e.message ?? 'Failed to request passkey login challenge',
-        { code: e.code, json: e.cause ?? e }
+        code,
+        e.message ??
+          e.error_description ??
+          'Failed to request passkey login challenge',
+        { code, json: e.cause ?? e }
       );
       throw new PasskeyError(authError);
     }
@@ -381,6 +404,10 @@ export class WebAuth0Client implements IAuth0Client {
         organization,
       } = parameters;
 
+      // Apply default scope if not provided, for consistency with native
+      // platforms (which default to "openid profile email" when omitted).
+      const finalScope = scope ?? 'openid profile email';
+
       // `authResponse` is the raw PublicKeyCredential from
       // navigator.credentials.create()/.get() on the primary web path.
       // getTokenWithPasskey() detects attestation vs assertion and
@@ -393,7 +420,7 @@ export class WebAuth0Client implements IAuth0Client {
               credential: JSON.parse(authResponse) as PasskeyCredentialResponse,
               realm,
               audience,
-              scope,
+              scope: finalScope,
               organization,
             })
           : await this.client.passkey.getTokenWithPasskey({
@@ -401,7 +428,7 @@ export class WebAuth0Client implements IAuth0Client {
               credential: authResponse,
               realm,
               audience,
-              scope,
+              scope: finalScope,
               organization,
             });
 
@@ -416,10 +443,20 @@ export class WebAuth0Client implements IAuth0Client {
         refreshToken: response.refresh_token,
       };
     } catch (e: any) {
+      if (e instanceof PasskeyError) throw e;
+      // The token-exchange step (_requestTokenForPasskey / _requestToken)
+      // throws auth0-spa-js's GenericError family (invalid_grant,
+      // mfa_required, missing_refresh_token, use_dpop_nonce, ...) or a
+      // bare Error from ID token verification — none of these set `.code`,
+      // only `.error` (OAuth2-style), so check both before falling back to
+      // a generic code. See PasskeyErrorCodes for the resulting mapping.
+      const code = e.code ?? e.error ?? 'passkey_exchange_failed';
       const authError = new AuthError(
-        e.code ?? 'passkey_exchange_failed',
-        e.message ?? 'Failed to exchange passkey credential for tokens',
-        { code: e.code, json: e.cause ?? e }
+        code,
+        e.message ??
+          e.error_description ??
+          'Failed to exchange passkey credential for tokens',
+        { code, json: e.cause ?? e }
       );
       throw new PasskeyError(authError);
     }

@@ -279,7 +279,7 @@ const credentials = await auth0.mfa.verify({
 
 ## 4. Passkeys (Web)
 
-Passkeys are supported on web via `@auth0/auth0-spa-js`. The flow is the same three steps as native (challenge → credential manager → exchange), but step 2 uses the browser's built-in [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) (`navigator.credentials.create()`/`.get()`) instead of a native module. `getTokenByPasskey`'s `authResponse` accepts the raw `PublicKeyCredential` returned by `navigator.credentials` directly on web — no manual serialization needed (unlike native, which takes a JSON string; see [Signup with Passkey (Web)](./EXAMPLES.md#signup-with-passkey-web) in `EXAMPLES.md` for the full signup example).
+Passkeys are supported on web via `@auth0/auth0-spa-js`. The flow is the same three steps as native (challenge → WebAuthn ceremony → exchange), but step 2 uses the browser's built-in [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) (`navigator.credentials.create()`/`.get()`) instead of a native module — the app calls it directly, the SDK does not perform this step for you. `getTokenByPasskey`'s `authResponse` accepts the raw `PublicKeyCredential` returned by `navigator.credentials` directly on web — no manual serialization needed (unlike native, which takes a JSON string; see [Signup with Passkey (Web)](./EXAMPLES.md#signup-with-passkey-web) in `EXAMPLES.md` for the full signup example).
 
 Because `navigator.credentials.create()`/`.get()` require a user gesture, call `passkeySignupChallenge` / `passkeyLoginChallenge` from within a click handler (not, for example, from a `useEffect`).
 
@@ -295,17 +295,25 @@ function PasskeyLoginButton() {
         realm: 'Username-Password-Authentication',
       });
 
-      const credential = await navigator.credentials.get({
-        publicKey: challenge.authParamsPublicKey as PublicKeyCredentialRequestOptions,
-      });
+      // navigator.credentials isn't wrapped by the SDK — normalize a
+      // cancelled/failed WebAuthn ceremony into a PasskeyError so it's
+      // handled the same way as any other passkey error below.
+      let credential: PublicKeyCredential;
+      try {
+        credential = (await navigator.credentials.get({
+          publicKey: challenge.authParamsPublicKey as PublicKeyCredentialRequestOptions,
+        })) as PublicKeyCredential;
+      } catch (e) {
+        throw new PasskeyError(e as Error);
+      }
 
       const credentials = await getTokenByPasskey({
         authSession: challenge.authSession,
-        authResponse: credential as PublicKeyCredential,
+        authResponse: credential,
         realm: 'Username-Password-Authentication',
       });
 
-      console.log('Signed in with passkey:', credentials.accessToken);
+      console.log('Signed in with passkey');
     } catch (error) {
       if (error instanceof PasskeyError) {
         console.error('Passkey login failed:', error.type, error.message);

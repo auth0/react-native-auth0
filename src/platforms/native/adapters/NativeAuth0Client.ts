@@ -316,7 +316,8 @@ export class NativeAuth0Client implements IAuth0Client {
       throw new PasskeyError(
         new AuthError(
           'InvalidParameter',
-          'authResponse must be a JSON string on native platforms.'
+          'authResponse must be a JSON string on native platforms.',
+          { code: 'InvalidParameter' }
         )
       );
     }

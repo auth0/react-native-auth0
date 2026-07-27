@@ -211,10 +211,19 @@ const HooksAuthContent = (): React.JSX.Element => {
         realm: 'Username-Password-Authentication',
       });
 
-      const credential = (await navigator.credentials.create({
-        publicKey:
-          challenge.authParamsPublicKey as PublicKeyCredentialCreationOptions,
-      })) as PublicKeyCredential;
+      // navigator.credentials isn't wrapped by the SDK — normalize a
+      // cancelled/failed WebAuthn ceremony into a PasskeyError ourselves
+      // so callers get the same PasskeyErrorCodes regardless of where the
+      // failure occurred.
+      let credential: PublicKeyCredential;
+      try {
+        credential = (await navigator.credentials.create({
+          publicKey:
+            challenge.authParamsPublicKey as PublicKeyCredentialCreationOptions,
+        })) as PublicKeyCredential;
+      } catch (e) {
+        throw new PasskeyError(e as Error);
+      }
 
       const credentials = await getTokenByPasskey({
         authSession: challenge.authSession,
@@ -242,10 +251,15 @@ const HooksAuthContent = (): React.JSX.Element => {
         realm: 'Username-Password-Authentication',
       });
 
-      const credential = (await navigator.credentials.get({
-        publicKey:
-          challenge.authParamsPublicKey as PublicKeyCredentialRequestOptions,
-      })) as PublicKeyCredential;
+      let credential: PublicKeyCredential;
+      try {
+        credential = (await navigator.credentials.get({
+          publicKey:
+            challenge.authParamsPublicKey as PublicKeyCredentialRequestOptions,
+        })) as PublicKeyCredential;
+      } catch (e) {
+        throw new PasskeyError(e as Error);
+      }
 
       const credentials = await getTokenByPasskey({
         authSession: challenge.authSession,

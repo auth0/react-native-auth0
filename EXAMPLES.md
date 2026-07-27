@@ -58,6 +58,7 @@
   - [Signup with Passkey](#signup-with-passkey)
   - [Signin with Passkey](#signin-with-passkey)
   - [Signup with Passkey (Web)](#signup-with-passkey-web)
+  - [Signin with Passkey (Web)](#signin-with-passkey-web)
   - [Auth Response Format](#passkeys-auth-response-format)
   - [Using Passkeys with Auth0 Class](#using-passkeys-with-auth0-class)
   - [Signup Challenge Parameters](#signup-challenge-parameters)
@@ -1232,12 +1233,12 @@ For detailed examples of validating different token types in Actions, see:
 
 ### Overview
 
-Passkeys provide a passwordless authentication experience using platform biometrics (Face ID, Touch ID, fingerprint) backed by public-key cryptography. On native platforms, the SDK provides the Auth0 challenge and token exchange steps, while you handle the platform credential manager interaction using native modules or libraries like `react-native-passkey`. On web, the SDK drives the full flow — challenge, browser WebAuthn ceremony (`navigator.credentials`), and token exchange — internally via `@auth0/auth0-spa-js`, so no extra library is needed.
+Passkeys provide a passwordless authentication experience using platform biometrics (Face ID, Touch ID, fingerprint) backed by public-key cryptography. The same three functions — `passkeySignupChallenge`, `passkeyLoginChallenge`, and `getTokenByPasskey` — are used on native and web; no web-specific methods were added. Only the WebAuthn ceremony step differs: on native you call your own native module or a library like `react-native-passkey`; on web you call the browser's built-in `navigator.credentials.create()`/`.get()` API directly, and pass the resulting `PublicKeyCredential` straight to `getTokenByPasskey` — the SDK does not perform this step for you on either platform.
 
 The passkey flow has three steps:
 
 1. **Challenge** — Request a WebAuthn challenge from Auth0 (`passkeySignupChallenge` or `passkeyLoginChallenge`)
-2. **Credential Manager** — Present the OS (native) or browser (web) credential manager UI to create or assert a passkey. On native, use your own native module or a library; on web, the SDK calls `navigator.credentials` for you as part of `getTokenByPasskey`.
+2. **WebAuthn Ceremony** — Create or assert the passkey yourself, using whatever mechanism your platform provides. On native, use your own native module or a library (e.g. `react-native-passkey`, which may in turn use Android's `CredentialManager` API or iOS's `ASAuthorizationController`); on web, call `navigator.credentials.create()`/`.get()` directly.
 3. **Exchange** — Send the credential response back to Auth0 to get tokens (`getTokenByPasskey`)
 
 > **Platform Support:** iOS 16.6+, Android, and Web (modern browsers with WebAuthn support).
@@ -1291,7 +1292,7 @@ function PasskeySignupScreen() {
         scope: 'openid profile email offline_access',
       });
 
-      console.log('Signed up with passkey:', credentials.accessToken);
+      console.log('Signed up with passkey');
     } catch (error) {
       if (error instanceof PasskeyError) {
         console.error('Passkey signup failed:', error.type, error.message);
@@ -1336,7 +1337,7 @@ function PasskeySigninScreen() {
         scope: 'openid profile email offline_access',
       });
 
-      console.log('Signed in with passkey:', credentials.accessToken);
+      console.log('Signed in with passkey');
     } catch (error) {
       if (error instanceof PasskeyError) {
         console.error('Passkey signin failed:', error.type, error.message);
@@ -1352,7 +1353,7 @@ function PasskeySigninScreen() {
 
 ### Signup with Passkey (Web)
 
-On web, step 2 (the credential manager) uses the browser's built-in [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) — `navigator.credentials.create()` for signup and `navigator.credentials.get()` for login — instead of a native module or third-party library. Unlike native, `authResponse` on web accepts the raw `PublicKeyCredential` object returned directly by `navigator.credentials` — no manual serialization needed. (See [Auth Response Format](#passkeys-auth-response-format) for the native, JSON-string form.)
+Web uses the **exact same `passkeySignupChallenge` / `passkeyLoginChallenge` / `getTokenByPasskey` functions as native** — no web-specific methods were added. Only step 2 (the WebAuthn ceremony) differs: the app calls the browser's built-in [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) — `navigator.credentials.create()` for signup and `navigator.credentials.get()` for login — instead of a native module or third-party library. Unlike native, `authResponse` on web accepts the raw `PublicKeyCredential` object returned directly by `navigator.credentials` — no manual serialization needed. (See [Auth Response Format](#passkeys-auth-response-format) for the native, JSON-string form.)
 
 ```tsx
 import { useAuth0, PasskeyError } from 'react-native-auth0';
@@ -1369,17 +1370,26 @@ function PasskeySignupScreenWeb() {
         realm: 'Username-Password-Authentication',
       });
 
-      const credential = await navigator.credentials.create({
-        publicKey: challenge.authParamsPublicKey as PublicKeyCredentialCreationOptions,
-      });
+      // navigator.credentials isn't wrapped by the SDK — normalize a
+      // cancelled/failed WebAuthn ceremony (e.g. the user dismissed the
+      // prompt) into a PasskeyError so it's handled the same way as any
+      // other passkey error below.
+      let credential: PublicKeyCredential;
+      try {
+        credential = (await navigator.credentials.create({
+          publicKey: challenge.authParamsPublicKey as PublicKeyCredentialCreationOptions,
+        })) as PublicKeyCredential;
+      } catch (e) {
+        throw new PasskeyError(e as Error);
+      }
 
       const credentials = await getTokenByPasskey({
         authSession: challenge.authSession,
-        authResponse: credential as PublicKeyCredential,
+        authResponse: credential,
         realm: 'Username-Password-Authentication',
       });
 
-      console.log('Signed up with passkey:', credentials.accessToken);
+      console.log('Signed up with passkey');
     } catch (error) {
       if (error instanceof PasskeyError) {
         console.error('Passkey signup failed:', error.type, error.message);
@@ -1388,6 +1398,52 @@ function PasskeySignupScreenWeb() {
   };
 
   return <button onClick={handleSignup}>Sign Up with Passkey</button>;
+}
+```
+
+<a name="signin-with-passkey-web"></a>
+
+### Signin with Passkey (Web)
+
+Same idea for login: `passkeyLoginChallenge` and `getTokenByPasskey` are unchanged from native — only the credential-manager step (`navigator.credentials.get()` instead of a native module) is web-specific.
+
+```tsx
+import { useAuth0, PasskeyError } from 'react-native-auth0';
+
+function PasskeySigninScreenWeb() {
+  const { passkeyLoginChallenge, getTokenByPasskey } = useAuth0();
+
+  // Must be called from a user gesture (e.g. an onClick handler).
+  const handleSignin = async () => {
+    try {
+      const challenge = await passkeyLoginChallenge({
+        realm: 'Username-Password-Authentication',
+      });
+
+      let credential: PublicKeyCredential;
+      try {
+        credential = (await navigator.credentials.get({
+          publicKey: challenge.authParamsPublicKey as PublicKeyCredentialRequestOptions,
+        })) as PublicKeyCredential;
+      } catch (e) {
+        throw new PasskeyError(e as Error);
+      }
+
+      const credentials = await getTokenByPasskey({
+        authSession: challenge.authSession,
+        authResponse: credential,
+        realm: 'Username-Password-Authentication',
+      });
+
+      console.log('Signed in with passkey');
+    } catch (error) {
+      if (error instanceof PasskeyError) {
+        console.error('Passkey signin failed:', error.type, error.message);
+      }
+    }
+  };
+
+  return <button onClick={handleSignin}>Sign In with Passkey</button>;
 }
 ```
 
@@ -1500,13 +1556,16 @@ The `passkeySignupChallenge` method accepts the following parameters to create a
 
 Passkey operations throw `PasskeyError` (extends `AuthError`) with a normalized `type` property. Use `PasskeyErrorCodes` for type-safe error handling:
 
-| Error Code                     | Description                                         |
-| ------------------------------ | --------------------------------------------------- |
-| `PASSKEY_CHALLENGE_FAILED`     | Auth0 challenge request failed                      |
-| `PASSKEY_EXCHANGE_FAILED`      | Token exchange with credential response failed      |
-| `PASSKEY_NOT_AVAILABLE`        | Passkeys not available on this device or OS version |
-| `PASSKEY_UNSUPPORTED_PLATFORM` | Passkeys not supported on this platform (Web)       |
-| `PASSKEY_UNKNOWN_ERROR`        | Unknown or uncategorized passkey error              |
+| Error Code                     | Description                                                                                                          |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `PASSKEY_CHALLENGE_FAILED`     | Auth0 challenge request failed                                                                                     |
+| `PASSKEY_EXCHANGE_FAILED`      | Token exchange with credential response failed                                                                     |
+| `PASSKEY_NOT_AVAILABLE`        | Passkeys not available on this device/OS version, or WebAuthn is not supported in this browser                    |
+| `PASSKEY_UNSUPPORTED_PLATFORM` | Passkeys not supported on this platform                                                                            |
+| `PASSKEY_INVALID_PARAMETER`    | The parameters provided were invalid (e.g. `passkeySignupChallenge` called with none of `email`/`phoneNumber`/`username`) |
+| `PASSKEY_CANCELLED`            | **Web only.** The user dismissed the passkey creation/assertion prompt                                             |
+| `PASSKEY_MFA_REQUIRED`         | **Web only.** MFA is required to complete the exchange — inspect `error.json.mfa_token` and continue with `mfa.challenge()`/`mfa.verify()` |
+| `PASSKEY_UNKNOWN_ERROR`        | Unknown or uncategorized passkey error — check `error.message` for the underlying description                     |
 
 ```typescript
 import { PasskeyError, PasskeyErrorCodes } from 'react-native-auth0';
@@ -1521,6 +1580,19 @@ try {
     console.log('Error message:', error.message);
     console.log('Error code:', error.code); // Raw native error code
   }
+}
+```
+
+**Web:** `navigator.credentials.create()`/`.get()` is not wrapped by the SDK — the app calls it directly between the challenge and exchange steps (see [Signup with Passkey (Web)](#signup-with-passkey-web)). Errors from that call (e.g. `DOMException` `NotAllowedError` when the user dismisses the prompt) are plain browser exceptions, not `PasskeyError`s, unless you wrap them yourself:
+
+```typescript
+try {
+  const credential = await navigator.credentials.get({ publicKey });
+} catch (e) {
+  // Normalizes DOMException names (NotAllowedError, AbortError,
+  // SecurityError, NotSupportedError, InvalidStateError, ConstraintError)
+  // into the same PasskeyErrorCodes used everywhere else.
+  throw new PasskeyError(e as Error);
 }
 ```
 

@@ -53,11 +53,13 @@ jest.mock('../../../../core/models', () => {
   class MockPasskeyError extends Error {
     type: string;
     code: string;
+    json: any;
     constructor(originalError: MockAuthError) {
       super(originalError.message);
       this.name = 'PasskeyError';
       this.code = originalError.code;
       this.type = originalError.code;
+      this.json = originalError.json;
     }
   }
 
@@ -637,6 +639,58 @@ describe('WebAuth0Client', () => {
         code: 'passkey_register_error',
       });
     });
+
+    it('should throw PasskeyError without calling the SPA client when no identifier is provided', async () => {
+      await expect(
+        client.passkeySignupChallenge({
+          name: 'John Doe',
+          realm: 'Username-Password-Authentication',
+        })
+      ).rejects.toMatchObject({
+        name: 'PasskeyError',
+        code: 'InvalidParameter',
+      });
+      expect(mockSpaClient.passkey.getSignupChallenge).not.toHaveBeenCalled();
+    });
+
+    it('should preserve the original message for a network failure with no .code or .error', async () => {
+      mockSpaClient.passkey.getSignupChallenge.mockRejectedValue(
+        new TypeError('Failed to fetch')
+      );
+
+      await expect(
+        client.passkeySignupChallenge({ email: 'user@example.com' })
+      ).rejects.toMatchObject({
+        name: 'PasskeyError',
+        message: 'Failed to fetch',
+      });
+    });
+
+    it('should accept phoneNumber as the sole identifier', async () => {
+      mockSpaClient.passkey.getSignupChallenge.mockResolvedValue({
+        authSession: 'auth-session-123',
+        publicKey: mockPublicKey,
+      });
+
+      await client.passkeySignupChallenge({ phoneNumber: '+15551234567' });
+
+      expect(mockSpaClient.passkey.getSignupChallenge).toHaveBeenCalledWith(
+        expect.objectContaining({ phoneNumber: '+15551234567' })
+      );
+    });
+
+    it('should accept username as the sole identifier', async () => {
+      mockSpaClient.passkey.getSignupChallenge.mockResolvedValue({
+        authSession: 'auth-session-123',
+        publicKey: mockPublicKey,
+      });
+
+      await client.passkeySignupChallenge({ username: 'johndoe' });
+
+      expect(mockSpaClient.passkey.getSignupChallenge).toHaveBeenCalledWith(
+        expect.objectContaining({ username: 'johndoe' })
+      );
+    });
   });
 
   describe('passkeyLoginChallenge method', () => {
@@ -676,6 +730,19 @@ describe('WebAuth0Client', () => {
         code: 'passkey_challenge_error',
       });
     });
+
+    it('should extract the OAuth2-style .error field when the SPA client rejects without a .code', async () => {
+      mockSpaClient.passkey.getLoginChallenge.mockRejectedValue({
+        error: 'passkey_not_supported',
+        error_description: 'WebAuthn is not supported in this browser.',
+        message: 'WebAuthn is not supported in this browser.',
+      });
+
+      await expect(client.passkeyLoginChallenge({})).rejects.toMatchObject({
+        name: 'PasskeyError',
+        code: 'passkey_not_supported',
+      });
+    });
   });
 
   describe('getTokenByPasskey method', () => {
@@ -710,13 +777,37 @@ describe('WebAuth0Client', () => {
         credential: mockCredential,
         realm: 'Username-Password-Authentication',
         audience: undefined,
-        scope: undefined,
+        scope: 'openid profile email',
         organization: undefined,
       });
       expect(result.accessToken).toBe('passkey-access-token');
       expect(result.idToken).toBe('passkey-id-token');
       expect(result.refreshToken).toBe('passkey-refresh-token');
       expect(result.expiresAt).toBeGreaterThan(Math.floor(Date.now() / 1000));
+    });
+
+    it('should use the provided scope instead of the default when given', async () => {
+      mockSpaClient._requestTokenForPasskey.mockResolvedValue({
+        access_token: 'passkey-access-token',
+        id_token: 'passkey-id-token',
+        token_type: 'Bearer',
+        expires_in: 3600,
+        scope: 'openid profile email offline_access',
+        refresh_token: 'passkey-refresh-token',
+      });
+
+      await client.getTokenByPasskey({
+        authSession: 'auth-session-123',
+        authResponse: JSON.stringify(mockCredential),
+        realm: 'Username-Password-Authentication',
+        scope: 'openid profile email offline_access',
+      });
+
+      expect(mockSpaClient._requestTokenForPasskey).toHaveBeenCalledWith(
+        expect.objectContaining({
+          scope: 'openid profile email offline_access',
+        })
+      );
     });
 
     it('should throw PasskeyError when the exchange fails', async () => {
@@ -733,6 +824,69 @@ describe('WebAuth0Client', () => {
       ).rejects.toMatchObject({
         name: 'PasskeyError',
         code: 'passkey_get_token_error',
+      });
+    });
+
+    it('should extract the OAuth2-style .error field from a GenericError-shaped rejection (no .code)', async () => {
+      // auth0-spa-js's _requestTokenForPasskey funnels through _requestToken,
+      // which throws GenericError/MfaRequiredError/MissingRefreshTokenError/
+      // UseDpopNonceError for the webauthn grant — none of these set `.code`,
+      // only the OAuth2-style `.error`/`.error_description` fields.
+      mockSpaClient._requestTokenForPasskey.mockRejectedValue({
+        error: 'invalid_grant',
+        error_description: 'Invalid authorization grant',
+        message: 'Invalid authorization grant',
+      });
+
+      await expect(
+        client.getTokenByPasskey({
+          authSession: 'auth-session-123',
+          authResponse: JSON.stringify(mockCredential),
+        })
+      ).rejects.toMatchObject({
+        name: 'PasskeyError',
+        code: 'invalid_grant',
+        message: 'Invalid authorization grant',
+      });
+    });
+
+    it('should propagate mfa_token/mfa_requirements when the exchange requires MFA', async () => {
+      mockSpaClient._requestTokenForPasskey.mockRejectedValue({
+        error: 'mfa_required',
+        error_description: 'MFA is required',
+        mfa_token: 'mfa_tok_123',
+        mfa_requirements: { challenge: [] },
+      });
+
+      await expect(
+        client.getTokenByPasskey({
+          authSession: 'auth-session-123',
+          authResponse: JSON.stringify(mockCredential),
+        })
+      ).rejects.toMatchObject({
+        name: 'PasskeyError',
+        code: 'mfa_required',
+        json: expect.objectContaining({ mfa_token: 'mfa_tok_123' }),
+      });
+    });
+
+    it('should preserve the original message when the rejection has neither .code nor .error', async () => {
+      // e.g. the bare Error thrown by auth0-spa-js's ID token verification.
+      mockSpaClient._requestTokenForPasskey.mockRejectedValue(
+        new Error(
+          'Signature algorithm of "none" is not supported. Expected the ID token to be signed with "RS256".'
+        )
+      );
+
+      await expect(
+        client.getTokenByPasskey({
+          authSession: 'auth-session-123',
+          authResponse: JSON.stringify(mockCredential),
+        })
+      ).rejects.toMatchObject({
+        name: 'PasskeyError',
+        message:
+          'Signature algorithm of "none" is not supported. Expected the ID token to be signed with "RS256".',
       });
     });
 
@@ -767,7 +921,7 @@ describe('WebAuth0Client', () => {
         credential: rawCredential,
         realm: 'Username-Password-Authentication',
         audience: undefined,
-        scope: undefined,
+        scope: 'openid profile email',
         organization: undefined,
       });
       expect(mockSpaClient._requestTokenForPasskey).not.toHaveBeenCalled();
