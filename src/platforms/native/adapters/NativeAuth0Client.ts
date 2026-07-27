@@ -312,6 +312,14 @@ export class NativeAuth0Client implements IAuth0Client {
   ): Promise<Credentials> {
     const { authSession, authResponse, realm, audience, scope, organization } =
       parameters;
+    if (typeof authResponse !== 'string') {
+      throw new PasskeyError(
+        new AuthError(
+          'InvalidParameter',
+          'authResponse must be a JSON string on native platforms.'
+        )
+      );
+    }
     try {
       return await this.guardedBridge.getTokenByPasskey(
         authSession,

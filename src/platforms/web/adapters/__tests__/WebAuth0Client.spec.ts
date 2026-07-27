@@ -125,6 +125,7 @@ describe('WebAuth0Client', () => {
       passkey: {
         getSignupChallenge: jest.fn(),
         getLoginChallenge: jest.fn(),
+        getTokenWithPasskey: jest.fn(),
       },
       _requestTokenForPasskey: jest.fn(),
     } as any;
@@ -732,6 +733,70 @@ describe('WebAuth0Client', () => {
       ).rejects.toMatchObject({
         name: 'PasskeyError',
         code: 'passkey_get_token_error',
+      });
+    });
+
+    it('should exchange a raw PublicKeyCredential via passkey.getTokenWithPasskey', async () => {
+      const rawCredential = {
+        id: 'credential-id',
+        rawId: new ArrayBuffer(8),
+        type: 'public-key',
+        response: {
+          clientDataJSON: new ArrayBuffer(8),
+          attestationObject: new ArrayBuffer(8),
+        },
+      } as unknown as PublicKeyCredential;
+
+      mockSpaClient.passkey.getTokenWithPasskey.mockResolvedValue({
+        access_token: 'passkey-access-token',
+        id_token: 'passkey-id-token',
+        token_type: 'Bearer',
+        expires_in: 3600,
+        scope: 'openid profile email',
+        refresh_token: 'passkey-refresh-token',
+      });
+
+      const result = await client.getTokenByPasskey({
+        authSession: 'auth-session-123',
+        authResponse: rawCredential,
+        realm: 'Username-Password-Authentication',
+      });
+
+      expect(mockSpaClient.passkey.getTokenWithPasskey).toHaveBeenCalledWith({
+        authSession: 'auth-session-123',
+        credential: rawCredential,
+        realm: 'Username-Password-Authentication',
+        audience: undefined,
+        scope: undefined,
+        organization: undefined,
+      });
+      expect(mockSpaClient._requestTokenForPasskey).not.toHaveBeenCalled();
+      expect(result.accessToken).toBe('passkey-access-token');
+      expect(result.idToken).toBe('passkey-id-token');
+    });
+
+    it('should throw PasskeyError when getTokenWithPasskey fails for a raw credential', async () => {
+      const rawCredential = {
+        id: 'credential-id',
+        rawId: new ArrayBuffer(8),
+        type: 'public-key',
+        response: { clientDataJSON: new ArrayBuffer(8) },
+      } as unknown as PublicKeyCredential;
+
+      mockSpaClient.passkey.getTokenWithPasskey.mockRejectedValue({
+        code: 'passkey_invalid_credential',
+        message:
+          'The provided credential is not a valid attestation or assertion response.',
+      });
+
+      await expect(
+        client.getTokenByPasskey({
+          authSession: 'auth-session-123',
+          authResponse: rawCredential,
+        })
+      ).rejects.toMatchObject({
+        name: 'PasskeyError',
+        code: 'passkey_invalid_credential',
       });
     });
   });

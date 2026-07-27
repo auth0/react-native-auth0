@@ -1352,51 +1352,10 @@ function PasskeySigninScreen() {
 
 ### Signup with Passkey (Web)
 
-On web, step 2 (the credential manager) uses the browser's built-in [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) — `navigator.credentials.create()` for signup and `navigator.credentials.get()` for login — instead of a native module or third-party library. Serialize the resulting `PublicKeyCredential` to the JSON shape described in [Auth Response Format](#passkeys-auth-response-format) before passing it to `getTokenByPasskey`.
+On web, step 2 (the credential manager) uses the browser's built-in [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) — `navigator.credentials.create()` for signup and `navigator.credentials.get()` for login — instead of a native module or third-party library. Unlike native, `authResponse` on web accepts the raw `PublicKeyCredential` object returned directly by `navigator.credentials` — no manual serialization needed. (See [Auth Response Format](#passkeys-auth-response-format) for the native, JSON-string form.)
 
 ```tsx
 import { useAuth0, PasskeyError } from 'react-native-auth0';
-
-// Converts a PublicKeyCredential from navigator.credentials into the
-// JSON shape getTokenByPasskey expects (see "Auth Response Format" below).
-function serializeCredential(credential: PublicKeyCredential) {
-  const toBase64Url = (buffer: ArrayBuffer) =>
-    btoa(String.fromCharCode(...new Uint8Array(buffer)))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
-
-  const response = credential.response;
-  const isAttestation = 'attestationObject' in response;
-
-  return JSON.stringify({
-    id: credential.id,
-    rawId: toBase64Url(credential.rawId),
-    type: credential.type,
-    authenticatorAttachment: credential.authenticatorAttachment ?? undefined,
-    response: isAttestation
-      ? {
-          clientDataJSON: toBase64Url(response.clientDataJSON),
-          attestationObject: toBase64Url(
-            (response as AuthenticatorAttestationResponse).attestationObject
-          ),
-        }
-      : {
-          clientDataJSON: toBase64Url(response.clientDataJSON),
-          authenticatorData: toBase64Url(
-            (response as AuthenticatorAssertionResponse).authenticatorData
-          ),
-          signature: toBase64Url(
-            (response as AuthenticatorAssertionResponse).signature
-          ),
-          userHandle: (response as AuthenticatorAssertionResponse).userHandle
-            ? toBase64Url(
-                (response as AuthenticatorAssertionResponse).userHandle!
-              )
-            : undefined,
-        },
-  });
-}
 
 function PasskeySignupScreenWeb() {
   const { passkeySignupChallenge, getTokenByPasskey } = useAuth0();
@@ -1410,13 +1369,13 @@ function PasskeySignupScreenWeb() {
         realm: 'Username-Password-Authentication',
       });
 
-      const credential = (await navigator.credentials.create({
+      const credential = await navigator.credentials.create({
         publicKey: challenge.authParamsPublicKey as PublicKeyCredentialCreationOptions,
-      })) as PublicKeyCredential;
+      });
 
       const credentials = await getTokenByPasskey({
         authSession: challenge.authSession,
-        authResponse: serializeCredential(credential),
+        authResponse: credential as PublicKeyCredential,
         realm: 'Username-Password-Authentication',
       });
 
@@ -1436,7 +1395,7 @@ function PasskeySignupScreenWeb() {
 
 ### Auth Response Format
 
-The `authResponse` parameter passed to `getTokenByPasskey` must be a JSON string representing the [PublicKeyCredential](https://www.w3.org/TR/webauthn-2/#publickeycredential) response from the platform credential manager (native module/library on iOS/Android, `navigator.credentials` on web).
+On **iOS and Android**, the `authResponse` parameter passed to `getTokenByPasskey` must be a JSON string representing the [PublicKeyCredential](https://www.w3.org/TR/webauthn-2/#publickeycredential) response from the platform credential manager. On **web**, pass the raw `PublicKeyCredential` object returned by `navigator.credentials.create()`/`.get()` directly — the SDK serializes it internally.
 
 **For registration (signup):**
 

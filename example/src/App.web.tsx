@@ -51,47 +51,6 @@ type MfaStep =
 
 type EnrollType = MfaFactorType;
 
-// Converts a PublicKeyCredential from navigator.credentials into the JSON
-// shape getTokenByPasskey expects (see EXAMPLES.md "Auth Response Format").
-const toBase64Url = (buffer: ArrayBuffer): string =>
-  btoa(String.fromCharCode(...new Uint8Array(buffer)))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
-
-const serializePasskeyCredential = (credential: PublicKeyCredential): string => {
-  const response = credential.response;
-  const isAttestation = 'attestationObject' in response;
-
-  return JSON.stringify({
-    id: credential.id,
-    rawId: toBase64Url(credential.rawId),
-    type: credential.type,
-    authenticatorAttachment: credential.authenticatorAttachment ?? undefined,
-    response: isAttestation
-      ? {
-          clientDataJSON: toBase64Url(response.clientDataJSON),
-          attestationObject: toBase64Url(
-            (response as AuthenticatorAttestationResponse).attestationObject
-          ),
-        }
-      : {
-          clientDataJSON: toBase64Url(response.clientDataJSON),
-          authenticatorData: toBase64Url(
-            (response as AuthenticatorAssertionResponse).authenticatorData
-          ),
-          signature: toBase64Url(
-            (response as AuthenticatorAssertionResponse).signature
-          ),
-          userHandle: (response as AuthenticatorAssertionResponse).userHandle
-            ? toBase64Url(
-                (response as AuthenticatorAssertionResponse).userHandle!
-              )
-            : undefined,
-        },
-  });
-};
-
 // ========================================================================
 // --- 1. HOOKS-BASED IMPLEMENTATION (Recommended) ---
 // ========================================================================
@@ -259,7 +218,7 @@ const HooksAuthContent = (): React.JSX.Element => {
 
       const credentials = await getTokenByPasskey({
         authSession: challenge.authSession,
-        authResponse: serializePasskeyCredential(credential),
+        authResponse: credential,
         realm: 'Username-Password-Authentication',
       });
 
@@ -290,7 +249,7 @@ const HooksAuthContent = (): React.JSX.Element => {
 
       const credentials = await getTokenByPasskey({
         authSession: challenge.authSession,
-        authResponse: serializePasskeyCredential(credential),
+        authResponse: credential,
         realm: 'Username-Password-Authentication',
       });
 

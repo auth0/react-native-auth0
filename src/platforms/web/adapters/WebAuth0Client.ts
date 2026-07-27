@@ -380,21 +380,30 @@ export class WebAuth0Client implements IAuth0Client {
         scope,
         organization,
       } = parameters;
-      // `authResponse` is already a serialized (base64url) credential JSON
-      // matching the native platforms' format, not a raw WebAuthn
-      // PublicKeyCredential — so we bypass `passkey.getTokenWithPasskey()`
-      // (which expects the raw browser credential) and go straight to the
-      // token exchange with the pre-serialized shape it would have produced.
-      const credential: PasskeyCredentialResponse = JSON.parse(authResponse);
 
-      const response = await this.client._requestTokenForPasskey({
-        authSession,
-        credential,
-        realm,
-        audience,
-        scope,
-        organization,
-      });
+      // `authResponse` is the raw PublicKeyCredential from
+      // navigator.credentials.create()/.get() on the primary web path.
+      // getTokenWithPasskey() detects attestation vs assertion and
+      // serializes it internally. A JSON string is also accepted for
+      // parity with the native platforms' bridge contract.
+      const response =
+        typeof authResponse === 'string'
+          ? await this.client._requestTokenForPasskey({
+              authSession,
+              credential: JSON.parse(authResponse) as PasskeyCredentialResponse,
+              realm,
+              audience,
+              scope,
+              organization,
+            })
+          : await this.client.passkey.getTokenWithPasskey({
+              authSession,
+              credential: authResponse,
+              realm,
+              audience,
+              scope,
+              organization,
+            });
 
       const expiresAt = Math.floor(Date.now() / 1000) + response.expires_in;
 
