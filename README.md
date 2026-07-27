@@ -32,9 +32,9 @@ We're excited to announce the release of react-native-auth0 `v5.0.0`!
 
 ### Requirements
 
-This SDK targets apps that are using React Native SDK version `0.78.0` and up. If you're using an older React Native version, see the compatibility matrix below.
+This SDK targets apps that are using React Native SDK version `0.82.0` and up. If you're using an older React Native version, see the compatibility matrix below.
 
-This SDK fully supports React Native New Architecture and Expo 53+.
+React Native `0.82` is the first React Native release that runs **entirely on the New Architecture**. As of v6, this SDK is **New Architecture-only** — the Legacy Architecture is no longer supported. If your app has not yet moved to the New Architecture, upgrade to React Native `0.82`+ or stay on v5.x. For Expo, this SDK requires **Expo SDK 55 or higher** (Expo 54 ships React Native `0.81`, below the `0.82` floor).
 
 > ⚠️ **Warning**: If you are using Expo version less than 53, you need to use react-native-auth0 version 4.x or earlier. Version 5.x supports Expo 53 and above.
 
