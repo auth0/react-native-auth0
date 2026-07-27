@@ -37,7 +37,12 @@ import type {
   RecoveryCodeEnrollmentChallenge,
   Factor,
 } from '../../../types';
-import { AuthError, PasskeyError, MyAccountError } from '../../../core/models';
+import {
+  AuthError,
+  PasskeyError,
+  PasskeyErrorCodes,
+  MyAccountError,
+} from '../../../core/models';
 
 /**
  * Web implementation of the My Account API, backed by `@auth0/auth0-spa-js`.
@@ -150,7 +155,7 @@ export class WebMyAccountClient implements IMyAccountClient {
           >,
         };
       },
-      (e) => new PasskeyError(e)
+      (e) => new PasskeyError(e, PasskeyErrorCodes.CHALLENGE_FAILED)
     );
   }
 
@@ -169,7 +174,8 @@ export class WebMyAccountClient implements IMyAccountClient {
             new AuthError(
               'invalid_auth_response',
               'authResponse is not valid JSON'
-            )
+            ),
+            PasskeyErrorCodes.EXCHANGE_FAILED
           );
         }
         const options: EnrollmentVerifyOptions = {
@@ -196,7 +202,7 @@ export class WebMyAccountClient implements IMyAccountClient {
           relyingPartyId: res.relying_party_id,
         };
       },
-      (e) => new PasskeyError(e)
+      (e) => new PasskeyError(e, PasskeyErrorCodes.EXCHANGE_FAILED)
     );
   }
 

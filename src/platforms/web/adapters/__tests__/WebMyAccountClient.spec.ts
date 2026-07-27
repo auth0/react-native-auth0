@@ -1,5 +1,9 @@
 import { WebMyAccountClient } from '../WebMyAccountClient';
-import { MyAccountError, PasskeyError } from '../../../../core/models';
+import {
+  MyAccountError,
+  PasskeyError,
+  PasskeyErrorCodes,
+} from '../../../../core/models';
 
 const mockApiInstance = {
   getFactors: jest.fn(),
@@ -362,11 +366,11 @@ describe('WebMyAccountClient', () => {
       }
     });
 
-    it('wraps passkey errors into PasskeyError', async () => {
+    it('wraps passkey challenge errors into PasskeyError with CHALLENGE_FAILED type', async () => {
       const client = makeClient();
       mockApiInstance.enrollmentChallenge.mockRejectedValue(
         new MyAccountApiError({
-          type: 'err',
+          type: 'https://auth0.com/api-errors/A0E-400-0001',
           status: 400,
           title: 'Bad Request',
           detail: 'nope',
@@ -375,7 +379,34 @@ describe('WebMyAccountClient', () => {
 
       await expect(
         client.passkeyEnrollmentChallenge({ accessToken: TOKEN })
-      ).rejects.toThrow(PasskeyError);
+      ).rejects.toMatchObject({
+        constructor: PasskeyError,
+        type: PasskeyErrorCodes.CHALLENGE_FAILED,
+      });
+    });
+
+    it('wraps passkey verify errors into PasskeyError with EXCHANGE_FAILED type', async () => {
+      const client = makeClient();
+      mockApiInstance.enrollmentVerify.mockRejectedValue(
+        new MyAccountApiError({
+          type: 'https://auth0.com/api-errors/A0E-400-0002',
+          status: 400,
+          title: 'Bad Request',
+          detail: 'nope',
+        })
+      );
+
+      await expect(
+        client.enrollPasskey({
+          accessToken: TOKEN,
+          authenticationMethodId: 'am_1',
+          authSession: 'sess_1',
+          authResponse: '{}',
+        })
+      ).rejects.toMatchObject({
+        constructor: PasskeyError,
+        type: PasskeyErrorCodes.EXCHANGE_FAILED,
+      });
     });
 
     it('rethrows non-MyAccountApiError errors unchanged', async () => {
