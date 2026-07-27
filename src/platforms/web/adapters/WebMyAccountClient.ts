@@ -161,11 +161,22 @@ export class WebMyAccountClient implements IMyAccountClient {
       parameters;
     return this.run(
       async () => {
+        let authnResponse: any;
+        try {
+          authnResponse = JSON.parse(authResponse);
+        } catch {
+          throw new PasskeyError(
+            new AuthError(
+              'invalid_auth_response',
+              'authResponse is not valid JSON'
+            )
+          );
+        }
         const options: EnrollmentVerifyOptions = {
           type: 'passkey',
           location: this.locationFor(authenticationMethodId),
           auth_session: authSession,
-          authn_response: JSON.parse(authResponse),
+          authn_response: authnResponse,
         };
         const res = (await this.makeClient(accessToken).enrollmentVerify(
           options

@@ -109,7 +109,7 @@ const HooksAuthContent = (): React.JSX.Element => {
   const [enrollmentState, setEnrollmentState] = useState<{
     id: string;
     authSession: string;
-    kind: 'otp' | 'recovery';
+    kind: 'phone' | 'email' | 'totp' | 'recovery';
   } | null>(null);
   const [passkeyChallenge, setPasskeyChallenge] = useState<{
     authenticationMethodId: string;
@@ -361,8 +361,7 @@ const HooksAuthContent = (): React.JSX.Element => {
         phoneNumber: phoneNumber.trim(),
         preferredAuthenticationMethod: PreferredAuthenticationMethods.SMS,
       });
-      console.log('challenge', challenge);
-      setEnrollmentState({ ...challenge, kind: 'otp' });
+      setEnrollmentState({ ...challenge, kind: 'phone' });
       return { step: 'enrollPhone', ...challenge };
     });
 
@@ -372,7 +371,7 @@ const HooksAuthContent = (): React.JSX.Element => {
         accessToken,
         emailAddress: emailAddress.trim(),
       });
-      setEnrollmentState({ ...challenge, kind: 'otp' });
+      setEnrollmentState({ ...challenge, kind: 'email' });
       return { step: 'enrollEmail', ...challenge };
     });
 
@@ -382,7 +381,7 @@ const HooksAuthContent = (): React.JSX.Element => {
       setEnrollmentState({
         id: challenge.id,
         authSession: challenge.authSession,
-        kind: 'otp',
+        kind: 'totp',
       });
       return {
         step: 'enrollTOTP',
@@ -420,7 +419,12 @@ const HooksAuthContent = (): React.JSX.Element => {
           authSession: enrollmentState.authSession,
         });
       } else {
-        method = await myAccount.confirmPhoneEnrollment({
+        const confirmByKind = {
+          phone: myAccount.confirmPhoneEnrollment,
+          email: myAccount.confirmEmailEnrollment,
+          totp: myAccount.confirmTOTPEnrollment,
+        };
+        method = await confirmByKind[enrollmentState.kind].call(myAccount, {
           accessToken,
           id: enrollmentState.id,
           authSession: enrollmentState.authSession,
@@ -1859,7 +1863,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 8,
   },
-  hint: { fontSize: 12, color: '#666', marginBottom: 8 },
   buttonGroup: { gap: 10 },
   hint: { fontSize: 12, color: '#888', fontStyle: 'italic', marginBottom: 8 },
   toggleContainer: {
