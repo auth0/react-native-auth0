@@ -40,6 +40,7 @@ export class WebAuth0Client implements IAuth0Client {
   readonly credentialsManager: WebCredentialsManager;
   readonly auth: IAuthenticationProvider;
   readonly mfa: IMfaClient;
+  readonly myAccount: IMyAccountClient;
 
   private readonly httpClient: HttpClient;
   private readonly tokenType: TokenType;
@@ -131,6 +132,11 @@ export class WebAuth0Client implements IAuth0Client {
     this.webAuth = new WebWebAuthProvider(this.client);
     this.credentialsManager = new WebCredentialsManager(this.client);
     this.mfa = new WebMfaClient(this.client.mfa, this.tokenType);
+    this.myAccount = new WebMyAccountClient(
+      this.client,
+      options.domain,
+      useDPoP
+    );
   }
 
   users(token: string, tokenType?: TokenType): IUsersClient {
@@ -150,8 +156,6 @@ export class WebAuth0Client implements IAuth0Client {
       getDPoPHeaders,
     });
   }
-
-  readonly myAccount: IMyAccountClient = new WebMyAccountClient();
 
   readonly passwordless: IPasswordlessClient = new WebPasswordlessClient();
 
