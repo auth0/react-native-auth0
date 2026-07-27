@@ -188,9 +188,11 @@ RCT_EXPORT_METHOD(customTokenExchange:(NSString *)subjectToken
                   audience:(NSString * _Nullable)audience
                   scope:(NSString * _Nullable)scope
                   organization:(NSString * _Nullable)organization
+                  actorToken:(NSString * _Nullable)actorToken
+                  actorTokenType:(NSString * _Nullable)actorTokenType
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-    [self.nativeBridge customTokenExchangeWithSubjectToken:subjectToken subjectTokenType:subjectTokenType audience:audience scope:scope organization:organization resolve:resolve reject:reject];
+    [self.nativeBridge customTokenExchangeWithSubjectToken:subjectToken subjectTokenType:subjectTokenType audience:audience scope:scope organization:organization actorToken:actorToken actorTokenType:actorTokenType resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(getMfaAuthenticators:(NSString *)mfaToken

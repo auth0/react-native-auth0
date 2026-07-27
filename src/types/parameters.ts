@@ -181,6 +181,29 @@ export interface CustomTokenExchangeParameters {
    * When provided, the organization ID will be present in the access token.
    */
   organization?: string;
+
+  /**
+   * The token representing the acting party in a delegation/impersonation
+   * flow (RFC 8693 Section 2.1). When provided, the issued tokens may carry
+   * an `act` claim describing the actor, accessible via `user.act`.
+   *
+   * If `actorToken` is provided, `actorTokenType` must also be provided.
+   *
+   * Note: when an actor token is present, Auth0 will not issue a refresh
+   * token regardless of whether `offline_access` is in the requested scope.
+   */
+  actorToken?: string;
+
+  /**
+   * The type identifier for the actor token. Follows the same URI validation
+   * rules as `subjectTokenType` and may be any developer-defined URI.
+   *
+   * If `actorTokenType` is provided, `actorToken` must also be provided.
+   *
+   * @example "urn:ietf:params:oauth:token-type:id_token"
+   * @example "http://corporate-idp/id-token"
+   */
+  actorTokenType?: string;
 }
 
 /**
