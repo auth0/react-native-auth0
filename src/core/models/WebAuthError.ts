@@ -57,6 +57,8 @@ export const WebAuthErrorCodes = {
   INVALID_INVITATION_URL: 'INVALID_INVITATION_URL',
   /** State parameter mismatch (potential CSRF attack) */
   INVALID_STATE: 'INVALID_STATE',
+  /** Callback URL did not match the expected redirect, e.g. an in-page link captured by the browser session (iOS) */
+  INVALID_CALLBACK_URL: 'INVALID_CALLBACK_URL',
   /** Authentication flow timed out */
   TIMEOUT_ERROR: 'TIMEOUT_ERROR',
   /** User consent required for requested scopes */
@@ -89,6 +91,7 @@ const ERROR_CODE_MAP: Record<string, string> = {
   'NO_AUTHORIZATION_CODE': WebAuthErrorCodes.NO_AUTHORIZATION_CODE,
   'PKCE_NOT_ALLOWED': WebAuthErrorCodes.PKCE_NOT_ALLOWED,
   'INVALID_INVITATION_URL': WebAuthErrorCodes.INVALID_INVITATION_URL,
+  'INVALID_CALLBACK_URL': WebAuthErrorCodes.INVALID_CALLBACK_URL,
 
   // --- Web (@auth0/auth0-spa-js) mappings ---
   'cancelled': WebAuthErrorCodes.USER_CANCELLED,

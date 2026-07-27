@@ -189,6 +189,13 @@ describe('NativeWebAuthProvider Error Handling', () => {
         method: 'authorize',
         mockMethod: 'authorize',
       },
+      {
+        code: 'INVALID_CALLBACK_URL',
+        message: 'Invalid callback URL: com.app://host/callback?tapped=privacy',
+        expectedType: 'INVALID_CALLBACK_URL',
+        method: 'authorize',
+        mockMethod: 'authorize',
+      },
     ];
 
     iOSErrorTestCases.forEach(
