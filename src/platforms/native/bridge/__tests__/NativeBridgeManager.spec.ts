@@ -413,7 +413,7 @@ describe('NativeBridgeManager', () => {
 
     it('should call the native customTokenExchange method with all parameters', async () => {
       MockedAuth0NativeModule.customTokenExchange.mockResolvedValueOnce(
-        mockExchangeResponse as any
+        mockExchangeResponse as unknown as Credentials
       );
 
       await bridge.customTokenExchange(
@@ -432,13 +432,41 @@ describe('NativeBridgeManager', () => {
         'urn:acme:legacy-token',
         'https://api.example.com',
         'openid profile email',
-        'org_123'
+        'org_123',
+        undefined,
+        undefined
+      );
+    });
+
+    it('should forward actor token parameters to the native module', async () => {
+      MockedAuth0NativeModule.customTokenExchange.mockResolvedValueOnce(
+        mockExchangeResponse as unknown as Credentials
+      );
+
+      await bridge.customTokenExchange(
+        'external-token',
+        'urn:acme:legacy-token',
+        undefined,
+        undefined,
+        undefined,
+        'actor-token',
+        'http://corporate-idp/id-token'
+      );
+
+      expect(MockedAuth0NativeModule.customTokenExchange).toHaveBeenCalledWith(
+        'external-token',
+        'urn:acme:legacy-token',
+        undefined,
+        undefined,
+        undefined,
+        'actor-token',
+        'http://corporate-idp/id-token'
       );
     });
 
     it('should call native method with undefined for optional parameters', async () => {
       MockedAuth0NativeModule.customTokenExchange.mockResolvedValueOnce(
-        mockExchangeResponse as any
+        mockExchangeResponse as unknown as Credentials
       );
 
       await bridge.customTokenExchange(
@@ -451,13 +479,15 @@ describe('NativeBridgeManager', () => {
         'urn:acme:legacy-token',
         undefined,
         undefined,
+        undefined,
+        undefined,
         undefined
       );
     });
 
     it('should correctly transform the native response to a Credentials model', async () => {
       MockedAuth0NativeModule.customTokenExchange.mockResolvedValueOnce(
-        mockExchangeResponse as any
+        mockExchangeResponse as unknown as Credentials
       );
 
       const credentials = await bridge.customTokenExchange(
@@ -489,7 +519,28 @@ describe('NativeBridgeManager', () => {
       } catch (e) {
         const tokenExchangeError = e as AuthError;
         expect(tokenExchangeError.message).toBe('Token exchange failed');
-        expect(tokenExchangeError.code).toBe('custom_token_exchange_failed');
+        expect(tokenExchangeError.code).toBe('a0.token_exchange_failed');
+        expect(tokenExchangeError.name).toBe('a0.token_exchange_failed');
+      }
+    });
+
+    it('preserves a specific Auth0 error code (e.g. invalid_request) instead of flattening it', async () => {
+      const nativeError = {
+        code: 'invalid_request',
+        message:
+          '"custom_authentication" Token Exchange Profile is not allowed for the client.',
+      };
+      MockedAuth0NativeModule.customTokenExchange.mockRejectedValue(
+        nativeError
+      );
+
+      try {
+        await bridge.customTokenExchange('bad-token', 'urn:acme:legacy-token');
+        throw new Error('Expected customTokenExchange to throw');
+      } catch (e) {
+        const err = e as AuthError;
+        expect(err.code).toBe('invalid_request');
+        expect(err.name).toBe('invalid_request');
       }
     });
   });

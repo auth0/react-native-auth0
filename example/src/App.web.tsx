@@ -67,6 +67,7 @@ const HooksAuthContent = (): React.JSX.Element => {
     createUser,
     resetPassword,
     loginWithPasswordRealm,
+    customTokenExchange,
     mfa,
     users,
     myAccount,
@@ -76,6 +77,30 @@ const HooksAuthContent = (): React.JSX.Element => {
   const [apiError, setApiError] = useState<Error | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // Custom Token Exchange (RFC 8693) state
+  const [subjectToken, setSubjectToken] = useState('');
+  const [subjectTokenType, setSubjectTokenType] = useState(
+    'urn:acme:external-idp-token'
+  );
+  const [actorToken, setActorToken] = useState('');
+  const [actorTokenType, setActorTokenType] = useState(
+    'urn:ietf:params:oauth:token-type:id_token'
+  );
+
+  const fillActorTokenFromSession = async () => {
+    setApiError(null);
+    try {
+      const credentials = await getCredentials();
+      if (credentials?.idToken) {
+        setActorToken(credentials.idToken);
+      } else {
+        setApiError(new Error('No ID token available in the current session.'));
+      }
+    } catch (e) {
+      setApiError(e as Error);
+    }
+  };
 
   // MFA wizard state
   const [mfaToken, setMfaToken] = useState('');
@@ -539,6 +564,72 @@ const HooksAuthContent = (): React.JSX.Element => {
               disabled={!result?.accessToken}
             />
             <Button onPress={clearSession} title="Log Out" />
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>
+              Custom Token Exchange (RFC 8693)
+            </Text>
+            <LabeledInput
+              label="Subject Token"
+              value={subjectToken}
+              onChangeText={setSubjectToken}
+              placeholder="External IdP token to exchange"
+              autoCapitalize="none"
+            />
+            <LabeledInput
+              label="Subject Token Type"
+              value={subjectTokenType}
+              onChangeText={setSubjectTokenType}
+              autoCapitalize="none"
+            />
+            <Button
+              onPress={() =>
+                runDemo(() =>
+                  customTokenExchange({ subjectToken, subjectTokenType })
+                )
+              }
+              title="customTokenExchange()"
+              disabled={!subjectToken || !subjectTokenType}
+            />
+
+            <Text style={styles.hint}>Delegation & Impersonation</Text>
+            <LabeledInput
+              label="Actor Token"
+              value={actorToken}
+              onChangeText={setActorToken}
+              placeholder="Acting-party token"
+              autoCapitalize="none"
+            />
+            <Button
+              onPress={fillActorTokenFromSession}
+              title="Use my ID token as actor"
+            />
+            <LabeledInput
+              label="Actor Token Type"
+              value={actorTokenType}
+              onChangeText={setActorTokenType}
+              autoCapitalize="none"
+            />
+            <Button
+              onPress={() =>
+                runDemo(() =>
+                  customTokenExchange({
+                    subjectToken,
+                    subjectTokenType,
+                    actorToken,
+                    actorTokenType,
+                  })
+                )
+              }
+              title="customTokenExchange() with actor"
+              disabled={
+                !subjectToken ||
+                !subjectTokenType ||
+                !actorToken ||
+                !actorTokenType
+              }
+            />
           </View>
 
           <View style={styles.section}>
