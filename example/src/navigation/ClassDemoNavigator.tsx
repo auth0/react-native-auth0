@@ -12,7 +12,7 @@ import type { Credentials } from 'react-native-auth0';
 export type ClassDemoStackParamList = {
   ClassLogin: undefined;
   ClassProfile: { credentials: Credentials }; // Expects credentials to be passed after login
-  ClassApiTests: { accessToken: string }; // Expects an access token for API calls
+  ClassApiTests: { accessToken: string; idToken?: string }; // Access token for API calls; idToken prefills the CTE actor token
 };
 
 const Stack = createStackNavigator<ClassDemoStackParamList>();

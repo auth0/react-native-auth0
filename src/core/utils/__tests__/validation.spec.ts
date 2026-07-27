@@ -1,5 +1,108 @@
-import { validateAuth0Options } from '../validation';
+import {
+  validateAuth0Options,
+  validateActorTokenParameters,
+  validateTokenTypeUri,
+} from '../validation';
 import { AuthError } from '../../models';
+
+describe('validateActorTokenParameters', () => {
+  it('should not throw when neither parameter is provided', () => {
+    expect(() => validateActorTokenParameters()).not.toThrow();
+  });
+
+  it('should not throw when both parameters are provided', () => {
+    expect(() =>
+      validateActorTokenParameters('actor-token', 'urn:token-type')
+    ).not.toThrow();
+  });
+
+  it('returns the provided values unchanged when both are valid', () => {
+    expect(
+      validateActorTokenParameters('actor-token', 'urn:token-type')
+    ).toEqual({
+      actorToken: 'actor-token',
+      actorTokenType: 'urn:token-type',
+    });
+  });
+
+  it('normalizes empty/whitespace-only values to undefined', () => {
+    expect(validateActorTokenParameters('   ', '   ')).toEqual({
+      actorToken: undefined,
+      actorTokenType: undefined,
+    });
+  });
+
+  it('should throw when only actorToken is provided', () => {
+    expect(() => validateActorTokenParameters('actor-token')).toThrow(
+      AuthError
+    );
+  });
+
+  it('should throw with the invalid_actor_token_parameters code', () => {
+    expect(() =>
+      validateActorTokenParameters(undefined, 'urn:token-type')
+    ).toThrow(
+      expect.objectContaining({ code: 'invalid_actor_token_parameters' })
+    );
+  });
+
+  it('treats an empty actorToken as not provided and fails the pairing check', () => {
+    expect(() => validateActorTokenParameters('', 'urn:token-type')).toThrow(
+      expect.objectContaining({ code: 'invalid_actor_token_parameters' })
+    );
+  });
+
+  it('treats a whitespace-only actorToken as not provided', () => {
+    expect(() => validateActorTokenParameters('   ', 'urn:token-type')).toThrow(
+      expect.objectContaining({ code: 'invalid_actor_token_parameters' })
+    );
+  });
+
+  it('does not throw when both parameters are empty (delegation not requested)', () => {
+    expect(() => validateActorTokenParameters('', '')).not.toThrow();
+  });
+
+  it('throws invalid_token_type when actorTokenType is not a valid URI', () => {
+    expect(() =>
+      validateActorTokenParameters('actor-token', 'not-a-uri')
+    ).toThrow(expect.objectContaining({ code: 'invalid_token_type' }));
+  });
+});
+
+describe('validateTokenTypeUri', () => {
+  it('accepts a urn-style token type', () => {
+    expect(() =>
+      validateTokenTypeUri(
+        'urn:ietf:params:oauth:token-type:id_token',
+        'subjectTokenType'
+      )
+    ).not.toThrow();
+  });
+
+  it('accepts an http(s) token type', () => {
+    expect(() =>
+      validateTokenTypeUri('http://corporate-idp/id-token', 'subjectTokenType')
+    ).not.toThrow();
+  });
+
+  it('throws invalid_token_type when the value has no scheme', () => {
+    expect(() =>
+      validateTokenTypeUri('legacy-token', 'subjectTokenType')
+    ).toThrow(expect.objectContaining({ code: 'invalid_token_type' }));
+  });
+
+  it('throws invalid_token_type when the value is empty', () => {
+    expect(() => validateTokenTypeUri('', 'subjectTokenType')).toThrow(
+      expect.objectContaining({ code: 'invalid_token_type' })
+    );
+  });
+
+  it('throws invalid_token_type when the value contains whitespace', () => {
+    expect(() =>
+      validateTokenTypeUri('urn:token type', 'subjectTokenType')
+    ).toThrow(expect.objectContaining({ code: 'invalid_token_type' }));
+  });
+});
 
 describe('validateAuth0Options', () => {
   const validOptions = {

@@ -167,7 +167,9 @@ export interface Spec extends TurboModule {
     subjectTokenType: string,
     audience: string | undefined,
     scope: string | undefined,
-    organization: string | undefined
+    organization: string | undefined,
+    actorToken: string | undefined,
+    actorTokenType: string | undefined
   ): Promise<Credentials>;
 
   /**
