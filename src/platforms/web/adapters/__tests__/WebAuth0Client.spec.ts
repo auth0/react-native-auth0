@@ -2,6 +2,7 @@ import { Auth0Client } from '@auth0/auth0-spa-js';
 import { WebAuth0Client } from '../WebAuth0Client';
 import { WebWebAuthProvider } from '../WebWebAuthProvider';
 import { WebCredentialsManager } from '../WebCredentialsManager';
+import { WebMyAccountClient } from '../WebMyAccountClient';
 import {
   AuthenticationOrchestrator,
   ManagementApiOrchestrator,
@@ -201,6 +202,10 @@ describe('WebAuth0Client', () => {
     it('should provide access to the underlying Auth0Client instance', () => {
       expect(client.client).toBeDefined();
       expect(client.client).toBe(mockSpaClient);
+    });
+
+    it('should provide a WebMyAccountClient wired with the shared spa-js client', () => {
+      expect(client.myAccount).toBeInstanceOf(WebMyAccountClient);
     });
   });
 
