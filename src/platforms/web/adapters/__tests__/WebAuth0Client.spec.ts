@@ -75,6 +75,18 @@ jest.mock('../../../../core/models', () => {
       };
       this.type = codeMap[this.code] ?? fallbackType;
     }
+
+    getMfaRequiredPayload() {
+      if (this.type !== 'PASSKEY_MFA_REQUIRED') {
+        return null;
+      }
+      return {
+        mfaToken: this.json.mfa_token ?? '',
+        error: this.json.error ?? this.code,
+        errorDescription: this.json.error_description ?? this.message,
+        mfaRequirements: this.json.mfa_requirements,
+      };
+    }
   }
 
   return {
@@ -879,7 +891,10 @@ describe('WebAuth0Client', () => {
         error: 'mfa_required',
         error_description: 'MFA is required',
         mfa_token: 'mfa_tok_123',
-        mfa_requirements: { challenge: [] },
+        mfa_requirements: {
+          challenge: [{ type: 'sms' }, { type: 'otp' }],
+          enroll: [{ type: 'email' }]
+        },
       });
 
       await expect(
@@ -890,8 +905,34 @@ describe('WebAuth0Client', () => {
       ).rejects.toMatchObject({
         name: 'PasskeyError',
         code: 'mfa_required',
-        json: expect.objectContaining({ mfa_token: 'mfa_tok_123' }),
+        type: 'PASSKEY_MFA_REQUIRED',
+        json: expect.objectContaining({
+          mfa_token: 'mfa_tok_123',
+          mfa_requirements: {
+            challenge: [{ type: 'sms' }, { type: 'otp' }],
+            enroll: [{ type: 'email' }]
+          }
+        }),
       });
+
+      // Also verify getMfaRequiredPayload() returns structured data
+      try {
+        await client.getTokenByPasskey({
+          authSession: 'auth-session-123',
+          authResponse: JSON.stringify(mockCredential),
+        });
+      } catch (error: any) {
+        const payload = error.getMfaRequiredPayload();
+        expect(payload).toEqual({
+          mfaToken: 'mfa_tok_123',
+          error: 'mfa_required',
+          errorDescription: 'MFA is required',
+          mfaRequirements: {
+            challenge: [{ type: 'sms' }, { type: 'otp' }],
+            enroll: [{ type: 'email' }]
+          },
+        });
+      }
     });
 
     it('should preserve the original message when the rejection has neither .code nor .error', async () => {

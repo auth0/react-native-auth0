@@ -1565,21 +1565,32 @@ Passkey operations throw `PasskeyError` (extends `AuthError`) with a normalized 
 | `PASSKEY_INVALID_PARAMETER`    | **Native only.** `authResponse` passed to `getTokenByPasskey` was not a JSON string                                |
 | `PASSKEY_INVALID_CREDENTIAL`   | **Web only.** The credential passed to `getTokenByPasskey` is neither a valid attestation (signup) nor assertion (login) response |
 | `PASSKEY_CANCELLED`            | **Web only.** The user dismissed the passkey creation/assertion prompt                                             |
-| `PASSKEY_MFA_REQUIRED`         | **Web only.** MFA is required to complete the exchange — inspect `error.json.mfa_token` and continue with `mfa.challenge()`/`mfa.verify()` |
+| `PASSKEY_MFA_REQUIRED`         | **Web only.** MFA is required to complete the exchange — use `error.getMfaRequiredPayload()` to extract `mfaToken` and `mfaRequirements`, then continue with `mfa.challenge()`/`mfa.verify()` |
 | `PASSKEY_UNKNOWN_ERROR`        | Unknown or uncategorized passkey error — check `error.message` for the underlying description                     |
 
 ```typescript
 import { PasskeyError, PasskeyErrorCodes } from 'react-native-auth0';
 
 try {
-  const challenge = await auth0.passkeyLoginChallenge({
-    realm: 'Username-Password-Authentication',
+  const credentials = await auth0.getTokenByPasskey({
+    authSession: challenge.authSession,
+    authResponse: credential,
   });
 } catch (error) {
   if (error instanceof PasskeyError) {
     console.log('Error type:', error.type); // e.g. "PASSKEY_CHALLENGE_FAILED"
     console.log('Error message:', error.message);
-    console.log('Error code:', error.code); // Raw native error code
+    console.log('Error code:', error.code); // Raw error code
+    
+    // Handle MFA required
+    if (error.type === PasskeyErrorCodes.MFA_REQUIRED) {
+      const mfaPayload = error.getMfaRequiredPayload();
+      if (mfaPayload) {
+        console.log('MFA token:', mfaPayload.mfaToken);
+        console.log('Available factors:', mfaPayload.mfaRequirements);
+        // Continue with mfa.challenge() / mfa.verify()
+      }
+    }
   }
 }
 ```

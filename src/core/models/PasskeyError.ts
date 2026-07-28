@@ -1,4 +1,5 @@
 import { AuthError } from './AuthError';
+import type { MfaRequiredErrorPayload } from '../../types/common';
 
 /**
  * Platform-agnostic error code constants for Passkey operations.
@@ -56,10 +57,9 @@ export const PasskeyErrorCodes = {
   CANCELLED: 'PASSKEY_CANCELLED',
   /**
    * Multi-factor authentication is required to complete this passkey
-   * exchange. Extract the token via `error.json.mfa_token` or use
-   * {@link MfaRequiredErrorPayload} for structured access to both
-   * `mfaToken` and `mfaRequirements`, then continue with the `mfa`
-   * client (`mfa.challenge()` / `mfa.verify()`).
+   * exchange. Use {@link PasskeyError.getMfaRequiredPayload} for
+   * structured access to `mfaToken` and `mfaRequirements`, then
+   * continue with the `mfa` client (`mfa.challenge()` / `mfa.verify()`).
    */
   MFA_REQUIRED: 'PASSKEY_MFA_REQUIRED',
   /** Unknown or uncategorized passkey error */
@@ -180,5 +180,47 @@ export class PasskeyError extends AuthError {
     });
 
     this.type = ERROR_CODE_MAP[code] ?? fallbackType;
+  }
+
+  /**
+   * Extracts structured MFA details when this error is of type
+   * `PASSKEY_MFA_REQUIRED`. Use this to obtain both `mfaToken` and
+   * `mfaRequirements` for continuing the MFA flow with `mfa.challenge()`
+   * and `mfa.verify()`.
+   *
+   * @returns Structured MFA payload if this is an MFA_REQUIRED error,
+   *   otherwise `null`.
+   *
+   * @example
+   * ```typescript
+   * try {
+   *   const credentials = await auth0.getTokenByPasskey({
+   *     authSession: challenge.authSession,
+   *     authResponse: credential,
+   *   });
+   * } catch (error) {
+   *   if (error instanceof PasskeyError) {
+   *     const mfaPayload = error.getMfaRequiredPayload();
+   *     if (mfaPayload) {
+   *       // MFA required - continue with mfa.challenge() / mfa.verify()
+   *       console.log('MFA token:', mfaPayload.mfaToken);
+   *       console.log('Available factors:', mfaPayload.mfaRequirements);
+   *     }
+   *   }
+   * }
+   * ```
+   */
+  public getMfaRequiredPayload(): MfaRequiredErrorPayload | null {
+    if (this.type !== PasskeyErrorCodes.MFA_REQUIRED) {
+      return null;
+    }
+
+    const json = this.json as any;
+    return {
+      mfaToken: json.mfa_token ?? '',
+      error: json.error ?? this.code,
+      errorDescription: json.error_description ?? this.message,
+      mfaRequirements: json.mfa_requirements,
+    };
   }
 }

@@ -323,6 +323,14 @@ function PasskeyLoginButton() {
     } catch (error) {
       if (error instanceof PasskeyError) {
         console.error('Passkey login failed:', error.type, error.message);
+        
+        // Handle MFA required scenario
+        const mfaPayload = error.getMfaRequiredPayload();
+        if (mfaPayload) {
+          console.log('MFA required. Token:', mfaPayload.mfaToken);
+          console.log('Available factors:', mfaPayload.mfaRequirements);
+          // Continue with mfa.challenge() and mfa.verify()
+        }
       }
     }
   };

@@ -250,6 +250,129 @@ describe('PasskeyError', () => {
       expect(error.json).toBe(e);
     });
   });
+
+  describe('getMfaRequiredPayload()', () => {
+    it('should return structured MFA payload when type is PASSKEY_MFA_REQUIRED', () => {
+      const authError = new AuthError(
+        'mfa_required',
+        'MFA is required to complete this request',
+        {
+          code: 'mfa_required',
+          status: 403,
+          json: {
+            error: 'mfa_required',
+            error_description: 'MFA is required to complete this request',
+            mfa_token: 'mfa_tok_abc123',
+            mfa_requirements: {
+              enroll: [{ type: 'otp' }],
+              challenge: [{ type: 'sms' }, { type: 'email' }],
+            },
+          },
+        }
+      );
+      const error = new PasskeyError(authError);
+
+      const payload = error.getMfaRequiredPayload();
+
+      expect(payload).not.toBeNull();
+      expect(payload).toEqual({
+        mfaToken: 'mfa_tok_abc123',
+        error: 'mfa_required',
+        errorDescription: 'MFA is required to complete this request',
+        mfaRequirements: {
+          enroll: [{ type: 'otp' }],
+          challenge: [{ type: 'sms' }, { type: 'email' }],
+        },
+      });
+    });
+
+    it('should return null when type is not PASSKEY_MFA_REQUIRED', () => {
+      const authError = new AuthError(
+        'passkey_challenge_error',
+        'Challenge failed',
+        {
+          code: 'passkey_challenge_error',
+          status: 400,
+        }
+      );
+      const error = new PasskeyError(authError);
+
+      const payload = error.getMfaRequiredPayload();
+
+      expect(payload).toBeNull();
+    });
+
+    it('should handle missing mfa_requirements gracefully', () => {
+      const authError = new AuthError('mfa_required', 'MFA required', {
+        code: 'mfa_required',
+        json: {
+          error: 'mfa_required',
+          error_description: 'MFA required',
+          mfa_token: 'mfa_tok_xyz',
+          // mfa_requirements intentionally omitted
+        },
+      });
+      const error = new PasskeyError(authError);
+
+      const payload = error.getMfaRequiredPayload();
+
+      expect(payload).not.toBeNull();
+      expect(payload).toEqual({
+        mfaToken: 'mfa_tok_xyz',
+        error: 'mfa_required',
+        errorDescription: 'MFA required',
+        mfaRequirements: undefined,
+      });
+    });
+
+    it('should fallback to empty string for missing mfa_token', () => {
+      const authError = new AuthError('mfa_required', 'MFA required', {
+        code: 'mfa_required',
+        json: {
+          error: 'mfa_required',
+          error_description: 'MFA required',
+          // mfa_token intentionally omitted
+        },
+      });
+      const error = new PasskeyError(authError);
+
+      const payload = error.getMfaRequiredPayload();
+
+      expect(payload).not.toBeNull();
+      expect(payload?.mfaToken).toBe('');
+    });
+
+    it('should use error.code as fallback for missing json.error', () => {
+      const authError = new AuthError('mfa_required', 'MFA required', {
+        code: 'mfa_required',
+        json: {
+          // error field missing
+          mfa_token: 'mfa_tok_123',
+        },
+      });
+      const error = new PasskeyError(authError);
+
+      const payload = error.getMfaRequiredPayload();
+
+      expect(payload?.error).toBe('mfa_required');
+    });
+
+    it('should use error.message as fallback for missing error_description', () => {
+      const authError = new AuthError('mfa_required', 'Fallback message', {
+        code: 'mfa_required',
+        json: {
+          error: 'mfa_required',
+          mfa_token: 'mfa_tok_123',
+          // error_description missing
+        },
+      });
+      const error = new PasskeyError(authError);
+
+      const payload = error.getMfaRequiredPayload();
+
+      expect(payload?.errorDescription).toBe('Fallback message');
+    });
+  });
 });
 
 describe('PasskeyErrorCodes', () => {
