@@ -10,13 +10,14 @@ Pod::Spec.new do |s|
   s.license      = package['license']
   s.authors      = package['author']
   s.platforms    = { :ios => min_ios_version_supported }
-  s.swift_version = '5.0'
+  s.swift_version = '6.0'
   s.source       = { :git => 'https://github.com/auth0/react-native-auth0.git', :tag => "v#{s.version}" }
 
   s.source_files = 'ios/**/*.{h,m,mm,swift}'
   s.requires_arc = true
 
-  s.dependency 'Auth0', '2.23.0'
+  s.dependency 'Auth0', '3.0.1'
+  s.dependency 'JWTDecode', '4.0.0'
   s.dependency 'SimpleKeychain', '1.3.0'
 
   install_modules_dependencies(s)
