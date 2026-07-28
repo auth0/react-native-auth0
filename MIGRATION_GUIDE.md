@@ -1,5 +1,82 @@
 # Migration Guide
 
+## Upgrading from v5 -> v6
+
+Version 6.0 of `react-native-auth0` modernizes the SDK's foundation and delegates all authentication to the underlying native SDKs (Auth0.swift and Auth0.Android). This guide is being written incrementally as the v6 workstreams land; each section below is marked with its status.
+
+> **Status legend:** ✅ Landed · 🚧 In progress · ⏳ Planned
+
+Upgrading from v5.x requires addressing several breaking changes. Please follow this guide carefully.
+
+### 1. Compatibility & Installation
+
+Before updating the library, ensure your project meets the new minimum requirements.
+
+#### Environment Requirements
+
+| Requirement      | v5.x            | v6.0                          |
+| :--------------- | :-------------- | :---------------------------- |
+| **React**        | `19.0.0`+       | `19.0.0`+                     |
+| **React Native** | `0.78.0`+       | **`0.82.0`+ (New Arch only)** |
+| **Architecture** | Old **or** New  | **New Architecture only**     |
+| **Expo**         | SDK `53`+       | **SDK `55`+** _(see below)_   |
+| **iOS**          | Deployment `14` | Deployment `14`               |
+| **Android**      | Target SDK `35` | Target SDK `36` _(see §3)_    |
+
+### 2. React Native New Architecture is now required ✅
+
+**This is the foundational breaking change in v6.** React Native `0.82` is the first React Native release that runs **entirely on the New Architecture** — the Legacy Architecture is no longer part of how apps run, and future releases will remove the remaining Legacy Architecture code from the codebase. To match the ecosystem, v6 of this SDK **drops old-architecture support entirely** and ships as a TurboModule-only native module.
+
+**What changed internally (no consumer code change, but affects your build):**
+
+- The Android module no longer ships an old-architecture (`oldarch`) bridge spec; it is now TurboModule-only.
+- The iOS module no longer compiles the legacy `RCTBridgeModule` path; it standardizes on the codegen TurboModule.
+- The `react-native` peer dependency floor is now **`>=0.82.0`**.
+
+**✅ Action Required:**
+
+1.  **Upgrade React Native to `0.82.0` or higher.**
+
+    ```bash
+    npm install react-native@^0.82.0 react@^19.0.0
+    ```
+
+    Follow the [React Native 0.82 release notes](https://reactnative.dev/blog/2025/10/08/react-native-0.82#react-1911) for the full upgrade steps, including removing any legacy old-architecture opt-outs.
+
+2.  **If you cannot enable the New Architecture yet,** stay on `react-native-auth0@5.x` until your app is migrated. v6 will not run on the legacy bridge.
+
+> **Note for web (`react-native-web`) consumers:** the web platform is unaffected by this change — it uses `@auth0/auth0-spa-js` and has no native module. No action is required for web-only usage.
+
+#### For Expo Projects
+
+Expo SDK 55+ uses the New Architecture only.
+
+```bash
+npx expo prebuild --clean
+```
+
+> **Warning:** `prebuild --clean` overwrites manual changes in your `ios` and `android` directories.
+
+### 3. Android: minSdk 26 & JDK 17 ⏳
+
+_Planned — lands with the Auth0.Android v4 adoption._ v6 raises the Android minimum SDK to **26** and requires consuming apps to build with **JDK 17** (AGP 8.10+). This section will be completed when that workstream merges.
+
+### 4. iOS: Auth0.swift 3.0 & `use_frameworks!` ⏳
+
+_Planned — lands with the Auth0.swift v3.0 adoption._ v6 adopts Auth0.swift 3.0 (Swift 6 tools, iOS 14 floor) and requires a `use_frameworks!` Podfile setup. This section will be completed when that workstream merges.
+
+### 5. Behavioral default shifts under native delegation ⏳
+
+_Planned — lands with full native auth delegation._ Routing all authentication through the native SDKs changes some defaults (e.g. `scope` gains `offline_access`, `minTTL` defaults to `60`, default connection names). Each shift and the action required will be documented here when that workstream merges.
+
+### 6. Management API (`users()`) removal ⏳
+
+_Planned._ The client-side Management API wrapper (`auth0.users(...)`) is being removed in v6, mirroring both native SDKs. Migrate Management operations to a backend/BFF. Full guidance will be added here.
+
+### Recommended Reading
+
+- The [FAQ](FAQ.md) for guidance on the `authorize()` redirect flow on web and the importance of the `offline_access` scope.
+
 ## Upgrading from v4 -> v5
 
 Version 5.0 of `react-native-auth0` is a significant update featuring a complete architectural overhaul. This new foundation improves performance, maintainability, and provides a more consistent API across all platforms.

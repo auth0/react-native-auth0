@@ -15025,7 +15025,7 @@ __metadata:
     url: "npm:^0.11.4"
   peerDependencies:
     react: ">=19.0.0"
-    react-native: ">=0.78.0"
+    react-native: ">=0.82.0"
   peerDependenciesMeta:
     expo:
       optional: true
