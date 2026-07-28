@@ -524,7 +524,7 @@ function MyComponent() {
       // The retry mechanism is automatically applied to all credential renewal attempts
       const credentials = await getCredentials();
 
-      console.log('Access Token:', credentials.accessToken);
+      console.log('Authenticated successfully');
       // Use credentials for API calls...
     } catch (error) {
       console.error('Failed to get credentials after retries:', error);
@@ -561,7 +561,7 @@ const auth0 = new Auth0({
 try {
   const credentials = await auth0.credentialsManager.getCredentials();
 
-  console.log('Access Token:', credentials.accessToken);
+  console.log('Credentials retrieved successfully');
 } catch (error) {
   console.error('Credential renewal failed after retries:', error);
 }
@@ -850,7 +850,7 @@ function MyComponent() {
         'https://first-api.example.com',
         'read:data write:data'
       );
-      console.log('First API Access Token:', credentials.accessToken);
+      console.log('First API authenticated successfully');
       console.log('Expires At:', new Date(credentials.expiresAt * 1000));
     } catch (error) {
       console.error('Error:', error);
@@ -864,7 +864,7 @@ function MyComponent() {
         'https://second-api.example.com',
         'read:reports'
       );
-      console.log('Second API Access Token:', credentials.accessToken);
+      console.log('Second API authenticated successfully');
     } catch (error) {
       console.error('Error:', error);
     }
@@ -1564,7 +1564,6 @@ Passkey operations throw `PasskeyError` (extends `AuthError`) with a normalized 
 | `PASSKEY_UNSUPPORTED_PLATFORM` | Passkeys not supported on this platform                                                                            |
 | `PASSKEY_INVALID_PARAMETER`    | **Native only.** `authResponse` passed to `getTokenByPasskey` was not a JSON string                                |
 | `PASSKEY_INVALID_CREDENTIAL`   | **Web only.** The credential passed to `getTokenByPasskey` is neither a valid attestation (signup) nor assertion (login) response |
-| `PASSKEY_CANCELLED`            | **Web only.** The user dismissed the passkey creation/assertion prompt                                             |
 | `PASSKEY_MFA_REQUIRED`         | **Web only.** MFA is required to complete the exchange — use `error.getMfaRequiredPayload()` to extract `mfaToken` and `mfaRequirements`, then continue with `mfa.challenge()`/`mfa.verify()` |
 | `PASSKEY_UNKNOWN_ERROR`        | Unknown or uncategorized passkey error — check `error.message` for the underlying description                     |
 
@@ -1592,19 +1591,6 @@ try {
       }
     }
   }
-}
-```
-
-**Web:** `navigator.credentials.create()`/`.get()` is not wrapped by the SDK — the app calls it directly between the challenge and exchange steps (see [Signup with Passkey (Web)](#signup-with-passkey-web)). Errors from that call (e.g. `DOMException` `NotAllowedError` when the user dismisses the prompt) are plain browser exceptions, not `PasskeyError`s, unless you wrap them yourself:
-
-```typescript
-try {
-  const credential = await navigator.credentials.get({ publicKey });
-} catch (e) {
-  // Normalizes DOMException names (NotAllowedError, AbortError,
-  // SecurityError, NotSupportedError, InvalidStateError, ConstraintError)
-  // into the same PasskeyErrorCodes used everywhere else.
-  throw new PasskeyError(e as Error);
 }
 ```
 
@@ -2162,7 +2148,7 @@ function MfaScreen({ mfaToken }: { mfaToken: string }) {
   const verifyOtp = async () => {
     try {
       const credentials = await mfa.verify({ mfaToken, otp });
-      console.log('Authentication complete!', credentials.accessToken);
+      console.log('Authentication complete!');
       // User is now logged in - state is automatically updated
     } catch (error) {
       if (error instanceof MfaError) {

@@ -53,8 +53,6 @@ export const PasskeyErrorCodes = {
   UNSUPPORTED_PLATFORM: 'PASSKEY_UNSUPPORTED_PLATFORM',
   /** The parameters provided for the passkey operation were invalid */
   INVALID_PARAMETER: 'PASSKEY_INVALID_PARAMETER',
-  /** The user cancelled the passkey creation/assertion prompt */
-  CANCELLED: 'PASSKEY_CANCELLED',
   /**
    * Multi-factor authentication is required to complete this passkey
    * exchange. Use {@link PasskeyError.getMfaRequiredPayload} for
@@ -75,7 +73,6 @@ const ERROR_CODE_MAP: Record<string, string> = {
   // --- Web platform (auth0-spa-js PasskeyApiClient / PasskeyClient) ---
   UnsupportedOperation: PasskeyErrorCodes.UNSUPPORTED_PLATFORM,
   passkey_not_supported: PasskeyErrorCodes.NOT_AVAILABLE,
-  passkey_cancelled: PasskeyErrorCodes.CANCELLED,
   passkey_register_error: PasskeyErrorCodes.CHALLENGE_FAILED,
   passkey_challenge_error: PasskeyErrorCodes.CHALLENGE_FAILED,
   passkey_get_token_error: PasskeyErrorCodes.EXCHANGE_FAILED,
@@ -92,19 +89,6 @@ const ERROR_CODE_MAP: Record<string, string> = {
   mfa_required: PasskeyErrorCodes.MFA_REQUIRED,
   missing_refresh_token: PasskeyErrorCodes.EXCHANGE_FAILED,
   use_dpop_nonce: PasskeyErrorCodes.EXCHANGE_FAILED,
-
-  // --- Browser WebAuthn ceremony (navigator.credentials.create()/.get()).
-  // The app calls this directly — it's not wrapped by any SDK method — so
-  // these DOMException names are matched by `.name`, not `.code`, when a
-  // plain Error/DOMException (rather than an AuthError) is passed to the
-  // PasskeyError constructor below. Names per the WebAuthn spec's
-  // navigator.credentials.create()/.get() exception list. ---
-  NotAllowedError: PasskeyErrorCodes.CANCELLED,
-  AbortError: PasskeyErrorCodes.CANCELLED,
-  SecurityError: PasskeyErrorCodes.NOT_AVAILABLE,
-  NotSupportedError: PasskeyErrorCodes.NOT_AVAILABLE,
-  InvalidStateError: PasskeyErrorCodes.CHALLENGE_FAILED,
-  ConstraintError: PasskeyErrorCodes.CHALLENGE_FAILED,
 };
 
 /**
@@ -149,13 +133,8 @@ export class PasskeyError extends AuthError {
   public readonly type: string;
 
   /**
-   * @param originalError Either an `AuthError` from an SDK method (Auth0
-   *   challenge/exchange failures), or a plain `Error`/`DOMException` —
-   *   e.g. one thrown directly by the browser's
-   *   `navigator.credentials.create()`/`.get()` call, which the app makes
-   *   itself between `passkeySignupChallenge`/`passkeyLoginChallenge` and
-   *   `getTokenByPasskey`. For the latter, wrap it as shown:
-   *   `catch (e) { throw new PasskeyError(e); }`.
+   * @param originalError An `AuthError` from an SDK method (challenge/exchange
+   *   failures from auth0-spa-js or OAuth2 token endpoint).
    * @param fallbackType The {@link PasskeyErrorCodes} value to use when
    *   `originalError.code` is not a recognized passkey code. Callers that know
    *   which phase failed — e.g. the web My Account adapter, where the error
@@ -169,8 +148,6 @@ export class PasskeyError extends AuthError {
     fallbackType: string = PasskeyErrorCodes.UNKNOWN_ERROR
   ) {
     const isAuthError = originalError instanceof AuthError;
-    // AuthErrors carry the lookup key on `.code`; a raw DOMException (or
-    // any other Error) only has a `.name` (e.g. "NotAllowedError").
     const code = isAuthError ? originalError.code : originalError.name;
 
     super(originalError.name, originalError.message, {

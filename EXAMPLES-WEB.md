@@ -201,7 +201,7 @@ function MfaScreen({ mfaToken }: { mfaToken: string }) {
   const verifyOtp = async () => {
     try {
       const credentials = await mfa.verify({ mfaToken, otp });
-      console.log('Authenticated!', credentials.accessToken);
+      console.log('Authenticated!');
     } catch (error) {
       if (error instanceof MfaError) {
         switch (error.type) {
@@ -297,20 +297,14 @@ function PasskeyLoginButton() {
         realm: 'Username-Password-Authentication',
       });
 
-      // navigator.credentials isn't wrapped by the SDK — normalize a
-      // cancelled/failed WebAuthn ceremony into a PasskeyError so it's
-      // handled the same way as any other passkey error below.
-      let credential: PublicKeyCredential | null;
-      try {
-        credential = (await navigator.credentials.get({
-          publicKey: challenge.authParamsPublicKey as PublicKeyCredentialRequestOptions,
-        })) as PublicKeyCredential | null;
-      } catch (e) {
-        throw new PasskeyError(e as Error);
-      }
+      // App calls navigator.credentials directly (not wrapped by SDK)
+      const credential = (await navigator.credentials.get({
+        publicKey: challenge.authParamsPublicKey as PublicKeyCredentialRequestOptions,
+      })) as PublicKeyCredential | null;
 
       if (!credential) {
-        throw new PasskeyError(new Error('No passkey credential returned'));
+        // User cancelled or no credential available
+        throw new Error('No passkey credential returned');
       }
 
       const credentials = await getTokenByPasskey({

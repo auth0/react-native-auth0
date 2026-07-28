@@ -95,11 +95,6 @@ describe('PasskeyError', () => {
         'spa-js: WebAuthn unsupported in this browser',
       ],
       [
-        'passkey_cancelled',
-        'PASSKEY_CANCELLED',
-        'spa-js: user dismissed the WebAuthn prompt',
-      ],
-      [
         'passkey_register_error',
         'PASSKEY_CHALLENGE_FAILED',
         'spa-js: signup challenge request failed',
@@ -185,56 +180,16 @@ describe('PasskeyError', () => {
     });
   });
 
-  describe('DOMException from navigator.credentials.create()/.get() (web only)', () => {
-    // The app calls navigator.credentials itself, between
-    // passkeySignupChallenge/passkeyLoginChallenge and getTokenByPasskey —
-    // no SDK method wraps that call. Passing the caught DOMException
-    // directly to `new PasskeyError(e)` normalizes it the same way as
-    // any other passkey error.
-    const domTestCases: [string, string, string][] = [
-      [
-        'NotAllowedError',
-        'PASSKEY_CANCELLED',
-        'user dismissed the prompt, or the operation timed out',
-      ],
-      ['AbortError', 'PASSKEY_CANCELLED', 'operation aborted via AbortSignal'],
-      ['SecurityError', 'PASSKEY_NOT_AVAILABLE', 'origin/rpId mismatch'],
-      [
-        'NotSupportedError',
-        'PASSKEY_NOT_AVAILABLE',
-        'no requested algorithm supported by any authenticator',
-      ],
-      [
-        'InvalidStateError',
-        'PASSKEY_CHALLENGE_FAILED',
-        'an excluded/already-registered credential was used',
-      ],
-      [
-        'ConstraintError',
-        'PASSKEY_CHALLENGE_FAILED',
-        'authenticator cannot satisfy a required option (e.g. residentKey)',
-      ],
-    ];
-
-    it.each(domTestCases)(
-      'should map DOMException "%s" to type "%s" (%s)',
-      (domName, expectedType) => {
-        const e = new DOMException('DOMException message', domName);
-        const error = new PasskeyError(e);
-        expect(error.type).toBe(expectedType);
-        expect(error.message).toBe('DOMException message');
-        expect(error.code).toBe(domName);
-      }
-    );
-
-    it('should fall back to UNKNOWN_ERROR for an unrecognized DOMException name while preserving the message', () => {
-      const e = new DOMException(
-        'Some future spec exception.',
-        'UnknownFutureError'
+  describe('Unmapped error codes', () => {
+    it('should fall back to UNKNOWN_ERROR for unrecognized AuthError code while preserving the message', () => {
+      const original = new AuthError(
+        'unknown_passkey_error',
+        'Some future passkey error from spa-js',
+        { code: 'unknown_passkey_error' }
       );
-      const error = new PasskeyError(e);
+      const error = new PasskeyError(original);
       expect(error.type).toBe(PasskeyErrorCodes.UNKNOWN_ERROR);
-      expect(error.message).toBe('Some future spec exception.');
+      expect(error.message).toBe('Some future passkey error from spa-js');
     });
 
     it('should fall back to UNKNOWN_ERROR for a plain Error with no matching name', () => {
@@ -245,9 +200,12 @@ describe('PasskeyError', () => {
     });
 
     it('should expose the original error via .json for app-level inspection', () => {
-      const e = new DOMException('cancelled', 'NotAllowedError');
-      const error = new PasskeyError(e);
-      expect(error.json).toBe(e);
+      const original = new AuthError('unknown_error', 'Something went wrong', {
+        code: 'unknown_error',
+        json: { detail: 'Internal error' },
+      });
+      const error = new PasskeyError(original);
+      expect(error.json).toEqual({ detail: 'Internal error' });
     });
   });
 
@@ -389,7 +347,6 @@ describe('PasskeyErrorCodes', () => {
     expect(PasskeyErrorCodes.INVALID_PARAMETER).toBe(
       'PASSKEY_INVALID_PARAMETER'
     );
-    expect(PasskeyErrorCodes.CANCELLED).toBe('PASSKEY_CANCELLED');
     expect(PasskeyErrorCodes.MFA_REQUIRED).toBe('PASSKEY_MFA_REQUIRED');
     expect(PasskeyErrorCodes.UNKNOWN_ERROR).toBe('PASSKEY_UNKNOWN_ERROR');
   });
