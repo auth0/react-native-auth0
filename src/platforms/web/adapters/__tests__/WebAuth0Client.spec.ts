@@ -54,12 +54,26 @@ jest.mock('../../../../core/models', () => {
     type: string;
     code: string;
     json: any;
-    constructor(originalError: MockAuthError) {
+    constructor(
+      originalError: MockAuthError | Error,
+      fallbackType = 'PASSKEY_UNKNOWN_ERROR'
+    ) {
       super(originalError.message);
       this.name = 'PasskeyError';
-      this.code = originalError.code;
-      this.type = originalError.code;
-      this.json = originalError.json;
+      const isAuthError = originalError instanceof MockAuthError;
+      this.code = isAuthError ? originalError.code : originalError.name;
+      this.json = isAuthError ? originalError.json : originalError;
+
+      // Simplified ERROR_CODE_MAP matching the real PasskeyError
+      const codeMap: Record<string, string> = {
+        InvalidParameter: 'PASSKEY_INVALID_PARAMETER',
+        passkey_challenge_error: 'PASSKEY_CHALLENGE_FAILED',
+        passkey_get_token_error: 'PASSKEY_EXCHANGE_FAILED',
+        passkey_invalid_credential: 'PASSKEY_INVALID_CREDENTIAL',
+        mfa_required: 'PASSKEY_MFA_REQUIRED',
+        // Add others as needed by tests
+      };
+      this.type = codeMap[this.code] ?? fallbackType;
     }
   }
 
@@ -962,6 +976,24 @@ describe('WebAuth0Client', () => {
         name: 'PasskeyError',
         code: 'passkey_invalid_credential',
       });
+    });
+
+    it('should throw PasskeyError with INVALID_PARAMETER when authResponse is malformed JSON', async () => {
+      await expect(
+        client.getTokenByPasskey({
+          authSession: 'auth-session-123',
+          authResponse: '{malformed json',
+        })
+      ).rejects.toMatchObject({
+        name: 'PasskeyError',
+        code: 'InvalidParameter',
+        type: 'PASSKEY_INVALID_PARAMETER',
+        message:
+          'authResponse must be a valid JSON string or PublicKeyCredential.',
+      });
+
+      expect(mockSpaClient._requestTokenForPasskey).not.toHaveBeenCalled();
+      expect(mockSpaClient.passkey.getTokenWithPasskey).not.toHaveBeenCalled();
     });
   });
 

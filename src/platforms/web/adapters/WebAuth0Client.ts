@@ -410,11 +410,26 @@ export class WebAuth0Client implements IAuth0Client {
       // getTokenWithPasskey() detects attestation vs assertion and
       // serializes it internally. A JSON string is also accepted for
       // parity with the native platforms' bridge contract.
+      let parsedCredential: PasskeyCredentialResponse | undefined;
+      if (typeof authResponse === 'string') {
+        try {
+          parsedCredential = JSON.parse(authResponse) as PasskeyCredentialResponse;
+        } catch (parseError) {
+          throw new PasskeyError(
+            new AuthError(
+              'InvalidParameter',
+              'authResponse must be a valid JSON string or PublicKeyCredential.',
+              { code: 'InvalidParameter' }
+            )
+          );
+        }
+      }
+
       const response =
-        typeof authResponse === 'string'
+        parsedCredential
           ? await this.client._requestTokenForPasskey({
               authSession,
-              credential: JSON.parse(authResponse) as PasskeyCredentialResponse,
+              credential: parsedCredential,
               realm,
               audience,
               scope: finalScope,
@@ -422,7 +437,7 @@ export class WebAuth0Client implements IAuth0Client {
             })
           : await this.client.passkey.getTokenWithPasskey({
               authSession,
-              credential: authResponse,
+              credential: authResponse as PublicKeyCredential,
               realm,
               audience,
               scope: finalScope,

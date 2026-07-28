@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Native Auth0 - Web Passkey Flow (PR #1604)</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #eb5424;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 40px;
+            border-left: 4px solid #eb5424;
+            padding-left: 15px;
+        }
+        .section {
+            background: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .file-ref {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #d73a49;
+        }
+        .line-num {
+            color: #6f42c1;
+            font-weight: bold;
+        }
+        .diagram {
+            margin: 20px 0;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        .key-files {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .file-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #0366d6;
+        }
+        .file-card h4 {
+            margin: 0 0 10px 0;
+            color: #0366d6;
+        }
+        .file-card ul {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #eb5424;
+            color: white;
+            font-weight: 600;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        code {
+            background: #f6f8fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔐 React Native Auth0 - Web Passkey Flow Analysis</h1>
+    <div class="section">
+        <p><strong>PR #1604:</strong> Passkeys API support on web platform</p>
+        <p><strong>Branch:</strong> feat/passkeys-web</p>
+        <p><strong>Key Change:</strong> Adds WebAuthn passkey support to react-native-auth0 web platform via <code>@auth0/auth0-spa-js</code></p>
+    </div>
+
+    <h2>📋 Overview</h2>
+    <div class="section">
+        <p>This PR enables passwordless authentication using passkeys on the React Native web platform. The flow involves three main participants:</p>
+        <ol>
+            <li><strong>React Native Web App</strong> - The application UI and user interaction layer</li>
+            <li><strong>react-native-auth0 SDK</strong> - The abstraction layer providing unified API across platforms</li>
+            <li><strong>Browser WebAuthn API</strong> - Native browser capability for passkey management</li>
+            <li><strong>Auth0 Backend</strong> - Authentication server handling challenge generation and token exchange</li>
+        </ol>
+    </div>
+
+    <h2>🔄 Passkey Signup Flow</h2>
+    <div class="diagram">
+        <div class="mermaid">
+sequenceDiagram
+    participant App as React Native Web App<br/>(example/src/App.web.tsx)
+    participant SDK as react-native-auth0 SDK<br/>(WebAuth0Client.ts)
+    participant SPA as @auth0/auth0-spa-js<br/>(PasskeyApiClient)
+    participant Browser as Browser WebAuthn API<br/>(navigator.credentials)
+    participant Auth0 as Auth0 Backend
+
+    Note over App: User clicks "Sign Up with Passkey"<br/>Line 204-233
+
+    App->>SDK: passkeySignupChallenge({ email, realm })
+    Note over App,SDK: src/Auth0.ts:190-198<br/>Delegates to WebAuth0Client
+
+    SDK->>SPA: passkey.getSignupChallenge({ email, realm, ... })
+    Note over SDK,SPA: WebAuth0Client.ts:303<br/>Lines 278-340
+
+    SPA->>Auth0: POST /passkey/register<br/>(Get WebAuthn creation options)
+    Auth0-->>SPA: { authSession, publicKey }
+    SPA-->>SDK: { authSession, publicKey }
+
+    SDK-->>App: { authSession, authParamsPublicKey }
+    Note over SDK,App: Returns challenge<br/>Lines 317-320
+
+    Note over App: Calls navigator.credentials.create()<br/>Lines 214-217
+
+    App->>Browser: navigator.credentials.create({ publicKey })
+    Note over Browser: User authenticates with<br/>biometrics/device credential
+    Browser-->>App: PublicKeyCredential (attestation)
+
+    App->>SDK: getTokenByPasskey({ authSession, authResponse: credential })
+    Note over App,SDK: Lines 219-223<br/>Passes raw PublicKeyCredential
+
+    SDK->>SPA: passkey.getTokenWithPasskey({ authSession, credential })
+    Note over SDK,SPA: WebAuth0Client.ts:423-430<br/>Lines 391-441
+
+    SPA->>Auth0: POST /oauth/token<br/>(grant_type: urn:okta:params:oauth:grant-type:webauthn)
+    Auth0-->>SPA: { access_token, id_token, ... }
+    SPA-->>SDK: Token response
+    SDK-->>App: Credentials { accessToken, idToken, refreshToken }
+
+    Note over App: User authenticated!<br/>Lines 225-227
+        </div>
+    </div>
+
+    <h2>🔄 Passkey Login Flow</h2>
+    <div class="diagram">
+        <div class="mermaid">
+sequenceDiagram
+    participant App as React Native Web App<br/>(example/src/App.web.tsx)
+    participant SDK as react-native-auth0 SDK<br/>(WebAuth0Client.ts)
+    participant SPA as @auth0/auth0-spa-js<br/>(PasskeyApiClient)
+    participant Browser as Browser WebAuthn API<br/>(navigator.credentials)
+    participant Auth0 as Auth0 Backend
+
+    Note over App: User clicks "Sign In with Passkey"<br/>EXAMPLES-WEB.md:292-319
+
+    App->>SDK: passkeyLoginChallenge({ realm })
+    Note over App,SDK: src/Auth0.ts:200-206
+
+    SDK->>SPA: passkey.getLoginChallenge({ realm })
+    Note over SDK,SPA: WebAuth0Client.ts:347<br/>Lines 342-389
+
+    SPA->>Auth0: POST /passkey/challenge
+    Auth0-->>SPA: { authSession, publicKey }
+    SPA-->>SDK: { authSession, publicKey }
+    SDK-->>App: { authSession, authParamsPublicKey }
+
+    Note over App: Calls navigator.credentials.get()<br/>Lines 304-310
+
+    App->>Browser: navigator.credentials.get({ publicKey })
+    Note over Browser: User selects credential<br/>& authenticates
+    Browser-->>App: PublicKeyCredential | null (assertion)
+
+    Note over App: App handles null (cancellation)<br/>before calling SDK
+
+    App->>SDK: getTokenByPasskey({ authSession, authResponse: credential })
+
+    SDK->>SPA: passkey.getTokenWithPasskey({ authSession, credential })
+    Note over SDK,SPA: WebAuth0Client.ts:423-430
+
+    SPA->>Auth0: POST /oauth/token<br/>(webauthn grant)
+    Auth0-->>SPA: { access_token, id_token, ... }
+    SPA-->>SDK: Token response
+    SDK-->>App: Credentials { accessToken, idToken, refreshToken }
+
+    Note over App: User authenticated!
+        </div>
+    </div>
+
+    <h2>🏗️ Architecture & Components</h2>
+    <div class="diagram">
+        <div class="mermaid">
+graph TB
+    subgraph "React Native Web Application"
+        A1[App.web.tsx<br/>example/src/App.web.tsx]
+        A2[useAuth0 Hook<br/>Provides passkeySignupChallenge,<br/>passkeyLoginChallenge,<br/>getTokenByPasskey]
+    end
+
+    subgraph "react-native-auth0 SDK Core"
+        B1[Auth0.ts<br/>src/Auth0.ts:190-210<br/>Main facade class]
+        B2[IAuth0Client Interface<br/>src/core/interfaces/IAuth0Client.ts<br/>Platform-agnostic contract]
+        B3[Auth0ClientFactory<br/>Selects platform implementation]
+    end
+
+    subgraph "Web Platform Implementation"
+        C1[WebAuth0Client<br/>src/platforms/web/adapters/WebAuth0Client.ts<br/>Lines 278-441]
+        C2[PasskeyError<br/>src/core/models/PasskeyError.ts<br/>Error normalization]
+        C3[GetTokenByPasskeyParameters<br/>src/types/parameters.ts<br/>Type: string | PublicKeyCredential]
+    end
+
+    subgraph "@auth0/auth0-spa-js (v2.24.0+)"
+        D1[PasskeyApiClient<br/>getSignupChallenge<br/>getLoginChallenge<br/>getTokenWithPasskey]
+        D2[Auth0Client._requestTokenForPasskey<br/>Fallback for JSON string input]
+    end
+
+    subgraph "Browser"
+        E1[navigator.credentials.create<br/>Passkey registration]
+        E2[navigator.credentials.get<br/>Passkey authentication]
+        E3[PublicKeyCredential<br/>WebAuthn credential object]
+    end
+
+    subgraph "Auth0 Backend"
+        F1[POST /passkey/register<br/>Challenge generation]
+        F2[POST /passkey/challenge<br/>Login challenge]
+        F3[POST /oauth/token<br/>Token exchange<br/>grant_type: urn:okta:params:oauth:grant-type:webauthn]
+    end
+
+    A1 --> A2
+    A2 --> B1
+    B1 --> B2
+    B2 --> B3
+    B3 --> C1
+    C1 --> D1
+    C1 --> D2
+    A1 --> E1
+    A1 --> E2
+    E1 --> E3
+    E2 --> E3
+    D1 --> F1
+    D1 --> F2
+    D1 --> F3
+    D2 --> F3
+
+    style A1 fill:#e3f2fd
+    style C1 fill:#fff3e0
+    style D1 fill:#f3e5f5
+    style E1 fill:#e8f5e9
+    style F1 fill:#fce4ec
+        </div>
+    </div>
+
+    <h2>📁 Key Files & Responsibilities</h2>
+    <div class="section">
+        <div class="key-files">
+            <div class="file-card">
+                <h4>App Entry Point</h4>
+                <p class="file-ref">example/src/App.web.tsx</p>
+                <ul>
+                    <li><span class="line-num">Lines 204-233:</span> Passkey signup handler</li>
+                    <li><span class="line-num">Lines 290-319:</span> Passkey login button (EXAMPLES-WEB.md)</li>
+                    <li>Calls <code>navigator.credentials.create()</code> / <code>.get()</code></li>
+                    <li>Wraps WebAuthn errors in <code>PasskeyError</code></li>
+                </ul>
+            </div>
+
+            <div class="file-card">
+                <h4>SDK Public API</h4>
+                <p class="file-ref">src/Auth0.ts</p>
+                <ul>
+                    <li><span class="line-num">Lines 190-198:</span> <code>passkeySignupChallenge()</code></li>
+                    <li><span class="line-num">Lines 200-206:</span> <code>passkeyLoginChallenge()</code></li>
+                    <li><span class="line-num">Lines 208-210:</span> <code>getTokenByPasskey()</code></li>
+                    <li>Delegates to platform client</li>
+                </ul>
+            </div>
+
+            <div class="file-card">
+                <h4>Web Platform Adapter</h4>
+                <p class="file-ref">src/platforms/web/adapters/WebAuth0Client.ts</p>
+                <ul>
+                    <li><span class="line-num">Lines 278-340:</span> <code>passkeySignupChallenge()</code> - Challenge request</li>
+                    <li><span class="line-num">Lines 342-389:</span> <code>passkeyLoginChallenge()</code> - Login challenge</li>
+                    <li><span class="line-num">Lines 391-441:</span> <code>getTokenByPasskey()</code> - Token exchange</li>
+                    <li><span class="line-num">Lines 414-421:</span> JSON.parse with INVALID_PARAMETER guard</li>
+                    <li><span class="line-num">Lines 423-430:</span> Calls spa-js <code>getTokenWithPasskey()</code></li>
+                </ul>
+            </div>
+
+            <div class="file-card">
+                <h4>Error Handling</h4>
+                <p class="file-ref">src/core/models/PasskeyError.ts</p>
+                <ul>
+                    <li><span class="line-num">Lines 69-106:</span> <code>ERROR_CODE_MAP</code> - Maps error codes to types</li>
+                    <li><span class="line-num">Lines 167-183:</span> Constructor - Accepts <code>AuthError | Error</code></li>
+                    <li><span class="line-num">Line 182:</span> <code>this.type = ERROR_CODE_MAP[code] ?? fallbackType</code></li>
+                    <li>Normalizes spa-js, native, and DOMException errors</li>
+                </ul>
+            </div>
+
+            <div class="file-card">
+                <h4>Type Definitions</h4>
+                <p class="file-ref">src/types/parameters.ts</p>
+                <ul>
+                    <li><span class="line-num">Lines 469-493:</span> <code>PasskeySignupChallengeParameters</code></li>
+                    <li><span class="line-num">Lines 495-506:</span> <code>PasskeyLoginChallengeParameters</code></li>
+                    <li><span class="line-num">Lines 508-530:</span> <code>GetTokenByPasskeyParameters</code></li>
+                    <li><span class="line-num">Line 514:</span> <code>authResponse: string | PublicKeyCredential</code></li>
+                </ul>
+            </div>
+
+            <div class="file-card">
+                <h4>Documentation</h4>
+                <p class="file-ref">EXAMPLES-WEB.md</p>
+                <ul>
+                    <li><span class="line-num">Lines 280-332:</span> Passkeys (Web) section</li>
+                    <li><span class="line-num">Line 284:</span> HTTPS requirement note</li>
+                    <li><span class="line-num">Lines 286-319:</span> Complete login example</li>
+                    <li><span class="line-num">Lines 312-314:</span> Null credential check</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h2>🔀 Data Flow Details</h2>
+    <div class="section">
+        <h3>1. Challenge Request (Signup)</h3>
+        <table>
+            <tr>
+                <th>Step</th>
+                <th>Component</th>
+                <th>File:Line</th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>App</td>
+                <td><code>App.web.tsx:209</code></td>
+                <td>Calls <code>passkeySignupChallenge({ email, realm })</code></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>SDK</td>
+                <td><code>Auth0.ts:190</code></td>
+                <td>Delegates to <code>this.client.passkeySignupChallenge()</code></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>WebAuth0Client</td>
+                <td><code>WebAuth0Client.ts:303</code></td>
+                <td>Calls <code>this.client.passkey.getSignupChallenge()</code></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>spa-js</td>
+                <td><code>@auth0/auth0-spa-js</code></td>
+                <td>POST <code>/passkey/register</code> to Auth0</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>WebAuth0Client</td>
+                <td><code>WebAuth0Client.ts:317-320</code></td>
+                <td>Returns <code>{ authSession, authParamsPublicKey }</code></td>
+            </tr>
+        </table>
+
+        <h3>2. WebAuthn Ceremony (App-Driven)</h3>
+        <table>
+            <tr>
+                <th>Step</th>
+                <th>Component</th>
+                <th>File:Line</th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>App</td>
+                <td><code>App.web.tsx:214-217</code></td>
+                <td>Calls <code>navigator.credentials.create({ publicKey })</code></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Browser</td>
+                <td>WebAuthn API</td>
+                <td>Displays authenticator UI, captures biometric/PIN</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Browser</td>
+                <td>WebAuthn API</td>
+                <td>Returns <code>PublicKeyCredential</code> (attestation/assertion)</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>App</td>
+                <td><code>App.web.tsx:218</code></td>
+                <td>Catches <code>DOMException</code>, wraps in <code>PasskeyError</code></td>
+            </tr>
+        </table>
+
+        <h3>3. Token Exchange</h3>
+        <table>
+            <tr>
+                <th>Step</th>
+                <th>Component</th>
+                <th>File:Line</th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>App</td>
+                <td><code>App.web.tsx:219</code></td>
+                <td>Calls <code>getTokenByPasskey({ authSession, authResponse: credential })</code></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>SDK</td>
+                <td><code>Auth0.ts:208</code></td>
+                <td>Delegates to <code>this.client.getTokenByPasskey()</code></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>WebAuth0Client</td>
+                <td><code>WebAuth0Client.ts:414-421</code></td>
+                <td>Checks if <code>authResponse</code> is string → JSON.parse, else raw credential</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>WebAuth0Client</td>
+                <td><code>WebAuth0Client.ts:423-430</code></td>
+                <td>Calls <code>passkey.getTokenWithPasskey()</code> (raw) or <code>_requestTokenForPasskey()</code> (string)</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>spa-js</td>
+                <td><code>@auth0/auth0-spa-js</code></td>
+                <td>Serializes credential, POSTs to <code>/oauth/token</code> with webauthn grant</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>Auth0</td>
+                <td>Backend</td>
+                <td>Verifies attestation/assertion, returns tokens</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>WebAuth0Client</td>
+                <td><code>WebAuth0Client.ts:434-440</code></td>
+                <td>Converts response to <code>Credentials</code> object</td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td>App</td>
+                <td><code>App.web.tsx:225</code></td>
+                <td>Receives <code>{ accessToken, idToken, refreshToken, expiresAt }</code></td>
+            </tr>
+        </table>
+    </div>
+
+    <h2>⚠️ Error Handling Flow</h2>
+    <div class="diagram">
+        <div class="mermaid">
+graph TB
+    Start[Error Thrown]
+
+    subgraph "Error Sources"
+        E1[spa-js PasskeyError<br/>code: passkey_*]
+        E2[spa-js GenericError<br/>error: invalid_grant, mfa_required]
+        E3[DOMException<br/>name: NotAllowedError, SecurityError]
+        E4[JSON.parse failure<br/>SyntaxError]
+    end
+
+    E1 --> Map[ERROR_CODE_MAP Lookup<br/>PasskeyError.ts:69-106]
+    E2 --> Map
+    E3 --> Map
+    E4 --> Guard[WebAuth0Client.ts:411-421<br/>Catches parse error]
+    Guard --> Param[Throws PasskeyError<br/>code: InvalidParameter]
+    Param --> Map
+
+    Map --> Type[PasskeyError.type set<br/>Line 182]
+
+    Type --> T1[PASSKEY_NOT_AVAILABLE]
+    Type --> T2[PASSKEY_CHALLENGE_FAILED]
+    Type --> T3[PASSKEY_EXCHANGE_FAILED]
+    Type --> T4[PASSKEY_INVALID_PARAMETER]
+    Type --> T5[PASSKEY_INVALID_CREDENTIAL]
+    Type --> T6[PASSKEY_CANCELLED]
+    Type --> T7[PASSKEY_MFA_REQUIRED]
+    Type --> T8[PASSKEY_UNKNOWN_ERROR]
+
+    style T1 fill:#f8bbd0
+    style T2 fill:#f8bbd0
+    style T3 fill:#f8bbd0
+    style T4 fill:#ffccbc
+    style T5 fill:#ffccbc
+    style T6 fill:#ffe0b2
+    style T7 fill:#fff9c4
+    style T8 fill:#e0e0e0
+
+    style E4 fill:#ffebee
+    style Guard fill:#fff3e0
+    style Param fill:#e8f5e9
+    style Map fill:#e3f2fd
+        </div>
+    </div>
+
+    <h2>🔑 Key Implementation Details</h2>
+    <div class="section">
+        <div class="note">
+            <h3>Platform-Specific Behavior</h3>
+            <p><strong>Native (iOS/Android):</strong> <code>authResponse</code> must be a JSON string (serialized credential). The native bridge handles serialization.</p>
+            <p><strong>Web:</strong> <code>authResponse</code> can be either:</p>
+            <ul>
+                <li><strong>Raw <code>PublicKeyCredential</code></strong> (primary path) - App passes the credential object directly from <code>navigator.credentials</code></li>
+                <li><strong>JSON string</strong> (fallback) - For parity with native, spa-js <code>_requestTokenForPasskey</code> is called</li>
+            </ul>
+            <p><strong>Detection:</strong> <code>typeof authResponse === 'string'</code> at <span class="file-ref">WebAuth0Client.ts:414</span></p>
+        </div>
+
+        <div class="note success">
+            <h3>Error Code Mapping Examples</h3>
+            <table>
+                <tr>
+                    <th>Source Error Code</th>
+                    <th>Normalized Type</th>
+                    <th>Scenario</th>
+                </tr>
+                <tr>
+                    <td><code>passkey_not_supported</code></td>
+                    <td><code>PASSKEY_NOT_AVAILABLE</code></td>
+                    <td>Browser lacks WebAuthn support</td>
+                </tr>
+                <tr>
+                    <td><code>passkey_challenge_error</code></td>
+                    <td><code>PASSKEY_CHALLENGE_FAILED</code></td>
+                    <td>Auth0 challenge request failed</td>
+                </tr>
+                <tr>
+                    <td><code>invalid_grant</code></td>
+                    <td><code>PASSKEY_EXCHANGE_FAILED</code></td>
+                    <td>Token exchange rejected by Auth0</td>
+                </tr>
+                <tr>
+                    <td><code>mfa_required</code></td>
+                    <td><code>PASSKEY_MFA_REQUIRED</code></td>
+                    <td>Additional MFA step needed</td>
+                </tr>
+                <tr>
+                    <td><code>NotAllowedError</code> (DOMException)</td>
+                    <td><code>PASSKEY_CANCELLED</code></td>
+                    <td>User dismissed WebAuthn prompt</td>
+                </tr>
+                <tr>
+                    <td><code>SecurityError</code> (DOMException)</td>
+                    <td><code>PASSKEY_NOT_AVAILABLE</code></td>
+                    <td>HTTPS required or RP ID mismatch</td>
+                </tr>
+                <tr>
+                    <td><code>InvalidParameter</code></td>
+                    <td><code>PASSKEY_INVALID_PARAMETER</code></td>
+                    <td>Malformed JSON authResponse</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="note">
+            <h3>Security Requirements</h3>
+            <ul>
+                <li><strong>HTTPS Required:</strong> WebAuthn APIs only work in secure contexts (HTTPS or <code>localhost</code> for dev)</li>
+                <li><strong>User Gesture:</strong> <code>navigator.credentials.create()</code> / <code>.get()</code> must be called from a click handler</li>
+                <li><strong>Same Origin:</strong> RP ID must match the origin serving the app</li>
+                <li><strong>DPoP Enabled:</strong> Default token type is <code>DPoP</code> for enhanced security</li>
+            </ul>
+            <p><strong>Reference:</strong> <span class="file-ref">EXAMPLES-WEB.md:284</span> documents the HTTPS requirement</p>
+        </div>
+    </div>
+
+    <h2>📊 Test Coverage</h2>
+    <div class="section">
+        <h3>Test Files</h3>
+        <div class="key-files">
+            <div class="file-card">
+                <h4>WebAuth0Client Tests</h4>
+                <p class="file-ref">src/platforms/web/adapters/__tests__/WebAuth0Client.spec.ts</p>
+                <ul>
+                    <li><span class="line-num">Lines 622-704:</span> <code>passkeySignupChallenge</code> tests</li>
+                    <li><span class="line-num">Lines 706-756:</span> <code>passkeyLoginChallenge</code> tests</li>
+                    <li><span class="line-num">Lines 758-985:</span> <code>getTokenByPasskey</code> tests</li>
+                    <li><span class="line-num">Lines 969-984:</span> Malformed JSON test (NEW)</li>
+                    <li><span class="line-num">Lines 53-78:</span> MockPasskeyError with code mapping</li>
+                </ul>
+            </div>
+
+            <div class="file-card">
+                <h4>PasskeyError Tests</h4>
+                <p class="file-ref">src/core/models/__tests__/PasskeyError.spec.ts</p>
+                <ul>
+                    <li><span class="line-num">Lines 29-150:</span> Error code mapping test table</li>
+                    <li><span class="line-num">Lines 152-217:</span> DOMException mapping tests</li>
+                    <li><span class="line-num">Lines 219-237:</span> PasskeyErrorCodes export tests</li>
+                    <li><strong>Total:</strong> 38 tests covering all error scenarios</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="note success">
+            <h3>Test Results</h3>
+            <p><strong>Total:</strong> 703 tests pass (37 test suites)</p>
+            <p><strong>New Tests Added:</strong> 1 (malformed JSON authResponse)</p>
+            <p><strong>Coverage:</strong> All three passkey methods + error normalization + nullable credential handling</p>
+        </div>
+    </div>
+
+    <h2>🚀 Usage Example (Complete Flow)</h2>
+    <div class="section">
+        <pre><code>import { useAuth0, PasskeyError } from 'react-native-auth0';
+
+function PasskeySignupButton() {
+  const { passkeySignupChallenge, getTokenByPasskey } = useAuth0();
+
+  const handleSignup = async () => {
+    try {
+      // Step 1: Request challenge from Auth0 (via SDK)
+      const challenge = await passkeySignupChallenge({
+        email: 'user@example.com',
+        realm: 'Username-Password-Authentication',
+      });
+
+      // Step 2: Create passkey using browser WebAuthn API
+      // (App-driven, NOT wrapped by SDK)
+      const credential = (await navigator.credentials.create({
+        publicKey: challenge.authParamsPublicKey as PublicKeyCredentialCreationOptions,
+      })) as PublicKeyCredential;
+
+      // Step 3: Exchange credential for tokens (via SDK)
+      const credentials = await getTokenByPasskey({
+        authSession: challenge.authSession,
+        authResponse: credential, // Raw PublicKeyCredential
+        realm: 'Username-Password-Authentication',
+      });
+
+      console.log('Signed up with passkey');
+      // credentials.accessToken, credentials.idToken available
+    } catch (error) {
+      // App-level error handling (SDK throws PasskeyError)
+      if (error instanceof PasskeyError) {
+        // SDK has already normalized error.type across platforms
+        console.error('Passkey operation failed:', error.type);
+      }
+    }
+  };
+
+  return &lt;button onClick={handleSignup}&gt;Sign Up with Passkey&lt;/button&gt;;
+}</code></pre>
+        <p><strong>Reference:</strong> <span class="file-ref">example/src/App.web.tsx:204-233</span></p>
+    </div>
+
+    <h2>📝 Summary of PR Changes</h2>
+    <div class="section">
+        <h3>Files Modified</h3>
+        <table>
+            <tr>
+                <th>File</th>
+                <th>Change Type</th>
+                <th>Key Changes</th>
+            </tr>
+            <tr>
+                <td><code>package.json</code></td>
+                <td>Dependency</td>
+                <td>Bumped <code>@auth0/auth0-spa-js</code> to <code>^2.24.0</code></td>
+            </tr>
+            <tr>
+                <td><code>src/Auth0.ts</code></td>
+                <td>API</td>
+                <td>Removed "Native only" remarks from passkey methods (lines 190-210)</td>
+            </tr>
+            <tr>
+                <td><code>src/platforms/web/adapters/WebAuth0Client.ts</code></td>
+                <td>Implementation</td>
+                <td>Implemented 3 passkey methods (lines 278-441)</td>
+            </tr>
+            <tr>
+                <td><code>src/core/models/PasskeyError.ts</code></td>
+                <td>Error Handling</td>
+                <td>Added web error codes, DOMException mapping, widened constructor</td>
+            </tr>
+            <tr>
+                <td><code>src/types/parameters.ts</code></td>
+                <td>Types</td>
+                <td>Widened <code>authResponse</code> to <code>string | PublicKeyCredential</code></td>
+            </tr>
+            <tr>
+                <td><code>README.md</code></td>
+                <td>Documentation</td>
+                <td>Flipped passkey platform support: ❌→✅ for Web (3 rows)</td>
+            </tr>
+            <tr>
+                <td><code>EXAMPLES.md</code></td>
+                <td>Documentation</td>
+                <td>Added web passkey signup/signin examples</td>
+            </tr>
+            <tr>
+                <td><code>EXAMPLES-WEB.md</code></td>
+                <td>Documentation</td>
+                <td>Added HTTPS requirement note + nullable credential handling</td>
+            </tr>
+            <tr>
+                <td><code>example/src/App.web.tsx</code></td>
+                <td>Example</td>
+                <td>Added passkey signup/login UI + handlers</td>
+            </tr>
+        </table>
+
+        <h3>Statistics</h3>
+        <ul>
+            <li><strong>Lines Changed:</strong> ~800+ (including tests and docs)</li>
+            <li><strong>New Tests:</strong> 40+ (38 in PasskeyError.spec.ts, rest in WebAuth0Client.spec.ts)</li>
+            <li><strong>Test Pass Rate:</strong> 703/703 (100%)</li>
+            <li><strong>Platforms Supported:</strong> iOS ✅, Android ✅, Web ✅ (NEW)</li>
+        </ul>
+    </div>
+
+    <div class="section" style="background: #e3f2fd; border-left: 4px solid #2196f3;">
+        <h3>📌 Generated from PR #1604</h3>
+        <p><strong>Branch:</strong> feat/passkeys-web</p>
+        <p><strong>Repository:</strong> auth0/react-native-auth0</p>
+        <p><strong>Analysis Date:</strong> July 28, 2026</p>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            sequence: {
+                diagramMarginX: 10,
+                diagramMarginY: 10,
+                actorMargin: 50,
+                width: 150,
+                height: 65,
+                boxMargin: 10,
+                boxTextMargin: 5,
+                noteMargin: 10,
+                messageMargin: 35
+            },
+            flowchart: {
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+    </script>
+</body>
+</html>

@@ -56,8 +56,10 @@ export const PasskeyErrorCodes = {
   CANCELLED: 'PASSKEY_CANCELLED',
   /**
    * Multi-factor authentication is required to complete this passkey
-   * exchange. Inspect `error.json.mfa_token` and continue with the
-   * `mfa` client (`mfa.challenge()` / `mfa.verify()`).
+   * exchange. Extract the token via `error.json.mfa_token` or use
+   * {@link MfaRequiredErrorPayload} for structured access to both
+   * `mfaToken` and `mfaRequirements`, then continue with the `mfa`
+   * client (`mfa.challenge()` / `mfa.verify()`).
    */
   MFA_REQUIRED: 'PASSKEY_MFA_REQUIRED',
   /** Unknown or uncategorized passkey error */
