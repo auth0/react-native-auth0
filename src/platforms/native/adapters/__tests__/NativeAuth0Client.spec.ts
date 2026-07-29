@@ -612,7 +612,7 @@ describe('NativeAuth0Client', () => {
       const { AuthError } = require('../../../../core/models');
       const { PasskeyError } = require('../../../../core/models');
 
-      (mockBridgeInstance as any).getTokenByPasskey = jest
+      mockBridgeInstance.getTokenByPasskey = jest
         .fn()
         .mockRejectedValue(
           new AuthError('PASSKEY_EXCHANGE_FAILED', 'Exchange failed', {
@@ -629,6 +629,34 @@ describe('NativeAuth0Client', () => {
           authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
         })
       ).rejects.toBeInstanceOf(PasskeyError);
+    });
+
+    it('should reject with PasskeyError and not call the bridge when authResponse is not a string', async () => {
+      const {
+        PasskeyError,
+        PasskeyErrorCodes,
+      } = require('../../../../core/models');
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      const rawCredential = {
+        id: 'cred-id',
+        type: 'public-key',
+        response: {},
+      } as unknown as PublicKeyCredential;
+
+      await expect(
+        client.getTokenByPasskey({
+          authSession: 'auth-session-123',
+          authResponse: rawCredential,
+        })
+      ).rejects.toMatchObject({
+        constructor: PasskeyError,
+        type: PasskeyErrorCodes.INVALID_PARAMETER,
+      });
+      expect(
+        (mockBridgeInstance as any).getTokenByPasskey
+      ).not.toHaveBeenCalled();
     });
   });
 
