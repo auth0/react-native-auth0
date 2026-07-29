@@ -79,16 +79,9 @@ describe('WebCredentialsManager Error Handling', () => {
         undefined
       );
 
-      await expect(manager.getCredentials()).rejects.toThrow(
-        CredentialsManagerError
-      );
-
-      try {
-        await manager.getCredentials();
-      } catch (e) {
-        const err = e as CredentialsManagerError;
-        expect(err.type).toBe('SESSION_EXPIRED');
-      }
+      await expect(manager.getCredentials()).rejects.toMatchObject({
+        type: 'SESSION_EXPIRED',
+      });
     });
 
     it('should map a silent undefined response in getApiCredentials to SESSION_EXPIRED', async () => {
@@ -98,14 +91,7 @@ describe('WebCredentialsManager Error Handling', () => {
 
       await expect(
         manager.getApiCredentials('https://api.example.com')
-      ).rejects.toThrow(CredentialsManagerError);
-
-      try {
-        await manager.getApiCredentials('https://api.example.com');
-      } catch (e) {
-        const err = e as CredentialsManagerError;
-        expect(err.type).toBe('SESSION_EXPIRED');
-      }
+      ).rejects.toMatchObject({ type: 'SESSION_EXPIRED' });
     });
   });
 });

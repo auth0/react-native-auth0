@@ -11,6 +11,22 @@ import type { Auth0Client } from '@auth0/auth0-spa-js';
 export class WebCredentialsManager implements ICredentialsManager {
   constructor(private client: Auth0Client) {}
 
+  // @auth0/auth0-spa-js (>= ^2.22.0) enforces the IPSIE `session_expiry` ceiling
+  // silently: once the upstream IdP session has expired, `getTokenSilently`
+  // resolves without a token instead of throwing. Surface this as SESSION_EXPIRED
+  // so callers get the same actionable signal as native (re-authentication
+  // required). If a future spa-js bump changes this behavior, revalidate the
+  // callers that rely on the undefined return below.
+  private sessionExpiredError(): CredentialsManagerError {
+    return new CredentialsManagerError(
+      new AuthError(
+        'session_expired',
+        'The session has expired and the user must re-authenticate.',
+        { code: 'session_expired' }
+      )
+    );
+  }
+
   async saveCredentials(_credentials: Credentials): Promise<void> {
     console.warn(
       '`saveCredentials` is a no-op on the web. @auth0/auth0-spa-js handles credential storage automatically.'
@@ -31,18 +47,10 @@ export class WebCredentialsManager implements ICredentialsManager {
         detailedResponse: true,
       });
 
-      // @auth0/auth0-spa-js enforces the IPSIE `session_expiry` ceiling silently:
-      // once the upstream IdP session has expired it resolves without a token
-      // instead of throwing. Surface this as SESSION_EXPIRED so callers get the
-      // same actionable signal as native (re-authentication required).
+      // See sessionExpiredError(): spa-js short-circuits the ceiling with an
+      // undefined resolution rather than a thrown error.
       if (!tokenResponse) {
-        throw new CredentialsManagerError(
-          new AuthError(
-            'session_expired',
-            'The session has expired and the user must re-authenticate.',
-            { code: 'session_expired' }
-          )
-        );
+        throw this.sessionExpiredError();
       }
 
       const claims = await this.client.getIdTokenClaims();
@@ -102,18 +110,10 @@ export class WebCredentialsManager implements ICredentialsManager {
         detailedResponse: true,
       });
 
-      // @auth0/auth0-spa-js enforces the IPSIE `session_expiry` ceiling silently:
-      // once the upstream IdP session has expired it resolves without a token
-      // instead of throwing. Surface this as SESSION_EXPIRED so callers get the
-      // same actionable signal as native (re-authentication required).
+      // See sessionExpiredError(): spa-js short-circuits the ceiling with an
+      // undefined resolution rather than a thrown error.
       if (!tokenResponse) {
-        throw new CredentialsManagerError(
-          new AuthError(
-            'session_expired',
-            'The session has expired and the user must re-authenticate.',
-            { code: 'session_expired' }
-          )
-        );
+        throw this.sessionExpiredError();
       }
 
       // Calculate access token expiration from expires_in (seconds until expiration)
