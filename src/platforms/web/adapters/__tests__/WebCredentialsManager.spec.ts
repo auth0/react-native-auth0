@@ -125,17 +125,42 @@ describe('WebCredentialsManager', () => {
       expect(result.sessionExpiresAt).toBeUndefined();
     });
 
-    it('should reject a millisecond-valued session_expiry (out of range)', async () => {
+    it('should floor a fractional session_expiry within range', async () => {
       mockSpaClient.getTokenSilently.mockResolvedValue(mockTokenResponse);
       mockSpaClient.getIdTokenClaims.mockResolvedValue({
         ...mockIdTokenClaims,
-        session_expiry: 1893456000000, // 13-digit ms value
+        session_expiry: 1893456000.9,
       });
 
       const result = await credentialsManager.getCredentials();
 
-      expect(result.sessionExpiresAt).toBeUndefined();
+      expect(result.sessionExpiresAt).toBe(1893456000);
     });
+
+    // The decode guard accepts only a finite number in (0, 10_000_000_000).
+    // Anything else — strings, zero, negatives, the exact ceiling, and
+    // millisecond values — must leave sessionExpiresAt undefined (no ceiling).
+    it.each([
+      ['a millisecond value', 1893456000000],
+      ['the exact upper bound', 10_000_000_000],
+      ['zero', 0],
+      ['a negative value', -1],
+      ['a numeric string', '1893456000'],
+      ['a boolean', true],
+    ])(
+      'should reject %s and leave sessionExpiresAt undefined',
+      async (_label, sessionExpiry) => {
+        mockSpaClient.getTokenSilently.mockResolvedValue(mockTokenResponse);
+        mockSpaClient.getIdTokenClaims.mockResolvedValue({
+          ...mockIdTokenClaims,
+          session_expiry: sessionExpiry,
+        });
+
+        const result = await credentialsManager.getCredentials();
+
+        expect(result.sessionExpiresAt).toBeUndefined();
+      }
+    );
 
     it('should get credentials with custom scope and parameters', async () => {
       mockSpaClient.getTokenSilently.mockResolvedValue(mockTokenResponse);

@@ -643,7 +643,12 @@ function MyComponent() {
 
 > **Platform Support:** iOS, Android, and Web.
 
-Auth0 supports the [IPSIE SL1](https://openid.github.io/ipsie-openid-sl1/draft-openid-ipsie-sl1-profile.html) `session_expiry` claim, which lets an upstream identity provider (e.g. Okta) set a hard ceiling on how long an Auth0-issued session may live. When your enterprise connection has this option enabled, Auth0 includes a `session_expiry` Unix timestamp in the ID token returned to your app after login.
+Auth0 supports the [IPSIE SL1](https://openid.github.io/ipsie-openid-sl1/draft-openid-ipsie-sl1-profile.html) `session_expiry` claim, which lets an upstream identity provider (e.g. Okta) set a hard ceiling on how long an Auth0-issued session may live. When an `okta` or `oidc` enterprise connection has the **"Use ID Token for Session Expiry"** toggle enabled (in the Dashboard, or `id_token_session_expiry_supported: true` via the Management API), and the app uses the Authorization Code flow, Auth0 includes a `session_expiry` Unix timestamp in the ID token returned to your app after login.
+
+This ceiling is layered **on top of** your tenant's existing idle and absolute session timeouts — it does not replace them. The session ends at whichever limit is reached first.
+
+> [!WARNING]
+> `session_expiry` is interpreted as **seconds** since the Unix epoch (per RFC 7519 `NumericDate`). If the Post-Login Action that sets it emits **milliseconds** (e.g. `Date.now()` without `/ 1000`), the value reads as tens of thousands of years out; the platform SDKs reject implausibly large values (≥ `10_000_000_000`) as malformed and treat them as **no ceiling**, silently disabling enforcement. Always emit seconds.
 
 The underlying platform SDKs enforce this ceiling on every credential retrieval. Once the ceiling has passed, `getCredentials()` clears the stored credentials and rejects instead of attempting a token renewal — the user must re-authenticate. **No opt-in code is required**; enforcement is transparent once the connection option is active on your tenant.
 
@@ -685,6 +690,9 @@ if (credentials.sessionExpiresAt) {
   console.log(`Upstream IdP session ends at: ${endsAt.toISOString()}`);
 }
 ```
+
+> [!NOTE]
+> Enforcement applies a small negative leeway (about 30 seconds) to account for clock skew, so the session is treated as expired slightly before this exact timestamp. Build any countdown UI with that margin in mind.
 
 This value is decoded from the current ID token's `session_expiry` claim, except on Android where the credentials manager reports the ceiling pinned at the initial login (the value it actually enforces) when one is stored. It is also readable directly from the raw `session_expiry` claim on the decoded ID token — see [Parse user profile from an ID token locally](#parse-user-profile-from-an-id-token-locally).
 
