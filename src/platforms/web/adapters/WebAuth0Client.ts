@@ -2,7 +2,6 @@ import {
   Auth0Client,
   type Auth0ClientOptions,
   type LogoutOptions,
-  type PasskeyCredentialResponse,
 } from '@auth0/auth0-spa-js';
 import type {
   IAuth0Client,
@@ -405,44 +404,27 @@ export class WebAuth0Client implements IAuth0Client {
       // platforms (which default to "openid profile email" when omitted).
       const finalScope = scope ?? 'openid profile email';
 
-      // `authResponse` is the raw PublicKeyCredential from
-      // navigator.credentials.create()/.get() on the primary web path.
-      // getTokenWithPasskey() detects attestation vs assertion and
-      // serializes it internally. A JSON string is also accepted for
-      // parity with the native platforms' bridge contract.
-      let parsedCredential: PasskeyCredentialResponse | undefined;
+      // `authResponse` must be the raw PublicKeyCredential from
+      // navigator.credentials.create()/.get(). getTokenWithPasskey()
+      // detects attestation vs assertion and serializes it internally.
       if (typeof authResponse === 'string') {
-        try {
-          parsedCredential = JSON.parse(authResponse) as PasskeyCredentialResponse;
-        } catch (parseError) {
-          throw new PasskeyError(
-            new AuthError(
-              'InvalidParameter',
-              'authResponse must be a valid JSON string or PublicKeyCredential.',
-              { code: 'InvalidParameter' }
-            )
-          );
-        }
+        throw new PasskeyError(
+          new AuthError(
+            'InvalidParameter',
+            'authResponse must be a PublicKeyCredential object on web, not a JSON string.',
+            { code: 'InvalidParameter' }
+          )
+        );
       }
 
-      const response =
-        parsedCredential
-          ? await this.client._requestTokenForPasskey({
-              authSession,
-              credential: parsedCredential,
-              realm,
-              audience,
-              scope: finalScope,
-              organization,
-            })
-          : await this.client.passkey.getTokenWithPasskey({
-              authSession,
-              credential: authResponse as PublicKeyCredential,
-              realm,
-              audience,
-              scope: finalScope,
-              organization,
-            });
+      const response = await this.client.passkey.getTokenWithPasskey({
+        authSession,
+        credential: authResponse,
+        realm,
+        audience,
+        scope: finalScope,
+        organization,
+      });
 
       const expiresAt = Math.floor(Date.now() / 1000) + response.expires_in;
 
@@ -456,7 +438,7 @@ export class WebAuth0Client implements IAuth0Client {
       };
     } catch (e: any) {
       if (e instanceof PasskeyError) throw e;
-      // The token-exchange step (_requestTokenForPasskey / _requestToken)
+      // The token-exchange step (getTokenWithPasskey)
       // throws auth0-spa-js's GenericError family (invalid_grant,
       // mfa_required, missing_refresh_token, use_dpop_nonce, ...) or a
       // bare Error from ID token verification — none of these set `.code`,
