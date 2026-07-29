@@ -25,6 +25,7 @@ enum MfaVerificationType: String {
     case recoveryCode
 }
 
+@MainActor
 class A0MfaClient {
 
     private let clientId: String
@@ -149,7 +150,7 @@ class A0MfaClient {
                 }
             }
         case .otp:
-            let request: Request<OTPMFAEnrollmentChallenge, MfaEnrollmentError> = mfaClient.enroll(mfaToken: mfaToken)
+            let request: any Requestable<OTPMFAEnrollmentChallenge, MfaEnrollmentError> = mfaClient.enroll(mfaToken: mfaToken)
             request.start { result in
                 switch result {
                 case .success(let challenge):
@@ -163,7 +164,7 @@ class A0MfaClient {
                 }
             }
         case .push:
-            let request: Request<PushMFAEnrollmentChallenge, MfaEnrollmentError> = mfaClient.enroll(mfaToken: mfaToken)
+            let request: any Requestable<PushMFAEnrollmentChallenge, MfaEnrollmentError> = mfaClient.enroll(mfaToken: mfaToken)
             request.start { result in
                 switch result {
                 case .success(let challenge):
@@ -202,7 +203,7 @@ class A0MfaClient {
             return
         }
 
-        let request: Request<Credentials, MFAVerifyError>
+        let request: any TokenRequestable<Credentials, MFAVerifyError>
         switch verificationType {
         case .otp:
             request = mfaClient.verify(otp: code, mfaToken: mfaToken)
@@ -215,7 +216,7 @@ class A0MfaClient {
         var extraParameters: [String: Any] = [:]
         if let scope = scope { extraParameters["scope"] = scope }
         if let audience = audience { extraParameters["audience"] = audience }
-        let finalRequest = extraParameters.isEmpty ? request : request.parameters(extraParameters)
+        let finalRequest: any Requestable<Credentials, MFAVerifyError> = extraParameters.isEmpty ? request : request.parameters(extraParameters)
 
         finalRequest.start { result in
             switch result {

@@ -53,7 +53,6 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         private const val BIOMETRICS_AUTHENTICATION_ERROR_CODE = "BIOMETRICS_CONFIGURATION_ERROR"
         
         // DPoP-specific error codes
-        private const val DPOP_ERROR_CODE = "DPOP_ERROR"
         private const val DPOP_KEY_GENERATION_FAILED_CODE = "DPOP_KEY_GENERATION_FAILED"
         private const val DPOP_KEY_STORAGE_FAILED_CODE = "DPOP_KEY_STORAGE_FAILED"
         private const val DPOP_KEY_RETRIEVAL_FAILED_CODE = "DPOP_KEY_RETRIEVAL_FAILED"
@@ -141,9 +140,6 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         useTrustedWebActivity: Boolean,
         promise: Promise
     ) {
-        if(this.useDPoP) {
-            WebAuthProvider.useDPoP(reactContext)
-        }
         webAuthPromise = promise
         val cleanedParameters = mutableMapOf<String, String>()
 
@@ -154,6 +150,10 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         }
 
         val builder = WebAuthProvider.login(auth0!!).withScheme(scheme)
+
+        if (this.useDPoP) {
+            builder.useDPoP(reactContext)
+        }
 
         builder.apply {
             state?.let { withState(it) }
@@ -303,7 +303,6 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                     secureCredentialsManager = SecureCredentialsManager(
                         authAPI,
                         reactContext,
-                        auth0!!,
                         storage,
                         activity,
                         localAuthOptions
@@ -599,7 +598,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                     val map = WritableNativeMap().apply {
                         putString("sessionTransferToken", result.sessionTransferToken)
                         putString("tokenType", result.tokenType)
-                        putInt("expiresIn", result.expiresIn)
+                        val expiresInSeconds = ((result.expiresAt.time - System.currentTimeMillis()) / 1000).toInt()
+                        putInt("expiresIn", expiresInSeconds)
                         result.idToken?.let { putString("idToken", it) }
                         result.refreshToken?.let { putString("refreshToken", it) }
                     }
@@ -1023,7 +1023,6 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         return SecureCredentialsManager(
             authAPI,
             reactContext,
-            auth0!!,
             storage
         )
     }
@@ -1039,7 +1038,6 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             DPoPException.KEY_PAIR_NOT_FOUND -> DPOP_KEY_RETRIEVAL_FAILED_CODE
             DPoPException.SIGNING_ERROR -> DPOP_PROOF_FAILED_CODE
             DPoPException.MALFORMED_URL -> DPOP_MISSING_PARAMETER_CODE
-            DPoPException.UNSUPPORTED_ERROR -> DPOP_ERROR_CODE
             DPoPException.UNKNOWN_ERROR -> DPOP_GENERATION_FAILED_CODE
             else -> DPOP_GENERATION_FAILED_CODE
         }

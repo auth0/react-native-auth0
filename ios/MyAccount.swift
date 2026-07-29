@@ -3,6 +3,7 @@ import AuthenticationServices
 import Foundation
 
 @objc
+@MainActor
 public class A0MyAccount: NSObject {
 
     private let domain: String
