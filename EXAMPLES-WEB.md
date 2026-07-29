@@ -201,7 +201,7 @@ function MfaScreen({ mfaToken }: { mfaToken: string }) {
   const verifyOtp = async () => {
     try {
       const credentials = await mfa.verify({ mfaToken, otp });
-      console.log('Authenticated!', credentials.accessToken);
+      console.log('Authenticated!');
     } catch (error) {
       if (error instanceof MfaError) {
         switch (error.type) {
@@ -275,6 +275,63 @@ const credentials = await auth0.mfa.verify({
   mfaToken: 'mfa_token',
   otp: '123456',
 });
+```
+
+## 4. Passkeys (Web)
+
+Passkeys are supported on web via `@auth0/auth0-spa-js`. The flow is the same three steps as native (challenge → WebAuthn ceremony → exchange), but step 2 uses the browser's built-in [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) (`navigator.credentials.create()`/`.get()`) instead of a native module — the app calls it directly, the SDK does not perform this step for you. `getTokenByPasskey`'s `authResponse` accepts the raw `PublicKeyCredential` returned by `navigator.credentials` directly on web — no manual serialization needed (unlike native, which takes a JSON string; see [Signup with Passkey (Web)](./EXAMPLES.md#signup-with-passkey-web) in `EXAMPLES.md` for the full signup example).
+
+**Secure context requirement:** `navigator.credentials.create()`/`.get()` only work over HTTPS (or `localhost` for local development). Apps served over plain HTTP will fail at the WebAuthn ceremony with a `SecurityError`.
+
+Because `navigator.credentials.create()`/`.get()` require a user gesture, call `passkeySignupChallenge` / `passkeyLoginChallenge` from within a click handler (not, for example, from a `useEffect`).
+
+```tsx
+import { useAuth0, PasskeyError } from 'react-native-auth0';
+
+function PasskeyLoginButton() {
+  const { passkeyLoginChallenge, getTokenByPasskey } = useAuth0();
+
+  const handleLogin = async () => {
+    try {
+      const challenge = await passkeyLoginChallenge({
+        realm: 'Username-Password-Authentication',
+      });
+
+      // App calls navigator.credentials directly (not wrapped by SDK)
+      const credential = (await navigator.credentials.get({
+        publicKey:
+          challenge.authParamsPublicKey as PublicKeyCredentialRequestOptions,
+      })) as PublicKeyCredential | null;
+
+      if (!credential) {
+        // User cancelled or no credential available
+        throw new Error('No passkey credential returned');
+      }
+
+      const credentials = await getTokenByPasskey({
+        authSession: challenge.authSession,
+        authResponse: credential,
+        realm: 'Username-Password-Authentication',
+      });
+
+      console.log('Signed in with passkey');
+    } catch (error) {
+      if (error instanceof PasskeyError) {
+        console.error('Passkey login failed:', error.type, error.message);
+
+        // Handle MFA required scenario
+        const mfaPayload = error.getMfaRequiredPayload();
+        if (mfaPayload) {
+          console.log('MFA required. Token:', mfaPayload.mfaToken);
+          console.log('Available factors:', mfaPayload.mfaRequirements);
+          // Continue with mfa.challenge() and mfa.verify()
+        }
+      }
+    }
+  };
+
+  return <button onClick={handleLogin}>Sign In with Passkey</button>;
+}
 ```
 
 ## Web Platform Notes

@@ -71,12 +71,17 @@ const HooksAuthContent = (): React.JSX.Element => {
     mfa,
     users,
     myAccount,
+    passkeySignupChallenge,
+    passkeyLoginChallenge,
+    getTokenByPasskey,
   } = useAuth0();
 
   const [result, setResult] = useState<object | null>(null);
   const [apiError, setApiError] = useState<Error | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passkeyEmail, setPasskeyEmail] = useState('');
+  const [passkeyLoading, setPasskeyLoading] = useState(false);
 
   // Custom Token Exchange (RFC 8693) state
   const [subjectToken, setSubjectToken] = useState('');
@@ -185,6 +190,91 @@ const HooksAuthContent = (): React.JSX.Element => {
       setApiError(e);
     } else {
       setApiError(e as Error);
+    }
+  };
+
+  const handlePasskeyError = (e: unknown) => {
+    if (e instanceof PasskeyError) {
+      setApiError(e);
+      return;
+    }
+    setApiError(e as Error);
+  };
+
+  const onPasskeySignup = async () => {
+    setResult(null);
+    setApiError(null);
+    setPasskeyLoading(true);
+    try {
+      const challenge = await passkeySignupChallenge({
+        email: passkeyEmail || undefined,
+        realm: 'Username-Password-Authentication',
+      });
+
+      // navigator.credentials isn't wrapped by the SDK — normalize a
+      // cancelled/failed WebAuthn ceremony into a PasskeyError ourselves
+      // so callers get the same PasskeyErrorCodes regardless of where the
+      // failure occurred.
+      let credential: PublicKeyCredential;
+      try {
+        credential = (await navigator.credentials.create({
+          publicKey:
+            challenge.authParamsPublicKey as PublicKeyCredentialCreationOptions,
+        })) as PublicKeyCredential;
+      } catch (e) {
+        throw new PasskeyError(e as Error);
+      }
+
+      const credentials = await getTokenByPasskey({
+        authSession: challenge.authSession,
+        authResponse: credential,
+        realm: 'Username-Password-Authentication',
+      });
+
+      setResult({
+        success: true,
+        accessToken: `${credentials.accessToken.substring(0, 30)}...`,
+      });
+    } catch (e) {
+      handlePasskeyError(e);
+    } finally {
+      setPasskeyLoading(false);
+    }
+  };
+
+  const onPasskeyLogin = async () => {
+    setResult(null);
+    setApiError(null);
+    setPasskeyLoading(true);
+    try {
+      const challenge = await passkeyLoginChallenge({
+        realm: 'Username-Password-Authentication',
+      });
+
+      let credential: PublicKeyCredential;
+      try {
+        credential = (await navigator.credentials.get({
+          publicKey:
+            challenge.authParamsPublicKey as PublicKeyCredentialRequestOptions,
+        })) as PublicKeyCredential;
+      } catch (e) {
+        throw new PasskeyError(e as Error);
+      }
+
+      const credentials = await getTokenByPasskey({
+        authSession: challenge.authSession,
+        authResponse: credential,
+        realm: 'Username-Password-Authentication',
+      });
+
+      setResult({
+        success: true,
+        accessToken: `${credentials.accessToken.substring(0, 30)}...`,
+      });
+    } catch (e) {
+      handlePasskeyError(e);
+    } finally {
+      setPasskeyLoading(false);
     }
   };
 
@@ -1134,6 +1224,29 @@ const HooksAuthContent = (): React.JSX.Element => {
                 <Button onPress={resetMfaWizard} title="Done" />
               </>
             )}
+          </Section>
+          <Section title="Passkeys">
+            <Text style={styles.hint}>
+              Uses the browser's built-in WebAuthn API (navigator.credentials)
+              via @auth0/auth0-spa-js.
+            </Text>
+            <LabeledInput
+              label="Email (for signup)"
+              value={passkeyEmail}
+              onChangeText={setPasskeyEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
+            <Button
+              onPress={onPasskeySignup}
+              title="Sign Up with Passkey"
+              disabled={!passkeyEmail || passkeyLoading}
+            />
+            <Button
+              onPress={onPasskeyLogin}
+              title="Sign In with Passkey"
+              disabled={passkeyLoading}
+            />
           </Section>
         </>
       )}
