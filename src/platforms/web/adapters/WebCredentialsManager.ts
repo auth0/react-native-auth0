@@ -27,6 +27,22 @@ export class WebCredentialsManager implements ICredentialsManager {
     );
   }
 
+  // Normalize a caught error into a CredentialsManagerError. Errors we've already
+  // classified (e.g. the session_expiry ceiling) are passed through unchanged;
+  // anything else is wrapped in an AuthError with the given fallback code.
+  private toCredentialsManagerError(
+    e: any,
+    fallbackCode: string
+  ): CredentialsManagerError {
+    if (e instanceof CredentialsManagerError) {
+      return e;
+    }
+    const code = e.error ?? fallbackCode;
+    return new CredentialsManagerError(
+      new AuthError(code, e.error_description ?? e.message, { json: e, code })
+    );
+  }
+
   async saveCredentials(_credentials: Credentials): Promise<void> {
     console.warn(
       '`saveCredentials` is a no-op on the web. @auth0/auth0-spa-js handles credential storage automatically.'
@@ -81,16 +97,7 @@ export class WebCredentialsManager implements ICredentialsManager {
         sessionExpiresAt,
       });
     } catch (e: any) {
-      // Rethrow errors we've already classified (e.g. the session_expiry ceiling).
-      if (e instanceof CredentialsManagerError) {
-        throw e;
-      }
-      const code = e.error ?? 'GetCredentialsFailed';
-      const authError = new AuthError(code, e.error_description ?? e.message, {
-        json: e,
-        code,
-      });
-      throw new CredentialsManagerError(authError);
+      throw this.toCredentialsManagerError(e, 'GetCredentialsFailed');
     }
   }
 
@@ -128,16 +135,7 @@ export class WebCredentialsManager implements ICredentialsManager {
         scope: tokenResponse.scope,
       });
     } catch (e: any) {
-      // Rethrow errors we've already classified (e.g. the session_expiry ceiling).
-      if (e instanceof CredentialsManagerError) {
-        throw e;
-      }
-      const code = e.error ?? 'GetApiCredentialsFailed';
-      const authError = new AuthError(code, e.error_description ?? e.message, {
-        json: e,
-        code,
-      });
-      throw new CredentialsManagerError(authError);
+      throw this.toCredentialsManagerError(e, 'GetApiCredentialsFailed');
     }
   }
 
