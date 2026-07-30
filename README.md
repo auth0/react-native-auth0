@@ -730,6 +730,11 @@ try {
           'DPoP credential state error. Clear credentials and re-authenticate.'
         );
         break;
+      case CredentialsManagerErrorCodes.SESSION_EXPIRED:
+        console.log(
+          'Upstream IdP session ceiling reached. Clear credentials and restart the login flow.'
+        );
+        break;
       default:
         console.error('Credentials error:', error.message);
     }
@@ -754,6 +759,9 @@ try {
 | `DPOP_KEY_MISSING`    | `DPOP_KEY_MISSING`                                                                                                                                                                                                                                                                                                                               | `dpopKeyMissing`    |                                                             |
 | `DPOP_NOT_CONFIGURED` | `DPOP_NOT_CONFIGURED`                                                                                                                                                                                                                                                                                                                            | `dpopNotConfigured` |                                                             |
 | `DPOP_KEY_MISMATCH`   | `DPOP_KEY_MISMATCH`                                                                                                                                                                                                                                                                                                                              | `dpopKeyMismatch`   |                                                             |
+| `SESSION_EXPIRED`     | `SESSION_EXPIRED`                                                                                                                                                                                                                                                                                                                                | `sessionExpired`    | `session_expired`                                           |
+
+> **`SESSION_EXPIRED`** is raised when the upstream IdP session ceiling (IPSIE `session_expiry` claim) has been reached. The local session is no longer valid and the user must re-authenticate. See [IPSIE Session Expiry](https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES.md#ipsie-session-expiry) for details.
 
 ### MFA errors
 
@@ -916,9 +924,9 @@ This library provides a unified API across Native (iOS/Android) and Web platform
 | `auth.passwordless...()`                                               |          ✅          |      ❌       | **Not supported on Web.** Passwordless flows on the web should be configured via Universal Login and initiated with `webAuth.authorize()`.                               |
 | `auth.loginWith...()` (OTP/SMS etc)                                    |          ✅          |      ❌       | **Not supported on Web.** These direct grant flows are not secure for public clients like browsers.                                                                      |
 | **Passkeys**                                                           |                      |               | ---                                                                                                                                                                      |
-| `passkeySignupChallenge()`                                             |          ✅          |      ✅       | Gets a WebAuthn registration challenge from Auth0. Requires iOS 16.6+, Android API 28+, or a browser with WebAuthn support.                                                               |
-| `passkeyLoginChallenge()`                                              |          ✅          |      ✅       | Gets a WebAuthn assertion challenge from Auth0. Requires iOS 16.6+, Android API 28+, or a browser with WebAuthn support.                                                                  |
-| `getTokenByPasskey()`                                                  |          ✅          |      ✅       | Exchanges a passkey credential response for Auth0 tokens. On Web, uses `@auth0/auth0-spa-js`.                                                        |
+| `passkeySignupChallenge()`                                             |          ✅          |      ✅       | Gets a WebAuthn registration challenge from Auth0. Requires iOS 16.6+, Android API 28+, or a browser with WebAuthn support.                                              |
+| `passkeyLoginChallenge()`                                              |          ✅          |      ✅       | Gets a WebAuthn assertion challenge from Auth0. Requires iOS 16.6+, Android API 28+, or a browser with WebAuthn support.                                                 |
+| `getTokenByPasskey()`                                                  |          ✅          |      ✅       | Exchanges a passkey credential response for Auth0 tokens. On Web, uses `@auth0/auth0-spa-js`.                                                                            |
 | **Token & User Management**                                            |                      |               | ---                                                                                                                                                                      |
 | `auth.refreshToken()`                                                  |          ✅          |      ❌       | **Not supported on Web.** Token refresh is handled automatically by `getCredentials()` via `getTokenSilently()` on the web.                                              |
 | `auth.userInfo()`                                                      |          ✅          |      ✅       | Fetches the user's profile from the `/userinfo` endpoint using an access token.                                                                                          |

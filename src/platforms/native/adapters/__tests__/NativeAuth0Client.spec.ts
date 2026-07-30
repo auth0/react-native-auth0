@@ -612,13 +612,11 @@ describe('NativeAuth0Client', () => {
       const { AuthError } = require('../../../../core/models');
       const { PasskeyError } = require('../../../../core/models');
 
-      mockBridgeInstance.getTokenByPasskey = jest
-        .fn()
-        .mockRejectedValue(
-          new AuthError('PASSKEY_EXCHANGE_FAILED', 'Exchange failed', {
-            code: 'PASSKEY_EXCHANGE_FAILED',
-          })
-        );
+      mockBridgeInstance.getTokenByPasskey = jest.fn().mockRejectedValue(
+        new AuthError('PASSKEY_EXCHANGE_FAILED', 'Exchange failed', {
+          code: 'PASSKEY_EXCHANGE_FAILED',
+        })
+      );
 
       const client = new NativeAuth0Client(options);
       await new Promise(process.nextTick);

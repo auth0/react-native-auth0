@@ -21,6 +21,7 @@
   - [Using Retry with Auth0 Class](#using-retry-with-auth0-class)
   - [Platform Support](#platform-support)
   - [Error Handling](#error-handling)
+- [IPSIE Session Expiry](#ipsie-session-expiry)
 - [Biometric Authentication](#biometric-authentication)
   - [Biometric Policy Types](#biometric-policy-types)
   - [Using with Auth0Provider (Hooks)](#using-with-auth0provider-hooks)
@@ -639,6 +640,66 @@ function MyComponent() {
 1. **Use moderate retry counts**: Recommended maximum of 2 retries to balance reliability with performance
 2. **Configure adequate overlap period**: Ensure your Auth0 tenant has at least 180 seconds token overlap configured
 3. **Test on real devices**: Simulate network instability during testing to validate retry behavior
+
+## IPSIE Session Expiry
+
+> **Platform Support:** iOS, Android, and Web.
+
+Auth0 supports the [IPSIE SL1](https://openid.github.io/ipsie-openid-sl1/draft-openid-ipsie-sl1-profile.html) `session_expiry` claim, which lets an upstream identity provider (e.g. Okta) set a hard ceiling on how long an Auth0-issued session may live. When an `okta` or `oidc` enterprise connection has the **"Use ID Token for Session Expiry"** toggle enabled (in the Dashboard, or `id_token_session_expiry_supported: true` via the Management API), and the app uses the Authorization Code flow, Auth0 includes a `session_expiry` Unix timestamp in the ID token returned to your app after login.
+
+This ceiling is layered **on top of** your tenant's existing idle and absolute session timeouts — it does not replace them. The session ends at whichever limit is reached first.
+
+> [!WARNING]
+> `session_expiry` is interpreted as **seconds** since the Unix epoch (per RFC 7519 `NumericDate`). If the Post-Login Action that sets it emits **milliseconds** (e.g. `Date.now()` without `/ 1000`), the value reads as tens of thousands of years out; the platform SDKs reject implausibly large values (≥ `10_000_000_000`) as malformed and treat them as **no ceiling**, silently disabling enforcement. Always emit seconds.
+
+The underlying platform SDKs enforce this ceiling on every credential retrieval. Once the ceiling has passed, `getCredentials()` clears the stored credentials and rejects instead of attempting a token renewal — the user must re-authenticate. **No opt-in code is required**; enforcement is transparent once the connection option is active on your tenant.
+
+`react-native-auth0` surfaces this as a single, cross-platform error type: `CredentialsManagerError` with `type === 'SESSION_EXPIRED'`. Your existing "no credentials" re-login path already handles it, or you can match it explicitly:
+
+```jsx
+import { useAuth0, CredentialsManagerError } from 'react-native-auth0';
+
+function MyComponent() {
+  const { getCredentials, authorize } = useAuth0();
+
+  const fetchCredentials = async () => {
+    try {
+      const credentials = await getCredentials();
+      return credentials;
+    } catch (error) {
+      if (
+        error instanceof CredentialsManagerError &&
+        error.type === 'SESSION_EXPIRED'
+      ) {
+        // Upstream IdP session has ended — send the user back to login.
+        await authorize({ scope: 'openid profile offline_access' });
+      } else {
+        throw error;
+      }
+    }
+  };
+
+  // ...
+}
+```
+
+If you need to read the ceiling directly — for example to warn the user before their session ends — it is exposed as `sessionExpiresAt` (an absolute Unix timestamp, in seconds) on the returned `Credentials`. It is `undefined` when the connection does not emit the claim:
+
+```jsx
+const credentials = await getCredentials();
+if (credentials.sessionExpiresAt) {
+  const endsAt = new Date(credentials.sessionExpiresAt * 1000);
+  console.log(`Upstream IdP session ends at: ${endsAt.toISOString()}`);
+}
+```
+
+> [!NOTE]
+> Enforcement applies a small negative leeway (about 30 seconds) to account for clock skew, so the session is treated as expired slightly before this exact timestamp. Build any countdown UI with that margin in mind.
+
+This value is decoded from the current ID token's `session_expiry` claim, except on Android where the credentials manager reports the ceiling pinned at the initial login (the value it actually enforces) when one is stored. It is also readable directly from the raw `session_expiry` claim on the decoded ID token — see [Parse user profile from an ID token locally](#parse-user-profile-from-an-id-token-locally).
+
+> [!NOTE]
+> On Android, the `session_expiry` ceiling is pinned at the initial login and is not raised by subsequent refresh-token grants. On iOS and Web, `sessionExpiresAt` is derived from the current ID token. Sessions from connections **without** the claim behave exactly as before.
 
 ## Biometric Authentication
 
@@ -1377,7 +1438,8 @@ function PasskeySignupScreenWeb() {
       let credential: PublicKeyCredential;
       try {
         credential = (await navigator.credentials.create({
-          publicKey: challenge.authParamsPublicKey as PublicKeyCredentialCreationOptions,
+          publicKey:
+            challenge.authParamsPublicKey as PublicKeyCredentialCreationOptions,
         })) as PublicKeyCredential;
       } catch (e) {
         throw new PasskeyError(e as Error);
@@ -1423,7 +1485,8 @@ function PasskeySigninScreenWeb() {
       let credential: PublicKeyCredential;
       try {
         credential = (await navigator.credentials.get({
-          publicKey: challenge.authParamsPublicKey as PublicKeyCredentialRequestOptions,
+          publicKey:
+            challenge.authParamsPublicKey as PublicKeyCredentialRequestOptions,
         })) as PublicKeyCredential;
       } catch (e) {
         throw new PasskeyError(e as Error);
@@ -1556,16 +1619,16 @@ The `passkeySignupChallenge` method accepts the following parameters to create a
 
 Passkey operations throw `PasskeyError` (extends `AuthError`) with a normalized `type` property. Use `PasskeyErrorCodes` for type-safe error handling:
 
-| Error Code                     | Description                                                                                                          |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| `PASSKEY_CHALLENGE_FAILED`     | Auth0 challenge request failed                                                                                     |
-| `PASSKEY_EXCHANGE_FAILED`      | Token exchange with credential response failed                                                                     |
-| `PASSKEY_NOT_AVAILABLE`        | Passkeys not available on this device/OS version, or WebAuthn is not supported in this browser                    |
-| `PASSKEY_UNSUPPORTED_PLATFORM` | Passkeys not supported on this platform                                                                            |
-| `PASSKEY_INVALID_PARAMETER`    | **Native only.** `authResponse` passed to `getTokenByPasskey` was not a JSON string                                |
-| `PASSKEY_INVALID_CREDENTIAL`   | **Web only.** The credential passed to `getTokenByPasskey` is neither a valid attestation (signup) nor assertion (login) response |
+| Error Code                     | Description                                                                                                                                                                                   |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PASSKEY_CHALLENGE_FAILED`     | Auth0 challenge request failed                                                                                                                                                                |
+| `PASSKEY_EXCHANGE_FAILED`      | Token exchange with credential response failed                                                                                                                                                |
+| `PASSKEY_NOT_AVAILABLE`        | Passkeys not available on this device/OS version, or WebAuthn is not supported in this browser                                                                                                |
+| `PASSKEY_UNSUPPORTED_PLATFORM` | Passkeys not supported on this platform                                                                                                                                                       |
+| `PASSKEY_INVALID_PARAMETER`    | **Native only.** `authResponse` passed to `getTokenByPasskey` was not a JSON string                                                                                                           |
+| `PASSKEY_INVALID_CREDENTIAL`   | **Web only.** The credential passed to `getTokenByPasskey` is neither a valid attestation (signup) nor assertion (login) response                                                             |
 | `PASSKEY_MFA_REQUIRED`         | **Web only.** MFA is required to complete the exchange — use `error.getMfaRequiredPayload()` to extract `mfaToken` and `mfaRequirements`, then continue with `mfa.challenge()`/`mfa.verify()` |
-| `PASSKEY_UNKNOWN_ERROR`        | Unknown or uncategorized passkey error — check `error.message` for the underlying description                     |
+| `PASSKEY_UNKNOWN_ERROR`        | Unknown or uncategorized passkey error — check `error.message` for the underlying description                                                                                                 |
 
 ```typescript
 import { PasskeyError, PasskeyErrorCodes } from 'react-native-auth0';
@@ -1580,7 +1643,7 @@ try {
     console.log('Error type:', error.type); // e.g. "PASSKEY_CHALLENGE_FAILED"
     console.log('Error message:', error.message);
     console.log('Error code:', error.code); // Raw error code
-    
+
     // Handle MFA required
     if (error.type === PasskeyErrorCodes.MFA_REQUIRED) {
       const mfaPayload = error.getMfaRequiredPayload();
@@ -1598,8 +1661,8 @@ try {
 
 ### Platform Support
 
-| Platform    | Support      | Requirements                                                 |
-| ----------- | ------------ | ------------------------------------------------------------- |
+| Platform    | Support      | Requirements                                                   |
+| ----------- | ------------ | -------------------------------------------------------------- |
 | **iOS**     | ✅ Supported | iOS 16.6+, Associated Domains with `webcredentials`            |
 | **Android** | ✅ Supported | Android API 28+, Digital Asset Links configured                |
 | **Web**     | ✅ Supported | Modern browser with WebAuthn support; call from a user gesture |

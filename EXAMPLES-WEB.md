@@ -299,7 +299,8 @@ function PasskeyLoginButton() {
 
       // App calls navigator.credentials directly (not wrapped by SDK)
       const credential = (await navigator.credentials.get({
-        publicKey: challenge.authParamsPublicKey as PublicKeyCredentialRequestOptions,
+        publicKey:
+          challenge.authParamsPublicKey as PublicKeyCredentialRequestOptions,
       })) as PublicKeyCredential | null;
 
       if (!credential) {
@@ -317,7 +318,7 @@ function PasskeyLoginButton() {
     } catch (error) {
       if (error instanceof PasskeyError) {
         console.error('Passkey login failed:', error.type, error.message);
-        
+
         // Handle MFA required scenario
         const mfaPayload = error.getMfaRequiredPayload();
         if (mfaPayload) {

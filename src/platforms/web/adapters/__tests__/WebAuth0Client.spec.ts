@@ -932,7 +932,7 @@ describe('WebAuth0Client', () => {
         mfa_token: 'mfa_tok_123',
         mfa_requirements: {
           challenge: [{ type: 'sms' }, { type: 'otp' }],
-          enroll: [{ type: 'email' }]
+          enroll: [{ type: 'email' }],
         },
       });
 
@@ -949,8 +949,8 @@ describe('WebAuth0Client', () => {
           mfa_token: 'mfa_tok_123',
           mfa_requirements: {
             challenge: [{ type: 'sms' }, { type: 'otp' }],
-            enroll: [{ type: 'email' }]
-          }
+            enroll: [{ type: 'email' }],
+          },
         }),
       });
 
@@ -968,7 +968,7 @@ describe('WebAuth0Client', () => {
           errorDescription: 'MFA is required',
           mfaRequirements: {
             challenge: [{ type: 'sms' }, { type: 'otp' }],
-            enroll: [{ type: 'email' }]
+            enroll: [{ type: 'email' }],
           },
         });
       }
