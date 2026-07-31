@@ -115,7 +115,7 @@
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "metro-config": "^0.84.4",
-    "metro-runtime": "^0.84.4",
+    "metro-runtime": "^0.87.0",
     "minami": "^1.2.3",
     "node-fetch": "^3.3.2",
     "pod-install": "^1.0.19",
