@@ -581,7 +581,7 @@ export interface PasskeyChallengeResponse {
  * Parameters for exchanging a passkey credential response for Auth0 tokens.
  *
  * After the platform credential manager returns the credential (either a new
- * registration or an assertion), pass the auth_session and the credential JSON
+ * registration or an assertion), pass the auth_session and the credential
  * response to this method to obtain Auth0 tokens.
  *
  * @see https://auth0.com/docs/authenticate/database-connections/passkeys
@@ -589,8 +589,16 @@ export interface PasskeyChallengeResponse {
 export interface GetTokenByPasskeyParameters {
   /** The auth session received from the challenge response. */
   authSession: string;
-  /** The JSON string of the PublicKeyCredential response from the platform credential manager. */
-  authResponse: string;
+  /**
+   * The credential response from the platform credential manager.
+   *
+   * On native (iOS/Android), this is the JSON string of the
+   * `PublicKeyCredential` response returned by the native credential
+   * manager. On web, pass the raw `PublicKeyCredential` object returned
+   * directly by `navigator.credentials.create()`/`.get()` — it does not
+   * need to be serialized first.
+   */
+  authResponse: string | PublicKeyCredential;
   /** The database connection name. */
   realm?: string;
   /** The target API identifier for the issued access token. */

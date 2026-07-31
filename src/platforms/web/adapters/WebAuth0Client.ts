@@ -293,35 +293,166 @@ export class WebAuth0Client implements IAuth0Client {
   }
 
   async passkeySignupChallenge(
-    _parameters: PasskeySignupChallengeParameters
+    parameters: PasskeySignupChallengeParameters
   ): Promise<PasskeyChallengeResponse> {
-    throw new PasskeyError(
-      new AuthError(
-        'UnsupportedOperation',
-        'Passkeys are not supported on the web platform'
-      )
-    );
+    try {
+      const {
+        email,
+        phoneNumber,
+        username,
+        name,
+        givenName,
+        familyName,
+        nickname,
+        picture,
+        userMetadata,
+        realm,
+        organization,
+      } = parameters;
+
+      // auth0-spa-js's PasskeySignupChallengeOptions type requires at
+      // least one of email/phoneNumber/username, but which identifiers
+      // are actually accepted depends on the database connection's
+      // configuration (see Prerequisites in EXAMPLES.md) — the API
+      // rejects an unsupported/missing combination server-side, so no
+      // client-side check is duplicated here (matching native, which
+      // also forwards these fields as-is).
+      const challenge = await this.client.passkey.getSignupChallenge({
+        email,
+        phoneNumber,
+        username,
+        name,
+        givenName,
+        familyName,
+        nickname,
+        picture,
+        userMetadata,
+        realm,
+        organization,
+      } as Parameters<typeof this.client.passkey.getSignupChallenge>[0]);
+
+      return {
+        authSession: challenge.authSession,
+        authParamsPublicKey: challenge.publicKey as unknown as Record<
+          string,
+          any
+        >,
+      };
+    } catch (e: any) {
+      if (e instanceof PasskeyError) throw e;
+      // spa-js's PasskeyRegisterError sets `.code`; the OAuth2-style
+      // GenericError family (thrown by the underlying token/discovery
+      // calls) only sets `.error` — check both so no error is silently
+      // downgraded to PASSKEY_UNKNOWN_ERROR.
+      const code = e.code ?? e.error ?? 'passkey_signup_challenge_failed';
+      const authError = new AuthError(
+        code,
+        e.message ??
+          e.error_description ??
+          'Failed to request passkey signup challenge',
+        { code, json: e.cause ?? e }
+      );
+      throw new PasskeyError(authError);
+    }
   }
 
   async passkeyLoginChallenge(
-    _parameters: PasskeyLoginChallengeParameters
+    parameters: PasskeyLoginChallengeParameters
   ): Promise<PasskeyChallengeResponse> {
-    throw new PasskeyError(
-      new AuthError(
-        'UnsupportedOperation',
-        'Passkeys are not supported on the web platform'
-      )
-    );
+    try {
+      const { realm, organization } = parameters;
+      const challenge = await this.client.passkey.getLoginChallenge({
+        realm,
+        organization,
+      });
+
+      return {
+        authSession: challenge.authSession,
+        authParamsPublicKey: challenge.publicKey as unknown as Record<
+          string,
+          any
+        >,
+      };
+    } catch (e: any) {
+      if (e instanceof PasskeyError) throw e;
+      const code = e.code ?? e.error ?? 'passkey_login_challenge_failed';
+      const authError = new AuthError(
+        code,
+        e.message ??
+          e.error_description ??
+          'Failed to request passkey login challenge',
+        { code, json: e.cause ?? e }
+      );
+      throw new PasskeyError(authError);
+    }
   }
 
   async getTokenByPasskey(
-    _parameters: GetTokenByPasskeyParameters
+    parameters: GetTokenByPasskeyParameters
   ): Promise<Credentials> {
-    throw new PasskeyError(
-      new AuthError(
-        'UnsupportedOperation',
-        'Passkeys are not supported on the web platform'
-      )
-    );
+    try {
+      const {
+        authSession,
+        authResponse,
+        realm,
+        audience,
+        scope,
+        organization,
+      } = parameters;
+
+      // Apply default scope if not provided, for consistency with native
+      // platforms (which default to "openid profile email" when omitted).
+      const finalScope = scope ?? 'openid profile email';
+
+      // `authResponse` must be the raw PublicKeyCredential from
+      // navigator.credentials.create()/.get(). getTokenWithPasskey()
+      // detects attestation vs assertion and serializes it internally.
+      if (typeof authResponse === 'string') {
+        throw new PasskeyError(
+          new AuthError(
+            'InvalidParameter',
+            'authResponse must be a PublicKeyCredential object on web, not a JSON string.',
+            { code: 'InvalidParameter' }
+          )
+        );
+      }
+
+      const response = await this.client.passkey.getTokenWithPasskey({
+        authSession,
+        credential: authResponse,
+        realm,
+        audience,
+        scope: finalScope,
+        organization,
+      });
+
+      const expiresAt = Math.floor(Date.now() / 1000) + response.expires_in;
+
+      return {
+        accessToken: response.access_token,
+        idToken: response.id_token,
+        tokenType: (response.token_type as TokenType) ?? this.tokenType,
+        expiresAt,
+        scope: response.scope,
+        refreshToken: response.refresh_token,
+      };
+    } catch (e: any) {
+      if (e instanceof PasskeyError) throw e;
+      // The token-exchange step (getTokenWithPasskey)
+      // throws auth0-spa-js's GenericError family (invalid_grant,
+      // mfa_required, missing_refresh_token, use_dpop_nonce, ...) or a
+      // bare Error from ID token verification — none of these set `.code`,
+      // only `.error` (OAuth2-style), so check both before falling back to
+      // a generic code. See PasskeyErrorCodes for the resulting mapping.
+      const code = e.code ?? e.error ?? 'passkey_exchange_failed';
+      const authError = new AuthError(
+        code,
+        e.message ??
+          e.error_description ??
+          'Failed to exchange passkey credential for tokens',
+        { code, json: e.cause ?? e }
+      );
+      throw new PasskeyError(authError);
+    }
   }
 }
