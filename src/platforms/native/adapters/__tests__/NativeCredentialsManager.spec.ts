@@ -106,6 +106,21 @@ describe('NativeCredentialsManager', () => {
 
       expect(result).toEqual(expectedCredentials);
     });
+
+    it('should pass through sessionExpiresAt from the bridge', async () => {
+      const expectedCredentials = {
+        idToken: 'a',
+        accessToken: 'b',
+        tokenType: 'c',
+        expiresAt: 123,
+        sessionExpiresAt: 1893456000,
+      };
+      mockBridge.getCredentials.mockResolvedValueOnce(expectedCredentials);
+
+      const result = await manager.getCredentials();
+
+      expect(result.sessionExpiresAt).toBe(1893456000);
+    });
   });
 
   describe('hasValidCredentials', () => {

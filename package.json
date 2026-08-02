@@ -1,7 +1,7 @@
 {
   "name": "react-native-auth0",
   "title": "React Native Auth0",
-  "version": "5.10.0",
+  "version": "5.11.0",
   "description": "React Native toolkit for Auth0 API",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
@@ -135,7 +135,7 @@
     "typescript-eslint": "^8.62.0"
   },
   "dependencies": {
-    "@auth0/auth0-spa-js": "^2.22.0",
+    "@auth0/auth0-spa-js": "^2.24.0",
     "base-64": "^1.0.0",
     "jwt-decode": "^4.0.0",
     "url": "^0.11.4"

@@ -680,7 +680,7 @@ public class NativeBridge: NSObject {
 
 extension Credentials {
     func asDictionary() -> [String: Any] {
-        return [
+        var dict: [String: Any] = [
             NativeBridge.accessTokenKey: self.accessToken,
             NativeBridge.tokenTypeKey: self.tokenType,
             NativeBridge.idTokenKey: self.idToken,
@@ -688,6 +688,10 @@ extension Credentials {
             NativeBridge.expiresAtKey: floor(self.expiresAt.timeIntervalSince1970),
             NativeBridge.scopeKey: self.scope as Any
         ]
+        if let sessionExpiresAt = self.sessionExpiresAt {
+            dict[NativeBridge.sessionExpiresAtKey] = floor(sessionExpiresAt.timeIntervalSince1970)
+        }
+        return dict
     }
 }
 
@@ -766,6 +770,7 @@ extension CredentialsManagerError {
             case CredentialsManagerError.dpopKeyMissing: code = "DPOP_KEY_MISSING"
             case CredentialsManagerError.dpopKeyMismatch: code = "DPOP_KEY_MISMATCH"
             case CredentialsManagerError.dpopNotConfigured: code = "DPOP_NOT_CONFIGURED"
+            case CredentialsManagerError.sessionExpired: code = "SESSION_EXPIRED"
             default: code = "UNKNOWN"
         }
         return code

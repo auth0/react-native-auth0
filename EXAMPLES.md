@@ -21,6 +21,7 @@
   - [Using Retry with Auth0 Class](#using-retry-with-auth0-class)
   - [Platform Support](#platform-support)
   - [Error Handling](#error-handling)
+- [IPSIE Session Expiry](#ipsie-session-expiry)
 - [Biometric Authentication](#biometric-authentication)
   - [Biometric Policy Types](#biometric-policy-types)
   - [Using with Auth0Provider (Hooks)](#using-with-auth0provider-hooks)
@@ -57,7 +58,9 @@
   - [Prerequisites](#prerequisites-1)
   - [Signup with Passkey](#signup-with-passkey)
   - [Signin with Passkey](#signin-with-passkey)
-  - [Auth Response Format](#auth-response-format)
+  - [Signup with Passkey (Web)](#signup-with-passkey-web)
+  - [Signin with Passkey (Web)](#signin-with-passkey-web)
+  - [Auth Response Format](#passkeys-auth-response-format)
   - [Using Passkeys with Auth0 Class](#using-passkeys-with-auth0-class)
   - [Signup Challenge Parameters](#signup-challenge-parameters)
   - [Error Handling](#error-handling-1)
@@ -522,7 +525,7 @@ function MyComponent() {
       // The retry mechanism is automatically applied to all credential renewal attempts
       const credentials = await getCredentials();
 
-      console.log('Access Token:', credentials.accessToken);
+      console.log('Authenticated successfully');
       // Use credentials for API calls...
     } catch (error) {
       console.error('Failed to get credentials after retries:', error);
@@ -559,7 +562,7 @@ const auth0 = new Auth0({
 try {
   const credentials = await auth0.credentialsManager.getCredentials();
 
-  console.log('Access Token:', credentials.accessToken);
+  console.log('Credentials retrieved successfully');
 } catch (error) {
   console.error('Credential renewal failed after retries:', error);
 }
@@ -637,6 +640,66 @@ function MyComponent() {
 1. **Use moderate retry counts**: Recommended maximum of 2 retries to balance reliability with performance
 2. **Configure adequate overlap period**: Ensure your Auth0 tenant has at least 180 seconds token overlap configured
 3. **Test on real devices**: Simulate network instability during testing to validate retry behavior
+
+## IPSIE Session Expiry
+
+> **Platform Support:** iOS, Android, and Web.
+
+Auth0 supports the [IPSIE SL1](https://openid.github.io/ipsie-openid-sl1/draft-openid-ipsie-sl1-profile.html) `session_expiry` claim, which lets an upstream identity provider (e.g. Okta) set a hard ceiling on how long an Auth0-issued session may live. When an `okta` or `oidc` enterprise connection has the **"Use ID Token for Session Expiry"** toggle enabled (in the Dashboard, or `id_token_session_expiry_supported: true` via the Management API), and the app uses the Authorization Code flow, Auth0 includes a `session_expiry` Unix timestamp in the ID token returned to your app after login.
+
+This ceiling is layered **on top of** your tenant's existing idle and absolute session timeouts — it does not replace them. The session ends at whichever limit is reached first.
+
+> [!WARNING]
+> `session_expiry` is interpreted as **seconds** since the Unix epoch (per RFC 7519 `NumericDate`). If the Post-Login Action that sets it emits **milliseconds** (e.g. `Date.now()` without `/ 1000`), the value reads as tens of thousands of years out; the platform SDKs reject implausibly large values (≥ `10_000_000_000`) as malformed and treat them as **no ceiling**, silently disabling enforcement. Always emit seconds.
+
+The underlying platform SDKs enforce this ceiling on every credential retrieval. Once the ceiling has passed, `getCredentials()` clears the stored credentials and rejects instead of attempting a token renewal — the user must re-authenticate. **No opt-in code is required**; enforcement is transparent once the connection option is active on your tenant.
+
+`react-native-auth0` surfaces this as a single, cross-platform error type: `CredentialsManagerError` with `type === 'SESSION_EXPIRED'`. Your existing "no credentials" re-login path already handles it, or you can match it explicitly:
+
+```jsx
+import { useAuth0, CredentialsManagerError } from 'react-native-auth0';
+
+function MyComponent() {
+  const { getCredentials, authorize } = useAuth0();
+
+  const fetchCredentials = async () => {
+    try {
+      const credentials = await getCredentials();
+      return credentials;
+    } catch (error) {
+      if (
+        error instanceof CredentialsManagerError &&
+        error.type === 'SESSION_EXPIRED'
+      ) {
+        // Upstream IdP session has ended — send the user back to login.
+        await authorize({ scope: 'openid profile offline_access' });
+      } else {
+        throw error;
+      }
+    }
+  };
+
+  // ...
+}
+```
+
+If you need to read the ceiling directly — for example to warn the user before their session ends — it is exposed as `sessionExpiresAt` (an absolute Unix timestamp, in seconds) on the returned `Credentials`. It is `undefined` when the connection does not emit the claim:
+
+```jsx
+const credentials = await getCredentials();
+if (credentials.sessionExpiresAt) {
+  const endsAt = new Date(credentials.sessionExpiresAt * 1000);
+  console.log(`Upstream IdP session ends at: ${endsAt.toISOString()}`);
+}
+```
+
+> [!NOTE]
+> Enforcement applies a small negative leeway (about 30 seconds) to account for clock skew, so the session is treated as expired slightly before this exact timestamp. Build any countdown UI with that margin in mind.
+
+This value is decoded from the current ID token's `session_expiry` claim, except on Android where the credentials manager reports the ceiling pinned at the initial login (the value it actually enforces) when one is stored. It is also readable directly from the raw `session_expiry` claim on the decoded ID token — see [Parse user profile from an ID token locally](#parse-user-profile-from-an-id-token-locally).
+
+> [!NOTE]
+> On Android, the `session_expiry` ceiling is pinned at the initial login and is not raised by subsequent refresh-token grants. On iOS and Web, `sessionExpiresAt` is derived from the current ID token. Sessions from connections **without** the claim behave exactly as before.
 
 ## Biometric Authentication
 
@@ -848,7 +911,7 @@ function MyComponent() {
         'https://first-api.example.com',
         'read:data write:data'
       );
-      console.log('First API Access Token:', credentials.accessToken);
+      console.log('First API authenticated successfully');
       console.log('Expires At:', new Date(credentials.expiresAt * 1000));
     } catch (error) {
       console.error('Error:', error);
@@ -862,7 +925,7 @@ function MyComponent() {
         'https://second-api.example.com',
         'read:reports'
       );
-      console.log('Second API Access Token:', credentials.accessToken);
+      console.log('Second API authenticated successfully');
     } catch (error) {
       console.error('Error:', error);
     }
@@ -1231,15 +1294,15 @@ For detailed examples of validating different token types in Actions, see:
 
 ### Overview
 
-Passkeys provide a passwordless authentication experience using platform biometrics (Face ID, Touch ID, fingerprint) backed by public-key cryptography. The SDK provides the Auth0 challenge and token exchange steps, while you handle the platform credential manager interaction using native modules or libraries like `react-native-passkey`.
+Passkeys provide a passwordless authentication experience using platform biometrics (Face ID, Touch ID, fingerprint) backed by public-key cryptography. The same three functions — `passkeySignupChallenge`, `passkeyLoginChallenge`, and `getTokenByPasskey` — are used on native and web; no web-specific methods were added. Only the WebAuthn ceremony step differs: on native you call your own native module or a library like `react-native-passkey`; on web you call the browser's built-in `navigator.credentials.create()`/`.get()` API directly, and pass the resulting `PublicKeyCredential` straight to `getTokenByPasskey` — the SDK does not perform this step for you on either platform.
 
 The passkey flow has three steps:
 
 1. **Challenge** — Request a WebAuthn challenge from Auth0 (`passkeySignupChallenge` or `passkeyLoginChallenge`)
-2. **Credential Manager** — Present the OS credential manager UI to create or assert a passkey (using your own native module or a library)
+2. **WebAuthn Ceremony** — Create or assert the passkey yourself, using whatever mechanism your platform provides. On native, use your own native module or a library (e.g. `react-native-passkey`, which may in turn use Android's `CredentialManager` API or iOS's `ASAuthorizationController`); on web, call `navigator.credentials.create()`/`.get()` directly.
 3. **Exchange** — Send the credential response back to Auth0 to get tokens (`getTokenByPasskey`)
 
-> **Platform Support:** Native only (iOS 16.6+ / Android). Not supported on Web.
+> **Platform Support:** iOS 16.6+, Android, and Web (modern browsers with WebAuthn support).
 
 <a name="passkeys-prerequisites"></a>
 
@@ -1251,6 +1314,7 @@ Before using passkeys:
 2. **Configure a custom domain** on your Auth0 tenant (required for passkeys)
 3. **iOS:** Requires iOS 16.6 or later. Add an Associated Domain with the `webcredentials` service pointing to your Auth0 custom domain
 4. **Android:** Requires Android API 28+. Configure your app's Digital Asset Links for the Auth0 custom domain
+5. **Web:** Requires a browser with WebAuthn support (all modern browsers). Passkeys must be triggered from a user gesture (e.g. a button click) due to browser security restrictions.
 
 > **Important:** `passkeySignupChallenge` is for creating **new** user accounts with a passkey. It will fail if the email already exists in the database connection. Use `passkeyLoginChallenge` for existing users who have already registered a passkey.
 
@@ -1289,7 +1353,7 @@ function PasskeySignupScreen() {
         scope: 'openid profile email offline_access',
       });
 
-      console.log('Signed up with passkey:', credentials.accessToken);
+      console.log('Signed up with passkey');
     } catch (error) {
       if (error instanceof PasskeyError) {
         console.error('Passkey signup failed:', error.type, error.message);
@@ -1334,7 +1398,7 @@ function PasskeySigninScreen() {
         scope: 'openid profile email offline_access',
       });
 
-      console.log('Signed in with passkey:', credentials.accessToken);
+      console.log('Signed in with passkey');
     } catch (error) {
       if (error instanceof PasskeyError) {
         console.error('Passkey signin failed:', error.type, error.message);
@@ -1346,9 +1410,111 @@ function PasskeySigninScreen() {
 }
 ```
 
+<a name="signup-with-passkey-web"></a>
+
+### Signup with Passkey (Web)
+
+Web uses the **exact same `passkeySignupChallenge` / `passkeyLoginChallenge` / `getTokenByPasskey` functions as native** — no web-specific methods were added. Only step 2 (the WebAuthn ceremony) differs: the app calls the browser's built-in [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) — `navigator.credentials.create()` for signup and `navigator.credentials.get()` for login — instead of a native module or third-party library. Unlike native, `authResponse` on web accepts the raw `PublicKeyCredential` object returned directly by `navigator.credentials` — no manual serialization needed. (See [Auth Response Format](#passkeys-auth-response-format) for the native, JSON-string form.)
+
+```tsx
+import { useAuth0, PasskeyError } from 'react-native-auth0';
+
+function PasskeySignupScreenWeb() {
+  const { passkeySignupChallenge, getTokenByPasskey } = useAuth0();
+
+  // Must be called from a user gesture (e.g. an onClick handler).
+  const handleSignup = async () => {
+    try {
+      const challenge = await passkeySignupChallenge({
+        email: 'user@example.com',
+        name: 'John Doe',
+        realm: 'Username-Password-Authentication',
+      });
+
+      // navigator.credentials isn't wrapped by the SDK — normalize a
+      // cancelled/failed WebAuthn ceremony (e.g. the user dismissed the
+      // prompt) into a PasskeyError so it's handled the same way as any
+      // other passkey error below.
+      let credential: PublicKeyCredential;
+      try {
+        credential = (await navigator.credentials.create({
+          publicKey:
+            challenge.authParamsPublicKey as PublicKeyCredentialCreationOptions,
+        })) as PublicKeyCredential;
+      } catch (e) {
+        throw new PasskeyError(e as Error);
+      }
+
+      const credentials = await getTokenByPasskey({
+        authSession: challenge.authSession,
+        authResponse: credential,
+        realm: 'Username-Password-Authentication',
+      });
+
+      console.log('Signed up with passkey');
+    } catch (error) {
+      if (error instanceof PasskeyError) {
+        console.error('Passkey signup failed:', error.type, error.message);
+      }
+    }
+  };
+
+  return <button onClick={handleSignup}>Sign Up with Passkey</button>;
+}
+```
+
+<a name="signin-with-passkey-web"></a>
+
+### Signin with Passkey (Web)
+
+Same idea for login: `passkeyLoginChallenge` and `getTokenByPasskey` are unchanged from native — only the credential-manager step (`navigator.credentials.get()` instead of a native module) is web-specific.
+
+```tsx
+import { useAuth0, PasskeyError } from 'react-native-auth0';
+
+function PasskeySigninScreenWeb() {
+  const { passkeyLoginChallenge, getTokenByPasskey } = useAuth0();
+
+  // Must be called from a user gesture (e.g. an onClick handler).
+  const handleSignin = async () => {
+    try {
+      const challenge = await passkeyLoginChallenge({
+        realm: 'Username-Password-Authentication',
+      });
+
+      let credential: PublicKeyCredential;
+      try {
+        credential = (await navigator.credentials.get({
+          publicKey:
+            challenge.authParamsPublicKey as PublicKeyCredentialRequestOptions,
+        })) as PublicKeyCredential;
+      } catch (e) {
+        throw new PasskeyError(e as Error);
+      }
+
+      const credentials = await getTokenByPasskey({
+        authSession: challenge.authSession,
+        authResponse: credential,
+        realm: 'Username-Password-Authentication',
+      });
+
+      console.log('Signed in with passkey');
+    } catch (error) {
+      if (error instanceof PasskeyError) {
+        console.error('Passkey signin failed:', error.type, error.message);
+      }
+    }
+  };
+
+  return <button onClick={handleSignin}>Sign In with Passkey</button>;
+}
+```
+
+<a name="passkeys-auth-response-format"></a>
+
 ### Auth Response Format
 
-The `authResponse` parameter passed to `getTokenByPasskey` must be a JSON string representing the [PublicKeyCredential](https://www.w3.org/TR/webauthn-2/#publickeycredential) response from the platform credential manager.
+On **iOS and Android**, the `authResponse` parameter passed to `getTokenByPasskey` must be a JSON string representing the [PublicKeyCredential](https://www.w3.org/TR/webauthn-2/#publickeycredential) response from the platform credential manager. On **web**, pass the raw `PublicKeyCredential` object returned by `navigator.credentials.create()`/`.get()` directly — the SDK serializes it internally.
 
 **For registration (signup):**
 
@@ -1431,7 +1597,7 @@ const loginCredentials = await auth0.getTokenByPasskey({
 
 ### Signup Challenge Parameters
 
-The `passkeySignupChallenge` method accepts the following parameters to create a user profile along with the passkey:
+The `passkeySignupChallenge` method accepts the following parameters to create a user profile along with the passkey. At least one of `email`, `phoneNumber`, or `username` is required — which of these your database connection actually accepts depends on its configuration (e.g. **Flexible Identifiers**). The SDK does not validate this client-side; an unsupported or missing identifier is rejected by the Auth0 API and surfaces as a `PASSKEY_CHALLENGE_FAILED` error.
 
 | Parameter      | Type                      | Description                          |
 | -------------- | ------------------------- | ------------------------------------ |
@@ -1453,26 +1619,40 @@ The `passkeySignupChallenge` method accepts the following parameters to create a
 
 Passkey operations throw `PasskeyError` (extends `AuthError`) with a normalized `type` property. Use `PasskeyErrorCodes` for type-safe error handling:
 
-| Error Code                     | Description                                         |
-| ------------------------------ | --------------------------------------------------- |
-| `PASSKEY_CHALLENGE_FAILED`     | Auth0 challenge request failed                      |
-| `PASSKEY_EXCHANGE_FAILED`      | Token exchange with credential response failed      |
-| `PASSKEY_NOT_AVAILABLE`        | Passkeys not available on this device or OS version |
-| `PASSKEY_UNSUPPORTED_PLATFORM` | Passkeys not supported on this platform (Web)       |
-| `PASSKEY_UNKNOWN_ERROR`        | Unknown or uncategorized passkey error              |
+| Error Code                     | Description                                                                                                                                                                                   |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PASSKEY_CHALLENGE_FAILED`     | Auth0 challenge request failed                                                                                                                                                                |
+| `PASSKEY_EXCHANGE_FAILED`      | Token exchange with credential response failed                                                                                                                                                |
+| `PASSKEY_NOT_AVAILABLE`        | Passkeys not available on this device/OS version, or WebAuthn is not supported in this browser                                                                                                |
+| `PASSKEY_UNSUPPORTED_PLATFORM` | Passkeys not supported on this platform                                                                                                                                                       |
+| `PASSKEY_INVALID_PARAMETER`    | **Native only.** `authResponse` passed to `getTokenByPasskey` was not a JSON string                                                                                                           |
+| `PASSKEY_INVALID_CREDENTIAL`   | **Web only.** The credential passed to `getTokenByPasskey` is neither a valid attestation (signup) nor assertion (login) response                                                             |
+| `PASSKEY_MFA_REQUIRED`         | **Web only.** MFA is required to complete the exchange — use `error.getMfaRequiredPayload()` to extract `mfaToken` and `mfaRequirements`, then continue with `mfa.challenge()`/`mfa.verify()` |
+| `PASSKEY_UNKNOWN_ERROR`        | Unknown or uncategorized passkey error — check `error.message` for the underlying description                                                                                                 |
 
 ```typescript
 import { PasskeyError, PasskeyErrorCodes } from 'react-native-auth0';
 
 try {
-  const challenge = await auth0.passkeyLoginChallenge({
-    realm: 'Username-Password-Authentication',
+  const credentials = await auth0.getTokenByPasskey({
+    authSession: challenge.authSession,
+    authResponse: credential,
   });
 } catch (error) {
   if (error instanceof PasskeyError) {
     console.log('Error type:', error.type); // e.g. "PASSKEY_CHALLENGE_FAILED"
     console.log('Error message:', error.message);
-    console.log('Error code:', error.code); // Raw native error code
+    console.log('Error code:', error.code); // Raw error code
+
+    // Handle MFA required
+    if (error.type === PasskeyErrorCodes.MFA_REQUIRED) {
+      const mfaPayload = error.getMfaRequiredPayload();
+      if (mfaPayload) {
+        console.log('MFA token:', mfaPayload.mfaToken);
+        console.log('Available factors:', mfaPayload.mfaRequirements);
+        // Continue with mfa.challenge() / mfa.verify()
+      }
+    }
   }
 }
 ```
@@ -1481,13 +1661,13 @@ try {
 
 ### Platform Support
 
-| Platform    | Support          | Requirements                                              |
-| ----------- | ---------------- | --------------------------------------------------------- |
-| **iOS**     | ✅ Supported     | iOS 16.6+, Associated Domains with `webcredentials`       |
-| **Android** | ✅ Supported     | Android API 28+, Digital Asset Links configured           |
-| **Web**     | ❌ Not Supported | Throws `PasskeyError` with `PASSKEY_UNSUPPORTED_PLATFORM` |
+| Platform    | Support      | Requirements                                                   |
+| ----------- | ------------ | -------------------------------------------------------------- |
+| **iOS**     | ✅ Supported | iOS 16.6+, Associated Domains with `webcredentials`            |
+| **Android** | ✅ Supported | Android API 28+, Digital Asset Links configured                |
+| **Web**     | ✅ Supported | Modern browser with WebAuthn support; call from a user gesture |
 
-> **Note:** Passkeys require a real device for the full flow. Simulators/emulators may have limited support.
+> **Note:** On native platforms, passkeys require a real device for the full flow — simulators/emulators may have limited support. On web, the credential-manager step (step 2) uses the browser's built-in `navigator.credentials` API instead of a native module or third-party library — see [Signup with Passkey (Web)](#signup-with-passkey-web) below. Because `navigator.credentials.create()`/`.get()` require a user gesture, call `passkeySignupChallenge`/`passkeyLoginChallenge` from within a click handler.
 
 ## My Account API
 
@@ -2031,7 +2211,7 @@ function MfaScreen({ mfaToken }: { mfaToken: string }) {
   const verifyOtp = async () => {
     try {
       const credentials = await mfa.verify({ mfaToken, otp });
-      console.log('Authentication complete!', credentials.accessToken);
+      console.log('Authentication complete!');
       // User is now logged in - state is automatically updated
     } catch (error) {
       if (error instanceof MfaError) {
