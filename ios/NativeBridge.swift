@@ -19,6 +19,7 @@ public class NativeBridge: NSObject {
     nonisolated static let accessTokenKey = "accessToken";
     nonisolated static let idTokenKey = "idToken";
     nonisolated static let expiresAtKey = "expiresAt";
+    nonisolated static let sessionExpiresAtKey = "sessionExpiresAt";
     nonisolated static let scopeKey = "scope";
     nonisolated static let refreshTokenKey = "refreshToken";
     nonisolated static let typeKey = "type";
