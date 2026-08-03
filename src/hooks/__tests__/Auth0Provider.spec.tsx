@@ -847,7 +847,7 @@ describe('Auth0Provider', () => {
       const mockSSOCredentials = {
         sessionTransferToken: 'stt_xyz123',
         tokenType: 'Bearer',
-        expiresIn: 3600,
+        expiresAt: 1893456000,
         idToken: 'id_token_123',
         refreshToken: 'refresh_token_789',
       };
@@ -905,7 +905,7 @@ describe('Auth0Provider', () => {
       const mockSSOCredentials = {
         sessionTransferToken: 'stt_xyz123',
         tokenType: 'Bearer',
-        expiresIn: 3600,
+        expiresAt: 1893456000,
       };
 
       mockClientInstance.credentialsManager.getSSOCredentials = jest
@@ -959,7 +959,7 @@ describe('Auth0Provider', () => {
       const mockSSOCredentials = {
         sessionTransferToken: 'stt_xyz123',
         tokenType: 'Bearer',
-        expiresIn: 3600,
+        expiresAt: 1893456000,
       };
 
       mockClientInstance.credentialsManager.getSSOCredentials = jest
@@ -1023,7 +1023,7 @@ describe('Auth0Provider', () => {
       const minimalSSOCredentials = {
         sessionTransferToken: 'stt_minimal',
         tokenType: 'Bearer',
-        expiresIn: 1800,
+        expiresAt: 1893456000,
       };
 
       mockClientInstance.credentialsManager.getSSOCredentials = jest
@@ -1094,7 +1094,7 @@ describe('Auth0Provider', () => {
       const mockSSOCredentials = {
         sessionTransferToken: 'stt_exchange_123',
         tokenType: 'urn:auth0:params:oauth:token-type:session_transfer_token',
-        expiresIn: 120,
+        expiresAt: 1893456000,
         idToken: 'id_token_123',
         refreshToken: 'new_refresh_token',
       };
@@ -1179,7 +1179,7 @@ describe('Auth0Provider', () => {
       const mockSSOCredentials = {
         sessionTransferToken: 'stt_xyz',
         tokenType: 'session_transfer',
-        expiresIn: 60,
+        expiresAt: 1893456000,
       };
 
       mockClientInstance.auth.ssoExchange = jest

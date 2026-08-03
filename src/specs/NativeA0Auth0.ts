@@ -153,7 +153,7 @@ export interface Spec extends TurboModule {
   ): Promise<{
     sessionTransferToken: string;
     tokenType: string;
-    expiresIn: Int32;
+    expiresAt: number;
     idToken?: string;
     refreshToken?: string;
   }>;

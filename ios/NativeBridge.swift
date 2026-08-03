@@ -279,19 +279,19 @@ public class NativeBridge: NSObject {
                 var response: [String: Any] = [
                     "sessionTransferToken": ssoCredentials.sessionTransferToken,
                     "tokenType": ssoCredentials.issuedTokenType,
-                    "expiresIn": ssoCredentials.expiresAt,
+                    NativeBridge.expiresAtKey: floor(ssoCredentials.expiresAt.timeIntervalSince1970),
                     "idToken": ssoCredentials.idToken
                 ]
-                
+
                 // Add optional fields if present
                 if let refreshToken = ssoCredentials.refreshToken {
                     response["refreshToken"] = refreshToken
                 }
-                
+
                 resolve(response)
             case .failure(let error):
                 reject(
-                    NativeBridge.credentialsManagerErrorCode,
+                    error.reactNativeErrorCode(),
                     error.localizedDescription,
                     error
                 )
@@ -628,6 +628,8 @@ public class NativeBridge: NSObject {
                 relyingPartyId: self.domain,
                 challengeData: Data()
             )
+            // ID token claim validation is opt-in on `TokenRequestable` in Auth0.swift 3.0.
+            // Android validates this path too (`A0Auth0Module.signinWithPasskey`).
             auth.login(
                 passkey: passkey,
                 challenge: challenge,
@@ -635,7 +637,9 @@ public class NativeBridge: NSObject {
                 audience: audienceValue,
                 scope: finalScope,
                 organization: orgValue
-            ).start { result in
+            )
+            .validateClaims()
+            .start { result in
                 switch result {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
@@ -709,16 +713,23 @@ extension APICredentials {
 
 extension WebAuthError {
     func reactNativeErrorCode() -> String {
+        // Server-returned errors (`access_denied`, `invalid_request`, ...) travel in the
+        // cause, not the case, so prefer the underlying code when one is present.
+        func causeCode(fallback: String) -> String {
+            (self.cause as? AuthenticationError)?.code ?? fallback
+        }
+
         var code: String
         switch self {
             case WebAuthError.transactionActiveAlready: code = "TRANSACTION_ACTIVE_ALREADY"
             case WebAuthError.userCancelled: code = "USER_CANCELLED"
             case WebAuthError.idTokenValidationFailed: code = "ID_TOKEN_VALIDATION_FAILED"
-            case WebAuthError.other: if let cause = self.cause as? AuthenticationError {
-                code = cause.code
-            } else {
-                code = "OTHER"
-            }
+            // Auth0.swift 3.0 splits v2's `.other` into `.authenticationFailed` (the
+            // callback URL carried an `error` param) and `.codeExchangeFailed` (the
+            // /oauth/token call for the authorization code failed).
+            case WebAuthError.authenticationFailed: code = causeCode(fallback: "AUTHENTICATION_FAILED")
+            case WebAuthError.codeExchangeFailed: code = causeCode(fallback: "CODE_EXCHANGE_FAILED")
+            case WebAuthError.other: code = causeCode(fallback: "OTHER")
             default:
                 // Auth0.swift surfaces a callback-URL mismatch as `.unknown("Invalid callback URL: ...")`
                 // with no dedicated enum case, so message matching is the only available hook.
@@ -760,7 +771,18 @@ extension CredentialsManagerError {
             } else {
                 code = "RENEW_FAILED"
             }
+            case CredentialsManagerError.apiExchangeFailed: if let cause = self.cause as? AuthenticationError {
+                code = cause.code
+            } else {
+                code = "API_EXCHANGE_FAILED"
+            }
+            case CredentialsManagerError.ssoExchangeFailed: if let cause = self.cause as? AuthenticationError {
+                code = cause.code
+            } else {
+                code = "SSO_EXCHANGE_FAILED"
+            }
             case CredentialsManagerError.storeFailed: code = "STORE_FAILED"
+            case CredentialsManagerError.clearFailed: code = "CLEAR_FAILED"
             case CredentialsManagerError.biometricsFailed: code = "BIOMETRICS_FAILED"
             case CredentialsManagerError.revokeFailed: if let cause = self.cause as? AuthenticationError {
                 code = cause.code

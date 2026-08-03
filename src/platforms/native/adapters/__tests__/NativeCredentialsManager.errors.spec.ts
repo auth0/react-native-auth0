@@ -236,6 +236,38 @@ describe('Common Error Handling - NativeCredentialsManager', () => {
     });
   });
 
+  describe('Token exchange failures', () => {
+    // Auth0.swift 3.0 / Auth0.Android 4 report these as dedicated cases rather
+    // than collapsing them into a generic failure.
+    const exchangeErrorTestCases = [
+      { code: 'API_EXCHANGE_FAILED', expectedType: 'API_EXCHANGE_FAILED' },
+      { code: 'apiExchangeFailed', expectedType: 'API_EXCHANGE_FAILED' },
+      { code: 'SSO_EXCHANGE_FAILED', expectedType: 'SSO_EXCHANGE_FAILED' },
+      { code: 'ssoExchangeFailed', expectedType: 'SSO_EXCHANGE_FAILED' },
+      { code: 'CLEAR_FAILED', expectedType: 'CLEAR_FAILED' },
+      { code: 'clearFailed', expectedType: 'CLEAR_FAILED' },
+    ];
+
+    exchangeErrorTestCases.forEach(({ code, expectedType }) => {
+      it(`should map ${code} to ${expectedType}`, async () => {
+        const message = 'The token exchange failed.';
+        mockBridge.getCredentials.mockRejectedValue({ code, message });
+
+        await expect(manager.getCredentials()).rejects.toThrow(
+          CredentialsManagerError
+        );
+
+        try {
+          await manager.getCredentials();
+        } catch (e) {
+          const err = e as CredentialsManagerError;
+          expect(err.type).toBe(expectedType);
+          expect(err.message).toBe(message);
+        }
+      });
+    });
+  });
+
   describe('Android Biometric Error Mappings', () => {
     const biometricErrorTestCases = [
       'BIOMETRIC_NO_ACTIVITY',

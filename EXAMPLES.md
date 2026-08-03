@@ -1933,7 +1933,7 @@ function MyComponent() {
 
       console.log('Session Transfer Token:', ssoCredentials.sessionTransferToken);
       console.log('Token Type:', ssoCredentials.tokenType);
-      console.log('Expires In:', ssoCredentials.expiresIn, 'seconds');
+      console.log('Expires At:', ssoCredentials.expiresAt, '(UNIX seconds)');
 
       // Open web app with session transfer token as query parameter
       const webAppUrl = `https://your-web-app.com/login?session_transfer_token=${ssoCredentials.sessionTransferToken}`;
@@ -1970,7 +1970,7 @@ const ssoCredentials = await auth0.credentialsManager.getSSOCredentials();
 
 console.log('Session Transfer Token:', ssoCredentials.sessionTransferToken);
 console.log('Token Type:', ssoCredentials.tokenType);
-console.log('Expires In:', ssoCredentials.expiresIn);
+console.log('Expires At:', ssoCredentials.expiresAt);
 
 // Optional: ID Token and Refresh Token may be returned if RTR is enabled
 if (ssoCredentials.idToken) {
@@ -2012,7 +2012,7 @@ function SSOExchangeScreen() {
 
       console.log('Session Transfer Token:', ssoCredentials.sessionTransferToken);
       console.log('Token Type:', ssoCredentials.tokenType);
-      console.log('Expires In:', ssoCredentials.expiresIn);
+      console.log('Expires At:', ssoCredentials.expiresAt);
 
       // Open your web application with the session transfer token
       const webAppUrl = `https://your-web-app.com/login?session_transfer_token=${ssoCredentials.sessionTransferToken}`;
@@ -2047,7 +2047,7 @@ const ssoCredentials = await auth0.auth.ssoExchange({ refreshToken });
 
 console.log('Session Transfer Token:', ssoCredentials.sessionTransferToken);
 console.log('Token Type:', ssoCredentials.tokenType);
-console.log('Expires In:', ssoCredentials.expiresIn);
+console.log('Expires At:', ssoCredentials.expiresAt);
 
 // Open your web application with the session transfer token
 const webAppUrl = `https://your-web-app.com/login?session_transfer_token=${ssoCredentials.sessionTransferToken}`;

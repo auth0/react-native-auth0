@@ -14,14 +14,14 @@ Before updating the library, ensure your project meets the new minimum requireme
 
 #### Environment Requirements
 
-| Requirement      | v5.x            | v6.0                          |
-| :--------------- | :-------------- | :---------------------------- |
-| **React**        | `19.0.0`+       | `19.0.0`+                     |
-| **React Native** | `0.78.0`+       | **`0.82.0`+ (New Arch only)** |
-| **Architecture** | Old **or** New  | **New Architecture only**     |
-| **Expo**         | SDK `53`+       | **SDK `55`+** _(see below)_   |
-| **iOS**          | Deployment `14` | Deployment `14`               |
-| **Android**      | Target SDK `35` | Target SDK `36` _(see §3)_    |
+| Requirement      | v5.x            | v6.0                                                  |
+| :--------------- | :-------------- | :---------------------------------------------------- |
+| **React**        | `19.0.0`+       | `19.0.0`+                                             |
+| **React Native** | `0.78.0`+       | **`0.82.0`+ (New Arch only)**                         |
+| **Architecture** | Old **or** New  | **New Architecture only**                             |
+| **Expo**         | SDK `53`+       | **SDK `55`+** _(see below)_                           |
+| **iOS**          | Deployment `14` | **Deployment `15.1`** _(see §4)_                      |
+| **Android**      | Target SDK `35` | **Target SDK `36`, minSdk `26`, JDK `17`** _(see §3)_ |
 
 ### 2. React Native New Architecture is now required ✅
 
@@ -57,13 +57,36 @@ npx expo prebuild --clean
 
 > **Warning:** `prebuild --clean` overwrites manual changes in your `ios` and `android` directories.
 
-### 3. Android: minSdk 26 & JDK 17 ⏳
+### 3. Android: minSdk 26 & JDK 17 ✅
 
-_Planned — lands with the Auth0.Android v4 adoption._ v6 raises the Android minimum SDK to **26** and requires consuming apps to build with **JDK 17** (AGP 8.10+). This section will be completed when that workstream merges.
+v6 adopts **Auth0.Android 4.0.1**, which raises the SDK's build floors. These are inherited by your app.
 
-### 4. iOS: Auth0.swift 3.0 & `use_frameworks!` ⏳
+| Setting        | v5.x  | v6.0        |
+| :------------- | :---- | :---------- |
+| **minSdk**     | `21`  | **26**      |
+| **compileSdk** | `35`  | **36**      |
+| **targetSdk**  | `35`  | **36**      |
+| **JDK**        | `11`  | **17**      |
+| **Kotlin**     | `1.9` | **2.0.21**  |
+| **AGP**        | `8.x` | **8.10.1+** |
 
-_Planned — lands with the Auth0.swift v3.0 adoption._ v6 adopts Auth0.swift 3.0 (Swift 6 tools, iOS 14 floor) and requires a `use_frameworks!` Podfile setup. This section will be completed when that workstream merges.
+**✅ Action Required:**
+
+1. Raise `minSdkVersion` to **26** in your app's `android/build.gradle`. Devices below Android 8.0 (Oreo) are no longer supported.
+2. Build with **JDK 17**. Verify with `java -version`, and set `org.gradle.java.home` in `gradle.properties` if you have multiple JDKs installed.
+3. Ensure your Android Gradle Plugin is **8.10.1** or higher.
+
+### 4. iOS: Auth0.swift 3.0 ✅
+
+v6 adopts **Auth0.swift 3.0.1**, which is built with the **Swift 6** compiler.
+
+**✅ Action Required:**
+
+1. Your iOS deployment target must meet React Native 0.82's floor (`min_ios_version_supported`, currently **15.1**). The podspec inherits this value, so no explicit `platform :ios` bump is needed beyond what RN 0.82 already requires.
+2. Run `pod install --repo-update` in your `ios` directory to pick up Auth0.swift 3.0.1.
+3. Use **Xcode 16** or later.
+
+> See §7 for the public-API changes that come with these native majors.
 
 ### 5. Behavioral default shifts under native delegation ⏳
 
@@ -72,6 +95,43 @@ _Planned — lands with full native auth delegation._ Routing all authentication
 ### 6. Management API (`users()`) removal ⏳
 
 _Planned._ The client-side Management API wrapper (`auth0.users(...)`) is being removed in v6, mirroring both native SDKs. Migrate Management operations to a backend/BFF. Full guidance will be added here.
+
+### 7. Native SDK API alignment (Auth0.Android v4 / Auth0.swift v3) ✅
+
+Adopting the new native SDK majors changes two parts of the public surface.
+
+#### `SSOCredentials.expiresIn` is now `expiresAt`
+
+Both native SDKs replaced the relative TTL with an absolute expiration date. The SDK follows suit, so the field is now an **absolute UNIX timestamp in seconds** — consistent with `Credentials.expiresAt`.
+
+**✅ Action Required:** if you read this field, switch to `expiresAt` and stop adding it to the current time.
+
+```diff
+  const ssoCredentials = await auth0.credentialsManager.getSSOCredentials();
+- const expiryTime = Date.now() / 1000 + ssoCredentials.expiresIn;
++ const expiryTime = ssoCredentials.expiresAt;
+```
+
+#### Removed and added `WebAuthErrorCodes`
+
+Auth0.swift 3.0 removed the underlying error cases behind four codes, so they can no longer be raised and have been removed:
+
+| Removed code             | Notes                                                                              |
+| :----------------------- | :--------------------------------------------------------------------------------- |
+| `NO_BUNDLE_IDENTIFIER`   | No longer reported by Auth0.swift.                                                 |
+| `NO_AUTHORIZATION_CODE`  | Now surfaces as `CODE_EXCHANGE_FAILED`.                                            |
+| `INVALID_INVITATION_URL` | No longer reported by Auth0.swift.                                                 |
+| `PKCE_NOT_ALLOWED`       | **Android only** — the code remains but is no longer raised on iOS. _Not removed._ |
+
+Two codes were added for the new Auth0.swift cases, both iOS-only: `AUTHENTICATION_FAILED` and `CODE_EXCHANGE_FAILED`.
+
+**✅ Action Required:** remove any `switch`/`if` branches on `NO_BUNDLE_IDENTIFIER`, `NO_AUTHORIZATION_CODE`, or `INVALID_INVITATION_URL`. Ensure you have a `default` branch, as always.
+
+> **Improvement:** on iOS, server-returned errors such as `access_denied`, `invalid_request`, and `a0.invalid_configuration` now map to their specific `WebAuthErrorCodes` values instead of collapsing into `UNKNOWN_ERROR`. If you relied on `UNKNOWN_ERROR` to catch a denied consent, switch to `ACCESS_DENIED`.
+
+#### New `CredentialsManagerErrorCodes`
+
+`SSO_EXCHANGE_FAILED` (iOS and Android) and `CLEAR_FAILED` (iOS) are now reported instead of being collapsed into a generic credentials-manager error. No action is required unless you exhaustively match on these codes.
 
 ### Recommended Reading
 

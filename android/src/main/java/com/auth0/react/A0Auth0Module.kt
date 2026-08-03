@@ -105,7 +105,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         CredentialsManagerException.DPOP_KEY_MISSING to "DPOP_KEY_MISSING",
         CredentialsManagerException.DPOP_NOT_CONFIGURED to "DPOP_NOT_CONFIGURED",
         CredentialsManagerException.DPOP_KEY_MISMATCH to "DPOP_KEY_MISMATCH",
-        CredentialsManagerException.SESSION_EXPIRED to "SESSION_EXPIRED"
+        CredentialsManagerException.SESSION_EXPIRED to "SESSION_EXPIRED",
+        CredentialsManagerException.SSO_EXCHANGE_FAILED to "SSO_EXCHANGE_FAILED"
     )
     // DPoP enabled by default
     private var useDPoP: Boolean = true
@@ -599,8 +600,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                     val map = WritableNativeMap().apply {
                         putString("sessionTransferToken", result.sessionTransferToken)
                         putString("tokenType", result.tokenType)
-                        val expiresInSeconds = ((result.expiresAt.time - System.currentTimeMillis()) / 1000).toInt()
-                        putInt("expiresIn", expiresInSeconds)
+                        putDouble("expiresAt", result.expiresAt.time / 1000.0)
                         result.idToken?.let { putString("idToken", it) }
                         result.refreshToken?.let { putString("refreshToken", it) }
                     }

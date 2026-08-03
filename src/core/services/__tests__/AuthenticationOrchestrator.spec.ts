@@ -908,7 +908,9 @@ describe('AuthenticationOrchestrator', () => {
       expect(result).toBeInstanceOf(SSOCredentials);
       expect(result.sessionTransferToken).toBe(ssoResponse.access_token);
       expect(result.tokenType).toBe(ssoResponse.issued_token_type);
-      expect(result.expiresIn).toBe(ssoResponse.expires_in);
+      expect(result.expiresAt).toBe(
+        Math.floor(Date.now() / 1000) + ssoResponse.expires_in
+      );
       expect(result.idToken).toBe(ssoResponse.id_token);
       expect(result.refreshToken).toBe(ssoResponse.refresh_token);
     });

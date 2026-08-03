@@ -62,6 +62,10 @@ export const CredentialsManagerErrorCodes = {
   API_ERROR: 'API_ERROR',
   /** Failed to exchange refresh token for API-specific credentials (MRRT) */
   API_EXCHANGE_FAILED: 'API_EXCHANGE_FAILED',
+  /** Failed to exchange refresh token for session transfer (SSO) credentials */
+  SSO_EXCHANGE_FAILED: 'SSO_EXCHANGE_FAILED',
+  /** Failed to clear the stored credentials */
+  CLEAR_FAILED: 'CLEAR_FAILED',
   /** Device is incompatible with secure storage requirements */
   INCOMPATIBLE_DEVICE: 'INCOMPATIBLE_DEVICE',
   /** Cryptographic operation failed */
@@ -100,6 +104,9 @@ const ERROR_CODE_MAP: Record<string, string> = {
 
   // --- API Credentials (MRRT) specific codes ---
   API_EXCHANGE_FAILED: CredentialsManagerErrorCodes.API_EXCHANGE_FAILED,
+  // --- Session transfer (Native to Web SSO) codes ---
+  SSO_EXCHANGE_FAILED: CredentialsManagerErrorCodes.SSO_EXCHANGE_FAILED,
+  CLEAR_FAILED: CredentialsManagerErrorCodes.CLEAR_FAILED,
   // --- Web (@auth0/auth0-spa-js) mappings ---
   login_required: CredentialsManagerErrorCodes.NO_CREDENTIALS,
   consent_required: CredentialsManagerErrorCodes.RENEW_FAILED,
@@ -118,7 +125,9 @@ const ERROR_CODE_MAP: Record<string, string> = {
   apiExchangeFailed: CredentialsManagerErrorCodes.API_EXCHANGE_FAILED,
   noCredentials: CredentialsManagerErrorCodes.NO_CREDENTIALS,
   noRefreshToken: CredentialsManagerErrorCodes.NO_REFRESH_TOKEN,
+  ssoExchangeFailed: CredentialsManagerErrorCodes.SSO_EXCHANGE_FAILED,
   storeFailed: CredentialsManagerErrorCodes.STORE_FAILED,
+  clearFailed: CredentialsManagerErrorCodes.CLEAR_FAILED,
   largeMinTTL: CredentialsManagerErrorCodes.LARGE_MIN_TTL,
   sessionExpired: CredentialsManagerErrorCodes.SESSION_EXPIRED,
 

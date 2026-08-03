@@ -7,7 +7,7 @@ describe('SSOCredentials', () => {
       const data = {
         sessionTransferToken: 'stt_token_123',
         tokenType: 'urn:auth0:params:oauth:token-type:session_transfer_token',
-        expiresIn: 120,
+        expiresAt: 1893456000,
         idToken: 'id_token_456',
         refreshToken: 'refresh_token_789',
       };
@@ -16,7 +16,7 @@ describe('SSOCredentials', () => {
 
       expect(creds.sessionTransferToken).toBe(data.sessionTransferToken);
       expect(creds.tokenType).toBe(data.tokenType);
-      expect(creds.expiresIn).toBe(data.expiresIn);
+      expect(creds.expiresAt).toBe(data.expiresAt);
       expect(creds.idToken).toBe(data.idToken);
       expect(creds.refreshToken).toBe(data.refreshToken);
     });
@@ -25,7 +25,7 @@ describe('SSOCredentials', () => {
       const data = {
         sessionTransferToken: 'stt_token_123',
         tokenType: 'urn:auth0:params:oauth:token-type:session_transfer_token',
-        expiresIn: 120,
+        expiresAt: 1893456000,
       };
 
       const creds = new SSOCredentials(data);
@@ -52,9 +52,25 @@ describe('SSOCredentials', () => {
       expect(creds).toBeInstanceOf(SSOCredentials);
       expect(creds.sessionTransferToken).toBe(response.access_token);
       expect(creds.tokenType).toBe(response.issued_token_type);
-      expect(creds.expiresIn).toBe(response.expires_in);
       expect(creds.idToken).toBe(response.id_token);
       expect(creds.refreshToken).toBe(response.refresh_token);
+    });
+
+    it('should convert the relative expires_in into an absolute expiresAt', () => {
+      const now = 1893456000000;
+      jest.spyOn(Date, 'now').mockReturnValue(now);
+
+      const creds = SSOCredentials.fromResponse({
+        access_token: 'stt_token_123',
+        issued_token_type:
+          'urn:auth0:params:oauth:token-type:session_transfer_token',
+        token_type: 'N_A',
+        expires_in: 120,
+      });
+
+      expect(creds.expiresAt).toBe(now / 1000 + 120);
+
+      jest.spyOn(Date, 'now').mockRestore();
     });
 
     it('should handle a response with no optional fields', () => {

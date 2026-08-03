@@ -155,7 +155,7 @@ describe('NativeCredentialsManager', () => {
     const validSSOCredentials = {
       sessionTransferToken: 'stt_xyz123',
       tokenType: 'Bearer',
-      expiresIn: 3600,
+      expiresAt: 1893456000,
       idToken: 'id_token_123',
       refreshToken: 'refresh_token_789',
     };
@@ -219,11 +219,23 @@ describe('NativeCredentialsManager', () => {
       expect(result).toEqual(validSSOCredentials);
     });
 
+    it('should surface expiresAt as an absolute UNIX timestamp in seconds', async () => {
+      mockBridge.getSSOCredentials.mockResolvedValueOnce(validSSOCredentials);
+
+      const result = await manager.getSSOCredentials();
+
+      // Both native SDKs return an absolute `Date`, which the bridges convert to
+      // epoch seconds. A relative TTL (e.g. 3600) would fall well below this floor.
+      expect(typeof result.expiresAt).toBe('number');
+      expect(result.expiresAt).toBeGreaterThan(1_600_000_000);
+      expect(result.expiresAt).toBeLessThan(10_000_000_000);
+    });
+
     it('should return SSO credentials without optional tokens', async () => {
       const minimalSSOCredentials = {
         sessionTransferToken: 'stt_xyz123',
         tokenType: 'Bearer',
-        expiresIn: 3600,
+        expiresAt: 1893456000,
       };
       mockBridge.getSSOCredentials.mockResolvedValueOnce(minimalSSOCredentials);
 
