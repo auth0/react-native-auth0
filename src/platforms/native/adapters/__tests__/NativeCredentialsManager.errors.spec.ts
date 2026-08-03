@@ -244,8 +244,6 @@ describe('Common Error Handling - NativeCredentialsManager', () => {
       { code: 'apiExchangeFailed', expectedType: 'API_EXCHANGE_FAILED' },
       { code: 'SSO_EXCHANGE_FAILED', expectedType: 'SSO_EXCHANGE_FAILED' },
       { code: 'ssoExchangeFailed', expectedType: 'SSO_EXCHANGE_FAILED' },
-      { code: 'CLEAR_FAILED', expectedType: 'CLEAR_FAILED' },
-      { code: 'clearFailed', expectedType: 'CLEAR_FAILED' },
     ];
 
     exchangeErrorTestCases.forEach(({ code, expectedType }) => {
@@ -259,6 +257,34 @@ describe('Common Error Handling - NativeCredentialsManager', () => {
 
         try {
           await manager.getCredentials();
+        } catch (e) {
+          const err = e as CredentialsManagerError;
+          expect(err.type).toBe(expectedType);
+          expect(err.message).toBe(message);
+        }
+      });
+    });
+  });
+
+  describe('Clear failures', () => {
+    // Raised on the clear path, so it has to be driven through
+    // `clearCredentials()` rather than `getCredentials()`.
+    const clearErrorTestCases = [
+      { code: 'CLEAR_FAILED', expectedType: 'CLEAR_FAILED' },
+      { code: 'clearFailed', expectedType: 'CLEAR_FAILED' },
+    ];
+
+    clearErrorTestCases.forEach(({ code, expectedType }) => {
+      it(`should map ${code} to ${expectedType}`, async () => {
+        const message = 'Failed to clear the credentials.';
+        mockBridge.clearCredentials.mockRejectedValue({ code, message });
+
+        await expect(manager.clearCredentials()).rejects.toThrow(
+          CredentialsManagerError
+        );
+
+        try {
+          await manager.clearCredentials();
         } catch (e) {
           const err = e as CredentialsManagerError;
           expect(err.type).toBe(expectedType);

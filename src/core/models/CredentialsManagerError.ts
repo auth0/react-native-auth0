@@ -320,6 +320,8 @@ export class CredentialsManagerError extends AuthError {
    * - `NO_REFRESH_TOKEN`: Refresh token is not available
    * - `RENEW_FAILED`: Token renewal failed
    * - `API_EXCHANGE_FAILED`: API credentials exchange failed (MRRT)
+   * - `SSO_EXCHANGE_FAILED`: Session transfer (SSO) credentials exchange failed
+   * - `CLEAR_FAILED`: Failed to clear the stored credentials
    * - `DPOP_KEY_MISSING`: DPoP key pair no longer in keystore/keychain
    * - `DPOP_NOT_CONFIGURED`: Credentials DPoP-bound but client not configured
    * - `DPOP_KEY_MISMATCH`: DPoP key pair doesn't match saved credentials

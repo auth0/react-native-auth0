@@ -60,17 +60,19 @@ describe('SSOCredentials', () => {
       const now = 1893456000000;
       jest.spyOn(Date, 'now').mockReturnValue(now);
 
-      const creds = SSOCredentials.fromResponse({
-        access_token: 'stt_token_123',
-        issued_token_type:
-          'urn:auth0:params:oauth:token-type:session_transfer_token',
-        token_type: 'N_A',
-        expires_in: 120,
-      });
+      try {
+        const creds = SSOCredentials.fromResponse({
+          access_token: 'stt_token_123',
+          issued_token_type:
+            'urn:auth0:params:oauth:token-type:session_transfer_token',
+          token_type: 'N_A',
+          expires_in: 120,
+        });
 
-      expect(creds.expiresAt).toBe(now / 1000 + 120);
-
-      jest.spyOn(Date, 'now').mockRestore();
+        expect(creds.expiresAt).toBe(now / 1000 + 120);
+      } finally {
+        jest.spyOn(Date, 'now').mockRestore();
+      }
     });
 
     it('should handle a response with no optional fields', () => {

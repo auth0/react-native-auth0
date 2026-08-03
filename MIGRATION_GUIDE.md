@@ -114,14 +114,15 @@ Both native SDKs replaced the relative TTL with an absolute expiration date. The
 
 #### Removed and added `WebAuthErrorCodes`
 
-Auth0.swift 3.0 removed the underlying error cases behind four codes, so they can no longer be raised and have been removed:
+Auth0.swift 3.0 removed the underlying error cases behind **three** codes, so they can no longer be raised and have been removed:
 
-| Removed code             | Notes                                                                              |
-| :----------------------- | :--------------------------------------------------------------------------------- |
-| `NO_BUNDLE_IDENTIFIER`   | No longer reported by Auth0.swift.                                                 |
-| `NO_AUTHORIZATION_CODE`  | Now surfaces as `CODE_EXCHANGE_FAILED`.                                            |
-| `INVALID_INVITATION_URL` | No longer reported by Auth0.swift.                                                 |
-| `PKCE_NOT_ALLOWED`       | **Android only** — the code remains but is no longer raised on iOS. _Not removed._ |
+| Removed code             | Notes                                   |
+| :----------------------- | :-------------------------------------- |
+| `NO_BUNDLE_IDENTIFIER`   | No longer reported by Auth0.swift.      |
+| `NO_AUTHORIZATION_CODE`  | Now surfaces as `CODE_EXCHANGE_FAILED`. |
+| `INVALID_INVITATION_URL` | No longer reported by Auth0.swift.      |
+
+A fourth code, `PKCE_NOT_ALLOWED`, **has not been removed** — it is still exported and still raised on Android (`a0.pkce_not_available`). Only iOS stopped reporting it, so it is now Android-only. Keep any Android handling for it in place.
 
 Two codes were added for the new Auth0.swift cases, both iOS-only: `AUTHENTICATION_FAILED` and `CODE_EXCHANGE_FAILED`.
 
