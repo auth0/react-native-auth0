@@ -126,6 +126,13 @@ describe('NativeWebAuthProvider Error Handling', () => {
         method: 'authorize',
         mockMethod: 'authorize',
       },
+      {
+        code: 'a0.pkce_not_available',
+        message: 'PKCE not available.',
+        expectedType: 'PKCE_NOT_ALLOWED',
+        method: 'authorize',
+        mockMethod: 'authorize',
+      },
     ];
 
     androidErrorTestCases.forEach(
@@ -155,13 +162,6 @@ describe('NativeWebAuthProvider Error Handling', () => {
   describe('iOS-Specific Error Mappings', () => {
     const iOSErrorTestCases = [
       {
-        code: 'NO_BUNDLE_IDENTIFIER',
-        message: 'No bundle identifier.',
-        expectedType: 'NO_BUNDLE_IDENTIFIER',
-        method: 'authorize',
-        mockMethod: 'authorize',
-      },
-      {
         code: 'TRANSACTION_ACTIVE_ALREADY',
         message: 'Transaction already active.',
         expectedType: 'TRANSACTION_ACTIVE_ALREADY',
@@ -169,23 +169,16 @@ describe('NativeWebAuthProvider Error Handling', () => {
         mockMethod: 'authorize',
       },
       {
-        code: 'NO_AUTHORIZATION_CODE',
-        message: 'No authorization code.',
-        expectedType: 'NO_AUTHORIZATION_CODE',
+        code: 'AUTHENTICATION_FAILED',
+        message: 'The authentication failed.',
+        expectedType: 'AUTHENTICATION_FAILED',
         method: 'authorize',
         mockMethod: 'authorize',
       },
       {
-        code: 'PKCE_NOT_ALLOWED',
-        message: 'PKCE not allowed.',
-        expectedType: 'PKCE_NOT_ALLOWED',
-        method: 'authorize',
-        mockMethod: 'authorize',
-      },
-      {
-        code: 'INVALID_INVITATION_URL',
-        message: 'Invalid invitation URL.',
-        expectedType: 'INVALID_INVITATION_URL',
+        code: 'CODE_EXCHANGE_FAILED',
+        message: 'The code exchange failed.',
+        expectedType: 'CODE_EXCHANGE_FAILED',
         method: 'authorize',
         mockMethod: 'authorize',
       },

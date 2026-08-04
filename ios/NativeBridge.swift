@@ -13,34 +13,35 @@ import LocalAuthentication
 import SimpleKeychain
 
 @objc
+@MainActor
 public class NativeBridge: NSObject {
-    
-    static let accessTokenKey = "accessToken";
-    static let idTokenKey = "idToken";
-    static let expiresAtKey = "expiresAt";
-    static let sessionExpiresAtKey = "sessionExpiresAt";
-    static let scopeKey = "scope";
-    static let refreshTokenKey = "refreshToken";
-    static let typeKey = "type";
-    static let tokenTypeKey = "tokenType";
-    static let dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    
-    static let credentialsManagerErrorCode = "CREDENTIAL_MANAGER_ERROR"
-    static let biometricsAuthenticationErrorCode = "BIOMETRICS_CONFIGURATION_ERROR"
-    
+
+    nonisolated static let accessTokenKey = "accessToken";
+    nonisolated static let idTokenKey = "idToken";
+    nonisolated static let expiresAtKey = "expiresAt";
+    nonisolated static let sessionExpiresAtKey = "sessionExpiresAt";
+    nonisolated static let scopeKey = "scope";
+    nonisolated static let refreshTokenKey = "refreshToken";
+    nonisolated static let typeKey = "type";
+    nonisolated static let tokenTypeKey = "tokenType";
+    nonisolated static let dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
+    nonisolated static let credentialsManagerErrorCode = "CREDENTIAL_MANAGER_ERROR"
+    nonisolated static let biometricsAuthenticationErrorCode = "BIOMETRICS_CONFIGURATION_ERROR"
+
     // DPoP error codes
-    static let dpopErrorCode = "DPOP_ERROR"
-    static let dpopKeyGenerationFailedCode = "DPOP_KEY_GENERATION_FAILED"
-    static let dpopKeyStorageFailedCode = "DPOP_KEY_STORAGE_FAILED"
-    static let dpopKeyRetrievalFailedCode = "DPOP_KEY_RETRIEVAL_FAILED"
-    static let dpopKeyNotFoundCode = "DPOP_KEY_NOT_FOUND"
-    static let dpopKeychainErrorCode = "DPOP_KEYCHAIN_ERROR"
-    static let dpopGenerationFailedCode = "DPOP_GENERATION_FAILED"
-    static let dpopProofFailedCode = "DPOP_PROOF_FAILED"
-    static let dpopNonceMismatchCode = "DPOP_NONCE_MISMATCH"
-    static let dpopInvalidTokenTypeCode = "DPOP_INVALID_TOKEN_TYPE"
-    static let dpopMissingParameterCode = "DPOP_MISSING_PARAMETER"
-    static let dpopClearKeyFailedCode = "DPOP_CLEAR_KEY_FAILED"
+    nonisolated static let dpopErrorCode = "DPOP_ERROR"
+    nonisolated static let dpopKeyGenerationFailedCode = "DPOP_KEY_GENERATION_FAILED"
+    nonisolated static let dpopKeyStorageFailedCode = "DPOP_KEY_STORAGE_FAILED"
+    nonisolated static let dpopKeyRetrievalFailedCode = "DPOP_KEY_RETRIEVAL_FAILED"
+    nonisolated static let dpopKeyNotFoundCode = "DPOP_KEY_NOT_FOUND"
+    nonisolated static let dpopKeychainErrorCode = "DPOP_KEYCHAIN_ERROR"
+    nonisolated static let dpopGenerationFailedCode = "DPOP_GENERATION_FAILED"
+    nonisolated static let dpopProofFailedCode = "DPOP_PROOF_FAILED"
+    nonisolated static let dpopNonceMismatchCode = "DPOP_NONCE_MISMATCH"
+    nonisolated static let dpopInvalidTokenTypeCode = "DPOP_INVALID_TOKEN_TYPE"
+    nonisolated static let dpopMissingParameterCode = "DPOP_MISSING_PARAMETER"
+    nonisolated static let dpopClearKeyFailedCode = "DPOP_CLEAR_KEY_FAILED"
     
     var credentialsManager: CredentialsManager
     var clientId: String
@@ -99,50 +100,49 @@ public class NativeBridge: NSObject {
             builder = builder.useDPoP()
         }
         if let value = URL(string: redirectUri) {
-            let _ = builder.redirectURL(value)
+            builder = builder.redirectURL(value)
         }
         if let value = state {
-            let _ = builder.state(value)
+            builder = builder.state(value)
         }
         if let value = nonce {
-            let _ = builder.nonce(value)
+            builder = builder.nonce(value)
         }
         if let value = audience {
-            let _ = builder.audience(value)
+            builder = builder.audience(value)
         }
         if let value = scope {
-            let _ = builder.scope(value)
+            builder = builder.scope(value)
         }
         if let value = connection {
-            let _ = builder.connection(value)
+            builder = builder.connection(value)
         }
         if(maxAge != 0) {
-            let _ = builder.maxAge(maxAge)
+            builder = builder.maxAge(maxAge)
         }
         if let value = organization {
-            let _ = builder.organization(value)
+            builder = builder.organization(value)
         }
         if let value = invitationUrl, let invitationURL = URL(string: value) {
-            let _ = builder.invitationURL(invitationURL)
+            builder = builder.invitationURL(invitationURL)
         }
         if(leeway != 0) {
-            let _ = builder.leeway(leeway)
+            builder = builder.leeway(leeway)
         }
         if(ephemeralSession) {
-            let _ = builder.useEphemeralSession()
+            builder = builder.useEphemeralSession()
         }
-        
+
         // Check if scheme starts with https and use HTTPS if it does
         if scheme.starts(with: "https") {
-            let _ = builder.useHTTPS()
+            builder = builder.useHTTPS()
         }
-        
+
         //Since we cannot have a null value here, the JS layer sends 99 if we have to ignore setting this value
         if let presentationStyle = UIModalPresentationStyle(rawValue: safariViewControllerPresentationStyle), safariViewControllerPresentationStyle != 99 {
-            let _ = builder.provider(WebAuthentication.safariProvider(style: presentationStyle))
+            builder = builder.provider(WebAuthentication.safariProvider(style: presentationStyle))
         }
-        let _ = builder
-            .parameters(additionalParameters)
+        builder = builder.parameters(additionalParameters)
         builder.start { result in
             switch result {
             case .success(let credentials):
@@ -154,17 +154,17 @@ public class NativeBridge: NSObject {
     }
 
     @objc public func webAuthLogout(scheme: String, federated: Bool, redirectUri: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
+        var builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
         if let value = URL(string: redirectUri) {
-            let _ = builder.redirectURL(value)
+            builder = builder.redirectURL(value)
         }
-        
+
         // Check if scheme starts with https and use HTTPS if it does
         if scheme.starts(with: "https") {
-            let _ = builder.useHTTPS()
+            builder = builder.useHTTPS()
         }
-        
-        builder.clearSession(federated: federated) { result in
+
+        builder.logout(federated: federated) { result in
                 switch result {
                 case .success:
                     resolve(true)
@@ -208,14 +208,15 @@ public class NativeBridge: NSObject {
                 tokenType: tokenType,
                 idToken:  idToken,
                 refreshToken: refreshToken,
-                expiresIn: expiresIn,
+                expiresAt: expiresIn,
                 scope: scope,
                 recoveryCode: nil
             )
-            if (credentialsManager.store(credentials: credentials)) {
+            do {
+                try credentialsManager.store(credentials: credentials)
                 resolve(true)
-            } else {
-                reject("STORE_FAILED", "Failed to store credentials in the Keychain.", nil)
+            } catch {
+                reject("STORE_FAILED", "Failed to store credentials in the Keychain.", error)
             }
         } else {
             reject(NativeBridge.credentialsManagerErrorCode, "Incomplete information provided for credentials - 'expiresIn' not found", NSError.init(domain: NativeBridge.credentialsManagerErrorCode, code: -99999, userInfo: nil));
@@ -249,8 +250,14 @@ public class NativeBridge: NSObject {
     }
     
     @objc public func clearCredentials(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        let removed = credentialsManager.clear()
-        
+        let removed: Bool
+        do {
+            try credentialsManager.clear()
+            removed = true
+        } catch {
+            removed = false
+        }
+
         // Also clear DPoP key if DPoP is enabled
         if self.useDPoP {
             do {
@@ -260,7 +267,7 @@ public class NativeBridge: NSObject {
                 print("Warning: Failed to clear DPoP key: \(error.localizedDescription)")
             }
         }
-        
+
         resolve(removed)
     }
     
@@ -272,19 +279,19 @@ public class NativeBridge: NSObject {
                 var response: [String: Any] = [
                     "sessionTransferToken": ssoCredentials.sessionTransferToken,
                     "tokenType": ssoCredentials.issuedTokenType,
-                    "expiresIn": ssoCredentials.expiresIn,
+                    NativeBridge.expiresAtKey: floor(ssoCredentials.expiresAt.timeIntervalSince1970),
                     "idToken": ssoCredentials.idToken
                 ]
-                
+
                 // Add optional fields if present
                 if let refreshToken = ssoCredentials.refreshToken {
                     response["refreshToken"] = refreshToken
                 }
-                
+
                 resolve(response)
             case .failure(let error):
                 reject(
-                    NativeBridge.credentialsManagerErrorCode,
+                    error.reactNativeErrorCode(),
                     error.localizedDescription,
                     error
                 )
@@ -386,9 +393,12 @@ public class NativeBridge: NSObject {
 
     
     @objc public func clearApiCredentials(audience: String, scope: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        // The clear(forAudience:scope:) method returns a boolean indicating success.
-        // We can resolve the promise with this boolean value.
-        resolve(credentialsManager.clear(forAudience: audience, scope: scope))
+        do {
+            try credentialsManager.clear(forAudience: audience, scope: scope)
+            resolve(true)
+        } catch {
+            resolve(false)
+        }
     }
     
     @objc public func customTokenExchange(subjectToken: String, subjectTokenType: String, audience: String?, scope: String?, organization: String?, actorToken actorTokenValue: String?, actorTokenType: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
@@ -618,6 +628,8 @@ public class NativeBridge: NSObject {
                 relyingPartyId: self.domain,
                 challengeData: Data()
             )
+            // ID token claim validation is opt-in on `TokenRequestable` in Auth0.swift 3.0.
+            // Android validates this path too (`A0Auth0Module.signinWithPasskey`).
             auth.login(
                 passkey: passkey,
                 challenge: challenge,
@@ -625,7 +637,9 @@ public class NativeBridge: NSObject {
                 audience: audienceValue,
                 scope: finalScope,
                 organization: orgValue
-            ).start { result in
+            )
+            .validateClaims()
+            .start { result in
                 switch result {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
@@ -676,7 +690,7 @@ extension Credentials {
             NativeBridge.tokenTypeKey: self.tokenType,
             NativeBridge.idTokenKey: self.idToken,
             NativeBridge.refreshTokenKey: self.refreshToken as Any,
-            NativeBridge.expiresAtKey: floor(self.expiresIn.timeIntervalSince1970),
+            NativeBridge.expiresAtKey: floor(self.expiresAt.timeIntervalSince1970),
             NativeBridge.scopeKey: self.scope as Any
         ]
         if let sessionExpiresAt = self.sessionExpiresAt {
@@ -691,7 +705,7 @@ extension APICredentials {
         return [
             NativeBridge.accessTokenKey: self.accessToken,
             NativeBridge.tokenTypeKey: self.tokenType,
-            NativeBridge.expiresAtKey: floor(self.expiresIn.timeIntervalSince1970),
+            NativeBridge.expiresAtKey: floor(self.expiresAt.timeIntervalSince1970),
             NativeBridge.scopeKey: self.scope
         ]
     }
@@ -699,20 +713,23 @@ extension APICredentials {
 
 extension WebAuthError {
     func reactNativeErrorCode() -> String {
+        // Server-returned errors (`access_denied`, `invalid_request`, ...) travel in the
+        // cause, not the case, so prefer the underlying code when one is present.
+        func causeCode(fallback: String) -> String {
+            (self.cause as? AuthenticationError)?.code ?? fallback
+        }
+
         var code: String
         switch self {
-            case WebAuthError.noBundleIdentifier: code = "NO_BUNDLE_IDENTIFIER"
             case WebAuthError.transactionActiveAlready: code = "TRANSACTION_ACTIVE_ALREADY"
-            case WebAuthError.invalidInvitationURL: code = "INVALID_INVITATION_URL"
             case WebAuthError.userCancelled: code = "USER_CANCELLED"
-            case WebAuthError.noAuthorizationCode: code = "NO_AUTHORIZATION_CODE"
-            case WebAuthError.pkceNotAllowed: code = "PKCE_NOT_ALLOWED"
             case WebAuthError.idTokenValidationFailed: code = "ID_TOKEN_VALIDATION_FAILED"
-            case WebAuthError.other: if let cause = self.cause as? AuthenticationError {
-                code = cause.code
-            } else {
-                code = "OTHER"
-            }
+            // Auth0.swift 3.0 splits v2's `.other` into `.authenticationFailed` (the
+            // callback URL carried an `error` param) and `.codeExchangeFailed` (the
+            // /oauth/token call for the authorization code failed).
+            case WebAuthError.authenticationFailed: code = causeCode(fallback: "AUTHENTICATION_FAILED")
+            case WebAuthError.codeExchangeFailed: code = causeCode(fallback: "CODE_EXCHANGE_FAILED")
+            case WebAuthError.other: code = causeCode(fallback: "OTHER")
             default:
                 // Auth0.swift surfaces a callback-URL mismatch as `.unknown("Invalid callback URL: ...")`
                 // with no dedicated enum case, so message matching is the only available hook.
@@ -754,7 +771,18 @@ extension CredentialsManagerError {
             } else {
                 code = "RENEW_FAILED"
             }
+            case CredentialsManagerError.apiExchangeFailed: if let cause = self.cause as? AuthenticationError {
+                code = cause.code
+            } else {
+                code = "API_EXCHANGE_FAILED"
+            }
+            case CredentialsManagerError.ssoExchangeFailed: if let cause = self.cause as? AuthenticationError {
+                code = cause.code
+            } else {
+                code = "SSO_EXCHANGE_FAILED"
+            }
             case CredentialsManagerError.storeFailed: code = "STORE_FAILED"
+            case CredentialsManagerError.clearFailed: code = "CLEAR_FAILED"
             case CredentialsManagerError.biometricsFailed: code = "BIOMETRICS_FAILED"
             case CredentialsManagerError.revokeFailed: if let cause = self.cause as? AuthenticationError {
                 code = cause.code

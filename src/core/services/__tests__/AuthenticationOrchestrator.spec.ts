@@ -903,14 +903,26 @@ describe('AuthenticationOrchestrator', () => {
         response: new Response(null, { status: 200 }),
       });
 
-      const result = await orchestrator.ssoExchange(parameters);
+      // Freeze the clock: the implementation derives `expiresAt` from
+      // `Date.now()`, so a real clock crossing a second boundary between the
+      // call and the assertion would make this flaky.
+      const now = 1893456000000;
+      jest.spyOn(Date, 'now').mockReturnValue(now);
 
-      expect(result).toBeInstanceOf(SSOCredentials);
-      expect(result.sessionTransferToken).toBe(ssoResponse.access_token);
-      expect(result.tokenType).toBe(ssoResponse.issued_token_type);
-      expect(result.expiresIn).toBe(ssoResponse.expires_in);
-      expect(result.idToken).toBe(ssoResponse.id_token);
-      expect(result.refreshToken).toBe(ssoResponse.refresh_token);
+      try {
+        const result = await orchestrator.ssoExchange(parameters);
+
+        expect(result).toBeInstanceOf(SSOCredentials);
+        expect(result.sessionTransferToken).toBe(ssoResponse.access_token);
+        expect(result.tokenType).toBe(ssoResponse.issued_token_type);
+        expect(result.expiresAt).toBe(
+          Math.floor(now / 1000) + ssoResponse.expires_in
+        );
+        expect(result.idToken).toBe(ssoResponse.id_token);
+        expect(result.refreshToken).toBe(ssoResponse.refresh_token);
+      } finally {
+        jest.spyOn(Date, 'now').mockRestore();
+      }
     });
 
     it('should handle oauth error', async () => {

@@ -23,18 +23,15 @@ describe('Error Code Constants', () => {
       );
       expect(WebAuthErrorCodes.FAILED_TO_LOAD_URL).toBe('FAILED_TO_LOAD_URL');
       expect(WebAuthErrorCodes.BROWSER_TERMINATED).toBe('BROWSER_TERMINATED');
-      expect(WebAuthErrorCodes.NO_BUNDLE_IDENTIFIER).toBe(
-        'NO_BUNDLE_IDENTIFIER'
-      );
       expect(WebAuthErrorCodes.TRANSACTION_ACTIVE_ALREADY).toBe(
         'TRANSACTION_ACTIVE_ALREADY'
       );
-      expect(WebAuthErrorCodes.NO_AUTHORIZATION_CODE).toBe(
-        'NO_AUTHORIZATION_CODE'
-      );
       expect(WebAuthErrorCodes.PKCE_NOT_ALLOWED).toBe('PKCE_NOT_ALLOWED');
-      expect(WebAuthErrorCodes.INVALID_INVITATION_URL).toBe(
-        'INVALID_INVITATION_URL'
+      expect(WebAuthErrorCodes.AUTHENTICATION_FAILED).toBe(
+        'AUTHENTICATION_FAILED'
+      );
+      expect(WebAuthErrorCodes.CODE_EXCHANGE_FAILED).toBe(
+        'CODE_EXCHANGE_FAILED'
       );
       expect(WebAuthErrorCodes.INVALID_STATE).toBe('INVALID_STATE');
       expect(WebAuthErrorCodes.INVALID_CALLBACK_URL).toBe(
@@ -48,9 +45,9 @@ describe('Error Code Constants', () => {
       expect(WebAuthErrorCodes.UNKNOWN_ERROR).toBe('UNKNOWN_ERROR');
     });
 
-    it('should have exactly 19 error codes', () => {
+    it('should have exactly 18 error codes', () => {
       const keys = Object.keys(WebAuthErrorCodes);
-      expect(keys).toHaveLength(19);
+      expect(keys).toHaveLength(18);
     });
 
     it('should be immutable (as const)', () => {
@@ -108,6 +105,10 @@ describe('Error Code Constants', () => {
       expect(CredentialsManagerErrorCodes.API_EXCHANGE_FAILED).toBe(
         'API_EXCHANGE_FAILED'
       );
+      expect(CredentialsManagerErrorCodes.SSO_EXCHANGE_FAILED).toBe(
+        'SSO_EXCHANGE_FAILED'
+      );
+      expect(CredentialsManagerErrorCodes.CLEAR_FAILED).toBe('CLEAR_FAILED');
       expect(CredentialsManagerErrorCodes.INCOMPATIBLE_DEVICE).toBe(
         'INCOMPATIBLE_DEVICE'
       );
@@ -126,9 +127,9 @@ describe('Error Code Constants', () => {
       );
     });
 
-    it('should have exactly 19 error codes', () => {
+    it('should have exactly 21 error codes', () => {
       const keys = Object.keys(CredentialsManagerErrorCodes);
-      expect(keys).toHaveLength(19);
+      expect(keys).toHaveLength(21);
     });
 
     it('should be immutable (as const)', () => {

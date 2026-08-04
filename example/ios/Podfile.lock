@@ -1,7 +1,8 @@
 PODS:
-  - A0Auth0 (5.10.0):
-    - Auth0 (= 2.24.1)
+  - A0Auth0 (5.11.0):
+    - Auth0 (= 3.0.1)
     - hermes-engine
+    - JWTDecode (= 4.0.0)
     - RCTRequired
     - RCTTypeSafety
     - React-Core
@@ -23,14 +24,14 @@ PODS:
     - ReactNativeDependencies
     - SimpleKeychain (= 1.3.0)
     - Yoga
-  - Auth0 (2.24.1):
-    - JWTDecode (= 3.3.0)
+  - Auth0 (3.0.1):
+    - JWTDecode (= 4.0)
     - SimpleKeychain (= 1.3.0)
   - FBLazyVector (0.86.0)
   - hermes-engine (250829098.0.14):
     - hermes-engine/Pre-built (= 250829098.0.14)
   - hermes-engine/Pre-built (250829098.0.14)
-  - JWTDecode (3.3.0)
+  - JWTDecode (4.0.0)
   - RCTDeprecation (0.86.0)
   - RCTRequired (0.86.0)
   - RCTSwiftUI (0.86.0)
@@ -2242,11 +2243,11 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  A0Auth0: 88b0133241904699bfb3234731983d30dbf9cba0
-  Auth0: 700271885e7d3bab08f372f7e119adb7b2ba662b
+  A0Auth0: 2c9e96b05a7422552027fd336a45ece0bd8d8545
+  Auth0: c94e637a662b4e07aeb1e6e5acf3f8787e451e1c
   FBLazyVector: b3e7ad108f0d882e30445c5527d774e3fd432f3d
   hermes-engine: 4ba8c4848d46c6a441e09d1c62f883ba69bc5b76
-  JWTDecode: 1ca6f765844457d0dd8690436860fecee788f631
+  JWTDecode: a420459e8c73d7840cb6a6a7a1eb89c894d58499
   RCTDeprecation: 2a74a2c57675e64419bd89078efde81f7c1de90b
   RCTRequired: 30451112e6fef4e6f31b4e7eee0845156e35e4b0
   RCTSwiftUI: 5aaf0b07e747ba749dc6acc94d8bd41eea4b570f

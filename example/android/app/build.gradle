@@ -80,6 +80,12 @@ android {
     namespace "com.auth0example"
     defaultConfig {
         applicationId "com.auth0example"
+        // Required by the Auth0.Android manifest merge. Replace `auth0Domain` with
+        // your own tenant domain to run the example against it.
+        manifestPlaceholders = [
+            auth0Domain: "your-domain",
+            auth0Scheme: "${applicationId}.auth0"
+        ]
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

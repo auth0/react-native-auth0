@@ -45,16 +45,14 @@ export const WebAuthErrorCodes = {
   FAILED_TO_LOAD_URL: 'FAILED_TO_LOAD_URL',
   /** Browser was closed unexpectedly */
   BROWSER_TERMINATED: 'BROWSER_TERMINATED',
-  /** Native bundle identifier could not be retrieved (iOS) */
-  NO_BUNDLE_IDENTIFIER: 'NO_BUNDLE_IDENTIFIER',
   /** Another authentication transaction is already active */
   TRANSACTION_ACTIVE_ALREADY: 'TRANSACTION_ACTIVE_ALREADY',
-  /** Authorization code missing from callback URL */
-  NO_AUTHORIZATION_CODE: 'NO_AUTHORIZATION_CODE',
   /** PKCE is required but not enabled in Auth0 Application */
   PKCE_NOT_ALLOWED: 'PKCE_NOT_ALLOWED',
-  /** Organization invitation URL is malformed */
-  INVALID_INVITATION_URL: 'INVALID_INVITATION_URL',
+  /** The callback URL carried an error the SDK could not attribute to a specific cause */
+  AUTHENTICATION_FAILED: 'AUTHENTICATION_FAILED',
+  /** Exchanging the authorization code for tokens failed */
+  CODE_EXCHANGE_FAILED: 'CODE_EXCHANGE_FAILED',
   /** State parameter mismatch (potential CSRF attack) */
   INVALID_STATE: 'INVALID_STATE',
   /** Callback URL did not match the expected redirect, e.g. an in-page link captured by the browser session (iOS) */
@@ -84,13 +82,12 @@ const ERROR_CODE_MAP: Record<string, string> = {
   'a0.browser_not_available': WebAuthErrorCodes.BROWSER_NOT_AVAILABLE,
   'a0.session.failed_load': WebAuthErrorCodes.FAILED_TO_LOAD_URL,
   'a0.session.browser_terminated': WebAuthErrorCodes.BROWSER_TERMINATED,
+  'a0.pkce_not_available': WebAuthErrorCodes.PKCE_NOT_ALLOWED,
 
   // --- iOS-specific mappings ---
-  'NO_BUNDLE_IDENTIFIER': WebAuthErrorCodes.NO_BUNDLE_IDENTIFIER,
   'TRANSACTION_ACTIVE_ALREADY': WebAuthErrorCodes.TRANSACTION_ACTIVE_ALREADY,
-  'NO_AUTHORIZATION_CODE': WebAuthErrorCodes.NO_AUTHORIZATION_CODE,
-  'PKCE_NOT_ALLOWED': WebAuthErrorCodes.PKCE_NOT_ALLOWED,
-  'INVALID_INVITATION_URL': WebAuthErrorCodes.INVALID_INVITATION_URL,
+  'AUTHENTICATION_FAILED': WebAuthErrorCodes.AUTHENTICATION_FAILED,
+  'CODE_EXCHANGE_FAILED': WebAuthErrorCodes.CODE_EXCHANGE_FAILED,
   'INVALID_CALLBACK_URL': WebAuthErrorCodes.INVALID_CALLBACK_URL,
 
   // --- Web (@auth0/auth0-spa-js) mappings ---

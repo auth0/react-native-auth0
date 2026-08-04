@@ -2,6 +2,7 @@ import Auth0
 import Foundation
 
 @objc
+@MainActor
 public class A0Passwordless: NSObject {
 
     private let client: Authentication

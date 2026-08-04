@@ -84,8 +84,8 @@ export type SessionTransferCredentials = {
   sessionTransferToken: string;
   /** The type of the token issued */
   tokenType: string;
-  /** The expiration time of the session transfer token in seconds. */
-  expiresIn: number;
+  /** When the session transfer token expires, as a UNIX timestamp (in seconds). */
+  expiresAt: number;
   /**
    * A new ID token, if one was issued during the token exchange.
    * This is typically present when Refresh Token Rotation is enabled.
