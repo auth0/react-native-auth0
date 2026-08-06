@@ -86,7 +86,7 @@ v6 adopts **Auth0.swift 3.0.1**, which is built with the **Swift 6** compiler.
 2. Run `pod install --repo-update` in your `ios` directory to pick up Auth0.swift 3.0.1.
 3. Use **Xcode 16** or later.
 
-> See §8 for the public-API changes that come with these native majors.
+> See §9 for the public-API changes that come with these native majors.
 
 ### 5. DPoP is now opt-in ✅
 
@@ -141,7 +141,46 @@ For updating `user_metadata`, expose an endpoint on your backend that performs t
 
 > Reading the current user's profile does **not** need the Management API. `auth0.auth.userInfo({ token })` calls `/userinfo` and works with a normal access token, and the `user` object from `useAuth0()` is decoded from the ID token.
 
-### 8. Native SDK API alignment (Auth0.Android v4 / Auth0.swift v3) ✅
+### 8. MFA methods on the auth client removed ✅
+
+The four MFA methods on `auth0.auth` are gone, replaced by the dedicated `auth0.mfa` client that also supports listing and enrolling authenticators. They were deprecated in v5.x. The `mfa` client is available on iOS, Android, and web.
+
+| Removed from `auth0.auth`                             | Use instead on `auth0.mfa`                   |
+| :---------------------------------------------------- | :------------------------------------------- |
+| `loginWithOTP({ mfaToken, otp })`                     | `verify({ mfaToken, otp })`                  |
+| `loginWithOOB({ mfaToken, oobCode, bindingCode })`    | `verify({ mfaToken, oobCode, bindingCode })` |
+| `loginWithRecoveryCode({ mfaToken, recoveryCode })`   | `verify({ mfaToken, recoveryCode })`         |
+| `multifactorChallenge({ mfaToken, authenticatorId })` | `challenge({ mfaToken, authenticatorId })`   |
+
+The equivalents on `useAuth0()` are removed too: `authorizeWithOTP`, `authorizeWithOOB`, `authorizeWithRecoveryCode`, and `sendMultifactorChallenge` — use the `mfa` client from the hook instead. The `LoginOtpParameters`, `LoginOobParameters`, `LoginRecoveryCodeParameters`, `MfaChallengeParameters`, and `MfaChallengeResponse` types are no longer exported.
+
+**✅ Action Required:**
+
+```diff
+- const credentials = await auth0.auth.loginWithOTP({ mfaToken, otp });
++ const credentials = await auth0.mfa.verify({ mfaToken, otp });
+```
+
+`verify()` is a superset of the three `loginWith*` methods — it also accepts `scope` and `audience` for the returned credentials.
+
+> **One behavioural difference.** `multifactorChallenge()` treated `authenticatorId` as optional, letting Auth0 pick a default factor. On `mfa.challenge()` it is **required**. If you relied on omitting it, list the user's authenticators first and pass an explicit id:
+>
+> ```js
+> const authenticators = await auth0.mfa.getAuthenticators({ mfaToken });
+>
+> // A user can reach MFA_REQUIRED with nothing enrolled yet — enrol a factor
+> // with `auth0.mfa.enroll()` before challenging.
+> if (authenticators.length === 0) {
+>   return promptEnrollment();
+> }
+>
+> const challenge = await auth0.mfa.challenge({
+>   mfaToken,
+>   authenticatorId: authenticators[0].id,
+> });
+> ```
+
+### 9. Native SDK API alignment (Auth0.Android v4 / Auth0.swift v3) ✅
 
 Adopting the new native SDK majors changes two parts of the public surface.
 

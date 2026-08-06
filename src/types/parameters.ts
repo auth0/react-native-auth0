@@ -274,35 +274,6 @@ export interface LoginSmsParameters extends RequestOptions {
   scope?: string;
 }
 
-// ========= Multi-Factor Authentication (MFA) Parameters =========
-
-/** Parameters for logging in with an OTP code after an MFA challenge. */
-export interface LoginOtpParameters extends RequestOptions {
-  mfaToken: string;
-  otp: string;
-  audience?: string;
-}
-
-/** Parameters for logging in with an Out-of-Band (OOB) code after an MFA challenge. */
-export interface LoginOobParameters extends RequestOptions {
-  mfaToken: string;
-  oobCode: string;
-  bindingCode?: string;
-}
-
-/** Parameters for logging in with a recovery code after an MFA challenge. */
-export interface LoginRecoveryCodeParameters extends RequestOptions {
-  mfaToken: string;
-  recoveryCode: string;
-}
-
-/** Parameters for requesting an MFA challenge. */
-export interface MfaChallengeParameters extends RequestOptions {
-  mfaToken: string;
-  challengeType?: 'oob' | 'otp';
-  authenticatorId?: string;
-}
-
 // ========= MFA Flexible Factors Grant Parameters =========
 
 /** Parameters for listing enrolled MFA authenticators. */

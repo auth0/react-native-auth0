@@ -217,28 +217,6 @@ export interface Auth0Options {
   // Telemetry and localAuthenticationOptions are platform-specific extensions
 }
 
-// ========= MFA Challenge Response Types =========
-
-/** Base response for an MFA challenge request. */
-export type MfaChallengeOtpResponse = { challengeType: 'otp' };
-
-/** Response for an Out-of-Band (OOB) MFA challenge, containing the OOB code. */
-export type MfaChallengeOobResponse = {
-  challengeType: 'oob';
-  oobCode: string;
-};
-
-/** Response for an OOB MFA challenge that requires a binding code. */
-export type MfaChallengeOobWithBindingResponse = MfaChallengeOobResponse & {
-  bindingMethod: string;
-};
-
-/** A union type representing all possible successful responses from an MFA challenge request. */
-export type MfaChallengeResponse =
-  | MfaChallengeOtpResponse
-  | MfaChallengeOobResponse
-  | MfaChallengeOobWithBindingResponse;
-
 // ========= MFA Flexible Factors Grant Types =========
 
 /** Represents an enrolled MFA authenticator. */

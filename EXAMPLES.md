@@ -186,16 +186,13 @@ authorize({}, { customScheme: 'YOUR_AUTH0_DOMAIN' })
 
 This call requires the client to have the _MFA_ Client Grant Type enabled. Check [this article](https://auth0.com/docs/clients/client-grant-types) to learn how to enable it.
 
-When you sign in to a multifactor authentication enabled connection using the `passwordRealm` method, you receive an error stating that MFA is required for that user along with an `mfa_token` value. Use this value to call `loginWithOTP` and complete the MFA flow passing the One Time Password from the enrolled MFA code generator app.
+When you sign in to a multifactor authentication enabled connection using the `passwordRealm` method, you receive an error stating that MFA is required for that user along with an `mfa_token` value. Pass that value to the [`mfa` client](#mfa-flexible-factors-grant) to complete the flow.
 
 ```js
-auth0.auth
-  .loginWithOTP({
-    mfaToken: error.json.mfa_token,
-    otp: '{user entered OTP}',
-  })
-  .then(console.log)
-  .catch(console.error);
+const credentials = await auth0.mfa.verify({
+  mfaToken: error.json.mfa_token,
+  otp: '{user entered OTP}',
+});
 ```
 
 ### Login with Passwordless

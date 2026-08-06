@@ -11,10 +11,6 @@ import type {
   LoginEmailParameters,
   PasswordlessSmsParameters,
   LoginSmsParameters,
-  MfaChallengeParameters,
-  LoginOobParameters,
-  LoginOtpParameters,
-  LoginRecoveryCodeParameters,
   ExchangeNativeSocialParameters,
   CustomTokenExchangeParameters,
   PasskeySignupChallengeParameters,
@@ -24,7 +20,6 @@ import type {
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
-  MfaChallengeResponse,
   DPoPHeadersParams,
   SessionTransferCredentials,
 } from '../types';
@@ -355,42 +350,6 @@ export interface Auth0ContextInterface extends AuthState {
    */
   authorizeWithSMS: (parameters: LoginSmsParameters) => Promise<Credentials>;
 
-  /**
-   * Sends a multifactor challenge to the user.
-   * @param parameters The parameters for the multifactor challenge.
-   * @returns A promise that resolves when the challenge has been sent.
-   * @throws {AuthError} If sending the challenge fails.
-   */
-  sendMultifactorChallenge: (
-    parameters: MfaChallengeParameters
-  ) => Promise<MfaChallengeResponse>;
-
-  /**
-   * Authorizes a user with out-of-band (OOB) authentication.
-   * @param parameters The parameters for OOB authorization.
-   * @returns A promise that resolves with the user's credentials.
-   * @throws {AuthError} If the authorization fails.
-   */
-  authorizeWithOOB: (parameters: LoginOobParameters) => Promise<Credentials>;
-
-  /**
-   * Authorizes a user with a one-time password (OTP).
-   * @param parameters The parameters for OTP authorization.
-   * @returns A promise that resolves with the user's credentials.
-   * @throws {AuthError} If the authorization fails.
-   */
-  authorizeWithOTP: (parameters: LoginOtpParameters) => Promise<Credentials>;
-
-  /**
-   * Authorizes a user with a recovery code.
-   * @param parameters The parameters for recovery code authorization.
-   * @returns A promise that resolves with the user's credentials.
-   * @throws {AuthError} If the authorization fails.
-   */
-  authorizeWithRecoveryCode: (
-    parameters: LoginRecoveryCodeParameters
-  ) => Promise<Credentials>;
-
   // Token Management
   revokeRefreshToken: (parameters: RevokeOptions) => Promise<void>;
 
@@ -530,7 +489,6 @@ const initialContext: Auth0ContextInterface = {
   resumeSession: stub,
   authorizeWithExchange: stub,
   createUser: stub,
-  authorizeWithRecoveryCode: stub,
   authorizeWithExchangeNativeSocial: stub,
   customTokenExchange: stub,
   passkeySignupChallenge: stub,
@@ -564,9 +522,6 @@ const initialContext: Auth0ContextInterface = {
   sendSMSCode: stub,
   authorizeWithEmail: stub,
   authorizeWithSMS: stub,
-  sendMultifactorChallenge: stub,
-  authorizeWithOOB: stub,
-  authorizeWithOTP: stub,
   resetPassword: stub,
   revokeRefreshToken: stub,
   getDPoPHeaders: stub,
