@@ -36,11 +36,32 @@ export interface IAuthenticationProvider {
   passwordlessWithSMS(parameters: PasswordlessSmsParameters): Promise<void>;
   loginWithEmail(parameters: LoginEmailParameters): Promise<Credentials>;
   loginWithSMS(parameters: LoginSmsParameters): Promise<Credentials>;
+  /**
+   * @deprecated Will be removed in v6. Use `auth0.mfa.verify({ mfaToken, otp })`
+   * instead, which additionally accepts `scope` and `audience`.
+   */
   loginWithOTP(parameters: LoginOtpParameters): Promise<Credentials>;
+  /**
+   * @deprecated Will be removed in v6. Use
+   * `auth0.mfa.verify({ mfaToken, oobCode, bindingCode })` instead, which
+   * additionally accepts `scope` and `audience`.
+   */
   loginWithOOB(parameters: LoginOobParameters): Promise<Credentials>;
+  /**
+   * @deprecated Will be removed in v6. Use
+   * `auth0.mfa.verify({ mfaToken, recoveryCode })` instead, which additionally
+   * accepts `scope` and `audience`.
+   */
   loginWithRecoveryCode(
     parameters: LoginRecoveryCodeParameters
   ): Promise<Credentials>;
+  /**
+   * @deprecated Will be removed in v6. Use
+   * `auth0.mfa.challenge({ mfaToken, authenticatorId })` instead. Note that
+   * `authenticatorId` is required there — if you relied on omitting it to let
+   * Auth0 pick a default factor, call `auth0.mfa.getAuthenticators({ mfaToken })`
+   * first and pass an explicit id.
+   */
   multifactorChallenge(
     parameters: MfaChallengeParameters
   ): Promise<MfaChallengeResponse>;

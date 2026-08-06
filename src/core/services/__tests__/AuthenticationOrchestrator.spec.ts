@@ -564,6 +564,53 @@ describe('AuthenticationOrchestrator', () => {
 
   // New tests for MFA flows
   describe('MFA flows', () => {
+    // These methods are deprecated in favour of the `mfa` client and warn on
+    // every call; silence the noise but assert the warning separately below.
+    let warnSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      warnSpy.mockRestore();
+    });
+
+    it.each([
+      [
+        'loginWithOTP',
+        { mfaToken: 'mfa_token_123', otp: '123456' },
+        'mfa.verify',
+      ],
+      [
+        'loginWithOOB',
+        { mfaToken: 'mfa_token_123', oobCode: 'oob_123' },
+        'mfa.verify',
+      ],
+      [
+        'loginWithRecoveryCode',
+        { mfaToken: 'mfa_token_123', recoveryCode: 'rec_123' },
+        'mfa.verify',
+      ],
+      ['multifactorChallenge', { mfaToken: 'mfa_token_123' }, 'mfa.challenge'],
+    ])(
+      '%s warns that it is deprecated and names its replacement',
+      async (method, parameters, replacement) => {
+        mockHttpClientInstance.post.mockResolvedValueOnce({
+          json: tokensResponse,
+          response: new Response(null, { status: 200 }),
+        });
+
+        await (orchestrator as any)[method](parameters);
+
+        expect(warnSpy).toHaveBeenCalledTimes(1);
+        const message = warnSpy.mock.calls[0]?.[0] as string;
+        expect(message).toContain(method);
+        expect(message).toContain('v6');
+        expect(message).toContain(replacement);
+      }
+    );
+
     it('loginWithOTP should send correct payload', async () => {
       mockHttpClientInstance.post.mockResolvedValueOnce({
         json: tokensResponse,

@@ -1,5 +1,46 @@
 # Migration Guide
 
+## Deprecated in v5.x — removed in v6
+
+These APIs still work in v5.x but emit a deprecation warning and will be **removed in v6**. Migrating now means no code changes are needed when you upgrade.
+
+### MFA methods on the auth client
+
+The MFA methods on `auth0.auth` are deprecated in favour of the dedicated `auth0.mfa` client, which covers the same grants and adds authenticator listing and enrolment. The `mfa` client is available on iOS, Android, and web.
+
+| Deprecated on `auth0.auth`                            | Use instead on `auth0.mfa`                   |
+| :---------------------------------------------------- | :------------------------------------------- |
+| `loginWithOTP({ mfaToken, otp })`                     | `verify({ mfaToken, otp })`                  |
+| `loginWithOOB({ mfaToken, oobCode, bindingCode })`    | `verify({ mfaToken, oobCode, bindingCode })` |
+| `loginWithRecoveryCode({ mfaToken, recoveryCode })`   | `verify({ mfaToken, recoveryCode })`         |
+| `multifactorChallenge({ mfaToken, authenticatorId })` | `challenge({ mfaToken, authenticatorId })`   |
+
+The same applies to the `useAuth0()` hook: `authorizeWithOTP`, `authorizeWithOOB`, `authorizeWithRecoveryCode`, and `sendMultifactorChallenge` are deprecated in favour of `mfa`.
+
+```diff
+- const credentials = await auth0.auth.loginWithOTP({ mfaToken, otp });
++ const credentials = await auth0.mfa.verify({ mfaToken, otp });
+```
+
+`verify()` is a superset of the three `loginWith*` methods — it also accepts `scope` and `audience` for the returned credentials.
+
+> **One behavioural difference.** `multifactorChallenge()` treated `authenticatorId` as optional, letting Auth0 pick a default factor. On `mfa.challenge()` it is **required**. If you relied on omitting it, list the user's authenticators first and pass an explicit id:
+>
+> ```js
+> const authenticators = await auth0.mfa.getAuthenticators({ mfaToken });
+>
+> // A user can reach MFA_REQUIRED with nothing enrolled yet — enrol a factor
+> // with `auth0.mfa.enroll()` before challenging.
+> if (authenticators.length === 0) {
+>   return promptEnrollment();
+> }
+>
+> const challenge = await auth0.mfa.challenge({
+>   mfaToken,
+>   authenticatorId: authenticators[0].id,
+> });
+> ```
+
 ## Upgrading from v4 -> v5
 
 Version 5.0 of `react-native-auth0` is a significant update featuring a complete architectural overhaul. This new foundation improves performance, maintainability, and provides a more consistent API across all platforms.

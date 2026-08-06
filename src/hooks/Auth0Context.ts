@@ -360,6 +360,9 @@ export interface Auth0ContextInterface extends AuthState {
    * @param parameters The parameters for the multifactor challenge.
    * @returns A promise that resolves when the challenge has been sent.
    * @throws {AuthError} If sending the challenge fails.
+   *
+   * @deprecated Will be removed in v6. Use `mfa.challenge({ mfaToken, authenticatorId })`,
+   * where `authenticatorId` is required — list them with `mfa.getAuthenticators({ mfaToken })`.
    */
   sendMultifactorChallenge: (
     parameters: MfaChallengeParameters
@@ -370,6 +373,8 @@ export interface Auth0ContextInterface extends AuthState {
    * @param parameters The parameters for OOB authorization.
    * @returns A promise that resolves with the user's credentials.
    * @throws {AuthError} If the authorization fails.
+   *
+   * @deprecated Will be removed in v6. Use `mfa.verify({ mfaToken, oobCode, bindingCode })`.
    */
   authorizeWithOOB: (parameters: LoginOobParameters) => Promise<Credentials>;
 
@@ -378,6 +383,8 @@ export interface Auth0ContextInterface extends AuthState {
    * @param parameters The parameters for OTP authorization.
    * @returns A promise that resolves with the user's credentials.
    * @throws {AuthError} If the authorization fails.
+   *
+   * @deprecated Will be removed in v6. Use `mfa.verify({ mfaToken, otp })`.
    */
   authorizeWithOTP: (parameters: LoginOtpParameters) => Promise<Credentials>;
 
@@ -386,6 +393,8 @@ export interface Auth0ContextInterface extends AuthState {
    * @param parameters The parameters for recovery code authorization.
    * @returns A promise that resolves with the user's credentials.
    * @throws {AuthError} If the authorization fails.
+   *
+   * @deprecated Will be removed in v6. Use `mfa.verify({ mfaToken, recoveryCode })`.
    */
   authorizeWithRecoveryCode: (
     parameters: LoginRecoveryCodeParameters
