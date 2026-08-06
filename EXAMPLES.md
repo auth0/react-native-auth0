@@ -187,7 +187,7 @@ authorize({}, { customScheme: 'YOUR_AUTH0_DOMAIN' })
 
 ### Login using MFA with One Time Password code
 
-> **Deprecated — will be removed in v6.** The MFA methods on the auth client (`auth.loginWithOTP`, `auth.loginWithOOB`, `auth.loginWithRecoveryCode`, `auth.multifactorChallenge`) are superseded by the [`mfa` client](#mfa-flexible-factors-grant), which also lets you list and enrol authenticators. See the mapping table in the [Migration Guide](MIGRATION_GUIDE.md#mfa-methods-on-the-auth-client).
+> **Deprecated — will be removed in v6.** The MFA methods on the auth client (`auth0.auth.loginWithOTP`, `auth0.auth.loginWithOOB`, `auth0.auth.loginWithRecoveryCode`, `auth0.auth.multifactorChallenge`) are superseded by the [`mfa` client](#mfa-flexible-factors-grant), which also lets you list and enrol authenticators. See the mapping table in the [Migration Guide](MIGRATION_GUIDE.md#mfa-methods-on-the-auth-client).
 
 This call requires the client to have the _MFA_ Client Grant Type enabled. Check [this article](https://auth0.com/docs/clients/client-grant-types) to learn how to enable it.
 
