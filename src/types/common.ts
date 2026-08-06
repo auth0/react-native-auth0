@@ -191,7 +191,8 @@ export interface Auth0Options {
   /**
    * Enables DPoP (Demonstrating Proof-of-Possession) for enhanced token security.
    * When enabled, access and refresh tokens are cryptographically bound to a client-specific key pair.
-   * @default true
+   * Requires DPoP to be enabled for your application in the Auth0 Dashboard.
+   * @default false
    * @see https://datatracker.ietf.org/doc/html/rfc9449
    */
   useDPoP?: boolean;

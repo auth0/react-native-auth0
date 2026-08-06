@@ -108,8 +108,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         CredentialsManagerException.SESSION_EXPIRED to "SESSION_EXPIRED",
         CredentialsManagerException.SSO_EXCHANGE_FAILED to "SSO_EXCHANGE_FAILED"
     )
-    // DPoP enabled by default
-    private var useDPoP: Boolean = true
+    // DPoP is opt-in
+    private var useDPoP: Boolean = false
 
     private var auth0: Auth0? = null
     private var mfaClient: MfaClient? = null
@@ -285,7 +285,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         // does not currently support retry configuration for credential renewal.
         // This parameter is accepted for API compatibility with iOS.
 
-        this.useDPoP = useDPoP ?: true
+        this.useDPoP = useDPoP ?: false
         auth0 = Auth0.getInstance(clientId, domain)
         mfaClient = MfaClient(auth0!!, this.useDPoP, reactContext)
         myAccount = MyAccount(auth0!!, this.useDPoP, reactContext)

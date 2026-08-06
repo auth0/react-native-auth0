@@ -1677,7 +1677,7 @@ The My Account API allows authenticated users to manage their own authentication
 
 Access the My Account client via the `myAccount` property from `useAuth0()` or the `Auth0` class instance.
 
-The My Account API is supported on Native (iOS/Android) and Web. The same `myAccount` API is used on all platforms; only the passkey credential ceremony differs (native passkey module vs. the browser's WebAuthn APIs). On Web, when DPoP is enabled (the default), the supplied access token must have been issued by the same client instance, since the DPoP proof is signed with that client's keypair; when the client is not configured with DPoP, plain bearer tokens are used and any valid access token works.
+The My Account API is supported on Native (iOS/Android) and Web. The same `myAccount` API is used on all platforms; only the passkey credential ceremony differs (native passkey module vs. the browser's WebAuthn APIs). On Web, when DPoP is enabled, the supplied access token must have been issued by the same client instance, since the DPoP proof is signed with that client's keypair; when the client is not configured with DPoP, plain bearer tokens are used and any valid access token works.
 
 ### Prerequisites
 
@@ -2853,22 +2853,15 @@ if (credentials) {
 
 ### Enabling DPoP
 
-DPoP is enabled by default (`useDPoP: true`) when you initialize the Auth0 client:
+DPoP is opt-in (`useDPoP` defaults to `false`). Set `useDPoP: true` when you initialize the Auth0 client, and make sure DPoP is enabled for your application in the Auth0 Dashboard:
 
 ```js
 import Auth0 from 'react-native-auth0';
 
-// DPoP is enabled by default
 const auth0 = new Auth0({
   domain: 'YOUR_AUTH0_DOMAIN',
   clientId: 'YOUR_AUTH0_CLIENT_ID',
-});
-
-// Or explicitly enable it
-const auth0 = new Auth0({
-  domain: 'YOUR_AUTH0_DOMAIN',
-  clientId: 'YOUR_AUTH0_CLIENT_ID',
-  useDPoP: true, // Explicitly enable DPoP
+  useDPoP: true,
 });
 ```
 
@@ -2882,7 +2875,7 @@ function App() {
     <Auth0Provider
       domain="YOUR_AUTH0_DOMAIN"
       clientId="YOUR_AUTH0_CLIENT_ID"
-      // DPoP is enabled by default
+      useDPoP={true}
     >
       {/* Your app components */}
     </Auth0Provider>
@@ -2891,6 +2884,8 @@ function App() {
 ```
 
 > **Important**: DPoP will only be used for **new user sessions** created after enabling it. Existing sessions with Bearer tokens will continue to work until the user logs in again. See [Handling DPoP token migration](#handling-dpop-token-migration) for how to handle this transition.
+
+> **Turning DPoP off again**: if you previously ran with DPoP enabled, stored credentials are DPoP-bound. Reading them back with `useDPoP` unset (or `false`) fails with `DPOP_NOT_CONFIGURED`, because the credentials manager is no longer configured to prove possession of the key. Clear the stored credentials and have the user log in again when you turn DPoP off.
 
 ### Making API calls with DPoP
 

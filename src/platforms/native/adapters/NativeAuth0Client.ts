@@ -64,7 +64,7 @@ export class NativeAuth0Client implements IAuth0Client {
     this.configSignature = getConfigSignature(options);
     const baseUrl = `https://${options.domain}`;
     this.baseUrl = baseUrl;
-    const useDPoP = options.useDPoP ?? true;
+    const useDPoP = options.useDPoP ?? false;
     this.tokenType = useDPoP ? TokenType.dpop : TokenType.bearer;
 
     this.httpClient = new HttpClient({
@@ -116,7 +116,7 @@ export class NativeAuth0Client implements IAuth0Client {
       clientId,
       domain,
       localAuthenticationOptions,
-      useDPoP = true,
+      useDPoP = false,
       maxRetries,
       credentialsManagerStorageKey,
     } = options;

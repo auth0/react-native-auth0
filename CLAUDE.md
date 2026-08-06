@@ -105,14 +105,14 @@ react-native-auth0/
 - Edit generated output: `lib/`, `docs/`, `coverage/`, `node_modules/`, `ios/build/`, `android/build/`, `example/**/build/`, Pods.
 - Hand-edit `yarn.lock`.
 - Remove or skip failing tests without fixing the underlying cause.
-- Disable PKCE or DPoP (both on by default).
+- Disable PKCE (on by default), or change the DPoP default without approval.
 
 ---
 
 ## Security Considerations
 
 - **PKCE:** enabled by default — never disable.
-- **DPoP:** enabled by default (since v5.1.0).
+- **DPoP:** opt-in via `useDPoP: true` (was on by default in v5.1.0–v5.x; defaults to `false` from v6).
 - **Secure storage:** iOS Keychain (SimpleKeychain) / Android EncryptedSharedPreferences; optional biometric protection with device-credential fallback.
 - **Token handling:** never log tokens; treat access/refresh/ID tokens as sensitive throughout.
 - **Static analysis:** Snyk (`.snyk`) and Semgrep (`.semgrepignore`) run in CI via `sca_scan.yml` — don't add ignore entries to suppress findings without approval.

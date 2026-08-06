@@ -83,7 +83,7 @@ export class WebAuth0Client implements IAuth0Client {
   constructor(options: WebAuth0Options) {
     const baseUrl = `https://${options.domain}`;
     this.baseUrl = baseUrl;
-    const useDPoP = options.useDPoP ?? true;
+    const useDPoP = options.useDPoP ?? false;
     this.tokenType = useDPoP ? TokenType.dpop : TokenType.bearer;
 
     this.httpClient = new HttpClient({
@@ -100,7 +100,7 @@ export class WebAuth0Client implements IAuth0Client {
       // MRRT requires refresh tokens to work - automatically enable if useMrrt is true
       useRefreshTokens: options.useRefreshTokens ?? options.useMrrt ?? false,
       useRefreshTokensFallback: options.useRefreshTokensFallback ?? true,
-      useDpop: options.useDPoP ?? true,
+      useDpop: useDPoP,
       authorizationParams: {
         redirect_uri:
           typeof window !== 'undefined' ? window.location.origin : '',

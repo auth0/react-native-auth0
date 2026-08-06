@@ -250,7 +250,7 @@ describe('NativeBridgeManager', () => {
         'client-id',
         'tenant-a.auth0.com',
         undefined, // localAuthenticationOptions
-        true, // useDPoP default
+        false, // useDPoP default
         0, // maxRetries default
         undefined // credentialsManagerStorageKey
       );

@@ -86,17 +86,46 @@ v6 adopts **Auth0.swift 3.0.1**, which is built with the **Swift 6** compiler.
 2. Run `pod install --repo-update` in your `ios` directory to pick up Auth0.swift 3.0.1.
 3. Use **Xcode 16** or later.
 
-> See §7 for the public-API changes that come with these native majors.
+> See §8 for the public-API changes that come with these native majors.
 
-### 5. Behavioral default shifts under native delegation ⏳
+### 5. DPoP is now opt-in ✅
+
+`useDPoP` now defaults to **`false`**. In v5.1.0–v5.x it defaulted to `true`, which meant every app got DPoP-bound tokens whether or not DPoP was enabled for the application in the Auth0 Dashboard. Since DPoP has to be turned on tenant-side to be useful, it is now something you opt into explicitly.
+
+**✅ Action Required:** if you rely on DPoP, set it explicitly:
+
+```diff
+  const auth0 = new Auth0({
+    domain: 'YOUR_AUTH0_DOMAIN',
+    clientId: 'YOUR_AUTH0_CLIENT_ID',
++   useDPoP: true,
+  });
+```
+
+If you never set `useDPoP` and don't need DPoP, no change is required — you will simply get Bearer tokens.
+
+> **Warning — existing sessions:** credentials saved by a DPoP-enabled v5 app are DPoP-bound. If you upgrade without setting `useDPoP: true`, the credentials manager is no longer configured to prove possession of the key, and reading those stored credentials fails with `DPOP_NOT_CONFIGURED` (`CredentialsManagerErrorCodes.DPOP_NOT_CONFIGURED`). Either set `useDPoP: true` to keep those sessions working, or clear the stored credentials and have the user log in again:
+>
+> ```js
+> try {
+>   const credentials = await auth0.credentialsManager.getCredentials();
+> } catch (e) {
+>   if (e.type === 'DPOP_NOT_CONFIGURED') {
+>     await auth0.credentialsManager.clearCredentials();
+>     // Send the user through authorize() again.
+>   }
+> }
+> ```
+
+### 6. Behavioral default shifts under native delegation ⏳
 
 _Planned — lands with full native auth delegation._ Routing all authentication through the native SDKs changes some defaults (e.g. `scope` gains `offline_access`, `minTTL` defaults to `60`, default connection names). Each shift and the action required will be documented here when that workstream merges.
 
-### 6. Management API (`users()`) removal ⏳
+### 7. Management API (`users()`) removal ⏳
 
 _Planned._ The client-side Management API wrapper (`auth0.users(...)`) is being removed in v6, mirroring both native SDKs. Migrate Management operations to a backend/BFF. Full guidance will be added here.
 
-### 7. Native SDK API alignment (Auth0.Android v4 / Auth0.swift v3) ✅
+### 8. Native SDK API alignment (Auth0.Android v4 / Auth0.swift v3) ✅
 
 Adopting the new native SDK majors changes two parts of the public surface.
 
