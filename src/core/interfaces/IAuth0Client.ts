@@ -57,6 +57,9 @@ export interface IAuth0Client {
    * @param token An access token with the required permissions for the management operations.
    * @param tokenType Optional token type ('Bearer' or 'DPoP'). Defaults to the client's configured token type.
    * @returns An `IUsersClient` instance configured with the provided token.
+   *
+   * @deprecated Will be removed in v6. Move Management API operations to a backend
+   * you control (a BFF).
    */
   users(token: string, tokenType?: TokenType): IUsersClient;
 

@@ -824,6 +824,10 @@ If you were not explicitly configuring biometric authentication before, the new 
 
 ## Management API (Users)
 
+> **Deprecated — will be removed in v6.** Calling the Management API from a client requires an access token with over-privileged scopes (`read:current_user`, `update:current_user_metadata`) that cannot be kept secret in a mobile app or a browser. Move these operations to a backend you control (a BFF): your app sends its own access token, the backend validates it and calls the Management API with its own credentials. Both native SDKs have already dropped their Management clients.
+>
+> Reading the current user's profile does **not** need the Management API — use `auth0.auth.userInfo({ token })`, or the `user` object from `useAuth0()`, which is decoded from the ID token.
+
 ### Patch user with user_metadata
 
 ```js

@@ -1107,6 +1107,8 @@ export interface Factor {
 /**
  * Parameters for patching a user's metadata via the Management API.
  * Requires an access token with `update:current_user_metadata` scope.
+ *
+ * @deprecated Will be removed in v6, along with `Auth0.users()`.
  */
 export interface PatchUserParameters {
   /** The ID of the user to update (e.g., `auth0|12345`). */
@@ -1118,6 +1120,8 @@ export interface PatchUserParameters {
 /**
  * Parameters for retrieving a user's full profile from the Management API.
  * Requires an access token with `read:current_user` scope.
+ *
+ * @deprecated Will be removed in v6, along with `Auth0.users()`.
  */
 export interface GetUserParameters {
   /** The ID of the user to retrieve. */

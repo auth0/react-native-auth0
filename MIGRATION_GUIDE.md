@@ -41,6 +41,24 @@ The same applies to the `useAuth0()` hook: `authorizeWithOTP`, `authorizeWithOOB
 > });
 > ```
 
+### Management API (`users()`)
+
+`auth0.users(token)`, along with `getUser()` and `patchUser()`, is deprecated. Calling the Management API from a client requires an access token with over-privileged scopes (`read:current_user`, `update:current_user_metadata`) that cannot be kept secret in a mobile app or a browser. Auth0.swift and Auth0.Android have already removed their Management clients.
+
+**Recommended:** move these operations to a backend-for-frontend. Your app sends its own access token; the backend validates it and calls the Management API with its own credentials.
+
+```diff
+- const profile = await auth0.users(accessToken).getUser({ id: user.sub });
++ const res = await fetch('https://your-api.example.com/me', {
++   headers: { Authorization: `Bearer ${accessToken}` },
++ });
++ const profile = await res.json();
+```
+
+For `user_metadata` updates, expose an endpoint on your backend that performs the patch after authorizing the request.
+
+> If you only used `getUser()` to read the signed-in user's profile, you don't need a backend at all. `auth0.auth.userInfo({ token })` calls `/userinfo` with a normal access token, and the `user` object from `useAuth0()` is decoded from the ID token.
+
 ## Upgrading from v4 -> v5
 
 Version 5.0 of `react-native-auth0` is a significant update featuring a complete architectural overhaul. This new foundation improves performance, maintainability, and provides a more consistent API across all platforms.

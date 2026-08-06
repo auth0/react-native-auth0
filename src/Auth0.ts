@@ -103,8 +103,17 @@ class Auth0 {
    * Provides access to the Management API (e.g., for user patching).
    * @param token An access token with the required permissions for the management operations.
    * @param tokenType Optional token type ('Bearer' or 'DPoP'). Defaults to the client's configured token type.
+   *
+   * @deprecated Will be removed in v6. Calling the Management API from a client
+   * requires an over-privileged token that cannot be kept secret in a mobile app
+   * or browser, so move these operations to a backend you control (a BFF). To read
+   * the current user's profile, use {@link Auth0.auth}'s `userInfo()` or the `user`
+   * object from `useAuth0()` instead — neither needs the Management API.
    */
   users(token: string, tokenType?: TokenType) {
+    console.warn(
+      '`users()` is deprecated and will be removed in v6. Move Management API calls to a backend you control. To read the current user profile, use `auth.userInfo()` or the `user` object from `useAuth0()`.'
+    );
     return this.client.users(token, tokenType);
   }
 
