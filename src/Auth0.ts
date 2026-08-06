@@ -1,6 +1,5 @@
 import type { IAuth0Client } from './core/interfaces/IAuth0Client';
 import type { IMfaClient } from './core/interfaces/IMfaClient';
-import type { TokenType } from './types/common';
 import { Auth0ClientFactory } from './factory/Auth0ClientFactory';
 import type {
   Auth0Options,
@@ -97,15 +96,6 @@ class Auth0 {
    */
   get passwordless() {
     return this.client.passwordless;
-  }
-
-  /**
-   * Provides access to the Management API (e.g., for user patching).
-   * @param token An access token with the required permissions for the management operations.
-   * @param tokenType Optional token type ('Bearer' or 'DPoP'). Defaults to the client's configured token type.
-   */
-  users(token: string, tokenType?: TokenType) {
-    return this.client.users(token, tokenType);
   }
 
   /**

@@ -3,7 +3,6 @@ import type {
   IAuthenticationProvider,
   IMyAccountClient,
   IPasswordlessClient,
-  IUsersClient,
   IMfaClient,
 } from '../../../core/interfaces';
 import type { NativeAuth0Options } from '../../../types/platform-specific';
@@ -22,10 +21,7 @@ import { NativeMfaClient } from './NativeMfaClient';
 import { NativeMyAccountClient } from './NativeMyAccountClient';
 import { NativePasswordlessClient } from './NativePasswordlessClient';
 import { type INativeBridge, NativeBridgeManager } from '../bridge';
-import {
-  AuthenticationOrchestrator,
-  ManagementApiOrchestrator,
-} from '../../../core/services';
+import { AuthenticationOrchestrator } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
 import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
@@ -45,14 +41,10 @@ export class NativeAuth0Client implements IAuth0Client {
   private readonly httpClient: HttpClient;
   private readonly tokenType: TokenType;
   private readonly bridge: INativeBridge;
-  private readonly baseUrl: string;
   private readonly options: NativeAuth0Options;
   private readonly configSignature: string;
   private syncLock: Promise<void> = Promise.resolve();
   private guardedBridge!: INativeBridge;
-  private readonly getDPoPHeadersForOrchestrator?: (
-    params: DPoPHeadersParams
-  ) => Promise<Record<string, string>>;
 
   // Signature last applied to the shared native singleton. `hasValidInstance`
   // only checks domain/clientId, so this tracks other identity options
@@ -63,7 +55,6 @@ export class NativeAuth0Client implements IAuth0Client {
     this.options = options;
     this.configSignature = getConfigSignature(options);
     const baseUrl = `https://${options.domain}`;
-    this.baseUrl = baseUrl;
     const useDPoP = options.useDPoP ?? false;
     this.tokenType = useDPoP ? TokenType.dpop : TokenType.bearer;
 
@@ -81,9 +72,6 @@ export class NativeAuth0Client implements IAuth0Client {
       await this.ready;
       return this.bridge.getDPoPHeaders(params);
     };
-    this.getDPoPHeadersForOrchestrator = useDPoP
-      ? getDPoPHeadersForOrchestrator
-      : undefined;
 
     this.ready = this.initialize(bridge, options);
 
@@ -151,24 +139,6 @@ export class NativeAuth0Client implements IAuth0Client {
       .catch(() => undefined)
       .then(() => this.initialize(this.bridge, this.options));
     return this.syncLock;
-  }
-
-  users(token: string, tokenType?: TokenType): IUsersClient {
-    // Use provided tokenType or fall back to client's default
-    const effectiveTokenType = tokenType ?? this.tokenType;
-    // Only provide getDPoPHeaders if the effective token type is DPoP
-    const getDPoPHeaders =
-      effectiveTokenType === TokenType.dpop
-        ? this.getDPoPHeadersForOrchestrator
-        : undefined;
-
-    return new ManagementApiOrchestrator({
-      token: token,
-      httpClient: this.httpClient,
-      tokenType: effectiveTokenType,
-      baseUrl: this.baseUrl,
-      getDPoPHeaders,
-    });
   }
 
   readonly myAccount: IMyAccountClient;

@@ -30,9 +30,6 @@
     - [Android](#android)
     - [iOS](#ios)
   - [Migration from Previous Behavior](#migration-from-previous-behavior)
-- [Management API (Users)](#management-api-users)
-  - [Patch user with user_metadata](#patch-user-with-user_metadata)
-  - [Get full user profile](#get-full-user-profile)
 - [Organizations](#organizations)
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
@@ -810,33 +807,6 @@ const credentials = await auth0.credentialsManager.getCredentials();
 ### Migration from Previous Behavior
 
 If you were not explicitly configuring biometric authentication before, the new `BiometricPolicy.default` maintains backward-compatible behavior. To enforce stricter biometric requirements, switch to `BiometricPolicy.always`.
-
-## Management API (Users)
-
-### Patch user with user_metadata
-
-```js
-auth0
-  .users('the user access_token')
-  .patchUser({
-    id: 'user_id',
-    metadata: { first_name: 'John', last_name: 'Doe' },
-  })
-  .then(console.log)
-  .catch(console.error);
-```
-
-### Get full user profile
-
-```js
-auth0
-  .users('{ACCESS_TOKEN}')
-  .getUser({ id: 'user_id' })
-  .then(console.log)
-  .catch(console.error);
-```
-
-For more info please check our generated [documentation](https://auth0.github.io/react-native-auth0/index.html)
 
 ## Organizations
 
