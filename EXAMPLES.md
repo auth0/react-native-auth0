@@ -187,11 +187,22 @@ authorize({}, { customScheme: 'YOUR_AUTH0_DOMAIN' })
 
 ### Login using MFA with One Time Password code
 
+> **Deprecated — will be removed in v6.** The MFA methods on the auth client (`auth.loginWithOTP`, `auth.loginWithOOB`, `auth.loginWithRecoveryCode`, `auth.multifactorChallenge`) are superseded by the [`mfa` client](#mfa-flexible-factors-grant), which also lets you list and enrol authenticators. See the mapping table in the [Migration Guide](MIGRATION_GUIDE.md#mfa-methods-on-the-auth-client).
+
 This call requires the client to have the _MFA_ Client Grant Type enabled. Check [this article](https://auth0.com/docs/clients/client-grant-types) to learn how to enable it.
 
-When you sign in to a multifactor authentication enabled connection using the `passwordRealm` method, you receive an error stating that MFA is required for that user along with an `mfa_token` value. Use this value to call `loginWithOTP` and complete the MFA flow passing the One Time Password from the enrolled MFA code generator app.
+When you sign in to a multifactor authentication enabled connection using the `passwordRealm` method, you receive an error stating that MFA is required for that user along with an `mfa_token` value. Use this value to complete the MFA flow, passing the One Time Password from the enrolled MFA code generator app.
 
 ```js
+// Recommended: the `mfa` client
+const credentials = await auth0.mfa.verify({
+  mfaToken: error.json.mfa_token,
+  otp: '{user entered OTP}',
+});
+```
+
+```js
+// Deprecated: removed in v6
 auth0.auth
   .loginWithOTP({
     mfaToken: error.json.mfa_token,

@@ -292,7 +292,13 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
     return CredentialsModel.fromResponse(json);
   }
 
+  /**
+   * @deprecated Will be removed in v6. Use `auth0.mfa.verify({ mfaToken, otp })`.
+   */
   async loginWithOTP(parameters: LoginOtpParameters): Promise<Credentials> {
+    console.warn(
+      '`auth.loginWithOTP()` is deprecated and will be removed in v6. Use `mfa.verify({ mfaToken, otp })` instead.'
+    );
     validateParameters(parameters, ['mfaToken', 'otp']);
     const { headers, ...payload } = parameters;
     const body = {
@@ -311,7 +317,14 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
     return CredentialsModel.fromResponse(json);
   }
 
+  /**
+   * @deprecated Will be removed in v6. Use
+   * `auth0.mfa.verify({ mfaToken, oobCode, bindingCode })`.
+   */
   async loginWithOOB(parameters: LoginOobParameters): Promise<Credentials> {
+    console.warn(
+      '`auth.loginWithOOB()` is deprecated and will be removed in v6. Use `mfa.verify({ mfaToken, oobCode, bindingCode })` instead.'
+    );
     validateParameters(parameters, ['mfaToken', 'oobCode']);
     const { headers, ...payload } = parameters;
     const body = {
@@ -331,9 +344,16 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
     return CredentialsModel.fromResponse(json);
   }
 
+  /**
+   * @deprecated Will be removed in v6. Use
+   * `auth0.mfa.verify({ mfaToken, recoveryCode })`.
+   */
   async loginWithRecoveryCode(
     parameters: LoginRecoveryCodeParameters
   ): Promise<Credentials> {
+    console.warn(
+      '`auth.loginWithRecoveryCode()` is deprecated and will be removed in v6. Use `mfa.verify({ mfaToken, recoveryCode })` instead.'
+    );
     validateParameters(parameters, ['mfaToken', 'recoveryCode']);
     const { headers, ...payload } = parameters;
     const body = {
@@ -352,9 +372,17 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
     return CredentialsModel.fromResponse(json);
   }
 
+  /**
+   * @deprecated Will be removed in v6. Use
+   * `auth0.mfa.challenge({ mfaToken, authenticatorId })`, where `authenticatorId`
+   * is required — list them with `auth0.mfa.getAuthenticators({ mfaToken })`.
+   */
   async multifactorChallenge(
     parameters: MfaChallengeParameters
   ): Promise<MfaChallengeResponse> {
+    console.warn(
+      '`auth.multifactorChallenge()` is deprecated and will be removed in v6. Use `mfa.challenge({ mfaToken, authenticatorId })` instead; list authenticators with `mfa.getAuthenticators({ mfaToken })`.'
+    );
     validateParameters(parameters, ['mfaToken']);
     const { headers, ...payload } = parameters;
     const body = {
