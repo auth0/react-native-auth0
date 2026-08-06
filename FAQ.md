@@ -500,7 +500,7 @@ DPoP is **opt-in** (`useDPoP` defaults to `false`), since it also has to be enab
 - ✅ You handle sensitive data or financial transactions
 - ✅ You want best-in-class security practices
 - ✅ Your users access the app from multiple devices (DPoP helps prevent cross-device token abuse)
-- ⚠️ **Note**: Existing users with Bearer tokens will need to log in again to get DPoP tokens (see [FAQ #13](#13-how-do-i-migrate-existing-users-to-dpop))
+- ⚠️ **Note**: Existing users with Bearer tokens will need to log in again to get DPoP tokens (see [FAQ #14](#14-how-do-i-migrate-existing-users-to-dpop))
 
 **How to enable it:**
 
