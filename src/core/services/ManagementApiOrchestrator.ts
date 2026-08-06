@@ -15,6 +15,9 @@ import { deepCamelCase } from '../utils';
 
 /**
  * Orchestrates interactions with the Auth0 Management API's user endpoints.
+ *
+ * @deprecated Will be removed in v6, along with `Auth0.users()`. Move Management API
+ * operations to a backend you control (a BFF).
  */
 export class ManagementApiOrchestrator implements IUsersClient {
   private readonly client: HttpClient;

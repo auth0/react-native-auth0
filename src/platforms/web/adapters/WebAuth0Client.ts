@@ -143,6 +143,10 @@ export class WebAuth0Client implements IAuth0Client {
     );
   }
 
+  /**
+   * @deprecated Will be removed in v6. Move Management API operations to a backend
+   * you control (a BFF).
+   */
   users(token: string, tokenType?: TokenType): IUsersClient {
     // Use provided tokenType or fall back to client's default
     const effectiveTokenType = tokenType ?? this.tokenType;
