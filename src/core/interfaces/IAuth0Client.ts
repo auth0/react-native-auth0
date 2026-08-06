@@ -3,11 +3,9 @@ import type { ICredentialsManager } from './ICredentialsManager';
 import type { IAuthenticationProvider } from './IAuthenticationProvider';
 import type { IMyAccountClient } from './IMyAccountClient';
 import type { IPasswordlessClient } from './IPasswordlessClient';
-import type { IUsersClient } from './IUsersClient';
 import type { IMfaClient } from './IMfaClient';
 import type {
   DPoPHeadersParams,
-  TokenType,
   CustomTokenExchangeParameters,
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
@@ -50,15 +48,6 @@ export interface IAuth0Client {
    * @remarks Native only (iOS, Android). Not supported on web.
    */
   readonly passwordless: IPasswordlessClient;
-
-  /**
-   * Creates a client for interacting with the Auth0 Management API's user endpoints.
-   *
-   * @param token An access token with the required permissions for the management operations.
-   * @param tokenType Optional token type ('Bearer' or 'DPoP'). Defaults to the client's configured token type.
-   * @returns An `IUsersClient` instance configured with the provided token.
-   */
-  users(token: string, tokenType?: TokenType): IUsersClient;
 
   /**
    * Generates DPoP headers for making authenticated requests to custom APIs.

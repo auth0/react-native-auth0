@@ -41,7 +41,7 @@ react-native-auth0/
 │   ├── core/                  # Platform-agnostic core
 │   │   ├── interfaces/        # Contracts every platform implements (IAuth0Client, …)
 │   │   ├── models/            # Credentials, Auth0User, AuthError hierarchy
-│   │   ├── services/          # HttpClient, Authentication/ManagementApi orchestrators
+│   │   ├── services/          # HttpClient, AuthenticationOrchestrator
 │   │   └── utils/             # scope, validation, telemetry, deepCamelCase
 │   ├── factory/               # Auth0ClientFactory(.web).ts — bundler-selected client
 │   ├── platforms/native/      # iOS/Android adapters + native bridge

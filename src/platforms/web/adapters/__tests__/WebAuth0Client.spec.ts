@@ -3,10 +3,7 @@ import { WebAuth0Client } from '../WebAuth0Client';
 import { WebWebAuthProvider } from '../WebWebAuthProvider';
 import { WebCredentialsManager } from '../WebCredentialsManager';
 import { WebMyAccountClient } from '../WebMyAccountClient';
-import {
-  AuthenticationOrchestrator,
-  ManagementApiOrchestrator,
-} from '../../../../core/services';
+import { AuthenticationOrchestrator } from '../../../../core/services';
 import { HttpClient } from '../../../../core/services/HttpClient';
 
 // Mock all dependencies
@@ -14,7 +11,6 @@ jest.mock('@auth0/auth0-spa-js');
 jest.mock('../WebWebAuthProvider');
 jest.mock('../WebCredentialsManager');
 jest.mock('../../../../core/services/AuthenticationOrchestrator');
-jest.mock('../../../../core/services/ManagementApiOrchestrator');
 jest.mock('../../../../core/services/HttpClient');
 
 // Mock AuthError and AuthenticationException properly to support inheritance
@@ -110,10 +106,6 @@ const MockAuthenticationOrchestrator =
   AuthenticationOrchestrator as jest.MockedClass<
     typeof AuthenticationOrchestrator
   >;
-const MockManagementApiOrchestrator =
-  ManagementApiOrchestrator as jest.MockedClass<
-    typeof ManagementApiOrchestrator
-  >;
 const MockHttpClient = HttpClient as jest.MockedClass<typeof HttpClient>;
 
 describe('WebAuth0Client', () => {
@@ -167,7 +159,6 @@ describe('WebAuth0Client', () => {
     MockAuth0Client.mockImplementation(() => mockSpaClient);
     MockHttpClient.mockImplementation(() => mockHttpClient);
     MockAuthenticationOrchestrator.mockImplementation(() => ({}) as any);
-    MockManagementApiOrchestrator.mockImplementation(() => ({}) as any);
     MockWebWebAuthProvider.mockImplementation(() => ({}) as any);
     MockWebCredentialsManager.mockImplementation(() => ({}) as any);
 
@@ -271,66 +262,6 @@ describe('WebAuth0Client', () => {
     });
   });
 
-  describe('users method', () => {
-    // DPoP is opt-in, so build a DPoP-enabled client to keep covering that path.
-    let dpopClient: WebAuth0Client;
-
-    beforeEach(() => {
-      dpopClient = new WebAuth0Client({ ...defaultOptions, useDPoP: true });
-      MockManagementApiOrchestrator.mockClear();
-    });
-
-    it('should create and return ManagementApiOrchestrator instance', () => {
-      const token = 'access_token_123';
-      const usersClient = dpopClient.users(token);
-
-      expect(MockManagementApiOrchestrator).toHaveBeenCalledWith({
-        token,
-        httpClient: mockHttpClient,
-        tokenType: 'DPoP',
-        baseUrl: `https://${defaultOptions.domain}`,
-        getDPoPHeaders: expect.any(Function),
-      });
-      expect(usersClient).toBeDefined();
-    });
-
-    it('should default to Bearer when DPoP is not enabled', () => {
-      client.users('access_token_123');
-
-      expect(MockManagementApiOrchestrator).toHaveBeenCalledWith({
-        token: 'access_token_123',
-        httpClient: mockHttpClient,
-        tokenType: 'Bearer',
-        baseUrl: `https://${defaultOptions.domain}`,
-        getDPoPHeaders: undefined,
-      });
-    });
-
-    it('should create new instance for each call', () => {
-      const token1 = 'token1';
-      const token2 = 'token2';
-
-      dpopClient.users(token1);
-      dpopClient.users(token2);
-
-      expect(MockManagementApiOrchestrator).toHaveBeenCalledTimes(2);
-      expect(MockManagementApiOrchestrator).toHaveBeenNthCalledWith(1, {
-        token: token1,
-        httpClient: mockHttpClient,
-        tokenType: 'DPoP',
-        baseUrl: `https://${defaultOptions.domain}`,
-        getDPoPHeaders: expect.any(Function),
-      });
-      expect(MockManagementApiOrchestrator).toHaveBeenNthCalledWith(2, {
-        token: token2,
-        httpClient: mockHttpClient,
-        tokenType: 'DPoP',
-        baseUrl: `https://${defaultOptions.domain}`,
-        getDPoPHeaders: expect.any(Function),
-      });
-    });
-  });
-
   describe('logout method', () => {
     beforeEach(() => {
       // Reset logout mock before each test
@@ -403,15 +334,7 @@ describe('WebAuth0Client', () => {
           httpClient: mockHttpClient,
         })
       );
-
-      const token = 'test_token';
-      client.users(token);
-
-      expect(MockManagementApiOrchestrator).toHaveBeenCalledWith(
-        expect.objectContaining({
-          httpClient: mockHttpClient,
-        })
-      );
+      expect(MockHttpClient).toHaveBeenCalledTimes(1);
     });
 
     it('should pass the same SPA client instance to all web adapters', () => {

@@ -8,7 +8,6 @@ import type {
   IAuthenticationProvider,
   IMyAccountClient,
   IPasswordlessClient,
-  IUsersClient,
   IMfaClient,
 } from '../../../core/interfaces';
 import type { WebAuth0Options } from '../../../types/platform-specific';
@@ -27,10 +26,7 @@ import { WebMfaClient } from './WebMfaClient';
 import { WebMyAccountClient } from './WebMyAccountClient';
 import { WebPasswordlessClient } from './WebPasswordlessClient';
 import { ssoExchangeNotSupported } from './WebAuthenticationProvider';
-import {
-  AuthenticationOrchestrator,
-  ManagementApiOrchestrator,
-} from '../../../core/services';
+import { AuthenticationOrchestrator } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
 import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
@@ -48,10 +44,6 @@ export class WebAuth0Client implements IAuth0Client {
 
   private readonly httpClient: HttpClient;
   private readonly tokenType: TokenType;
-  private readonly baseUrl: string;
-  private readonly getDPoPHeadersForOrchestrator?: (
-    params: DPoPHeadersParams
-  ) => Promise<Record<string, string>>;
   public readonly client: Auth0Client;
   private static spaClient: Auth0Client | null = null;
 
@@ -82,7 +74,6 @@ export class WebAuth0Client implements IAuth0Client {
 
   constructor(options: WebAuth0Options) {
     const baseUrl = `https://${options.domain}`;
-    this.baseUrl = baseUrl;
     const useDPoP = options.useDPoP ?? false;
     this.tokenType = useDPoP ? TokenType.dpop : TokenType.bearer;
 
@@ -116,9 +107,6 @@ export class WebAuth0Client implements IAuth0Client {
     const getDPoPHeadersForOrchestrator = async (params: DPoPHeadersParams) => {
       return this.getDPoPHeaders(params);
     };
-    this.getDPoPHeadersForOrchestrator = useDPoP
-      ? getDPoPHeadersForOrchestrator
-      : undefined;
 
     const orchestrator = new AuthenticationOrchestrator({
       clientId: options.clientId,
@@ -141,24 +129,6 @@ export class WebAuth0Client implements IAuth0Client {
       options.domain,
       useDPoP
     );
-  }
-
-  users(token: string, tokenType?: TokenType): IUsersClient {
-    // Use provided tokenType or fall back to client's default
-    const effectiveTokenType = tokenType ?? this.tokenType;
-    // Only provide getDPoPHeaders if the effective token type is DPoP
-    const getDPoPHeaders =
-      effectiveTokenType === TokenType.dpop
-        ? this.getDPoPHeadersForOrchestrator
-        : undefined;
-
-    return new ManagementApiOrchestrator({
-      token: token,
-      httpClient: this.httpClient,
-      tokenType: effectiveTokenType,
-      baseUrl: this.baseUrl,
-      getDPoPHeaders,
-    });
   }
 
   readonly passwordless: IPasswordlessClient = new WebPasswordlessClient();

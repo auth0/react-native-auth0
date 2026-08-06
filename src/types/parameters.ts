@@ -1101,25 +1101,3 @@ export interface Factor {
   /** Usage classification (e.g., ["mfa"], ["first_factor", "mfa"]). */
   usage?: string[];
 }
-
-// ========= User Management & Profile Parameters =========
-
-/**
- * Parameters for patching a user's metadata via the Management API.
- * Requires an access token with `update:current_user_metadata` scope.
- */
-export interface PatchUserParameters {
-  /** The ID of the user to update (e.g., `auth0|12345`). */
-  id: string;
-  /** An object containing the metadata to set or update. */
-  metadata: Record<string, any>;
-}
-
-/**
- * Parameters for retrieving a user's full profile from the Management API.
- * Requires an access token with `read:current_user` scope.
- */
-export interface GetUserParameters {
-  /** The ID of the user to retrieve. */
-  id: string;
-}

@@ -121,9 +121,25 @@ If you never set `useDPoP` and don't need DPoP, no change is required — you wi
 
 _Planned — lands with full native auth delegation._ Routing all authentication through the native SDKs changes some defaults (e.g. `scope` gains `offline_access`, `minTTL` defaults to `60`, default connection names). Each shift and the action required will be documented here when that workstream merges.
 
-### 7. Management API (`users()`) removal ⏳
+### 7. Management API (`users()`) removed ✅
 
-_Planned._ The client-side Management API wrapper (`auth0.users(...)`) is being removed in v6, mirroring both native SDKs. Migrate Management operations to a backend/BFF. Full guidance will be added here.
+The client-side Management API wrapper is gone. `auth0.users(token)` — and with it `getUser()` and `patchUser()` — has been removed, mirroring Auth0.swift v3 and Auth0.Android v4, which both dropped their Management clients. The `IUsersClient` type and the `GetUserParameters` / `PatchUserParameters` types are no longer exported.
+
+Calling the Management API from a client requires an access token with broad, over-privileged scopes (`read:current_user`, `update:current_user_metadata`), which cannot be kept secret in a mobile app or browser. Management operations belong on a server you control.
+
+**✅ Action Required:** move these calls to a backend-for-frontend (BFF). Your app sends its own access token to your backend; the backend validates it, then calls the Management API with its own credentials.
+
+```diff
+- const profile = await auth0.users(accessToken).getUser({ id: user.sub });
++ const res = await fetch('https://your-api.example.com/me', {
++   headers: { Authorization: `Bearer ${accessToken}` },
++ });
++ const profile = await res.json();
+```
+
+For updating `user_metadata`, expose an endpoint on your backend that performs the patch after authorizing the request.
+
+> Reading the current user's profile does **not** need the Management API. `auth0.auth.userInfo({ token })` calls `/userinfo` and works with a normal access token, and the `user` object from `useAuth0()` is decoded from the ID token.
 
 ### 8. Native SDK API alignment (Auth0.Android v4 / Auth0.swift v3) ✅
 
