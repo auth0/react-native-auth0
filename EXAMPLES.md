@@ -830,6 +830,23 @@ If you were not explicitly configuring biometric authentication before, the new 
 
 ### Patch user with user_metadata
 
+**Recommended —** update metadata through your own backend, which holds the Management API credentials:
+
+```js
+const credentials = await auth0.credentialsManager.getCredentials();
+
+await fetch('https://your-api.example.com/me/metadata', {
+  method: 'PATCH',
+  headers: {
+    'Authorization': `Bearer ${credentials.accessToken}`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ first_name: 'John', last_name: 'Doe' }),
+});
+```
+
+**Legacy (v5 only) —** deprecated, and removed in v6:
+
 ```js
 auth0
   .users('the user access_token')
@@ -842,6 +859,18 @@ auth0
 ```
 
 ### Get full user profile
+
+**Recommended —** reading the signed-in user's profile needs no Management API and no backend:
+
+```js
+const credentials = await auth0.credentialsManager.getCredentials();
+const profile = await auth0.auth.userInfo({ token: credentials.accessToken });
+
+// Or, inside a component, the `user` object decoded from the ID token:
+const { user } = useAuth0();
+```
+
+**Legacy (v5 only) —** deprecated, and removed in v6:
 
 ```js
 auth0
