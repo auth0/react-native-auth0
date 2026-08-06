@@ -28,6 +28,13 @@ The same applies to the `useAuth0()` hook: `authorizeWithOTP`, `authorizeWithOOB
 >
 > ```js
 > const authenticators = await auth0.mfa.getAuthenticators({ mfaToken });
+>
+> // A user can reach MFA_REQUIRED with nothing enrolled yet — enrol a factor
+> // with `auth0.mfa.enroll()` before challenging.
+> if (authenticators.length === 0) {
+>   return promptEnrollment();
+> }
+>
 > const challenge = await auth0.mfa.challenge({
 >   mfaToken,
 >   authenticatorId: authenticators[0].id,
