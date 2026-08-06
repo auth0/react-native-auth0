@@ -58,7 +58,7 @@ export class NativeBridgeManager implements INativeBridge {
     clientId: string,
     domain: string,
     localAuthenticationOptions?: LocalAuthenticationOptions,
-    useDPoP: boolean = true,
+    useDPoP: boolean = false,
     maxRetries: number = 0,
     credentialsManagerStorageKey?: string
   ): Promise<void> {

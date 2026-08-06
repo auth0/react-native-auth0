@@ -495,20 +495,20 @@ const credentials = await auth0.credentialsManager.getCredentials(
 
 **Should you enable it?**
 
-DPoP is **enabled by default** (`useDPoP: true`) in this SDK because it provides significant security benefits with minimal impact on the developer experience. However, you should consider:
+DPoP is **opt-in** (`useDPoP` defaults to `false`), since it also has to be enabled for your application in the Auth0 Dashboard. Consider turning it on if:
 
-- ✅ Enable if you handle sensitive data or financial transactions
-- ✅ Enable if you want best-in-class security practices
-- ✅ Enable if your users access the app from multiple devices (DPoP helps prevent cross-device token abuse)
-- ⚠️ **Note**: Existing users with Bearer tokens will need to log in again to get DPoP tokens (see [FAQ #13](#13-how-do-i-migrate-existing-users-to-dpop))
+- ✅ You handle sensitive data or financial transactions
+- ✅ You want best-in-class security practices
+- ✅ Your users access the app from multiple devices (DPoP helps prevent cross-device token abuse)
+- ⚠️ **Note**: Existing users with Bearer tokens will need to log in again to get DPoP tokens (see [FAQ #14](#14-how-do-i-migrate-existing-users-to-dpop))
 
-**How to disable it (if needed):**
+**How to enable it:**
 
 ```javascript
 const auth0 = new Auth0({
   domain: 'YOUR_AUTH0_DOMAIN',
   clientId: 'YOUR_AUTH0_CLIENT_ID',
-  useDPoP: false, // Disable DPoP
+  useDPoP: true, // Enable DPoP
 });
 ```
 

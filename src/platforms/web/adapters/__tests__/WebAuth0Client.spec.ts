@@ -192,13 +192,30 @@ describe('WebAuth0Client', () => {
         expect.objectContaining({
           clientId: defaultOptions.clientId,
           httpClient: mockHttpClient,
-          tokenType: 'DPoP',
+          tokenType: 'Bearer',
           baseUrl: `https://${defaultOptions.domain}`,
         })
       );
 
       expect(MockWebWebAuthProvider).toHaveBeenCalledWith(mockSpaClient);
       expect(MockWebCredentialsManager).toHaveBeenCalledWith(mockSpaClient);
+    });
+
+    it('should use DPoP token type when useDPoP is enabled', () => {
+      MockAuthenticationOrchestrator.mockClear();
+
+      const dpopClient = new WebAuth0Client({
+        ...defaultOptions,
+        useDPoP: true,
+      });
+
+      expect(dpopClient).toBeDefined();
+      expect(MockAuthenticationOrchestrator).toHaveBeenCalledWith(
+        expect.objectContaining({
+          tokenType: 'DPoP',
+          getDPoPHeaders: expect.any(Function),
+        })
+      );
     });
 
     it('should initialize with custom options', () => {
@@ -255,9 +272,17 @@ describe('WebAuth0Client', () => {
   });
 
   describe('users method', () => {
+    // DPoP is opt-in, so build a DPoP-enabled client to keep covering that path.
+    let dpopClient: WebAuth0Client;
+
+    beforeEach(() => {
+      dpopClient = new WebAuth0Client({ ...defaultOptions, useDPoP: true });
+      MockManagementApiOrchestrator.mockClear();
+    });
+
     it('should create and return ManagementApiOrchestrator instance', () => {
       const token = 'access_token_123';
-      const usersClient = client.users(token);
+      const usersClient = dpopClient.users(token);
 
       expect(MockManagementApiOrchestrator).toHaveBeenCalledWith({
         token,
@@ -269,14 +294,24 @@ describe('WebAuth0Client', () => {
       expect(usersClient).toBeDefined();
     });
 
-    it('should create new instance for each call', () => {
-      MockManagementApiOrchestrator.mockClear();
+    it('should default to Bearer when DPoP is not enabled', () => {
+      client.users('access_token_123');
 
+      expect(MockManagementApiOrchestrator).toHaveBeenCalledWith({
+        token: 'access_token_123',
+        httpClient: mockHttpClient,
+        tokenType: 'Bearer',
+        baseUrl: `https://${defaultOptions.domain}`,
+        getDPoPHeaders: undefined,
+      });
+    });
+
+    it('should create new instance for each call', () => {
       const token1 = 'token1';
       const token2 = 'token2';
 
-      client.users(token1);
-      client.users(token2);
+      dpopClient.users(token1);
+      dpopClient.users(token2);
 
       expect(MockManagementApiOrchestrator).toHaveBeenCalledTimes(2);
       expect(MockManagementApiOrchestrator).toHaveBeenNthCalledWith(1, {
@@ -470,17 +505,21 @@ describe('WebAuth0Client', () => {
     });
 
     it('should use client tokenType as fallback when response token_type is missing', async () => {
+      const dpopClient = new WebAuth0Client({
+        ...defaultOptions,
+        useDPoP: true,
+      });
       mockSpaClient.loginWithCustomTokenExchange.mockResolvedValueOnce({
         ...mockExchangeResponse,
         token_type: undefined,
       });
 
-      const result = await client.customTokenExchange({
+      const result = await dpopClient.customTokenExchange({
         subjectToken: 'external-token',
         subjectTokenType: 'urn:acme:legacy-token',
       });
 
-      // Should use client's default tokenType (DPoP)
+      // Should use client's configured tokenType (DPoP)
       expect(result.tokenType).toBe('DPoP');
     });
 

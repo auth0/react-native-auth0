@@ -118,7 +118,7 @@ describe('NativeAuth0Client', () => {
       options.clientId,
       options.domain,
       undefined, // No local auth options provided in this test
-      true, // useDPoP defaults to true
+      false, // useDPoP defaults to false
       undefined, // maxRetries not provided
       undefined // credentialsManagerStorageKey not provided
     );
@@ -140,7 +140,7 @@ describe('NativeAuth0Client', () => {
       options.clientId,
       options.domain,
       undefined,
-      true,
+      false,
       undefined,
       'tenant-b'
     );
@@ -161,7 +161,7 @@ describe('NativeAuth0Client', () => {
       options.clientId,
       options.domain,
       localAuthOptions,
-      true, // useDPoP defaults to true
+      false, // useDPoP defaults to false
       undefined, // maxRetries not provided
       undefined // credentialsManagerStorageKey not provided
     );
@@ -684,7 +684,7 @@ describe('NativeAuth0Client', () => {
         options.clientId,
         options.domain,
         undefined,
-        true,
+        false,
         undefined,
         undefined
       );
