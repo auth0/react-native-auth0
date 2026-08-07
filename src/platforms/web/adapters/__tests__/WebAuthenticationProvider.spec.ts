@@ -197,83 +197,6 @@ describe('UnimplementedWebAuthenticationProvider', () => {
     });
   });
 
-  describe('loginWithOTP', () => {
-    it('should reject with NotImplemented error', async () => {
-      const parameters = {
-        mfaToken: 'mfa_token_123',
-        otp: '123456',
-      };
-
-      await expect(
-        UnimplementedWebAuthenticationProvider.loginWithOTP(parameters)
-      ).rejects.toThrow(AuthError);
-      await expect(
-        UnimplementedWebAuthenticationProvider.loginWithOTP(parameters)
-      ).rejects.toMatchObject({
-        name: 'NotImplemented',
-        message: webAuthNotSupported,
-      });
-    });
-  });
-
-  describe('loginWithOOB', () => {
-    it('should reject with NotImplemented error', async () => {
-      const parameters = {
-        mfaToken: 'mfa_token_123',
-        oobCode: 'oob_code_123',
-        bindingCode: 'binding_123',
-      };
-
-      await expect(
-        UnimplementedWebAuthenticationProvider.loginWithOOB(parameters)
-      ).rejects.toThrow(AuthError);
-      await expect(
-        UnimplementedWebAuthenticationProvider.loginWithOOB(parameters)
-      ).rejects.toMatchObject({
-        name: 'NotImplemented',
-        message: webAuthNotSupported,
-      });
-    });
-  });
-
-  describe('loginWithRecoveryCode', () => {
-    it('should reject with NotImplemented error', async () => {
-      const parameters = {
-        mfaToken: 'mfa_token_123',
-        recoveryCode: 'recovery_123',
-      };
-
-      await expect(
-        UnimplementedWebAuthenticationProvider.loginWithRecoveryCode(parameters)
-      ).rejects.toThrow(AuthError);
-      await expect(
-        UnimplementedWebAuthenticationProvider.loginWithRecoveryCode(parameters)
-      ).rejects.toMatchObject({
-        name: 'NotImplemented',
-        message: webAuthNotSupported,
-      });
-    });
-  });
-
-  describe('multifactorChallenge', () => {
-    it('should reject with NotImplemented error', async () => {
-      const parameters = {
-        mfaToken: 'mfa_token_123',
-        challengeType: 'otp',
-      };
-
-      await expect(
-        UnimplementedWebAuthenticationProvider.multifactorChallenge(parameters)
-      ).rejects.toThrow(AuthError);
-      await expect(
-        UnimplementedWebAuthenticationProvider.multifactorChallenge(parameters)
-      ).rejects.toMatchObject({
-        name: 'NotImplemented',
-        message: webAuthNotSupported,
-      });
-    });
-  });
-
   describe('resetPassword', () => {
     it('should reject with NotImplemented error', async () => {
       const parameters = {
@@ -347,10 +270,6 @@ describe('UnimplementedWebAuthenticationProvider', () => {
       expect(typeof provider.passwordlessWithSMS).toBe('function');
       expect(typeof provider.loginWithEmail).toBe('function');
       expect(typeof provider.loginWithSMS).toBe('function');
-      expect(typeof provider.loginWithOTP).toBe('function');
-      expect(typeof provider.loginWithOOB).toBe('function');
-      expect(typeof provider.loginWithRecoveryCode).toBe('function');
-      expect(typeof provider.multifactorChallenge).toBe('function');
       expect(typeof provider.resetPassword).toBe('function');
       expect(typeof provider.createUser).toBe('function');
       expect(typeof provider.ssoExchange).toBe('function');

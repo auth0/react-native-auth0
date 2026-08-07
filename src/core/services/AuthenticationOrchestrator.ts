@@ -3,7 +3,6 @@ import type {
   Credentials,
   SessionTransferCredentials,
   User,
-  MfaChallengeResponse,
   PasswordRealmParameters,
   RefreshTokenParameters,
   UserInfoParameters,
@@ -15,10 +14,6 @@ import type {
   PasswordlessSmsParameters,
   LoginEmailParameters,
   LoginSmsParameters,
-  LoginOtpParameters,
-  LoginOobParameters,
-  LoginRecoveryCodeParameters,
-  MfaChallengeParameters,
   ResetPasswordParameters,
   CreateUserParameters,
   NativeCredentialsResponse,
@@ -290,86 +285,6 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
       );
     if (!response.ok) throw AuthError.fromResponse(response, json);
     return CredentialsModel.fromResponse(json);
-  }
-
-  async loginWithOTP(parameters: LoginOtpParameters): Promise<Credentials> {
-    validateParameters(parameters, ['mfaToken', 'otp']);
-    const { headers, ...payload } = parameters;
-    const body = {
-      grant_type: 'http://auth0.com/oauth/grant-type/mfa-otp',
-      client_id: this.clientId,
-      mfa_token: payload.mfaToken,
-      otp: payload.otp,
-    };
-    const { json, response } =
-      await this.client.post<NativeCredentialsResponse>(
-        '/oauth/token',
-        body,
-        headers
-      );
-    if (!response.ok) throw AuthError.fromResponse(response, json);
-    return CredentialsModel.fromResponse(json);
-  }
-
-  async loginWithOOB(parameters: LoginOobParameters): Promise<Credentials> {
-    validateParameters(parameters, ['mfaToken', 'oobCode']);
-    const { headers, ...payload } = parameters;
-    const body = {
-      grant_type: 'http://auth0.com/oauth/grant-type/mfa-oob',
-      client_id: this.clientId,
-      mfa_token: payload.mfaToken,
-      oob_code: payload.oobCode,
-      binding_code: payload.bindingCode,
-    };
-    const { json, response } =
-      await this.client.post<NativeCredentialsResponse>(
-        '/oauth/token',
-        body,
-        headers
-      );
-    if (!response.ok) throw AuthError.fromResponse(response, json);
-    return CredentialsModel.fromResponse(json);
-  }
-
-  async loginWithRecoveryCode(
-    parameters: LoginRecoveryCodeParameters
-  ): Promise<Credentials> {
-    validateParameters(parameters, ['mfaToken', 'recoveryCode']);
-    const { headers, ...payload } = parameters;
-    const body = {
-      grant_type: 'http://auth0.com/oauth/grant-type/mfa-recovery-code',
-      client_id: this.clientId,
-      mfa_token: payload.mfaToken,
-      recovery_code: payload.recoveryCode,
-    };
-    const { json, response } =
-      await this.client.post<NativeCredentialsResponse>(
-        '/oauth/token',
-        body,
-        headers
-      );
-    if (!response.ok) throw AuthError.fromResponse(response, json);
-    return CredentialsModel.fromResponse(json);
-  }
-
-  async multifactorChallenge(
-    parameters: MfaChallengeParameters
-  ): Promise<MfaChallengeResponse> {
-    validateParameters(parameters, ['mfaToken']);
-    const { headers, ...payload } = parameters;
-    const body = {
-      client_id: this.clientId,
-      mfa_token: payload.mfaToken,
-      challenge_type: payload.challengeType,
-      authenticator_id: payload.authenticatorId,
-    };
-    const { json, response } = await this.client.post<any>(
-      '/mfa/challenge',
-      body,
-      headers
-    );
-    if (!response.ok) throw AuthError.fromResponse(response, json);
-    return deepCamelCase<MfaChallengeResponse>(json);
   }
 
   async revoke(parameters: RevokeOptions): Promise<void> {

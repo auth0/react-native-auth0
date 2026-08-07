@@ -17,10 +17,6 @@ import type {
   LoginEmailParameters,
   PasswordlessSmsParameters,
   LoginSmsParameters,
-  MfaChallengeParameters,
-  LoginOobParameters,
-  LoginOtpParameters,
-  LoginRecoveryCodeParameters,
   ExchangeNativeSocialParameters,
   CustomTokenExchangeParameters,
   PasskeySignupChallengeParameters,
@@ -30,7 +26,6 @@ import type {
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
-  MfaChallengeResponse,
   DPoPHeadersParams,
   PasswordlessChallengeEmailParameters,
   PasswordlessChallengePhoneParameters,
@@ -427,39 +422,6 @@ export const Auth0Provider = ({
     [client, loginFlow]
   );
 
-  const sendMultifactorChallenge = useCallback(
-    async (
-      parameters: MfaChallengeParameters
-    ): Promise<MfaChallengeResponse> => {
-      try {
-        return await client.auth.multifactorChallenge(parameters);
-      } catch (e) {
-        const error = e as AuthError;
-        dispatch({ type: 'ERROR', error });
-        throw error;
-      }
-    },
-    [client]
-  );
-
-  const authorizeWithOOB = useCallback(
-    (parameters: LoginOobParameters) =>
-      loginFlow(client.auth.loginWithOOB(parameters)),
-    [client, loginFlow]
-  );
-
-  const authorizeWithOTP = useCallback(
-    (parameters: LoginOtpParameters) =>
-      loginFlow(client.auth.loginWithOTP(parameters)),
-    [client, loginFlow]
-  );
-
-  const authorizeWithRecoveryCode = useCallback(
-    (parameters: LoginRecoveryCodeParameters) =>
-      loginFlow(client.auth.loginWithRecoveryCode(parameters)),
-    [client, loginFlow]
-  );
-
   const revokeRefreshToken = useCallback(
     (parameters: RevokeOptions) => voidFlow(client.auth.revoke(parameters)),
     [client, voidFlow]
@@ -568,10 +530,6 @@ export const Auth0Provider = ({
       authorizeWithEmail,
       sendSMSCode,
       authorizeWithSMS,
-      sendMultifactorChallenge,
-      authorizeWithOOB,
-      authorizeWithOTP,
-      authorizeWithRecoveryCode,
       revokeRefreshToken,
       getDPoPHeaders,
       ssoExchange,
@@ -605,10 +563,6 @@ export const Auth0Provider = ({
       authorizeWithEmail,
       sendSMSCode,
       authorizeWithSMS,
-      sendMultifactorChallenge,
-      authorizeWithOOB,
-      authorizeWithOTP,
-      authorizeWithRecoveryCode,
       revokeRefreshToken,
       getDPoPHeaders,
       ssoExchange,

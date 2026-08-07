@@ -2,7 +2,6 @@ import type {
   Credentials,
   SessionTransferCredentials,
   User,
-  MfaChallengeResponse,
   PasswordRealmParameters,
   RefreshTokenParameters,
   UserInfoParameters,
@@ -14,10 +13,6 @@ import type {
   PasswordlessSmsParameters,
   LoginEmailParameters,
   LoginSmsParameters,
-  LoginOtpParameters,
-  LoginOobParameters,
-  LoginRecoveryCodeParameters,
-  MfaChallengeParameters,
   ResetPasswordParameters,
   CreateUserParameters,
 } from '../../types';
@@ -36,14 +31,6 @@ export interface IAuthenticationProvider {
   passwordlessWithSMS(parameters: PasswordlessSmsParameters): Promise<void>;
   loginWithEmail(parameters: LoginEmailParameters): Promise<Credentials>;
   loginWithSMS(parameters: LoginSmsParameters): Promise<Credentials>;
-  loginWithOTP(parameters: LoginOtpParameters): Promise<Credentials>;
-  loginWithOOB(parameters: LoginOobParameters): Promise<Credentials>;
-  loginWithRecoveryCode(
-    parameters: LoginRecoveryCodeParameters
-  ): Promise<Credentials>;
-  multifactorChallenge(
-    parameters: MfaChallengeParameters
-  ): Promise<MfaChallengeResponse>;
   resetPassword(parameters: ResetPasswordParameters): Promise<void>;
   createUser(parameters: CreateUserParameters): Promise<Partial<User>>;
 

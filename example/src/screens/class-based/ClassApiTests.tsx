@@ -152,11 +152,11 @@ const ClassApiTestsScreen = ({ route }: Props) => {
           <Button
             onPress={() =>
               runTest(
-                () => auth0.auth.loginWithOTP({ mfaToken, otp }),
-                'Login with OTP'
+                () => auth0.mfa.verify({ mfaToken, otp }),
+                'Verify MFA with OTP'
               )
             }
-            title="auth.loginWithOTP()"
+            title="mfa.verify()"
             disabled={!mfaToken || !otp}
           />
           <LabeledInput

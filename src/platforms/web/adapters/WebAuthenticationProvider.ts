@@ -44,14 +44,6 @@ export const UnimplementedWebAuthenticationProvider: IAuthenticationProvider = {
     Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
   loginWithSMS: () =>
     Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
-  loginWithOTP: () =>
-    Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
-  loginWithOOB: () =>
-    Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
-  loginWithRecoveryCode: () =>
-    Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
-  multifactorChallenge: () =>
-    Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
   resetPassword: () =>
     Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
   createUser: () =>
