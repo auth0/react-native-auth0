@@ -110,8 +110,26 @@ export interface NativeAuthorizeOptions {
    */
   leeway?: number;
   /**
-   * **iOS only**: Disable Single-Sign-On (SSO). It only affects iOS with versions 13 and above.
+   * Run web authentication in an isolated browser session, so no shared session
+   * cookie is left behind. When the browser honours the request, Single Sign-On
+   * (SSO) does not apply.
+   *
+   * - **iOS:** sets `prefersEphemeralWebBrowserSession` on `ASWebAuthenticationSession`,
+   *   which also suppresses the SSO consent alert box. Requires iOS 13+.
+   * - **Android:** opens the Custom Tab with ephemeral browsing. Requires Chrome 136+
+   *   (or another browser that supports it); on unsupported browsers the flow falls back
+   *   to a regular Custom Tab, so login still completes but the session is not ephemeral.
+   *   Ignored when {@link NativeAuthorizeOptions.useTrustedWebActivity} is also enabled,
+   *   as a Trusted Web Activity does not support ephemeral browsing.
+   *
+   * No effect on Web.
+   *
    * @default `false`
+   *
+   * @example
+   * ```typescript
+   * await authorize({ scope: 'openid profile email' }, { ephemeralSession: true });
+   * ```
    */
   ephemeralSession?: boolean;
   /**

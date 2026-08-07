@@ -182,7 +182,24 @@ The equivalents on `useAuth0()` are removed too: `authorizeWithOTP`, `authorizeW
 
 ### 9. Native SDK API alignment (Auth0.Android v4 / Auth0.swift v3) ✅
 
-Adopting the new native SDK majors changes two parts of the public surface.
+Adopting the new native SDK majors changes three parts of the public surface.
+
+#### `ephemeralSession` now takes effect on Android
+
+Auth0.Android 4.0 added ephemeral browsing for Custom Tabs, so the `ephemeralSession` option on `authorize()` is no longer iOS-only. Previously the option was accepted on Android but silently ignored; it now opens the Custom Tab in an isolated session where cookies, cache and history are discarded when the browser closes.
+
+Requires **Chrome 136+** or another browser that supports ephemeral browsing. On unsupported browsers a warning is logged and the flow falls back to a regular Custom Tab, so login still completes but the session is not ephemeral.
+
+**⚠️ Action Required:** if your Android code passes `ephemeralSession: true` — for example because the same options object is shared across platforms — SSO will now be disabled on Android too, and users will be prompted to log in on every `authorize()` call. Set the flag per platform if you want to keep SSO on Android.
+
+```typescript
+await authorize(
+  { scope: 'openid profile email' },
+  { ephemeralSession: Platform.OS === 'ios' }
+);
+```
+
+Two further Android caveats: the fallback above means you should keep calling `clearSession` unless you can guarantee the browser honours the ephemeral request, and `ephemeralSession` has no effect when `useTrustedWebActivity` is also enabled (a Trusted Web Activity cannot browse ephemerally, so TWA wins). See [Ephemeral Sessions](EXAMPLES.md#ephemeral-sessions) for details.
 
 #### `SSOCredentials.expiresIn` is now `expiresAt`
 

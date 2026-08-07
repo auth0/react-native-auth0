@@ -90,7 +90,7 @@ auth0.webAuth
 
 Note that with `ephemeralSession: true` you don't need to call `clearSession` at all. Just clearing the credentials from the app will suffice. What `clearSession` does is clear the shared session cookie, so that in the next login call the user gets asked to log in again. But with `ephemeralSession: true` there will be no shared cookie to remove.
 
-You still need to call `clearSession` on Android, though, as `ephemeralSession` is iOS-only.
+As of v6, `ephemeralSession` also works on Android, where it opens the Custom Tab with ephemeral browsing. This requires Chrome 136+ (or another browser that supports it); on unsupported browsers the flow falls back to a regular Custom Tab, which does keep a shared cookie — so keep calling `clearSession` on Android unless you can guarantee the browser honours the ephemeral request.
 
 ### Use `SFSafariViewController`
 

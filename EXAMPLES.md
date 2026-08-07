@@ -97,6 +97,8 @@
 - [Allowed Browsers (Android)](#allowed-browsers-android)
   - [Using with Hooks](#using-with-hooks)
   - [Using with Auth0 Class](#using-with-auth0-class-1)
+- [Trusted Web Activity (Android)](#trusted-web-activity-android)
+- [Ephemeral Sessions](#ephemeral-sessions)
 - [Recovering Login After Process Death (Android)](#recovering-login-after-process-death-android)
   - [Using with Hooks](#recovering-login-using-hooks)
   - [Using with Auth0 Class](#recovering-login-using-the-auth0-class)
@@ -2759,6 +2761,49 @@ await auth0.webAuth.authorize(
 ```
 
 The same `useTrustedWebActivity` option is also accepted by `clearSession` so the logout flow opens in a Trusted Web Activity as well.
+
+## Ephemeral Sessions
+
+Pass `ephemeralSession: true` to run web authentication in an isolated browser session, so no shared session cookie is left behind. When the browser honours the request, Single Sign-On (SSO) does not apply.
+
+**Behaviour:**
+
+- **iOS:** sets `prefersEphemeralWebBrowserSession` on `ASWebAuthenticationSession`. Because there is no shared cookie to consent to, this also suppresses the SSO alert box. Requires iOS 13+.
+- **Android:** opens the Custom Tab with ephemeral browsing. Requires **Chrome 136+** or another browser that supports it; on unsupported browsers a warning is logged and the flow falls back to a regular Custom Tab — login still completes, but the session is not ephemeral.
+
+> **Platform Support:** iOS and Android. This option is ignored on web.
+
+> **Warning:** On Android, `ephemeralSession` and [`useTrustedWebActivity`](#trusted-web-activity-android) are effectively mutually exclusive. A Trusted Web Activity does not support ephemeral browsing, so if you enable both, TWA takes precedence and the session will **not** be ephemeral. Pick one.
+
+> **Note:** Android support for ephemeral sessions was added in v6. In earlier versions the option was accepted but only took effect on iOS.
+
+### Using with Hooks
+
+```typescript
+import { useAuth0 } from 'react-native-auth0';
+
+const { authorize } = useAuth0();
+
+await authorize({ scope: 'openid profile email' }, { ephemeralSession: true });
+```
+
+### Using with Auth0 Class
+
+```typescript
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+});
+
+await auth0.webAuth.authorize(
+  { scope: 'openid profile email' },
+  { ephemeralSession: true }
+);
+```
+
+Because no shared session cookie is stored, you do not need to call `clearSession` to log the user out of the browser session — clearing the stored credentials is enough. Note that this holds only when the browser actually honoured the ephemeral request; on an Android browser that fell back to a regular Custom Tab, a shared cookie may still be present.
 
 ## Recovering Login After Process Death (Android)
 

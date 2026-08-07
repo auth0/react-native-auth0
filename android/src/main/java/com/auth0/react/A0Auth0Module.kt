@@ -180,6 +180,9 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 )
             }
             if (useTrustedWebActivity) { withTrustedWebActivity() }
+            // Ephemeral browsing only applies to the Custom Tab path; the TWA intent
+            // builder ignores it, so TWA wins when both options are set.
+            if (ephemeralSession == true) { withEphemeralBrowsing() }
         }
 
         builder.withParameters(cleanedParameters)

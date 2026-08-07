@@ -194,6 +194,36 @@ describe('NativeBridgeManager', () => {
       );
     });
 
+    it('should pass ephemeralSession to native webAuth when provided', async () => {
+      MockedAuth0NativeModule.webAuth.mockResolvedValueOnce(
+        nativeSuccessCredentials as any
+      );
+
+      await bridge.authorize(
+        { redirectUrl: 'com.myapp://cb' },
+        { customScheme: 'com.myapp', ephemeralSession: true }
+      );
+
+      expect(MockedAuth0NativeModule.webAuth).toHaveBeenCalledWith(
+        'com.myapp',
+        'com.myapp://cb',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        0,
+        undefined,
+        undefined,
+        0,
+        true, // ephemeralSession
+        99,
+        {},
+        undefined, // allowedBrowserPackages
+        false // useTrustedWebActivity
+      );
+    });
+
     it('should correctly transform the native response to a Credentials model', async () => {
       MockedAuth0NativeModule.webAuth.mockResolvedValueOnce(
         nativeSuccessCredentials as any
