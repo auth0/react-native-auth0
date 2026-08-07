@@ -73,7 +73,7 @@ PODS:
     - React-utils
     - ReactNativeDependencies
     - Yoga
-  - React-Core-prebuilt (0.86.0):
+  - React-Core-prebuilt (0.86.2):
     - ReactNativeDependencies
   - React-Core/CoreModulesHeaders (0.86.2):
     - hermes-engine
@@ -1920,7 +1920,7 @@ PODS:
     - React-utils (= 0.86.2)
     - ReactNativeDependencies
   - ReactNativeDependencies (0.86.2)
-  - RNGestureHandler (3.0.2):
+  - RNGestureHandler (3.1.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2255,7 +2255,7 @@ SPEC CHECKSUMS:
   React: 4b2532a459d15e1adf6c22d3e399e5c85a94220f
   React-callinvoker: 0b8ce4057e02a0bd15cf0532596e8eb8c0392e92
   React-Core: 5af045531a540ba3f65f07de1e3f585ddfb27948
-  React-Core-prebuilt: 13924a267683b3d6fa4bde9c80380becf83a9c5c
+  React-Core-prebuilt: 405cf395d66cf694faf9aed3483a21b5515cec85
   React-CoreModules: 99b194a721de84ccfc1be149a0de52647dc38c0e
   React-cxxreact: b7e8e254074fd8111d147202b391ccf7816946a6
   React-debug: 6bc17013f4dc724c23c91e1c83220251d1eacee6
@@ -2320,11 +2320,11 @@ SPEC CHECKSUMS:
   ReactCodegen: 3bbb7de19774794a7428ef623a7b777106cf3737
   ReactCommon: 9002f006f571256348994183f7d4387aa7cf84e8
   ReactNativeDependencies: 2bd6854ade79bf1b60586d1ab7813a389df1b6bf
-  RNGestureHandler: 953af68599a35f425ea962dda2ee15ee4e3ca719
+  RNGestureHandler: a426f18ab9021991fe2cbc8bf1677b740e20e70c
   RNScreens: de068bbd7d91b820fedac25c597d4b14830de74b
   SimpleKeychain: 9c0f3ca8458fed74e01db864d181c5cbe278603e
   Yoga: 9891cfb1c680f64de9c41b09e7453dea33454d2b
 
 PODFILE CHECKSUM: 4d5858eb0b119123f92cbe4189a696908bcef7aa
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2
