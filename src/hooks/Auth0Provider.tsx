@@ -478,6 +478,16 @@ export const Auth0Provider = ({
     [client]
   );
 
+  const clearDPoPKey = useCallback(async (): Promise<void> => {
+    try {
+      return await client.clearDPoPKey();
+    } catch (e) {
+      const error = e as AuthError;
+      dispatch({ type: 'ERROR', error });
+      throw error;
+    }
+  }, [client]);
+
   const ssoExchange = useCallback(
     async (
       parameters: SSOExchangeParameters
@@ -574,6 +584,7 @@ export const Auth0Provider = ({
       authorizeWithRecoveryCode,
       revokeRefreshToken,
       getDPoPHeaders,
+      clearDPoPKey,
       ssoExchange,
       mfa,
     }),
@@ -611,6 +622,7 @@ export const Auth0Provider = ({
       authorizeWithRecoveryCode,
       revokeRefreshToken,
       getDPoPHeaders,
+      clearDPoPKey,
       ssoExchange,
       mfa,
     ]
