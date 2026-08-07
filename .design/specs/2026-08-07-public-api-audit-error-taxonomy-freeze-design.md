@@ -117,8 +117,27 @@ one-time cleanup; the test is what holds the line.
 
 ## Expected Outcome
 
-122 → ~123 exports: 4 removed, ~9 added, 1 renamed with alias. Every remaining export is
-intentional and covered by the snapshot test.
+122 → 136 exports: 4 removed, 18 added. Every remaining export is intentional and covered by the
+snapshot test.
+
+**Removed (4)** — internal wire/config shapes that were never usable by consumers:
+`NativeAuth0Options`, `WebAuth0Options`, `NativeCredentialsResponse`, `SSOCredentialsResponse`.
+
+**Added (18):**
+
+| Group                                                                                          | Count |
+| ---------------------------------------------------------------------------------------------- | ----- |
+| Derived code unions — `WebAuthErrorCode` … `MyAccountErrorCode` (one per error class)           | 6     |
+| `MyAccountErrorCodes` — the new codes object completing the taxonomy                           | 1     |
+| `Auth0ErrorCode` — the shared base union                                                       | 1     |
+| `DPoPHeadersParameters` — rename; the `DPoPHeadersParams` alias stays exported and deprecated  | 1     |
+| `Auth0` — named alias for the default export, so consumers need not rely on `default`          | 1     |
+| `Auth0ContextInterface`, `AuthState` — already in `useAuth0()`'s signature but not exported    | 2     |
+| Client interfaces — `IAuth0Client` and its 5 sub-provider siblings                              | 6     |
+
+The interface and React-binding groups are types that already appeared in public method signatures
+but were unreachable from the entry point — exporting them makes the existing surface *typeable*, not
+larger in capability.
 
 ## Testing
 

@@ -5,7 +5,7 @@ import type {
   WebAuthorizeParameters,
   ClearSessionParameters,
   NativeClearSessionOptions,
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   SessionTransferCredentials,
   MfaAuthenticator,
   MfaEnrollmentChallenge,
@@ -213,7 +213,7 @@ export class NativeBridgeManager implements INativeBridge {
   }
 
   async getDPoPHeaders(
-    params: DPoPHeadersParams
+    params: DPoPHeadersParameters
   ): Promise<Record<string, string>> {
     return this.a0_call(
       Auth0NativeModule.getDPoPHeaders.bind(Auth0NativeModule),

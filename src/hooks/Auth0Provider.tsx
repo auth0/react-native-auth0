@@ -26,7 +26,7 @@ import type {
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   PasswordlessChallengeEmailParameters,
   PasswordlessChallengePhoneParameters,
   PasswordlessLoginOtpParameters,
@@ -428,7 +428,7 @@ export const Auth0Provider = ({
   );
 
   const getDPoPHeaders = useCallback(
-    async (params: DPoPHeadersParams): Promise<Record<string, string>> => {
+    async (params: DPoPHeadersParameters): Promise<Record<string, string>> => {
       try {
         return await client.getDPoPHeaders(params);
       } catch (e) {

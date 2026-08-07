@@ -20,7 +20,7 @@ import type {
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   SessionTransferCredentials,
 } from '../types';
 import type { IMfaClient } from '../core/interfaces/IMfaClient';
@@ -378,7 +378,7 @@ export interface Auth0ContextInterface extends AuthState {
    * ```
    */
   getDPoPHeaders: (
-    params: DPoPHeadersParams
+    params: DPoPHeadersParameters
   ) => Promise<Record<string, string>>;
 
   /**

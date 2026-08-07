@@ -3,7 +3,7 @@ import type { IMfaClient } from './core/interfaces/IMfaClient';
 import { Auth0ClientFactory } from './factory/Auth0ClientFactory';
 import type {
   Auth0Options,
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   CustomTokenExchangeParameters,
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
@@ -122,7 +122,7 @@ class Auth0 {
    * }
    * ```
    */
-  getDPoPHeaders(params: DPoPHeadersParams) {
+  getDPoPHeaders(params: DPoPHeadersParameters) {
     return this.client.getDPoPHeaders(params);
   }
 

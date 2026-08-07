@@ -67,7 +67,16 @@ export const WebAuthErrorCodes = {
   UNKNOWN_ERROR: 'UNKNOWN_ERROR',
 } as const;
 
-const ERROR_CODE_MAP: Record<string, string> = {
+/**
+ * A normalized WebAuth error code.
+ *
+ * Derived from {@link WebAuthErrorCodes} so the union and the runtime constants
+ * cannot drift apart.
+ */
+export type WebAuthErrorCode =
+  (typeof WebAuthErrorCodes)[keyof typeof WebAuthErrorCodes];
+
+const ERROR_CODE_MAP: Record<string, WebAuthErrorCode> = {
   // --- Common Codes ---
   'a0.session.user_cancelled': WebAuthErrorCodes.USER_CANCELLED,
   'USER_CANCELLED': WebAuthErrorCodes.USER_CANCELLED,
@@ -104,7 +113,11 @@ const ERROR_CODE_MAP: Record<string, string> = {
 };
 
 export class WebAuthError extends AuthError {
-  public readonly type: string;
+  /**
+   * A normalized error type that is consistent across platforms.
+   * This can be used for reliable error handling in application code.
+   */
+  public readonly type: WebAuthErrorCode;
 
   constructor(originalError: AuthError) {
     super(originalError.name, originalError.message, {

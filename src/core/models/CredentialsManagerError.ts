@@ -80,7 +80,16 @@ export const CredentialsManagerErrorCodes = {
   UNKNOWN_ERROR: 'UNKNOWN_ERROR',
 } as const;
 
-const ERROR_CODE_MAP: Record<string, string> = {
+/**
+ * A normalized Credentials Manager error code.
+ *
+ * Derived from {@link CredentialsManagerErrorCodes} so the union and the runtime
+ * constants cannot drift apart.
+ */
+export type CredentialsManagerErrorCode =
+  (typeof CredentialsManagerErrorCodes)[keyof typeof CredentialsManagerErrorCodes];
+
+const ERROR_CODE_MAP: Record<string, CredentialsManagerErrorCode> = {
   // --- Core CredentialsManager error codes ---
   INVALID_CREDENTIALS: CredentialsManagerErrorCodes.INVALID_CREDENTIALS,
   NO_CREDENTIALS: CredentialsManagerErrorCodes.NO_CREDENTIALS,
@@ -337,7 +346,7 @@ export class CredentialsManagerError extends AuthError {
    * - `CREDENTIAL_MANAGER_ERROR`: Generic credentials manager error
    * - `UNKNOWN_ERROR`: Unknown error type
    */
-  public readonly type: string;
+  public readonly type: CredentialsManagerErrorCode;
 
   constructor(originalError: AuthError) {
     super(originalError.name, originalError.message, {

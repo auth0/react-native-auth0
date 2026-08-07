@@ -668,6 +668,60 @@ The options for configuring the display of local authentication prompt, authenti
 
 > :warning: You need a real device to test Local Authentication for iOS. Local Authentication is not available in simulators.
 
+### Error taxonomy
+
+Every error the SDK throws extends `AuthError` and carries a **normalized, platform-agnostic**
+`type`. Switch on `type` — never on `code` — and your error handling behaves identically on iOS,
+Android, and web.
+
+| Property  | Use it for                                                                                                 |
+| --------- | ---------------------------------------------------------------------------------------------------------- |
+| `type`    | **Control flow.** A normalized code, stable across platforms. Compare against the `…ErrorCodes` constants. |
+| `code`    | **Diagnostics.** The raw code from the underlying platform SDK or wire response. Varies by platform.       |
+| `message` | Human-readable description. Not stable — do not parse it.                                                  |
+| `status`  | HTTP status, when the failure came from an HTTP response (`0` otherwise).                                  |
+
+Each error class ships a companion constants object and a matching TypeScript union, so a `switch`
+on `type` is exhaustively checked at compile time:
+
+| Error class               | Constants                      | Type union                         | Thrown by                                       |
+| ------------------------- | ------------------------------ | ---------------------------------- | ----------------------------------------------- |
+| `WebAuthError`            | `WebAuthErrorCodes`            | `WebAuthErrorCode`                 | `webAuth.authorize()`, `webAuth.clearSession()` |
+| `CredentialsManagerError` | `CredentialsManagerErrorCodes` | `CredentialsManagerErrorCode`      | `credentialsManager.*`                          |
+| `MfaError`                | `MfaErrorCodes`                | `MfaErrorCode`                     | `mfa.*`                                         |
+| `PasskeyError`            | `PasskeyErrorCodes`            | `PasskeyErrorCode`                 | passkey signup/login and passkey enrollment     |
+| `MyAccountError`          | `MyAccountErrorCodes`          | `MyAccountErrorCode`               | `myAccount.*`                                   |
+| `DPoPError`               | `DPoPErrorCodes`               | `DPoPErrorCode`                    | `getDPoPHeaders()` and DPoP key handling        |
+| `TimeoutError`            | —                              | `type` is always `'TIMEOUT_ERROR'` | HTTP requests exceeding `timeout`               |
+
+```typescript
+import { WebAuthError, WebAuthErrorCodes } from 'react-native-auth0';
+import type { WebAuthErrorCode } from 'react-native-auth0';
+
+function describe(type: WebAuthErrorCode): string {
+  switch (type) {
+    case WebAuthErrorCodes.USER_CANCELLED:
+      return 'Cancelled';
+    case WebAuthErrorCodes.NETWORK_ERROR:
+      return 'Offline';
+    default:
+      return 'Login failed';
+  }
+}
+```
+
+`Auth0ErrorCode` is the union of all of the above. Prefer the specific union when handling one error
+class — it keeps `switch` statements exhaustive and rejects codes that cannot occur there. Reach for
+`Auth0ErrorCode` only in generic code such as logging or telemetry.
+
+> **Stability.** These constants, their unions, and the `type` values they contain are the public
+> error contract. Values will not be removed or renamed outside a major version.
+
+`MyAccountError` is the one class with an extra property: the My Account API reports failures as
+[RFC 7807](https://datatracker.ietf.org/doc/html/rfc7807) type URIs, so `type` holds the normalized
+code while `typeUri` preserves the original URI (e.g. `https://auth0.com/api-errors/A0E-401`) for
+logging and support tickets.
+
 ### Credentials Manager errors
 
 The Credentials Manager will only throw `CredentialsManagerError` exceptions. You can find more information in the details property of the exception.

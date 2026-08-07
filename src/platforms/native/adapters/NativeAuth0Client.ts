@@ -7,7 +7,7 @@ import type {
 } from '../../../core/interfaces';
 import type { NativeAuth0Options } from '../../../types/platform-specific';
 import type {
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   CustomTokenExchangeParameters,
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
@@ -68,7 +68,9 @@ export class NativeAuth0Client implements IAuth0Client {
     this.bridge = bridge;
 
     // Create a bound getDPoPHeaders function for the orchestrator
-    const getDPoPHeadersForOrchestrator = async (params: DPoPHeadersParams) => {
+    const getDPoPHeadersForOrchestrator = async (
+      params: DPoPHeadersParameters
+    ) => {
       await this.ready;
       return this.bridge.getDPoPHeaders(params);
     };
@@ -144,7 +146,7 @@ export class NativeAuth0Client implements IAuth0Client {
   readonly myAccount: IMyAccountClient;
 
   async getDPoPHeaders(
-    params: DPoPHeadersParams
+    params: DPoPHeadersParameters
   ): Promise<Record<string, string>> {
     await this.ready;
     try {
