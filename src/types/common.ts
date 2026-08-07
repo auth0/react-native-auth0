@@ -412,7 +412,7 @@ export enum TokenType {
  * Parameters required to generate DPoP headers for custom API requests.
  * These headers cryptographically bind the access token to the specific HTTP request.
  */
-export interface DPoPHeadersParams {
+export interface DPoPHeadersParameters {
   /** The full URL of the API endpoint being called. */
   url: string;
   /** The HTTP method of the request (e.g., 'GET', 'POST'). */
@@ -424,3 +424,10 @@ export interface DPoPHeadersParams {
   /** Optional nonce value */
   nonce?: string;
 }
+
+/**
+ * @deprecated Renamed to {@link DPoPHeadersParameters} for consistency with the
+ * other `...Parameters` types. This alias will be removed in a future major
+ * version.
+ */
+export type DPoPHeadersParams = DPoPHeadersParameters;

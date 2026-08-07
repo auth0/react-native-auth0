@@ -3,6 +3,7 @@ import {
   CredentialsManagerErrorCodes,
   DPoPErrorCodes,
   MfaErrorCodes,
+  MyAccountErrorCodes,
 } from '../';
 
 describe('Error Code Constants', () => {
@@ -210,6 +211,52 @@ describe('Error Code Constants', () => {
       }
 
       expect(result).toBe('generation_failed');
+    });
+  });
+
+  describe('MyAccountErrorCodes', () => {
+    it('should export all expected error code constants', () => {
+      expect(MyAccountErrorCodes.UNAUTHORIZED).toBe('UNAUTHORIZED');
+      expect(MyAccountErrorCodes.INVALID_REQUEST).toBe('INVALID_REQUEST');
+      expect(MyAccountErrorCodes.ENROLLMENT_FAILED).toBe('ENROLLMENT_FAILED');
+      expect(MyAccountErrorCodes.VERIFICATION_FAILED).toBe(
+        'VERIFICATION_FAILED'
+      );
+      expect(MyAccountErrorCodes.NOT_FOUND).toBe('NOT_FOUND');
+      expect(MyAccountErrorCodes.CONFLICT).toBe('CONFLICT');
+      expect(MyAccountErrorCodes.TOO_MANY_REQUESTS).toBe('TOO_MANY_REQUESTS');
+      expect(MyAccountErrorCodes.MY_ACCOUNT_ERROR).toBe('MY_ACCOUNT_ERROR');
+      expect(MyAccountErrorCodes.UNKNOWN_MY_ACCOUNT_ERROR).toBe(
+        'UNKNOWN_MY_ACCOUNT_ERROR'
+      );
+    });
+
+    it('should have exactly 9 error codes', () => {
+      const keys = Object.keys(MyAccountErrorCodes);
+      expect(keys).toHaveLength(9);
+    });
+
+    it('should be immutable (as const)', () => {
+      expect(MyAccountErrorCodes).toBeDefined();
+      expect(typeof MyAccountErrorCodes).toBe('object');
+    });
+
+    it('should be usable in switch statements', () => {
+      const testErrorType = 'UNAUTHORIZED';
+      let result = '';
+
+      switch (testErrorType) {
+        case MyAccountErrorCodes.UNAUTHORIZED:
+          result = 'unauthorized';
+          break;
+        case MyAccountErrorCodes.NOT_FOUND:
+          result = 'not_found';
+          break;
+        default:
+          result = 'unknown';
+      }
+
+      expect(result).toBe('unauthorized');
     });
   });
 

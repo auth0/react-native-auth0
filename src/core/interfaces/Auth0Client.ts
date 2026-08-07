@@ -5,7 +5,7 @@ import type { MyAccountClient } from './MyAccountClient';
 import type { PasswordlessClient } from './PasswordlessClient';
 import type { MfaClient } from './MfaClient';
 import type {
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   CustomTokenExchangeParameters,
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
@@ -70,7 +70,9 @@ export interface Auth0Client {
    * fetch('https://api.example.com/data', { headers });
    * ```
    */
-  getDPoPHeaders(params: DPoPHeadersParams): Promise<Record<string, string>>;
+  getDPoPHeaders(
+    params: DPoPHeadersParameters
+  ): Promise<Record<string, string>>;
 
   /**
    * Performs a Custom Token Exchange using RFC 8693.
