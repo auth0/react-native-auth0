@@ -23,8 +23,7 @@ export interface Spec extends TurboModule {
     clientId: string,
     domain: string,
     localAuthenticationOptions:
-      | { [key: string]: string | Int32 | boolean }
-      | undefined,
+      { [key: string]: string | Int32 | boolean } | undefined,
     useDPoP: boolean | undefined,
     maxRetries: Int32,
     credentialsManagerStorageKey: string | undefined
