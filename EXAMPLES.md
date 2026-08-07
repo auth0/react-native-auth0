@@ -2767,7 +2767,7 @@ The same `useTrustedWebActivity` option is also accepted by `clearSession` so th
 
 ## Ephemeral Sessions
 
-Pass `ephemeralSession: true` to run web authentication in an isolated, incognito-like browser session. Cookies, cache and history from the login flow are discarded when the browser closes, so no shared session cookie is left behind and Single Sign-On (SSO) does not apply.
+Pass `ephemeralSession: true` to run web authentication in an isolated browser session, so no shared session cookie is left behind. When the browser honours the request, Single Sign-On (SSO) does not apply.
 
 **Behaviour:**
 
