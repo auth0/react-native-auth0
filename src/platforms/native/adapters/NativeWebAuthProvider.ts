@@ -1,5 +1,5 @@
 import { Linking, Platform, type EmitterSubscription } from 'react-native';
-import type { IWebAuthProvider } from '../../../core/interfaces';
+import type { WebAuthProvider } from '../../../core/interfaces';
 import type {
   Credentials,
   WebAuthorizeParameters,
@@ -10,19 +10,19 @@ import type {
   NativeAuthorizeOptions,
   NativeClearSessionOptions,
 } from '../../../types/platform-specific';
-import type { INativeBridge } from '../bridge';
+import type { NativeBridge } from '../bridge';
 import { finalizeScope } from '../../../core/utils';
 import { AuthError, WebAuthError } from '../../../core/models';
 
 const webAuthNotSupported = 'This Method is only available in web platform.';
 
 /**
- * A native platform-specific implementation of the IWebAuthProvider.
+ * A native platform-specific implementation of the WebAuthProvider.
  * This class translates web authentication calls into calls to the native bridge.
  */
-export class NativeWebAuthProvider implements IWebAuthProvider {
+export class NativeWebAuthProvider implements WebAuthProvider {
   constructor(
-    private bridge: INativeBridge,
+    private bridge: NativeBridge,
     private domain: string
   ) {}
   handleRedirectCallback(): Promise<void> {

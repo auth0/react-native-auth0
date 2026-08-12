@@ -1,9 +1,9 @@
 import { NativeWebAuthProvider } from '../NativeWebAuthProvider';
-import { INativeBridge } from '../../bridge';
+import { NativeBridge } from '../../bridge';
 import { WebAuthError } from '../../../../core/models';
 
 // Mock the native bridge
-const mockBridge: jest.Mocked<INativeBridge> = {
+const mockBridge: jest.Mocked<NativeBridge> = {
   authorize: jest.fn(),
   clearSession: jest.fn(),
   getBundleIdentifier: jest.fn().mockResolvedValue('com.app.test'),

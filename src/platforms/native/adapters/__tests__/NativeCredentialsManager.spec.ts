@@ -1,9 +1,9 @@
 import { NativeCredentialsManager } from '../NativeCredentialsManager';
-import { INativeBridge } from '../../bridge';
+import { NativeBridge } from '../../bridge';
 import { AuthError, CredentialsManagerError } from '../../../../core/models';
 
-// 1. Create a mock of the INativeBridge dependency.
-const mockBridge: jest.Mocked<INativeBridge> = {
+// 1. Create a mock of the NativeBridge dependency.
+const mockBridge: jest.Mocked<NativeBridge> = {
   // We only need to mock the methods that this specific adapter uses.
   saveCredentials: jest.fn(),
   getCredentials: jest.fn(),
@@ -13,7 +13,7 @@ const mockBridge: jest.Mocked<INativeBridge> = {
   getSSOCredentials: jest.fn(),
   getApiCredentials: jest.fn(),
   clearApiCredentials: jest.fn(),
-  // Add stubs for other INativeBridge methods to satisfy the type.
+  // Add stubs for other NativeBridge methods to satisfy the type.
   initialize: jest.fn(),
   hasValidInstance: jest.fn(),
   getBundleIdentifier: jest.fn(),

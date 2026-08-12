@@ -23,7 +23,7 @@ import type {
   Factor,
 } from '../../types';
 
-export interface IMyAccountClient {
+export interface MyAccountClient {
   // --- Passkey Enrollment ---
 
   passkeyEnrollmentChallenge(

@@ -31,7 +31,7 @@ import type {
   PasswordlessChallengePhoneParameters,
   PasswordlessLoginOtpParameters,
 } from '../types';
-import type { IMfaClient } from '../core/interfaces/IMfaClient';
+import type { MfaClient } from '../core/interfaces/MfaClient';
 import type {
   NativeAuthorizeOptions,
   NativeClearSessionOptions,
@@ -455,7 +455,7 @@ export const Auth0Provider = ({
     [client]
   );
 
-  const mfa = useMemo<IMfaClient>(() => {
+  const mfa = useMemo<MfaClient>(() => {
     const mfaClient = client.mfa;
     return {
       getAuthenticators: async (parameters) => {

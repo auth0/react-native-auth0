@@ -6,7 +6,7 @@ import { ApiCredentials } from '../models';
  * Implementations are responsible for secure storage (e.g., Keychain on iOS,
  * EncryptedSharedPreferences on Android) and token refresh logic.
  */
-export interface ICredentialsManager {
+export interface CredentialsManager {
   /**
    * Securely saves a set of credentials to the device's storage.
    *

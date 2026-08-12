@@ -23,8 +23,8 @@ import type {
   DPoPHeadersParams,
   SessionTransferCredentials,
 } from '../types';
-import type { IMfaClient } from '../core/interfaces/IMfaClient';
-import type { IMyAccountClient } from '../core/interfaces';
+import type { MfaClient } from '../core/interfaces/MfaClient';
+import type { MyAccountClient } from '../core/interfaces';
 import type {
   PasswordlessChallenge,
   PasswordlessChallengeEmailParameters,
@@ -286,7 +286,7 @@ export interface Auth0ContextInterface extends AuthState {
    * const methods = await myAccount.getAuthenticationMethods({ accessToken });
    * ```
    */
-  myAccount: IMyAccountClient;
+  myAccount: MyAccountClient;
 
   /**
    * Provides access to the Passwordless OTP flow for database connections.
@@ -445,7 +445,7 @@ export interface Auth0ContextInterface extends AuthState {
    * const credentials = await mfa.verify({ mfaToken, otp: '123456' });
    * ```
    */
-  mfa: IMfaClient;
+  mfa: MfaClient;
 
   /**
    * Exchanges a refresh token for session transfer credentials via the Authentication API.

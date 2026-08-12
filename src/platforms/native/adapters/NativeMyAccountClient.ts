@@ -1,4 +1,4 @@
-import type { IMyAccountClient } from '../../../core/interfaces';
+import type { MyAccountClient } from '../../../core/interfaces';
 import type {
   PasskeyEnrollmentChallengeParameters,
   PasskeyEnrollmentChallengeResponse,
@@ -23,13 +23,13 @@ import type {
   RecoveryCodeEnrollmentChallenge,
   Factor,
 } from '../../../types';
-import type { INativeBridge } from '../bridge';
+import type { NativeBridge } from '../bridge';
 import { AuthError, PasskeyError, MyAccountError } from '../../../core/models';
 
-export class NativeMyAccountClient implements IMyAccountClient {
-  private readonly bridge: INativeBridge;
+export class NativeMyAccountClient implements MyAccountClient {
+  private readonly bridge: NativeBridge;
 
-  constructor(bridge: INativeBridge) {
+  constructor(bridge: NativeBridge) {
     this.bridge = bridge;
   }
 

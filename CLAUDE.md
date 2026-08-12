@@ -39,7 +39,7 @@ react-native-auth0/
 │   ├── index.ts               # Public API exports (entry point)
 │   ├── Auth0.ts               # Main Auth0 facade class
 │   ├── core/                  # Platform-agnostic core
-│   │   ├── interfaces/        # Contracts every platform implements (IAuth0Client, …)
+│   │   ├── interfaces/        # Contracts every platform implements (Auth0Client, …)
 │   │   ├── models/            # Credentials, Auth0User, AuthError hierarchy
 │   │   ├── services/          # HttpClient, AuthenticationOrchestrator
 │   │   └── utils/             # scope, validation, telemetry, deepCamelCase
@@ -65,7 +65,7 @@ react-native-auth0/
 | -------------------------------------------------------- | --------------------------------------------------------- |
 | `src/index.ts`                                           | Public API surface — everything exported to consumers     |
 | `src/Auth0.ts`                                           | Main facade class                                         |
-| `src/core/interfaces/IAuth0Client.ts`                    | Primary client interface; new methods start here          |
+| `src/core/interfaces/Auth0Client.ts`                     | Primary client interface; new methods start here          |
 | `src/core/services/HttpClient.ts`                        | HTTP wrapper; injects the `Auth0-Client` telemetry header |
 | `src/core/services/AuthenticationOrchestrator.ts`        | Authentication API calls                                  |
 | `src/core/utils/telemetry.ts`                            | Telemetry payload (version injected at prebuild)          |
@@ -143,7 +143,7 @@ The default `yarn test` suite is unit-only — no credentials or live tenant req
 ## Code Style
 
 - **CI-enforced:** single quotes, trailing commas, 2-space indent (Prettier); `@typescript-eslint/unbound-method` is an error; strict TS with `noUnusedLocals`/`noUnusedParameters`. `prettier/prettier` failures fail lint.
-- Naming: `PascalCase` types/classes/interfaces (interfaces prefixed `I`), `camelCase` functions/vars, `snake_case` only for raw API wire payloads (converted via `deepCamelCase`).
+- Naming: `PascalCase` types/classes/interfaces (interfaces are **not** `I`-prefixed — the contract keeps the plain name, implementations carry the platform prefix), `camelCase` functions/vars, `snake_case` only for raw API wire payloads (converted via `deepCamelCase`).
 
 See [references/code-style.md](references/code-style.md) for good/bad examples and the dominant patterns (interface-driven design, factory selection, orchestrators). Read when writing non-trivial new code.
 
