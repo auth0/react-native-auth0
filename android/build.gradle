@@ -51,6 +51,10 @@ android {
     abortOnError false
   }
 
+  testOptions {
+    unitTests.returnDefaultValues = true
+  }
+
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_17
     targetCompatibility JavaVersion.VERSION_17
@@ -79,6 +83,9 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   implementation "androidx.browser:browser:1.10.0"
   implementation 'com.auth0.android:auth0:4.0.1'
+
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
 }
 
 react {

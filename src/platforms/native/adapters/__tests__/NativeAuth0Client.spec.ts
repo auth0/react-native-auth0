@@ -120,7 +120,8 @@ describe('NativeAuth0Client', () => {
       undefined, // No local auth options provided in this test
       false, // useDPoP defaults to false
       undefined, // maxRetries not provided
-      undefined // credentialsManagerStorageKey not provided
+      undefined, // credentialsManagerStorageKey not provided
+      undefined // androidNetworkingOptions not provided
     );
 
     // Use client to avoid unused variable warning
@@ -142,7 +143,8 @@ describe('NativeAuth0Client', () => {
       undefined,
       false,
       undefined,
-      'tenant-b'
+      'tenant-b',
+      undefined
     );
     expect(client).toBeDefined();
   });
@@ -163,10 +165,34 @@ describe('NativeAuth0Client', () => {
       localAuthOptions,
       false, // useDPoP defaults to false
       undefined, // maxRetries not provided
-      undefined // credentialsManagerStorageKey not provided
+      undefined, // credentialsManagerStorageKey not provided
+      undefined // androidNetworkingOptions not provided
     );
 
     // Use client to avoid unused variable warning
+    expect(client).toBeDefined();
+  });
+
+  it('should pass androidNetworkingOptions to initialize when provided', async () => {
+    mockBridgeInstance.hasValidInstance.mockResolvedValue(false);
+    const androidNetworkingOptions = { connectTimeout: 30, readTimeout: 30 };
+
+    const client = new NativeAuth0Client({
+      ...options,
+      androidNetworkingOptions,
+    });
+    await new Promise(process.nextTick);
+
+    expect(mockBridgeInstance.initialize).toHaveBeenCalledWith(
+      options.clientId,
+      options.domain,
+      undefined,
+      false,
+      undefined,
+      undefined,
+      androidNetworkingOptions
+    );
+
     expect(client).toBeDefined();
   });
 
@@ -686,6 +712,7 @@ describe('NativeAuth0Client', () => {
         undefined,
         false,
         undefined,
+        undefined,
         undefined
       );
       expect(mockBridgeInstance.authorize).toHaveBeenCalledTimes(1);
@@ -728,6 +755,7 @@ describe('NativeAuth0Client', () => {
         options.domain,
         undefined,
         false, // useDPoP flipped to false
+        undefined,
         undefined,
         undefined
       );

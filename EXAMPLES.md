@@ -21,6 +21,9 @@
   - [Using Retry with Auth0 Class](#using-retry-with-auth0-class)
   - [Platform Support](#platform-support)
   - [Error Handling](#error-handling)
+- [Android Networking Configuration](#android-networking-configuration)
+  - [Using Networking Options with Hooks](#using-networking-options-with-hooks)
+  - [Using Networking Options with Auth0 Class](#using-networking-options-with-auth0-class)
 - [IPSIE Session Expiry](#ipsie-session-expiry)
 - [Biometric Authentication](#biometric-authentication)
   - [Biometric Policy Types](#biometric-policy-types)
@@ -636,6 +639,66 @@ function MyComponent() {
 1. **Use moderate retry counts**: Recommended maximum of 2 retries to balance reliability with performance
 2. **Configure adequate overlap period**: Ensure your Auth0 tenant has at least 180 seconds token overlap configured
 3. **Test on real devices**: Simulate network instability during testing to validate retry behavior
+
+## Android Networking Configuration
+
+> **Platform Support:** Android only. Accepted on iOS for API compatibility but has no effect.
+
+The `androidNetworkingOptions` configuration option lets you tune the native networking client (`DefaultClient` from Auth0.Android's OkHttp-based stack) used for every request the native SDK makes on your behalf — web auth token exchange, credential renewal, MFA, passkeys, and My Account API calls.
+
+```ts
+androidNetworkingOptions?: {
+  connectTimeout?: number; // seconds, default 10
+  readTimeout?: number; // seconds, default 10
+  writeTimeout?: number; // seconds, default 10
+  callTimeout?: number; // seconds, default 0 (no limit)
+  defaultHeaders?: Record<string, string>; // sent on every request, default {}
+  enableLogging?: boolean; // default false
+};
+```
+
+Any option you omit falls back to Auth0.Android's own default.
+
+> [!WARNING]
+> `enableLogging` is **debug-only**. When enabled, Auth0.Android logs full HTTP request and response bodies to Logcat — including access, refresh, and ID tokens returned from token-endpoint calls, in plaintext. Never enable it in a production build.
+
+### Using Networking Options with Hooks
+
+```jsx
+import React from 'react';
+import { Auth0Provider } from 'react-native-auth0';
+
+function App() {
+  return (
+    <Auth0Provider
+      domain="YOUR_AUTH0_DOMAIN"
+      clientId="YOUR_AUTH0_CLIENT_ID"
+      androidNetworkingOptions={{
+        connectTimeout: 30,
+        readTimeout: 30,
+        defaultHeaders: { 'X-App-Version': '1.2.3' },
+      }}
+    >
+      <MyComponent />
+    </Auth0Provider>
+  );
+}
+```
+
+### Using Networking Options with Auth0 Class
+
+```js
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+  androidNetworkingOptions: {
+    connectTimeout: 30,
+    readTimeout: 30,
+  },
+});
+```
 
 ## IPSIE Session Expiry
 

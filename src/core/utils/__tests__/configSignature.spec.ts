@@ -84,4 +84,30 @@ describe('getConfigSignature', () => {
       getConfigSignature({ ...base, maxRetries: 3 })
     );
   });
+
+  it('differs when androidNetworkingOptions changes', () => {
+    expect(
+      getConfigSignature({
+        ...base,
+        androidNetworkingOptions: { connectTimeout: 10 },
+      })
+    ).not.toBe(
+      getConfigSignature({
+        ...base,
+        androidNetworkingOptions: { connectTimeout: 30 },
+      })
+    );
+  });
+
+  it('is insensitive to androidNetworkingOptions key order', () => {
+    const a = getConfigSignature({
+      ...base,
+      androidNetworkingOptions: { connectTimeout: 10, readTimeout: 20 },
+    });
+    const b = getConfigSignature({
+      ...base,
+      androidNetworkingOptions: { readTimeout: 20, connectTimeout: 10 },
+    });
+    expect(a).toBe(b);
+  });
 });
