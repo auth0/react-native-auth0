@@ -39,7 +39,8 @@ class A0Auth0ModuleNetworkingOptionsTest {
         server.enqueue(MockResponse().setHeadersDelay(3, TimeUnit.SECONDS).setBody("{}"))
 
         val client = A0Auth0Module.buildNetworkingClient(
-            JavaOnlyMap.of("readTimeout", configuredTimeoutSeconds)
+            JavaOnlyMap.of("readTimeout", configuredTimeoutSeconds),
+            isDebuggable = true
         )
 
         var threw = false
@@ -65,12 +66,32 @@ class A0Auth0ModuleNetworkingOptionsTest {
         server.enqueue(MockResponse().setBody("{}"))
 
         val client = A0Auth0Module.buildNetworkingClient(
-            JavaOnlyMap.of("defaultHeaders", JavaOnlyMap.of("X-Custom-Header", "custom-value"))
+            JavaOnlyMap.of("defaultHeaders", JavaOnlyMap.of("X-Custom-Header", "custom-value")),
+            isDebuggable = true
         )
 
         client.load(server.url("/").toString(), RequestOptions(HttpMethod.GET))
 
         val recordedRequest = server.takeRequest()
         assertTrue(recordedRequest.getHeader("X-Custom-Header") == "custom-value")
+    }
+
+    @Test
+    fun `enableLogging is ignored on a non-debuggable build even when requested`() {
+        server.enqueue(MockResponse().setBody("{}"))
+
+        // If the debuggable gate is ever removed, Auth0.Android attaches its logging
+        // interceptor and this request crashes ("Method ... not mocked") because
+        // android.util.Log isn't stubbed in this unit test environment - that crash is
+        // exactly the regression this test is meant to catch.
+        val client = A0Auth0Module.buildNetworkingClient(
+            JavaOnlyMap.of("enableLogging", true),
+            isDebuggable = false
+        )
+
+        client.load(server.url("/").toString(), RequestOptions(HttpMethod.GET))
+
+        val recordedRequest = server.takeRequest()
+        assertTrue(recordedRequest.method == "GET")
     }
 }
