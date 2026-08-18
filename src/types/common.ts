@@ -219,7 +219,7 @@ export interface Auth0Options {
    * request it makes (web auth token exchange, credential renewal, MFA, passkeys, etc.).
    * @remarks Android only. Accepted on iOS for API compatibility but has no effect.
    */
-  androidNetworkingOptions?: AndroidNetworkingOptions;
+  networkingOptions?: NetworkingOptions;
   // Telemetry and localAuthenticationOptions are platform-specific extensions
 }
 
@@ -229,7 +229,7 @@ export interface Auth0Options {
  *
  * @remarks Android only. Has no effect on iOS or web.
  */
-export interface AndroidNetworkingOptions {
+export interface NetworkingOptions {
   /** Connection timeout, in seconds. @default 10 */
   connectTimeout?: number;
   /** Read timeout, in seconds. @default 10 */

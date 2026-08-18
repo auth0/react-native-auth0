@@ -644,10 +644,10 @@ function MyComponent() {
 
 > **Platform Support:** Android only. Accepted on iOS for API compatibility but has no effect.
 
-The `androidNetworkingOptions` configuration option lets you tune the native networking client (`DefaultClient` from Auth0.Android's OkHttp-based stack) used for every request the native SDK makes on your behalf — web auth token exchange, credential renewal, MFA, passkeys, and My Account API calls.
+The `networkingOptions` configuration option lets you tune the native networking client (`DefaultClient` from Auth0.Android's OkHttp-based stack) used for every request the native SDK makes on your behalf — web auth token exchange, credential renewal, MFA, passkeys, and My Account API calls.
 
 ```ts
-androidNetworkingOptions?: {
+networkingOptions?: {
   connectTimeout?: number; // seconds, default 10
   readTimeout?: number; // seconds, default 10
   writeTimeout?: number; // seconds, default 10
@@ -673,7 +673,7 @@ function App() {
     <Auth0Provider
       domain="YOUR_AUTH0_DOMAIN"
       clientId="YOUR_AUTH0_CLIENT_ID"
-      androidNetworkingOptions={{
+      networkingOptions={{
         connectTimeout: 30,
         readTimeout: 30,
         defaultHeaders: { 'X-App-Version': '1.2.3' },
@@ -693,7 +693,7 @@ import Auth0 from 'react-native-auth0';
 const auth0 = new Auth0({
   domain: 'YOUR_AUTH0_DOMAIN',
   clientId: 'YOUR_AUTH0_CLIENT_ID',
-  androidNetworkingOptions: {
+  networkingOptions: {
     connectTimeout: 30,
     readTimeout: 30,
   },

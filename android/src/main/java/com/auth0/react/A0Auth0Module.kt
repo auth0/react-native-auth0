@@ -93,10 +93,10 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         // config, so this always resolves to a fresh DefaultClient() when options are absent
         // rather than leaving the previous networkingClient in place.
         internal fun resolveNetworkingClient(
-            androidNetworkingOptions: ReadableMap?,
+            networkingOptions: ReadableMap?,
             isDebuggable: Boolean
         ): DefaultClient =
-            androidNetworkingOptions?.let { buildNetworkingClient(it, isDebuggable) } ?: DefaultClient()
+            networkingOptions?.let { buildNetworkingClient(it, isDebuggable) } ?: DefaultClient()
     }
 
     private val errorCodeMap = mapOf(
@@ -315,7 +315,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         useDPoP: Boolean?,
         maxRetries: Double,
         credentialsManagerStorageKey: String?,
-        androidNetworkingOptions: ReadableMap?,
+        networkingOptions: ReadableMap?,
         promise: Promise
     ) {
         // Note: maxRetries parameter is ignored on Android as the Auth0.Android SDK
@@ -326,7 +326,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         val auth0Instance = Auth0.getInstance(clientId, domain)
         auth0 = auth0Instance
         val isDebuggable = (reactContext.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
-        auth0Instance.networkingClient = resolveNetworkingClient(androidNetworkingOptions, isDebuggable)
+        auth0Instance.networkingClient = resolveNetworkingClient(networkingOptions, isDebuggable)
         mfaClient = MfaClient(auth0Instance, this.useDPoP, reactContext)
         myAccount = MyAccount(auth0Instance, this.useDPoP, reactContext)
         passwordless = Passwordless(auth0Instance, this.useDPoP, reactContext)

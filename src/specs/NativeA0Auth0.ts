@@ -28,7 +28,7 @@ export interface Spec extends TurboModule {
     useDPoP: boolean | undefined,
     maxRetries: Int32,
     credentialsManagerStorageKey: string | undefined,
-    androidNetworkingOptions: Object | undefined
+    networkingOptions: Object | undefined
   ): Promise<void>;
 
   /**

@@ -121,7 +121,7 @@ describe('NativeAuth0Client', () => {
       false, // useDPoP defaults to false
       undefined, // maxRetries not provided
       undefined, // credentialsManagerStorageKey not provided
-      undefined // androidNetworkingOptions not provided
+      undefined // networkingOptions not provided
     );
 
     // Use client to avoid unused variable warning
@@ -166,20 +166,20 @@ describe('NativeAuth0Client', () => {
       false, // useDPoP defaults to false
       undefined, // maxRetries not provided
       undefined, // credentialsManagerStorageKey not provided
-      undefined // androidNetworkingOptions not provided
+      undefined // networkingOptions not provided
     );
 
     // Use client to avoid unused variable warning
     expect(client).toBeDefined();
   });
 
-  it('should pass androidNetworkingOptions to initialize when provided', async () => {
+  it('should pass networkingOptions to initialize when provided', async () => {
     mockBridgeInstance.hasValidInstance.mockResolvedValue(false);
-    const androidNetworkingOptions = { connectTimeout: 30, readTimeout: 30 };
+    const networkingOptions = { connectTimeout: 30, readTimeout: 30 };
 
     const client = new NativeAuth0Client({
       ...options,
-      androidNetworkingOptions,
+      networkingOptions,
     });
     await new Promise(process.nextTick);
 
@@ -190,7 +190,7 @@ describe('NativeAuth0Client', () => {
       false,
       undefined,
       undefined,
-      androidNetworkingOptions
+      networkingOptions
     );
 
     expect(client).toBeDefined();

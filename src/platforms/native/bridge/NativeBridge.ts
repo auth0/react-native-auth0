@@ -9,7 +9,7 @@ import type {
   MfaEnrollmentChallenge,
   MfaChallengeResult,
   PasskeyChallengeResponse,
-  AndroidNetworkingOptions,
+  NetworkingOptions,
 } from '../../../types';
 import type {
   LocalAuthenticationOptions,
@@ -40,7 +40,7 @@ export interface NativeBridge {
    * @param useDPoP Whether to enable DPoP (Demonstrating Proof-of-Possession) for token requests.
    * @param maxRetries The maximum number of retry attempts for transient errors during credential renewal. **iOS only** - ignored on Android. Defaults to 0.
    * @param credentialsManagerStorageKey Namespaces the credentials store. **Android only** SharedPreferences file name. **iOS only** Keychain service name. Defaults to the shared store when omitted.
-   * @param androidNetworkingOptions Configures the native networking client. **Android only** - ignored on iOS.
+   * @param networkingOptions Configures the native networking client. **Android only** - ignored on iOS.
    */
   initialize(
     clientId: string,
@@ -49,7 +49,7 @@ export interface NativeBridge {
     useDPoP?: boolean,
     maxRetries?: number,
     credentialsManagerStorageKey?: string,
-    androidNetworkingOptions?: AndroidNetworkingOptions
+    networkingOptions?: NetworkingOptions
   ): Promise<void>;
 
   /**

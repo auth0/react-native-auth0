@@ -14,7 +14,7 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 import kotlin.system.measureTimeMillis
 
-// Proves that A0Auth0Module.buildNetworkingClient() genuinely threads androidNetworkingOptions
+// Proves that A0Auth0Module.buildNetworkingClient() genuinely threads networkingOptions
 // into the DefaultClient it builds, rather than just compiling. Exercises the client against a
 // real (local) server so the OkHttp timeout machinery actually runs.
 class A0Auth0ModuleNetworkingOptionsTest {
@@ -33,7 +33,7 @@ class A0Auth0ModuleNetworkingOptionsTest {
     }
 
     @Test
-    fun `readTimeout from androidNetworkingOptions is applied to the built DefaultClient`() {
+    fun `readTimeout from networkingOptions is applied to the built DefaultClient`() {
         val configuredTimeoutSeconds = 1
         // Stall the response well past the configured timeout.
         server.enqueue(MockResponse().setHeadersDelay(3, TimeUnit.SECONDS).setBody("{}"))
@@ -62,7 +62,7 @@ class A0Auth0ModuleNetworkingOptionsTest {
     }
 
     @Test
-    fun `defaultHeaders from androidNetworkingOptions are sent on every request`() {
+    fun `defaultHeaders from networkingOptions are sent on every request`() {
         server.enqueue(MockResponse().setBody("{}"))
 
         val client = A0Auth0Module.buildNetworkingClient(
@@ -103,7 +103,7 @@ class A0Auth0ModuleNetworkingOptionsTest {
             isDebuggable = true
         )
 
-        // Re-initialization with the same clientId/domain but androidNetworkingOptions omitted
+        // Re-initialization with the same clientId/domain but networkingOptions omitted
         // must not carry the previous readTimeout forward - it should behave like a fresh
         // DefaultClient() (10s default readTimeout).
         val reset = A0Auth0Module.resolveNetworkingClient(null, isDebuggable = true)

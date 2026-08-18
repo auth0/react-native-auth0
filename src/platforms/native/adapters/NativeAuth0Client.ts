@@ -109,7 +109,7 @@ export class NativeAuth0Client implements Auth0Client {
       useDPoP = false,
       maxRetries,
       credentialsManagerStorageKey,
-      androidNetworkingOptions,
+      networkingOptions,
     } = options;
     // Re-init when domain/clientId differ (hasValidInstance) or any other
     // identity option drifted from what was last applied to the native side.
@@ -127,7 +127,7 @@ export class NativeAuth0Client implements Auth0Client {
         useDPoP,
         maxRetries,
         credentialsManagerStorageKey,
-        androidNetworkingOptions
+        networkingOptions
       );
     }
     // Record even on the skip path so siblings differing only in a

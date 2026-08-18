@@ -284,12 +284,12 @@ describe('NativeBridgeManager', () => {
         false, // useDPoP default
         0, // maxRetries default
         undefined, // credentialsManagerStorageKey
-        undefined // androidNetworkingOptions
+        undefined // networkingOptions
       );
     });
 
-    it('forwards androidNetworkingOptions to the native module when provided', async () => {
-      const androidNetworkingOptions = {
+    it('forwards networkingOptions to the native module when provided', async () => {
+      const networkingOptions = {
         connectTimeout: 30,
         readTimeout: 30,
         defaultHeaders: { 'X-Custom': 'value' },
@@ -302,7 +302,7 @@ describe('NativeBridgeManager', () => {
         false,
         0,
         undefined,
-        androidNetworkingOptions
+        networkingOptions
       );
 
       expect(
@@ -314,7 +314,7 @@ describe('NativeBridgeManager', () => {
         false,
         0,
         undefined,
-        androidNetworkingOptions
+        networkingOptions
       );
     });
 
