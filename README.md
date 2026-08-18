@@ -53,6 +53,8 @@ Our SDK requires a minimum iOS deployment target of 14.0. In your project's ios/
 platform :ios, '14.0'
 ```
 
+The iOS pod ships a privacy manifest (`PrivacyInfo.xcprivacy`) that declares no tracking, no required-reason API usage, and a user identifier collected only for app functionality. Xcode picks it up automatically when you generate a privacy report for App Store submission — you don't need to declare anything on this SDK's behalf.
+
 ### Installation
 
 First install the native library module:
