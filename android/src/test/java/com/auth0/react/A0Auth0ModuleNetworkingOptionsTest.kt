@@ -94,4 +94,31 @@ class A0Auth0ModuleNetworkingOptionsTest {
         val recordedRequest = server.takeRequest()
         assertTrue(recordedRequest.method == "GET")
     }
+
+    @Test
+    fun `re-initializing with the same configuration but no options restores the default client`() {
+        // First "initialization": custom options give a 1s readTimeout.
+        val customized = A0Auth0Module.resolveNetworkingClient(
+            JavaOnlyMap.of("readTimeout", 1),
+            isDebuggable = true
+        )
+
+        // Re-initialization with the same clientId/domain but androidNetworkingOptions omitted
+        // must not carry the previous readTimeout forward - it should behave like a fresh
+        // DefaultClient() (10s default readTimeout).
+        val reset = A0Auth0Module.resolveNetworkingClient(null, isDebuggable = true)
+
+        server.enqueue(MockResponse().setHeadersDelay(3, TimeUnit.SECONDS).setBody("{}"))
+        var threw = false
+        try {
+            customized.load(server.url("/").toString(), RequestOptions(HttpMethod.GET))
+        } catch (e: IOException) {
+            threw = true
+        }
+        assertTrue("Expected the 1s readTimeout to fire on the customized client", threw)
+
+        server.enqueue(MockResponse().setHeadersDelay(3, TimeUnit.SECONDS).setBody("{}"))
+        // Should comfortably survive the 3s delay under the restored 10s default readTimeout.
+        reset.load(server.url("/").toString(), RequestOptions(HttpMethod.GET))
+    }
 }

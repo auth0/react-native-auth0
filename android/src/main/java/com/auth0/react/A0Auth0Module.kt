@@ -87,6 +87,16 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             }
             return builder.build()
         }
+
+        // Auth0.getInstance() returns a shared singleton per clientId/domain: a sibling client
+        // (or this same client on re-init) must not inherit another initialization's networking
+        // config, so this always resolves to a fresh DefaultClient() when options are absent
+        // rather than leaving the previous networkingClient in place.
+        internal fun resolveNetworkingClient(
+            androidNetworkingOptions: ReadableMap?,
+            isDebuggable: Boolean
+        ): DefaultClient =
+            androidNetworkingOptions?.let { buildNetworkingClient(it, isDebuggable) } ?: DefaultClient()
     }
 
     private val errorCodeMap = mapOf(
@@ -313,19 +323,15 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         // This parameter is accepted for API compatibility with iOS.
 
         this.useDPoP = useDPoP ?: false
-        auth0 = Auth0.getInstance(clientId, domain)
-        // Auth0.getInstance() returns a shared singleton per clientId/domain: a sibling client
-        // (or this same client on re-init) must not inherit another initialization's networking
-        // config, so always set networkingClient rather than only when options are present.
+        val auth0Instance = Auth0.getInstance(clientId, domain)
+        auth0 = auth0Instance
         val isDebuggable = (reactContext.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
-        auth0!!.networkingClient = androidNetworkingOptions?.let {
-            buildNetworkingClient(it, isDebuggable)
-        } ?: DefaultClient()
-        mfaClient = MfaClient(auth0!!, this.useDPoP, reactContext)
-        myAccount = MyAccount(auth0!!, this.useDPoP, reactContext)
-        passwordless = Passwordless(auth0!!, this.useDPoP, reactContext)
+        auth0Instance.networkingClient = resolveNetworkingClient(androidNetworkingOptions, isDebuggable)
+        mfaClient = MfaClient(auth0Instance, this.useDPoP, reactContext)
+        myAccount = MyAccount(auth0Instance, this.useDPoP, reactContext)
+        passwordless = Passwordless(auth0Instance, this.useDPoP, reactContext)
 
-        val authAPI = AuthenticationAPIClient(auth0!!)
+        val authAPI = AuthenticationAPIClient(auth0Instance)
         if (this.useDPoP) {
             authAPI.useDPoP(reactContext)
         }
