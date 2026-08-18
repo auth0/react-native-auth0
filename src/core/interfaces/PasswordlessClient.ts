@@ -15,7 +15,7 @@ import type {
  *
  * @remarks Native only (iOS, Android). Not supported on web.
  */
-export interface IPasswordlessClient {
+export interface PasswordlessClient {
   /**
    * Issues an OTP challenge to an email address for a database connection.
    *

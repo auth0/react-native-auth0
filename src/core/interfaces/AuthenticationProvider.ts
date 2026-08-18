@@ -21,7 +21,7 @@ import type {
  * Defines the contract for direct authentication methods that interact with Auth0's
  * Authentication API endpoints without a web-based redirect.
  */
-export interface IAuthenticationProvider {
+export interface AuthenticationProvider {
   passwordRealm(parameters: PasswordRealmParameters): Promise<Credentials>;
   refreshToken(parameters: RefreshTokenParameters): Promise<Credentials>;
   userInfo(parameters: UserInfoParameters): Promise<User>;

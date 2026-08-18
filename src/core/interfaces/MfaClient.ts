@@ -16,7 +16,7 @@ import type {
  * from an MFA_REQUIRED error. It provides methods to list authenticators,
  * enroll new factors, challenge existing factors, and verify MFA codes.
  */
-export interface IMfaClient {
+export interface MfaClient {
   /**
    * Lists the user's enrolled MFA authenticators.
    *

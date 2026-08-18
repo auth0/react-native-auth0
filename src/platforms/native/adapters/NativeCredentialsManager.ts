@@ -1,20 +1,20 @@
-import type { ICredentialsManager } from '../../../core/interfaces';
+import type { CredentialsManager } from '../../../core/interfaces';
 import { ApiCredentials, AuthError } from '../../../core/models';
 import { CredentialsManagerError } from '../../../core/models';
 import type {
-  ApiCredentials as IApiCredentials,
+  ApiCredentials as ApiCredentialsData,
   Credentials,
   SessionTransferCredentials,
 } from '../../../types';
-import type { INativeBridge } from '../bridge';
+import type { NativeBridge } from '../bridge';
 
 /**
- * A native platform-specific implementation of the ICredentialsManager.
+ * A native platform-specific implementation of the CredentialsManager.
  * It delegates all credential storage, retrieval, and management logic to the
  * underlying native bridge, which uses secure native storage.
  */
-export class NativeCredentialsManager implements ICredentialsManager {
-  constructor(private bridge: INativeBridge) {}
+export class NativeCredentialsManager implements CredentialsManager {
+  constructor(private bridge: NativeBridge) {}
 
   private async handleError<T>(promise: Promise<T>): Promise<T> {
     try {
@@ -58,7 +58,7 @@ export class NativeCredentialsManager implements ICredentialsManager {
       this.bridge.getApiCredentials(audience, scope, minTtl ?? 0, parameters)
     );
     // Convert plain object from native to class instance
-    return new ApiCredentials(nativeCredentials as IApiCredentials);
+    return new ApiCredentials(nativeCredentials as ApiCredentialsData);
   }
 
   async clearApiCredentials(audience: string, scope?: string): Promise<void> {

@@ -1,14 +1,14 @@
 import {
-  Auth0Client,
+  Auth0Client as SpaAuth0Client,
   type Auth0ClientOptions,
   type LogoutOptions,
 } from '@auth0/auth0-spa-js';
 import type {
-  IAuth0Client,
-  IAuthenticationProvider,
-  IMyAccountClient,
-  IPasswordlessClient,
-  IMfaClient,
+  Auth0Client,
+  AuthenticationProvider,
+  MyAccountClient,
+  PasswordlessClient,
+  MfaClient,
 } from '../../../core/interfaces';
 import type { WebAuth0Options } from '../../../types/platform-specific';
 import type {
@@ -35,32 +35,32 @@ import {
   validateTokenTypeUri,
 } from '../../../core/utils';
 
-export class WebAuth0Client implements IAuth0Client {
+export class WebAuth0Client implements Auth0Client {
   readonly webAuth: WebWebAuthProvider;
   readonly credentialsManager: WebCredentialsManager;
-  readonly auth: IAuthenticationProvider;
-  readonly mfa: IMfaClient;
-  readonly myAccount: IMyAccountClient;
+  readonly auth: AuthenticationProvider;
+  readonly mfa: MfaClient;
+  readonly myAccount: MyAccountClient;
 
   private readonly httpClient: HttpClient;
   private readonly tokenType: TokenType;
-  public readonly client: Auth0Client;
-  private static spaClient: Auth0Client | null = null;
+  public readonly client: SpaAuth0Client;
+  private static spaClient: SpaAuth0Client | null = null;
 
   private logoutInProgress = false;
 
   /**
-   * Factory method to get a singleton instance of Auth0Client.
+   * Factory method to get a singleton instance of SpaAuth0Client.
    * This ensures that the client is only created once and reused.
    *
    * @param options - The Auth0ClientOptions to configure the client.
-   * @returns An instance of Auth0Client.
+   * @returns An instance of SpaAuth0Client.
    */
-  private static getSpaClient(options: Auth0ClientOptions): Auth0Client {
+  private static getSpaClient(options: Auth0ClientOptions): SpaAuth0Client {
     if (WebAuth0Client.spaClient) {
       return WebAuth0Client.spaClient;
     }
-    WebAuth0Client.spaClient = new Auth0Client(options);
+    WebAuth0Client.spaClient = new SpaAuth0Client(options);
     return WebAuth0Client.spaClient;
   }
 
@@ -131,7 +131,7 @@ export class WebAuth0Client implements IAuth0Client {
     );
   }
 
-  readonly passwordless: IPasswordlessClient = new WebPasswordlessClient();
+  readonly passwordless: PasswordlessClient = new WebPasswordlessClient();
 
   public async logout(options?: LogoutOptions): Promise<void> {
     // If a logout process has already started, do nothing.

@@ -1,11 +1,11 @@
 import { NativePasswordlessClient } from '../NativePasswordlessClient';
-import type { INativeBridge } from '../../bridge';
+import type { NativeBridge } from '../../bridge';
 
 const mockBridge = {
   passwordlessChallengeWithEmail: jest.fn(),
   passwordlessChallengeWithPhoneNumber: jest.fn(),
   passwordlessLoginWithOTP: jest.fn(),
-} as unknown as jest.Mocked<INativeBridge>;
+} as unknown as jest.Mocked<NativeBridge>;
 
 describe('NativePasswordlessClient', () => {
   let client: NativePasswordlessClient;

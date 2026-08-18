@@ -1,9 +1,9 @@
-import type { IWebAuthProvider } from './IWebAuthProvider';
-import type { ICredentialsManager } from './ICredentialsManager';
-import type { IAuthenticationProvider } from './IAuthenticationProvider';
-import type { IMyAccountClient } from './IMyAccountClient';
-import type { IPasswordlessClient } from './IPasswordlessClient';
-import type { IMfaClient } from './IMfaClient';
+import type { WebAuthProvider } from './WebAuthProvider';
+import type { CredentialsManager } from './CredentialsManager';
+import type { AuthenticationProvider } from './AuthenticationProvider';
+import type { MyAccountClient } from './MyAccountClient';
+import type { PasswordlessClient } from './PasswordlessClient';
+import type { MfaClient } from './MfaClient';
 import type {
   DPoPHeadersParams,
   CustomTokenExchangeParameters,
@@ -21,33 +21,33 @@ import type {
  * into a single, cohesive contract. Platform-specific factories will produce an
  * object that conforms to this interface.
  */
-export interface IAuth0Client {
+export interface Auth0Client {
   /**
    * Provides access to methods for handling web-based authentication flows.
    */
-  readonly webAuth: IWebAuthProvider;
+  readonly webAuth: WebAuthProvider;
 
   /**
    * Provides access to methods for securely managing user credentials on the device.
    */
-  readonly credentialsManager: ICredentialsManager;
+  readonly credentialsManager: CredentialsManager;
 
   /**
    * Provides access to methods for direct authentication grants (e.g., password-realm).
    */
-  readonly auth: IAuthenticationProvider;
+  readonly auth: AuthenticationProvider;
 
   /**
    * Provides access to methods for interacting with the My Account API for managing authentication methods.
    */
-  readonly myAccount: IMyAccountClient;
+  readonly myAccount: MyAccountClient;
 
   /**
    * Provides access to the passwordless OTP flow for database connections.
    *
    * @remarks Native only (iOS, Android). Not supported on web.
    */
-  readonly passwordless: IPasswordlessClient;
+  readonly passwordless: PasswordlessClient;
 
   /**
    * Generates DPoP headers for making authenticated requests to custom APIs.
@@ -101,7 +101,7 @@ export interface IAuth0Client {
    * const credentials = await auth0.mfa.verify({ mfaToken, otp: '123456' });
    * ```
    */
-  readonly mfa: IMfaClient;
+  readonly mfa: MfaClient;
 
   /**
    * Requests a passkey signup challenge from Auth0.

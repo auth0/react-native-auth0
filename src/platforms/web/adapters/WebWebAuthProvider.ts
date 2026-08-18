@@ -1,4 +1,4 @@
-import type { IWebAuthProvider } from '../../../core/interfaces';
+import type { WebAuthProvider } from '../../../core/interfaces';
 import type {
   Credentials,
   WebAuthorizeParameters,
@@ -13,7 +13,7 @@ import type {
   User as SpaJSUser,
 } from '@auth0/auth0-spa-js';
 
-export class WebWebAuthProvider implements IWebAuthProvider {
+export class WebWebAuthProvider implements WebAuthProvider {
   constructor(private client: Auth0Client) {}
 
   // private method to convert a SpaJSUser to a User

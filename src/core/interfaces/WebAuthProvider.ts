@@ -16,7 +16,7 @@ import type {
  * Defines the contract for a provider that handles web-based authentication flows,
  * such as redirecting to the Auth0 Universal Login page.
  */
-export interface IWebAuthProvider {
+export interface WebAuthProvider {
   /**
    * Initiates the web-based authentication flow.
    *

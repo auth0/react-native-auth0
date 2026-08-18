@@ -256,7 +256,7 @@ describe('UnimplementedWebAuthenticationProvider', () => {
   });
 
   describe('comprehensive method coverage', () => {
-    it('should ensure all IAuthenticationProvider methods are implemented', () => {
+    it('should ensure all AuthenticationProvider methods are implemented', () => {
       const provider = UnimplementedWebAuthenticationProvider;
 
       // Verify all expected methods exist
