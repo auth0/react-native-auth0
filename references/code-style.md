@@ -9,7 +9,7 @@
 
 ## Naming
 
-- `PascalCase` for classes, types, and interfaces; interfaces are `I`-prefixed (`IAuth0Client`, `ICredentialsManager`).
+- `PascalCase` for classes, types, and interfaces. Interfaces are **not** `I`-prefixed — the contract takes the plain name (`Auth0Client`, `CredentialsManager`) and implementations carry the platform prefix (`NativeAuth0Client`, `WebCredentialsManager`).
 - `camelCase` for functions, methods, variables.
 - `snake_case` appears only in raw API wire payloads; convert to camelCase via `deepCamelCase` (`src/core/utils`) before it reaches public types.
 - Errors extend `AuthError` and carry a programmatic `code`, a `message`, and an optional `cause`.
@@ -21,7 +21,7 @@
 ```ts
 import type { Credentials } from '../../types';
 
-export interface IAuthenticationProvider {
+export interface AuthenticationProvider {
   passwordRealm: (params: PasswordRealmParameters) => Promise<Credentials>;
 }
 
@@ -37,7 +37,7 @@ export class InvalidTokenError extends AuthError {
 ```ts
 import { Credentials } from '../../types'; // should be `import type`
 
-export interface IAuthenticationProvider {
+export interface AuthenticationProvider {
   passwordRealm(params: any): Promise<any>; // any + method syntax
 }
 

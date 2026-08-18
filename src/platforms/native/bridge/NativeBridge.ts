@@ -21,7 +21,7 @@ import type {
  * This interface is the single source of truth for communication between the
  * JavaScript and the native layers (iOS/Android).
  */
-export interface INativeBridge {
+export interface NativeBridge {
   /**
    * Checks if the native SDK has been initialized with the required credentials.
    * This should be called before any other method.

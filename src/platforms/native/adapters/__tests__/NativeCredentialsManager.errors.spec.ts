@@ -1,9 +1,9 @@
 import { NativeCredentialsManager } from '../NativeCredentialsManager';
-import { INativeBridge } from '../../bridge';
+import { NativeBridge } from '../../bridge';
 import { CredentialsManagerError } from '../../../../core/models';
 
 // Mock the native bridge
-const mockBridge: jest.Mocked<INativeBridge> = {
+const mockBridge: jest.Mocked<NativeBridge> = {
   getCredentials: jest.fn(),
   saveCredentials: jest.fn(),
   clearCredentials: jest.fn(),

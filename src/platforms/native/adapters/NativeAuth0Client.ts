@@ -1,9 +1,9 @@
 import type {
-  IAuth0Client,
-  IAuthenticationProvider,
-  IMyAccountClient,
-  IPasswordlessClient,
-  IMfaClient,
+  Auth0Client,
+  AuthenticationProvider,
+  MyAccountClient,
+  PasswordlessClient,
+  MfaClient,
 } from '../../../core/interfaces';
 import type { NativeAuth0Options } from '../../../types/platform-specific';
 import type {
@@ -20,7 +20,7 @@ import { NativeCredentialsManager } from './NativeCredentialsManager';
 import { NativeMfaClient } from './NativeMfaClient';
 import { NativeMyAccountClient } from './NativeMyAccountClient';
 import { NativePasswordlessClient } from './NativePasswordlessClient';
-import { type INativeBridge, NativeBridgeManager } from '../bridge';
+import { type NativeBridge, NativeBridgeManager } from '../bridge';
 import { AuthenticationOrchestrator } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
@@ -31,20 +31,20 @@ import {
   validateTokenTypeUri,
 } from '../../../core/utils';
 
-export class NativeAuth0Client implements IAuth0Client {
+export class NativeAuth0Client implements Auth0Client {
   readonly webAuth: NativeWebAuthProvider;
   readonly credentialsManager: NativeCredentialsManager;
-  readonly auth: IAuthenticationProvider;
-  readonly mfa: IMfaClient;
-  readonly passwordless: IPasswordlessClient;
+  readonly auth: AuthenticationProvider;
+  readonly mfa: MfaClient;
+  readonly passwordless: PasswordlessClient;
   private ready: Promise<void>;
   private readonly httpClient: HttpClient;
   private readonly tokenType: TokenType;
-  private readonly bridge: INativeBridge;
+  private readonly bridge: NativeBridge;
   private readonly options: NativeAuth0Options;
   private readonly configSignature: string;
   private syncLock: Promise<void> = Promise.resolve();
-  private guardedBridge!: INativeBridge;
+  private guardedBridge!: NativeBridge;
 
   // Signature last applied to the shared native singleton. `hasValidInstance`
   // only checks domain/clientId, so this tracks other identity options
@@ -97,7 +97,7 @@ export class NativeAuth0Client implements IAuth0Client {
   }
 
   private async initialize(
-    bridge: INativeBridge,
+    bridge: NativeBridge,
     options: NativeAuth0Options
   ): Promise<void> {
     const {
@@ -141,7 +141,7 @@ export class NativeAuth0Client implements IAuth0Client {
     return this.syncLock;
   }
 
-  readonly myAccount: IMyAccountClient;
+  readonly myAccount: MyAccountClient;
 
   async getDPoPHeaders(
     params: DPoPHeadersParams
@@ -158,7 +158,7 @@ export class NativeAuth0Client implements IAuth0Client {
     }
   }
 
-  private createGuardedBridge(bridge: INativeBridge): INativeBridge {
+  private createGuardedBridge(bridge: NativeBridge): NativeBridge {
     const guarded: any = {};
 
     // Get the prototype of the bridge instance to access its methods.
@@ -189,7 +189,7 @@ export class NativeAuth0Client implements IAuth0Client {
       };
     }
 
-    return guarded as INativeBridge;
+    return guarded as NativeBridge;
   }
 
   /**

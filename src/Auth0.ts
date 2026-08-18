@@ -1,5 +1,5 @@
-import type { IAuth0Client } from './core/interfaces/IAuth0Client';
-import type { IMfaClient } from './core/interfaces/IMfaClient';
+import type { Auth0Client } from './core/interfaces/Auth0Client';
+import type { MfaClient } from './core/interfaces/MfaClient';
 import { Auth0ClientFactory } from './factory/Auth0ClientFactory';
 import type {
   Auth0Options,
@@ -29,7 +29,7 @@ import type {
  * ```
  */
 class Auth0 {
-  private client: IAuth0Client;
+  private client: Auth0Client;
 
   /**
    * Creates an instance of the Auth0 client.
@@ -43,7 +43,7 @@ class Auth0 {
 
   /**
    * Provides access to the web-based authentication methods.
-   * @see IWebAuthProvider
+   * @see WebAuthProvider
    */
   get webAuth() {
     return this.client.webAuth;
@@ -51,7 +51,7 @@ class Auth0 {
 
   /**
    * Provides access to the credentials management methods.
-   * @see ICredentialsManager
+   * @see CredentialsManager
    */
   get credentialsManager() {
     return this.client.credentialsManager;
@@ -59,7 +59,7 @@ class Auth0 {
 
   /**
    * Provides access to direct authentication methods (e.g., password-realm).
-   * @see IAuthenticationProvider
+   * @see AuthenticationProvider
    */
   get auth() {
     return this.client.auth;
@@ -165,7 +165,7 @@ class Auth0 {
    * const credentials = await auth0.mfa.verify({ mfaToken, otp: '123456' });
    * ```
    */
-  get mfa(): IMfaClient {
+  get mfa(): MfaClient {
     return this.client.mfa;
   }
 

@@ -1,4 +1,4 @@
-import type { INativeBridge } from './INativeBridge';
+import type { NativeBridge } from './NativeBridge';
 import type {
   ApiCredentials,
   Credentials,
@@ -26,12 +26,12 @@ import type { NativeModuleError } from '../../../core/interfaces';
 
 /**
  * Manages the direct communication with the native Auth0 module.
- * It implements the INativeBridge interface and is responsible for:
+ * It implements the NativeBridge interface and is responsible for:
  * - Calling the actual native methods.
  *-  Normalizing data and parameters between JS and Native.
  * - Catching native errors and re-throwing them as structured AuthError objects.
  */
-export class NativeBridgeManager implements INativeBridge {
+export class NativeBridgeManager implements NativeBridge {
   private async a0_call<T>(
     nativeMethod: (...args: any[]) => Promise<T>,
     ...args: any[]

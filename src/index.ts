@@ -24,7 +24,7 @@ export {
   LocalAuthenticationStrategy,
 } from './types/platform-specific';
 export type { LocalAuthenticationOptions } from './types/platform-specific';
-export type { IMfaClient } from './core/interfaces/IMfaClient';
+export type { MfaClient } from './core/interfaces/MfaClient';
 
 // Re-export Auth0 as default
 export { default } from './Auth0';

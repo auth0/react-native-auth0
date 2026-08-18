@@ -1,4 +1,4 @@
-import type { IAuthenticationProvider } from '../interfaces';
+import type { AuthenticationProvider } from '../interfaces';
 import type {
   Credentials,
   SessionTransferCredentials,
@@ -67,7 +67,7 @@ function includeRequiredScope(scope?: string): string {
  * Orchestrates all direct authentication flows by making calls to the Auth0 Authentication API.
  * This class is platform-agnostic and relies on an injected HttpClient.
  */
-export class AuthenticationOrchestrator implements IAuthenticationProvider {
+export class AuthenticationOrchestrator implements AuthenticationProvider {
   private readonly client: HttpClient;
   private readonly clientId: string;
   private readonly tokenType: TokenType;

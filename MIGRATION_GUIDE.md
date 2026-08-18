@@ -235,6 +235,21 @@ Two codes were added for the new Auth0.swift cases, both iOS-only: `AUTHENTICATI
 
 `SSO_EXCHANGE_FAILED` (iOS and Android) and `CLEAR_FAILED` (iOS) are now reported instead of being collapsed into a generic credentials-manager error. No action is required unless you exhaustively match on these codes.
 
+### 10. Interfaces no longer use the `I` prefix ✅
+
+The platform contracts in `src/core/interfaces/` dropped their `I` prefix, so the interface now takes the plain name and the implementations keep their platform prefix (`Auth0Client` is the contract; `NativeAuth0Client` and `WebAuth0Client` implement it).
+
+Only one of these was exported to consumers:
+
+```diff
+- import type { IMfaClient } from 'react-native-auth0';
++ import type { MfaClient } from 'react-native-auth0';
+```
+
+**✅ Action Required:** rename the import if you annotated anything with `IMfaClient` — typically a variable holding `auth0.mfa` or the `mfa` object from `useAuth0()`. This is a type-only change; runtime behaviour is identical.
+
+The rest (`AuthenticationProvider`, `CredentialsManager`, `MyAccountClient`, `PasswordlessClient`, `WebAuthProvider`, `NativeBridge`) were never exported from the package entry point, so nothing to do there.
+
 ### Recommended Reading
 
 - The [FAQ](FAQ.md) for guidance on the `authorize()` redirect flow on web and the importance of the `offline_access` scope.
