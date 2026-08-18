@@ -82,6 +82,9 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             options.getMap("defaultHeaders")?.let { headers ->
                 builder.defaultHeaders(headers.toHashMap().mapValues { it.value?.toString() ?: "" })
             }
+            // Only honor enableLogging on debug builds: Auth0.Android logs full request/response
+            // bodies at this level, including plaintext access/refresh/ID tokens from token-endpoint
+            // responses. Test coverage in A0Auth0ModuleNetworkingOptionsTest ensures this gate holds.
             if (isDebuggable && options.hasKey("enableLogging")) {
                 builder.enableLogging(options.getBoolean("enableLogging"))
             }

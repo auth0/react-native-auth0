@@ -80,10 +80,10 @@ class A0Auth0ModuleNetworkingOptionsTest {
     fun `enableLogging is ignored on a non-debuggable build even when requested`() {
         server.enqueue(MockResponse().setBody("{}"))
 
-        // If the debuggable gate is ever removed, Auth0.Android attaches its logging
-        // interceptor and this request crashes ("Method ... not mocked") because
-        // android.util.Log isn't stubbed in this unit test environment - that crash is
-        // exactly the regression this test is meant to catch.
+        // SECURITY: If the isDebuggable gate is ever removed, Auth0.Android attaches its
+        // logging interceptor which logs full request/response bodies (including tokens).
+        // This test would crash ("Method android.util.Log not mocked") if that happens,
+        // catching the security regression before it ships.
         val client = A0Auth0Module.buildNetworkingClient(
             JavaOnlyMap.of("enableLogging", true),
             isDebuggable = false

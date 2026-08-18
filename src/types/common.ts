@@ -228,6 +228,15 @@ export interface Auth0Options {
  * Mirrors `DefaultClient.Builder` from the Auth0.Android SDK.
  *
  * @remarks Android only. Has no effect on iOS or web.
+ *
+ * @example
+ * ```ts
+ * networkingOptions: {
+ *   connectTimeout: 30,
+ *   readTimeout: 30,
+ *   defaultHeaders: { 'X-App-Version': '1.2.3' }
+ * }
+ * ```
  */
 export interface NetworkingOptions {
   /** Connection timeout, in seconds. @default 10 */
