@@ -11,6 +11,7 @@ function problemDetails(
     type?: string;
     title?: string;
     detail?: string;
+    status?: number;
     statusCode?: number;
   },
   code = details.type ?? '',
@@ -45,6 +46,21 @@ describe('MyAccountError', () => {
       );
 
       expect(error.typeUri).toBe('https://auth0.com/api-errors/A0E-400-0001');
+    });
+
+    it('reads the RFC 7807 `status` field even when AuthError.status is 0', () => {
+      // Regression: a spec-compliant problem document uses `status`, not the
+      // nonstandard `statusCode`. The adapter that built the AuthError may not
+      // have populated `.status`, so `parsed.status` must be checked first.
+      const error = new MyAccountError(
+        problemDetails({
+          type: 'https://auth0.com/api-errors/A0E-401-0001',
+          status: 401,
+        })
+      );
+
+      expect(error.statusCode).toBe(401);
+      expect(error.type).toBe(MyAccountErrorCodes.UNAUTHORIZED);
     });
 
     it('falls back to raw values when the message is not JSON', () => {

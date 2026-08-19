@@ -1013,10 +1013,13 @@ function TokenExchangeScreen() {
           case 'invalid_grant':
             Alert.alert('Error', 'The external token was rejected or expired');
             break;
-          case 'unsupported_grant_type':
+          case 'unsupported_token_type':
+            Alert.alert('Error', 'The external token type is not supported');
+            break;
+          case 'unauthorized_client':
             Alert.alert(
               'Error',
-              'Custom Token Exchange is not enabled for this tenant'
+              'Custom Token Exchange is not enabled for this client'
             );
             break;
           case 'access_denied':
@@ -1851,7 +1854,7 @@ error handling matches every other error class in the SDK, and preserves the ori
 catch (e) {
   if (e instanceof MyAccountError) {
     console.log(e.type);       // "UNAUTHORIZED" — normalized, switch on this
-    console.log(e.typeUri);    // "https://auth0.com/api-errors/A0E-401" — raw, log this
+    console.log(e.typeUri);    // "https://auth0.com/api-errors/A0E-401-0001" — raw, log this
     console.log(e.statusCode); // 401
   }
 }

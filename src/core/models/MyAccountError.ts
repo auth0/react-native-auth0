@@ -158,7 +158,10 @@ export class MyAccountError extends AuthError {
     this.typeUri = (parsed?.type as string) ?? originalError.code;
     this.title = (parsed?.title as string) ?? '';
     this.detail = (parsed?.detail as string) ?? originalError.message;
-    this.statusCode = (parsed?.statusCode as number) ?? originalError.status;
+    this.statusCode =
+      (parsed?.status as number) ??
+      (parsed?.statusCode as number) ??
+      originalError.status;
 
     this.type =
       ERROR_CODE_MAP[originalError.code] ??

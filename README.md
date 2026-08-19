@@ -670,19 +670,24 @@ The options for configuring the display of local authentication prompt, authenti
 
 ### Error taxonomy
 
-Every error the SDK throws extends `AuthError` and carries a **normalized, platform-agnostic**
-`type`. Switch on `type` — never on `code` — and your error handling behaves identically on iOS,
-Android, and web.
+Every error the SDK throws extends `AuthError`. The six normalized subclasses below carry a
+**normalized, platform-agnostic** `type` — switch on `type`, not `code`, for these and your error
+handling behaves identically on iOS, Android, and web. Flows that throw a plain `AuthError`
+instead — for example [Custom Token Exchange](EXAMPLES.md#custom-token-exchange-rfc-8693), which surfaces
+the raw OAuth error from the token endpoint — don't get a normalized `type`; there, `code` is the
+correct (and only) thing to switch on.
 
-| Property  | Use it for                                                                                                 |
-| --------- | ---------------------------------------------------------------------------------------------------------- |
-| `type`    | **Control flow.** A normalized code, stable across platforms. Compare against the `…ErrorCodes` constants. |
-| `code`    | **Diagnostics.** The raw code from the underlying platform SDK or wire response. Varies by platform.       |
-| `message` | Human-readable description. Not stable — do not parse it.                                                  |
-| `status`  | HTTP status, when the failure came from an HTTP response (`0` otherwise).                                  |
+| Property  | Use it for                                                                                                                                             |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`    | **Control flow** for the six normalized subclasses. A normalized code, stable across platforms. Compare against the `…ErrorCodes` constants.             |
+| `code`    | **Diagnostics** for the normalized subclasses (raw code from the underlying platform SDK or wire response, varies by platform); **control flow** for plain `AuthError` flows that have no normalized `type`. |
+| `message` | Human-readable description. Not stable — do not parse it.                                                                                                 |
+| `status`  | HTTP status, when the failure came from an HTTP response (`0` otherwise).                                                                                 |
 
-Each error class ships a companion constants object and a matching TypeScript union, so a `switch`
-on `type` is exhaustively checked at compile time:
+Each of the six normalized classes ships a companion constants object and a matching TypeScript
+union. Handle every value explicitly (no `default` branch) and TypeScript enforces exhaustiveness
+at compile time — a `switch` missing a case fails to compile. The example below adds a `default`
+fallback for brevity, so it does not get that compile-time guarantee:
 
 | Error class               | Constants                      | Type union                         | Thrown by                                       |
 | ------------------------- | ------------------------------ | ---------------------------------- | ----------------------------------------------- |
@@ -719,7 +724,7 @@ class — it keeps `switch` statements exhaustive and rejects codes that cannot 
 
 `MyAccountError` is the one class with an extra property: the My Account API reports failures as
 [RFC 7807](https://datatracker.ietf.org/doc/html/rfc7807) type URIs, so `type` holds the normalized
-code while `typeUri` preserves the original URI (e.g. `https://auth0.com/api-errors/A0E-401`) for
+code while `typeUri` preserves the original URI (e.g. `https://auth0.com/api-errors/A0E-401-0001`) for
 logging and support tickets.
 
 ### Credentials Manager errors
