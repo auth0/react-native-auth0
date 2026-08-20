@@ -1,6 +1,7 @@
 import { WebMyAccountClient } from '../WebMyAccountClient';
 import {
   MyAccountError,
+  MyAccountErrorCodes,
   PasskeyError,
   PasskeyErrorCodes,
 } from '../../../../core/models';
@@ -362,7 +363,10 @@ describe('WebMyAccountClient', () => {
         expect(err.statusCode).toBe(401);
         expect(err.title).toBe('Unauthorized');
         expect(err.detail).toBe('Token expired');
-        expect(err.type).toBe('https://auth0.com/api-errors/A0E-401');
+        // `type` is the normalized, cross-platform code; the raw RFC 7807 type
+        // URI stays available on `typeUri`.
+        expect(err.type).toBe(MyAccountErrorCodes.UNAUTHORIZED);
+        expect(err.typeUri).toBe('https://auth0.com/api-errors/A0E-401');
       }
     });
 

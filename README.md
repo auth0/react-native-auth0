@@ -668,6 +668,65 @@ The options for configuring the display of local authentication prompt, authenti
 
 > :warning: You need a real device to test Local Authentication for iOS. Local Authentication is not available in simulators.
 
+### Error taxonomy
+
+Every error the SDK throws extends `AuthError`. The six normalized subclasses below carry a
+**normalized, platform-agnostic** `type` — switch on `type`, not `code`, for these and your error
+handling behaves identically on iOS, Android, and web. Flows that throw a plain `AuthError`
+instead — for example [Custom Token Exchange](EXAMPLES.md#custom-token-exchange-rfc-8693), which surfaces
+the raw OAuth error from the token endpoint — don't get a normalized `type`; there, `code` is the
+correct (and only) thing to switch on.
+
+| Property  | Use it for                                                                                                                                             |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`    | **Control flow** for the six normalized subclasses. A normalized code, stable across platforms. Compare against the `…ErrorCodes` constants.             |
+| `code`    | **Diagnostics** for the normalized subclasses (raw code from the underlying platform SDK or wire response, varies by platform); **control flow** for plain `AuthError` flows that have no normalized `type`. |
+| `message` | Human-readable description. Not stable — do not parse it.                                                                                                 |
+| `status`  | HTTP status, when the failure came from an HTTP response (`0` otherwise).                                                                                 |
+
+Each of the six normalized classes ships a companion constants object and a matching TypeScript
+union. Handle every value explicitly (no `default` branch) and TypeScript enforces exhaustiveness
+at compile time — a `switch` missing a case fails to compile. The example below adds a `default`
+fallback for brevity, so it does not get that compile-time guarantee:
+
+| Error class               | Constants                      | Type union                         | Thrown by                                       |
+| ------------------------- | ------------------------------ | ---------------------------------- | ----------------------------------------------- |
+| `WebAuthError`            | `WebAuthErrorCodes`            | `WebAuthErrorCode`                 | `webAuth.authorize()`, `webAuth.clearSession()` |
+| `CredentialsManagerError` | `CredentialsManagerErrorCodes` | `CredentialsManagerErrorCode`      | `credentialsManager.*`                          |
+| `MfaError`                | `MfaErrorCodes`                | `MfaErrorCode`                     | `mfa.*`                                         |
+| `PasskeyError`            | `PasskeyErrorCodes`            | `PasskeyErrorCode`                 | passkey signup/login and passkey enrollment     |
+| `MyAccountError`          | `MyAccountErrorCodes`          | `MyAccountErrorCode`               | `myAccount.*`                                   |
+| `DPoPError`               | `DPoPErrorCodes`               | `DPoPErrorCode`                    | `getDPoPHeaders()` and DPoP key handling        |
+| `TimeoutError`            | —                              | `type` is always `'TIMEOUT_ERROR'` | HTTP requests exceeding `timeout`               |
+
+```typescript
+import { WebAuthError, WebAuthErrorCodes } from 'react-native-auth0';
+import type { WebAuthErrorCode } from 'react-native-auth0';
+
+function describe(type: WebAuthErrorCode): string {
+  switch (type) {
+    case WebAuthErrorCodes.USER_CANCELLED:
+      return 'Cancelled';
+    case WebAuthErrorCodes.NETWORK_ERROR:
+      return 'Offline';
+    default:
+      return 'Login failed';
+  }
+}
+```
+
+`Auth0ErrorCode` is the union of all of the above. Prefer the specific union when handling one error
+class — it keeps `switch` statements exhaustive and rejects codes that cannot occur there. Reach for
+`Auth0ErrorCode` only in generic code such as logging or telemetry.
+
+> **Stability.** These constants, their unions, and the `type` values they contain are the public
+> error contract. Values will not be removed or renamed outside a major version.
+
+`MyAccountError` is the one class with an extra property: the My Account API reports failures as
+[RFC 7807](https://datatracker.ietf.org/doc/html/rfc7807) type URIs, so `type` holds the normalized
+code while `typeUri` preserves the original URI (e.g. `https://auth0.com/api-errors/A0E-401-0001`) for
+logging and support tickets.
+
 ### Credentials Manager errors
 
 The Credentials Manager will only throw `CredentialsManagerError` exceptions. You can find more information in the details property of the exception.

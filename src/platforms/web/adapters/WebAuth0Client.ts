@@ -12,7 +12,7 @@ import type {
 } from '../../../core/interfaces';
 import type { WebAuth0Options } from '../../../types/platform-specific';
 import type {
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   CustomTokenExchangeParameters,
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
@@ -104,7 +104,9 @@ export class WebAuth0Client implements Auth0Client {
     this.client = client;
 
     // Create a bound getDPoPHeaders function for the orchestrator
-    const getDPoPHeadersForOrchestrator = async (params: DPoPHeadersParams) => {
+    const getDPoPHeadersForOrchestrator = async (
+      params: DPoPHeadersParameters
+    ) => {
       return this.getDPoPHeaders(params);
     };
 
@@ -154,7 +156,7 @@ export class WebAuth0Client implements Auth0Client {
   }
 
   async getDPoPHeaders(
-    params: DPoPHeadersParams
+    params: DPoPHeadersParameters
   ): Promise<Record<string, string>> {
     // For web platform, we need to get the access token and use the underlying
     // auth0-spa-js DPoP utilities to generate the headers

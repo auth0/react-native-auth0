@@ -985,11 +985,7 @@ Custom Token Exchange allows you to exchange external identity provider tokens f
 ```typescript
 import React from 'react';
 import { Button, Alert } from 'react-native';
-import {
-  useAuth0,
-  AuthenticationException,
-  AuthenticationErrorCodes,
-} from 'react-native-auth0';
+import { useAuth0, AuthError } from 'react-native-auth0';
 
 function TokenExchangeScreen() {
   const { customTokenExchange, user, error } = useAuth0();
@@ -1006,25 +1002,28 @@ function TokenExchangeScreen() {
 
       Alert.alert('Success', `Logged in as ${user?.name}`);
     } catch (e) {
-      if (e instanceof AuthenticationException) {
-        switch (e.type) {
-          case AuthenticationErrorCodes.INVALID_SUBJECT_TOKEN:
-            Alert.alert('Error', 'The external token is invalid or expired');
+      if (e instanceof AuthError) {
+        // Custom Token Exchange surfaces the OAuth 2.0 error from the token
+        // endpoint on `code`. See the RFC 8693 error responses and your Action's
+        // own failure reasons.
+        switch (e.code) {
+          case 'invalid_request':
+            Alert.alert('Error', 'The external token or token type is invalid');
             break;
-          case AuthenticationErrorCodes.UNSUPPORTED_TOKEN_TYPE:
-            Alert.alert('Error', 'The token type is not supported');
+          case 'invalid_grant':
+            Alert.alert('Error', 'The external token was rejected or expired');
             break;
-          case AuthenticationErrorCodes.TOKEN_EXCHANGE_NOT_CONFIGURED:
+          case 'unsupported_token_type':
+            Alert.alert('Error', 'The external token type is not supported');
+            break;
+          case 'unauthorized_client':
             Alert.alert(
               'Error',
-              'Custom Token Exchange is not configured for this tenant'
+              'Custom Token Exchange is not enabled for this client'
             );
             break;
-          case AuthenticationErrorCodes.TOKEN_VALIDATION_FAILED:
-            Alert.alert('Error', 'Token validation failed in Auth0 Action');
-            break;
-          case AuthenticationErrorCodes.NETWORK_ERROR:
-            Alert.alert('Error', 'Network error. Please check your connection.');
+          case 'access_denied':
+            Alert.alert('Error', 'Token validation failed in the Auth0 Action');
             break;
           default:
             Alert.alert('Error', e.message);
@@ -1042,10 +1041,7 @@ function TokenExchangeScreen() {
 ### Using Custom Token Exchange with Auth0 Class
 
 ```typescript
-import Auth0, {
-  AuthenticationException,
-  AuthenticationErrorCodes,
-} from 'react-native-auth0';
+import Auth0, { AuthError } from 'react-native-auth0';
 
 const auth0 = new Auth0({
   domain: 'YOUR_AUTH0_DOMAIN',
@@ -1064,14 +1060,14 @@ async function exchangeExternalToken(externalToken: string) {
     console.log('Exchange successful:', credentials);
     return credentials;
   } catch (error) {
-    if (error instanceof AuthenticationException) {
+    if (error instanceof AuthError) {
       // Access the underlying error details
-      console.error('Error type:', error.type);
+      console.error('Error code:', error.code);
       console.error('Error message:', error.message);
-      console.error('Underlying error code:', error.underlyingError.code);
+      console.error('HTTP status:', error.status);
 
-      // Handle specific error types
-      if (error.type === AuthenticationErrorCodes.INVALID_SUBJECT_TOKEN) {
+      // Handle specific error codes
+      if (error.code === 'invalid_grant') {
         // Token is invalid or expired - prompt user to re-authenticate
         throw new Error('Please authenticate again with the external provider');
       }
@@ -1845,6 +1841,21 @@ try {
       default:
         console.error(`My Account error: [${e.type}] ${e.message}`);
     }
+  }
+}
+```
+
+The My Account API reports failures as [RFC 7807](https://datatracker.ietf.org/doc/html/rfc7807)
+type URIs. `MyAccountError` normalizes those to a `MyAccountErrorCodes` value on `type` so your
+error handling matches every other error class in the SDK, and preserves the original URI on
+`typeUri` for logging or support tickets:
+
+```typescript
+catch (e) {
+  if (e instanceof MyAccountError) {
+    console.log(e.type);       // "UNAUTHORIZED" — normalized, switch on this
+    console.log(e.typeUri);    // "https://auth0.com/api-errors/A0E-401-0001" — raw, log this
+    console.log(e.statusCode); // 401
   }
 }
 ```
