@@ -87,7 +87,7 @@
     "@eslint/eslintrc": "^3.3.6",
     "@eslint/js": "^9.39.5",
     "@react-native-community/cli": "20.2.0",
-    "@react-native/babel-preset": "0.86.2",
+    "@react-native/babel-preset": "0.87.0",
     "@react-native/eslint-config": "0.86.2",
     "@release-it/conventional-changelog": "^11.0.1",
     "@shipgirl/typedoc-plugin-versions": "^0.3.2",
