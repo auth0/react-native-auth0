@@ -2783,6 +2783,8 @@ On Android, web authentication defaults to a Custom Tab, which shows a read-only
 
 > **Platform Support:** Android only. This option is ignored on iOS and web.
 
+> **Note:** Since v6, Android web authentication uses **Auth Tab** by default — a Custom Tab launch mode that delivers proper `ActivityResult` callbacks instead of inferring cancellation from lifecycle events. This fixes the spurious `USER_CANCELLED` error when users tap Chrome's minimize button (Chrome 122+). Trusted Web Activity and Auth Tab are independent; TWA is opt-in and renders full-screen with no URL bar, while Auth Tab is the default launch mode for regular Custom Tabs. Both can be used together by enabling `useTrustedWebActivity: true` — the TWA flow will use Auth Tab internally.
+
 ### Required setup
 
 TWA will only render full-screen if your app's signing certificate is registered with your Auth0 tenant. Without this, Digital Asset Links verification fails and the flow falls back to a Custom Tab.

@@ -201,6 +201,18 @@ await authorize(
 
 Two further Android caveats: the fallback above means you should keep calling `clearSession` unless you can guarantee the browser honours the ephemeral request, and `ephemeralSession` has no effect when `useTrustedWebActivity` is also enabled (a Trusted Web Activity cannot browse ephemerally, so TWA wins). See [Ephemeral Sessions](EXAMPLES.md#ephemeral-sessions) for details.
 
+#### Auth Tab is now the default Android web authentication launch mode
+
+Auth0.Android 4.0's Auth Tab launch path delivers a real `ActivityResult` from the Custom Tab instead of inferring cancellation from activity lifecycle events. This fixes a long-standing Android bug where tapping Chrome's minimize button (available in Chrome 122+) would incorrectly reject `authorize()` with `USER_CANCELLED` while leaving the browser alive as a "zombie" — so when the user returned and completed login, the redirect was dropped and credentials never arrived.
+
+**What changed:** `authorize()` and `clearSession()` now call `withAuthTab()` by default on Android. The iOS flow is unchanged; web is unaffected.
+
+**Impact:** Most apps see no difference — login and logout work as before, but the minimize-button bug is fixed. The launch path is slightly different internally (Chrome Custom Tabs launched via Auth Tab rather than plain Custom Tabs), but this is transparent to user-facing behavior.
+
+**✅ Action Required:** None for most apps. The change is entirely internal to the Android implementation. If you encounter issues on a specific browser (Edge, Brave, Firefox), test across browsers and report findings — Auth Tab has been validated with Chrome.
+
+> **Note:** Real user cancellation (back button, dismiss gesture) still rejects with `USER_CANCELLED` as expected — only the spurious rejection from the minimize button is fixed.
+
 #### `SSOCredentials.expiresIn` is now `expiresAt`
 
 Both native SDKs replaced the relative TTL with an absolute expiration date. The SDK follows suit, so the field is now an **absolute UNIX timestamp in seconds** — consistent with `Credentials.expiresAt`.

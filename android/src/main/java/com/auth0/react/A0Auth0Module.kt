@@ -219,6 +219,9 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             // Ephemeral browsing only applies to the Custom Tab path; the TWA intent
             // builder ignores it, so TWA wins when both options are set.
             if (ephemeralSession == true) { withEphemeralBrowsing() }
+            // Auth Tab delivers a real ActivityResult instead of inferring cancellation
+            // from lifecycle, fixing spurious USER_CANCELLED when Chrome minimize is tapped.
+            withAuthTab()
         }
 
         builder.withParameters(cleanedParameters)
@@ -519,6 +522,9 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         if (useTrustedWebActivity) {
             builder.withTrustedWebActivity()
         }
+
+        // Auth Tab for logout flow as well (same rationale as authorize)
+        builder.withAuthTab()
 
         redirectUri?.let { builder.withReturnToUrl(it) }
 
