@@ -167,7 +167,7 @@ export const addAuth0AppDelegateCode = (
   if (!isSwift) {
     // Throw error for non-Swift files, since we're only supporting Swift app delegates (RN 78+)
     throw new Error(
-      'This plugin only supports expo 53 or greater. If you are using older version 4.x'
+      'This plugin requires a Swift AppDelegate, which means Expo SDK 55 or greater. On older Expo versions, use react-native-auth0 5.x or earlier.'
     );
   }
 

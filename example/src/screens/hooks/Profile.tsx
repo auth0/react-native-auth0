@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  View,
-  StyleSheet,
-  Alert,
-} from 'react-native';
+import { ScrollView, View, StyleSheet, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth0 } from 'react-native-auth0';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
