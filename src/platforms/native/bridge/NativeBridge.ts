@@ -3,7 +3,7 @@ import type {
   ApiCredentials,
   WebAuthorizeParameters,
   ClearSessionParameters,
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   SessionTransferCredentials,
   MfaAuthenticator,
   MfaEnrollmentChallenge,
@@ -168,7 +168,9 @@ export interface NativeBridge {
    * @param params Parameters including the URL, HTTP method, access token, and token type.
    * @returns A promise that resolves to an object containing the required headers.
    */
-  getDPoPHeaders(params: DPoPHeadersParams): Promise<Record<string, string>>;
+  getDPoPHeaders(
+    params: DPoPHeadersParameters
+  ): Promise<Record<string, string>>;
 
   /**
    * Clears the DPoP key from secure storage.

@@ -248,7 +248,29 @@ Only one of these was exported to consumers:
 
 **✅ Action Required:** rename the import if you annotated anything with `IMfaClient` — typically a variable holding `auth0.mfa` or the `mfa` object from `useAuth0()`. This is a type-only change; runtime behaviour is identical.
 
-The rest (`AuthenticationProvider`, `CredentialsManager`, `MyAccountClient`, `PasswordlessClient`, `WebAuthProvider`, `NativeBridge`) were never exported from the package entry point, so nothing to do there.
+`AuthenticationProvider`, `CredentialsManager`, `MyAccountClient`, `PasswordlessClient`, and `WebAuthProvider` are now exported under their plain names too _(see [§11](#11-public-api-surface-freeze--my-account-error-normalization-))_; only `NativeBridge` stays internal-only.
+
+### 11. Public API surface freeze & My Account error normalization ✅
+
+The public surface was audited before v6 GA: previously-unreachable types were exported, dead internal types were un-exported, and `MyAccountError` was brought in line with the rest of the error taxonomy.
+
+#### `MyAccountError.type` is now a normalized code
+
+`MyAccountError.type` used to be the raw [RFC 7807](https://datatracker.ietf.org/doc/html/rfc7807) type URI reported by the My Account API (e.g. `https://auth0.com/api-errors/A0E-401-0001`). It is now a normalized `MyAccountErrorCodes` value, consistent with every other error class in the SDK. The original URI is preserved on a new `typeUri` property.
+
+**⚠️ Action Required:** if you compared `MyAccountError.type` against a raw URI string, switch to comparing against `MyAccountErrorCodes` and read `typeUri` for the raw value.
+
+```diff
+- if (error.type === 'https://auth0.com/api-errors/A0E-401-0001') { ... }
++ if (error.type === MyAccountErrorCodes.UNAUTHORIZED) { ... }
++ console.log(error.typeUri); // "https://auth0.com/api-errors/A0E-401-0001" — raw, log this
+```
+
+#### Four internal types are no longer exported
+
+`NativeAuth0Options`, `WebAuth0Options`, `NativeCredentialsResponse`, and `SSOCredentialsResponse` were internal adapter-construction/wire shapes that were reachable from `react-native-auth0` by accident. They are not part of the supported API and have been removed from the package's exports.
+
+**✅ Action Required:** if you imported any of these four types directly, inline the shape you need or open an issue describing your use case — none of them were meant to be public.
 
 ### Recommended Reading
 
@@ -365,7 +387,7 @@ With the introduction of **React Native Web support**, some methods are only ava
 
 On React Native Web, the `authorize()` method now triggers a **full-page redirect** to Auth0. As a result, the promise returned by `authorize()` will **not resolve** in the browser. Your application must be structured to handle the user state upon reloading after the redirect.
 
-**✅ Action Required:** Review the new **[FAQ entry](#faq-authorize-web)** for guidance on how to correctly handle the post-login flow on the web. The `Auth0Provider` and `useAuth0` hook are designed to manage this flow automatically.
+**✅ Action Required:** Review the new **[FAQ entry](FAQ.md#9-why-doesnt-await-authorize-work-on-the-web-how-do-i-handle-login)** for guidance on how to correctly handle the post-login flow on the web. The `Auth0Provider` and `useAuth0` hook are designed to manage this flow automatically.
 
 ### Change #5: Hook Methods Now Throw Error
 
