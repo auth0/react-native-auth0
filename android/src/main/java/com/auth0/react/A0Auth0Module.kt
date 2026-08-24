@@ -2,6 +2,7 @@ package com.auth0.react
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -20,6 +21,7 @@ import com.auth0.android.dpop.DPoPException
 import com.auth0.android.provider.BrowserPicker
 import com.auth0.android.provider.CustomTabsOptions
 import com.auth0.android.provider.WebAuthProvider
+import com.auth0.android.request.DefaultClient
 import com.auth0.android.request.PublicKeyCredentials
 import com.auth0.android.request.UserData
 import com.auth0.android.result.APICredentials
@@ -64,6 +66,40 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         private const val DPOP_INVALID_TOKEN_TYPE_CODE = "DPOP_INVALID_TOKEN_TYPE"
         private const val DPOP_MISSING_PARAMETER_CODE = "DPOP_MISSING_PARAMETER"
         private const val DPOP_CLEAR_KEY_FAILED_CODE = "DPOP_CLEAR_KEY_FAILED"
+
+        // Builds the DefaultClient Auth0.Android uses for every request it makes (web auth
+        // token exchange, credential renewal, MFA, passkeys, etc.). Unset keys fall through to
+        // Auth0.Android's own Builder defaults. `enableLogging` is debug-only: Auth0.Android logs
+        // full request/response bodies (including tokens) at that level, so we never call
+        // `logger(...)` ourselves, never expose the raw HttpLoggingInterceptor.Logger to JS, and
+        // ignore the option entirely unless the host app is a debug build.
+        internal fun buildNetworkingClient(options: ReadableMap, isDebuggable: Boolean): DefaultClient {
+            val builder = DefaultClient.Builder()
+            if (options.hasKey("connectTimeout")) builder.connectTimeout(options.getInt("connectTimeout"))
+            if (options.hasKey("readTimeout")) builder.readTimeout(options.getInt("readTimeout"))
+            if (options.hasKey("writeTimeout")) builder.writeTimeout(options.getInt("writeTimeout"))
+            if (options.hasKey("callTimeout")) builder.callTimeout(options.getInt("callTimeout"))
+            options.getMap("defaultHeaders")?.let { headers ->
+                builder.defaultHeaders(headers.toHashMap().mapValues { it.value?.toString() ?: "" })
+            }
+            // Only honor enableLogging on debug builds: Auth0.Android logs full request/response
+            // bodies at this level, including plaintext access/refresh/ID tokens from token-endpoint
+            // responses. Test coverage in A0Auth0ModuleNetworkingOptionsTest ensures this gate holds.
+            if (isDebuggable && options.hasKey("enableLogging")) {
+                builder.enableLogging(options.getBoolean("enableLogging"))
+            }
+            return builder.build()
+        }
+
+        // Auth0.getInstance() returns a shared singleton per clientId/domain: a sibling client
+        // (or this same client on re-init) must not inherit another initialization's networking
+        // config, so this always resolves to a fresh DefaultClient() when options are absent
+        // rather than leaving the previous networkingClient in place.
+        internal fun resolveNetworkingClient(
+            networkingOptions: ReadableMap?,
+            isDebuggable: Boolean
+        ): DefaultClient =
+            networkingOptions?.let { buildNetworkingClient(it, isDebuggable) } ?: DefaultClient.Builder().build()
     }
 
     private val errorCodeMap = mapOf(
@@ -282,6 +318,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         useDPoP: Boolean?,
         maxRetries: Double,
         credentialsManagerStorageKey: String?,
+        networkingOptions: ReadableMap?,
         promise: Promise
     ) {
         // Note: maxRetries parameter is ignored on Android as the Auth0.Android SDK
@@ -289,12 +326,15 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         // This parameter is accepted for API compatibility with iOS.
 
         this.useDPoP = useDPoP ?: false
-        auth0 = Auth0.getInstance(clientId, domain)
-        mfaClient = MfaClient(auth0!!, this.useDPoP, reactContext)
-        myAccount = MyAccount(auth0!!, this.useDPoP, reactContext)
-        passwordless = Passwordless(auth0!!, this.useDPoP, reactContext)
+        val auth0Instance = Auth0.getInstance(clientId, domain)
+        auth0 = auth0Instance
+        val isDebuggable = (reactContext.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        auth0Instance.networkingClient = resolveNetworkingClient(networkingOptions, isDebuggable)
+        mfaClient = MfaClient(auth0Instance, this.useDPoP, reactContext)
+        myAccount = MyAccount(auth0Instance, this.useDPoP, reactContext)
+        passwordless = Passwordless(auth0Instance, this.useDPoP, reactContext)
 
-        val authAPI = AuthenticationAPIClient(auth0!!)
+        val authAPI = AuthenticationAPIClient(auth0Instance)
         if (this.useDPoP) {
             authAPI.useDPoP(reactContext)
         }

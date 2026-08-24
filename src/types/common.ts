@@ -214,7 +214,55 @@ export interface Auth0Options {
    * @remarks Native only (iOS/Android). Has no effect on the web platform.
    */
   credentialsManagerStorageKey?: string;
+  /**
+   * Configures the native networking client (OkHttp) that Auth0.Android uses for every
+   * request it makes (web auth token exchange, credential renewal, MFA, passkeys, etc.).
+   * @remarks Android only. Accepted on iOS for API compatibility but has no effect.
+   */
+  networkingOptions?: NetworkingOptions;
   // Telemetry and localAuthenticationOptions are platform-specific extensions
+}
+
+/**
+ * Configuration for the native networking client used by Auth0.Android.
+ * Mirrors `DefaultClient.Builder` from the Auth0.Android SDK.
+ *
+ * @remarks Android only. Has no effect on iOS or web.
+ *
+ * @example
+ * ```ts
+ * networkingOptions: {
+ *   connectTimeout: 30,
+ *   readTimeout: 30,
+ *   defaultHeaders: { 'X-App-Version': '1.2.3' }
+ * }
+ * ```
+ */
+export interface NetworkingOptions {
+  /** Connection timeout, in seconds. @default 10 */
+  connectTimeout?: number;
+  /** Read timeout, in seconds. @default 10 */
+  readTimeout?: number;
+  /** Write timeout, in seconds. @default 10 */
+  writeTimeout?: number;
+  /** Overall timeout for the entire call, in seconds. `0` means no timeout. @default 0 */
+  callTimeout?: number;
+  /**
+   * Headers sent on every request made by the native networking client. If a specific
+   * request sets a header with the same name, the request-level header takes precedence.
+   * @default {}
+   */
+  defaultHeaders?: Record<string, string>;
+  /**
+   * Enables verbose HTTP request/response logging to Logcat.
+   *
+   * @remarks
+   * **Debug-only.** Auth0.Android logs full request and response bodies at this level,
+   * which includes access, refresh, and ID tokens in plaintext for token-endpoint calls.
+   * Never enable this in production.
+   * @default false
+   */
+  enableLogging?: boolean;
 }
 
 // ========= MFA Flexible Factors Grant Types =========

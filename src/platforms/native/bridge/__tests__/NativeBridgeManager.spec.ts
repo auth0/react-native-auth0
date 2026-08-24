@@ -267,7 +267,8 @@ describe('NativeBridgeManager', () => {
         undefined,
         true,
         0,
-        'tenant-b'
+        'tenant-b',
+        undefined
       );
     });
 
@@ -282,7 +283,38 @@ describe('NativeBridgeManager', () => {
         undefined, // localAuthenticationOptions
         false, // useDPoP default
         0, // maxRetries default
-        undefined // credentialsManagerStorageKey
+        undefined, // credentialsManagerStorageKey
+        undefined // networkingOptions
+      );
+    });
+
+    it('forwards networkingOptions to the native module when provided', async () => {
+      const networkingOptions = {
+        connectTimeout: 30,
+        readTimeout: 30,
+        defaultHeaders: { 'X-Custom': 'value' },
+      };
+
+      await bridge.initialize(
+        'client-id',
+        'tenant-c.auth0.com',
+        undefined,
+        false,
+        0,
+        undefined,
+        networkingOptions
+      );
+
+      expect(
+        MockedAuth0NativeModule.initializeAuth0WithConfiguration
+      ).toHaveBeenCalledWith(
+        'client-id',
+        'tenant-c.auth0.com',
+        undefined,
+        false,
+        0,
+        undefined,
+        networkingOptions
       );
     });
 

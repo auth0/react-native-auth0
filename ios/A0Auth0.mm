@@ -100,8 +100,10 @@ RCT_EXPORT_METHOD(initializeAuth0WithConfiguration:(NSString *)clientId
                                   useDPoP:(nonnull NSNumber *)useDPoP
                                maxRetries:(double)maxRetries
             credentialsManagerStorageKey:(NSString * _Nullable)credentialsManagerStorageKey
+                  networkingOptions:(NSDictionary * _Nullable)networkingOptions
                                  resolve:(RCTPromiseResolveBlock)resolve
                                   reject:(RCTPromiseRejectBlock)reject) {
+    // networkingOptions is Android-only; intentionally not forwarded to NativeBridge.
     [self tryAndInitializeNativeBridge:clientId domain:domain withLocalAuthenticationOptions:localAuthenticationOptions useDPoP:useDPoP maxRetries:(NSInteger)maxRetries credentialsManagerStorageKey:credentialsManagerStorageKey resolve:resolve reject:reject];
 }
 

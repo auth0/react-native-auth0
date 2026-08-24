@@ -11,6 +11,7 @@ import type {
   MfaEnrollmentChallenge,
   MfaChallengeResult,
   PasskeyChallengeResponse,
+  NetworkingOptions,
 } from '../../../types';
 import {
   SafariViewControllerPresentationStyle,
@@ -60,7 +61,8 @@ export class NativeBridgeManager implements NativeBridge {
     localAuthenticationOptions?: LocalAuthenticationOptions,
     useDPoP: boolean = false,
     maxRetries: number = 0,
-    credentialsManagerStorageKey?: string
+    credentialsManagerStorageKey?: string,
+    networkingOptions?: NetworkingOptions
   ): Promise<void> {
     // This is a new method we'd add to the native side to ensure the
     // underlying Auth0.swift/Auth0.android SDKs are configured.
@@ -73,7 +75,8 @@ export class NativeBridgeManager implements NativeBridge {
       localAuthenticationOptions,
       useDPoP,
       maxRetries,
-      credentialsManagerStorageKey
+      credentialsManagerStorageKey,
+      networkingOptions
     );
   }
 
