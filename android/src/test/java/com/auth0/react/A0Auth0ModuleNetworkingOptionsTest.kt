@@ -6,12 +6,17 @@ import com.facebook.react.bridge.JavaOnlyMap
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import java.util.logging.Handler
+import java.util.logging.Level
+import java.util.logging.LogRecord
+import java.util.logging.Logger
 import kotlin.system.measureTimeMillis
 
 // Proves that A0Auth0Module.buildNetworkingClient() genuinely threads networkingOptions
@@ -20,16 +25,66 @@ import kotlin.system.measureTimeMillis
 class A0Auth0ModuleNetworkingOptionsTest {
 
     private lateinit var server: MockWebServer
+    private lateinit var logCapture: LogCapture
+    private lateinit var okHttpLogger: Logger
 
     @Before
     fun setUp() {
         server = MockWebServer()
         server.start()
+
+        // Set up log capture for OkHttp's HttpLoggingInterceptor
+        // Capture at root logger level to catch all logging regardless of hierarchy
+        logCapture = LogCapture()
+        okHttpLogger = Logger.getLogger("")  // Root logger catches everything
+        okHttpLogger.level = Level.ALL
+        okHttpLogger.addHandler(logCapture)
     }
 
     @After
     fun tearDown() {
         server.shutdown()
+        okHttpLogger.removeHandler(logCapture)
+    }
+
+    /**
+     * Captures java.util.logging records so we can verify Auth0.Android's
+     * HttpLoggingInterceptor is (or isn't) writing request/response bodies.
+     */
+    private class LogCapture : Handler() {
+        private val records = mutableListOf<LogRecord>()
+
+        override fun publish(record: LogRecord) {
+            records.add(record)
+        }
+
+        override fun flush() {}
+        override fun close() {}
+
+        fun hasRequestOrResponseBodyLogs(): Boolean {
+            return records.any { record ->
+                val message = record.message ?: ""
+                val loggerName = record.loggerName ?: ""
+
+                (loggerName.contains("okhttp", ignoreCase = true) ||
+                 loggerName.contains("http", ignoreCase = true)) &&
+                (message.contains("--> ") ||      // Request line: "--> GET /token"
+                 message.contains("<-- ") ||      // Response line: "<-- 200 OK"
+                 message.contains("Content-") ||  // Headers like Content-Type, Content-Length
+                 message.contains("access_token") || // Response body content
+                 message.contains("{\""))         // JSON body start
+            }
+        }
+
+        fun getAllLogMessages(): String {
+            return records.joinToString("\n") { record ->
+                "[${record.loggerName}] ${record.message}"
+            }
+        }
+
+        fun clear() {
+            records.clear()
+        }
     }
 
     @Test
@@ -78,21 +133,52 @@ class A0Auth0ModuleNetworkingOptionsTest {
 
     @Test
     fun `enableLogging is ignored on a non-debuggable build even when requested`() {
-        server.enqueue(MockResponse().setBody("{}"))
+        server.enqueue(MockResponse().setBody("""{"access_token": "secret123"}"""))
+
+        logCapture.clear()
 
         // SECURITY: If the isDebuggable gate is ever removed, Auth0.Android attaches its
         // logging interceptor which logs full request/response bodies (including tokens).
-        // This test would crash ("Method android.util.Log not mocked") if that happens,
-        // catching the security regression before it ships.
+        // Auth0.Android's interceptor writes through java.util.logging, not android.util.Log,
+        // so we must assert on captured log records rather than relying on a crash.
         val client = A0Auth0Module.buildNetworkingClient(
             JavaOnlyMap.of("enableLogging", true),
             isDebuggable = false
         )
 
-        client.load(server.url("/").toString(), RequestOptions(HttpMethod.GET))
+        client.load(server.url("/token").toString(), RequestOptions(HttpMethod.GET))
 
-        val recordedRequest = server.takeRequest()
-        assertTrue(recordedRequest.method == "GET")
+        // Verify that NO request/response body logs were written. If the isDebuggable gate
+        // is removed, this assertion will fail because the interceptor will log the response
+        // body containing "access_token": "secret123".
+        assertFalse(
+            "Expected no HTTP body logs on non-debuggable build, but logging was enabled",
+            logCapture.hasRequestOrResponseBodyLogs()
+        )
+    }
+
+    @Test
+    fun `enableLogging actually logs request and response bodies on debuggable builds`() {
+        server.enqueue(MockResponse().setBody("""{"access_token": "secret456"}"""))
+
+        logCapture.clear()
+
+        // Positive test: verify that enableLogging actually works when isDebuggable = true.
+        val client = A0Auth0Module.buildNetworkingClient(
+            JavaOnlyMap.of("enableLogging", true),
+            isDebuggable = true
+        )
+
+        client.load(server.url("/token").toString(), RequestOptions(HttpMethod.GET))
+
+        // The interceptor should have logged the request and response, proving that:
+        // (a) our test harness correctly captures logs, and
+        // (b) the enableLogging option genuinely enables logging when allowed.
+        val allLogs = logCapture.getAllLogMessages()
+        assertTrue(
+            "Expected HTTP body logs on debuggable build with enableLogging=true. Captured logs:\n$allLogs",
+            logCapture.hasRequestOrResponseBodyLogs()
+        )
     }
 
     @Test

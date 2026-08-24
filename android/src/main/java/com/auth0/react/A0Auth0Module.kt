@@ -99,7 +99,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             networkingOptions: ReadableMap?,
             isDebuggable: Boolean
         ): DefaultClient =
-            networkingOptions?.let { buildNetworkingClient(it, isDebuggable) } ?: DefaultClient()
+            networkingOptions?.let { buildNetworkingClient(it, isDebuggable) } ?: DefaultClient.Builder().build()
     }
 
     private val errorCodeMap = mapOf(
