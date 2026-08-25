@@ -36,22 +36,24 @@ This SDK targets apps that are using React Native SDK version `0.82.0` and up. I
 
 React Native `0.82` is the first React Native release that runs **entirely on the New Architecture**. As of v6, this SDK is **New Architecture-only** — the Legacy Architecture is no longer supported. If your app has not yet moved to the New Architecture, upgrade to React Native `0.82`+ or stay on v5.x. For Expo, this SDK requires **Expo SDK 55 or higher** (Expo 54 ships React Native `0.81`, below the `0.82` floor).
 
-> ⚠️ **Warning**: If you are using Expo version less than 53, you need to use react-native-auth0 version 4.x or earlier. Version 5.x supports Expo 53 and above.
+> ⚠️ **Warning**: For Expo, this version requires **Expo SDK 55 or higher** (Expo 54 ships React Native `0.81`, below the `0.82` floor). If you are on an earlier Expo version, upgrade Expo or stay on react-native-auth0 `5.x` (Expo 53–54) or `4.x` (below Expo 53).
 
 ### Platform compatibility
 
 The following shows platform minimums for running projects with this SDK:
 
-| Platform | Minimum version |
-| -------- | :-------------: |
-| iOS      |      14.0       |
-| Android  |       35        |
+| Platform |   Minimum version    |
+| -------- | :------------------: |
+| iOS      |         15.1         |
+| Android  | API 26 (Android 8.0) |
 
-Our SDK requires a minimum iOS deployment target of 14.0. In your project's ios/Podfile, ensure your platform target is set to 14.0.
+**iOS.** This SDK requires a minimum iOS deployment target of `15.1`, inherited from the React Native `0.82`+ Pods (`min_ios_version_supported`). In your project's `ios/Podfile`, set the platform accordingly — following the older `14.0` value will fail `pod install`:
 
+```ruby
+platform :ios, '15.1'
 ```
-platform :ios, '14.0'
-```
+
+**Android.** This SDK requires **`minSdkVersion` 26** (Android 8.0). It compiles against **`compileSdkVersion` 36** and must be built with **JDK 17**. Raise these in your app's `android/build.gradle` (and verify your toolchain with `java -version`) if you are coming from an earlier setup. See the [Migration Guide](https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md) for details.
 
 The iOS pod ships a privacy manifest (`PrivacyInfo.xcprivacy`) that declares no tracking, no required-reason API usage, and a user identifier collected only for app functionality. Xcode includes it automatically when you generate a privacy report, so you don't have to describe this SDK's behavior yourself. You are still responsible for reviewing that report and for keeping your App Store Connect privacy answers accurate for your app as a whole, including the data this SDK collects.
 
@@ -70,6 +72,26 @@ First install the native library module:
 Then, you need to run the following command to install the ios app pods with Cocoapods. That will auto-link the iOS library:
 
 `$ cd ios && pod install`
+
+#### iOS framework linkage (`use_frameworks!`)
+
+This SDK's native dependencies — Auth0 3.0.1, JWTDecode 4.0.0, and SimpleKeychain 1.3.0 — are Swift pods. They install with the default React Native static-library linkage (no `use_frameworks!`), so **most apps need no extra Podfile changes**.
+
+If your project requires `use_frameworks!` (for example, because another dependency ships as a framework), both linkage modes are supported — this was verified by building the example app under each:
+
+```ruby
+# Static frameworks
+use_frameworks! :linkage => :static
+
+# ...or dynamic frameworks
+use_frameworks! :linkage => :dynamic
+```
+
+No additional `post_install` step is required for this SDK beyond what React Native already generates. After changing linkage, run a clean install:
+
+```bash
+cd ios && rm -rf Pods Podfile.lock && pod install --repo-update
+```
 
 ### Configure the SDK
 
@@ -679,12 +701,12 @@ instead — for example [Custom Token Exchange](EXAMPLES.md#custom-token-exchang
 the raw OAuth error from the token endpoint — don't get a normalized `type`; there, `code` is the
 correct (and only) thing to switch on.
 
-| Property  | Use it for                                                                                                                                             |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | **Control flow** for the six normalized subclasses. A normalized code, stable across platforms. Compare against the `…ErrorCodes` constants.             |
+| Property  | Use it for                                                                                                                                                                                                   |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `type`    | **Control flow** for the six normalized subclasses. A normalized code, stable across platforms. Compare against the `…ErrorCodes` constants.                                                                 |
 | `code`    | **Diagnostics** for the normalized subclasses (raw code from the underlying platform SDK or wire response, varies by platform); **control flow** for plain `AuthError` flows that have no normalized `type`. |
-| `message` | Human-readable description. Not stable — do not parse it.                                                                                                 |
-| `status`  | HTTP status, when the failure came from an HTTP response (`0` otherwise).                                                                                 |
+| `message` | Human-readable description. Not stable — do not parse it.                                                                                                                                                    |
+| `status`  | HTTP status, when the failure came from an HTTP response (`0` otherwise).                                                                                                                                    |
 
 Each of the six normalized classes ships a companion constants object and a matching TypeScript
 union. Handle every value explicitly (no `default` branch) and TypeScript enforces exhaustiveness

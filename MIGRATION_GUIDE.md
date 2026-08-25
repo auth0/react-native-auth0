@@ -249,6 +249,21 @@ Two codes were added for the new Auth0.swift cases, both iOS-only: `AUTHENTICATI
 
 `SSO_EXCHANGE_FAILED` (iOS and Android) and `CLEAR_FAILED` (iOS) are now reported instead of being collapsed into a generic credentials-manager error. No action is required unless you exhaustively match on these codes.
 
+#### ID-token claim validation is now opt-in on direct token requests
+
+Auth0.swift 3.0 made ID-token claim validation **opt-in** on `TokenRequestable` (`.validateClaims()`), matching the long-standing behaviour on Auth0.Android. Web Authentication (`authorize()`) is unaffected — the browser-based flow still validates the ID token internally on both platforms. What changed is only the **direct token-request** paths, where the SDK now opts in per flow. The current state is:
+
+| Flow                               | ID-token claims validated? |
+| :--------------------------------- | :------------------------: |
+| Web Authentication (`authorize()`) |    ✅ (both platforms)     |
+| Passkey **signin**                 |    ✅ (both platforms)     |
+| Passkey **signup**                 |    ❌ (both platforms)     |
+| Custom Token Exchange              |    ❌ (both platforms)     |
+| MFA challenge/verify               |    ❌ (both platforms)     |
+| Passwordless                       |    ❌ (both platforms)     |
+
+The `❌` rows are **deliberate iOS/Android parity**, not an oversight — these flows validate on neither platform, so behaviour is identical everywhere. No action is required; this is documented so you know exactly which responses carry a validated ID token.
+
 ### 10. Interfaces no longer use the `I` prefix ✅
 
 The platform contracts in `src/core/interfaces/` dropped their `I` prefix, so the interface now takes the plain name and the implementations keep their platform prefix (`Auth0Client` is the contract; `NativeAuth0Client` and `WebAuth0Client` implement it).
