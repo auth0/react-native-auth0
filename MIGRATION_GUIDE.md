@@ -207,6 +207,8 @@ Auth0.Android 4.0's Auth Tab launch path delivers a real `ActivityResult` from t
 
 **What changed:** `authorize()` and `clearSession()` now call `withAuthTab()` by default on Android. The iOS flow is unchanged; web is unaffected.
 
+**Browser support:** Auth Tab requires **Chrome 137 or later**. On older browser versions it automatically falls back to a standard Custom Tab, so login and logout still work.
+
 **Impact:** Most apps see no difference — login and logout work as before, but the minimize-button bug is fixed. The launch path is slightly different internally (Chrome Custom Tabs launched via Auth Tab rather than plain Custom Tabs), but this is transparent to user-facing behavior.
 
 **✅ Action Required:** None for most apps. The change is entirely internal to the Android implementation. If you encounter issues on a specific browser (Edge, Brave, Firefox), test across browsers and report findings — Auth Tab has been validated with Chrome.

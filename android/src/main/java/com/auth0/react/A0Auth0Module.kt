@@ -222,6 +222,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
             // Auth Tab delivers a real ActivityResult instead of inferring cancellation
             // from lifecycle, fixing spurious USER_CANCELLED when Chrome minimize is tapped.
+            // Auth Tab requires Chrome 137+; older browsers fall back to a standard Custom Tab.
             //
             // Note: [withAuthTab] and [withTrustedWebActivity] are mutually exclusive. If both are set,
             // TWA takes precedence and Auth Tab will not be used. They rely on different underlying
@@ -529,6 +530,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         }
 
         // Auth Tab for logout flow as well (same rationale as authorize).
+        // Auth Tab requires Chrome 137+; older browsers fall back to a standard Custom Tab.
         //
         // Note: [withAuthTab] and [withTrustedWebActivity] are mutually exclusive. If both are set,
         // TWA takes precedence and Auth Tab will not be used. They rely on different underlying
