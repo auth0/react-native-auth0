@@ -1,5 +1,6 @@
 # Examples using react-native-auth0
 
+- [iOS framework linkage (`use_frameworks!`)](#ios-framework-linkage-use_frameworks)
 - [Authentication API](#authentication-api)
   - [Login with Password Realm Grant](#login-with-password-realm-grant)
   - [Get user information using user's access_token](#get-user-information-using-users-access_token)
@@ -111,6 +112,30 @@
   - [Handling DPoP token migration](#handling-dpop-token-migration)
   - [Checking token type](#checking-token-type)
   - [Handling nonce errors](#handling-nonce-errors)
+
+## iOS framework linkage (`use_frameworks!`)
+
+This SDK's native iOS dependencies — Auth0 3.0.1, JWTDecode 4.0.0, and SimpleKeychain 1.3.0 — are Swift pods. They install with the default React Native static-library linkage, so **most apps need no extra Podfile changes**:
+
+```bash
+cd ios && pod install
+```
+
+If another dependency forces `use_frameworks!`, both linkage modes are supported (verified by building the example app under each). Pick one in your `Podfile`:
+
+```ruby
+# Static frameworks
+use_frameworks! :linkage => :static
+
+# ...or dynamic frameworks
+use_frameworks! :linkage => :dynamic
+```
+
+No SDK-specific `post_install` step is required beyond what React Native already generates. After changing linkage, reinstall the pods — delete only `Pods` so `Podfile.lock` isn't re-resolved and unrelated dependencies aren't bumped:
+
+```bash
+cd ios && rm -rf Pods && pod install
+```
 
 ## Authentication API
 

@@ -87,11 +87,13 @@ use_frameworks! :linkage => :static
 use_frameworks! :linkage => :dynamic
 ```
 
-No additional `post_install` step is required for this SDK beyond what React Native already generates. After changing linkage, run a clean install:
+No additional `post_install` step is required for this SDK beyond what React Native already generates. After changing linkage, reinstall the pods:
 
 ```bash
-cd ios && rm -rf Pods Podfile.lock && pod install --repo-update
+cd ios && rm -rf Pods && pod install
 ```
+
+> Delete only `Pods` — keep `Podfile.lock` so a linkage change doesn't re-resolve and bump unrelated dependencies. Add `--repo-update` only if you also need to refresh the CocoaPods spec repo.
 
 ### Configure the SDK
 
