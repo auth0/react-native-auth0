@@ -59,7 +59,7 @@ npx expo prebuild --clean
 
 ### 3. Android: minSdk 26 & JDK 17 ✅
 
-v6 adopts **Auth0.Android 4.0.1**, which raises the SDK's build floors. These are inherited by your app.
+v6 adopts **Auth0.Android 4.1.0**, which raises the SDK's build floors. These are inherited by your app.
 
 | Setting        | v5.x  | v6.0        |
 | :------------- | :---- | :---------- |
@@ -199,11 +199,11 @@ await authorize(
 );
 ```
 
-Two further Android caveats: the fallback above means you should keep calling `clearSession` unless you can guarantee the browser honours the ephemeral request, and `ephemeralSession` has no effect when `useTrustedWebActivity` is also enabled (a Trusted Web Activity cannot browse ephemerally, so TWA wins). See [Ephemeral Sessions](EXAMPLES.md#ephemeral-sessions) for details.
+Two further Android caveats: the fallback above means you should keep calling `clearSession` unless you can guarantee the browser honours the ephemeral request, and ephemeral browsing is supported on Auth Tab (the new default, see below) and plain Custom Tabs but **not** on a Trusted Web Activity. So with `useTrustedWebActivity` enabled the session is not ephemeral; on Auth Tab or a plain Custom Tab it is ephemeral as long as the browser supports it (Chrome 136+). See [Ephemeral Sessions](EXAMPLES.md#ephemeral-sessions) for details.
 
 #### Auth Tab is now the default Android web authentication launch mode
 
-Auth0.Android 4.0's Auth Tab launch path delivers a real `ActivityResult` from the Custom Tab instead of inferring cancellation from activity lifecycle events. This fixes a long-standing Android bug where tapping Chrome's minimize button (available in Chrome 122+) would incorrectly reject `authorize()` with `USER_CANCELLED` while leaving the browser alive as a "zombie" — so when the user returned and completed login, the redirect was dropped and credentials never arrived.
+Auth0.Android 4.0's Auth Tab launch path delivers a real `ActivityResult` from the Custom Tab instead of inferring cancellation from activity lifecycle events. This fixes a long-standing Android bug ([#1584](https://github.com/auth0/react-native-auth0/issues/1584)) where tapping Chrome's minimize button (available in Chrome 122+) would incorrectly reject `authorize()` with `USER_CANCELLED` while leaving the browser alive as a "zombie" — so when the user returned and completed login, the redirect was dropped and credentials never arrived.
 
 **What changed:** `authorize()` and `clearSession()` now call `withAuthTab()` by default on Android. The iOS flow is unchanged; web is unaffected.
 
