@@ -2783,6 +2783,8 @@ On Android, web authentication defaults to a Custom Tab, which shows a read-only
 
 > **Platform Support:** Android only. This option is ignored on iOS and web.
 
+> **Note:** Since v6, Android web authentication uses **Auth Tab** by default — a Custom Tab launch mode that delivers proper `ActivityResult` callbacks instead of inferring cancellation from lifecycle events. This fixes the spurious `USER_CANCELLED` error ([#1584](https://github.com/auth0/react-native-auth0/issues/1584)) when users tap Chrome's minimize button (Chrome 122+). Auth Tab requires **Chrome 137 or later**; on older browser versions it automatically falls back to a standard Custom Tab. Auth Tab is the default launch mode for regular Custom Tabs, whereas TWA is opt-in and renders full-screen with no URL bar. Because they use different launch mechanisms, enabling `useTrustedWebActivity: true` makes TWA take precedence and Auth Tab is not used. Note also that [`ephemeralSession: true`](#ephemeral-sessions) is honoured on both Auth Tab and a plain Custom Tab (on a browser that supports ephemeral browsing), but a TWA does **not** support it — so enabling `useTrustedWebActivity: true` disables ephemeral browsing.
+
 ### Required setup
 
 TWA will only render full-screen if your app's signing certificate is registered with your Auth0 tenant. Without this, Digital Asset Links verification fails and the flow falls back to a Custom Tab.
@@ -2843,11 +2845,11 @@ Pass `ephemeralSession: true` to run web authentication in an isolated browser s
 **Behaviour:**
 
 - **iOS:** sets `prefersEphemeralWebBrowserSession` on `ASWebAuthenticationSession`. Because there is no shared cookie to consent to, this also suppresses the SSO alert box. Requires iOS 13+.
-- **Android:** opens the Custom Tab with ephemeral browsing. Requires **Chrome 136+** or another browser that supports it; on unsupported browsers a warning is logged and the flow falls back to a regular Custom Tab — login still completes, but the session is not ephemeral.
+- **Android:** opens the browser (Auth Tab or a plain Custom Tab) with ephemeral browsing. Requires **Chrome 136+** or another browser that supports it; on unsupported browsers a warning is logged and the flow falls back to a regular (non-ephemeral) session — login still completes, but the session is not ephemeral.
 
 > **Platform Support:** iOS and Android. This option is ignored on web.
 
-> **Warning:** On Android, `ephemeralSession` and [`useTrustedWebActivity`](#trusted-web-activity-android) are effectively mutually exclusive. A Trusted Web Activity does not support ephemeral browsing, so if you enable both, TWA takes precedence and the session will **not** be ephemeral. Pick one.
+> **Warning:** On Android, ephemeral browsing is supported on both [Auth Tab](#trusted-web-activity-android) (the default launch mode since v6) and a plain Custom Tab, as long as the browser supports ephemeral browsing (Chrome 136+). A [Trusted Web Activity](#trusted-web-activity-android) does **not** support it, so when `useTrustedWebActivity: true` is set the session will **not** be ephemeral. On a browser too old to support ephemeral browsing, a warning is logged and the session is not ephemeral.
 
 > **Note:** Android support for ephemeral sessions was added in v6. In earlier versions the option was accepted but only took effect on iOS.
 
