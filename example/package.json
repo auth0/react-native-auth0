@@ -30,7 +30,7 @@
     "@react-native-community/cli-platform-android": "20.2.0",
     "@react-native-community/cli-platform-ios": "20.2.0",
     "@react-native/babel-preset": "0.86.2",
-    "@react-native/metro-config": "0.86.2",
+    "@react-native/metro-config": "0.87.0",
     "@react-native/typescript-config": "0.86.2",
     "@types/react": "^19.2.18",
     "babel-loader": "^10.1.1",
