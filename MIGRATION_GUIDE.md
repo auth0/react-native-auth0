@@ -251,24 +251,18 @@ Two codes were added for the new Auth0.swift cases, both iOS-only: `AUTHENTICATI
 
 #### ID-token claim validation is now opt-in on direct token requests
 
-Auth0.swift 3.0 made ID-token claim validation **opt-in** on `TokenRequestable` (`.validateClaims()`), matching the long-standing behaviour on Auth0.Android. Web Authentication (`authorize()`) is unaffected — the browser-based flow still validates the ID token internally on both platforms. What changed is only the **direct token-request** paths, where the SDK now opts in per flow. The current state is:
+On **native**, neither Auth0.swift 3.0 nor Auth0.Android 4.0.1 validates the ID token's claims implicitly on the Authentication API's direct token-request methods — validation is **opt-in** via `.validateClaims()` and off by default. The only native flow that validates the ID token on its own is **Web Authentication** (`authorize()`), whose browser-based flow verifies it internally. On **web**, `@auth0/auth0-spa-js` validates as part of its token request for every flow it supports (passwordless is not supported on web — it rejects with `UnsupportedOperation`). Which flows validate the ID token automatically:
 
 | Flow                               | iOS | Android | Web |
 | :--------------------------------- | :-: | :-----: | :-: |
 | Web Authentication (`authorize()`) | ✅  |   ✅    | ✅  |
-| Passkey **signin**                 | ✅  |   ✅    | ✅  |
-| Passkey **signup**                 | ❌  |   ✅    | ✅  |
+| Passkey **signin**                 | ❌  |   ❌    | ✅  |
+| Passkey **signup**                 | ❌  |   ❌    | ✅  |
 | Custom Token Exchange              | ❌  |   ❌    | ✅  |
 | MFA challenge/verify               | ❌  |   ❌    | ✅  |
-| Passwordless                       | ❌  |   ❌    | ✅  |
+| Passwordless                       | ❌  |   ❌    | N/A |
 
-Notes on the `❌` cells:
-
-- **Web** always validates: `@auth0/auth0-spa-js` verifies the ID token internally on every token request, so these flows validate there regardless of the native behaviour.
-- **Passkey signup on iOS** does not validate today, while Android (which shares its passkey token exchange with signin) does. This iOS/Android gap is a known inconsistency rather than intended parity, and is tracked for a follow-up fix on the native side.
-- The remaining native `❌` cells (Custom Token Exchange, MFA, Passwordless) validate on neither iOS nor Android.
-
-No action is required in your app; this is documented so you know exactly which responses carry a validated ID token on each platform.
+**For any native `❌` cell, validate the ID token yourself** (signature, `iss`, `aud`, `exp`, and `nonce` where applicable) before using its claims for identity or authorization decisions. `Auth0User.fromIdToken` only **decodes** the token and checks for `sub` — it does not validate.
 
 ### 10. Interfaces no longer use the `I` prefix ✅
 
