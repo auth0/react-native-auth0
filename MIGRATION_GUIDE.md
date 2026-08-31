@@ -249,6 +249,21 @@ Two codes were added for the new Auth0.swift cases, both iOS-only: `AUTHENTICATI
 
 `SSO_EXCHANGE_FAILED` (iOS and Android) and `CLEAR_FAILED` (iOS) are now reported instead of being collapsed into a generic credentials-manager error. No action is required unless you exhaustively match on these codes.
 
+#### ID-token claim validation is now opt-in on direct token requests
+
+On **native**, neither Auth0.swift 3.0 nor Auth0.Android 4.0.1 validates the ID token's claims implicitly on the Authentication API's direct token-request methods — validation is **opt-in** via `.validateClaims()` and off by default. The only native flow that validates the ID token on its own is **Web Authentication** (`authorize()`), whose browser-based flow verifies it internally. On **web**, `@auth0/auth0-spa-js` validates as part of its token request for every flow it supports (passwordless is not supported on web — it rejects with `UnsupportedOperation`). Which flows validate the ID token automatically:
+
+| Flow                               | iOS | Android | Web |
+| :--------------------------------- | :-: | :-----: | :-: |
+| Web Authentication (`authorize()`) | ✅  |   ✅    | ✅  |
+| Passkey **signin**                 | ❌  |   ❌    | ✅  |
+| Passkey **signup**                 | ❌  |   ❌    | ✅  |
+| Custom Token Exchange              | ❌  |   ❌    | ✅  |
+| MFA challenge/verify               | ❌  |   ❌    | ✅  |
+| Passwordless                       | ❌  |   ❌    | N/A |
+
+**For any native `❌` cell, validate the ID token yourself** (signature, `iss`, `aud`, `exp`, and `nonce` where applicable) before using its claims for identity or authorization decisions. `Auth0User.fromIdToken` only **decodes** the token and checks for `sub` — it does not validate.
+
 ### 10. Interfaces no longer use the `I` prefix ✅
 
 The platform contracts in `src/core/interfaces/` dropped their `I` prefix, so the interface now takes the plain name and the implementations keep their platform prefix (`Auth0Client` is the contract; `NativeAuth0Client` and `WebAuth0Client` implement it).
