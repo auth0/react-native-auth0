@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   View,
   StyleSheet,
@@ -8,6 +7,7 @@ import {
   Alert,
   Linking,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { RouteProp, NavigationProp } from '@react-navigation/native';
 import { jwtDecode } from 'jwt-decode';
 import auth0 from '../../api/auth0';

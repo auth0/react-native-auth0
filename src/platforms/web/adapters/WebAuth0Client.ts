@@ -1,19 +1,18 @@
 import {
-  Auth0Client,
+  Auth0Client as SpaAuth0Client,
   type Auth0ClientOptions,
   type LogoutOptions,
 } from '@auth0/auth0-spa-js';
 import type {
-  IAuth0Client,
-  IAuthenticationProvider,
-  IMyAccountClient,
-  IPasswordlessClient,
-  IUsersClient,
-  IMfaClient,
+  Auth0Client,
+  AuthenticationProvider,
+  MyAccountClient,
+  PasswordlessClient,
+  MfaClient,
 } from '../../../core/interfaces';
 import type { WebAuth0Options } from '../../../types/platform-specific';
 import type {
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   CustomTokenExchangeParameters,
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
@@ -27,10 +26,7 @@ import { WebMfaClient } from './WebMfaClient';
 import { WebMyAccountClient } from './WebMyAccountClient';
 import { WebPasswordlessClient } from './WebPasswordlessClient';
 import { ssoExchangeNotSupported } from './WebAuthenticationProvider';
-import {
-  AuthenticationOrchestrator,
-  ManagementApiOrchestrator,
-} from '../../../core/services';
+import { AuthenticationOrchestrator } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
 import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
@@ -39,36 +35,32 @@ import {
   validateTokenTypeUri,
 } from '../../../core/utils';
 
-export class WebAuth0Client implements IAuth0Client {
+export class WebAuth0Client implements Auth0Client {
   readonly webAuth: WebWebAuthProvider;
   readonly credentialsManager: WebCredentialsManager;
-  readonly auth: IAuthenticationProvider;
-  readonly mfa: IMfaClient;
-  readonly myAccount: IMyAccountClient;
+  readonly auth: AuthenticationProvider;
+  readonly mfa: MfaClient;
+  readonly myAccount: MyAccountClient;
 
   private readonly httpClient: HttpClient;
   private readonly tokenType: TokenType;
-  private readonly baseUrl: string;
-  private readonly getDPoPHeadersForOrchestrator?: (
-    params: DPoPHeadersParams
-  ) => Promise<Record<string, string>>;
-  public readonly client: Auth0Client;
-  private static spaClient: Auth0Client | null = null;
+  public readonly client: SpaAuth0Client;
+  private static spaClient: SpaAuth0Client | null = null;
 
   private logoutInProgress = false;
 
   /**
-   * Factory method to get a singleton instance of Auth0Client.
+   * Factory method to get a singleton instance of SpaAuth0Client.
    * This ensures that the client is only created once and reused.
    *
    * @param options - The Auth0ClientOptions to configure the client.
-   * @returns An instance of Auth0Client.
+   * @returns An instance of SpaAuth0Client.
    */
-  private static getSpaClient(options: Auth0ClientOptions): Auth0Client {
+  private static getSpaClient(options: Auth0ClientOptions): SpaAuth0Client {
     if (WebAuth0Client.spaClient) {
       return WebAuth0Client.spaClient;
     }
-    WebAuth0Client.spaClient = new Auth0Client(options);
+    WebAuth0Client.spaClient = new SpaAuth0Client(options);
     return WebAuth0Client.spaClient;
   }
 
@@ -82,8 +74,7 @@ export class WebAuth0Client implements IAuth0Client {
 
   constructor(options: WebAuth0Options) {
     const baseUrl = `https://${options.domain}`;
-    this.baseUrl = baseUrl;
-    const useDPoP = options.useDPoP ?? true;
+    const useDPoP = options.useDPoP ?? false;
     this.tokenType = useDPoP ? TokenType.dpop : TokenType.bearer;
 
     this.httpClient = new HttpClient({
@@ -100,7 +91,7 @@ export class WebAuth0Client implements IAuth0Client {
       // MRRT requires refresh tokens to work - automatically enable if useMrrt is true
       useRefreshTokens: options.useRefreshTokens ?? options.useMrrt ?? false,
       useRefreshTokensFallback: options.useRefreshTokensFallback ?? true,
-      useDpop: options.useDPoP ?? true,
+      useDpop: useDPoP,
       authorizationParams: {
         redirect_uri:
           typeof window !== 'undefined' ? window.location.origin : '',
@@ -113,12 +104,11 @@ export class WebAuth0Client implements IAuth0Client {
     this.client = client;
 
     // Create a bound getDPoPHeaders function for the orchestrator
-    const getDPoPHeadersForOrchestrator = async (params: DPoPHeadersParams) => {
+    const getDPoPHeadersForOrchestrator = async (
+      params: DPoPHeadersParameters
+    ) => {
       return this.getDPoPHeaders(params);
     };
-    this.getDPoPHeadersForOrchestrator = useDPoP
-      ? getDPoPHeadersForOrchestrator
-      : undefined;
 
     const orchestrator = new AuthenticationOrchestrator({
       clientId: options.clientId,
@@ -143,29 +133,7 @@ export class WebAuth0Client implements IAuth0Client {
     );
   }
 
-  /**
-   * @deprecated Will be removed in v6. Move Management API operations to a backend
-   * you control (a BFF).
-   */
-  users(token: string, tokenType?: TokenType): IUsersClient {
-    // Use provided tokenType or fall back to client's default
-    const effectiveTokenType = tokenType ?? this.tokenType;
-    // Only provide getDPoPHeaders if the effective token type is DPoP
-    const getDPoPHeaders =
-      effectiveTokenType === TokenType.dpop
-        ? this.getDPoPHeadersForOrchestrator
-        : undefined;
-
-    return new ManagementApiOrchestrator({
-      token: token,
-      httpClient: this.httpClient,
-      tokenType: effectiveTokenType,
-      baseUrl: this.baseUrl,
-      getDPoPHeaders,
-    });
-  }
-
-  readonly passwordless: IPasswordlessClient = new WebPasswordlessClient();
+  readonly passwordless: PasswordlessClient = new WebPasswordlessClient();
 
   public async logout(options?: LogoutOptions): Promise<void> {
     // If a logout process has already started, do nothing.
@@ -188,7 +156,7 @@ export class WebAuth0Client implements IAuth0Client {
   }
 
   async getDPoPHeaders(
-    params: DPoPHeadersParams
+    params: DPoPHeadersParameters
   ): Promise<Record<string, string>> {
     // For web platform, we need to get the access token and use the underlying
     // auth0-spa-js DPoP utilities to generate the headers

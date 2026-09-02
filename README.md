@@ -32,26 +32,30 @@ We're excited to announce the release of react-native-auth0 `v5.0.0`!
 
 ### Requirements
 
-This SDK targets apps that are using React Native SDK version `0.78.0` and up. If you're using an older React Native version, see the compatibility matrix below.
+This SDK targets apps that are using React Native SDK version `0.82.0` and up. If you're using an older React Native version, see the compatibility matrix below.
 
-This SDK fully supports React Native New Architecture and Expo 53+.
+React Native `0.82` is the first React Native release that runs **entirely on the New Architecture**. As of v6, this SDK is **New Architecture-only** — the Legacy Architecture is no longer supported. If your app has not yet moved to the New Architecture, upgrade to React Native `0.82`+ or stay on v5.x. For Expo, this SDK requires **Expo SDK 55 or higher** (Expo 54 ships React Native `0.81`, below the `0.82` floor).
 
-> ⚠️ **Warning**: If you are using Expo version less than 53, you need to use react-native-auth0 version 4.x or earlier. Version 5.x supports Expo 53 and above.
+> ⚠️ **Warning**: For Expo, this version requires **Expo SDK 55 or higher** (Expo 54 ships React Native `0.81`, below the `0.82` floor). If you are on an earlier Expo version, upgrade Expo or stay on react-native-auth0 `5.x` (Expo 53–54) or `4.x` (below Expo 53).
 
 ### Platform compatibility
 
 The following shows platform minimums for running projects with this SDK:
 
-| Platform | Minimum version |
-| -------- | :-------------: |
-| iOS      |      14.0       |
-| Android  |       35        |
+| Platform |   Minimum version    |
+| -------- | :------------------: |
+| iOS      |         15.1         |
+| Android  | API 26 (Android 8.0) |
 
-Our SDK requires a minimum iOS deployment target of 14.0. In your project's ios/Podfile, ensure your platform target is set to 14.0.
+**iOS.** This SDK requires a minimum iOS deployment target of `15.1`, inherited from the React Native `0.82`+ Pods (`min_ios_version_supported`). In your project's `ios/Podfile`, set the platform accordingly — following the older `14.0` value will fail `pod install`:
 
+```ruby
+platform :ios, '15.1'
 ```
-platform :ios, '14.0'
-```
+
+**Android.** This SDK requires **`minSdkVersion` 26** (Android 8.0). It compiles against **`compileSdkVersion` 36** and must be built with **JDK 17**. Raise these in your app's `android/build.gradle` (and verify your toolchain with `java -version`) if you are coming from an earlier setup. See the [Migration Guide](https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md) for details.
+
+The iOS pod ships a privacy manifest (`PrivacyInfo.xcprivacy`) that declares no tracking, no required-reason API usage, and a user identifier collected only for app functionality. Xcode includes it automatically when you generate a privacy report, so you don't have to describe this SDK's behavior yourself. You are still responsible for reviewing that report and for keeping your App Store Connect privacy answers accurate for your app as a whole, including the data this SDK collects.
 
 ### Installation
 
@@ -68,6 +72,28 @@ First install the native library module:
 Then, you need to run the following command to install the ios app pods with Cocoapods. That will auto-link the iOS library:
 
 `$ cd ios && pod install`
+
+#### iOS framework linkage (`use_frameworks!`)
+
+This SDK's native dependencies — Auth0 3.0.1, JWTDecode 4.0.0, and SimpleKeychain 1.3.0 — are Swift pods. They install with the default React Native static-library linkage (no `use_frameworks!`), so **most apps need no extra Podfile changes**.
+
+If your project requires `use_frameworks!` (for example, because another dependency ships as a framework), both linkage modes are supported — this was verified by building the example app under each:
+
+```ruby
+# Static frameworks
+use_frameworks! :linkage => :static
+
+# ...or dynamic frameworks
+use_frameworks! :linkage => :dynamic
+```
+
+No additional `post_install` step is required for this SDK beyond what React Native already generates. After changing linkage, reinstall the pods:
+
+```bash
+cd ios && rm -rf Pods && pod install
+```
+
+> Delete only `Pods` — keep `Podfile.lock` so a linkage change doesn't re-resolve and bump unrelated dependencies. Add `--repo-update` only if you also need to refresh the CocoaPods spec repo.
 
 ### Configure the SDK
 
@@ -668,6 +694,65 @@ The options for configuring the display of local authentication prompt, authenti
 
 > :warning: You need a real device to test Local Authentication for iOS. Local Authentication is not available in simulators.
 
+### Error taxonomy
+
+Every error the SDK throws extends `AuthError`. The six normalized subclasses below carry a
+**normalized, platform-agnostic** `type` — switch on `type`, not `code`, for these and your error
+handling behaves identically on iOS, Android, and web. Flows that throw a plain `AuthError`
+instead — for example [Custom Token Exchange](EXAMPLES.md#custom-token-exchange-rfc-8693), which surfaces
+the raw OAuth error from the token endpoint — don't get a normalized `type`; there, `code` is the
+correct (and only) thing to switch on.
+
+| Property  | Use it for                                                                                                                                                                                                   |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `type`    | **Control flow** for the six normalized subclasses. A normalized code, stable across platforms. Compare against the `…ErrorCodes` constants.                                                                 |
+| `code`    | **Diagnostics** for the normalized subclasses (raw code from the underlying platform SDK or wire response, varies by platform); **control flow** for plain `AuthError` flows that have no normalized `type`. |
+| `message` | Human-readable description. Not stable — do not parse it.                                                                                                                                                    |
+| `status`  | HTTP status, when the failure came from an HTTP response (`0` otherwise).                                                                                                                                    |
+
+Each of the six normalized classes ships a companion constants object and a matching TypeScript
+union. Handle every value explicitly (no `default` branch) and TypeScript enforces exhaustiveness
+at compile time — a `switch` missing a case fails to compile. The example below adds a `default`
+fallback for brevity, so it does not get that compile-time guarantee:
+
+| Error class               | Constants                      | Type union                         | Thrown by                                       |
+| ------------------------- | ------------------------------ | ---------------------------------- | ----------------------------------------------- |
+| `WebAuthError`            | `WebAuthErrorCodes`            | `WebAuthErrorCode`                 | `webAuth.authorize()`, `webAuth.clearSession()` |
+| `CredentialsManagerError` | `CredentialsManagerErrorCodes` | `CredentialsManagerErrorCode`      | `credentialsManager.*`                          |
+| `MfaError`                | `MfaErrorCodes`                | `MfaErrorCode`                     | `mfa.*`                                         |
+| `PasskeyError`            | `PasskeyErrorCodes`            | `PasskeyErrorCode`                 | passkey signup/login and passkey enrollment     |
+| `MyAccountError`          | `MyAccountErrorCodes`          | `MyAccountErrorCode`               | `myAccount.*`                                   |
+| `DPoPError`               | `DPoPErrorCodes`               | `DPoPErrorCode`                    | `getDPoPHeaders()` and DPoP key handling        |
+| `TimeoutError`            | —                              | `type` is always `'TIMEOUT_ERROR'` | HTTP requests exceeding `timeout`               |
+
+```typescript
+import { WebAuthError, WebAuthErrorCodes } from 'react-native-auth0';
+import type { WebAuthErrorCode } from 'react-native-auth0';
+
+function describe(type: WebAuthErrorCode): string {
+  switch (type) {
+    case WebAuthErrorCodes.USER_CANCELLED:
+      return 'Cancelled';
+    case WebAuthErrorCodes.NETWORK_ERROR:
+      return 'Offline';
+    default:
+      return 'Login failed';
+  }
+}
+```
+
+`Auth0ErrorCode` is the union of all of the above. Prefer the specific union when handling one error
+class — it keeps `switch` statements exhaustive and rejects codes that cannot occur there. Reach for
+`Auth0ErrorCode` only in generic code such as logging or telemetry.
+
+> **Stability.** These constants, their unions, and the `type` values they contain are the public
+> error contract. Values will not be removed or renamed outside a major version.
+
+`MyAccountError` is the one class with an extra property: the My Account API reports failures as
+[RFC 7807](https://datatracker.ietf.org/doc/html/rfc7807) type URIs, so `type` holds the normalized
+code while `typeUri` preserves the original URI (e.g. `https://auth0.com/api-errors/A0E-401-0001`) for
+logging and support tickets.
+
 ### Credentials Manager errors
 
 The Credentials Manager will only throw `CredentialsManagerError` exceptions. You can find more information in the details property of the exception.
@@ -888,18 +973,17 @@ try {
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | ------------------------------- | ------------------------------------ |
 | `USER_CANCELLED`             | The user actively cancelled the web authentication flow.                                                                                                                                                                                                                                                                                                                                                 | `a0.session.user_cancelled`     | `USER_CANCELLED`                | `cancelled`                          |
 | `BROWSER_NOT_AVAILABLE`      | No compatible browser application is installed on the device.                                                                                                                                                                                                                                                                                                                                            | `a0.browser_not_available`      | -                               |                                      |
-| `NO_BUNDLE_IDENTIFIER`       | The native bundle identifier could not be retrieved, which is required to construct the callback URL.                                                                                                                                                                                                                                                                                                    | -                               | `NO_BUNDLE_IDENTIFIER`          |                                      |
 | `FAILED_TO_LOAD_URL`         | The authorization URL could not be loaded in the browser.                                                                                                                                                                                                                                                                                                                                                | `a0.session.failed_load`        | -                               |                                      |
 | `BROWSER_TERMINATED`         | The browser was closed unexpectedly, likely because the application was relaunched from the home screen while the login was in progress.                                                                                                                                                                                                                                                                 | `a0.session.browser_terminated` | -                               |                                      |
-| `INVALID_STATE`              | The `state` parameter returned from the server did not match the one sent, indicating a potential Cross-Site Request Forgery (CSRF) attack.                                                                                                                                                                                                                                                              | `access_denied`                 | `OTHER`                         | `state_mismatch`                     |
-| `ACCESS_DENIED`              | The user or Auth0 denied the authentication request. This can be caused by a user denying consent, a failing Action or Rule, or other authorization policies.                                                                                                                                                                                                                                            | `access_denied`                 | `OTHER`                         | `access_denied`                      |
+| `INVALID_STATE`              | The `state` parameter returned from the server did not match the one sent, indicating a potential Cross-Site Request Forgery (CSRF) attack. Distinguished from `ACCESS_DENIED` by the native code being `state_mismatch`, or the error message containing `state is invalid`.                                                                                                                            | `access_denied`                 | `access_denied`                 | `state_mismatch`                     |
+| `ACCESS_DENIED`              | The user or Auth0 denied the authentication request. This can be caused by a user denying consent, a failing Action or Rule, or other authorization policies.                                                                                                                                                                                                                                            | `access_denied`                 | `access_denied`                 | `access_denied`                      |
 | `CONSENT_REQUIRED`           | The user needs to explicitly grant consent for the application to access requested scopes or resources.                                                                                                                                                                                                                                                                                                  | -                               |                                 | `consent_required`                   |
-| `NO_AUTHORIZATION_CODE`      | The callback URL from the server is missing the required `code` parameter needed for the token exchange.                                                                                                                                                                                                                                                                                                 | -                               | `NO_AUTHORIZATION_CODE`         |                                      |
-| `INVALID_CONFIGURATION`      | The Auth0 Application is misconfigured. Common causes include an invalid social connection configuration.                                                                                                                                                                                                                                                                                                | `a0.invalid_configuration`      | `OTHER`                         |                                      |
-| `PKCE_NOT_ALLOWED`           | PKCE is required but not enabled for the Auth0 Application. Ensure the "Application Type" is set to "Native" in your Auth0 dashboard.                                                                                                                                                                                                                                                                    | `a0.pkce_not_available`         | `PKCE_NOT_ALLOWED`              |                                      |
+| `INVALID_CONFIGURATION`      | The Auth0 Application is misconfigured. Common causes include an invalid social connection configuration.                                                                                                                                                                                                                                                                                                | `a0.invalid_configuration`      | `a0.invalid_configuration`      |                                      |
+| `PKCE_NOT_ALLOWED`           | PKCE is required but not enabled for the Auth0 Application. Ensure the "Application Type" is set to "Native" in your Auth0 dashboard.                                                                                                                                                                                                                                                                    | `a0.pkce_not_available`         | -                               |                                      |
 | `ID_TOKEN_VALIDATION_FAILED` | The ID token received is invalid and failed one or more validation checks, such as signature, issuer, audience, or nonce verification.                                                                                                                                                                                                                                                                   | `a0.session.invalid_idtoken`    | `ID_TOKEN_VALIDATION_FAILED`    | (various validation Errors).         |
-| `INVALID_INVITATION_URL`     | The organization invitation URL is malformed or missing the required `organization` and `invitation` parameters.                                                                                                                                                                                                                                                                                         | -                               | `INVALID_INVITATION_URL`        |                                      |
 | `INVALID_CALLBACK_URL`       | The URL that returned to the app did not match the expected callback. On iOS this commonly happens when an in-page link (e.g. a privacy-policy link) reuses the app's custom scheme and is captured by `ASWebAuthenticationSession` instead of the real callback. Keep your configured callback in the required format and ensure such in-page links use `https://` rather than the app's custom scheme. | -                               | `INVALID_CALLBACK_URL`          |                                      |
+| `AUTHENTICATION_FAILED`      | The callback URL carried an error that could not be attributed to a more specific cause. **iOS only.**                                                                                                                                                                                                                                                                                                   | -                               | `AUTHENTICATION_FAILED`         |                                      |
+| `CODE_EXCHANGE_FAILED`       | Exchanging the authorization code for tokens failed. **iOS only.**                                                                                                                                                                                                                                                                                                                                       | -                               | `CODE_EXCHANGE_FAILED`          |                                      |
 | `NETWORK_ERROR`              | A network error occurred, preventing the request from completing. The device may be offline or unable to reach the Auth0 servers.                                                                                                                                                                                                                                                                        | `a0.network_error`              | `OTHER` (with `URLError` cause) | (Network-related fetch exception)    |
 | `TIMEOUT_ERROR`              | The web authentication flow timed out.                                                                                                                                                                                                                                                                                                                                                                   | -                               | -                               | `timeout` (from `PopupTimeoutError`) |
 | `UNKNOWN_ERROR`              | An unexpected or uncategorized error occurred. Check the `message` and `cause` properties for more specific details.                                                                                                                                                                                                                                                                                     | _(various)_                     | `UNKNOWN` or `OTHER`            |                                      |
@@ -932,7 +1016,6 @@ This library provides a unified API across Native (iOS/Android) and Web platform
 | `auth.userInfo()`                                                      |          ✅          |      ✅       | Fetches the user's profile from the `/userinfo` endpoint using an access token.                                                                                          |
 | `auth.createUser()`                                                    |          ✅          |      ✅       | Calls the `/dbconnections/signup` endpoint. Works on both platforms.                                                                                                     |
 | `auth.resetPassword()`                                                 |          ✅          |      ✅       | Calls the `/dbconnections/change_password` endpoint. Works on both platforms.                                                                                            |
-| `users(token).patchUser()`                                             |          ✅          |      ✅       | **Deprecated — removed in v6.** Calls the Management API from the client, which needs an over-privileged token. Move to a backend (BFF).                                 |
 | **MFA Flexible Factors Grant**                                         |                      |               | ---                                                                                                                                                                      |
 | `mfa.getAuthenticators()`                                              |          ✅          |      ✅       | Lists enrolled MFA authenticators for the user.                                                                                                                          |
 | `mfa.enroll()`                                                         |          ✅          |      ✅       | Enrolls a new MFA factor (OTP, SMS, email, voice, push).                                                                                                                 |
@@ -948,7 +1031,7 @@ This library provides a unified API across Native (iOS/Android) and Web platform
 | `myAccount.confirmPhoneEnrollment()` (and other `confirm...`)          |          ✅          |      ✅       | Confirms an enrollment challenge and returns the enrolled authentication method.                                                                                         |
 | `myAccount.passkeyEnrollmentChallenge()` / `myAccount.enrollPasskey()` |          ✅          |      ✅       | Enrolls a passkey as an authentication method. On Web, the browser's WebAuthn APIs handle the credential ceremony.                                                       |
 
-> **Note on DPoP (Web):** When the client is configured with DPoP (the default), My Account calls on Web only succeed when the supplied access token was issued by the same client instance, because the DPoP proof is signed with that client's keypair. When the client is not configured with DPoP, plain bearer tokens are used and any valid access token works.
+> **Note on DPoP (Web):** When the client is configured with DPoP, My Account calls on Web only succeed when the supplied access token was issued by the same client instance, because the DPoP proof is signed with that client's keypair. When the client is not configured with DPoP, plain bearer tokens are used and any valid access token works.
 
 ## Troubleshooting
 

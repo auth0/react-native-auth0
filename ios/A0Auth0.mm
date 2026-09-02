@@ -2,9 +2,7 @@
 
 #import <React/RCTUtils.h>
 
-#ifdef RCT_NEW_ARCH_ENABLED
 #import "RNAuth0Spec/RNAuth0Spec.h"
-#endif
 
 /**
  * This preprocessor directive resolves the static linking issue by ensuring
@@ -23,7 +21,7 @@
 #define ERROR_CANCELLED @{@"error": @"a0.session.user_cancelled",@"error_description": @"User cancelled the Auth"}
 #define ERROR_FAILED_TO_LOAD @{@"error": @"a0.session.failed_load",@"error_description": @"Failed to load url"}
 
-@interface A0Auth0 ()
+@interface A0Auth0 () <NativeA0Auth0Spec>
 @property (strong, nonatomic) NativeBridge *nativeBridge;
 @property (strong, nonatomic) A0MyAccount *myAccount;
 @property (strong, nonatomic) A0Passwordless *passwordless;
@@ -102,8 +100,10 @@ RCT_EXPORT_METHOD(initializeAuth0WithConfiguration:(NSString *)clientId
                                   useDPoP:(nonnull NSNumber *)useDPoP
                                maxRetries:(double)maxRetries
             credentialsManagerStorageKey:(NSString * _Nullable)credentialsManagerStorageKey
+                  networkingOptions:(NSDictionary * _Nullable)networkingOptions
                                  resolve:(RCTPromiseResolveBlock)resolve
                                   reject:(RCTPromiseRejectBlock)reject) {
+    // networkingOptions is Android-only; intentionally not forwarded to NativeBridge.
     [self tryAndInitializeNativeBridge:clientId domain:domain withLocalAuthenticationOptions:localAuthenticationOptions useDPoP:useDPoP maxRetries:(NSInteger)maxRetries credentialsManagerStorageKey:credentialsManagerStorageKey resolve:resolve reject:reject];
 }
 
@@ -416,10 +416,8 @@ UIBackgroundTaskIdentifier taskId;
     self.myAccount = [[A0MyAccount alloc] initWithDomain:domain useDPoP:useDPoPBool];
     self.passwordless = [[A0Passwordless alloc] initWithClientId:clientId domain:domain useDPoP:useDPoPBool];
 }
-#ifdef RCT_NEW_ARCH_ENABLED
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params { 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params {
     return std::make_shared<facebook::react::NativeA0Auth0SpecJSI>(params);
 }
-#endif
 
 @end

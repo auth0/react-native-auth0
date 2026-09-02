@@ -1,13 +1,11 @@
-import type { IWebAuthProvider } from './IWebAuthProvider';
-import type { ICredentialsManager } from './ICredentialsManager';
-import type { IAuthenticationProvider } from './IAuthenticationProvider';
-import type { IMyAccountClient } from './IMyAccountClient';
-import type { IPasswordlessClient } from './IPasswordlessClient';
-import type { IUsersClient } from './IUsersClient';
-import type { IMfaClient } from './IMfaClient';
+import type { WebAuthProvider } from './WebAuthProvider';
+import type { CredentialsManager } from './CredentialsManager';
+import type { AuthenticationProvider } from './AuthenticationProvider';
+import type { MyAccountClient } from './MyAccountClient';
+import type { PasswordlessClient } from './PasswordlessClient';
+import type { MfaClient } from './MfaClient';
 import type {
-  DPoPHeadersParams,
-  TokenType,
+  DPoPHeadersParameters,
   CustomTokenExchangeParameters,
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
@@ -23,45 +21,33 @@ import type {
  * into a single, cohesive contract. Platform-specific factories will produce an
  * object that conforms to this interface.
  */
-export interface IAuth0Client {
+export interface Auth0Client {
   /**
    * Provides access to methods for handling web-based authentication flows.
    */
-  readonly webAuth: IWebAuthProvider;
+  readonly webAuth: WebAuthProvider;
 
   /**
    * Provides access to methods for securely managing user credentials on the device.
    */
-  readonly credentialsManager: ICredentialsManager;
+  readonly credentialsManager: CredentialsManager;
 
   /**
    * Provides access to methods for direct authentication grants (e.g., password-realm).
    */
-  readonly auth: IAuthenticationProvider;
+  readonly auth: AuthenticationProvider;
 
   /**
    * Provides access to methods for interacting with the My Account API for managing authentication methods.
    */
-  readonly myAccount: IMyAccountClient;
+  readonly myAccount: MyAccountClient;
 
   /**
    * Provides access to the passwordless OTP flow for database connections.
    *
    * @remarks Native only (iOS, Android). Not supported on web.
    */
-  readonly passwordless: IPasswordlessClient;
-
-  /**
-   * Creates a client for interacting with the Auth0 Management API's user endpoints.
-   *
-   * @param token An access token with the required permissions for the management operations.
-   * @param tokenType Optional token type ('Bearer' or 'DPoP'). Defaults to the client's configured token type.
-   * @returns An `IUsersClient` instance configured with the provided token.
-   *
-   * @deprecated Will be removed in v6. Move Management API operations to a backend
-   * you control (a BFF).
-   */
-  users(token: string, tokenType?: TokenType): IUsersClient;
+  readonly passwordless: PasswordlessClient;
 
   /**
    * Generates DPoP headers for making authenticated requests to custom APIs.
@@ -84,7 +70,9 @@ export interface IAuth0Client {
    * fetch('https://api.example.com/data', { headers });
    * ```
    */
-  getDPoPHeaders(params: DPoPHeadersParams): Promise<Record<string, string>>;
+  getDPoPHeaders(
+    params: DPoPHeadersParameters
+  ): Promise<Record<string, string>>;
 
   /**
    * Performs a Custom Token Exchange using RFC 8693.
@@ -115,7 +103,7 @@ export interface IAuth0Client {
    * const credentials = await auth0.mfa.verify({ mfaToken, otp: '123456' });
    * ```
    */
-  readonly mfa: IMfaClient;
+  readonly mfa: MfaClient;
 
   /**
    * Requests a passkey signup challenge from Auth0.

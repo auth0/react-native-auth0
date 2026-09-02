@@ -1,4 +1,4 @@
-import type { IAuth0Client } from '../core/interfaces';
+import type { Auth0Client } from '../core/interfaces';
 import type { Auth0Options } from '../types';
 import type { WebAuth0Options } from '../types/platform-specific';
 import { validateAuth0Options, getConfigSignature } from '../core/utils';
@@ -7,12 +7,12 @@ import { validateAuth0Options, getConfigSignature } from '../core/utils';
 import { WebAuth0Client } from '../platforms/web';
 
 /**
- * Creates the Web-specific IAuth0Client; selected by bundlers when targeting web.
+ * Creates the Web-specific Auth0Client; selected by bundlers when targeting web.
  * Clients are cached by config signature so remounts reuse the same instance
  * (avoiding duplicate refresh exchanges); a config change yields a fresh client.
  */
 export class Auth0ClientFactory {
-  private static clientCache = new Map<string, IAuth0Client>();
+  private static clientCache = new Map<string, Auth0Client>();
 
   /**
    * Creates or returns a cached WebAuth0Client instance.
@@ -20,7 +20,7 @@ export class Auth0ClientFactory {
    * @param options The configuration options for the Auth0 client.
    * @returns An instance of WebAuth0Client.
    */
-  static createClient(options: Auth0Options): IAuth0Client {
+  static createClient(options: Auth0Options): Auth0Client {
     validateAuth0Options(options);
 
     const cacheKey = getConfigSignature(options);

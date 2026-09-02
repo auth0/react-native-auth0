@@ -1,5 +1,6 @@
 # Examples using react-native-auth0
 
+- [iOS framework linkage (`use_frameworks!`)](#ios-framework-linkage-use_frameworks)
 - [Authentication API](#authentication-api)
   - [Login with Password Realm Grant](#login-with-password-realm-grant)
   - [Get user information using user's access_token](#get-user-information-using-users-access_token)
@@ -21,6 +22,9 @@
   - [Using Retry with Auth0 Class](#using-retry-with-auth0-class)
   - [Platform Support](#platform-support)
   - [Error Handling](#error-handling)
+- [Android Networking Configuration](#android-networking-configuration)
+  - [Using Networking Options with Hooks](#using-networking-options-with-hooks)
+  - [Using Networking Options with Auth0 Class](#using-networking-options-with-auth0-class)
 - [IPSIE Session Expiry](#ipsie-session-expiry)
 - [Biometric Authentication](#biometric-authentication)
   - [Biometric Policy Types](#biometric-policy-types)
@@ -30,9 +34,6 @@
     - [Android](#android)
     - [iOS](#ios)
   - [Migration from Previous Behavior](#migration-from-previous-behavior)
-- [Management API (Users)](#management-api-users)
-  - [Patch user with user_metadata](#patch-user-with-user_metadata)
-  - [Get full user profile](#get-full-user-profile)
 - [Organizations](#organizations)
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
@@ -100,6 +101,8 @@
 - [Allowed Browsers (Android)](#allowed-browsers-android)
   - [Using with Hooks](#using-with-hooks)
   - [Using with Auth0 Class](#using-with-auth0-class-1)
+- [Trusted Web Activity (Android)](#trusted-web-activity-android)
+- [Ephemeral Sessions](#ephemeral-sessions)
 - [Recovering Login After Process Death (Android)](#recovering-login-after-process-death-android)
   - [Using with Hooks](#recovering-login-using-hooks)
   - [Using with Auth0 Class](#recovering-login-using-the-auth0-class)
@@ -109,6 +112,30 @@
   - [Handling DPoP token migration](#handling-dpop-token-migration)
   - [Checking token type](#checking-token-type)
   - [Handling nonce errors](#handling-nonce-errors)
+
+## iOS framework linkage (`use_frameworks!`)
+
+This SDK's native iOS dependencies — Auth0 3.0.1, JWTDecode 4.0.0, and SimpleKeychain 1.3.0 — are Swift pods. They install with the default React Native static-library linkage, so **most apps need no extra Podfile changes**:
+
+```bash
+cd ios && pod install
+```
+
+If another dependency forces `use_frameworks!`, both linkage modes are supported (verified by building the example app under each). Pick one in your `Podfile`:
+
+```ruby
+# Static frameworks
+use_frameworks! :linkage => :static
+
+# ...or dynamic frameworks
+use_frameworks! :linkage => :dynamic
+```
+
+No SDK-specific `post_install` step is required beyond what React Native already generates. After changing linkage, reinstall the pods — delete only `Pods` so `Podfile.lock` isn't re-resolved and unrelated dependencies aren't bumped:
+
+```bash
+cd ios && rm -rf Pods && pod install
+```
 
 ## Authentication API
 
@@ -187,29 +214,15 @@ authorize({}, { customScheme: 'YOUR_AUTH0_DOMAIN' })
 
 ### Login using MFA with One Time Password code
 
-> **Deprecated — will be removed in v6.** The MFA methods on the auth client (`auth0.auth.loginWithOTP`, `auth0.auth.loginWithOOB`, `auth0.auth.loginWithRecoveryCode`, `auth0.auth.multifactorChallenge`) are superseded by the [`mfa` client](#mfa-flexible-factors-grant), which also lets you list and enrol authenticators. See the mapping table in the [Migration Guide](MIGRATION_GUIDE.md#mfa-methods-on-the-auth-client).
-
 This call requires the client to have the _MFA_ Client Grant Type enabled. Check [this article](https://auth0.com/docs/clients/client-grant-types) to learn how to enable it.
 
-When you sign in to a multifactor authentication enabled connection using the `passwordRealm` method, you receive an error stating that MFA is required for that user along with an `mfa_token` value. Use this value to complete the MFA flow, passing the One Time Password from the enrolled MFA code generator app.
+When you sign in to a multifactor authentication enabled connection using the `passwordRealm` method, you receive an error stating that MFA is required for that user along with an `mfa_token` value. Pass that value to the [`mfa` client](#mfa-flexible-factors-grant) to complete the flow.
 
 ```js
-// Recommended: the `mfa` client
 const credentials = await auth0.mfa.verify({
   mfaToken: error.json.mfa_token,
   otp: '{user entered OTP}',
 });
-```
-
-```js
-// Deprecated: removed in v6
-auth0.auth
-  .loginWithOTP({
-    mfaToken: error.json.mfa_token,
-    otp: '{user entered OTP}',
-  })
-  .then(console.log)
-  .catch(console.error);
 ```
 
 ### Login with Passwordless
@@ -652,6 +665,66 @@ function MyComponent() {
 2. **Configure adequate overlap period**: Ensure your Auth0 tenant has at least 180 seconds token overlap configured
 3. **Test on real devices**: Simulate network instability during testing to validate retry behavior
 
+## Android Networking Configuration
+
+> **Platform Support:** Android only. Accepted on iOS for API compatibility but has no effect.
+
+The `networkingOptions` configuration option lets you tune the native networking client (`DefaultClient` from Auth0.Android's OkHttp-based stack) used for every request the native SDK makes on your behalf — web auth token exchange, credential renewal, MFA, passkeys, and My Account API calls.
+
+```ts
+networkingOptions?: {
+  connectTimeout?: number; // seconds, default 10
+  readTimeout?: number; // seconds, default 10
+  writeTimeout?: number; // seconds, default 10
+  callTimeout?: number; // seconds, default 0 (no limit)
+  defaultHeaders?: Record<string, string>; // sent on every request, default {}
+  enableLogging?: boolean; // default false
+};
+```
+
+Any option you omit falls back to Auth0.Android's own default.
+
+> [!WARNING]
+> `enableLogging` is **debug-only**. When enabled, Auth0.Android logs full HTTP request and response bodies to Logcat — including access, refresh, and ID tokens returned from token-endpoint calls, in plaintext. Never enable it in a production build.
+
+### Using Networking Options with Hooks
+
+```jsx
+import React from 'react';
+import { Auth0Provider } from 'react-native-auth0';
+
+function App() {
+  return (
+    <Auth0Provider
+      domain="YOUR_AUTH0_DOMAIN"
+      clientId="YOUR_AUTH0_CLIENT_ID"
+      networkingOptions={{
+        connectTimeout: 30,
+        readTimeout: 30,
+        defaultHeaders: { 'X-App-Version': '1.2.3' },
+      }}
+    >
+      <MyComponent />
+    </Auth0Provider>
+  );
+}
+```
+
+### Using Networking Options with Auth0 Class
+
+```js
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+  networkingOptions: {
+    connectTimeout: 30,
+    readTimeout: 30,
+  },
+});
+```
+
 ## IPSIE Session Expiry
 
 > **Platform Support:** iOS, Android, and Web.
@@ -821,66 +894,6 @@ const credentials = await auth0.credentialsManager.getCredentials();
 ### Migration from Previous Behavior
 
 If you were not explicitly configuring biometric authentication before, the new `BiometricPolicy.default` maintains backward-compatible behavior. To enforce stricter biometric requirements, switch to `BiometricPolicy.always`.
-
-## Management API (Users)
-
-> **Deprecated — will be removed in v6.** Calling the Management API from a client requires an access token with over-privileged scopes (`read:current_user`, `update:current_user_metadata`) that cannot be kept secret in a mobile app or a browser. Move these operations to a backend you control (a BFF): your app sends its own access token, the backend validates it and calls the Management API with its own credentials. Both native SDKs have already dropped their Management clients.
->
-> Reading the current user's profile does **not** need the Management API — use `auth0.auth.userInfo({ token })`, or the `user` object from `useAuth0()`, which is decoded from the ID token.
-
-### Patch user with user_metadata
-
-**Recommended —** update metadata through your own backend, which holds the Management API credentials:
-
-```js
-const credentials = await auth0.credentialsManager.getCredentials();
-
-await fetch('https://your-api.example.com/me/metadata', {
-  method: 'PATCH',
-  headers: {
-    'Authorization': `Bearer ${credentials.accessToken}`,
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({ first_name: 'John', last_name: 'Doe' }),
-});
-```
-
-**Legacy (v5 only) —** deprecated, and removed in v6:
-
-```js
-auth0
-  .users('the user access_token')
-  .patchUser({
-    id: 'user_id',
-    metadata: { first_name: 'John', last_name: 'Doe' },
-  })
-  .then(console.log)
-  .catch(console.error);
-```
-
-### Get full user profile
-
-**Recommended —** reading the signed-in user's profile needs no Management API and no backend:
-
-```js
-const credentials = await auth0.credentialsManager.getCredentials();
-const profile = await auth0.auth.userInfo({ token: credentials.accessToken });
-
-// Or, inside a component, the `user` object decoded from the ID token:
-const { user } = useAuth0();
-```
-
-**Legacy (v5 only) —** deprecated, and removed in v6:
-
-```js
-auth0
-  .users('{ACCESS_TOKEN}')
-  .getUser({ id: 'user_id' })
-  .then(console.log)
-  .catch(console.error);
-```
-
-For more info please check our generated [documentation](https://auth0.github.io/react-native-auth0/index.html)
 
 ## Organizations
 
@@ -1060,11 +1073,7 @@ Custom Token Exchange allows you to exchange external identity provider tokens f
 ```typescript
 import React from 'react';
 import { Button, Alert } from 'react-native';
-import {
-  useAuth0,
-  AuthenticationException,
-  AuthenticationErrorCodes,
-} from 'react-native-auth0';
+import { useAuth0, AuthError } from 'react-native-auth0';
 
 function TokenExchangeScreen() {
   const { customTokenExchange, user, error } = useAuth0();
@@ -1081,25 +1090,28 @@ function TokenExchangeScreen() {
 
       Alert.alert('Success', `Logged in as ${user?.name}`);
     } catch (e) {
-      if (e instanceof AuthenticationException) {
-        switch (e.type) {
-          case AuthenticationErrorCodes.INVALID_SUBJECT_TOKEN:
-            Alert.alert('Error', 'The external token is invalid or expired');
+      if (e instanceof AuthError) {
+        // Custom Token Exchange surfaces the OAuth 2.0 error from the token
+        // endpoint on `code`. See the RFC 8693 error responses and your Action's
+        // own failure reasons.
+        switch (e.code) {
+          case 'invalid_request':
+            Alert.alert('Error', 'The external token or token type is invalid');
             break;
-          case AuthenticationErrorCodes.UNSUPPORTED_TOKEN_TYPE:
-            Alert.alert('Error', 'The token type is not supported');
+          case 'invalid_grant':
+            Alert.alert('Error', 'The external token was rejected or expired');
             break;
-          case AuthenticationErrorCodes.TOKEN_EXCHANGE_NOT_CONFIGURED:
+          case 'unsupported_token_type':
+            Alert.alert('Error', 'The external token type is not supported');
+            break;
+          case 'unauthorized_client':
             Alert.alert(
               'Error',
-              'Custom Token Exchange is not configured for this tenant'
+              'Custom Token Exchange is not enabled for this client'
             );
             break;
-          case AuthenticationErrorCodes.TOKEN_VALIDATION_FAILED:
-            Alert.alert('Error', 'Token validation failed in Auth0 Action');
-            break;
-          case AuthenticationErrorCodes.NETWORK_ERROR:
-            Alert.alert('Error', 'Network error. Please check your connection.');
+          case 'access_denied':
+            Alert.alert('Error', 'Token validation failed in the Auth0 Action');
             break;
           default:
             Alert.alert('Error', e.message);
@@ -1117,10 +1129,7 @@ function TokenExchangeScreen() {
 ### Using Custom Token Exchange with Auth0 Class
 
 ```typescript
-import Auth0, {
-  AuthenticationException,
-  AuthenticationErrorCodes,
-} from 'react-native-auth0';
+import Auth0, { AuthError } from 'react-native-auth0';
 
 const auth0 = new Auth0({
   domain: 'YOUR_AUTH0_DOMAIN',
@@ -1139,14 +1148,14 @@ async function exchangeExternalToken(externalToken: string) {
     console.log('Exchange successful:', credentials);
     return credentials;
   } catch (error) {
-    if (error instanceof AuthenticationException) {
+    if (error instanceof AuthError) {
       // Access the underlying error details
-      console.error('Error type:', error.type);
+      console.error('Error code:', error.code);
       console.error('Error message:', error.message);
-      console.error('Underlying error code:', error.underlyingError.code);
+      console.error('HTTP status:', error.status);
 
-      // Handle specific error types
-      if (error.type === AuthenticationErrorCodes.INVALID_SUBJECT_TOKEN) {
+      // Handle specific error codes
+      if (error.code === 'invalid_grant') {
         // Token is invalid or expired - prompt user to re-authenticate
         throw new Error('Please authenticate again with the external provider');
       }
@@ -1721,7 +1730,7 @@ The My Account API allows authenticated users to manage their own authentication
 
 Access the My Account client via the `myAccount` property from `useAuth0()` or the `Auth0` class instance.
 
-The My Account API is supported on Native (iOS/Android) and Web. The same `myAccount` API is used on all platforms; only the passkey credential ceremony differs (native passkey module vs. the browser's WebAuthn APIs). On Web, when DPoP is enabled (the default), the supplied access token must have been issued by the same client instance, since the DPoP proof is signed with that client's keypair; when the client is not configured with DPoP, plain bearer tokens are used and any valid access token works.
+The My Account API is supported on Native (iOS/Android) and Web. The same `myAccount` API is used on all platforms; only the passkey credential ceremony differs (native passkey module vs. the browser's WebAuthn APIs). On Web, when DPoP is enabled, the supplied access token must have been issued by the same client instance, since the DPoP proof is signed with that client's keypair; when the client is not configured with DPoP, plain bearer tokens are used and any valid access token works.
 
 ### Prerequisites
 
@@ -1924,6 +1933,21 @@ try {
 }
 ```
 
+The My Account API reports failures as [RFC 7807](https://datatracker.ietf.org/doc/html/rfc7807)
+type URIs. `MyAccountError` normalizes those to a `MyAccountErrorCodes` value on `type` so your
+error handling matches every other error class in the SDK, and preserves the original URI on
+`typeUri` for logging or support tickets:
+
+```typescript
+catch (e) {
+  if (e instanceof MyAccountError) {
+    console.log(e.type);       // "UNAUTHORIZED" — normalized, switch on this
+    console.log(e.typeUri);    // "https://auth0.com/api-errors/A0E-401-0001" — raw, log this
+    console.log(e.statusCode); // 401
+  }
+}
+```
+
 ### Platform Support
 
 | Platform    | Support          | Notes                                                     |
@@ -1977,7 +2001,7 @@ function MyComponent() {
 
       console.log('Session Transfer Token:', ssoCredentials.sessionTransferToken);
       console.log('Token Type:', ssoCredentials.tokenType);
-      console.log('Expires In:', ssoCredentials.expiresIn, 'seconds');
+      console.log('Expires At:', ssoCredentials.expiresAt, '(UNIX seconds)');
 
       // Open web app with session transfer token as query parameter
       const webAppUrl = `https://your-web-app.com/login?session_transfer_token=${ssoCredentials.sessionTransferToken}`;
@@ -2014,7 +2038,7 @@ const ssoCredentials = await auth0.credentialsManager.getSSOCredentials();
 
 console.log('Session Transfer Token:', ssoCredentials.sessionTransferToken);
 console.log('Token Type:', ssoCredentials.tokenType);
-console.log('Expires In:', ssoCredentials.expiresIn);
+console.log('Expires At:', ssoCredentials.expiresAt, '(UNIX seconds)');
 
 // Optional: ID Token and Refresh Token may be returned if RTR is enabled
 if (ssoCredentials.idToken) {
@@ -2056,7 +2080,7 @@ function SSOExchangeScreen() {
 
       console.log('Session Transfer Token:', ssoCredentials.sessionTransferToken);
       console.log('Token Type:', ssoCredentials.tokenType);
-      console.log('Expires In:', ssoCredentials.expiresIn);
+      console.log('Expires At:', ssoCredentials.expiresAt, '(UNIX seconds)');
 
       // Open your web application with the session transfer token
       const webAppUrl = `https://your-web-app.com/login?session_transfer_token=${ssoCredentials.sessionTransferToken}`;
@@ -2091,7 +2115,7 @@ const ssoCredentials = await auth0.auth.ssoExchange({ refreshToken });
 
 console.log('Session Transfer Token:', ssoCredentials.sessionTransferToken);
 console.log('Token Type:', ssoCredentials.tokenType);
-console.log('Expires In:', ssoCredentials.expiresIn);
+console.log('Expires At:', ssoCredentials.expiresAt, '(UNIX seconds)');
 
 // Open your web application with the session transfer token
 const webAppUrl = `https://your-web-app.com/login?session_transfer_token=${ssoCredentials.sessionTransferToken}`;
@@ -2784,6 +2808,8 @@ On Android, web authentication defaults to a Custom Tab, which shows a read-only
 
 > **Platform Support:** Android only. This option is ignored on iOS and web.
 
+> **Note:** Since v6, Android web authentication uses **Auth Tab** by default — a Custom Tab launch mode that delivers proper `ActivityResult` callbacks instead of inferring cancellation from lifecycle events. This fixes the spurious `USER_CANCELLED` error ([#1584](https://github.com/auth0/react-native-auth0/issues/1584)) when users tap Chrome's minimize button (Chrome 122+). Auth Tab requires **Chrome 137 or later**; on older browser versions it automatically falls back to a standard Custom Tab. Auth Tab is the default launch mode for regular Custom Tabs, whereas TWA is opt-in and renders full-screen with no URL bar. Because they use different launch mechanisms, enabling `useTrustedWebActivity: true` makes TWA take precedence and Auth Tab is not used. Note also that [`ephemeralSession: true`](#ephemeral-sessions) is honoured on both Auth Tab and a plain Custom Tab (on a browser that supports ephemeral browsing), but a TWA does **not** support it — so enabling `useTrustedWebActivity: true` disables ephemeral browsing.
+
 ### Required setup
 
 TWA will only render full-screen if your app's signing certificate is registered with your Auth0 tenant. Without this, Digital Asset Links verification fails and the flow falls back to a Custom Tab.
@@ -2836,6 +2862,49 @@ await auth0.webAuth.authorize(
 ```
 
 The same `useTrustedWebActivity` option is also accepted by `clearSession` so the logout flow opens in a Trusted Web Activity as well.
+
+## Ephemeral Sessions
+
+Pass `ephemeralSession: true` to run web authentication in an isolated browser session, so no shared session cookie is left behind. When the browser honours the request, Single Sign-On (SSO) does not apply.
+
+**Behaviour:**
+
+- **iOS:** sets `prefersEphemeralWebBrowserSession` on `ASWebAuthenticationSession`. Because there is no shared cookie to consent to, this also suppresses the SSO alert box. Requires iOS 13+.
+- **Android:** opens the browser (Auth Tab or a plain Custom Tab) with ephemeral browsing. Requires **Chrome 136+** or another browser that supports it; on unsupported browsers a warning is logged and the flow falls back to a regular (non-ephemeral) session — login still completes, but the session is not ephemeral.
+
+> **Platform Support:** iOS and Android. This option is ignored on web.
+
+> **Warning:** On Android, ephemeral browsing is supported on both [Auth Tab](#trusted-web-activity-android) (the default launch mode since v6) and a plain Custom Tab, as long as the browser supports ephemeral browsing (Chrome 136+). A [Trusted Web Activity](#trusted-web-activity-android) does **not** support it, so when `useTrustedWebActivity: true` is set the session will **not** be ephemeral. On a browser too old to support ephemeral browsing, a warning is logged and the session is not ephemeral.
+
+> **Note:** Android support for ephemeral sessions was added in v6. In earlier versions the option was accepted but only took effect on iOS.
+
+### Using with Hooks
+
+```typescript
+import { useAuth0 } from 'react-native-auth0';
+
+const { authorize } = useAuth0();
+
+await authorize({ scope: 'openid profile email' }, { ephemeralSession: true });
+```
+
+### Using with Auth0 Class
+
+```typescript
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+});
+
+await auth0.webAuth.authorize(
+  { scope: 'openid profile email' },
+  { ephemeralSession: true }
+);
+```
+
+Because no shared session cookie is stored, you do not need to call `clearSession` to log the user out of the browser session — clearing the stored credentials is enough. Note that this holds only when the browser actually honoured the ephemeral request; on an Android browser that fell back to a regular Custom Tab, a shared cookie may still be present.
 
 ## Recovering Login After Process Death (Android)
 
@@ -2897,22 +2966,15 @@ if (credentials) {
 
 ### Enabling DPoP
 
-DPoP is enabled by default (`useDPoP: true`) when you initialize the Auth0 client:
+DPoP is opt-in (`useDPoP` defaults to `false`). Set `useDPoP: true` when you initialize the Auth0 client, and make sure DPoP is enabled for your application in the Auth0 Dashboard:
 
 ```js
 import Auth0 from 'react-native-auth0';
 
-// DPoP is enabled by default
 const auth0 = new Auth0({
   domain: 'YOUR_AUTH0_DOMAIN',
   clientId: 'YOUR_AUTH0_CLIENT_ID',
-});
-
-// Or explicitly enable it
-const auth0 = new Auth0({
-  domain: 'YOUR_AUTH0_DOMAIN',
-  clientId: 'YOUR_AUTH0_CLIENT_ID',
-  useDPoP: true, // Explicitly enable DPoP
+  useDPoP: true,
 });
 ```
 
@@ -2926,7 +2988,7 @@ function App() {
     <Auth0Provider
       domain="YOUR_AUTH0_DOMAIN"
       clientId="YOUR_AUTH0_CLIENT_ID"
-      // DPoP is enabled by default
+      useDPoP={true}
     >
       {/* Your app components */}
     </Auth0Provider>
@@ -2935,6 +2997,8 @@ function App() {
 ```
 
 > **Important**: DPoP will only be used for **new user sessions** created after enabling it. Existing sessions with Bearer tokens will continue to work until the user logs in again. See [Handling DPoP token migration](#handling-dpop-token-migration) for how to handle this transition.
+
+> **Turning DPoP off again**: if you previously ran with DPoP enabled, stored credentials are DPoP-bound. Reading them back with `useDPoP` unset (or `false`) fails with `DPOP_NOT_CONFIGURED`, because the credentials manager is no longer configured to prove possession of the key. Clear the stored credentials and have the user log in again when you turn DPoP off.
 
 ### Making API calls with DPoP
 

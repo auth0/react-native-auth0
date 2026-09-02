@@ -118,9 +118,10 @@ describe('NativeAuth0Client', () => {
       options.clientId,
       options.domain,
       undefined, // No local auth options provided in this test
-      true, // useDPoP defaults to true
+      false, // useDPoP defaults to false
       undefined, // maxRetries not provided
-      undefined // credentialsManagerStorageKey not provided
+      undefined, // credentialsManagerStorageKey not provided
+      undefined // networkingOptions not provided
     );
 
     // Use client to avoid unused variable warning
@@ -140,9 +141,10 @@ describe('NativeAuth0Client', () => {
       options.clientId,
       options.domain,
       undefined,
-      true,
+      false,
       undefined,
-      'tenant-b'
+      'tenant-b',
+      undefined
     );
     expect(client).toBeDefined();
   });
@@ -161,12 +163,36 @@ describe('NativeAuth0Client', () => {
       options.clientId,
       options.domain,
       localAuthOptions,
-      true, // useDPoP defaults to true
+      false, // useDPoP defaults to false
       undefined, // maxRetries not provided
-      undefined // credentialsManagerStorageKey not provided
+      undefined, // credentialsManagerStorageKey not provided
+      undefined // networkingOptions not provided
     );
 
     // Use client to avoid unused variable warning
+    expect(client).toBeDefined();
+  });
+
+  it('should pass networkingOptions to initialize when provided', async () => {
+    mockBridgeInstance.hasValidInstance.mockResolvedValue(false);
+    const networkingOptions = { connectTimeout: 30, readTimeout: 30 };
+
+    const client = new NativeAuth0Client({
+      ...options,
+      networkingOptions,
+    });
+    await new Promise(process.nextTick);
+
+    expect(mockBridgeInstance.initialize).toHaveBeenCalledWith(
+      options.clientId,
+      options.domain,
+      undefined,
+      false,
+      undefined,
+      undefined,
+      networkingOptions
+    );
+
     expect(client).toBeDefined();
   });
 
@@ -684,7 +710,8 @@ describe('NativeAuth0Client', () => {
         options.clientId,
         options.domain,
         undefined,
-        true,
+        false,
+        undefined,
         undefined,
         undefined
       );
@@ -728,6 +755,7 @@ describe('NativeAuth0Client', () => {
         options.domain,
         undefined,
         false, // useDPoP flipped to false
+        undefined,
         undefined,
         undefined
       );

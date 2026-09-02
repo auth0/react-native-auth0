@@ -64,7 +64,22 @@ export const PasskeyErrorCodes = {
   UNKNOWN_ERROR: 'PASSKEY_UNKNOWN_ERROR',
 } as const;
 
-const ERROR_CODE_MAP: Record<string, string> = {
+/**
+ * A normalized passkey error code.
+ *
+ * Derived from {@link PasskeyErrorCodes} so the union and the runtime constants
+ * cannot drift apart.
+ *
+ * @remarks
+ * Unlike the other code objects in the SDK, the keys here are deliberately
+ * shorter than their values (`NOT_AVAILABLE` → `'PASSKEY_NOT_AVAILABLE'`). The
+ * `PASSKEY_` value prefix keeps passkey codes globally unique across the
+ * taxonomy while keeping the constants readable at the call site.
+ */
+export type PasskeyErrorCode =
+  (typeof PasskeyErrorCodes)[keyof typeof PasskeyErrorCodes];
+
+const ERROR_CODE_MAP: Record<string, PasskeyErrorCode> = {
   PASSKEY_NOT_AVAILABLE: PasskeyErrorCodes.NOT_AVAILABLE,
   PASSKEY_CHALLENGE_FAILED: PasskeyErrorCodes.CHALLENGE_FAILED,
   PASSKEY_EXCHANGE_FAILED: PasskeyErrorCodes.EXCHANGE_FAILED,
@@ -130,7 +145,7 @@ export class PasskeyError extends AuthError {
    * A normalized error type that is consistent across platforms.
    * This can be used for reliable error handling in application code.
    */
-  public readonly type: string;
+  public readonly type: PasskeyErrorCode;
 
   /**
    * @param originalError An `AuthError` from an SDK method (challenge/exchange
@@ -145,7 +160,7 @@ export class PasskeyError extends AuthError {
    */
   constructor(
     originalError: AuthError | Error,
-    fallbackType: string = PasskeyErrorCodes.UNKNOWN_ERROR
+    fallbackType: PasskeyErrorCode = PasskeyErrorCodes.UNKNOWN_ERROR
   ) {
     const isAuthError = originalError instanceof AuthError;
     const code = isAuthError ? originalError.code : originalError.name;

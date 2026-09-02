@@ -17,10 +17,6 @@ import type {
   LoginEmailParameters,
   PasswordlessSmsParameters,
   LoginSmsParameters,
-  MfaChallengeParameters,
-  LoginOobParameters,
-  LoginOtpParameters,
-  LoginRecoveryCodeParameters,
   ExchangeNativeSocialParameters,
   CustomTokenExchangeParameters,
   PasskeySignupChallengeParameters,
@@ -30,13 +26,12 @@ import type {
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
-  MfaChallengeResponse,
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   PasswordlessChallengeEmailParameters,
   PasswordlessChallengePhoneParameters,
   PasswordlessLoginOtpParameters,
 } from '../types';
-import type { IMfaClient } from '../core/interfaces/IMfaClient';
+import type { MfaClient } from '../core/interfaces/MfaClient';
 import type {
   NativeAuthorizeOptions,
   NativeClearSessionOptions,
@@ -427,46 +422,13 @@ export const Auth0Provider = ({
     [client, loginFlow]
   );
 
-  const sendMultifactorChallenge = useCallback(
-    async (
-      parameters: MfaChallengeParameters
-    ): Promise<MfaChallengeResponse> => {
-      try {
-        return await client.auth.multifactorChallenge(parameters);
-      } catch (e) {
-        const error = e as AuthError;
-        dispatch({ type: 'ERROR', error });
-        throw error;
-      }
-    },
-    [client]
-  );
-
-  const authorizeWithOOB = useCallback(
-    (parameters: LoginOobParameters) =>
-      loginFlow(client.auth.loginWithOOB(parameters)),
-    [client, loginFlow]
-  );
-
-  const authorizeWithOTP = useCallback(
-    (parameters: LoginOtpParameters) =>
-      loginFlow(client.auth.loginWithOTP(parameters)),
-    [client, loginFlow]
-  );
-
-  const authorizeWithRecoveryCode = useCallback(
-    (parameters: LoginRecoveryCodeParameters) =>
-      loginFlow(client.auth.loginWithRecoveryCode(parameters)),
-    [client, loginFlow]
-  );
-
   const revokeRefreshToken = useCallback(
     (parameters: RevokeOptions) => voidFlow(client.auth.revoke(parameters)),
     [client, voidFlow]
   );
 
   const getDPoPHeaders = useCallback(
-    async (params: DPoPHeadersParams): Promise<Record<string, string>> => {
+    async (params: DPoPHeadersParameters): Promise<Record<string, string>> => {
       try {
         return await client.getDPoPHeaders(params);
       } catch (e) {
@@ -493,7 +455,7 @@ export const Auth0Provider = ({
     [client]
   );
 
-  const mfa = useMemo<IMfaClient>(() => {
+  const mfa = useMemo<MfaClient>(() => {
     const mfaClient = client.mfa;
     return {
       getAuthenticators: async (parameters) => {
@@ -568,10 +530,6 @@ export const Auth0Provider = ({
       authorizeWithEmail,
       sendSMSCode,
       authorizeWithSMS,
-      sendMultifactorChallenge,
-      authorizeWithOOB,
-      authorizeWithOTP,
-      authorizeWithRecoveryCode,
       revokeRefreshToken,
       getDPoPHeaders,
       ssoExchange,
@@ -605,10 +563,6 @@ export const Auth0Provider = ({
       authorizeWithEmail,
       sendSMSCode,
       authorizeWithSMS,
-      sendMultifactorChallenge,
-      authorizeWithOOB,
-      authorizeWithOTP,
-      authorizeWithRecoveryCode,
       revokeRefreshToken,
       getDPoPHeaders,
       ssoExchange,

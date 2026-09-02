@@ -39,9 +39,9 @@ react-native-auth0/
 │   ├── index.ts               # Public API exports (entry point)
 │   ├── Auth0.ts               # Main Auth0 facade class
 │   ├── core/                  # Platform-agnostic core
-│   │   ├── interfaces/        # Contracts every platform implements (IAuth0Client, …)
+│   │   ├── interfaces/        # Contracts every platform implements (Auth0Client, …)
 │   │   ├── models/            # Credentials, Auth0User, AuthError hierarchy
-│   │   ├── services/          # HttpClient, Authentication/ManagementApi orchestrators
+│   │   ├── services/          # HttpClient, AuthenticationOrchestrator
 │   │   └── utils/             # scope, validation, telemetry, deepCamelCase
 │   ├── factory/               # Auth0ClientFactory(.web).ts — bundler-selected client
 │   ├── platforms/native/      # iOS/Android adapters + native bridge
@@ -65,7 +65,7 @@ react-native-auth0/
 | -------------------------------------------------------- | --------------------------------------------------------- |
 | `src/index.ts`                                           | Public API surface — everything exported to consumers     |
 | `src/Auth0.ts`                                           | Main facade class                                         |
-| `src/core/interfaces/IAuth0Client.ts`                    | Primary client interface; new methods start here          |
+| `src/core/interfaces/Auth0Client.ts`                     | Primary client interface; new methods start here          |
 | `src/core/services/HttpClient.ts`                        | HTTP wrapper; injects the `Auth0-Client` telemetry header |
 | `src/core/services/AuthenticationOrchestrator.ts`        | Authentication API calls                                  |
 | `src/core/utils/telemetry.ts`                            | Telemetry payload (version injected at prebuild)          |
@@ -105,14 +105,14 @@ react-native-auth0/
 - Edit generated output: `lib/`, `docs/`, `coverage/`, `node_modules/`, `ios/build/`, `android/build/`, `example/**/build/`, Pods.
 - Hand-edit `yarn.lock`.
 - Remove or skip failing tests without fixing the underlying cause.
-- Disable PKCE or DPoP (both on by default).
+- Disable PKCE (on by default), or change the DPoP default without approval.
 
 ---
 
 ## Security Considerations
 
 - **PKCE:** enabled by default — never disable.
-- **DPoP:** enabled by default (since v5.1.0).
+- **DPoP:** opt-in via `useDPoP: true` (was on by default in v5.1.0–v5.x; defaults to `false` from v6).
 - **Secure storage:** iOS Keychain (SimpleKeychain) / Android EncryptedSharedPreferences; optional biometric protection with device-credential fallback.
 - **Token handling:** never log tokens; treat access/refresh/ID tokens as sensitive throughout.
 - **Static analysis:** Snyk (`.snyk`) and Semgrep (`.semgrepignore`) run in CI via `sca_scan.yml` — don't add ignore entries to suppress findings without approval.
@@ -143,7 +143,7 @@ The default `yarn test` suite is unit-only — no credentials or live tenant req
 ## Code Style
 
 - **CI-enforced:** single quotes, trailing commas, 2-space indent (Prettier); `@typescript-eslint/unbound-method` is an error; strict TS with `noUnusedLocals`/`noUnusedParameters`. `prettier/prettier` failures fail lint.
-- Naming: `PascalCase` types/classes/interfaces (interfaces prefixed `I`), `camelCase` functions/vars, `snake_case` only for raw API wire payloads (converted via `deepCamelCase`).
+- Naming: `PascalCase` types/classes/interfaces (interfaces are **not** `I`-prefixed — the contract keeps the plain name, implementations carry the platform prefix), `camelCase` functions/vars, `snake_case` only for raw API wire payloads (converted via `deepCamelCase`).
 
 See [references/code-style.md](references/code-style.md) for good/bad examples and the dominant patterns (interface-driven design, factory selection, orchestrators). Read when writing non-trivial new code.
 

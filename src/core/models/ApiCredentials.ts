@@ -1,10 +1,10 @@
-import type { ApiCredentials as IApiCredentials } from '../../types';
+import type { ApiCredentials as ApiCredentialsData } from '../../types';
 
 /**
  * A class representation of API-specific user credentials.
  * It encapsulates the tokens and provides helper methods for convenience.
  */
-export class ApiCredentials implements IApiCredentials {
+export class ApiCredentials implements ApiCredentialsData {
   public accessToken: string;
   public tokenType: string;
   public expiresAt: number;
@@ -15,7 +15,7 @@ export class ApiCredentials implements IApiCredentials {
    *
    * @param params An object conforming to the ApiCredentials type definition.
    */
-  constructor(params: IApiCredentials) {
+  constructor(params: ApiCredentialsData) {
     this.accessToken = params.accessToken;
     this.tokenType = params.tokenType;
     this.expiresAt = params.expiresAt;

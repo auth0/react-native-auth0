@@ -3,12 +3,13 @@ import type {
   ApiCredentials,
   WebAuthorizeParameters,
   ClearSessionParameters,
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   SessionTransferCredentials,
   MfaAuthenticator,
   MfaEnrollmentChallenge,
   MfaChallengeResult,
   PasskeyChallengeResponse,
+  NetworkingOptions,
 } from '../../../types';
 import type {
   LocalAuthenticationOptions,
@@ -21,7 +22,7 @@ import type {
  * This interface is the single source of truth for communication between the
  * JavaScript and the native layers (iOS/Android).
  */
-export interface INativeBridge {
+export interface NativeBridge {
   /**
    * Checks if the native SDK has been initialized with the required credentials.
    * This should be called before any other method.
@@ -39,6 +40,7 @@ export interface INativeBridge {
    * @param useDPoP Whether to enable DPoP (Demonstrating Proof-of-Possession) for token requests.
    * @param maxRetries The maximum number of retry attempts for transient errors during credential renewal. **iOS only** - ignored on Android. Defaults to 0.
    * @param credentialsManagerStorageKey Namespaces the credentials store. **Android only** SharedPreferences file name. **iOS only** Keychain service name. Defaults to the shared store when omitted.
+   * @param networkingOptions Configures the native networking client. **Android only** - ignored on iOS.
    */
   initialize(
     clientId: string,
@@ -46,7 +48,8 @@ export interface INativeBridge {
     localAuthenticationOptions?: LocalAuthenticationOptions,
     useDPoP?: boolean,
     maxRetries?: number,
-    credentialsManagerStorageKey?: string
+    credentialsManagerStorageKey?: string,
+    networkingOptions?: NetworkingOptions
   ): Promise<void>;
 
   /**
@@ -168,7 +171,9 @@ export interface INativeBridge {
    * @param params Parameters including the URL, HTTP method, access token, and token type.
    * @returns A promise that resolves to an object containing the required headers.
    */
-  getDPoPHeaders(params: DPoPHeadersParams): Promise<Record<string, string>>;
+  getDPoPHeaders(
+    params: DPoPHeadersParameters
+  ): Promise<Record<string, string>>;
 
   /**
    * Clears the DPoP key from secure storage.

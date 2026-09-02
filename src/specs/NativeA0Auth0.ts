@@ -26,7 +26,8 @@ export interface Spec extends TurboModule {
       { [key: string]: string | Int32 | boolean } | undefined,
     useDPoP: boolean | undefined,
     maxRetries: Int32,
-    credentialsManagerStorageKey: string | undefined
+    credentialsManagerStorageKey: string | undefined,
+    networkingOptions: Object | undefined
   ): Promise<void>;
 
   /**
@@ -152,7 +153,7 @@ export interface Spec extends TurboModule {
   ): Promise<{
     sessionTransferToken: string;
     tokenType: string;
-    expiresIn: Int32;
+    expiresAt: number;
     idToken?: string;
     refreshToken?: string;
   }>;

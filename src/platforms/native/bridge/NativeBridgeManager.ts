@@ -1,16 +1,17 @@
-import type { INativeBridge } from './INativeBridge';
+import type { NativeBridge } from './NativeBridge';
 import type {
   ApiCredentials,
   Credentials,
   WebAuthorizeParameters,
   ClearSessionParameters,
   NativeClearSessionOptions,
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   SessionTransferCredentials,
   MfaAuthenticator,
   MfaEnrollmentChallenge,
   MfaChallengeResult,
   PasskeyChallengeResponse,
+  NetworkingOptions,
 } from '../../../types';
 import {
   SafariViewControllerPresentationStyle,
@@ -26,12 +27,12 @@ import type { NativeModuleError } from '../../../core/interfaces';
 
 /**
  * Manages the direct communication with the native Auth0 module.
- * It implements the INativeBridge interface and is responsible for:
+ * It implements the NativeBridge interface and is responsible for:
  * - Calling the actual native methods.
  *-  Normalizing data and parameters between JS and Native.
  * - Catching native errors and re-throwing them as structured AuthError objects.
  */
-export class NativeBridgeManager implements INativeBridge {
+export class NativeBridgeManager implements NativeBridge {
   private async a0_call<T>(
     nativeMethod: (...args: any[]) => Promise<T>,
     ...args: any[]
@@ -58,9 +59,10 @@ export class NativeBridgeManager implements INativeBridge {
     clientId: string,
     domain: string,
     localAuthenticationOptions?: LocalAuthenticationOptions,
-    useDPoP: boolean = true,
+    useDPoP: boolean = false,
     maxRetries: number = 0,
-    credentialsManagerStorageKey?: string
+    credentialsManagerStorageKey?: string,
+    networkingOptions?: NetworkingOptions
   ): Promise<void> {
     // This is a new method we'd add to the native side to ensure the
     // underlying Auth0.swift/Auth0.android SDKs are configured.
@@ -73,7 +75,8 @@ export class NativeBridgeManager implements INativeBridge {
       localAuthenticationOptions,
       useDPoP,
       maxRetries,
-      credentialsManagerStorageKey
+      credentialsManagerStorageKey,
+      networkingOptions
     );
   }
 
@@ -213,7 +216,7 @@ export class NativeBridgeManager implements INativeBridge {
   }
 
   async getDPoPHeaders(
-    params: DPoPHeadersParams
+    params: DPoPHeadersParameters
   ): Promise<Record<string, string>> {
     return this.a0_call(
       Auth0NativeModule.getDPoPHeaders.bind(Auth0NativeModule),

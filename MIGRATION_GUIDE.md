@@ -1,21 +1,160 @@
 # Migration Guide
 
-## Deprecated in v5.x — removed in v6
+## Upgrading from v5 -> v6
 
-These APIs still work in v5.x but emit a deprecation warning and will be **removed in v6**. Migrating now means no code changes are needed when you upgrade.
+Version 6.0 of `react-native-auth0` modernizes the SDK's foundation and delegates all authentication to the underlying native SDKs (Auth0.swift and Auth0.Android). This guide is being written incrementally as the v6 workstreams land; each section below is marked with its status.
 
-### MFA methods on the auth client
+> **Status legend:** ✅ Landed · 🚧 In progress · ⏳ Planned
 
-The MFA methods on `auth0.auth` are deprecated in favour of the dedicated `auth0.mfa` client, which covers the same grants and adds authenticator listing and enrolment. The `mfa` client is available on iOS, Android, and web.
+Upgrading from v5.x requires addressing several breaking changes. Please follow this guide carefully.
 
-| Deprecated on `auth0.auth`                            | Use instead on `auth0.mfa`                   |
+### 1. Compatibility & Installation
+
+Before updating the library, ensure your project meets the new minimum requirements.
+
+#### Environment Requirements
+
+| Requirement      | v5.x            | v6.0                                                  |
+| :--------------- | :-------------- | :---------------------------------------------------- |
+| **React**        | `19.0.0`+       | `19.0.0`+                                             |
+| **React Native** | `0.78.0`+       | **`0.82.0`+ (New Arch only)**                         |
+| **Architecture** | Old **or** New  | **New Architecture only**                             |
+| **Expo**         | SDK `53`+       | **SDK `55`+** _(see below)_                           |
+| **iOS**          | Deployment `14` | **Deployment `15.1`** _(see §4)_                      |
+| **Android**      | Target SDK `35` | **Target SDK `36`, minSdk `26`, JDK `17`** _(see §3)_ |
+
+### 2. React Native New Architecture is now required ✅
+
+**This is the foundational breaking change in v6.** React Native `0.82` is the first React Native release that runs **entirely on the New Architecture** — the Legacy Architecture is no longer part of how apps run, and future releases will remove the remaining Legacy Architecture code from the codebase. To match the ecosystem, v6 of this SDK **drops old-architecture support entirely** and ships as a TurboModule-only native module.
+
+**What changed internally (no consumer code change, but affects your build):**
+
+- The Android module no longer ships an old-architecture (`oldarch`) bridge spec; it is now TurboModule-only.
+- The iOS module no longer compiles the legacy `RCTBridgeModule` path; it standardizes on the codegen TurboModule.
+- The `react-native` peer dependency floor is now **`>=0.82.0`**.
+
+**✅ Action Required:**
+
+1.  **Upgrade React Native to `0.82.0` or higher.**
+
+    ```bash
+    npm install react-native@^0.82.0 react@^19.0.0
+    ```
+
+    Follow the [React Native 0.82 release notes](https://reactnative.dev/blog/2025/10/08/react-native-0.82#react-1911) for the full upgrade steps, including removing any legacy old-architecture opt-outs.
+
+2.  **If you cannot enable the New Architecture yet,** stay on `react-native-auth0@5.x` until your app is migrated. v6 will not run on the legacy bridge.
+
+> **Note for web (`react-native-web`) consumers:** the web platform is unaffected by this change — it uses `@auth0/auth0-spa-js` and has no native module. No action is required for web-only usage.
+
+#### For Expo Projects
+
+Expo SDK 55+ uses the New Architecture only.
+
+```bash
+npx expo prebuild --clean
+```
+
+> **Warning:** `prebuild --clean` overwrites manual changes in your `ios` and `android` directories.
+
+### 3. Android: minSdk 26 & JDK 17 ✅
+
+v6 adopts **Auth0.Android 4.1.0**, which raises the SDK's build floors. These are inherited by your app.
+
+| Setting        | v5.x  | v6.0        |
+| :------------- | :---- | :---------- |
+| **minSdk**     | `21`  | **26**      |
+| **compileSdk** | `35`  | **36**      |
+| **targetSdk**  | `35`  | **36**      |
+| **JDK**        | `11`  | **17**      |
+| **Kotlin**     | `1.9` | **2.0.21**  |
+| **AGP**        | `8.x` | **8.10.1+** |
+
+**✅ Action Required:**
+
+1. Raise `minSdkVersion` to **26** in your app's `android/build.gradle`. Devices below Android 8.0 (Oreo) are no longer supported.
+2. Build with **JDK 17**. Verify with `java -version`, and set `org.gradle.java.home` in `gradle.properties` if you have multiple JDKs installed.
+3. Ensure your Android Gradle Plugin is **8.10.1** or higher.
+
+### 4. iOS: Auth0.swift 3.0 ✅
+
+v6 adopts **Auth0.swift 3.0.1**, which is built with the **Swift 6** compiler.
+
+**✅ Action Required:**
+
+1. Your iOS deployment target must meet React Native 0.82's floor (`min_ios_version_supported`, currently **15.1**). The podspec inherits this value, so no explicit `platform :ios` bump is needed beyond what RN 0.82 already requires.
+2. Run `pod install --repo-update` in your `ios` directory to pick up Auth0.swift 3.0.1.
+3. Use **Xcode 16** or later.
+
+> See §9 for the public-API changes that come with these native majors.
+
+### 5. DPoP is now opt-in ✅
+
+`useDPoP` now defaults to **`false`**. In v5.1.0–v5.x it defaulted to `true`, which meant every app got DPoP-bound tokens whether or not DPoP was enabled for the application in the Auth0 Dashboard. Since DPoP has to be turned on tenant-side to be useful, it is now something you opt into explicitly.
+
+**✅ Action Required:** if you rely on DPoP, set it explicitly:
+
+```diff
+  const auth0 = new Auth0({
+    domain: 'YOUR_AUTH0_DOMAIN',
+    clientId: 'YOUR_AUTH0_CLIENT_ID',
++   useDPoP: true,
+  });
+```
+
+If you never set `useDPoP` and don't need DPoP, no change is required — you will simply get Bearer tokens.
+
+> **Warning — existing sessions:** credentials saved by a DPoP-enabled v5 app are DPoP-bound. If you upgrade without setting `useDPoP: true`, the credentials manager is no longer configured to prove possession of the key, and reading those stored credentials fails with `DPOP_NOT_CONFIGURED` (`CredentialsManagerErrorCodes.DPOP_NOT_CONFIGURED`). Either set `useDPoP: true` to keep those sessions working, or clear the stored credentials and have the user log in again:
+>
+> ```js
+> try {
+>   const credentials = await auth0.credentialsManager.getCredentials();
+> } catch (e) {
+>   if (e.type === 'DPOP_NOT_CONFIGURED') {
+>     await auth0.credentialsManager.clearCredentials();
+>     // Send the user through authorize() again.
+>   }
+> }
+> ```
+
+### 6. Behavioral default shifts under native delegation ⏳
+
+_Planned — lands with full native auth delegation._ Routing all authentication through the native SDKs changes some defaults (e.g. `scope` gains `offline_access`, `minTTL` defaults to `60`, default connection names). Each shift and the action required will be documented here when that workstream merges.
+
+### 7. Management API (`users()`) removed ✅
+
+The client-side Management API wrapper is gone. `auth0.users(token)` — and with it `getUser()` and `patchUser()` — has been removed, mirroring Auth0.swift v3 and Auth0.Android v4, which both dropped their Management clients. The `IUsersClient` type and the `GetUserParameters` / `PatchUserParameters` types are no longer exported.
+
+Calling the Management API from a client requires an access token with broad, over-privileged scopes (`read:current_user`, `update:current_user_metadata`), which cannot be kept secret in a mobile app or browser. Management operations belong on a server you control.
+
+**✅ Action Required:** move these calls to a backend-for-frontend (BFF). Your app sends its own access token to your backend; the backend validates it, then calls the Management API with its own credentials.
+
+```diff
+- const profile = await auth0.users(accessToken).getUser({ id: user.sub });
++ const res = await fetch('https://your-api.example.com/me', {
++   headers: { Authorization: `Bearer ${accessToken}` },
++ });
++ const profile = await res.json();
+```
+
+For updating `user_metadata`, expose an endpoint on your backend that performs the patch after authorizing the request.
+
+> Reading the current user's profile does **not** need the Management API. `auth0.auth.userInfo({ token })` calls `/userinfo` and works with a normal access token, and the `user` object from `useAuth0()` is decoded from the ID token.
+
+### 8. MFA methods on the auth client removed ✅
+
+The four MFA methods on `auth0.auth` are gone, replaced by the dedicated `auth0.mfa` client that also supports listing and enrolling authenticators. They were deprecated in v5.x. The `mfa` client is available on iOS, Android, and web.
+
+| Removed from `auth0.auth`                             | Use instead on `auth0.mfa`                   |
 | :---------------------------------------------------- | :------------------------------------------- |
 | `loginWithOTP({ mfaToken, otp })`                     | `verify({ mfaToken, otp })`                  |
 | `loginWithOOB({ mfaToken, oobCode, bindingCode })`    | `verify({ mfaToken, oobCode, bindingCode })` |
 | `loginWithRecoveryCode({ mfaToken, recoveryCode })`   | `verify({ mfaToken, recoveryCode })`         |
 | `multifactorChallenge({ mfaToken, authenticatorId })` | `challenge({ mfaToken, authenticatorId })`   |
 
-The same applies to the `useAuth0()` hook: `authorizeWithOTP`, `authorizeWithOOB`, `authorizeWithRecoveryCode`, and `sendMultifactorChallenge` are deprecated in favour of `mfa`.
+The equivalents on `useAuth0()` are removed too: `authorizeWithOTP`, `authorizeWithOOB`, `authorizeWithRecoveryCode`, and `sendMultifactorChallenge` — use the `mfa` client from the hook instead. The `LoginOtpParameters`, `LoginOobParameters`, `LoginRecoveryCodeParameters`, `MfaChallengeParameters`, and `MfaChallengeResponse` types are no longer exported.
+
+**✅ Action Required:**
 
 ```diff
 - const credentials = await auth0.auth.loginWithOTP({ mfaToken, otp });
@@ -41,23 +180,130 @@ The same applies to the `useAuth0()` hook: `authorizeWithOTP`, `authorizeWithOOB
 > });
 > ```
 
-### Management API (`users()`)
+### 9. Native SDK API alignment (Auth0.Android v4 / Auth0.swift v3) ✅
 
-`auth0.users(token)`, along with `getUser()` and `patchUser()`, is deprecated. Calling the Management API from a client requires an access token with over-privileged scopes (`read:current_user`, `update:current_user_metadata`) that cannot be kept secret in a mobile app or a browser. Auth0.swift and Auth0.Android have already removed their Management clients.
+Adopting the new native SDK majors changes three parts of the public surface.
 
-**Recommended:** move these operations to a backend-for-frontend. Your app sends its own access token; the backend validates it and calls the Management API with its own credentials.
+#### `ephemeralSession` now takes effect on Android
 
-```diff
-- const profile = await auth0.users(accessToken).getUser({ id: user.sub });
-+ const res = await fetch('https://your-api.example.com/me', {
-+   headers: { Authorization: `Bearer ${accessToken}` },
-+ });
-+ const profile = await res.json();
+Auth0.Android 4.0 added ephemeral browsing for Custom Tabs, so the `ephemeralSession` option on `authorize()` is no longer iOS-only. Previously the option was accepted on Android but silently ignored; it now opens the Custom Tab in an isolated session where cookies, cache and history are discarded when the browser closes.
+
+Requires **Chrome 136+** or another browser that supports ephemeral browsing. On unsupported browsers a warning is logged and the flow falls back to a regular Custom Tab, so login still completes but the session is not ephemeral.
+
+**⚠️ Action Required:** if your Android code passes `ephemeralSession: true` — for example because the same options object is shared across platforms — SSO will now be disabled on Android too, and users will be prompted to log in on every `authorize()` call. Set the flag per platform if you want to keep SSO on Android.
+
+```typescript
+await authorize(
+  { scope: 'openid profile email' },
+  { ephemeralSession: Platform.OS === 'ios' }
+);
 ```
 
-For `user_metadata` updates, expose an endpoint on your backend that performs the patch after authorizing the request.
+Two further Android caveats: the fallback above means you should keep calling `clearSession` unless you can guarantee the browser honours the ephemeral request, and ephemeral browsing is supported on Auth Tab (the new default, see below) and plain Custom Tabs but **not** on a Trusted Web Activity. So with `useTrustedWebActivity` enabled the session is not ephemeral; on Auth Tab or a plain Custom Tab it is ephemeral as long as the browser supports it (Chrome 136+). See [Ephemeral Sessions](EXAMPLES.md#ephemeral-sessions) for details.
 
-> If you only used `getUser()` to read the signed-in user's profile, you don't need a backend at all. `auth0.auth.userInfo({ token })` calls `/userinfo` with a normal access token, and the `user` object from `useAuth0()` is decoded from the ID token.
+#### Auth Tab is now the default Android web authentication launch mode
+
+Auth0.Android 4.0's Auth Tab launch path delivers a real `ActivityResult` from the Custom Tab instead of inferring cancellation from activity lifecycle events. This fixes a long-standing Android bug ([#1584](https://github.com/auth0/react-native-auth0/issues/1584)) where tapping Chrome's minimize button (available in Chrome 122+) would incorrectly reject `authorize()` with `USER_CANCELLED` while leaving the browser alive as a "zombie" — so when the user returned and completed login, the redirect was dropped and credentials never arrived.
+
+**What changed:** `authorize()` and `clearSession()` now call `withAuthTab()` by default on Android. The iOS flow is unchanged; web is unaffected.
+
+**Browser support:** Auth Tab requires **Chrome 137 or later**. On older browser versions it automatically falls back to a standard Custom Tab, so login and logout still work.
+
+**Impact:** Most apps see no difference — login and logout work as before, but the minimize-button bug is fixed. The launch path is slightly different internally (Chrome Custom Tabs launched via Auth Tab rather than plain Custom Tabs), but this is transparent to user-facing behavior.
+
+**✅ Action Required:** None for most apps. The change is entirely internal to the Android implementation. If you encounter issues on a specific browser (Edge, Brave, Firefox), test across browsers and report findings — Auth Tab has been validated with Chrome.
+
+> **Note:** Real user cancellation (back button, dismiss gesture) still rejects with `USER_CANCELLED` as expected — only the spurious rejection from the minimize button is fixed.
+
+#### `SSOCredentials.expiresIn` is now `expiresAt`
+
+Both native SDKs replaced the relative TTL with an absolute expiration date. The SDK follows suit, so the field is now an **absolute UNIX timestamp in seconds** — consistent with `Credentials.expiresAt`.
+
+**✅ Action Required:** if you read this field, switch to `expiresAt` and stop adding it to the current time.
+
+```diff
+  const ssoCredentials = await auth0.credentialsManager.getSSOCredentials();
+- const expiryTime = Date.now() / 1000 + ssoCredentials.expiresIn;
++ const expiryTime = ssoCredentials.expiresAt;
+```
+
+#### Removed and added `WebAuthErrorCodes`
+
+Auth0.swift 3.0 removed the underlying error cases behind **three** codes, so they can no longer be raised and have been removed:
+
+| Removed code             | Notes                                   |
+| :----------------------- | :-------------------------------------- |
+| `NO_BUNDLE_IDENTIFIER`   | No longer reported by Auth0.swift.      |
+| `NO_AUTHORIZATION_CODE`  | Now surfaces as `CODE_EXCHANGE_FAILED`. |
+| `INVALID_INVITATION_URL` | No longer reported by Auth0.swift.      |
+
+A fourth code, `PKCE_NOT_ALLOWED`, **has not been removed** — it is still exported and still raised on Android (`a0.pkce_not_available`). Only iOS stopped reporting it, so it is now Android-only. Keep any Android handling for it in place.
+
+Two codes were added for the new Auth0.swift cases, both iOS-only: `AUTHENTICATION_FAILED` and `CODE_EXCHANGE_FAILED`.
+
+**✅ Action Required:** remove any `switch`/`if` branches on `NO_BUNDLE_IDENTIFIER`, `NO_AUTHORIZATION_CODE`, or `INVALID_INVITATION_URL`. Ensure you have a `default` branch, as always.
+
+> **Improvement:** on iOS, server-returned errors such as `access_denied`, `invalid_request`, and `a0.invalid_configuration` now map to their specific `WebAuthErrorCodes` values instead of collapsing into `UNKNOWN_ERROR`. If you relied on `UNKNOWN_ERROR` to catch a denied consent, switch to `ACCESS_DENIED`.
+
+#### New `CredentialsManagerErrorCodes`
+
+`SSO_EXCHANGE_FAILED` (iOS and Android) and `CLEAR_FAILED` (iOS) are now reported instead of being collapsed into a generic credentials-manager error. No action is required unless you exhaustively match on these codes.
+
+#### ID-token claim validation is now opt-in on direct token requests
+
+On **native**, neither Auth0.swift 3.0 nor Auth0.Android 4.0.1 validates the ID token's claims implicitly on the Authentication API's direct token-request methods — validation is **opt-in** via `.validateClaims()` and off by default. The only native flow that validates the ID token on its own is **Web Authentication** (`authorize()`), whose browser-based flow verifies it internally. On **web**, `@auth0/auth0-spa-js` validates as part of its token request for every flow it supports (passwordless is not supported on web — it rejects with `UnsupportedOperation`). Which flows validate the ID token automatically:
+
+| Flow                               | iOS | Android | Web |
+| :--------------------------------- | :-: | :-----: | :-: |
+| Web Authentication (`authorize()`) | ✅  |   ✅    | ✅  |
+| Passkey **signin**                 | ❌  |   ❌    | ✅  |
+| Passkey **signup**                 | ❌  |   ❌    | ✅  |
+| Custom Token Exchange              | ❌  |   ❌    | ✅  |
+| MFA challenge/verify               | ❌  |   ❌    | ✅  |
+| Passwordless                       | ❌  |   ❌    | N/A |
+
+**For any native `❌` cell, validate the ID token yourself** (signature, `iss`, `aud`, `exp`, and `nonce` where applicable) before using its claims for identity or authorization decisions. `Auth0User.fromIdToken` only **decodes** the token and checks for `sub` — it does not validate.
+
+### 10. Interfaces no longer use the `I` prefix ✅
+
+The platform contracts in `src/core/interfaces/` dropped their `I` prefix, so the interface now takes the plain name and the implementations keep their platform prefix (`Auth0Client` is the contract; `NativeAuth0Client` and `WebAuth0Client` implement it).
+
+Only one of these was exported to consumers:
+
+```diff
+- import type { IMfaClient } from 'react-native-auth0';
++ import type { MfaClient } from 'react-native-auth0';
+```
+
+**✅ Action Required:** rename the import if you annotated anything with `IMfaClient` — typically a variable holding `auth0.mfa` or the `mfa` object from `useAuth0()`. This is a type-only change; runtime behaviour is identical.
+
+`AuthenticationProvider`, `CredentialsManager`, `MyAccountClient`, `PasswordlessClient`, and `WebAuthProvider` are now exported under their plain names too _(see [§11](#11-public-api-surface-freeze--my-account-error-normalization-))_; only `NativeBridge` stays internal-only.
+
+### 11. Public API surface freeze & My Account error normalization ✅
+
+The public surface was audited before v6 GA: previously-unreachable types were exported, dead internal types were un-exported, and `MyAccountError` was brought in line with the rest of the error taxonomy.
+
+#### `MyAccountError.type` is now a normalized code
+
+`MyAccountError.type` used to be the raw [RFC 7807](https://datatracker.ietf.org/doc/html/rfc7807) type URI reported by the My Account API (e.g. `https://auth0.com/api-errors/A0E-401-0001`). It is now a normalized `MyAccountErrorCodes` value, consistent with every other error class in the SDK. The original URI is preserved on a new `typeUri` property.
+
+**⚠️ Action Required:** if you compared `MyAccountError.type` against a raw URI string, switch to comparing against `MyAccountErrorCodes` and read `typeUri` for the raw value.
+
+```diff
+- if (error.type === 'https://auth0.com/api-errors/A0E-401-0001') { ... }
++ if (error.type === MyAccountErrorCodes.UNAUTHORIZED) { ... }
++ console.log(error.typeUri); // "https://auth0.com/api-errors/A0E-401-0001" — raw, log this
+```
+
+#### Four internal types are no longer exported
+
+`NativeAuth0Options`, `WebAuth0Options`, `NativeCredentialsResponse`, and `SSOCredentialsResponse` were internal adapter-construction/wire shapes that were reachable from `react-native-auth0` by accident. They are not part of the supported API and have been removed from the package's exports.
+
+**✅ Action Required:** if you imported any of these four types directly, inline the shape you need or open an issue describing your use case — none of them were meant to be public.
+
+### Recommended Reading
+
+- The [FAQ](FAQ.md) for guidance on the `authorize()` redirect flow on web and the importance of the `offline_access` scope.
 
 ## Upgrading from v4 -> v5
 
@@ -170,7 +416,7 @@ With the introduction of **React Native Web support**, some methods are only ava
 
 On React Native Web, the `authorize()` method now triggers a **full-page redirect** to Auth0. As a result, the promise returned by `authorize()` will **not resolve** in the browser. Your application must be structured to handle the user state upon reloading after the redirect.
 
-**✅ Action Required:** Review the new **[FAQ entry](#faq-authorize-web)** for guidance on how to correctly handle the post-login flow on the web. The `Auth0Provider` and `useAuth0` hook are designed to manage this flow automatically.
+**✅ Action Required:** Review the new **[FAQ entry](FAQ.md#9-why-doesnt-await-authorize-work-on-the-web-how-do-i-handle-login)** for guidance on how to correctly handle the post-login flow on the web. The `Auth0Provider` and `useAuth0` hook are designed to manage this flow automatically.
 
 ### Change #5: Hook Methods Now Throw Error
 

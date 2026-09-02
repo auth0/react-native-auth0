@@ -274,35 +274,6 @@ export interface LoginSmsParameters extends RequestOptions {
   scope?: string;
 }
 
-// ========= Multi-Factor Authentication (MFA) Parameters =========
-
-/** Parameters for logging in with an OTP code after an MFA challenge. */
-export interface LoginOtpParameters extends RequestOptions {
-  mfaToken: string;
-  otp: string;
-  audience?: string;
-}
-
-/** Parameters for logging in with an Out-of-Band (OOB) code after an MFA challenge. */
-export interface LoginOobParameters extends RequestOptions {
-  mfaToken: string;
-  oobCode: string;
-  bindingCode?: string;
-}
-
-/** Parameters for logging in with a recovery code after an MFA challenge. */
-export interface LoginRecoveryCodeParameters extends RequestOptions {
-  mfaToken: string;
-  recoveryCode: string;
-}
-
-/** Parameters for requesting an MFA challenge. */
-export interface MfaChallengeParameters extends RequestOptions {
-  mfaToken: string;
-  challengeType?: 'oob' | 'otp';
-  authenticatorId?: string;
-}
-
 // ========= MFA Flexible Factors Grant Parameters =========
 
 /** Parameters for listing enrolled MFA authenticators. */
@@ -1100,30 +1071,4 @@ export interface Factor {
   type: string;
   /** Usage classification (e.g., ["mfa"], ["first_factor", "mfa"]). */
   usage?: string[];
-}
-
-// ========= User Management & Profile Parameters =========
-
-/**
- * Parameters for patching a user's metadata via the Management API.
- * Requires an access token with `update:current_user_metadata` scope.
- *
- * @deprecated Will be removed in v6, along with `Auth0.users()`.
- */
-export interface PatchUserParameters {
-  /** The ID of the user to update (e.g., `auth0|12345`). */
-  id: string;
-  /** An object containing the metadata to set or update. */
-  metadata: Record<string, any>;
-}
-
-/**
- * Parameters for retrieving a user's full profile from the Management API.
- * Requires an access token with `read:current_user` scope.
- *
- * @deprecated Will be removed in v6, along with `Auth0.users()`.
- */
-export interface GetUserParameters {
-  /** The ID of the user to retrieve. */
-  id: string;
 }

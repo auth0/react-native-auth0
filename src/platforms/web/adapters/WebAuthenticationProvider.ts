@@ -1,4 +1,4 @@
-import type { IAuthenticationProvider } from '../../../core/interfaces';
+import type { AuthenticationProvider } from '../../../core/interfaces';
 import { AuthError } from '../../../core/models';
 
 const webAuthNotSupported =
@@ -11,11 +11,11 @@ export const ssoExchangeNotSupported =
   'Native to Web SSO Exchange is only supported on native platforms (iOS/Android). This feature is not available in web environments.';
 
 /**
- * An IAuthenticationProvider implementation for the web that explicitly
+ * An AuthenticationProvider implementation for the web that explicitly
  * disallows direct-grant authentication methods for security reasons.
  */
 
-export const UnimplementedWebAuthenticationProvider: IAuthenticationProvider = {
+export const UnimplementedWebAuthenticationProvider: AuthenticationProvider = {
   // Original stubs
   passwordRealm: () =>
     Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
@@ -43,14 +43,6 @@ export const UnimplementedWebAuthenticationProvider: IAuthenticationProvider = {
   loginWithEmail: () =>
     Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
   loginWithSMS: () =>
-    Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
-  loginWithOTP: () =>
-    Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
-  loginWithOOB: () =>
-    Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
-  loginWithRecoveryCode: () =>
-    Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
-  multifactorChallenge: () =>
     Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),
   resetPassword: () =>
     Promise.reject(new AuthError('NotImplemented', webAuthNotSupported)),

@@ -1,9 +1,11 @@
-export { SafariViewControllerPresentationStyle } from '../index';
 export {
+  SafariViewControllerPresentationStyle,
   LocalAuthenticationLevel,
   LocalAuthenticationStrategy,
   BiometricPolicy,
-} from '../types/platform-specific';
+  TokenType,
+  MfaFactorType,
+} from '../index';
 
 /**
  * Error code constants for type-safe error handling.
@@ -12,5 +14,7 @@ export {
   WebAuthErrorCodes,
   CredentialsManagerErrorCodes,
   DPoPErrorCodes,
+  MfaErrorCodes,
   PasskeyErrorCodes,
-} from '../core/models';
+  MyAccountErrorCodes,
+} from '../index';

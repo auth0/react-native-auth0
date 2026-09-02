@@ -19,8 +19,7 @@ class A0Auth0Package : TurboReactPackage() {
     override fun getReactModuleInfoProvider(): ReactModuleInfoProvider {
         return ReactModuleInfoProvider {
             val moduleInfos = mutableMapOf<String, ReactModuleInfo>()
-            val isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
-            
+
             moduleInfos[A0Auth0Module.NAME] = ReactModuleInfo(
                 A0Auth0Module.NAME,
                 A0Auth0Module.NAME,
@@ -28,9 +27,9 @@ class A0Auth0Package : TurboReactPackage() {
                 false,  // needsEagerInit
                 true,   // hasConstants
                 false,  // isCxxModule
-                isTurboModule // isTurboModule
+                true    // isTurboModule
             )
-            
+
             moduleInfos
         }
     }

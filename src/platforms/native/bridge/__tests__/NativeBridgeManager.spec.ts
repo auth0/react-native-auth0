@@ -194,6 +194,36 @@ describe('NativeBridgeManager', () => {
       );
     });
 
+    it('should pass ephemeralSession to native webAuth when provided', async () => {
+      MockedAuth0NativeModule.webAuth.mockResolvedValueOnce(
+        nativeSuccessCredentials as any
+      );
+
+      await bridge.authorize(
+        { redirectUrl: 'com.myapp://cb' },
+        { customScheme: 'com.myapp', ephemeralSession: true }
+      );
+
+      expect(MockedAuth0NativeModule.webAuth).toHaveBeenCalledWith(
+        'com.myapp',
+        'com.myapp://cb',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        0,
+        undefined,
+        undefined,
+        0,
+        true, // ephemeralSession
+        99,
+        {},
+        undefined, // allowedBrowserPackages
+        false // useTrustedWebActivity
+      );
+    });
+
     it('should correctly transform the native response to a Credentials model', async () => {
       MockedAuth0NativeModule.webAuth.mockResolvedValueOnce(
         nativeSuccessCredentials as any
@@ -237,7 +267,8 @@ describe('NativeBridgeManager', () => {
         undefined,
         true,
         0,
-        'tenant-b'
+        'tenant-b',
+        undefined
       );
     });
 
@@ -250,9 +281,40 @@ describe('NativeBridgeManager', () => {
         'client-id',
         'tenant-a.auth0.com',
         undefined, // localAuthenticationOptions
-        true, // useDPoP default
+        false, // useDPoP default
         0, // maxRetries default
-        undefined // credentialsManagerStorageKey
+        undefined, // credentialsManagerStorageKey
+        undefined // networkingOptions
+      );
+    });
+
+    it('forwards networkingOptions to the native module when provided', async () => {
+      const networkingOptions = {
+        connectTimeout: 30,
+        readTimeout: 30,
+        defaultHeaders: { 'X-Custom': 'value' },
+      };
+
+      await bridge.initialize(
+        'client-id',
+        'tenant-c.auth0.com',
+        undefined,
+        false,
+        0,
+        undefined,
+        networkingOptions
+      );
+
+      expect(
+        MockedAuth0NativeModule.initializeAuth0WithConfiguration
+      ).toHaveBeenCalledWith(
+        'client-id',
+        'tenant-c.auth0.com',
+        undefined,
+        false,
+        0,
+        undefined,
+        networkingOptions
       );
     });
 

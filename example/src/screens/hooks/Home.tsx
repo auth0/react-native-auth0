@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   View,
   Text,
@@ -11,6 +10,7 @@ import {
   Linking,
   Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   useAuth0,
   WebAuthError,
@@ -80,6 +80,7 @@ const HomeScreen = () => {
   const [otpChallenge, setOtpChallenge] =
     useState<PasswordlessChallenge | null>(null);
   const [useTrustedWebActivity, setUseTrustedWebActivity] = useState(false);
+  const [ephemeralSession, setEphemeralSession] = useState(false);
 
   // MFA wizard state
   const [mfaToken, setMfaToken] = useState('');
@@ -129,7 +130,7 @@ const HomeScreen = () => {
           scope: 'openid profile email offline_access',
           audience: `https://${config.domain}/api/v2/`,
         },
-        { useTrustedWebActivity }
+        { useTrustedWebActivity, ephemeralSession }
       );
     } catch (e: any) {
       if (e instanceof WebAuthError) {
@@ -921,11 +922,27 @@ const HomeScreen = () => {
               Dashboard; otherwise it falls back to a Custom Tab. Android only.
             </Text>
             <Button
-              onPress={() => setUseTrustedWebActivity((prev) => !prev)}
+              onPress={() => {
+                setUseTrustedWebActivity((prev) => !prev);
+                setEphemeralSession(false);
+              }}
               title={`Trusted Web Activity: ${
                 useTrustedWebActivity ? 'On' : 'Off'
               }`}
               style={!useTrustedWebActivity ? styles.inactiveButton : undefined}
+            />
+            <Text style={styles.description}>
+              Ephemeral session disables SSO by running login in an
+              incognito-like browser session. On Android this needs Chrome 136+
+              and falls back to a regular Custom Tab otherwise.
+            </Text>
+            <Button
+              onPress={() => {
+                setEphemeralSession((prev) => !prev);
+                setUseTrustedWebActivity(false);
+              }}
+              title={`Ephemeral Session: ${ephemeralSession ? 'On' : 'Off'}`}
+              style={!ephemeralSession ? styles.inactiveButton : undefined}
             />
             <Text style={styles.description}>
               Recovers a login that completed after the OS killed the app

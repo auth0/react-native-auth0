@@ -1,9 +1,9 @@
 import { NativeCredentialsManager } from '../NativeCredentialsManager';
-import { INativeBridge } from '../../bridge';
+import { NativeBridge } from '../../bridge';
 import { AuthError, CredentialsManagerError } from '../../../../core/models';
 
-// 1. Create a mock of the INativeBridge dependency.
-const mockBridge: jest.Mocked<INativeBridge> = {
+// 1. Create a mock of the NativeBridge dependency.
+const mockBridge: jest.Mocked<NativeBridge> = {
   // We only need to mock the methods that this specific adapter uses.
   saveCredentials: jest.fn(),
   getCredentials: jest.fn(),
@@ -13,7 +13,7 @@ const mockBridge: jest.Mocked<INativeBridge> = {
   getSSOCredentials: jest.fn(),
   getApiCredentials: jest.fn(),
   clearApiCredentials: jest.fn(),
-  // Add stubs for other INativeBridge methods to satisfy the type.
+  // Add stubs for other NativeBridge methods to satisfy the type.
   initialize: jest.fn(),
   hasValidInstance: jest.fn(),
   getBundleIdentifier: jest.fn(),
@@ -155,7 +155,7 @@ describe('NativeCredentialsManager', () => {
     const validSSOCredentials = {
       sessionTransferToken: 'stt_xyz123',
       tokenType: 'Bearer',
-      expiresIn: 3600,
+      expiresAt: 1893456000,
       idToken: 'id_token_123',
       refreshToken: 'refresh_token_789',
     };
@@ -219,11 +219,23 @@ describe('NativeCredentialsManager', () => {
       expect(result).toEqual(validSSOCredentials);
     });
 
+    it('should surface expiresAt as an absolute UNIX timestamp in seconds', async () => {
+      mockBridge.getSSOCredentials.mockResolvedValueOnce(validSSOCredentials);
+
+      const result = await manager.getSSOCredentials();
+
+      // Both native SDKs return an absolute `Date`, which the bridges convert to
+      // epoch seconds. A relative TTL (e.g. 3600) would fall well below this floor.
+      expect(typeof result.expiresAt).toBe('number');
+      expect(result.expiresAt).toBeGreaterThan(1_600_000_000);
+      expect(result.expiresAt).toBeLessThan(10_000_000_000);
+    });
+
     it('should return SSO credentials without optional tokens', async () => {
       const minimalSSOCredentials = {
         sessionTransferToken: 'stt_xyz123',
         tokenType: 'Bearer',
-        expiresIn: 3600,
+        expiresAt: 1893456000,
       };
       mockBridge.getSSOCredentials.mockResolvedValueOnce(minimalSSOCredentials);
 

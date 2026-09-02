@@ -84,8 +84,8 @@ export type SessionTransferCredentials = {
   sessionTransferToken: string;
   /** The type of the token issued */
   tokenType: string;
-  /** The expiration time of the session transfer token in seconds. */
-  expiresIn: number;
+  /** When the session transfer token expires, as a UNIX timestamp (in seconds). */
+  expiresAt: number;
   /**
    * A new ID token, if one was issued during the token exchange.
    * This is typically present when Refresh Token Rotation is enabled.
@@ -191,7 +191,8 @@ export interface Auth0Options {
   /**
    * Enables DPoP (Demonstrating Proof-of-Possession) for enhanced token security.
    * When enabled, access and refresh tokens are cryptographically bound to a client-specific key pair.
-   * @default true
+   * Requires DPoP to be enabled for your application in the Auth0 Dashboard.
+   * @default false
    * @see https://datatracker.ietf.org/doc/html/rfc9449
    */
   useDPoP?: boolean;
@@ -213,30 +214,56 @@ export interface Auth0Options {
    * @remarks Native only (iOS/Android). Has no effect on the web platform.
    */
   credentialsManagerStorageKey?: string;
+  /**
+   * Configures the native networking client (OkHttp) that Auth0.Android uses for every
+   * request it makes (web auth token exchange, credential renewal, MFA, passkeys, etc.).
+   * @remarks Android only. Accepted on iOS for API compatibility but has no effect.
+   */
+  networkingOptions?: NetworkingOptions;
   // Telemetry and localAuthenticationOptions are platform-specific extensions
 }
 
-// ========= MFA Challenge Response Types =========
-
-/** Base response for an MFA challenge request. */
-export type MfaChallengeOtpResponse = { challengeType: 'otp' };
-
-/** Response for an Out-of-Band (OOB) MFA challenge, containing the OOB code. */
-export type MfaChallengeOobResponse = {
-  challengeType: 'oob';
-  oobCode: string;
-};
-
-/** Response for an OOB MFA challenge that requires a binding code. */
-export type MfaChallengeOobWithBindingResponse = MfaChallengeOobResponse & {
-  bindingMethod: string;
-};
-
-/** A union type representing all possible successful responses from an MFA challenge request. */
-export type MfaChallengeResponse =
-  | MfaChallengeOtpResponse
-  | MfaChallengeOobResponse
-  | MfaChallengeOobWithBindingResponse;
+/**
+ * Configuration for the native networking client used by Auth0.Android.
+ * Mirrors `DefaultClient.Builder` from the Auth0.Android SDK.
+ *
+ * @remarks Android only. Has no effect on iOS or web.
+ *
+ * @example
+ * ```ts
+ * networkingOptions: {
+ *   connectTimeout: 30,
+ *   readTimeout: 30,
+ *   defaultHeaders: { 'X-App-Version': '1.2.3' }
+ * }
+ * ```
+ */
+export interface NetworkingOptions {
+  /** Connection timeout, in seconds. @default 10 */
+  connectTimeout?: number;
+  /** Read timeout, in seconds. @default 10 */
+  readTimeout?: number;
+  /** Write timeout, in seconds. @default 10 */
+  writeTimeout?: number;
+  /** Overall timeout for the entire call, in seconds. `0` means no timeout. @default 0 */
+  callTimeout?: number;
+  /**
+   * Headers sent on every request made by the native networking client. If a specific
+   * request sets a header with the same name, the request-level header takes precedence.
+   * @default {}
+   */
+  defaultHeaders?: Record<string, string>;
+  /**
+   * Enables verbose HTTP request/response logging to Logcat.
+   *
+   * @remarks
+   * **Debug-only.** Auth0.Android logs full request and response bodies at this level,
+   * which includes access, refresh, and ID tokens in plaintext for token-endpoint calls.
+   * Never enable this in production.
+   * @default false
+   */
+  enableLogging?: boolean;
+}
 
 // ========= MFA Flexible Factors Grant Types =========
 
@@ -433,7 +460,7 @@ export enum TokenType {
  * Parameters required to generate DPoP headers for custom API requests.
  * These headers cryptographically bind the access token to the specific HTTP request.
  */
-export interface DPoPHeadersParams {
+export interface DPoPHeadersParameters {
   /** The full URL of the API endpoint being called. */
   url: string;
   /** The HTTP method of the request (e.g., 'GET', 'POST'). */
@@ -445,3 +472,10 @@ export interface DPoPHeadersParams {
   /** Optional nonce value */
   nonce?: string;
 }
+
+/**
+ * @deprecated Renamed to {@link DPoPHeadersParameters} for consistency with the
+ * other `...Parameters` types. This alias will be removed in a future major
+ * version.
+ */
+export type DPoPHeadersParams = DPoPHeadersParameters;

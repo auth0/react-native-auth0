@@ -69,7 +69,6 @@ const HooksAuthContent = (): React.JSX.Element => {
     loginWithPasswordRealm,
     customTokenExchange,
     mfa,
-    users,
     myAccount,
     passkeySignupChallenge,
     passkeyLoginChallenge,
@@ -643,15 +642,6 @@ const HooksAuthContent = (): React.JSX.Element => {
             <Button
               onPress={() => runDemo(getCredentials)}
               title="Get Credentials"
-            />
-            <Button
-              onPress={() =>
-                runDemo(() =>
-                  users(result?.accessToken).getUser({ id: user.sub })
-                )
-              }
-              title="Get Full Profile (Mgmt API)"
-              disabled={!result?.accessToken}
             />
             <Button onPress={clearSession} title="Log Out" />
           </View>
@@ -1601,17 +1591,6 @@ class ClassApp extends React.Component<{}, ClassAppState> {
                 )
               }
               title="Get Credentials"
-            />
-            <Button
-              onPress={() =>
-                this.runDemo(() =>
-                  this.state.auth0
-                    .users(result?.accessToken)
-                    .getUser({ id: user.sub })
-                )
-              }
-              title="Get Full Profile (Mgmt API)"
-              disabled={!result?.accessToken}
             />
             <Button
               onPress={() => this.runDemo(this.onGetMyAccountFactors)}

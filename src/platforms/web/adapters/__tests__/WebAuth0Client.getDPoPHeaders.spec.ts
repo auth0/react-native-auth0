@@ -40,7 +40,6 @@ jest.mock('@auth0/auth0-spa-js');
 jest.mock('../WebWebAuthProvider');
 jest.mock('../WebCredentialsManager');
 jest.mock('../../../../core/services/AuthenticationOrchestrator');
-jest.mock('../../../../core/services/ManagementApiOrchestrator');
 jest.mock('../../../../core/services/HttpClient');
 
 // Mock AuthError and DPoPError properly

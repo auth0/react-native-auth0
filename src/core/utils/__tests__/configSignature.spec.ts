@@ -84,4 +84,30 @@ describe('getConfigSignature', () => {
       getConfigSignature({ ...base, maxRetries: 3 })
     );
   });
+
+  it('differs when networkingOptions changes', () => {
+    expect(
+      getConfigSignature({
+        ...base,
+        networkingOptions: { connectTimeout: 10 },
+      })
+    ).not.toBe(
+      getConfigSignature({
+        ...base,
+        networkingOptions: { connectTimeout: 30 },
+      })
+    );
+  });
+
+  it('is insensitive to networkingOptions key order', () => {
+    const a = getConfigSignature({
+      ...base,
+      networkingOptions: { connectTimeout: 10, readTimeout: 20 },
+    });
+    const b = getConfigSignature({
+      ...base,
+      networkingOptions: { readTimeout: 20, connectTimeout: 10 },
+    });
+    expect(a).toBe(b);
+  });
 });

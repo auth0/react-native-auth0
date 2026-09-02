@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   View,
   Text,
@@ -8,6 +7,7 @@ import {
   Alert,
   Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import {
@@ -40,7 +40,8 @@ const ClassLoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const [useTrustedWebActivity, setUseTrustedWebActivity] = useState(true);
+  const [useTrustedWebActivity, setUseTrustedWebActivity] = useState(false);
+  const [ephemeralSession, setEphemeralSession] = useState(false);
 
   // MFA state (flat API-test panel)
   const [mfaToken, setMfaToken] = useState('');
@@ -68,10 +69,13 @@ const ClassLoginScreen = () => {
     setLoading(true);
     setError(null);
     try {
-      const credentials = await auth0.webAuth.authorize({
-        scope: 'openid profile email offline_access',
-        audience: `https://${config.domain}/api/v2/`,
-      });
+      const credentials = await auth0.webAuth.authorize(
+        {
+          scope: 'openid profile email offline_access',
+          audience: `https://${config.domain}/api/v2/`,
+        },
+        { useTrustedWebActivity, ephemeralSession }
+      );
       // On success, we save the credentials and navigate to the profile screen.
       await auth0.credentialsManager.saveCredentials(credentials);
       navigation.replace('ClassProfile', { credentials });
@@ -232,11 +236,27 @@ const ClassLoginScreen = () => {
               Dashboard; otherwise it falls back to a Custom Tab. Android only.
             </Text>
             <Button
-              onPress={() => setUseTrustedWebActivity((prev) => !prev)}
+              onPress={() => {
+                setUseTrustedWebActivity((prev) => !prev);
+                setEphemeralSession(false);
+              }}
               title={`Trusted Web Activity: ${
                 useTrustedWebActivity ? 'On' : 'Off'
               }`}
               style={!useTrustedWebActivity ? styles.inactiveButton : undefined}
+            />
+            <Text style={styles.description}>
+              Ephemeral session disables SSO by running login in an
+              incognito-like browser session. On Android this needs Chrome 136+
+              and falls back to a regular Custom Tab otherwise.
+            </Text>
+            <Button
+              onPress={() => {
+                setEphemeralSession((prev) => !prev);
+                setUseTrustedWebActivity(false);
+              }}
+              title={`Ephemeral Session: ${ephemeralSession ? 'On' : 'Off'}`}
+              style={!ephemeralSession ? styles.inactiveButton : undefined}
             />
           </>
         </Section>
