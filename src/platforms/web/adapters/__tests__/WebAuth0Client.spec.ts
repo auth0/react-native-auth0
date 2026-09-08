@@ -130,9 +130,6 @@ describe('WebAuth0Client', () => {
     // Clear all mocks first
     jest.clearAllMocks();
 
-    // Reset the singleton to ensure fresh instances
-    WebAuth0Client.resetSpaClientSingleton();
-
     // Setup window.location mock
     Object.defineProperty(window, 'location', {
       value: {
@@ -175,9 +172,7 @@ describe('WebAuth0Client', () => {
   });
 
   afterEach(() => {
-    // Clear all mocks and reset singleton
     jest.clearAllMocks();
-    WebAuth0Client.resetSpaClientSingleton();
   });
 
   describe('constructor', () => {
