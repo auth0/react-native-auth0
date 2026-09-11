@@ -17,9 +17,9 @@ Before updating the library, ensure your project meets the new minimum requireme
 | Requirement      | v5.x            | v6.0                                                  |
 | :--------------- | :-------------- | :---------------------------------------------------- |
 | **React**        | `19.0.0`+       | `19.0.0`+                                             |
-| **React Native** | `0.78.0`+       | **`0.82.0`+ (New Arch only)**                         |
+| **React Native** | `0.78.0`+       | **`0.87.0`+ (New Arch only)**                         |
 | **Architecture** | Old **or** New  | **New Architecture only**                             |
-| **Expo**         | SDK `53`+       | **SDK `55`+** _(see below)_                           |
+| **Expo**         | SDK `53`+       | **SDK bundling RN `0.87`+** _(see below)_             |
 | **iOS**          | Deployment `14` | **Deployment `15.1`** _(see §4)_                      |
 | **Android**      | Target SDK `35` | **Target SDK `36`, minSdk `26`, JDK `17`** _(see §3)_ |
 
@@ -31,17 +31,17 @@ Before updating the library, ensure your project meets the new minimum requireme
 
 - The Android module no longer ships an old-architecture (`oldarch`) bridge spec; it is now TurboModule-only.
 - The iOS module no longer compiles the legacy `RCTBridgeModule` path; it standardizes on the codegen TurboModule.
-- The `react-native` peer dependency floor is now **`>=0.82.0`**.
+- The `react-native` peer dependency floor is now **`>=0.87.0`**.
 
 **✅ Action Required:**
 
-1.  **Upgrade React Native to `0.82.0` or higher.**
+1.  **Upgrade React Native to `0.87.0` or higher.**
 
     ```bash
-    npm install react-native@^0.82.0 react@^19.0.0
+    npm install react-native@^0.87.0 react@^19.0.0
     ```
 
-    Follow the [React Native 0.82 release notes](https://reactnative.dev/blog/2025/10/08/react-native-0.82#react-1911) for the full upgrade steps, including removing any legacy old-architecture opt-outs.
+    React Native `0.82` was the first release to run entirely on the New Architecture; follow the [React Native 0.82 release notes](https://reactnative.dev/blog/2025/10/08/react-native-0.82#react-1911) for the New Architecture transition steps (including removing any legacy old-architecture opt-outs), then continue upgrading to `0.87`+.
 
 2.  **If you cannot enable the New Architecture yet,** stay on `react-native-auth0@5.x` until your app is migrated. v6 will not run on the legacy bridge.
 
@@ -49,7 +49,7 @@ Before updating the library, ensure your project meets the new minimum requireme
 
 #### For Expo Projects
 
-Expo SDK 55+ uses the New Architecture only.
+Use an Expo SDK that bundles **React Native `0.87` or higher** (Expo runs the New Architecture only). If your Expo SDK ships an older React Native, upgrade Expo once a compatible SDK is available.
 
 ```bash
 npx expo prebuild --clean
@@ -82,7 +82,7 @@ v6 adopts **Auth0.swift 3.0.1**, which is built with the **Swift 6** compiler.
 
 **✅ Action Required:**
 
-1. Your iOS deployment target must meet React Native 0.82's floor (`min_ios_version_supported`, currently **15.1**). The podspec inherits this value, so no explicit `platform :ios` bump is needed beyond what RN 0.82 already requires.
+1. Your iOS deployment target must meet React Native 0.87's floor (`min_ios_version_supported`, currently **15.1**). The podspec inherits this value, so no explicit `platform :ios` bump is needed beyond what RN 0.87 already requires.
 2. Run `pod install --repo-update` in your `ios` directory to pick up Auth0.swift 3.0.1.
 3. Use **Xcode 16** or later.
 

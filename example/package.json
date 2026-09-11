@@ -12,9 +12,9 @@
     "build:ios": "react-native build-ios --mode Debug"
   },
   "dependencies": {
-    "react": "19.2.8",
-    "react-native": "0.86.2",
-    "react-native-safe-area-context": "^5.8.1",
+    "react": "19.2.3",
+    "react-native": "0.87.0",
+    "react-native-safe-area-context": "^5.8.0",
     "react-native-web": "^0.21.2"
   },
   "devDependencies": {
@@ -24,18 +24,18 @@
     "@react-native-community/cli": "20.2.0",
     "@react-native-community/cli-platform-android": "20.2.0",
     "@react-native-community/cli-platform-ios": "20.2.0",
-    "@react-native/babel-preset": "0.86.2",
-    "@react-native/metro-config": "0.86.2",
-    "@react-native/typescript-config": "0.86.2",
+    "@react-native/babel-preset": "0.87.0",
+    "@react-native/metro-config": "0.87.0",
+    "@react-native/typescript-config": "0.87.0",
     "@types/react": "^19.2.18",
     "babel-loader": "^10.1.1",
     "babel-plugin-react-native-web": "^0.21.2",
     "html-webpack-plugin": "^5.6.8",
-    "react-native-builder-bob": "^0.43.0",
+    "react-native-builder-bob": "^0.43.1",
     "react-native-monorepo-config": "^0.4.0",
     "url-loader": "^4.1.1",
-    "webpack": "^5.109.2",
-    "webpack-cli": "^7.2.2",
+    "webpack": "^5.110.3",
+    "webpack-cli": "^7.2.3",
     "webpack-dev-server": "^5.2.6"
   },
   "engines": {

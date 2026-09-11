@@ -32,11 +32,11 @@ We're excited to announce the release of react-native-auth0 `v5.0.0`!
 
 ### Requirements
 
-This SDK targets apps that are using React Native SDK version `0.82.0` and up. If you're using an older React Native version, see the compatibility matrix below.
+This SDK targets apps that are using React Native SDK version `0.87.0` and up. If you're using an older React Native version, stay on an earlier release of this SDK (see below).
 
-React Native `0.82` is the first React Native release that runs **entirely on the New Architecture**. As of v6, this SDK is **New Architecture-only** — the Legacy Architecture is no longer supported. If your app has not yet moved to the New Architecture, upgrade to React Native `0.82`+ or stay on v5.x. For Expo, this SDK requires **Expo SDK 55 or higher** (Expo 54 ships React Native `0.81`, below the `0.82` floor).
+This SDK is **New Architecture-only** — the Legacy Architecture is no longer supported. React Native `0.82` was the first release to run entirely on the New Architecture, but this version of the SDK requires React Native `0.87`+. If your app is on an older React Native version, upgrade to `0.87`+ or stay on an SDK release that supports your version.
 
-> ⚠️ **Warning**: For Expo, this version requires **Expo SDK 55 or higher** (Expo 54 ships React Native `0.81`, below the `0.82` floor). If you are on an earlier Expo version, upgrade Expo or stay on react-native-auth0 `5.x` (Expo 53–54) or `4.x` (below Expo 53).
+> ⚠️ **Warning**: For Expo, this version requires an Expo SDK that bundles **React Native `0.87` or higher**. If your Expo SDK ships an older React Native, upgrade Expo once a compatible SDK is available, or stay on an earlier react-native-auth0 release.
 
 ### Platform compatibility
 
@@ -47,7 +47,7 @@ The following shows platform minimums for running projects with this SDK:
 | iOS      |         15.1         |
 | Android  | API 26 (Android 8.0) |
 
-**iOS.** This SDK requires a minimum iOS deployment target of `15.1`, inherited from the React Native `0.82`+ Pods (`min_ios_version_supported`). In your project's `ios/Podfile`, set the platform accordingly — following the older `14.0` value will fail `pod install`:
+**iOS.** This SDK requires a minimum iOS deployment target of `15.1`, inherited from the React Native `0.87`+ Pods (`min_ios_version_supported`). In your project's `ios/Podfile`, set the platform accordingly — following the older `14.0` value will fail `pod install`:
 
 ```ruby
 platform :ios, '15.1'
@@ -526,13 +526,14 @@ const Component = () => {
 
 <details>
   <summary>Using the `Auth0` class</summary>
-  
-  ```js
-  auth0.webAuth
-    .authorize()
-    .then(credentials => console.log(credentials))
-    .catch(error => console.log(error));
-  ```
+
+```js
+auth0.webAuth
+  .authorize()
+  .then((credentials) => console.log(credentials))
+  .catch((error) => console.log(error));
+```
+
 </details>
 
 > Web Authentication flows require a Browser application installed on the device. When no Browser is available, an error of type `a0.browser_not_available` will be raised via the provided callback.
