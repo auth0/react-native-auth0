@@ -15,10 +15,7 @@ const babelLoaderConfiguration = {
     path.resolve(appDirectory, 'index.js'),
     path.resolve(appDirectory, 'src'),
     path.resolve(appDirectory, '../src'), // Included react-native-auth0 source
-    path.resolve(__dirname, 'node_modules/@react-navigation'),
     path.resolve(__dirname, 'node_modules/react-native-safe-area-context'),
-    path.resolve(__dirname, 'node_modules/react-native-screens'),
-    path.resolve(__dirname, 'node_modules/react-native-vector-icons'),
   ],
   use: {
     loader: 'babel-loader',
