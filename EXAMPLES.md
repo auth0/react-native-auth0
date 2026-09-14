@@ -931,6 +931,8 @@ auth0.webAuth
 
 If the URL doesn't contain the expected values, an error will be raised through the provided callback.
 
+On the web, pass the same `invitationUrl` to `authorize()`; see [Organizations and invitations (Web)](./EXAMPLES-WEB.md#organizations-and-invitations-web).
+
 ## Multi-Resource Refresh Tokens (MRRT)
 
 ### MRRT Overview

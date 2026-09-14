@@ -13,6 +13,22 @@ import type {
   User as SpaJSUser,
 } from '@auth0/auth0-spa-js';
 
+// The native SDKs extract `invitation`/`organization` from the invitation URL
+// for us; on web we parse them here so spa-js gets the params it expects.
+function parseInvitationUrl(invitationUrl?: string): {
+  invitation?: string;
+  organization?: string;
+} {
+  if (!invitationUrl) return {};
+  const params = new URL(invitationUrl).searchParams;
+  const invitation = params.get('invitation');
+  const organization = params.get('organization');
+  return {
+    ...(invitation ? { invitation } : {}),
+    ...(organization ? { organization } : {}),
+  };
+}
+
 export class WebWebAuthProvider implements WebAuthProvider {
   constructor(private client: Auth0Client) {}
 
@@ -47,11 +63,12 @@ export class WebWebAuthProvider implements WebAuthProvider {
     parameters: WebAuthorizeParameters = {}
   ): Promise<Credentials> {
     const finalScope = finalizeScope(parameters.scope);
-    const { redirectUrl, ...restParams } = parameters;
+    const { redirectUrl, invitationUrl, ...restParams } = parameters;
     try {
       await this.client.loginWithRedirect({
         authorizationParams: {
           ...restParams,
+          ...parseInvitationUrl(invitationUrl),
           scope: finalScope,
           redirect_uri: redirectUrl,
         },
