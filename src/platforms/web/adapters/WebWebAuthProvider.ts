@@ -63,13 +63,22 @@ export class WebWebAuthProvider implements WebAuthProvider {
     parameters: WebAuthorizeParameters = {}
   ): Promise<Credentials> {
     const finalScope = finalizeScope(parameters.scope);
-    const { redirectUrl, invitationUrl, maxAge, ...restParams } = parameters;
+    const {
+      redirectUrl,
+      invitationUrl,
+      maxAge,
+      additionalParameters,
+      ...restParams
+    } = parameters;
     try {
       await this.client.loginWithRedirect({
         authorizationParams: {
           ...restParams,
           ...parseInvitationUrl(invitationUrl),
           ...(maxAge != null ? { max_age: maxAge } : {}),
+          // spa-js expects extra params flattened onto authorizationParams,
+          // whereas the native bridge takes them as a nested object.
+          ...additionalParameters,
           scope: finalScope,
           redirect_uri: redirectUrl,
         },

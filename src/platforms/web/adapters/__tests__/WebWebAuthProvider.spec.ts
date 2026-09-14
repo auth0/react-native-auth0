@@ -125,6 +125,20 @@ describe('WebWebAuthProvider', () => {
       });
     });
 
+    it('should flatten additionalParameters onto authorizationParams', () => {
+      mockFinalizeScope.mockReturnValue('openid profile email');
+
+      provider.authorize({ additionalParameters: { prompt: 'login' } });
+
+      expect(mockSpaClient.loginWithRedirect).toHaveBeenCalledWith({
+        authorizationParams: {
+          prompt: 'login',
+          scope: 'openid profile email',
+          redirect_uri: undefined,
+        },
+      });
+    });
+
     it('should not forward invitationUrl itself to spa-js', () => {
       mockFinalizeScope.mockReturnValue('openid profile email');
 
