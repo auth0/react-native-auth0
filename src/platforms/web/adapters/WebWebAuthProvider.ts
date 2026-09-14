@@ -63,12 +63,13 @@ export class WebWebAuthProvider implements WebAuthProvider {
     parameters: WebAuthorizeParameters = {}
   ): Promise<Credentials> {
     const finalScope = finalizeScope(parameters.scope);
-    const { redirectUrl, invitationUrl, ...restParams } = parameters;
+    const { redirectUrl, invitationUrl, maxAge, ...restParams } = parameters;
     try {
       await this.client.loginWithRedirect({
         authorizationParams: {
           ...restParams,
           ...parseInvitationUrl(invitationUrl),
+          ...(maxAge != null ? { max_age: maxAge } : {}),
           scope: finalScope,
           redirect_uri: redirectUrl,
         },

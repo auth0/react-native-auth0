@@ -97,6 +97,34 @@ describe('WebWebAuthProvider', () => {
       });
     });
 
+    it('should map maxAge to the OIDC max_age param', () => {
+      mockFinalizeScope.mockReturnValue('openid profile email');
+
+      provider.authorize({ maxAge: 30 });
+
+      expect(mockSpaClient.loginWithRedirect).toHaveBeenCalledWith({
+        authorizationParams: {
+          max_age: 30,
+          scope: 'openid profile email',
+          redirect_uri: undefined,
+        },
+      });
+    });
+
+    it('should map maxAge of 0 to force re-authentication', () => {
+      mockFinalizeScope.mockReturnValue('openid profile email');
+
+      provider.authorize({ maxAge: 0 });
+
+      expect(mockSpaClient.loginWithRedirect).toHaveBeenCalledWith({
+        authorizationParams: {
+          max_age: 0,
+          scope: 'openid profile email',
+          redirect_uri: undefined,
+        },
+      });
+    });
+
     it('should not forward invitationUrl itself to spa-js', () => {
       mockFinalizeScope.mockReturnValue('openid profile email');
 
