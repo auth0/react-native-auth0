@@ -75,6 +75,11 @@ public class NativeBridge: NSObject {
                 if let evaluationPolicyInt = localAuthenticationOptions["evaluationPolicy"] as? Int {
                     evaluationPolicy = convert(policyInt: evaluationPolicyInt)
                 }
+                // Mirror Android's deviceCredentialFallback: allow the device passcode
+                // as a fallback when biometrics fail (LAPolicy has no separate flag for this).
+                if let deviceCredentialFallback = localAuthenticationOptions["deviceCredentialFallback"] as? Bool, deviceCredentialFallback {
+                    evaluationPolicy = .deviceOwnerAuthentication
+                }
 
                 // Parse biometric policy
                 var biometricPolicy = BiometricPolicy.default

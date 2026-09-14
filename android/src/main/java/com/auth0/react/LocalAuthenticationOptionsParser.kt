@@ -9,7 +9,7 @@ object LocalAuthenticationOptionsParser {
     private const val TITLE_KEY = "title"
     private const val SUBTITLE_KEY = "subtitle"
     private const val DESCRIPTION_KEY = "description"
-    private const val CANCEL_TITLE_KEY = "cancel"
+    private const val CANCEL_TITLE_KEY = "cancelTitle"
     private const val AUTHENTICATION_LEVEL_KEY = "authenticationLevel"
     private const val DEVICE_CREDENTIAL_FALLBACK_KEY = "deviceCredentialFallback"
     private const val BIOMETRIC_POLICY_KEY = "biometricPolicy"
@@ -22,7 +22,8 @@ object LocalAuthenticationOptionsParser {
         val subtitle = map.getString(SUBTITLE_KEY)
         val description = map.getString(DESCRIPTION_KEY)
         val cancelTitle = map.getString(CANCEL_TITLE_KEY)
-        val deviceCredentialFallback = map.getBoolean(DEVICE_CREDENTIAL_FALLBACK_KEY)
+        val deviceCredentialFallback =
+            map.hasKey(DEVICE_CREDENTIAL_FALLBACK_KEY) && map.getBoolean(DEVICE_CREDENTIAL_FALLBACK_KEY)
 
         val builder = LocalAuthenticationOptions.Builder()
             .setTitle(title)

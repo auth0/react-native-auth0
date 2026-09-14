@@ -74,6 +74,15 @@ export interface LocalAuthenticationOptions {
   evaluationPolicy?: LocalAuthenticationStrategy;
   authenticationLevel?: LocalAuthenticationLevel;
   fallbackTitle?: string;
+  /**
+   * Allow the device PIN, pattern, or password as a fallback when biometric
+   * authentication fails.
+   *
+   * On iOS this is equivalent to setting {@link LocalAuthenticationOptions.evaluationPolicy}
+   * to {@link LocalAuthenticationStrategy.deviceOwner}.
+   *
+   * @default false
+   */
   deviceCredentialFallback?: boolean;
   /**
    * Controls when biometric authentication prompts are shown when accessing stored credentials.
