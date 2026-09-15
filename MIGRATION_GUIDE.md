@@ -49,7 +49,7 @@ Before updating the library, ensure your project meets the new minimum requireme
 
 #### For Expo Projects
 
-Expo SDK 55+ uses the New Architecture only.
+Expo SDK 55+ uses the New Architecture only. Use **Expo SDK 55 or higher**.
 
 ```bash
 npx expo prebuild --clean

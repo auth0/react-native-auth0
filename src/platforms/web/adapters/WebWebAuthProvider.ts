@@ -13,6 +13,22 @@ import type {
   User as SpaJSUser,
 } from '@auth0/auth0-spa-js';
 
+// The native SDKs extract `invitation`/`organization` from the invitation URL
+// for us; on web we parse them here so spa-js gets the params it expects.
+function parseInvitationUrl(invitationUrl?: string): {
+  invitation?: string;
+  organization?: string;
+} {
+  if (!invitationUrl) return {};
+  const params = new URL(invitationUrl).searchParams;
+  const invitation = params.get('invitation');
+  const organization = params.get('organization');
+  return {
+    ...(invitation ? { invitation } : {}),
+    ...(organization ? { organization } : {}),
+  };
+}
+
 export class WebWebAuthProvider implements WebAuthProvider {
   constructor(private client: Auth0Client) {}
 
@@ -47,11 +63,22 @@ export class WebWebAuthProvider implements WebAuthProvider {
     parameters: WebAuthorizeParameters = {}
   ): Promise<Credentials> {
     const finalScope = finalizeScope(parameters.scope);
-    const { redirectUrl, ...restParams } = parameters;
+    const {
+      redirectUrl,
+      invitationUrl,
+      maxAge,
+      additionalParameters,
+      ...restParams
+    } = parameters;
     try {
       await this.client.loginWithRedirect({
         authorizationParams: {
           ...restParams,
+          ...parseInvitationUrl(invitationUrl),
+          ...(maxAge != null ? { max_age: maxAge } : {}),
+          // spa-js expects extra params flattened onto authorizationParams,
+          // whereas the native bridge takes them as a nested object.
+          ...additionalParameters,
           scope: finalScope,
           redirect_uri: redirectUrl,
         },
