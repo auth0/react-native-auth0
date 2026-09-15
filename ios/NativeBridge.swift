@@ -275,7 +275,29 @@ public class NativeBridge: NSObject {
 
         resolve(removed)
     }
-    
+
+    @objc public func clearAll(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        let removed: Bool
+        do {
+            try credentialsManager.clearAll()
+            removed = true
+        } catch {
+            removed = false
+        }
+
+        // Also clear DPoP key if DPoP is enabled
+        if self.useDPoP {
+            do {
+                try DPoP.clearKeypair()
+            } catch {
+                // Log error but don't fail the operation
+                print("Warning: Failed to clear DPoP key: \(error.localizedDescription)")
+            }
+        }
+
+        resolve(removed)
+    }
+
     @objc public func getSSOCredentials(parameters: [String: Any], headers: [String: Any], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let stringHeaders = headers.compactMapValues { $0 as? String }
         credentialsManager.ssoCredentials(parameters: parameters, headers: stringHeaders) { result in

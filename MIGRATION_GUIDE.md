@@ -119,7 +119,11 @@ If you never set `useDPoP` and don't need DPoP, no change is required — you wi
 
 ### 6. Behavioral default shifts under native delegation ⏳
 
-_Planned — lands with full native auth delegation._ Routing all authentication through the native SDKs changes some defaults (e.g. `scope` gains `offline_access`, `minTTL` defaults to `60`, default connection names). Each shift and the action required will be documented here when that workstream merges.
+`minTTL` now defaults to **60 seconds** on `getCredentials()` and `getApiCredentials()`, matching Auth0.Android v4 / Auth0.swift v3 (and auth0-flutter v3). Previously it defaulted to `0`, so a token was only refreshed once it had already expired; now it is refreshed when fewer than 60 seconds of lifetime remain. Pass an explicit `minTtl` to override.
+
+**⚠️ Action Required:** none for most apps. If you relied on the old `0` default — e.g. you never want a proactive refresh — pass `minTtl: 0` explicitly.
+
+The remaining native-delegation default shifts (e.g. `scope` gaining `offline_access`, default connection names) are _planned_ and will be documented here when that workstream merges.
 
 ### 7. Management API (`users()`) removed ✅
 
@@ -248,6 +252,22 @@ Two codes were added for the new Auth0.swift cases, both iOS-only: `AUTHENTICATI
 #### New `CredentialsManagerErrorCodes`
 
 `SSO_EXCHANGE_FAILED` (iOS and Android) and `CLEAR_FAILED` (iOS) are now reported instead of being collapsed into a generic credentials-manager error. No action is required unless you exhaustively match on these codes.
+
+#### New `clearAll()` on the credentials manager
+
+The native SDK majors added a `clearAll()` method that wipes the **entire** storage backing the credentials manager, not just the keys this SDK writes. The SDK now surfaces it on `auth0.credentialsManager.clearAll()` and `useAuth0()`.
+
+`clearCredentials()` is unchanged — it removes the main credentials (and the DPoP key). Use `clearAll()` when you also want to drop every API credential for all audiences in one call.
+
+```typescript
+// Remove the session credentials only (as before)
+await auth0.credentialsManager.clearCredentials();
+
+// Remove everything in the credentials store, including all API credentials
+await auth0.credentialsManager.clearAll();
+```
+
+**⚠️ Warning:** `clearAll()` delegates to the native SDK, which deletes **all** entries in the underlying store (the Keychain service on iOS, EncryptedSharedPreferences on Android). If you share that store with non-Auth0 data — for example by passing a custom `credentialsManagerStorageKey` that collides with your own keys — that data is removed too. Keep the store dedicated to Auth0 credentials, or use `clearCredentials()` / `clearApiCredentials()` for targeted removal. On web, where `@auth0/auth0-spa-js` manages a single cache, `clearAll()` behaves the same as `clearCredentials()`.
 
 #### ID-token claim validation is now opt-in on direct token requests
 

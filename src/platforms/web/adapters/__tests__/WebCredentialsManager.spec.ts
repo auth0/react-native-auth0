@@ -278,6 +278,14 @@ describe('WebCredentialsManager', () => {
     });
   });
 
+  describe('clearAll', () => {
+    it('should clear the single spa-js cache via logout', async () => {
+      await credentialsManager.clearAll();
+
+      expect(mockSpaClient.logout).toHaveBeenCalledWith({ openUrl: false });
+    });
+  });
+
   describe('getApiCredentials', () => {
     it('should throw CredentialsManagerError on login_required error', async () => {
       const spaError = {
