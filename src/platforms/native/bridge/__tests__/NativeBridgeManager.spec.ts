@@ -97,7 +97,8 @@ describe('NativeBridgeManager', () => {
         1, // presentationStyle
         parameters.additionalParameters,
         undefined, // allowedBrowserPackages
-        false // useTrustedWebActivity
+        false, // useTrustedWebActivity
+        false // useAuthTab (default)
       );
     });
 
@@ -127,7 +128,8 @@ describe('NativeBridgeManager', () => {
         99, // presentationStyle
         {}, // additionalParameters
         undefined, // allowedBrowserPackages
-        false // useTrustedWebActivity
+        false, // useTrustedWebActivity
+        false // useAuthTab (default)
       );
     });
 
@@ -161,7 +163,8 @@ describe('NativeBridgeManager', () => {
         99,
         {},
         allowedBrowserPackages,
-        false // useTrustedWebActivity
+        false, // useTrustedWebActivity
+        false // useAuthTab (default)
       );
     });
 
@@ -191,7 +194,8 @@ describe('NativeBridgeManager', () => {
         99,
         {},
         undefined, // allowedBrowserPackages
-        true // useTrustedWebActivity
+        true, // useTrustedWebActivity
+        false // useAuthTab (default)
       );
     });
 
@@ -221,7 +225,39 @@ describe('NativeBridgeManager', () => {
         99,
         {},
         undefined, // allowedBrowserPackages
-        false // useTrustedWebActivity
+        false, // useTrustedWebActivity
+        false // useAuthTab (default)
+      );
+    });
+
+    it('should pass useAuthTab to native webAuth when provided', async () => {
+      MockedAuth0NativeModule.webAuth.mockResolvedValueOnce(
+        nativeSuccessCredentials as any
+      );
+
+      await bridge.authorize(
+        { redirectUrl: 'com.myapp://cb' },
+        { customScheme: 'com.myapp', useAuthTab: true }
+      );
+
+      expect(MockedAuth0NativeModule.webAuth).toHaveBeenCalledWith(
+        'com.myapp',
+        'com.myapp://cb',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        0,
+        undefined,
+        undefined,
+        0,
+        false,
+        99,
+        {},
+        undefined, // allowedBrowserPackages
+        false, // useTrustedWebActivity
+        true // useAuthTab
       );
     });
 
@@ -344,7 +380,8 @@ describe('NativeBridgeManager', () => {
         parameters.federated,
         parameters.returnToUrl,
         undefined, // allowedBrowserPackages
-        false // useTrustedWebActivity
+        false, // useTrustedWebActivity
+        false // useAuthTab (default)
       );
     });
 
@@ -363,7 +400,8 @@ describe('NativeBridgeManager', () => {
         parameters.federated,
         parameters.returnToUrl,
         allowedBrowserPackages,
-        false // useTrustedWebActivity
+        false, // useTrustedWebActivity
+        false // useAuthTab (default)
       );
     });
 
@@ -384,7 +422,27 @@ describe('NativeBridgeManager', () => {
         parameters.federated,
         parameters.returnToUrl,
         undefined, // allowedBrowserPackages
-        true // useTrustedWebActivity
+        true, // useTrustedWebActivity
+        false // useAuthTab (default)
+      );
+    });
+
+    it('should pass useAuthTab to native webAuthLogout when provided', async () => {
+      const parameters = {
+        federated: false,
+        returnToUrl: 'com.myapp://logout',
+      };
+      const options = { customScheme: 'com.myapp', useAuthTab: true };
+
+      await bridge.clearSession(parameters, options);
+
+      expect(MockedAuth0NativeModule.webAuthLogout).toHaveBeenCalledWith(
+        options.customScheme,
+        parameters.federated,
+        parameters.returnToUrl,
+        undefined, // allowedBrowserPackages
+        false, // useTrustedWebActivity
+        true // useAuthTab
       );
     });
   });
