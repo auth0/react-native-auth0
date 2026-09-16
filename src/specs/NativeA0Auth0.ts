@@ -58,6 +58,12 @@ export interface Spec extends TurboModule {
   clearCredentials(): Promise<void>;
 
   /**
+   * Clear all credentials from the underlying secure storage, including any API
+   * credentials for every audience. May remove non-Auth0 data if the store is shared.
+   */
+  clearAll(): Promise<void>;
+
+  /**
    * Get API credentials for a specific audience
    */
   getApiCredentials(

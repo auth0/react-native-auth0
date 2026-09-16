@@ -23,7 +23,7 @@ export interface CredentialsManager {
    * should attempt to automatically refresh the tokens and store the new ones.
    *
    * @param scope The scopes to request for the new access token (used during refresh).
-   * @param minTtl The minimum time-to-live (in seconds) required for the access token. If the token expires sooner, a refresh will be attempted.
+   * @param minTtl The minimum time-to-live (in seconds) required for the access token. If the token expires sooner, a refresh will be attempted. Defaults to 60.
    * @param parameters Additional parameters to send during the token refresh request.
    * @param forceRefresh If true, a token refresh will be attempted even if the current access token is not expired.
    * @returns A promise that resolves with the user's credentials.
@@ -49,6 +49,22 @@ export interface CredentialsManager {
    * @returns A promise that resolves when the credentials have been cleared.
    */
   clearCredentials(): Promise<void>;
+
+  /**
+   * Clears **all** entries from the underlying secure storage — the main credentials
+   * and any API credentials for every audience.
+   *
+   * @remarks
+   * This delegates to the native SDK's `clearAll()`, which wipes the entire storage
+   * backing the credentials manager (the Keychain service on iOS,
+   * EncryptedSharedPreferences on Android), not just the keys this SDK knows about.
+   * If that store is shared with other data in your app, that data will be removed
+   * too. On web this is equivalent to `clearCredentials()`, since `@auth0/auth0-spa-js`
+   * manages a single cache.
+   *
+   * @returns A promise that resolves when the storage has been cleared.
+   */
+  clearAll(): Promise<void>;
 
   /**
    * Obtains session transfer credentials for performing Native to Web SSO.
@@ -101,7 +117,7 @@ export interface CredentialsManager {
    *
    * @param audience The identifier of the API for which to get credentials (e.g., 'https://api.example.com').
    * @param scope The scopes to request for the new access token. If omitted, default scopes configured for the API will be used.
-   * @param minTtl The minimum time-to-live (in seconds) required for the access token. If the token expires sooner, a refresh will be attempted.
+   * @param minTtl The minimum time-to-live (in seconds) required for the access token. If the token expires sooner, a refresh will be attempted. Defaults to 60.
    * @param parameters Additional parameters to send during the token refresh request.
    * @returns A promise that resolves with the API credentials.
    * @throws {CredentialsManagerError} If the operation fails. Common error types include:

@@ -157,6 +157,12 @@ export interface NativeBridge {
   clearCredentials(): Promise<void>;
 
   /**
+   * Clears all entries from the underlying secure storage, including API credentials
+   * for every audience. If the store is shared with other data, that data is removed too.
+   */
+  clearAll(): Promise<void>;
+
+  /**
    * Resumes the web authentication flow with the provided URL.
    * @param url The URL to resume the authentication flow.
    * @returns A promise that resolves when the flow has been resumed.

@@ -99,6 +99,7 @@ const createMockClient = () => {
       hasValidCredentials: jest.fn().mockResolvedValue(false),
       getCredentials: jest.fn().mockResolvedValue(null),
       clearCredentials: jest.fn().mockResolvedValue(undefined),
+      clearAll: jest.fn().mockResolvedValue(undefined),
       saveCredentials: jest.fn().mockResolvedValue(undefined),
       getSSOCredentials: jest.fn().mockResolvedValue(null),
     },
@@ -135,6 +136,7 @@ const TestConsumer = () => {
     authorize,
     clearSession,
     clearCredentials,
+    clearAll,
     createUser,
     resetPassword,
   } = useAuth0();
@@ -168,6 +170,11 @@ const TestConsumer = () => {
         title="Clear Credentials"
         onPress={() => clearCredentials()}
         testID="clear-credentials-button"
+      />
+      <Button
+        title="Clear All"
+        onPress={() => clearAll().catch(() => {})}
+        testID="clear-all-button"
       />
       <Button
         title="Create User"
@@ -555,6 +562,81 @@ describe('Auth0Provider', () => {
     expect(
       mockClientInstance.credentialsManager.clearCredentials
     ).toHaveBeenCalled();
+  });
+
+  it('should delegate to clearAll and dispatch LOGOUT_COMPLETE on success', async () => {
+    mockClientInstance.credentialsManager.hasValidCredentials.mockResolvedValueOnce(
+      true
+    );
+    mockClientInstance.credentialsManager.getCredentials.mockResolvedValueOnce({
+      idToken: 'a.b.c',
+      accessToken: 'access-token-123',
+      tokenType: 'Bearer',
+      expiresAt: Date.now() / 1000 + 3600,
+    } as any);
+
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumer />
+        </Auth0Provider>
+      );
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('user-status')).toHaveTextContent(
+        'Logged in as: Test User'
+      )
+    );
+
+    const clearAllButton = screen.getByTestId('clear-all-button');
+    await act(async () => {
+      fireEvent.click(clearAllButton);
+    });
+
+    expect(mockClientInstance.credentialsManager.clearAll).toHaveBeenCalled();
+    await waitFor(() =>
+      expect(screen.getByTestId('user-status')).toHaveTextContent(
+        'Not logged in'
+      )
+    );
+  });
+
+  it('should dispatch ERROR and reject when clearAll fails', async () => {
+    const clearError = {
+      name: 'a0.session.failed_clear',
+      message: 'Failed to clear credentials from secure storage.',
+    };
+    mockClientInstance.credentialsManager.clearAll = jest
+      .fn()
+      .mockRejectedValue(clearError);
+
+    let componentRef: any;
+    const TestConsumerWithRef = () => {
+      componentRef = useAuth0();
+      return <TestConsumer />;
+    };
+
+    await act(async () => {
+      render(
+        <Auth0Provider domain="test.com" clientId="123">
+          <TestConsumerWithRef />
+        </Auth0Provider>
+      );
+    });
+
+    await waitFor(() => expect(screen.getByTestId('user-status')).toBeTruthy());
+
+    await act(async () => {
+      await expect(componentRef.clearAll()).rejects.toEqual(clearError);
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('error')).toHaveTextContent(
+        'Failed to clear credentials from secure storage.'
+      )
+    );
+    expect(mockClientInstance.credentialsManager.clearAll).toHaveBeenCalled();
   });
 
   it('should update the error state if authorize fails', async () => {

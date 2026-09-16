@@ -156,6 +156,13 @@ export class WebCredentialsManager implements CredentialsManager {
     }
   }
 
+  // @auth0/auth0-spa-js manages a single cache, so wiping "all" storage is the
+  // same as clearing the session. Delegates to clearCredentials for parity with
+  // native's clearAll().
+  async clearAll(): Promise<void> {
+    return this.clearCredentials();
+  }
+
   async getSSOCredentials(
     _parameters?: Record<string, any>,
     _headers?: Record<string, string>

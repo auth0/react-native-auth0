@@ -466,6 +466,13 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     }
 
     @ReactMethod
+    override fun clearAll(promise: Promise) {
+        // clearAll() also clears the DPoP key pair internally.
+        secureCredentialsManager.clearAll()
+        promise.resolve(true)
+    }
+
+    @ReactMethod
     override fun hasValidCredentials(minTtl: Double, promise: Promise) {
         promise.resolve(secureCredentialsManager.hasValidCredentials(minTtl.toLong()))
     }

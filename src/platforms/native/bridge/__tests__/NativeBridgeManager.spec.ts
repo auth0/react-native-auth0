@@ -13,6 +13,7 @@ jest.mock('../../../../specs/NativeA0Auth0', () => ({
   saveCredentials: jest.fn(),
   hasValidCredentials: jest.fn(),
   clearCredentials: jest.fn(),
+  clearAll: jest.fn(),
   cancelWebAuth: jest.fn(),
   resumeWebAuth: jest.fn(),
   resumeWebAuthSession: jest.fn(),
@@ -437,6 +438,27 @@ describe('NativeBridgeManager', () => {
         {}, // parameters object is currently unused but passed for spec compliance
         forceRefresh
       );
+    });
+
+    it('should default minTtl to 60 when omitted', async () => {
+      await bridge.getCredentials();
+
+      expect(MockedAuth0NativeModule.getCredentials).toHaveBeenCalledWith(
+        undefined,
+        60,
+        {},
+        false
+      );
+    });
+  });
+
+  describe('clearAll', () => {
+    it('should call the native clearAll', async () => {
+      MockedAuth0NativeModule.clearAll.mockResolvedValueOnce(undefined);
+
+      await bridge.clearAll();
+
+      expect(MockedAuth0NativeModule.clearAll).toHaveBeenCalledTimes(1);
     });
   });
 

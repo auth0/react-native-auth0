@@ -9,6 +9,7 @@ const mockBridge: jest.Mocked<NativeBridge> = {
   getCredentials: jest.fn(),
   hasValidCredentials: jest.fn(),
   clearCredentials: jest.fn(),
+  clearAll: jest.fn(),
   clearDPoPKey: jest.fn(),
   getSSOCredentials: jest.fn(),
   getApiCredentials: jest.fn(),
@@ -148,6 +149,22 @@ describe('NativeCredentialsManager', () => {
       mockBridge.clearCredentials.mockResolvedValueOnce();
       await manager.clearCredentials();
       expect(mockBridge.clearCredentials).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('clearAll', () => {
+    it('should call the bridge to clear all storage', async () => {
+      mockBridge.clearAll.mockResolvedValueOnce();
+      await manager.clearAll();
+      expect(mockBridge.clearAll).toHaveBeenCalledTimes(1);
+    });
+
+    it('should wrap bridge errors in CredentialsManagerError', async () => {
+      const authError = new AuthError('CLEAR_FAILED', 'Clear failed', {
+        code: 'CLEAR_FAILED',
+      });
+      mockBridge.clearAll.mockRejectedValueOnce(authError);
+      await expect(manager.clearAll()).rejects.toThrow(CredentialsManagerError);
     });
   });
 
@@ -366,7 +383,7 @@ describe('NativeCredentialsManager', () => {
       expect(mockBridge.getApiCredentials).toHaveBeenCalledWith(
         'https://api.example.com',
         'read:data',
-        0,
+        60,
         undefined
       );
     });
