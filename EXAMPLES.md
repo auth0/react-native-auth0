@@ -1042,6 +1042,12 @@ await auth0.credentialsManager.clearApiCredentials(
   'https://first-api.example.com',
   'read:data write:data'
 );
+
+// Clear everything in one call — the session credentials plus API credentials
+// for every audience. On native this wipes the entire credentials store, so keep
+// it dedicated to Auth0 (see the storage-key note below); on web it is the same
+// as clearCredentials().
+await auth0.credentialsManager.clearAll();
 ```
 
 ### Web Platform Configuration

@@ -228,6 +228,17 @@ export const Auth0Provider = ({
     }
   }, [client]);
 
+  const clearAll = useCallback(async (): Promise<void> => {
+    try {
+      await client.credentialsManager.clearAll();
+      dispatch({ type: 'LOGOUT_COMPLETE' });
+    } catch (e) {
+      const error = e as AuthError;
+      dispatch({ type: 'ERROR', error });
+      throw error;
+    }
+  }, [client]);
+
   const getSSOCredentials = useCallback(
     async (
       parameters?: Record<string, any>,
@@ -510,6 +521,7 @@ export const Auth0Provider = ({
       getCredentials,
       hasValidCredentials,
       clearCredentials,
+      clearAll,
       getSSOCredentials,
       getApiCredentials,
       clearApiCredentials,
@@ -543,6 +555,7 @@ export const Auth0Provider = ({
       getCredentials,
       hasValidCredentials,
       clearCredentials,
+      clearAll,
       getSSOCredentials,
       getApiCredentials,
       clearApiCredentials,

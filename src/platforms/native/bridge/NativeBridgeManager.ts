@@ -165,7 +165,7 @@ export class NativeBridgeManager implements NativeBridge {
     return this.a0_call(
       Auth0NativeModule.getCredentials.bind(Auth0NativeModule),
       scope,
-      minTtl ?? 0,
+      minTtl ?? 60,
       params,
       forceRefresh ?? false
     );
@@ -182,7 +182,7 @@ export class NativeBridgeManager implements NativeBridge {
       Auth0NativeModule.getApiCredentials.bind(Auth0NativeModule),
       audience,
       scope,
-      minTtl ?? 0,
+      minTtl ?? 60,
       params
     );
   }
@@ -206,6 +206,10 @@ export class NativeBridgeManager implements NativeBridge {
     return this.a0_call(
       Auth0NativeModule.clearCredentials.bind(Auth0NativeModule)
     );
+  }
+
+  async clearAll(): Promise<void> {
+    return this.a0_call(Auth0NativeModule.clearAll.bind(Auth0NativeModule));
   }
 
   async resumeWebAuth(url: string): Promise<void> {

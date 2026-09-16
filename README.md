@@ -10,11 +10,11 @@
 
 📚 [Documentation](#documentation) • 🚀 [Getting Started](#getting-started) • ⏭️ [Next Steps](#next-steps) • ❓ [FAQs](https://github.com/auth0/react-native-auth0/blob/master/FAQ.md) • ❓ [Feedback](#feedback)
 
-### ⚠️ Important Migration Notice: v4.0.0 and v5.0.0
+### ⚠️ Important Migration Notice: v6.0.0
 
-We're excited to announce the release of react-native-auth0 `v5.0.0`!
+We're excited to announce the release of react-native-auth0 `v6.0.0`!
 
-**For v5.0.0 users:** This version requires React 19 and React Native 0.78.0 or higher. If you're using Expo, this version requires Expo 53 or higher. See the 👉 [Migration Guide](https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md) 👈 for compatibility requirements and upgrade instructions.
+**For v6.0.0 users:** This version is New Architecture-only and requires React Native `0.82`+ (Expo SDK 55+), Android API 26+, and JDK 17. See the 👉 [Migration Guide](https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md) 👈 for compatibility requirements and upgrade instructions.
 
 ## Documentation
 

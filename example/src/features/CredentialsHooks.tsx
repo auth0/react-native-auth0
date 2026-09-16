@@ -10,6 +10,7 @@ const CredentialsHooks = () => {
     saveCredentials,
     hasValidCredentials,
     clearCredentials,
+    clearAll,
     getApiCredentials,
     clearApiCredentials,
     getSSOCredentials,
@@ -57,6 +58,7 @@ const CredentialsHooks = () => {
         title="clearCredentials()"
         onPress={() => run(() => clearCredentials())}
       />
+      <Button title="clearAll()" onPress={() => run(() => clearAll())} />
 
       <View style={{ marginTop: 12, gap: 8 }}>
         <TextInput

@@ -101,6 +101,18 @@ export interface Auth0ContextInterface extends AuthState {
   clearCredentials: () => Promise<void>;
 
   /**
+   * Clears all credentials from secure storage, including any API credentials for
+   * every audience, and logs the user out locally.
+   *
+   * @remarks
+   * **Platform specific:** on native this wipes the entire storage backing the
+   * credentials manager and may remove non-Auth0 data if that store is shared.
+   * On web it is equivalent to `clearCredentials`.
+   * @returns A promise that resolves when the storage has been cleared.
+   */
+  clearAll: () => Promise<void>;
+
+  /**
    * Checks if a valid, non-expired set of credentials exists in storage.
    * This is a quick, local check and does not perform a network request.
    *
@@ -481,6 +493,7 @@ const initialContext: Auth0ContextInterface = {
   saveCredentials: stub,
   getCredentials: stub,
   clearCredentials: stub,
+  clearAll: stub,
   hasValidCredentials: stub,
   getApiCredentials: stub,
   clearApiCredentials: stub,

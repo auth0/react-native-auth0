@@ -44,6 +44,10 @@ export class NativeCredentialsManager implements CredentialsManager {
     return this.handleError(this.bridge.clearCredentials());
   }
 
+  async clearAll(): Promise<void> {
+    return this.handleError(this.bridge.clearAll());
+  }
+
   async hasValidCredentials(minTtl?: number): Promise<boolean> {
     return this.handleError(this.bridge.hasValidCredentials(minTtl));
   }
@@ -55,7 +59,7 @@ export class NativeCredentialsManager implements CredentialsManager {
     parameters?: Record<string, any>
   ): Promise<ApiCredentials> {
     const nativeCredentials = await this.handleError(
-      this.bridge.getApiCredentials(audience, scope, minTtl ?? 0, parameters)
+      this.bridge.getApiCredentials(audience, scope, minTtl ?? 60, parameters)
     );
     // Convert plain object from native to class instance
     return new ApiCredentials(nativeCredentials as ApiCredentialsData);
