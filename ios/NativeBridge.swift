@@ -278,20 +278,11 @@ public class NativeBridge: NSObject {
 
     @objc public func clearAll(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         do {
+            // clearAll() also clears the DPoP key pair internally.
             try credentialsManager.clearAll()
         } catch {
             reject(NativeBridge.credentialsManagerErrorCode, "Failed to clear credentials from secure storage.", error)
             return
-        }
-
-        // Also clear DPoP key if DPoP is enabled
-        if self.useDPoP {
-            do {
-                try DPoP.clearKeypair()
-            } catch {
-                // Log error but don't fail the operation
-                print("Warning: Failed to clear DPoP key: \(error.localizedDescription)")
-            }
         }
 
         resolve(true)
