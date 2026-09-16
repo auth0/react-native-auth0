@@ -45,32 +45,8 @@ export class WebAuth0Client implements Auth0Client {
   private readonly httpClient: HttpClient;
   private readonly tokenType: TokenType;
   public readonly client: SpaAuth0Client;
-  private static spaClient: SpaAuth0Client | null = null;
 
   private logoutInProgress = false;
-
-  /**
-   * Factory method to get a singleton instance of SpaAuth0Client.
-   * This ensures that the client is only created once and reused.
-   *
-   * @param options - The Auth0ClientOptions to configure the client.
-   * @returns An instance of SpaAuth0Client.
-   */
-  private static getSpaClient(options: Auth0ClientOptions): SpaAuth0Client {
-    if (WebAuth0Client.spaClient) {
-      return WebAuth0Client.spaClient;
-    }
-    WebAuth0Client.spaClient = new SpaAuth0Client(options);
-    return WebAuth0Client.spaClient;
-  }
-
-  /**
-   * Reset the singleton instance. Used for testing purposes.
-   * @internal
-   */
-  public static resetSpaClientSingleton(): void {
-    WebAuth0Client.spaClient = null;
-  }
 
   constructor(options: WebAuth0Options) {
     const baseUrl = `https://${options.domain}`;
@@ -99,9 +75,9 @@ export class WebAuth0Client implements Auth0Client {
       },
     };
 
-    // Use the singleton factory to get the spa-js client instance.
-    const client = WebAuth0Client.getSpaClient(clientOptions);
-    this.client = client;
+    // One client per instance: a shared one would leak its token cache
+    // to the next request on a server.
+    this.client = new SpaAuth0Client(clientOptions);
 
     // Create a bound getDPoPHeaders function for the orchestrator
     const getDPoPHeadersForOrchestrator = async (
