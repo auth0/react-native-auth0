@@ -8,10 +8,12 @@ public class A0MyAccount: NSObject {
 
     private let domain: String
     private let useDPoP: Bool
+    private let enableLogging: Bool
 
-    @objc public init(domain: String, useDPoP: Bool) {
+    @objc public init(domain: String, useDPoP: Bool, enableLogging: Bool) {
         self.domain = domain
         self.useDPoP = useDPoP
+        self.enableLogging = enableLogging
     }
 
     private func createClient(accessToken: String) -> any MyAccount {
@@ -19,6 +21,7 @@ public class A0MyAccount: NSObject {
         if self.useDPoP {
             client = client.useDPoP()
         }
+        client = client.logging(enabled: self.enableLogging)
         return client
     }
 

@@ -48,20 +48,23 @@ public class NativeBridge: NSObject {
     var domain: String
     var useDPoP: Bool
     var maxRetries: Int
+    var enableLogging: Bool
     private(set) lazy var mfaClient: A0MfaClient = {
-        A0MfaClient(clientId: self.clientId, domain: self.domain, useDPoP: self.useDPoP)
+        A0MfaClient(clientId: self.clientId, domain: self.domain, useDPoP: self.useDPoP, enableLogging: self.enableLogging)
     }()
-    
-    @objc public init(clientId: String, domain: String, localAuthenticationOptions: [String: Any]?, useDPoP: Bool, maxRetries: Int, credentialsManagerStorageKey: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+
+    @objc public init(clientId: String, domain: String, localAuthenticationOptions: [String: Any]?, useDPoP: Bool, maxRetries: Int, credentialsManagerStorageKey: String?, enableLogging: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         var auth0 = Auth0
             .authentication(clientId: clientId, domain: domain)
         self.clientId = clientId
         self.domain = domain
         self.useDPoP = useDPoP
         self.maxRetries = maxRetries
+        self.enableLogging = enableLogging
         if self.useDPoP {
             auth0 = auth0.useDPoP()
         }
+        auth0 = auth0.logging(enabled: enableLogging)
         // Namespace the keychain per client when a storage key is provided, else use the default service.
         if let key = credentialsManagerStorageKey, !key.isEmpty {
             self.credentialsManager = CredentialsManager(authentication: auth0, storage: SimpleKeychain(service: key), maxRetries: maxRetries)
@@ -104,6 +107,7 @@ public class NativeBridge: NSObject {
         if self.useDPoP {
             builder = builder.useDPoP()
         }
+        builder = builder.logging(enabled: self.enableLogging)
         if let value = URL(string: redirectUri) {
             builder = builder.redirectURL(value)
         }
@@ -160,6 +164,7 @@ public class NativeBridge: NSObject {
 
     @objc public func webAuthLogout(scheme: String, federated: Bool, redirectUri: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         var builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
+        builder = builder.logging(enabled: self.enableLogging)
         if let value = URL(string: redirectUri) {
             builder = builder.redirectURL(value)
         }
@@ -423,6 +428,7 @@ public class NativeBridge: NSObject {
         if self.useDPoP {
             auth = auth.useDPoP()
         }
+        auth = auth.logging(enabled: self.enableLogging)
 
         let finalScope = scope ?? "openid profile email"
 
@@ -491,6 +497,7 @@ public class NativeBridge: NSObject {
         if self.useDPoP {
             auth = auth.useDPoP()
         }
+        auth = auth.logging(enabled: self.enableLogging)
 
         auth.passkeySignupChallenge(
             email: finalEmail,
@@ -539,6 +546,7 @@ public class NativeBridge: NSObject {
         if self.useDPoP {
             auth = auth.useDPoP()
         }
+        auth = auth.logging(enabled: self.enableLogging)
 
         auth.passkeyLoginChallenge(
             connection: realmValue,
@@ -590,6 +598,7 @@ public class NativeBridge: NSObject {
         if self.useDPoP {
             auth = auth.useDPoP()
         }
+        auth = auth.logging(enabled: self.enableLogging)
 
         if let attestationObjectString = responseDict["attestationObject"] as? String {
             let attestationObject = Data(base64URLEncoded: attestationObjectString)

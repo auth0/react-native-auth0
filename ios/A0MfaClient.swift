@@ -31,19 +31,22 @@ class A0MfaClient {
     private let clientId: String
     private let domain: String
     private let useDPoP: Bool
+    private let enableLogging: Bool
 
     private lazy var mfaClient: MFAClient = {
         var client = Auth0.mfa(clientId: clientId, domain: domain)
         if useDPoP {
             client = client.useDPoP()
         }
+        client = client.logging(enabled: enableLogging)
         return client
     }()
 
-    init(clientId: String, domain: String, useDPoP: Bool) {
+    init(clientId: String, domain: String, useDPoP: Bool, enableLogging: Bool) {
         self.clientId = clientId
         self.domain = domain
         self.useDPoP = useDPoP
+        self.enableLogging = enableLogging
     }
 
     // Maps the public MfaFactorType vocabulary (otp/sms/voice/email/push) onto

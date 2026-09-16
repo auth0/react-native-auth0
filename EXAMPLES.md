@@ -667,7 +667,7 @@ function MyComponent() {
 
 ## Android Networking Configuration
 
-> **Platform Support:** Android only. Accepted on iOS for API compatibility but has no effect.
+> **Platform Support:** The timeout and header fields are Android only and have no effect on iOS. `enableLogging` is honored on both iOS and Android.
 
 The `networkingOptions` configuration option lets you tune the native networking client (`DefaultClient` from Auth0.Android's OkHttp-based stack) used for every request the native SDK makes on your behalf — web auth token exchange, credential renewal, MFA, passkeys, and My Account API calls.
 
@@ -685,7 +685,8 @@ networkingOptions?: {
 Any option you omit falls back to Auth0.Android's own default.
 
 > [!WARNING]
-> `enableLogging` is **debug-only**. When enabled, Auth0.Android logs full HTTP request and response bodies to Logcat — including access, refresh, and ID tokens returned from token-endpoint calls, in plaintext. Never enable it in a production build.
+> On **Android**, `enableLogging` is **debug-only**: Auth0.Android logs full HTTP request and response bodies to Logcat — including access, refresh, and ID tokens from token-endpoint calls, in plaintext — and the flag is ignored on release builds. Never enable it in a production build.
+> On **iOS**, `enableLogging` maps to Auth0.swift's `.logging(enabled:)`, which traces requests and responses to the unified logging system (OSLog) with access, refresh, and ID tokens redacted. There is no release-build gate, so enable it only while debugging.
 
 ### Using Networking Options with Hooks
 

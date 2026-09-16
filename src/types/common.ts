@@ -217,7 +217,8 @@ export interface Auth0Options {
   /**
    * Configures the native networking client (OkHttp) that Auth0.Android uses for every
    * request it makes (web auth token exchange, credential renewal, MFA, passkeys, etc.).
-   * @remarks Android only. Accepted on iOS for API compatibility but has no effect.
+   * @remarks The timeout and header fields are Android only and have no effect on iOS.
+   * `enableLogging` is honored on both platforms (see {@link NetworkingOptions.enableLogging}).
    */
   networkingOptions?: NetworkingOptions;
   // Telemetry and localAuthenticationOptions are platform-specific extensions
@@ -227,7 +228,8 @@ export interface Auth0Options {
  * Configuration for the native networking client used by Auth0.Android.
  * Mirrors `DefaultClient.Builder` from the Auth0.Android SDK.
  *
- * @remarks Android only. Has no effect on iOS or web.
+ * @remarks The timeout and header fields are Android only and have no effect on iOS or web.
+ * `enableLogging` is honored on iOS as well (it maps to Auth0.swift's `.logging(enabled:)`).
  *
  * @example
  * ```ts
@@ -254,12 +256,16 @@ export interface NetworkingOptions {
    */
   defaultHeaders?: Record<string, string>;
   /**
-   * Enables verbose HTTP request/response logging to Logcat.
+   * Enables verbose HTTP request/response logging for the native SDKs.
    *
    * @remarks
-   * **Debug-only.** Auth0.Android logs full request and response bodies at this level,
-   * which includes access, refresh, and ID tokens in plaintext for token-endpoint calls.
-   * Never enable this in production.
+   * On **Android** this maps to the OkHttp logging interceptor and writes full request and
+   * response bodies to Logcat — including access, refresh, and ID tokens in plaintext — so it is
+   * **debug-only** (ignored on release builds) and must never be enabled in production.
+   *
+   * On **iOS** this maps to Auth0.swift's `.logging(enabled:)`, which traces requests and responses
+   * to the unified logging system (OSLog) with access, refresh, and ID tokens redacted. It has no
+   * build-type gate, so still enable it only while debugging.
    * @default false
    */
   enableLogging?: boolean;

@@ -109,8 +109,10 @@ RCT_EXPORT_METHOD(initializeAuth0WithConfiguration:(NSString *)clientId
                   networkingOptions:(NSDictionary * _Nullable)networkingOptions
                                  resolve:(RCTPromiseResolveBlock)resolve
                                   reject:(RCTPromiseRejectBlock)reject) {
-    // networkingOptions is Android-only; intentionally not forwarded to NativeBridge.
-    [self tryAndInitializeNativeBridge:clientId domain:domain withLocalAuthenticationOptions:localAuthenticationOptions useDPoP:useDPoP maxRetries:(NSInteger)maxRetries credentialsManagerStorageKey:credentialsManagerStorageKey resolve:resolve reject:reject];
+    // networkingOptions is otherwise Android-only; on iOS we honor just `enableLogging`,
+    // which maps to Auth0.swift's `.logging(enabled:)` (HTTP tracing with token redaction).
+    BOOL enableLogging = [networkingOptions[@"enableLogging"] boolValue];
+    [self tryAndInitializeNativeBridge:clientId domain:domain withLocalAuthenticationOptions:localAuthenticationOptions useDPoP:useDPoP maxRetries:(NSInteger)maxRetries credentialsManagerStorageKey:credentialsManagerStorageKey enableLogging:enableLogging resolve:resolve reject:reject];
 }
 
 
@@ -415,12 +417,12 @@ UIBackgroundTaskIdentifier taskId;
     return valid;
 }
 
-- (void)tryAndInitializeNativeBridge:(NSString *)clientId domain:(NSString *)domain withLocalAuthenticationOptions:(NSDictionary*) options useDPoP:(NSNumber *)useDPoP maxRetries:(NSInteger)maxRetries credentialsManagerStorageKey:(NSString * _Nullable)credentialsManagerStorageKey resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+- (void)tryAndInitializeNativeBridge:(NSString *)clientId domain:(NSString *)domain withLocalAuthenticationOptions:(NSDictionary*) options useDPoP:(NSNumber *)useDPoP maxRetries:(NSInteger)maxRetries credentialsManagerStorageKey:(NSString * _Nullable)credentialsManagerStorageKey enableLogging:(BOOL)enableLogging resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     BOOL useDPoPBool = [useDPoP boolValue];
-    NativeBridge *bridge = [[NativeBridge alloc] initWithClientId:clientId domain:domain localAuthenticationOptions:options useDPoP:useDPoPBool maxRetries:maxRetries credentialsManagerStorageKey:credentialsManagerStorageKey resolve:resolve reject:reject];
+    NativeBridge *bridge = [[NativeBridge alloc] initWithClientId:clientId domain:domain localAuthenticationOptions:options useDPoP:useDPoPBool maxRetries:maxRetries credentialsManagerStorageKey:credentialsManagerStorageKey enableLogging:enableLogging resolve:resolve reject:reject];
     self.nativeBridge = bridge;
-    self.myAccount = [[A0MyAccount alloc] initWithDomain:domain useDPoP:useDPoPBool];
-    self.passwordless = [[A0Passwordless alloc] initWithClientId:clientId domain:domain useDPoP:useDPoPBool];
+    self.myAccount = [[A0MyAccount alloc] initWithDomain:domain useDPoP:useDPoPBool enableLogging:enableLogging];
+    self.passwordless = [[A0Passwordless alloc] initWithClientId:clientId domain:domain useDPoP:useDPoPBool enableLogging:enableLogging];
 }
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params {
     return std::make_shared<facebook::react::NativeA0Auth0SpecJSI>(params);
