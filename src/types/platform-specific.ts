@@ -214,11 +214,11 @@ export interface NativeAuthorizeOptions {
    * Mutually exclusive with {@link NativeAuthorizeOptions.useTrustedWebActivity} — when both
    * are set, TWA takes precedence.
    *
-   * @default false
+   * @default true
    *
    * @example
    * ```typescript
-   * await authorize({}, { useAuthTab: true });
+   * await authorize({}, { useAuthTab: false }); // opt out
    * ```
    */
   useAuthTab?: boolean;
@@ -256,7 +256,7 @@ export interface NativeClearSessionOptions {
    * **Android only:** Use the Auth Tab launch mechanism for logout. See the same option on
    * {@link NativeAuthorizeOptions} for full details. No effect on iOS or Web.
    *
-   * @default false
+   * @default true
    */
   useAuthTab?: boolean;
 }

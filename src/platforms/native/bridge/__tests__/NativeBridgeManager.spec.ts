@@ -98,7 +98,7 @@ describe('NativeBridgeManager', () => {
         parameters.additionalParameters,
         undefined, // allowedBrowserPackages
         false, // useTrustedWebActivity
-        false // useAuthTab
+        true // useAuthTab (default)
       );
     });
 
@@ -129,7 +129,7 @@ describe('NativeBridgeManager', () => {
         {}, // additionalParameters
         undefined, // allowedBrowserPackages
         false, // useTrustedWebActivity
-        false // useAuthTab
+        true // useAuthTab (default)
       );
     });
 
@@ -164,7 +164,7 @@ describe('NativeBridgeManager', () => {
         {},
         allowedBrowserPackages,
         false, // useTrustedWebActivity
-        false // useAuthTab
+        true // useAuthTab (default)
       );
     });
 
@@ -195,7 +195,7 @@ describe('NativeBridgeManager', () => {
         {},
         undefined, // allowedBrowserPackages
         true, // useTrustedWebActivity
-        false // useAuthTab
+        true // useAuthTab (default)
       );
     });
 
@@ -226,7 +226,7 @@ describe('NativeBridgeManager', () => {
         {},
         undefined, // allowedBrowserPackages
         false, // useTrustedWebActivity
-        false // useAuthTab
+        true // useAuthTab (default)
       );
     });
 
@@ -381,7 +381,7 @@ describe('NativeBridgeManager', () => {
         parameters.returnToUrl,
         undefined, // allowedBrowserPackages
         false, // useTrustedWebActivity
-        false // useAuthTab
+        true // useAuthTab (default)
       );
     });
 
@@ -401,7 +401,7 @@ describe('NativeBridgeManager', () => {
         parameters.returnToUrl,
         allowedBrowserPackages,
         false, // useTrustedWebActivity
-        false // useAuthTab
+        true // useAuthTab (default)
       );
     });
 
@@ -423,7 +423,7 @@ describe('NativeBridgeManager', () => {
         parameters.returnToUrl,
         undefined, // allowedBrowserPackages
         true, // useTrustedWebActivity
-        false // useAuthTab
+        true // useAuthTab (default)
       );
     });
 
