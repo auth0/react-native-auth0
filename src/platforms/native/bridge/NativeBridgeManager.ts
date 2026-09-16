@@ -116,7 +116,7 @@ export class NativeBridgeManager implements NativeBridge {
       parameters.additionalParameters ?? {},
       options.allowedBrowserPackages,
       options.useTrustedWebActivity ?? false,
-      options.useAuthTab ?? true
+      options.useAuthTab ?? false
     );
     return new CredentialsModel(credential);
   }
@@ -132,7 +132,7 @@ export class NativeBridgeManager implements NativeBridge {
       parameters.returnToUrl,
       options.allowedBrowserPackages,
       options.useTrustedWebActivity ?? false,
-      options.useAuthTab ?? true
+      options.useAuthTab ?? false
     );
   }
 
