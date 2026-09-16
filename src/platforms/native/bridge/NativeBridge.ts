@@ -40,7 +40,7 @@ export interface NativeBridge {
    * @param useDPoP Whether to enable DPoP (Demonstrating Proof-of-Possession) for token requests.
    * @param maxRetries The maximum number of retry attempts for transient errors during credential renewal. **iOS only** - ignored on Android. Defaults to 0.
    * @param credentialsManagerStorageKey Namespaces the credentials store. **Android only** SharedPreferences file name. **iOS only** Keychain service name. Defaults to the shared store when omitted.
-   * @param networkingOptions Configures the native networking client. **Android only** - ignored on iOS.
+   * @param networkingOptions Configures the native networking client. Timeouts and headers are **Android only**; `enableLogging` is honored on both platforms.
    */
   initialize(
     clientId: string,

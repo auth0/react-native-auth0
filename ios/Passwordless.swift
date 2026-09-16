@@ -7,11 +7,12 @@ public class A0Passwordless: NSObject {
 
     private let client: Authentication
 
-    @objc public init(clientId: String, domain: String, useDPoP: Bool) {
+    @objc public init(clientId: String, domain: String, useDPoP: Bool, enableLogging: Bool) {
         var client = Auth0.authentication(clientId: clientId, domain: domain)
         if useDPoP {
             client = client.useDPoP()
         }
+        client = client.logging(enabled: enableLogging)
         self.client = client
     }
 
