@@ -117,11 +117,15 @@ If you never set `useDPoP` and don't need DPoP, no change is required — you wi
 > }
 > ```
 
-### 6. Behavioral default shifts under native delegation ⏳
+### 6. Behavioral default shifts under native delegation
+
+#### `minTtl` now defaults to 60 seconds ✅
 
 `minTTL` now defaults to **60 seconds** on `getCredentials()` and `getApiCredentials()`, matching Auth0.Android v4 / Auth0.swift v3 (and auth0-flutter v3). Previously it defaulted to `0`, so a token was only refreshed once it had already expired; now it is refreshed when fewer than 60 seconds of lifetime remain. Pass an explicit `minTtl` to override.
 
 **⚠️ Action Required:** none for most apps. If you relied on the old `0` default — e.g. you never want a proactive refresh — pass `minTtl: 0` explicitly.
+
+#### Remaining default shifts ⏳
 
 The remaining native-delegation default shifts (e.g. `scope` gaining `offline_access`, default connection names) are _planned_ and will be documented here when that workstream merges.
 
@@ -203,21 +207,26 @@ await authorize(
 );
 ```
 
-Two further Android caveats: the fallback above means you should keep calling `clearSession` unless you can guarantee the browser honours the ephemeral request, and ephemeral browsing is supported on Auth Tab (the new default, see below) and plain Custom Tabs but **not** on a Trusted Web Activity. So with `useTrustedWebActivity` enabled the session is not ephemeral; on Auth Tab or a plain Custom Tab it is ephemeral as long as the browser supports it (Chrome 136+). See [Ephemeral Sessions](EXAMPLES.md#ephemeral-sessions) for details.
+Two further Android caveats: the fallback above means you should keep calling `clearSession` unless you can guarantee the browser honours the ephemeral request, and ephemeral browsing is supported on a standard Custom Tab (the default) and on Auth Tab (opt-in via `useAuthTab`, see below) but **not** on a Trusted Web Activity. So with `useTrustedWebActivity` enabled the session is not ephemeral; on a Custom Tab or Auth Tab it is ephemeral as long as the browser supports it (Chrome 136+). See [Ephemeral Sessions](EXAMPLES.md#ephemeral-sessions) for details.
 
-#### Auth Tab is now the default Android web authentication launch mode
+#### Auth Tab is available as an opt-in Android web authentication launch mode
 
-Auth0.Android 4.0's Auth Tab launch path delivers a real `ActivityResult` from the Custom Tab instead of inferring cancellation from activity lifecycle events. This fixes a long-standing Android bug ([#1584](https://github.com/auth0/react-native-auth0/issues/1584)) where tapping Chrome's minimize button (available in Chrome 122+) would incorrectly reject `authorize()` with `USER_CANCELLED` while leaving the browser alive as a "zombie" — so when the user returned and completed login, the redirect was dropped and credentials never arrived.
+Auth0.Android 4.0 added an Auth Tab launch path that delivers a real `ActivityResult` from the Custom Tab instead of inferring cancellation from activity lifecycle events. This addresses a long-standing Android bug ([#1584](https://github.com/auth0/react-native-auth0/issues/1584)) where tapping Chrome's minimize button (available in Chrome 122+) would incorrectly reject `authorize()` with `USER_CANCELLED` while leaving the browser alive as a "zombie" — so when the user returned and completed login, the redirect was dropped and credentials never arrived.
 
-**What changed:** `authorize()` and `clearSession()` now call `withAuthTab()` by default on Android. The iOS flow is unchanged; web is unaffected.
+**What changed:** the SDK adds a new **`useAuthTab`** option to `authorize()` and `clearSession()`. It **defaults to `false`**, so by default Android continues to use the standard Custom Tab launch path and behavior is unchanged from v5. Set `useAuthTab: true` to opt in to the Auth Tab launch mechanism and pick up the minimize-button fix. The iOS flow is unchanged; web is unaffected.
+
+```typescript
+await authorize({}, { useAuthTab: true }); // launch login via Auth Tab
+await clearSession({}, { useAuthTab: true }); // launch logout via Auth Tab
+```
 
 **Browser support:** Auth Tab requires **Chrome 137 or later**. On older browser versions it automatically falls back to a standard Custom Tab, so login and logout still work.
 
-**Impact:** Most apps see no difference — login and logout work as before, but the minimize-button bug is fixed. The launch path is slightly different internally (Chrome Custom Tabs launched via Auth Tab rather than plain Custom Tabs), but this is transparent to user-facing behavior.
+**Mutually exclusive with TWA:** `useAuthTab` and `useTrustedWebActivity` rely on different underlying launch mechanisms and cannot be combined. If both are set, `useTrustedWebActivity` takes precedence and Auth Tab is not used.
 
-**✅ Action Required:** None for most apps. The change is entirely internal to the Android implementation. If you encounter issues on a specific browser (Edge, Brave, Firefox), test across browsers and report findings — Auth Tab has been validated with Chrome.
+**✅ Action Required:** None — the default (`useAuthTab: false`) preserves existing v5 behavior. If your Android users hit the spurious `USER_CANCELLED` error from Chrome's minimize button, opt in with `useAuthTab: true` and test across browsers (Edge, Brave, Firefox) — Auth Tab has been validated with Chrome.
 
-> **Note:** Real user cancellation (back button, dismiss gesture) still rejects with `USER_CANCELLED` as expected — only the spurious rejection from the minimize button is fixed.
+> **Note:** With Auth Tab enabled, real user cancellation (back button, dismiss gesture) still rejects with `USER_CANCELLED` as expected — only the spurious rejection from the minimize button is fixed.
 
 #### `SSOCredentials.expiresIn` is now `expiresAt`
 
