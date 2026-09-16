@@ -115,7 +115,8 @@ export class NativeBridgeManager implements NativeBridge {
       // //The native layer will check for this and ignore if the value is 99
       parameters.additionalParameters ?? {},
       options.allowedBrowserPackages,
-      options.useTrustedWebActivity ?? false
+      options.useTrustedWebActivity ?? false,
+      options.useAuthTab ?? false
     );
     return new CredentialsModel(credential);
   }
@@ -130,7 +131,8 @@ export class NativeBridgeManager implements NativeBridge {
       parameters.federated ?? false,
       parameters.returnToUrl,
       options.allowedBrowserPackages,
-      options.useTrustedWebActivity ?? false
+      options.useTrustedWebActivity ?? false,
+      options.useAuthTab ?? false
     );
   }
 

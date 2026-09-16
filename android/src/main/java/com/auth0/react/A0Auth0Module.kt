@@ -176,6 +176,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         additionalParameters: ReadableMap?,
         allowedBrowserPackages: ReadableArray?,
         useTrustedWebActivity: Boolean,
+        useAuthTab: Boolean,
         promise: Promise
     ) {
         webAuthPromise = promise
@@ -227,7 +228,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             // Note: [withAuthTab] and [withTrustedWebActivity] are mutually exclusive. If both are set,
             // TWA takes precedence and Auth Tab will not be used. They rely on different underlying
             // launch mechanisms and cannot be combined.
-            withAuthTab()
+            if (useAuthTab) { withAuthTab() }
         }
 
         builder.withParameters(cleanedParameters)
@@ -525,7 +526,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     override fun getName(): String = NAME
 
     @ReactMethod
-    override fun webAuthLogout(scheme: String, federated: Boolean, redirectUri: String?, allowedBrowserPackages: ReadableArray?, useTrustedWebActivity: Boolean, promise: Promise) {
+    override fun webAuthLogout(scheme: String, federated: Boolean, redirectUri: String?, allowedBrowserPackages: ReadableArray?, useTrustedWebActivity: Boolean, useAuthTab: Boolean, promise: Promise) {
         val builder = WebAuthProvider.logout(auth0!!).withScheme(scheme)
 
         if (federated) {
@@ -542,7 +543,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         // Note: [withAuthTab] and [withTrustedWebActivity] are mutually exclusive. If both are set,
         // TWA takes precedence and Auth Tab will not be used. They rely on different underlying
         // launch mechanisms and cannot be combined.
-        builder.withAuthTab()
+        if (useAuthTab) { builder.withAuthTab() }
 
         redirectUri?.let { builder.withReturnToUrl(it) }
 

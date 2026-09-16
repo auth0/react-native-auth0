@@ -205,6 +205,23 @@ export interface NativeAuthorizeOptions {
    * ```
    */
   useTrustedWebActivity?: boolean;
+  /**
+   * **Android only:** Use the Auth Tab launch mechanism (Chrome Custom Tabs Activity Result
+   * API) instead of the legacy lifecycle-inference approach. Requires Chrome 137+; older
+   * browsers fall back to a standard Custom Tab automatically. Eliminates spurious
+   * `USER_CANCELLED` errors caused by Chrome minimization. No effect on iOS or Web.
+   *
+   * Mutually exclusive with {@link NativeAuthorizeOptions.useTrustedWebActivity} — when both
+   * are set, TWA takes precedence.
+   *
+   * @default false
+   *
+   * @example
+   * ```typescript
+   * await authorize({}, { useAuthTab: true });
+   * ```
+   */
+  useAuthTab?: boolean;
 }
 
 /**
@@ -235,6 +252,13 @@ export interface NativeClearSessionOptions {
    * {@link NativeAuthorizeOptions} for details. No effect on iOS or Web.
    */
   useTrustedWebActivity?: boolean;
+  /**
+   * **Android only:** Use the Auth Tab launch mechanism for logout. See the same option on
+   * {@link NativeAuthorizeOptions} for full details. No effect on iOS or Web.
+   *
+   * @default false
+   */
+  useAuthTab?: boolean;
 }
 
 // ========= Web-Specific Options =========
