@@ -467,18 +467,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
     @ReactMethod
     override fun clearAll(promise: Promise) {
+        // clearAll() also clears the DPoP key pair internally.
         secureCredentialsManager.clearAll()
-
-        // Also clear DPoP key if DPoP is enabled
-        if (useDPoP) {
-            try {
-                DPoP.clearKeyPair()
-            } catch (e: Exception) {
-                // Log error but don't fail the operation
-                android.util.Log.w(NAME, "Failed to clear DPoP key", e)
-            }
-        }
-
         promise.resolve(true)
     }
 
