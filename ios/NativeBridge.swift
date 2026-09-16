@@ -277,12 +277,11 @@ public class NativeBridge: NSObject {
     }
 
     @objc public func clearAll(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        let removed: Bool
         do {
             try credentialsManager.clearAll()
-            removed = true
         } catch {
-            removed = false
+            reject(NativeBridge.credentialsManagerErrorCode, "Failed to clear credentials from secure storage.", error)
+            return
         }
 
         // Also clear DPoP key if DPoP is enabled
@@ -295,7 +294,7 @@ public class NativeBridge: NSObject {
             }
         }
 
-        resolve(removed)
+        resolve(true)
     }
 
     @objc public func getSSOCredentials(parameters: [String: Any], headers: [String: Any], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
