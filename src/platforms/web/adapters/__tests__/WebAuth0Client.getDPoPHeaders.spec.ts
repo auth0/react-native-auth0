@@ -82,7 +82,6 @@ describe('WebAuth0Client - getDPoPHeaders', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    WebAuth0Client.resetSpaClientSingleton();
 
     // Setup window.location mock
     Object.defineProperty(window, 'location', {

@@ -1,9 +1,25 @@
 # Change Log
 
+## [v5.11.1](https://github.com/auth0/react-native-auth0/tree/v5.11.1) (2026-09-08)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.11.0...v5.11.1)
+
+**Deprecated**
+
+- refactor: deprecate the client-side Management API [\#1624](https://github.com/auth0/react-native-auth0/pull/1624) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- refactor: deprecate the legacy MFA methods on the auth client [\#1625](https://github.com/auth0/react-native-auth0/pull/1625) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Fixed**
+
+- security fixes
+- fix(android): skip explicit Kotlin plugin when AGP registers the kotlin extension [\#1654](https://github.com/auth0/react-native-auth0/pull/1654) ([gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## [v5.11.0](https://github.com/auth0/react-native-auth0/tree/v5.11.0) (2026-07-31)
+
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.10.0...v5.11.0)
 
 **Added**
+
 - feat: enforce IPSIE session_expiry with a SESSION_EXPIRED error [\#1597](https://github.com/auth0/react-native-auth0/pull/1597) ([subhankarmaiti](https://github.com/subhankarmaiti))
 - feat: add passkeys support for web [\#1604](https://github.com/auth0/react-native-auth0/pull/1604) ([NandanPrabhu](https://github.com/NandanPrabhu))
 - feat: add My Account API support on the web platform [\#1608](https://github.com/auth0/react-native-auth0/pull/1608) ([subhankarmaiti](https://github.com/subhankarmaiti))
