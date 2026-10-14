@@ -35,6 +35,21 @@ import {
   validateTokenTypeUri,
 } from '../../../core/utils';
 
+/**
+ * auth0-spa-js can neither choose the OTP delivery channel nor send identifier
+ * verification codes for a passkey signup. Rejecting beats dropping the option:
+ * the code would go out over a channel the caller did not choose, or the
+ * exchange would fail server-side with a confusing "missing verification" error.
+ */
+const unsupportedPasskeyOption = (option: string) =>
+  new PasskeyError(
+    new AuthError(
+      'UnsupportedOperation',
+      `\`${option}\` is only supported on native platforms (iOS/Android). It is not available on the web platform.`,
+      { code: 'UnsupportedOperation' }
+    )
+  );
+
 export class WebAuth0Client implements Auth0Client {
   readonly webAuth: WebWebAuthProvider;
   readonly credentialsManager: WebCredentialsManager;
@@ -256,7 +271,12 @@ export class WebAuth0Client implements Auth0Client {
         userMetadata,
         realm,
         organization,
+        deliveryMethod,
       } = parameters;
+
+      if (deliveryMethod) {
+        throw unsupportedPasskeyOption('deliveryMethod');
+      }
 
       // auth0-spa-js's PasskeySignupChallengeOptions type requires at
       // least one of email/phoneNumber/username, but which identifiers
@@ -346,7 +366,12 @@ export class WebAuth0Client implements Auth0Client {
         audience,
         scope,
         organization,
+        verification,
       } = parameters;
+
+      if (verification && Object.keys(verification).length > 0) {
+        throw unsupportedPasskeyOption('verification');
+      }
 
       // Apply default scope if not provided, for consistency with native
       // platforms (which default to "openid profile email" when omitted).

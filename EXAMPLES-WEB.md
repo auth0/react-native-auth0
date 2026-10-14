@@ -285,6 +285,8 @@ Passkeys are supported on web via `@auth0/auth0-spa-js`. The flow is the same th
 
 Because `navigator.credentials.create()`/`.get()` require a user gesture, call `passkeySignupChallenge` / `passkeyLoginChallenge` from within a click handler (not, for example, from a `useEffect`).
 
+**Identifier verification is not supported on web.** The native-only [identifier verification](./EXAMPLES.md#signup-with-passkey-identifier-verification) options — `deliveryMethod` on `passkeySignupChallenge` and `verification` on `getTokenByPasskey` — are not supported by `@auth0/auth0-spa-js`. Passing them rejects with a `PasskeyError` of type `PASSKEY_UNSUPPORTED_PLATFORM`.
+
 ```tsx
 import { useAuth0, PasskeyError } from 'react-native-auth0';
 

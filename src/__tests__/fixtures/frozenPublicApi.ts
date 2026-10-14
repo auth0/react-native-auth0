@@ -105,6 +105,8 @@ export const FROZEN_PUBLIC_API = [
   'PasskeyErrorCodes',
   'PasskeyLoginChallengeParameters',
   'PasskeySignupChallengeParameters',
+  'PasskeyVerificationMethod',
+  'PasskeyVerificationRetryPayload',
   'PasswordRealmParameters',
   'PasswordlessChallenge',
   'PasswordlessChallengeEmailParameters',

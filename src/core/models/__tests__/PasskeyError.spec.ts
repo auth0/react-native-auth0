@@ -80,6 +80,11 @@ describe('PasskeyError', () => {
         'native: token exchange failed',
       ],
       [
+        'PASSKEY_VERIFICATION_RETRYABLE',
+        'PASSKEY_VERIFICATION_RETRYABLE',
+        'native: a verification code was wrong or missing and the signup can be retried',
+      ],
+      [
         'InvalidParameter',
         'PASSKEY_INVALID_PARAMETER',
         'SDK-level parameter validation (native authResponse-must-be-a-string guard)',
@@ -331,6 +336,67 @@ describe('PasskeyError', () => {
       expect(payload?.errorDescription).toBe('Fallback message');
     });
   });
+
+  describe('getVerificationRetryPayload()', () => {
+    // On native the bridge rejects with `userInfo`, which `NativeBridgeManager`
+    // keeps on `json` (the whole native error object).
+    const retryable = (userInfo?: unknown) =>
+      new PasskeyError(
+        new AuthError('PASSKEY_VERIFICATION_RETRYABLE', 'Incorrect code', {
+          code: 'PASSKEY_VERIFICATION_RETRYABLE',
+          json: { code: 'PASSKEY_VERIFICATION_RETRYABLE', userInfo },
+        })
+      );
+
+    it('should return the session and identifiers to retry with', () => {
+      const error = retryable({
+        authSession: 'session-2',
+        verificationRequired: ['email', 'phone'],
+      });
+
+      expect(error.type).toBe(PasskeyErrorCodes.VERIFICATION_RETRYABLE);
+      expect(error.getVerificationRetryPayload()).toEqual({
+        authSession: 'session-2',
+        verificationRequired: ['email', 'phone'],
+      });
+    });
+
+    it('should leave out what the native error does not carry', () => {
+      // A missing code is reported without a session or identifier list: the
+      // caller keeps the original challenge's session and identifiers.
+      expect(retryable({}).getVerificationRetryPayload()).toEqual({
+        authSession: undefined,
+        verificationRequired: undefined,
+      });
+      expect(retryable(undefined).getVerificationRetryPayload()).toEqual({
+        authSession: undefined,
+        verificationRequired: undefined,
+      });
+    });
+
+    it('should ignore values of the wrong shape or an unknown identifier', () => {
+      const error = retryable({
+        authSession: 42,
+        verificationRequired: ['email', 'username', 7],
+      });
+
+      expect(error.getVerificationRetryPayload()).toEqual({
+        authSession: undefined,
+        verificationRequired: ['email'],
+      });
+    });
+
+    it('should return null for any other passkey error', () => {
+      const error = new PasskeyError(
+        new AuthError('PASSKEY_EXCHANGE_FAILED', 'Exchange failed', {
+          code: 'PASSKEY_EXCHANGE_FAILED',
+          json: { userInfo: { authSession: 'session-2' } },
+        })
+      );
+
+      expect(error.getVerificationRetryPayload()).toBeNull();
+    });
+  });
 });
 
 describe('PasskeyErrorCodes', () => {
@@ -348,6 +414,9 @@ describe('PasskeyErrorCodes', () => {
       'PASSKEY_INVALID_PARAMETER'
     );
     expect(PasskeyErrorCodes.MFA_REQUIRED).toBe('PASSKEY_MFA_REQUIRED');
+    expect(PasskeyErrorCodes.VERIFICATION_RETRYABLE).toBe(
+      'PASSKEY_VERIFICATION_RETRYABLE'
+    );
     expect(PasskeyErrorCodes.UNKNOWN_ERROR).toBe('PASSKEY_UNKNOWN_ERROR');
   });
 });

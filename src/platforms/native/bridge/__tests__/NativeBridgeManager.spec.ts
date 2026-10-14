@@ -26,6 +26,8 @@ jest.mock('../../../../specs/NativeA0Auth0', () => ({
   passwordlessChallengeWithEmail: jest.fn(),
   passwordlessChallengeWithPhoneNumber: jest.fn(),
   passwordlessLoginWithOTP: jest.fn(),
+  passkeySignupChallenge: jest.fn(),
+  getTokenByPasskey: jest.fn(),
 }));
 const MockedAuth0NativeModule = Auth0NativeModule as jest.Mocked<
   typeof Auth0NativeModule
@@ -786,6 +788,112 @@ describe('NativeBridgeManager', () => {
       await expect(
         bridge.passwordlessLoginWithOTP('session_login', '000000')
       ).rejects.toThrow(AuthError);
+    });
+  });
+
+  describe('passkeySignupChallenge', () => {
+    it('forwards all parameters, including the delivery method, and returns the identifiers to verify', async () => {
+      const challenge = {
+        authSession: 'session_signup',
+        authParamsPublicKey: { challenge: 'Y2hhbGxlbmdl' },
+        verificationRequired: ['email', 'phone'],
+      };
+      MockedAuth0NativeModule.passkeySignupChallenge.mockResolvedValueOnce(
+        challenge as any
+      );
+
+      const result = await bridge.passkeySignupChallenge(
+        'user@example.com',
+        '+15555550123',
+        'johndoe',
+        'John Doe',
+        'John',
+        'Doe',
+        'johnny',
+        'https://example.com/photo.png',
+        { signup_source: 'mobile_app' },
+        'Username-Password-Authentication',
+        'org_123',
+        'voice'
+      );
+
+      expect(
+        MockedAuth0NativeModule.passkeySignupChallenge
+      ).toHaveBeenCalledWith(
+        'user@example.com',
+        '+15555550123',
+        'johndoe',
+        'John Doe',
+        'John',
+        'Doe',
+        'johnny',
+        'https://example.com/photo.png',
+        { signup_source: 'mobile_app' },
+        'Username-Password-Authentication',
+        'org_123',
+        'voice'
+      );
+      expect(result).toEqual(challenge);
+    });
+
+    it('wraps a native error in an AuthError', async () => {
+      MockedAuth0NativeModule.passkeySignupChallenge.mockRejectedValue({
+        code: 'PASSKEY_CHALLENGE_FAILED',
+        message: 'boom',
+      });
+
+      await expect(
+        bridge.passkeySignupChallenge('user@example.com')
+      ).rejects.toThrow(AuthError);
+    });
+  });
+
+  describe('getTokenByPasskey', () => {
+    it('forwards all parameters, including the verification codes, and transforms the response into a Credentials model', async () => {
+      MockedAuth0NativeModule.getTokenByPasskey.mockResolvedValueOnce(
+        nativeSuccessCredentials as any
+      );
+
+      const credentials = await bridge.getTokenByPasskey(
+        'session_signup',
+        '{"id":"cred-id"}',
+        'Username-Password-Authentication',
+        'https://api.example.com',
+        'openid profile',
+        'org_123',
+        { email: '123456', phone: '654321' }
+      );
+
+      expect(MockedAuth0NativeModule.getTokenByPasskey).toHaveBeenCalledWith(
+        'session_signup',
+        '{"id":"cred-id"}',
+        'Username-Password-Authentication',
+        'https://api.example.com',
+        'openid profile',
+        'org_123',
+        { email: '123456', phone: '654321' }
+      );
+      expect(credentials).toBeInstanceOf(Credentials);
+      expect(credentials.accessToken).toBe(
+        nativeSuccessCredentials.accessToken
+      );
+    });
+
+    it('keeps the native error, including its userInfo, on the AuthError', async () => {
+      const nativeError = {
+        code: 'PASSKEY_VERIFICATION_RETRYABLE',
+        message: 'Incorrect code',
+        userInfo: { authSession: 'session_2', verificationRequired: ['email'] },
+      };
+      MockedAuth0NativeModule.getTokenByPasskey.mockRejectedValue(nativeError);
+
+      const error = await bridge
+        .getTokenByPasskey('session_signup', '{"id":"cred-id"}')
+        .catch((e: unknown) => e as AuthError);
+
+      expect(error).toBeInstanceOf(AuthError);
+      expect(error.code).toBe('PASSKEY_VERIFICATION_RETRYABLE');
+      expect(error.json).toBe(nativeError);
     });
   });
 });

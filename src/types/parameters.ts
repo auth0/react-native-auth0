@@ -520,6 +520,17 @@ export interface PasskeySignupChallengeParameters {
   realm?: string;
   /** Organization ID or name for authenticating in an organization context. */
   organization?: string;
+  /**
+   * How to deliver the one-time code when the phone number must be verified, by
+   * SMS or voice call. When omitted, Auth0 chooses the delivery method.
+   *
+   * Only used when the connection requires identifier verification. See
+   * {@link PasskeyChallengeResponse.verificationRequired}.
+   *
+   * @remarks Native only (iOS, Android). Not supported on web: passing it
+   * rejects with a `PasskeyError` of type `PASSKEY_UNSUPPORTED_PLATFORM`.
+   */
+  deliveryMethod?: PasswordlessDeliveryMethod;
 }
 
 /**
@@ -546,6 +557,44 @@ export interface PasskeyChallengeResponse {
   authSession: string;
   /** The raw WebAuthn public key credential creation/request options as JSON. */
   authParamsPublicKey: Record<string, any>;
+  /**
+   * The identifiers the user must verify with a one-time code before the
+   * passkey signup can complete.
+   *
+   * Only present on a signup challenge, and only when the database connection
+   * requires identifier verification. Auth0 sends a code to each listed
+   * identifier. Collect the codes **before** creating the passkey credential,
+   * then pass them as `verification` to `getTokenByPasskey`. Identifiers this
+   * SDK does not recognize are left out.
+   *
+   * @remarks Native only (iOS, Android). Always `undefined` on web.
+   */
+  verificationRequired?: PasskeyVerificationMethod[];
+}
+
+/**
+ * An identifier that Auth0 can require the user to verify with a one-time code
+ * while signing up with a passkey.
+ *
+ * @see {@link PasskeyChallengeResponse.verificationRequired}
+ */
+export type PasskeyVerificationMethod = 'email' | 'phone';
+
+/**
+ * What to retry a passkey signup exchange with after a one-time code was wrong
+ * or missing. Returned by `PasskeyError.getVerificationRetryPayload()`.
+ */
+export interface PasskeyVerificationRetryPayload {
+  /**
+   * The auth session to retry with. When `undefined`, keep using the session
+   * from the original challenge.
+   */
+  authSession?: string;
+  /**
+   * The identifiers whose codes must be collected again. When `undefined`,
+   * collect the codes for the identifiers of the original challenge.
+   */
+  verificationRequired?: PasskeyVerificationMethod[];
 }
 
 /**
@@ -581,6 +630,22 @@ export interface GetTokenByPasskeyParameters {
   scope?: string;
   /** Organization ID or name for authenticating in an organization context. */
   organization?: string;
+  /**
+   * The one-time codes the user entered, keyed by the identifier each code was
+   * sent to. Provide a code for every identifier listed in
+   * {@link PasskeyChallengeResponse.verificationRequired}.
+   *
+   * If a code is wrong or missing, the call rejects with a `PasskeyError` of
+   * type `PASSKEY_VERIFICATION_RETRYABLE`. Collect the codes again and call
+   * `getTokenByPasskey` again with the **same** `authResponse`, so the user is
+   * not asked to create the passkey a second time.
+   *
+   * Only used when completing a passkey signup.
+   *
+   * @remarks Native only (iOS, Android). Not supported on web: passing it
+   * rejects with a `PasskeyError` of type `PASSKEY_UNSUPPORTED_PLATFORM`.
+   */
+  verification?: Partial<Record<PasskeyVerificationMethod, string>>;
 }
 
 // ========= Passkey Enrollment Parameters =========

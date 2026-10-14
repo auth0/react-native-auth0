@@ -241,6 +241,7 @@ export class NativeAuth0Client implements Auth0Client {
       userMetadata,
       realm,
       organization,
+      deliveryMethod,
     } = parameters;
     try {
       return await this.guardedBridge.passkeySignupChallenge(
@@ -254,7 +255,8 @@ export class NativeAuth0Client implements Auth0Client {
         picture || undefined,
         userMetadata || undefined,
         realm || undefined,
-        organization || undefined
+        organization || undefined,
+        deliveryMethod || undefined
       );
     } catch (e) {
       if (e instanceof AuthError) {
@@ -284,8 +286,15 @@ export class NativeAuth0Client implements Auth0Client {
   async getTokenByPasskey(
     parameters: GetTokenByPasskeyParameters
   ): Promise<Credentials> {
-    const { authSession, authResponse, realm, audience, scope, organization } =
-      parameters;
+    const {
+      authSession,
+      authResponse,
+      realm,
+      audience,
+      scope,
+      organization,
+      verification,
+    } = parameters;
     if (typeof authResponse !== 'string') {
       throw new PasskeyError(
         new AuthError(
@@ -295,6 +304,12 @@ export class NativeAuth0Client implements Auth0Client {
         )
       );
     }
+    // The native modules only accept string codes.
+    const codes = Object.fromEntries(
+      Object.entries(verification ?? {}).filter(
+        (entry): entry is [string, string] => typeof entry[1] === 'string'
+      )
+    );
     try {
       return await this.guardedBridge.getTokenByPasskey(
         authSession,
@@ -302,7 +317,8 @@ export class NativeAuth0Client implements Auth0Client {
         realm || undefined,
         audience || undefined,
         scope || undefined,
-        organization || undefined
+        organization || undefined,
+        Object.keys(codes).length > 0 ? codes : undefined
       );
     } catch (e) {
       if (e instanceof AuthError) {

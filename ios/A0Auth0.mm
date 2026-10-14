@@ -249,9 +249,10 @@ RCT_EXPORT_METHOD(passkeySignupChallenge:(NSString * _Nullable)email
                   userMetadata:(NSDictionary * _Nullable)userMetadata
                   realm:(NSString * _Nullable)realm
                   organization:(NSString * _Nullable)organization
+                  deliveryMethod:(NSString * _Nullable)deliveryMethod
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-    [self.nativeBridge passkeySignupChallengeWithEmail:email phoneNumber:phoneNumber username:username name:name givenName:givenName familyName:familyName nickname:nickname picture:picture userMetadata:userMetadata realm:realm organization:organization resolve:resolve reject:reject];
+    [self.nativeBridge passkeySignupChallengeWithEmail:email phoneNumber:phoneNumber username:username name:name givenName:givenName familyName:familyName nickname:nickname picture:picture userMetadata:userMetadata realm:realm organization:organization deliveryMethod:deliveryMethod resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(passkeyLoginChallenge:(NSString * _Nullable)realm
@@ -267,9 +268,10 @@ RCT_EXPORT_METHOD(getTokenByPasskey:(NSString *)authSession
                   audience:(NSString * _Nullable)audience
                   scope:(NSString * _Nullable)scope
                   organization:(NSString * _Nullable)organization
+                  verification:(NSDictionary * _Nullable)verification
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-    [self.nativeBridge getTokenByPasskeyWithAuthSession:authSession authResponse:authResponse realm:realm audience:audience scope:scope organization:organization resolve:resolve reject:reject];
+    [self.nativeBridge getTokenByPasskeyWithAuthSession:authSession authResponse:authResponse realm:realm audience:audience scope:scope organization:organization verification:verification resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(passwordlessChallengeWithEmail:(NSString *)email

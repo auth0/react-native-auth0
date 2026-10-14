@@ -1,5 +1,9 @@
 import { AuthError } from './AuthError';
 import type { MfaRequiredErrorPayload } from '../../types/common';
+import type {
+  PasskeyVerificationMethod,
+  PasskeyVerificationRetryPayload,
+} from '../../types/parameters';
 
 /**
  * Platform-agnostic error code constants for Passkey operations.
@@ -60,6 +64,16 @@ export const PasskeyErrorCodes = {
    * continue with the `mfa` client (`mfa.challenge()` / `mfa.verify()`).
    */
   MFA_REQUIRED: 'PASSKEY_MFA_REQUIRED',
+  /**
+   * A one-time code sent for passkey signup identifier verification was wrong
+   * or missing, and the signup can be retried. Use
+   * {@link PasskeyError.getVerificationRetryPayload} to find out which codes to
+   * collect again, then call `getTokenByPasskey` again with the same
+   * credential.
+   *
+   * @remarks Native only (iOS, Android).
+   */
+  VERIFICATION_RETRYABLE: 'PASSKEY_VERIFICATION_RETRYABLE',
   /** Unknown or uncategorized passkey error */
   UNKNOWN_ERROR: 'PASSKEY_UNKNOWN_ERROR',
 } as const;
@@ -83,6 +97,7 @@ const ERROR_CODE_MAP: Record<string, PasskeyErrorCode> = {
   PASSKEY_NOT_AVAILABLE: PasskeyErrorCodes.NOT_AVAILABLE,
   PASSKEY_CHALLENGE_FAILED: PasskeyErrorCodes.CHALLENGE_FAILED,
   PASSKEY_EXCHANGE_FAILED: PasskeyErrorCodes.EXCHANGE_FAILED,
+  PASSKEY_VERIFICATION_RETRYABLE: PasskeyErrorCodes.VERIFICATION_RETRYABLE,
   InvalidParameter: PasskeyErrorCodes.INVALID_PARAMETER,
 
   // --- Web platform (auth0-spa-js PasskeyApiClient / PasskeyClient) ---
@@ -213,6 +228,69 @@ export class PasskeyError extends AuthError {
       error: json.error ?? this.code,
       errorDescription: json.error_description ?? this.message,
       mfaRequirements: json.mfa_requirements,
+    };
+  }
+
+  /**
+   * Extracts what to retry with when this error is of type
+   * `PASSKEY_VERIFICATION_RETRYABLE`: a one-time code sent for passkey signup
+   * identifier verification was wrong or missing, and the session is still
+   * usable.
+   *
+   * Collect the codes for `verificationRequired` again, then call
+   * `getTokenByPasskey` again with the **same** `authResponse` and the
+   * returned `authSession`. Where a field is `undefined`, fall back to the one
+   * from the original challenge.
+   *
+   * @returns The retry payload if this is a `VERIFICATION_RETRYABLE` error,
+   *   otherwise `null`.
+   *
+   * @example
+   * ```typescript
+   * let authSession = challenge.authSession;
+   * let verification = await promptForCodes(challenge.verificationRequired);
+   * for (let attempt = 0; attempt < 3; attempt++) {
+   *   try {
+   *     return await auth0.getTokenByPasskey({
+   *       authSession,
+   *       authResponse: credential, // the same credential on every attempt
+   *       verification,
+   *     });
+   *   } catch (error) {
+   *     const retry =
+   *       error instanceof PasskeyError && error.getVerificationRetryPayload();
+   *     if (!retry) throw error; // not retryable: restart the signup
+   *     authSession = retry.authSession ?? authSession;
+   *     verification = {
+   *       ...verification,
+   *       ...(await promptForCodes(
+   *         retry.verificationRequired ?? challenge.verificationRequired
+   *       )),
+   *     };
+   *   }
+   * }
+   * ```
+   */
+  public getVerificationRetryPayload(): PasskeyVerificationRetryPayload | null {
+    if (this.type !== PasskeyErrorCodes.VERIFICATION_RETRYABLE) {
+      return null;
+    }
+
+    // The native bridge rejects with `userInfo`; `NativeBridgeManager` keeps the
+    // whole native error on `json`.
+    const userInfo = (this.json as { userInfo?: Record<string, unknown> })
+      ?.userInfo;
+    const authSession = userInfo?.authSession;
+    const verificationRequired = userInfo?.verificationRequired;
+
+    return {
+      authSession: typeof authSession === 'string' ? authSession : undefined,
+      verificationRequired: Array.isArray(verificationRequired)
+        ? verificationRequired.filter(
+            (method): method is PasskeyVerificationMethod =>
+              method === 'email' || method === 'phone'
+          )
+        : undefined,
     };
   }
 }

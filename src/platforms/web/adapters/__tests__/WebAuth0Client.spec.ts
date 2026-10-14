@@ -63,6 +63,7 @@ jest.mock('../../../../core/models', () => {
       // Simplified ERROR_CODE_MAP matching the real PasskeyError
       const codeMap: Record<string, string> = {
         InvalidParameter: 'PASSKEY_INVALID_PARAMETER',
+        UnsupportedOperation: 'PASSKEY_UNSUPPORTED_PLATFORM',
         passkey_challenge_error: 'PASSKEY_CHALLENGE_FAILED',
         passkey_get_token_error: 'PASSKEY_EXCHANGE_FAILED',
         passkey_invalid_credential: 'PASSKEY_INVALID_CREDENTIAL',
@@ -608,6 +609,24 @@ describe('WebAuth0Client', () => {
       });
     });
 
+    it('should reject with UNSUPPORTED_PLATFORM, without calling the SPA client, when a deliveryMethod is requested', async () => {
+      // auth0-spa-js has no OTP delivery option; silently dropping it would
+      // send the code over a channel the caller did not choose.
+      await expect(
+        client.passkeySignupChallenge({
+          phoneNumber: '+15551234567',
+          deliveryMethod: 'voice',
+        })
+      ).rejects.toMatchObject({
+        name: 'PasskeyError',
+        code: 'UnsupportedOperation',
+        type: 'PASSKEY_UNSUPPORTED_PLATFORM',
+        message: expect.stringContaining('deliveryMethod'),
+      });
+
+      expect(mockSpaClient.passkey.getSignupChallenge).not.toHaveBeenCalled();
+    });
+
     it('should throw PasskeyError when the challenge request fails', async () => {
       mockSpaClient.passkey.getSignupChallenge.mockRejectedValue({
         code: 'passkey_register_error',
@@ -1001,6 +1020,43 @@ describe('WebAuth0Client', () => {
       });
 
       expect(mockSpaClient.passkey.getTokenWithPasskey).not.toHaveBeenCalled();
+    });
+
+    it('should reject with UNSUPPORTED_PLATFORM, without calling the SPA client, when verification codes are provided', async () => {
+      // auth0-spa-js cannot send them, so the exchange would fail server-side
+      // with a confusing "missing verification" error.
+      await expect(
+        client.getTokenByPasskey({
+          authSession: 'auth-session-123',
+          authResponse: { id: 'credential-id' } as any,
+          verification: { email: '123456' },
+        })
+      ).rejects.toMatchObject({
+        name: 'PasskeyError',
+        code: 'UnsupportedOperation',
+        type: 'PASSKEY_UNSUPPORTED_PLATFORM',
+        message: expect.stringContaining('verification'),
+      });
+
+      expect(mockSpaClient.passkey.getTokenWithPasskey).not.toHaveBeenCalled();
+    });
+
+    it('should not treat an empty verification map as unsupported', async () => {
+      mockSpaClient.passkey.getTokenWithPasskey.mockResolvedValue({
+        access_token: 'access-token',
+        id_token: 'id-token',
+        token_type: 'Bearer',
+        expires_in: 3600,
+        scope: 'openid profile email',
+      });
+
+      await expect(
+        client.getTokenByPasskey({
+          authSession: 'auth-session-123',
+          authResponse: { id: 'credential-id' } as any,
+          verification: {},
+        })
+      ).resolves.toMatchObject({ accessToken: 'access-token' });
     });
   });
 

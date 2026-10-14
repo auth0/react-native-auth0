@@ -352,9 +352,10 @@ export class NativeBridgeManager implements NativeBridge {
     picture?: string,
     userMetadata?: Record<string, string>,
     realm?: string,
-    organization?: string
+    organization?: string,
+    deliveryMethod?: string
   ): Promise<PasskeyChallengeResponse> {
-    return this.a0_call(
+    const challenge = await this.a0_call(
       Auth0NativeModule.passkeySignupChallenge.bind(Auth0NativeModule),
       email,
       phoneNumber,
@@ -366,8 +367,12 @@ export class NativeBridgeManager implements NativeBridge {
       picture,
       userMetadata,
       realm,
-      organization
+      organization,
+      deliveryMethod
     );
+    // The TurboModule spec can only type `verificationRequired` as `string[]`;
+    // the native modules only ever report the identifiers they recognize.
+    return challenge as PasskeyChallengeResponse;
   }
 
   async passkeyLoginChallenge(
@@ -387,7 +392,8 @@ export class NativeBridgeManager implements NativeBridge {
     realm?: string,
     audience?: string,
     scope?: string,
-    organization?: string
+    organization?: string,
+    verification?: Record<string, string>
   ): Promise<Credentials> {
     const credential = await this.a0_call(
       Auth0NativeModule.getTokenByPasskey.bind(Auth0NativeModule),
@@ -396,7 +402,8 @@ export class NativeBridgeManager implements NativeBridge {
       realm,
       audience,
       scope,
-      organization
+      organization,
+      verification
     );
     return new CredentialsModel(credential);
   }
