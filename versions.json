@@ -1,14 +1,9 @@
 {
   "versions": [
     {
-      "version": "6.0.0-beta.0",
-      "name": "v6.0.0-beta.0",
-      "path": "v6.0.0-beta.0"
-    },
-    {
-      "version": "5.11.1",
-      "name": "v5.11.1",
-      "path": "v5.11.1"
+      "version": "5.11.2",
+      "name": "v5.11.2",
+      "path": "v5.11.2"
     }
   ]
 }
