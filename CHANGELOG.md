@@ -1,5 +1,11 @@
 # Change Log
 
+## [v5.11.2](https://github.com/auth0/react-native-auth0/tree/v5.11.2) (2026-10-14)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.11.1...v5.11.2)
+
+**Fixed**
+- fix(android): bump Auth0.Android to 3.21.1 for Keystore2 INCOMPATIBL_DEVICE fix  [\#1677](https://github.com/auth0/react-native-auth0/pull/1677) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
 ## [v5.11.1](https://github.com/auth0/react-native-auth0/tree/v5.11.1) (2026-09-08)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.11.0...v5.11.1)
