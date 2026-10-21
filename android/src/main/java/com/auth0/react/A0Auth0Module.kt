@@ -1070,20 +1070,28 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         }
         
         val separator = if (error.message?.endsWith(".") == true) "" else "."
-        promise.reject(
-            error.getCode(),
-            withUnderlyingCause("${error.message}$separator CAUSE: ${error.getDescription()}", error),
-            error
-        )
+        val cause = underlyingCause(error)
+        val message = if (cause != null && error.getCode() == Auth0Exception.UNKNOWN_ERROR) {
+            // The description is only the generic "Failed with unknown error" here, so the cause replaces it.
+            "${error.message}$separator CAUSE: $cause"
+        } else {
+            withUnderlyingCause("${error.message}$separator CAUSE: ${error.getDescription()}", error)
+        }
+        promise.reject(error.getCode(), message, error)
     }
 
     /**
-     * Appends the first non-SDK exception in the cause chain (e.g. an SSLHandshakeException),
-     * which React Native does not forward to JS, mirroring the CAUSE that Auth0.swift adds on iOS.
+     * Returns the first non-SDK exception in the cause chain (e.g. an SSLHandshakeException),
+     * which React Native does not forward to JS.
+     */
+    private fun underlyingCause(error: Throwable): Throwable? =
+        generateSequence(error.cause) { it.cause }.firstOrNull { it !is Auth0Exception }
+
+    /**
+     * Appends the underlying cause to the message, mirroring the CAUSE that Auth0.swift adds on iOS.
      */
     private fun withUnderlyingCause(message: String?, error: Throwable): String? {
-        val cause = generateSequence(error.cause) { it.cause }.firstOrNull { it !is Auth0Exception }
-            ?: return message
+        val cause = underlyingCause(error) ?: return message
         val separator = if (message.isNullOrEmpty() || message.endsWith(".")) "" else "."
         return "${message.orEmpty()}$separator CAUSE: $cause".trim()
     }
