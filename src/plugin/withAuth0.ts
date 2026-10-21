@@ -172,8 +172,12 @@ export const addAuth0AppDelegateCode = (
   }
 
   // Swift handling for Expo 53+
-  // Add URL handling method if it doesn't exist
-  if (!src.includes('RCTLinkingManager.application')) {
+  // Add URL handling method if it doesn't exist. Expo SDK 58+ uses the UIScene
+  // life cycle, where Expo's scene delegate already forwards URLs to Linking.
+  if (
+    !src.includes('RCTLinkingManager.application') &&
+    !src.includes('ExpoReactNativeFactoryProvider')
+  ) {
     tempSrc = mergeContents({
       src: tempSrc,
       newSrc: [

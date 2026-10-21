@@ -8,6 +8,7 @@ import {
 // Import Swift AppDelegate fixtures for Expo 53+
 import swiftAppDelegateFixtureWithLinking from './fixtures/swiftappdelegate-withlinking';
 import swiftAppDelegateFixtureWithoutLinking from './fixtures/swiftappdelegate-withoutlinking';
+import swiftAppDelegateFixtureSceneLifecycle from './fixtures/swiftappdelegate-scene-lifecycle';
 import type { ModConfig } from '@expo/config-plugins';
 
 const getConfig = () => {
@@ -61,6 +62,12 @@ describe(addAuth0AppDelegateCode, () => {
     expect(
       addAuth0AppDelegateCode(swiftAppDelegateFixtureWithoutLinking, 'swift')
     ).toMatchSnapshot();
+  });
+
+  it(`does not modify Swift AppDelegate that uses the scene life cycle`, () => {
+    expect(
+      addAuth0AppDelegateCode(swiftAppDelegateFixtureSceneLifecycle, 'swift')
+    ).toBe(swiftAppDelegateFixtureSceneLifecycle);
   });
 });
 
