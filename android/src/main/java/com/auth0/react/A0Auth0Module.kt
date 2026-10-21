@@ -8,6 +8,7 @@ import android.os.Looper
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import com.auth0.android.Auth0
+import com.auth0.android.Auth0Exception
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.authentication.request.ActorToken
@@ -378,7 +379,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
                     override fun onFailure(e: CredentialsManagerException) {
                         val errorCode = deduceErrorCode(e)
-                        promise.reject(errorCode, e.message, e)
+                        promise.reject(errorCode, withUnderlyingCause(e.message, e), e)
                     }
                 }
             )
@@ -392,7 +393,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             promise.resolve(true)
         } catch (e: CredentialsManagerException) {
             val errorCode = deduceErrorCode(e)
-            promise.reject(errorCode, e.message, e)
+            promise.reject(errorCode, withUnderlyingCause(e.message, e), e)
         }
     }
 
@@ -446,7 +447,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
                     override fun onFailure(e: CredentialsManagerException) {
                         val errorCode = deduceErrorCode(e)
-                        promise.reject(errorCode, e.message, e)
+                        promise.reject(errorCode, withUnderlyingCause(e.message, e), e)
                     }
                 }
             )
@@ -609,7 +610,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 
                 override fun onFailure(error: CredentialsManagerException) {
                     val errorCode = deduceErrorCode(error)
-                    promise.reject(errorCode, error.message, error)
+                    promise.reject(errorCode, withUnderlyingCause(error.message, error), error)
                 }
             }
         )
@@ -1059,7 +1060,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 return
             }
             error.isNetworkError -> {
-                promise.reject("a0.network_error", "Network error", error)
+                promise.reject("a0.network_error", withUnderlyingCause("Network error", error), error)
                 return
             }
             error.isIdTokenValidationError -> {
@@ -1069,10 +1070,29 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         }
         
         val separator = if (error.message?.endsWith(".") == true) "" else "."
-        promise.reject(
-            error.getCode(),
-            "${error.message}$separator CAUSE: ${error.getDescription()}",
-            error
-        )
+        val cause = underlyingCause(error)
+        val message = if (cause != null && error.getCode() == Auth0Exception.UNKNOWN_ERROR) {
+            // The description is only the generic "Failed with unknown error" here, so the cause replaces it.
+            "${error.message}$separator CAUSE: $cause"
+        } else {
+            withUnderlyingCause("${error.message}$separator CAUSE: ${error.getDescription()}", error)
+        }
+        promise.reject(error.getCode(), message, error)
+    }
+
+    /**
+     * Returns the first non-SDK exception in the cause chain (e.g. an SSLHandshakeException),
+     * which React Native does not forward to JS.
+     */
+    private fun underlyingCause(error: Throwable): Throwable? =
+        generateSequence(error.cause) { it.cause }.firstOrNull { it !is Auth0Exception }
+
+    /**
+     * Appends the underlying cause to the message, mirroring the CAUSE that Auth0.swift adds on iOS.
+     */
+    private fun withUnderlyingCause(message: String?, error: Throwable): String? {
+        val cause = underlyingCause(error) ?: return message
+        val separator = if (message.isNullOrEmpty() || message.endsWith(".")) "" else "."
+        return "${message.orEmpty()}$separator CAUSE: $cause".trim()
     }
 }
