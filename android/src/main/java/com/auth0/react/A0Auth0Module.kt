@@ -1060,7 +1060,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 return
             }
             error.isNetworkError -> {
-                promise.reject("a0.network_error", "Network error", error)
+                promise.reject("a0.network_error", withUnderlyingCause("Network error", error), error)
                 return
             }
             error.isIdTokenValidationError -> {
