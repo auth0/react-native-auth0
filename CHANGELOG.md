@@ -1,10 +1,22 @@
 # Change Log
 
+## [v5.11.3](https://github.com/auth0/react-native-auth0/tree/v5.11.3) (2026-10-22)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.11.2...v5.11.3)
+
+**Fixed**
+
+- fix(plugin): skip ios linking override on expo sdk 58 [\#1687](https://github.com/auth0/react-native-auth0/pull/1687) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix(android): bump Auth0.Android to 3.21.2 for unrecognized biometric fix [\#1690](https://github.com/auth0/react-native-auth0/pull/1690) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix(android): include underlying cause in error messages for parity with iOS [\#1686](https://github.com/auth0/react-native-auth0/pull/1686) ([daft2](https://github.com/daft2))
+
 ## [v5.11.2](https://github.com/auth0/react-native-auth0/tree/v5.11.2) (2026-10-14)
+
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.11.1...v5.11.2)
 
 **Fixed**
-- fix(android): bump Auth0.Android to 3.21.1 for Keystore2 INCOMPATIBL_DEVICE fix  [\#1677](https://github.com/auth0/react-native-auth0/pull/1677) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
+- fix(android): bump Auth0.Android to 3.21.1 for Keystore2 INCOMPATIBL_DEVICE fix [\#1677](https://github.com/auth0/react-native-auth0/pull/1677) ([utkrishtsahu](https://github.com/utkrishtsahu))
 
 ## [v5.11.1](https://github.com/auth0/react-native-auth0/tree/v5.11.1) (2026-09-08)
 
