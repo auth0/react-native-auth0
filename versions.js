@@ -1,3 +1,3 @@
 'use strict';
-  export const DOC_VERSIONS = ['v5.11.2'];
+  export const DOC_VERSIONS = ['v5.11.3'];
   
