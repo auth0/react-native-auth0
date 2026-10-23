@@ -264,8 +264,9 @@ export interface NetworkingOptions {
    * **debug-only** (ignored on release builds) and must never be enabled in production.
    *
    * On **iOS** this maps to Auth0.swift's `.logging(enabled:)`, which traces requests and responses
-   * to the unified logging system (OSLog) with access, refresh, and ID tokens redacted. It has no
-   * build-type gate, so still enable it only while debugging.
+   * to the unified logging system (OSLog). Request headers and bodies are logged as-is — including
+   * refresh tokens, authorization codes, and credentials — and only response bodies are redacted by
+   * Auth0.swift. It has no build-type gate, so enable it only while debugging and never in production.
    * @default false
    */
   enableLogging?: boolean;

@@ -154,7 +154,7 @@ export interface NativeAuthorizeOptions {
    *
    * This can be used as a boolean value or as an object which sets the `presentationStyle`. See the examples below for reference
    *
-   * Ignored when {@link NativeAuthorizeOptions.ephemeralSession} is enabled or `customScheme` is `https`, because Auth0.swift only supports those with `ASWebAuthenticationSession`.
+   * Ignored when {@link NativeAuthorizeOptions.ephemeralSession} is enabled or the callback scheme is `https` (taken from `redirectUrl` when set, otherwise from `customScheme`), because Auth0.swift only supports those with `ASWebAuthenticationSession`.
    *
    * @example
    * ```typescript

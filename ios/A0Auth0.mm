@@ -110,7 +110,7 @@ RCT_EXPORT_METHOD(initializeAuth0WithConfiguration:(NSString *)clientId
                                  resolve:(RCTPromiseResolveBlock)resolve
                                   reject:(RCTPromiseRejectBlock)reject) {
     // networkingOptions is otherwise Android-only; on iOS we honor just `enableLogging`,
-    // which maps to Auth0.swift's `.logging(enabled:)` (HTTP tracing with token redaction).
+    // which maps to Auth0.swift's `.logging(enabled:)` (HTTP tracing; request headers and bodies are logged as-is, only responses are redacted).
     BOOL enableLogging = [networkingOptions[@"enableLogging"] boolValue];
     [self tryAndInitializeNativeBridge:clientId domain:domain withLocalAuthenticationOptions:localAuthenticationOptions useDPoP:useDPoP maxRetries:(NSInteger)maxRetries credentialsManagerStorageKey:credentialsManagerStorageKey enableLogging:enableLogging resolve:resolve reject:reject];
 }

@@ -686,7 +686,7 @@ Any option you omit falls back to Auth0.Android's own default.
 
 > [!WARNING]
 > On **Android**, `enableLogging` is **debug-only**: Auth0.Android logs full HTTP request and response bodies to Logcat — including access, refresh, and ID tokens from token-endpoint calls, in plaintext — and the flag is ignored on release builds. Never enable it in a production build.
-> On **iOS**, `enableLogging` maps to Auth0.swift's `.logging(enabled:)`, which traces requests and responses to the unified logging system (OSLog) with access, refresh, and ID tokens redacted. There is no release-build gate, so enable it only while debugging.
+> On **iOS**, `enableLogging` maps to Auth0.swift's `.logging(enabled:)`, which traces requests and responses to the unified logging system (OSLog). Request headers and bodies are logged as-is, including refresh tokens, authorization codes, and credentials; only response bodies are redacted by Auth0.swift. There is no release-build gate, so enable it only while debugging and never in production.
 
 ### Using Networking Options with Hooks
 
