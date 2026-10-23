@@ -14,6 +14,7 @@ import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 import java.util.logging.Handler
 import java.util.logging.Level
@@ -54,7 +55,7 @@ class A0Auth0ModuleNetworkingOptionsTest {
      * HttpLoggingInterceptor is (or isn't) writing request/response bodies.
      */
     private class LogCapture : Handler() {
-        private val records = mutableListOf<LogRecord>()
+        private val records = CopyOnWriteArrayList<LogRecord>()
 
         override fun publish(record: LogRecord) {
             records.add(record)
@@ -87,6 +88,23 @@ class A0Auth0ModuleNetworkingOptionsTest {
         fun clear() {
             records.clear()
         }
+    }
+
+    // LogCapture sits on the root logger, so threads other than the test's (MockWebServer,
+    // OkHttp) publish into it while the assertions read it.
+    @Test
+    fun `LogCapture can be read while another thread publishes`() {
+        val capture = LogCapture()
+        val publisher = Thread {
+            repeat(10_000) { capture.publish(LogRecord(Level.INFO, "unrelated")) }
+        }
+
+        publisher.start()
+        while (publisher.isAlive) {
+            capture.hasRequestOrResponseBodyLogs()
+            capture.getAllLogMessages()
+        }
+        publisher.join()
     }
 
     @Test
