@@ -95,8 +95,13 @@ class A0Auth0ModuleNetworkingOptionsTest {
     @Test
     fun `LogCapture can be read while another thread publishes`() {
         val capture = LogCapture()
+        var publisherFailure: Throwable? = null
         val publisher = Thread {
-            repeat(10_000) { capture.publish(LogRecord(Level.INFO, "unrelated")) }
+            try {
+                repeat(10_000) { capture.publish(LogRecord(Level.INFO, "unrelated")) }
+            } catch (t: Throwable) {
+                publisherFailure = t
+            }
         }
 
         publisher.start()
@@ -105,6 +110,8 @@ class A0Auth0ModuleNetworkingOptionsTest {
             capture.getAllLogMessages()
         }
         publisher.join()
+
+        publisherFailure?.let { throw it }
     }
 
     @Test
