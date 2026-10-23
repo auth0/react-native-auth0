@@ -9,6 +9,7 @@ import android.os.Looper
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import com.auth0.android.Auth0
+import com.auth0.android.Auth0Exception
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.authentication.request.ActorToken
@@ -50,6 +51,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         // Grace window (ms) for an in-flight restored token exchange to complete before
         // resumeWebAuthSession resolves null.
         private const val RESUME_SESSION_GRACE_MS = 5000L
+
+        private const val MAX_CAUSE_DEPTH = 10
 
         private const val CREDENTIAL_MANAGER_ERROR_CODE = "CREDENTIAL_MANAGER_ERROR"
         private const val BIOMETRICS_AUTHENTICATION_ERROR_CODE = "BIOMETRICS_CONFIGURATION_ERROR"
@@ -431,7 +434,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
                     override fun onFailure(e: CredentialsManagerException) {
                         val errorCode = deduceErrorCode(e)
-                        promise.reject(errorCode, e.message, e)
+                        promise.reject(errorCode, credentialsMessage(e), e)
                     }
                 }
             )
@@ -445,7 +448,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             promise.resolve(true)
         } catch (e: CredentialsManagerException) {
             val errorCode = deduceErrorCode(e)
-            promise.reject(errorCode, e.message, e)
+            promise.reject(errorCode, credentialsMessage(e), e)
         }
     }
 
@@ -506,7 +509,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
                     override fun onFailure(e: CredentialsManagerException) {
                         val errorCode = deduceErrorCode(e)
-                        promise.reject(errorCode, e.message, e)
+                        promise.reject(errorCode, credentialsMessage(e), e)
                     }
                 }
             )
@@ -677,7 +680,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 
                 override fun onFailure(error: CredentialsManagerException) {
                     val errorCode = deduceErrorCode(error)
-                    promise.reject(errorCode, error.message, error)
+                    promise.reject(errorCode, credentialsMessage(error), error)
                 }
             }
         )
@@ -1125,7 +1128,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 return
             }
             error.isNetworkError -> {
-                promise.reject("a0.network_error", "Network error", error)
+                promise.reject("a0.network_error", messageOrCause(error, "Network error"), error)
                 return
             }
             error.isIdTokenValidationError -> {
@@ -1137,8 +1140,30 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         val separator = if (error.message?.endsWith(".") == true) "" else "."
         promise.reject(
             error.getCode(),
-            "${error.message}$separator CAUSE: ${error.getDescription()}",
+            messageOrCause(error, "${error.message}$separator CAUSE: ${error.getDescription()}"),
             error
         )
+    }
+
+    /**
+     * The first non-SDK exception in the cause chain (e.g. an SSLHandshakeException) as the message.
+     * React Native does not forward the cause to JS, so without this it is lost.
+     */
+    // These two messages tell the user what to do (keys were reset, device unsupported),
+    // so the cause would only hide them. Auth0.Android can nest them under STORE_FAILED
+    // when saving refreshed credentials fails, so look through the whole chain.
+    private fun credentialsMessage(e: CredentialsManagerException): String? {
+        val withAdvice = generateSequence<Throwable>(e) { it.cause }
+            .take(MAX_CAUSE_DEPTH)
+            .filterIsInstance<CredentialsManagerException>()
+            .firstOrNull { deduceErrorCode(it) == "CRYPTO_EXCEPTION" || deduceErrorCode(it) == "INCOMPATIBLE_DEVICE" }
+        return withAdvice?.message ?: messageOrCause(e, e.message)
+    }
+
+    private fun messageOrCause(error: Throwable, fallback: String?): String? {
+        val cause = generateSequence(error.cause) { it.cause }
+            .take(MAX_CAUSE_DEPTH)
+            .firstOrNull { it !is Auth0Exception }
+        return cause?.toString() ?: fallback
     }
 }
