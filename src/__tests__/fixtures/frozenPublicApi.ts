@@ -96,6 +96,7 @@ export const FROZEN_PUBLIC_API = [
   'MyAccountErrorCodes',
   'NativeAuthorizeOptions',
   'NativeClearSessionOptions',
+  'NetworkingOptions',
   'PasskeyAuthenticationMethod',
   'PasskeyChallengeResponse',
   'PasskeyEnrollmentChallengeParameters',

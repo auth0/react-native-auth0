@@ -1,15 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, TextInput, View } from 'react-native';
 import { useAuth0, MfaFactorType } from 'react-native-auth0';
 import Section from '../shared/Section';
 import ResultView from '../shared/ResultView';
 
-const MfaHooks = () => {
+type Props = { mfaToken?: string };
+
+const MfaHooks = ({ mfaToken: incomingMfaToken }: Props) => {
   const { mfa } = useAuth0();
 
   const [result, setResult] = useState<unknown>(null);
   const [error, setError] = useState<Error | null>(null);
   const [mfaToken, setMfaToken] = useState('');
+
+  useEffect(() => {
+    if (incomingMfaToken) {
+      setMfaToken(incomingMfaToken);
+    }
+  }, [incomingMfaToken]);
   const [otpCode, setOtpCode] = useState('');
   const [oobCode, setOobCode] = useState('');
   const [bindingCode, setBindingCode] = useState('');

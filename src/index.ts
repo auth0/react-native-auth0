@@ -66,6 +66,7 @@ export type {
   Credentials,
   DPoPHeadersParameters,
   DPoPHeadersParams,
+  NetworkingOptions,
   PasswordlessChallenge,
   SessionTransferCredentials,
   User,

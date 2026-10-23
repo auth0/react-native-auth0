@@ -11,6 +11,7 @@ if (!config.domain || !config.clientId) {
 const auth0 = new Auth0({
   domain: config.domain,
   clientId: config.clientId,
+  useDPoP: config.useDPoP,
 });
 
 export default auth0;

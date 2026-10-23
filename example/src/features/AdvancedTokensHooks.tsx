@@ -24,7 +24,7 @@ const AdvancedTokensHooks = () => {
   const [url, setUrl] = useState('');
   const [method, setMethod] = useState('GET');
   const [accessToken, setAccessToken] = useState('');
-  const [tokenType, setTokenType] = useState('DPoP');
+  const [tokenType, setTokenType] = useState('Bearer');
 
   const run = async (fn: () => Promise<unknown>) => {
     setError(null);
@@ -103,7 +103,7 @@ const AdvancedTokensHooks = () => {
           onChangeText={setAccessToken}
         />
         <TextInput
-          placeholder="Token type"
+          placeholder="Token type (Bearer or DPoP)"
           value={tokenType}
           onChangeText={setTokenType}
         />

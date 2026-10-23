@@ -6,7 +6,9 @@ import com.facebook.react.bridge.JavaOnlyMap
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
@@ -85,6 +87,19 @@ class A0Auth0ModuleNetworkingOptionsTest {
         fun clear() {
             records.clear()
         }
+    }
+
+    @Test
+    fun `invalidTimeoutOption names the first negative timeout`() {
+        val options = JavaOnlyMap.of("connectTimeout", 10, "readTimeout", -1, "callTimeout", -5)
+
+        assertEquals("readTimeout", A0Auth0Module.invalidTimeoutOption(options))
+    }
+
+    @Test
+    fun `invalidTimeoutOption accepts zero, positive and missing timeouts`() {
+        assertNull(A0Auth0Module.invalidTimeoutOption(JavaOnlyMap.of("connectTimeout", 0, "writeTimeout", 30)))
+        assertNull(A0Auth0Module.invalidTimeoutOption(JavaOnlyMap()))
     }
 
     @Test

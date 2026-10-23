@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, StatusBar, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Auth0Provider } from 'react-native-auth0';
@@ -22,10 +22,19 @@ import AdvancedTokensHooks from './features/AdvancedTokensHooks';
 //   <Auth0Provider domain={...} clientId={...} localAuthenticationOptions={{
 //     title: 'Authenticate', evaluationPolicy: LocalAuthenticationStrategy.deviceOwnerWithBiometrics,
 //   }}>
+//
+// DPoP is opt-in in v6: set `useDPoP: true` in auth0-configuration.js and log in
+// again to try the DPoP flows in the Advanced Tokens section.
 function App(): React.JSX.Element {
+  const [mfaToken, setMfaToken] = useState<string>();
+
   return (
     <SafeAreaProvider>
-      <Auth0Provider domain={config.domain} clientId={config.clientId}>
+      <Auth0Provider
+        domain={config.domain}
+        clientId={config.clientId}
+        useDPoP={config.useDPoP}
+      >
         <StatusBar barStyle="dark-content" />
         <SafeAreaView style={{ flex: 1 }}>
           <ScrollView contentContainerStyle={{ padding: 16, gap: 24 }}>
@@ -34,9 +43,9 @@ function App(): React.JSX.Element {
             </Text>
             <WebAuthHooks />
             <CredentialsHooks />
-            <DirectAuthHooks />
+            <DirectAuthHooks onMfaToken={setMfaToken} />
             <PasswordlessHooks />
-            <MfaHooks />
+            <MfaHooks mfaToken={mfaToken} />
             <MyAccountHooks />
             <PasskeysHooks />
             <AdvancedTokensHooks />

@@ -65,10 +65,11 @@ v6 adopts **Auth0.Android 4.1.0**, which raises the SDK's build floors. These ar
 | :------------- | :---- | :---------- |
 | **minSdk**     | `21`  | **26**      |
 | **compileSdk** | `35`  | **36**      |
-| **targetSdk**  | `35`  | **36**      |
 | **JDK**        | `11`  | **17**      |
 | **Kotlin**     | `1.9` | **2.0.21**  |
 | **AGP**        | `8.x` | **8.10.1+** |
+
+The library itself now builds with `targetSdk` 36. That does not change your app's `targetSdkVersion`; keep the value you already target.
 
 **✅ Action Required:**
 

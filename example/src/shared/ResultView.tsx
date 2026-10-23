@@ -9,7 +9,7 @@ type Props = {
 // Minimal result/error display. No styling beyond spacing, per the example's
 // "default React Native components only" convention.
 const ResultView = ({ result, error }: Props) => {
-  if (!result && !error) {
+  if (result == null && !error) {
     return null;
   }
   return (

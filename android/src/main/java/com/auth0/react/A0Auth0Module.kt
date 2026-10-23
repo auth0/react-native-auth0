@@ -55,6 +55,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         private const val MAX_CAUSE_DEPTH = 10
 
         private const val CREDENTIAL_MANAGER_ERROR_CODE = "CREDENTIAL_MANAGER_ERROR"
+        private const val INVALID_NETWORKING_OPTIONS_CODE = "INVALID_NETWORKING_OPTIONS"
         private const val BIOMETRICS_AUTHENTICATION_ERROR_CODE = "BIOMETRICS_CONFIGURATION_ERROR"
         
         // DPoP-specific error codes
@@ -69,6 +70,12 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         private const val DPOP_INVALID_TOKEN_TYPE_CODE = "DPOP_INVALID_TOKEN_TYPE"
         private const val DPOP_MISSING_PARAMETER_CODE = "DPOP_MISSING_PARAMETER"
         private const val DPOP_CLEAR_KEY_FAILED_CODE = "DPOP_CLEAR_KEY_FAILED"
+
+        // OkHttp throws IllegalArgumentException for a negative timeout, which would otherwise
+        // surface after initialization has already stored the Auth0 instance.
+        internal fun invalidTimeoutOption(options: ReadableMap): String? =
+            listOf("connectTimeout", "readTimeout", "writeTimeout", "callTimeout")
+                .firstOrNull { options.hasKey(it) && options.getInt(it) < 0 }
 
         // Builds the DefaultClient Auth0.Android uses for every request it makes (web auth
         // token exchange, credential renewal, MFA, passkeys, etc.). Unset keys fall through to
@@ -337,6 +344,11 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         // Note: maxRetries parameter is ignored on Android as the Auth0.Android SDK
         // does not currently support retry configuration for credential renewal.
         // This parameter is accepted for API compatibility with iOS.
+
+        networkingOptions?.let(::invalidTimeoutOption)?.let { option ->
+            promise.reject(INVALID_NETWORKING_OPTIONS_CODE, "networkingOptions.$option must not be negative")
+            return
+        }
 
         this.useDPoP = useDPoP ?: false
         val auth0Instance = Auth0.getInstance(clientId, domain)

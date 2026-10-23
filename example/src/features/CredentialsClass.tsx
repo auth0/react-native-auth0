@@ -55,7 +55,21 @@ const CredentialsClass = () => {
       />
       <Button
         title="clearCredentials()"
-        onPress={() => run(() => auth0.credentialsManager.clearCredentials())}
+        onPress={() =>
+          run(async () => {
+            await auth0.credentialsManager.clearCredentials();
+            setLast(null);
+          })
+        }
+      />
+      <Button
+        title="clearAll()"
+        onPress={() =>
+          run(async () => {
+            await auth0.credentialsManager.clearAll();
+            setLast(null);
+          })
+        }
       />
 
       <View style={{ marginTop: 12, gap: 8 }}>

@@ -147,8 +147,10 @@ public class NativeBridge: NSObject {
             builder = builder.useHTTPS()
         }
 
-        //Since we cannot have a null value here, the JS layer sends 99 if we have to ignore setting this value
-        if let presentationStyle = UIModalPresentationStyle(rawValue: safariViewControllerPresentationStyle), safariViewControllerPresentationStyle != 99 {
+        //Since we cannot have a null value here, the JS layer sends 99 if we have to ignore setting this value.
+        //Auth0.swift only honors useEphemeralSession() and useHTTPS() with its default provider, so keep the default in those cases.
+        let keepsDefaultProvider = ephemeralSession || scheme.starts(with: "https")
+        if let presentationStyle = UIModalPresentationStyle(rawValue: safariViewControllerPresentationStyle), safariViewControllerPresentationStyle != 99, !keepsDefaultProvider {
             builder = builder.provider(WebAuthentication.safariProvider(style: presentationStyle))
         }
         builder = builder.parameters(additionalParameters)

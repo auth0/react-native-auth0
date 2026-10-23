@@ -56,9 +56,22 @@ const CredentialsHooks = () => {
       />
       <Button
         title="clearCredentials()"
-        onPress={() => run(() => clearCredentials())}
+        onPress={() =>
+          run(async () => {
+            await clearCredentials();
+            setLast(null);
+          })
+        }
       />
-      <Button title="clearAll()" onPress={() => run(() => clearAll())} />
+      <Button
+        title="clearAll()"
+        onPress={() =>
+          run(async () => {
+            await clearAll();
+            setLast(null);
+          })
+        }
+      />
 
       <View style={{ marginTop: 12, gap: 8 }}>
         <TextInput

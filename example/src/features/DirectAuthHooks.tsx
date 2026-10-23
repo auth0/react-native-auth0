@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Button, TextInput, View } from 'react-native';
+import { Button, Text, TextInput, View } from 'react-native';
 import { useAuth0 } from 'react-native-auth0';
 import Section from '../shared/Section';
 import ResultView from '../shared/ResultView';
+import { mfaTokenFrom } from '../shared/mfaToken';
 
-const DirectAuthHooks = () => {
+type Props = { onMfaToken?: (mfaToken: string) => void };
+
+const DirectAuthHooks = ({ onMfaToken }: Props) => {
   const {
     loginWithPasswordRealm,
     createUser,
@@ -15,6 +18,7 @@ const DirectAuthHooks = () => {
 
   const [result, setResult] = useState<unknown>(null);
   const [error, setError] = useState<Error | null>(null);
+  const [mfaRequired, setMfaRequired] = useState(false);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,11 +34,17 @@ const DirectAuthHooks = () => {
   const run = async (fn: () => Promise<unknown>) => {
     setError(null);
     setResult(null);
+    setMfaRequired(false);
     try {
       const res = await fn();
       setResult(res ?? { success: true });
     } catch (e) {
       setError(e as Error);
+      const mfaToken = mfaTokenFrom(e);
+      if (mfaToken) {
+        onMfaToken?.(mfaToken);
+        setMfaRequired(true);
+      }
     }
   };
 
@@ -126,6 +136,9 @@ const DirectAuthHooks = () => {
       </View>
 
       <ResultView result={result} error={error} />
+      {mfaRequired ? (
+        <Text>MFA required: the MFA token was passed to the MFA section.</Text>
+      ) : null}
     </Section>
   );
 };

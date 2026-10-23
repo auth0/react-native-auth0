@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Button, TextInput, View } from 'react-native';
+import { Button, Text, TextInput, View } from 'react-native';
 import auth0 from '../shared/api';
 import Section from '../shared/Section';
 import ResultView from '../shared/ResultView';
+import { mfaTokenFrom } from '../shared/mfaToken';
 
 // Class-based reference for the Direct Authentication API. Same operations as
 // DirectAuthHooks.tsx (plus userInfo and refreshToken), expressed against the
@@ -10,6 +11,7 @@ import ResultView from '../shared/ResultView';
 const DirectAuthClass = () => {
   const [result, setResult] = useState<unknown>(null);
   const [error, setError] = useState<Error | null>(null);
+  const [mfaToken, setMfaToken] = useState<string>();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,11 +28,13 @@ const DirectAuthClass = () => {
   const run = async (fn: () => Promise<unknown>) => {
     setError(null);
     setResult(null);
+    setMfaToken(undefined);
     try {
       const res = await fn();
       setResult(res ?? { success: true });
     } catch (e) {
       setError(e as Error);
+      setMfaToken(mfaTokenFrom(e));
     }
   };
 
@@ -148,6 +152,9 @@ const DirectAuthClass = () => {
       </View>
 
       <ResultView result={result} error={error} />
+      {mfaToken ? (
+        <Text selectable>MFA token (use it in MfaClass): {mfaToken}</Text>
+      ) : null}
     </Section>
   );
 };

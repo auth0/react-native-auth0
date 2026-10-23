@@ -712,9 +712,19 @@ correct (and only) thing to switch on.
 | `status`  | HTTP status, when the failure came from an HTTP response (`0` otherwise).                                                                                                                                    |
 
 Each of the six normalized classes ships a companion constants object and a matching TypeScript
-union. Handle every value explicitly (no `default` branch) and TypeScript enforces exhaustiveness
-at compile time — a `switch` missing a case fails to compile. The example below adds a `default`
-fallback for brevity, so it does not get that compile-time guarantee:
+union. Dropping the `default` branch is not enough for TypeScript to flag a missing case: a
+`switch` that only has side effects compiles even when it skips a value, so a new error code would
+be ignored silently. For a compile-time check, end the `switch` with a `default` that assigns the
+value to `never`:
+
+```typescript
+default: {
+  const unhandled: never = error.type; // fails to compile if a case is missing
+  throw new Error(`Unhandled error type: ${unhandled}`);
+}
+```
+
+The example below uses a plain fallback for brevity, so it does not get that check:
 
 | Error class               | Constants                      | Type union                         | Thrown by                                       |
 | ------------------------- | ------------------------------ | ---------------------------------- | ----------------------------------------------- |
