@@ -11,8 +11,8 @@ const isBrowser =
 
 /**
  * Creates the Web-specific Auth0Client; selected by bundlers when targeting web.
- * Clients are cached by config signature so remounts reuse the same instance
- * (avoiding duplicate refresh exchanges); a config change yields a fresh client.
+ * In a browser, clients are cached by config signature so remounts reuse the same
+ * instance (avoiding duplicate refresh exchanges); a config change yields a fresh client.
  */
 export class Auth0ClientFactory {
   private static clientCache = new Map<string, Auth0Client>();
