@@ -11902,13 +11902,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-runtime@npm:0.87.0, metro-runtime@npm:^0.87.0":
+"metro-runtime@npm:0.87.0":
   version: 0.87.0
   resolution: "metro-runtime@npm:0.87.0"
   dependencies:
     "@babel/runtime": "npm:^7.25.0"
     flow-enums-runtime: "npm:^0.0.6"
   checksum: 10c0/6811ee32a759dbccaa3241d98ec26f3e26fd5e4a1cdd5929c98df94fd46329c20f026759da6ca055cb068f8a57dfc7054b6cfc7bb9fb7b3280144055d2f8d67f
+  languageName: node
+  linkType: hard
+
+"metro-runtime@npm:^0.87.0":
+  version: 0.87.1
+  resolution: "metro-runtime@npm:0.87.1"
+  dependencies:
+    "@babel/runtime": "npm:^7.25.0"
+    flow-enums-runtime: "npm:^0.0.6"
+  checksum: 10c0/47ccc9aa8205475d11ea25c2f047fb0f870b8c81072adcd38d5e3fdaf8206f3828823e8720bcb7e5f8f7b940d757a127d18d7f48f0c2375a9094247946a8591d
   languageName: node
   linkType: hard
 
