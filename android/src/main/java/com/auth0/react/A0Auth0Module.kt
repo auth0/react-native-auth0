@@ -2,6 +2,7 @@ package com.auth0.react
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -21,6 +22,7 @@ import com.auth0.android.dpop.DPoPException
 import com.auth0.android.provider.BrowserPicker
 import com.auth0.android.provider.CustomTabsOptions
 import com.auth0.android.provider.WebAuthProvider
+import com.auth0.android.request.DefaultClient
 import com.auth0.android.request.PublicKeyCredentials
 import com.auth0.android.request.UserData
 import com.auth0.android.result.APICredentials
@@ -50,11 +52,13 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         // resumeWebAuthSession resolves null.
         private const val RESUME_SESSION_GRACE_MS = 5000L
 
+        private const val MAX_CAUSE_DEPTH = 10
+
         private const val CREDENTIAL_MANAGER_ERROR_CODE = "CREDENTIAL_MANAGER_ERROR"
+        private const val INVALID_NETWORKING_OPTIONS_CODE = "INVALID_NETWORKING_OPTIONS"
         private const val BIOMETRICS_AUTHENTICATION_ERROR_CODE = "BIOMETRICS_CONFIGURATION_ERROR"
         
         // DPoP-specific error codes
-        private const val DPOP_ERROR_CODE = "DPOP_ERROR"
         private const val DPOP_KEY_GENERATION_FAILED_CODE = "DPOP_KEY_GENERATION_FAILED"
         private const val DPOP_KEY_STORAGE_FAILED_CODE = "DPOP_KEY_STORAGE_FAILED"
         private const val DPOP_KEY_RETRIEVAL_FAILED_CODE = "DPOP_KEY_RETRIEVAL_FAILED"
@@ -66,6 +70,46 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         private const val DPOP_INVALID_TOKEN_TYPE_CODE = "DPOP_INVALID_TOKEN_TYPE"
         private const val DPOP_MISSING_PARAMETER_CODE = "DPOP_MISSING_PARAMETER"
         private const val DPOP_CLEAR_KEY_FAILED_CODE = "DPOP_CLEAR_KEY_FAILED"
+
+        // OkHttp throws IllegalArgumentException for a negative timeout, which would otherwise
+        // surface after initialization has already stored the Auth0 instance.
+        internal fun invalidTimeoutOption(options: ReadableMap): String? =
+            listOf("connectTimeout", "readTimeout", "writeTimeout", "callTimeout")
+                .firstOrNull { options.hasKey(it) && options.getInt(it) < 0 }
+
+        // Builds the DefaultClient Auth0.Android uses for every request it makes (web auth
+        // token exchange, credential renewal, MFA, passkeys, etc.). Unset keys fall through to
+        // Auth0.Android's own Builder defaults. `enableLogging` is debug-only: Auth0.Android logs
+        // full request/response bodies (including tokens) at that level, so we never call
+        // `logger(...)` ourselves, never expose the raw HttpLoggingInterceptor.Logger to JS, and
+        // ignore the option entirely unless the host app is a debug build.
+        internal fun buildNetworkingClient(options: ReadableMap, isDebuggable: Boolean): DefaultClient {
+            val builder = DefaultClient.Builder()
+            if (options.hasKey("connectTimeout")) builder.connectTimeout(options.getInt("connectTimeout"))
+            if (options.hasKey("readTimeout")) builder.readTimeout(options.getInt("readTimeout"))
+            if (options.hasKey("writeTimeout")) builder.writeTimeout(options.getInt("writeTimeout"))
+            if (options.hasKey("callTimeout")) builder.callTimeout(options.getInt("callTimeout"))
+            options.getMap("defaultHeaders")?.let { headers ->
+                builder.defaultHeaders(headers.toHashMap().mapValues { it.value?.toString() ?: "" })
+            }
+            // Only honor enableLogging on debug builds: Auth0.Android logs full request/response
+            // bodies at this level, including plaintext access/refresh/ID tokens from token-endpoint
+            // responses. Test coverage in A0Auth0ModuleNetworkingOptionsTest ensures this gate holds.
+            if (isDebuggable && options.hasKey("enableLogging")) {
+                builder.enableLogging(options.getBoolean("enableLogging"))
+            }
+            return builder.build()
+        }
+
+        // Auth0.getInstance() returns a shared singleton per clientId/domain: a sibling client
+        // (or this same client on re-init) must not inherit another initialization's networking
+        // config, so this always resolves to a fresh DefaultClient() when options are absent
+        // rather than leaving the previous networkingClient in place.
+        internal fun resolveNetworkingClient(
+            networkingOptions: ReadableMap?,
+            isDebuggable: Boolean
+        ): DefaultClient =
+            networkingOptions?.let { buildNetworkingClient(it, isDebuggable) } ?: DefaultClient.Builder().build()
     }
 
     private val errorCodeMap = mapOf(
@@ -107,10 +151,11 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         CredentialsManagerException.DPOP_KEY_MISSING to "DPOP_KEY_MISSING",
         CredentialsManagerException.DPOP_NOT_CONFIGURED to "DPOP_NOT_CONFIGURED",
         CredentialsManagerException.DPOP_KEY_MISMATCH to "DPOP_KEY_MISMATCH",
-        CredentialsManagerException.SESSION_EXPIRED to "SESSION_EXPIRED"
+        CredentialsManagerException.SESSION_EXPIRED to "SESSION_EXPIRED",
+        CredentialsManagerException.SSO_EXCHANGE_FAILED to "SSO_EXCHANGE_FAILED"
     )
-    // DPoP enabled by default
-    private var useDPoP: Boolean = true
+    // DPoP is opt-in
+    private var useDPoP: Boolean = false
 
     private var auth0: Auth0? = null
     private var mfaClient: MfaClient? = null
@@ -141,11 +186,9 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         additionalParameters: ReadableMap?,
         allowedBrowserPackages: ReadableArray?,
         useTrustedWebActivity: Boolean,
+        useAuthTab: Boolean,
         promise: Promise
     ) {
-        if(this.useDPoP) {
-            WebAuthProvider.useDPoP(reactContext)
-        }
         webAuthPromise = promise
         val cleanedParameters = mutableMapOf<String, String>()
 
@@ -156,6 +199,10 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         }
 
         val builder = WebAuthProvider.login(auth0!!).withScheme(scheme)
+
+        if (this.useDPoP) {
+            builder.useDPoP(reactContext)
+        }
 
         builder.apply {
             state?.let { withState(it) }
@@ -180,6 +227,18 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 )
             }
             if (useTrustedWebActivity) { withTrustedWebActivity() }
+            // Ephemeral browsing only applies to the Custom Tab path; the TWA intent
+            // builder ignores it, so TWA wins when both options are set.
+            if (ephemeralSession == true) { withEphemeralBrowsing() }
+
+            // Auth Tab delivers a real ActivityResult instead of inferring cancellation
+            // from lifecycle, fixing spurious USER_CANCELLED when Chrome minimize is tapped.
+            // Auth Tab requires Chrome 137+; older browsers fall back to a standard Custom Tab.
+            //
+            // Note: [withAuthTab] and [withTrustedWebActivity] are mutually exclusive. If both are set,
+            // TWA takes precedence and Auth Tab will not be used. They rely on different underlying
+            // launch mechanisms and cannot be combined.
+            if (useAuthTab) { withAuthTab() }
         }
 
         builder.withParameters(cleanedParameters)
@@ -279,19 +338,28 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         useDPoP: Boolean?,
         maxRetries: Double,
         credentialsManagerStorageKey: String?,
+        networkingOptions: ReadableMap?,
         promise: Promise
     ) {
         // Note: maxRetries parameter is ignored on Android as the Auth0.Android SDK
         // does not currently support retry configuration for credential renewal.
         // This parameter is accepted for API compatibility with iOS.
 
-        this.useDPoP = useDPoP ?: true
-        auth0 = Auth0.getInstance(clientId, domain)
-        mfaClient = MfaClient(auth0!!, this.useDPoP, reactContext)
-        myAccount = MyAccount(auth0!!, this.useDPoP, reactContext)
-        passwordless = Passwordless(auth0!!, this.useDPoP, reactContext)
+        networkingOptions?.let(::invalidTimeoutOption)?.let { option ->
+            promise.reject(INVALID_NETWORKING_OPTIONS_CODE, "networkingOptions.$option must not be negative")
+            return
+        }
 
-        val authAPI = AuthenticationAPIClient(auth0!!)
+        this.useDPoP = useDPoP ?: false
+        val auth0Instance = Auth0.getInstance(clientId, domain)
+        auth0 = auth0Instance
+        val isDebuggable = (reactContext.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        auth0Instance.networkingClient = resolveNetworkingClient(networkingOptions, isDebuggable)
+        mfaClient = MfaClient(auth0Instance, this.useDPoP, reactContext)
+        myAccount = MyAccount(auth0Instance, this.useDPoP, reactContext)
+        passwordless = Passwordless(auth0Instance, this.useDPoP, reactContext)
+
+        val authAPI = AuthenticationAPIClient(auth0Instance)
         if (this.useDPoP) {
             authAPI.useDPoP(reactContext)
         }
@@ -305,7 +373,6 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                     secureCredentialsManager = SecureCredentialsManager(
                         authAPI,
                         reactContext,
-                        auth0!!,
                         storage,
                         activity,
                         localAuthOptions
@@ -379,7 +446,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
                     override fun onFailure(e: CredentialsManagerException) {
                         val errorCode = deduceErrorCode(e)
-                        promise.reject(errorCode, withUnderlyingCause(e.message, e), e)
+                        promise.reject(errorCode, credentialsMessage(e), e)
                     }
                 }
             )
@@ -393,7 +460,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             promise.resolve(true)
         } catch (e: CredentialsManagerException) {
             val errorCode = deduceErrorCode(e)
-            promise.reject(errorCode, withUnderlyingCause(e.message, e), e)
+            promise.reject(errorCode, credentialsMessage(e), e)
         }
     }
 
@@ -411,6 +478,13 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             }
         }
         
+        promise.resolve(true)
+    }
+
+    @ReactMethod
+    override fun clearAll(promise: Promise) {
+        // clearAll() also clears the DPoP key pair internally.
+        secureCredentialsManager.clearAll()
         promise.resolve(true)
     }
 
@@ -447,7 +521,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
                     override fun onFailure(e: CredentialsManagerException) {
                         val errorCode = deduceErrorCode(e)
-                        promise.reject(errorCode, withUnderlyingCause(e.message, e), e)
+                        promise.reject(errorCode, credentialsMessage(e), e)
                     }
                 }
             )
@@ -467,7 +541,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
     override fun getName(): String = NAME
 
     @ReactMethod
-    override fun webAuthLogout(scheme: String, federated: Boolean, redirectUri: String?, allowedBrowserPackages: ReadableArray?, useTrustedWebActivity: Boolean, promise: Promise) {
+    override fun webAuthLogout(scheme: String, federated: Boolean, redirectUri: String?, allowedBrowserPackages: ReadableArray?, useTrustedWebActivity: Boolean, useAuthTab: Boolean, promise: Promise) {
         val builder = WebAuthProvider.logout(auth0!!).withScheme(scheme)
 
         if (federated) {
@@ -477,6 +551,14 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         if (useTrustedWebActivity) {
             builder.withTrustedWebActivity()
         }
+
+        // Auth Tab for logout flow as well (same rationale as authorize).
+        // Auth Tab requires Chrome 137+; older browsers fall back to a standard Custom Tab.
+        //
+        // Note: [withAuthTab] and [withTrustedWebActivity] are mutually exclusive. If both are set,
+        // TWA takes precedence and Auth Tab will not be used. They rely on different underlying
+        // launch mechanisms and cannot be combined.
+        if (useAuthTab) { builder.withAuthTab() }
 
         redirectUri?.let { builder.withReturnToUrl(it) }
 
@@ -601,7 +683,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                     val map = WritableNativeMap().apply {
                         putString("sessionTransferToken", result.sessionTransferToken)
                         putString("tokenType", result.tokenType)
-                        putInt("expiresIn", result.expiresIn)
+                        putDouble("expiresAt", result.expiresAt.time / 1000.0)
                         result.idToken?.let { putString("idToken", it) }
                         result.refreshToken?.let { putString("refreshToken", it) }
                     }
@@ -610,7 +692,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 
                 override fun onFailure(error: CredentialsManagerException) {
                     val errorCode = deduceErrorCode(error)
-                    promise.reject(errorCode, withUnderlyingCause(error.message, error), error)
+                    promise.reject(errorCode, credentialsMessage(error), error)
                 }
             }
         )
@@ -1025,7 +1107,6 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         return SecureCredentialsManager(
             authAPI,
             reactContext,
-            auth0!!,
             storage
         )
     }
@@ -1041,7 +1122,6 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             DPoPException.KEY_PAIR_NOT_FOUND -> DPOP_KEY_RETRIEVAL_FAILED_CODE
             DPoPException.SIGNING_ERROR -> DPOP_PROOF_FAILED_CODE
             DPoPException.MALFORMED_URL -> DPOP_MISSING_PARAMETER_CODE
-            DPoPException.UNSUPPORTED_ERROR -> DPOP_ERROR_CODE
             DPoPException.UNKNOWN_ERROR -> DPOP_GENERATION_FAILED_CODE
             else -> DPOP_GENERATION_FAILED_CODE
         }
@@ -1060,7 +1140,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 return
             }
             error.isNetworkError -> {
-                promise.reject("a0.network_error", withUnderlyingCause("Network error", error), error)
+                promise.reject("a0.network_error", messageOrCause(error, "Network error"), error)
                 return
             }
             error.isIdTokenValidationError -> {
@@ -1070,29 +1150,32 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         }
         
         val separator = if (error.message?.endsWith(".") == true) "" else "."
-        val cause = underlyingCause(error)
-        val message = if (cause != null && error.getCode() == Auth0Exception.UNKNOWN_ERROR) {
-            // The description is only the generic "Failed with unknown error" here, so the cause replaces it.
-            "${error.message}$separator CAUSE: $cause"
-        } else {
-            withUnderlyingCause("${error.message}$separator CAUSE: ${error.getDescription()}", error)
-        }
-        promise.reject(error.getCode(), message, error)
+        promise.reject(
+            error.getCode(),
+            messageOrCause(error, "${error.message}$separator CAUSE: ${error.getDescription()}"),
+            error
+        )
     }
 
     /**
-     * Returns the first non-SDK exception in the cause chain (e.g. an SSLHandshakeException),
-     * which React Native does not forward to JS.
+     * The first non-SDK exception in the cause chain (e.g. an SSLHandshakeException) as the message.
+     * React Native does not forward the cause to JS, so without this it is lost.
      */
-    private fun underlyingCause(error: Throwable): Throwable? =
-        generateSequence(error.cause) { it.cause }.firstOrNull { it !is Auth0Exception }
+    // These two messages tell the user what to do (keys were reset, device unsupported),
+    // so the cause would only hide them. Auth0.Android can nest them under STORE_FAILED
+    // when saving refreshed credentials fails, so look through the whole chain.
+    private fun credentialsMessage(e: CredentialsManagerException): String? {
+        val withAdvice = generateSequence<Throwable>(e) { it.cause }
+            .take(MAX_CAUSE_DEPTH)
+            .filterIsInstance<CredentialsManagerException>()
+            .firstOrNull { deduceErrorCode(it) == "CRYPTO_EXCEPTION" || deduceErrorCode(it) == "INCOMPATIBLE_DEVICE" }
+        return withAdvice?.message ?: messageOrCause(e, e.message)
+    }
 
-    /**
-     * Appends the underlying cause to the message, mirroring the CAUSE that Auth0.swift adds on iOS.
-     */
-    private fun withUnderlyingCause(message: String?, error: Throwable): String? {
-        val cause = underlyingCause(error) ?: return message
-        val separator = if (message.isNullOrEmpty() || message.endsWith(".")) "" else "."
-        return "${message.orEmpty()}$separator CAUSE: $cause".trim()
+    private fun messageOrCause(error: Throwable, fallback: String?): String? {
+        val cause = generateSequence(error.cause) { it.cause }
+            .take(MAX_CAUSE_DEPTH)
+            .firstOrNull { it !is Auth0Exception }
+        return cause?.toString() ?: fallback
     }
 }

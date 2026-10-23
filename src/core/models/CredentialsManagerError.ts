@@ -62,6 +62,10 @@ export const CredentialsManagerErrorCodes = {
   API_ERROR: 'API_ERROR',
   /** Failed to exchange refresh token for API-specific credentials (MRRT) */
   API_EXCHANGE_FAILED: 'API_EXCHANGE_FAILED',
+  /** Failed to exchange refresh token for session transfer (SSO) credentials */
+  SSO_EXCHANGE_FAILED: 'SSO_EXCHANGE_FAILED',
+  /** Failed to clear the stored credentials */
+  CLEAR_FAILED: 'CLEAR_FAILED',
   /** Device is incompatible with secure storage requirements */
   INCOMPATIBLE_DEVICE: 'INCOMPATIBLE_DEVICE',
   /** Cryptographic operation failed */
@@ -76,7 +80,16 @@ export const CredentialsManagerErrorCodes = {
   UNKNOWN_ERROR: 'UNKNOWN_ERROR',
 } as const;
 
-const ERROR_CODE_MAP: Record<string, string> = {
+/**
+ * A normalized Credentials Manager error code.
+ *
+ * Derived from {@link CredentialsManagerErrorCodes} so the union and the runtime
+ * constants cannot drift apart.
+ */
+export type CredentialsManagerErrorCode =
+  (typeof CredentialsManagerErrorCodes)[keyof typeof CredentialsManagerErrorCodes];
+
+const ERROR_CODE_MAP: Record<string, CredentialsManagerErrorCode> = {
   // --- Core CredentialsManager error codes ---
   INVALID_CREDENTIALS: CredentialsManagerErrorCodes.INVALID_CREDENTIALS,
   NO_CREDENTIALS: CredentialsManagerErrorCodes.NO_CREDENTIALS,
@@ -100,6 +113,9 @@ const ERROR_CODE_MAP: Record<string, string> = {
 
   // --- API Credentials (MRRT) specific codes ---
   API_EXCHANGE_FAILED: CredentialsManagerErrorCodes.API_EXCHANGE_FAILED,
+  // --- Session transfer (Native to Web SSO) codes ---
+  SSO_EXCHANGE_FAILED: CredentialsManagerErrorCodes.SSO_EXCHANGE_FAILED,
+  CLEAR_FAILED: CredentialsManagerErrorCodes.CLEAR_FAILED,
   // --- Web (@auth0/auth0-spa-js) mappings ---
   login_required: CredentialsManagerErrorCodes.NO_CREDENTIALS,
   consent_required: CredentialsManagerErrorCodes.RENEW_FAILED,
@@ -118,7 +134,9 @@ const ERROR_CODE_MAP: Record<string, string> = {
   apiExchangeFailed: CredentialsManagerErrorCodes.API_EXCHANGE_FAILED,
   noCredentials: CredentialsManagerErrorCodes.NO_CREDENTIALS,
   noRefreshToken: CredentialsManagerErrorCodes.NO_REFRESH_TOKEN,
+  ssoExchangeFailed: CredentialsManagerErrorCodes.SSO_EXCHANGE_FAILED,
   storeFailed: CredentialsManagerErrorCodes.STORE_FAILED,
+  clearFailed: CredentialsManagerErrorCodes.CLEAR_FAILED,
   largeMinTTL: CredentialsManagerErrorCodes.LARGE_MIN_TTL,
   sessionExpired: CredentialsManagerErrorCodes.SESSION_EXPIRED,
 
@@ -311,6 +329,8 @@ export class CredentialsManagerError extends AuthError {
    * - `NO_REFRESH_TOKEN`: Refresh token is not available
    * - `RENEW_FAILED`: Token renewal failed
    * - `API_EXCHANGE_FAILED`: API credentials exchange failed (MRRT)
+   * - `SSO_EXCHANGE_FAILED`: Session transfer (SSO) credentials exchange failed
+   * - `CLEAR_FAILED`: Failed to clear the stored credentials
    * - `DPOP_KEY_MISSING`: DPoP key pair no longer in keystore/keychain
    * - `DPOP_NOT_CONFIGURED`: Credentials DPoP-bound but client not configured
    * - `DPOP_KEY_MISMATCH`: DPoP key pair doesn't match saved credentials
@@ -326,7 +346,7 @@ export class CredentialsManagerError extends AuthError {
    * - `CREDENTIAL_MANAGER_ERROR`: Generic credentials manager error
    * - `UNKNOWN_ERROR`: Unknown error type
    */
-  public readonly type: string;
+  public readonly type: CredentialsManagerErrorCode;
 
   constructor(originalError: AuthError) {
     super(originalError.name, originalError.message, {

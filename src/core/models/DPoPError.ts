@@ -58,7 +58,16 @@ export const DPoPErrorCodes = {
   UNKNOWN_DPOP_ERROR: 'UNKNOWN_DPOP_ERROR',
 } as const;
 
-const ERROR_CODE_MAP: Record<string, string> = {
+/**
+ * A normalized DPoP error code.
+ *
+ * Derived from {@link DPoPErrorCodes} so the union and the runtime constants
+ * cannot drift apart.
+ */
+export type DPoPErrorCode =
+  (typeof DPoPErrorCodes)[keyof typeof DPoPErrorCodes];
+
+const ERROR_CODE_MAP: Record<string, DPoPErrorCode> = {
   // --- DPoP-specific error codes ---
   DPOP_GENERATION_FAILED: DPoPErrorCodes.DPOP_GENERATION_FAILED,
   DPOP_PROOF_FAILED: DPoPErrorCodes.DPOP_PROOF_FAILED,
@@ -129,7 +138,7 @@ export class DPoPError extends AuthError {
    * A normalized error type that is consistent across platforms.
    * This can be used for reliable error handling in application code.
    */
-  public readonly type: string;
+  public readonly type: DPoPErrorCode;
 
   /**
    * Constructs a new DPoPError instance from an AuthError.

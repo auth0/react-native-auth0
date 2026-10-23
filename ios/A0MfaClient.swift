@@ -25,24 +25,28 @@ enum MfaVerificationType: String {
     case recoveryCode
 }
 
+@MainActor
 class A0MfaClient {
 
     private let clientId: String
     private let domain: String
     private let useDPoP: Bool
+    private let enableLogging: Bool
 
     private lazy var mfaClient: MFAClient = {
         var client = Auth0.mfa(clientId: clientId, domain: domain)
         if useDPoP {
             client = client.useDPoP()
         }
+        client = client.logging(enabled: enableLogging)
         return client
     }()
 
-    init(clientId: String, domain: String, useDPoP: Bool) {
+    init(clientId: String, domain: String, useDPoP: Bool, enableLogging: Bool) {
         self.clientId = clientId
         self.domain = domain
         self.useDPoP = useDPoP
+        self.enableLogging = enableLogging
     }
 
     // Maps the public MfaFactorType vocabulary (otp/sms/voice/email/push) onto
@@ -149,7 +153,7 @@ class A0MfaClient {
                 }
             }
         case .otp:
-            let request: Request<OTPMFAEnrollmentChallenge, MfaEnrollmentError> = mfaClient.enroll(mfaToken: mfaToken)
+            let request: any Requestable<OTPMFAEnrollmentChallenge, MfaEnrollmentError> = mfaClient.enroll(mfaToken: mfaToken)
             request.start { result in
                 switch result {
                 case .success(let challenge):
@@ -163,7 +167,7 @@ class A0MfaClient {
                 }
             }
         case .push:
-            let request: Request<PushMFAEnrollmentChallenge, MfaEnrollmentError> = mfaClient.enroll(mfaToken: mfaToken)
+            let request: any Requestable<PushMFAEnrollmentChallenge, MfaEnrollmentError> = mfaClient.enroll(mfaToken: mfaToken)
             request.start { result in
                 switch result {
                 case .success(let challenge):
@@ -202,7 +206,7 @@ class A0MfaClient {
             return
         }
 
-        let request: Request<Credentials, MFAVerifyError>
+        let request: any TokenRequestable<Credentials, MFAVerifyError>
         switch verificationType {
         case .otp:
             request = mfaClient.verify(otp: code, mfaToken: mfaToken)
@@ -215,7 +219,7 @@ class A0MfaClient {
         var extraParameters: [String: Any] = [:]
         if let scope = scope { extraParameters["scope"] = scope }
         if let audience = audience { extraParameters["audience"] = audience }
-        let finalRequest = extraParameters.isEmpty ? request : request.parameters(extraParameters)
+        let finalRequest: any Requestable<Credentials, MFAVerifyError> = extraParameters.isEmpty ? request : request.parameters(extraParameters)
 
         finalRequest.start { result in
             switch result {

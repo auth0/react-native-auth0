@@ -1,4 +1,4 @@
-import type { IPasswordlessClient } from '../../../core/interfaces';
+import type { PasswordlessClient } from '../../../core/interfaces';
 import type {
   Credentials,
   PasswordlessChallenge,
@@ -6,12 +6,12 @@ import type {
   PasswordlessChallengePhoneParameters,
   PasswordlessLoginOtpParameters,
 } from '../../../types';
-import type { INativeBridge } from '../bridge';
+import type { NativeBridge } from '../bridge';
 
-export class NativePasswordlessClient implements IPasswordlessClient {
-  private readonly bridge: INativeBridge;
+export class NativePasswordlessClient implements PasswordlessClient {
+  private readonly bridge: NativeBridge;
 
-  constructor(bridge: INativeBridge) {
+  constructor(bridge: NativeBridge) {
     this.bridge = bridge;
   }
 

@@ -13,6 +13,7 @@ jest.mock('../../../../specs/NativeA0Auth0', () => ({
   saveCredentials: jest.fn(),
   hasValidCredentials: jest.fn(),
   clearCredentials: jest.fn(),
+  clearAll: jest.fn(),
   cancelWebAuth: jest.fn(),
   resumeWebAuth: jest.fn(),
   resumeWebAuthSession: jest.fn(),
@@ -96,7 +97,8 @@ describe('NativeBridgeManager', () => {
         1, // presentationStyle
         parameters.additionalParameters,
         undefined, // allowedBrowserPackages
-        false // useTrustedWebActivity
+        false, // useTrustedWebActivity
+        false // useAuthTab (default)
       );
     });
 
@@ -126,7 +128,8 @@ describe('NativeBridgeManager', () => {
         99, // presentationStyle
         {}, // additionalParameters
         undefined, // allowedBrowserPackages
-        false // useTrustedWebActivity
+        false, // useTrustedWebActivity
+        false // useAuthTab (default)
       );
     });
 
@@ -160,7 +163,8 @@ describe('NativeBridgeManager', () => {
         99,
         {},
         allowedBrowserPackages,
-        false // useTrustedWebActivity
+        false, // useTrustedWebActivity
+        false // useAuthTab (default)
       );
     });
 
@@ -190,7 +194,70 @@ describe('NativeBridgeManager', () => {
         99,
         {},
         undefined, // allowedBrowserPackages
-        true // useTrustedWebActivity
+        true, // useTrustedWebActivity
+        false // useAuthTab (default)
+      );
+    });
+
+    it('should pass ephemeralSession to native webAuth when provided', async () => {
+      MockedAuth0NativeModule.webAuth.mockResolvedValueOnce(
+        nativeSuccessCredentials as any
+      );
+
+      await bridge.authorize(
+        { redirectUrl: 'com.myapp://cb' },
+        { customScheme: 'com.myapp', ephemeralSession: true }
+      );
+
+      expect(MockedAuth0NativeModule.webAuth).toHaveBeenCalledWith(
+        'com.myapp',
+        'com.myapp://cb',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        0,
+        undefined,
+        undefined,
+        0,
+        true, // ephemeralSession
+        99,
+        {},
+        undefined, // allowedBrowserPackages
+        false, // useTrustedWebActivity
+        false // useAuthTab (default)
+      );
+    });
+
+    it('should pass useAuthTab to native webAuth when provided', async () => {
+      MockedAuth0NativeModule.webAuth.mockResolvedValueOnce(
+        nativeSuccessCredentials as any
+      );
+
+      await bridge.authorize(
+        { redirectUrl: 'com.myapp://cb' },
+        { customScheme: 'com.myapp', useAuthTab: true }
+      );
+
+      expect(MockedAuth0NativeModule.webAuth).toHaveBeenCalledWith(
+        'com.myapp',
+        'com.myapp://cb',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        0,
+        undefined,
+        undefined,
+        0,
+        false,
+        99,
+        {},
+        undefined, // allowedBrowserPackages
+        false, // useTrustedWebActivity
+        true // useAuthTab
       );
     });
 
@@ -237,7 +304,8 @@ describe('NativeBridgeManager', () => {
         undefined,
         true,
         0,
-        'tenant-b'
+        'tenant-b',
+        undefined
       );
     });
 
@@ -250,9 +318,40 @@ describe('NativeBridgeManager', () => {
         'client-id',
         'tenant-a.auth0.com',
         undefined, // localAuthenticationOptions
-        true, // useDPoP default
+        false, // useDPoP default
         0, // maxRetries default
-        undefined // credentialsManagerStorageKey
+        undefined, // credentialsManagerStorageKey
+        undefined // networkingOptions
+      );
+    });
+
+    it('forwards networkingOptions to the native module when provided', async () => {
+      const networkingOptions = {
+        connectTimeout: 30,
+        readTimeout: 30,
+        defaultHeaders: { 'X-Custom': 'value' },
+      };
+
+      await bridge.initialize(
+        'client-id',
+        'tenant-c.auth0.com',
+        undefined,
+        false,
+        0,
+        undefined,
+        networkingOptions
+      );
+
+      expect(
+        MockedAuth0NativeModule.initializeAuth0WithConfiguration
+      ).toHaveBeenCalledWith(
+        'client-id',
+        'tenant-c.auth0.com',
+        undefined,
+        false,
+        0,
+        undefined,
+        networkingOptions
       );
     });
 
@@ -281,7 +380,8 @@ describe('NativeBridgeManager', () => {
         parameters.federated,
         parameters.returnToUrl,
         undefined, // allowedBrowserPackages
-        false // useTrustedWebActivity
+        false, // useTrustedWebActivity
+        false // useAuthTab (default)
       );
     });
 
@@ -300,7 +400,8 @@ describe('NativeBridgeManager', () => {
         parameters.federated,
         parameters.returnToUrl,
         allowedBrowserPackages,
-        false // useTrustedWebActivity
+        false, // useTrustedWebActivity
+        false // useAuthTab (default)
       );
     });
 
@@ -321,7 +422,27 @@ describe('NativeBridgeManager', () => {
         parameters.federated,
         parameters.returnToUrl,
         undefined, // allowedBrowserPackages
-        true // useTrustedWebActivity
+        true, // useTrustedWebActivity
+        false // useAuthTab (default)
+      );
+    });
+
+    it('should pass useAuthTab to native webAuthLogout when provided', async () => {
+      const parameters = {
+        federated: false,
+        returnToUrl: 'com.myapp://logout',
+      };
+      const options = { customScheme: 'com.myapp', useAuthTab: true };
+
+      await bridge.clearSession(parameters, options);
+
+      expect(MockedAuth0NativeModule.webAuthLogout).toHaveBeenCalledWith(
+        options.customScheme,
+        parameters.federated,
+        parameters.returnToUrl,
+        undefined, // allowedBrowserPackages
+        false, // useTrustedWebActivity
+        true // useAuthTab
       );
     });
   });
@@ -375,6 +496,27 @@ describe('NativeBridgeManager', () => {
         {}, // parameters object is currently unused but passed for spec compliance
         forceRefresh
       );
+    });
+
+    it('should default minTtl to 60 when omitted', async () => {
+      await bridge.getCredentials();
+
+      expect(MockedAuth0NativeModule.getCredentials).toHaveBeenCalledWith(
+        undefined,
+        60,
+        {},
+        false
+      );
+    });
+  });
+
+  describe('clearAll', () => {
+    it('should call the native clearAll', async () => {
+      MockedAuth0NativeModule.clearAll.mockResolvedValueOnce(undefined);
+
+      await bridge.clearAll();
+
+      expect(MockedAuth0NativeModule.clearAll).toHaveBeenCalledTimes(1);
     });
   });
 

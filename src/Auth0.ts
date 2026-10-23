@@ -1,10 +1,9 @@
-import type { IAuth0Client } from './core/interfaces/IAuth0Client';
-import type { IMfaClient } from './core/interfaces/IMfaClient';
-import type { TokenType } from './types/common';
+import type { Auth0Client } from './core/interfaces/Auth0Client';
+import type { MfaClient } from './core/interfaces/MfaClient';
 import { Auth0ClientFactory } from './factory/Auth0ClientFactory';
 import type {
   Auth0Options,
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   CustomTokenExchangeParameters,
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
@@ -30,7 +29,7 @@ import type {
  * ```
  */
 class Auth0 {
-  private client: IAuth0Client;
+  private client: Auth0Client;
 
   /**
    * Creates an instance of the Auth0 client.
@@ -44,7 +43,7 @@ class Auth0 {
 
   /**
    * Provides access to the web-based authentication methods.
-   * @see IWebAuthProvider
+   * @see WebAuthProvider
    */
   get webAuth() {
     return this.client.webAuth;
@@ -52,7 +51,7 @@ class Auth0 {
 
   /**
    * Provides access to the credentials management methods.
-   * @see ICredentialsManager
+   * @see CredentialsManager
    */
   get credentialsManager() {
     return this.client.credentialsManager;
@@ -60,7 +59,7 @@ class Auth0 {
 
   /**
    * Provides access to direct authentication methods (e.g., password-realm).
-   * @see IAuthenticationProvider
+   * @see AuthenticationProvider
    */
   get auth() {
     return this.client.auth;
@@ -100,24 +99,6 @@ class Auth0 {
   }
 
   /**
-   * Provides access to the Management API (e.g., for user patching).
-   * @param token An access token with the required permissions for the management operations.
-   * @param tokenType Optional token type ('Bearer' or 'DPoP'). Defaults to the client's configured token type.
-   *
-   * @deprecated Will be removed in v6. Calling the Management API from a client
-   * requires an over-privileged token that cannot be kept secret in a mobile app
-   * or browser, so move these operations to a backend you control (a BFF). To read
-   * the current user's profile, use {@link Auth0.auth}'s `userInfo()` or the `user`
-   * object from `useAuth0()` instead — neither needs the Management API.
-   */
-  users(token: string, tokenType?: TokenType) {
-    console.warn(
-      '`users()` is deprecated and will be removed in v6. Move Management API calls to a backend you control. To read the current user profile, use `auth.userInfo()` or the `user` object from `useAuth0()`.'
-    );
-    return this.client.users(token, tokenType);
-  }
-
-  /**
    * Generates DPoP headers for making authenticated requests to custom APIs.
    * This method creates the necessary HTTP headers (Authorization and DPoP) to
    * securely bind the access token to a specific API request.
@@ -141,7 +122,7 @@ class Auth0 {
    * }
    * ```
    */
-  getDPoPHeaders(params: DPoPHeadersParams) {
+  getDPoPHeaders(params: DPoPHeadersParameters) {
     return this.client.getDPoPHeaders(params);
   }
 
@@ -184,7 +165,7 @@ class Auth0 {
    * const credentials = await auth0.mfa.verify({ mfaToken, otp: '123456' });
    * ```
    */
-  get mfa(): IMfaClient {
+  get mfa(): MfaClient {
     return this.client.mfa;
   }
 

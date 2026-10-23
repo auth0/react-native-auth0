@@ -13,6 +13,28 @@ To run the example application inside the repository, follow these steps:
 
 The application will be built and launched on the specified platform, allowing you to interact with it.
 
+To run the web example, run `yarn web` from the `example` directory and open the served URL.
+
+### Layout
+
+The app has no navigation. `App.tsx` (native) renders a single sectioned
+`ScrollView`, one section per SDK feature group: Web Auth, Credentials Manager,
+Direct Auth API (native only), Passwordless (native only), MFA, My Account,
+Passkeys, and Advanced Tokens. `App.web.tsx` is a single file covering the
+web-supported features only, with web-specific methods labelled inline.
+
+Each native feature has two files under `src/features/`:
+
+- `FeatureHooks.tsx` — the `useAuth0()` hooks approach. These are the files the
+  app actually imports and renders.
+- `FeatureClass.tsx` — the same feature written against the `Auth0` class
+  instance (`src/shared/api.ts`), kept as unused side-by-side reference. Nothing
+  imports these; they exist to show the class API next to the hooks API.
+
+Platform-specific methods carry the platform in their label (e.g.
+`resumeSession (Android)`, `cancelWebAuth (iOS)`, `saveCredentials (Native only)`).
+There is no custom styling — only default React Native components with spacing.
+
 ### To run on different Auth0 Application
 
 1. Change the `clientId` and `domain` value in `example/src/auth0-configuration.js`

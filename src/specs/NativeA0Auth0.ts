@@ -26,7 +26,8 @@ export interface Spec extends TurboModule {
       { [key: string]: string | Int32 | boolean } | undefined,
     useDPoP: boolean | undefined,
     maxRetries: Int32,
-    credentialsManagerStorageKey: string | undefined
+    credentialsManagerStorageKey: string | undefined,
+    networkingOptions: Object | undefined
   ): Promise<void>;
 
   /**
@@ -55,6 +56,12 @@ export interface Spec extends TurboModule {
    * Clear credentials
    */
   clearCredentials(): Promise<void>;
+
+  /**
+   * Clear all credentials from the underlying secure storage, including any API
+   * credentials for every audience. May remove non-Auth0 data if the store is shared.
+   */
+  clearAll(): Promise<void>;
 
   /**
    * Get API credentials for a specific audience
@@ -95,7 +102,8 @@ export interface Spec extends TurboModule {
     safariViewControllerPresentationStyle: Int32 | undefined,
     additionalParameters: { [key: string]: string } | undefined,
     allowedBrowserPackages: string[] | undefined,
-    useTrustedWebActivity: boolean
+    useTrustedWebActivity: boolean,
+    useAuthTab: boolean
   ): Promise<Credentials>;
 
   /**
@@ -106,7 +114,8 @@ export interface Spec extends TurboModule {
     federated: boolean,
     redirectUri: string,
     allowedBrowserPackages: string[] | undefined,
-    useTrustedWebActivity: boolean
+    useTrustedWebActivity: boolean,
+    useAuthTab: boolean
   ): Promise<void>;
 
   /**
@@ -152,7 +161,7 @@ export interface Spec extends TurboModule {
   ): Promise<{
     sessionTransferToken: string;
     tokenType: string;
-    expiresIn: Int32;
+    expiresAt: number;
     idToken?: string;
     refreshToken?: string;
   }>;

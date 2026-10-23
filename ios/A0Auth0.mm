@@ -2,9 +2,7 @@
 
 #import <React/RCTUtils.h>
 
-#ifdef RCT_NEW_ARCH_ENABLED
 #import "RNAuth0Spec/RNAuth0Spec.h"
-#endif
 
 /**
  * This preprocessor directive resolves the static linking issue by ensuring
@@ -23,7 +21,7 @@
 #define ERROR_CANCELLED @{@"error": @"a0.session.user_cancelled",@"error_description": @"User cancelled the Auth"}
 #define ERROR_FAILED_TO_LOAD @{@"error": @"a0.session.failed_load",@"error_description": @"Failed to load url"}
 
-@interface A0Auth0 ()
+@interface A0Auth0 () <NativeA0Auth0Spec>
 @property (strong, nonatomic) NativeBridge *nativeBridge;
 @property (strong, nonatomic) A0MyAccount *myAccount;
 @property (strong, nonatomic) A0Passwordless *passwordless;
@@ -49,8 +47,14 @@ RCT_EXPORT_METHOD(cancelWebAuth:(RCTPromiseResolveBlock)resolve
 
 
 RCT_EXPORT_METHOD(clearCredentials:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject) { 
+                  reject:(RCTPromiseRejectBlock)reject) {
     [self.nativeBridge clearCredentialsWithResolve:resolve reject:reject];
+}
+
+
+RCT_EXPORT_METHOD(clearAll:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.nativeBridge clearAllWithResolve:resolve reject:reject];
 }
 
 
@@ -102,9 +106,13 @@ RCT_EXPORT_METHOD(initializeAuth0WithConfiguration:(NSString *)clientId
                                   useDPoP:(nonnull NSNumber *)useDPoP
                                maxRetries:(double)maxRetries
             credentialsManagerStorageKey:(NSString * _Nullable)credentialsManagerStorageKey
+                  networkingOptions:(NSDictionary * _Nullable)networkingOptions
                                  resolve:(RCTPromiseResolveBlock)resolve
                                   reject:(RCTPromiseRejectBlock)reject) {
-    [self tryAndInitializeNativeBridge:clientId domain:domain withLocalAuthenticationOptions:localAuthenticationOptions useDPoP:useDPoP maxRetries:(NSInteger)maxRetries credentialsManagerStorageKey:credentialsManagerStorageKey resolve:resolve reject:reject];
+    // networkingOptions is otherwise Android-only; on iOS we honor just `enableLogging`,
+    // which maps to Auth0.swift's `.logging(enabled:)` (HTTP tracing; request headers and bodies are logged as-is, only responses are redacted).
+    BOOL enableLogging = [networkingOptions[@"enableLogging"] boolValue];
+    [self tryAndInitializeNativeBridge:clientId domain:domain withLocalAuthenticationOptions:localAuthenticationOptions useDPoP:useDPoP maxRetries:(NSInteger)maxRetries credentialsManagerStorageKey:credentialsManagerStorageKey enableLogging:enableLogging resolve:resolve reject:reject];
 }
 
 
@@ -146,6 +154,7 @@ safariViewControllerPresentationStyle:(nonnull NSNumber *)safariViewControllerPr
 additionalParameters:(NSDictionary * _Nullable)additionalParameters
  allowedBrowserPackages:(NSArray * _Nullable)allowedBrowserPackages
  useTrustedWebActivity:(BOOL)useTrustedWebActivity
+        useAuthTab:(BOOL)useAuthTab
         resolve:(RCTPromiseResolveBlock)resolve
          reject:(RCTPromiseRejectBlock)reject) {
     NSInteger maxAgeValue = maxAge != nil ? (NSInteger)[maxAge doubleValue] : 0;
@@ -162,6 +171,7 @@ RCT_EXPORT_METHOD(webAuthLogout:(NSString *)scheme
           redirectUri:(NSString *)redirectUri
  allowedBrowserPackages:(NSArray * _Nullable)allowedBrowserPackages
  useTrustedWebActivity:(BOOL)useTrustedWebActivity
+        useAuthTab:(BOOL)useAuthTab
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject) {
     [self.nativeBridge webAuthLogoutWithScheme:scheme federated:federated redirectUri:redirectUri resolve:resolve reject:reject];
@@ -409,17 +419,15 @@ UIBackgroundTaskIdentifier taskId;
     return valid;
 }
 
-- (void)tryAndInitializeNativeBridge:(NSString *)clientId domain:(NSString *)domain withLocalAuthenticationOptions:(NSDictionary*) options useDPoP:(NSNumber *)useDPoP maxRetries:(NSInteger)maxRetries credentialsManagerStorageKey:(NSString * _Nullable)credentialsManagerStorageKey resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+- (void)tryAndInitializeNativeBridge:(NSString *)clientId domain:(NSString *)domain withLocalAuthenticationOptions:(NSDictionary*) options useDPoP:(NSNumber *)useDPoP maxRetries:(NSInteger)maxRetries credentialsManagerStorageKey:(NSString * _Nullable)credentialsManagerStorageKey enableLogging:(BOOL)enableLogging resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     BOOL useDPoPBool = [useDPoP boolValue];
-    NativeBridge *bridge = [[NativeBridge alloc] initWithClientId:clientId domain:domain localAuthenticationOptions:options useDPoP:useDPoPBool maxRetries:maxRetries credentialsManagerStorageKey:credentialsManagerStorageKey resolve:resolve reject:reject];
+    NativeBridge *bridge = [[NativeBridge alloc] initWithClientId:clientId domain:domain localAuthenticationOptions:options useDPoP:useDPoPBool maxRetries:maxRetries credentialsManagerStorageKey:credentialsManagerStorageKey enableLogging:enableLogging resolve:resolve reject:reject];
     self.nativeBridge = bridge;
-    self.myAccount = [[A0MyAccount alloc] initWithDomain:domain useDPoP:useDPoPBool];
-    self.passwordless = [[A0Passwordless alloc] initWithClientId:clientId domain:domain useDPoP:useDPoPBool];
+    self.myAccount = [[A0MyAccount alloc] initWithDomain:domain useDPoP:useDPoPBool enableLogging:enableLogging];
+    self.passwordless = [[A0Passwordless alloc] initWithClientId:clientId domain:domain useDPoP:useDPoPBool enableLogging:enableLogging];
 }
-#ifdef RCT_NEW_ARCH_ENABLED
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params { 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params {
     return std::make_shared<facebook::react::NativeA0Auth0SpecJSI>(params);
 }
-#endif
 
 @end

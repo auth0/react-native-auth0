@@ -1,4 +1,4 @@
-import type { IPasswordlessClient } from '../../../core/interfaces';
+import type { PasswordlessClient } from '../../../core/interfaces';
 import type {
   Credentials,
   PasswordlessChallenge,
@@ -10,7 +10,7 @@ import { AuthError } from '../../../core/models';
 
 const NOT_SUPPORTED = 'Passwordless OTP is not supported on the web platform';
 
-export class WebPasswordlessClient implements IPasswordlessClient {
+export class WebPasswordlessClient implements PasswordlessClient {
   async challengeWithEmail(
     _parameters: PasswordlessChallengeEmailParameters
   ): Promise<PasswordlessChallenge> {

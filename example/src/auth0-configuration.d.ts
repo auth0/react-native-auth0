@@ -3,6 +3,7 @@ interface Auth0Configuration {
   clientId: string;
   domainSecondScreen: string;
   clientIdSecondScreen: string;
+  useDPoP?: boolean;
 }
 
 declare const config: Auth0Configuration;
