@@ -1,5 +1,13 @@
 # Change Log
 
+## [v5.11.4](https://github.com/auth0/react-native-auth0/tree/v5.11.4) (2026-10-26)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.11.3...v5.11.4)
+
+**Fixed**
+
+- fix(android): bump Auth0.Android to 3.21.3 to keep users logged in after upgrade [\#1706](https://github.com/auth0/react-native-auth0/pull/1706) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.11.3](https://github.com/auth0/react-native-auth0/tree/v5.11.3) (2026-10-22)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.11.2...v5.11.3)
