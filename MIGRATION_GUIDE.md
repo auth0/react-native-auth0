@@ -59,7 +59,7 @@ npx expo prebuild --clean
 
 ### 3. Android: minSdk 26 & JDK 17 ✅
 
-v6 adopts **Auth0.Android 4.1.0**, which raises the SDK's build floors. These are inherited by your app.
+v6 adopts **Auth0.Android 4.2.1**, which raises the SDK's build floors. These are inherited by your app.
 
 | Setting        | v5.x  | v6.0        |
 | :------------- | :---- | :---------- |
