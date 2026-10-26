@@ -236,8 +236,10 @@ public class NativeBridge: NSObject {
     }
     
     @objc public func getCredentials(scope: String?, minTTL: Int, parameters: [String: Any], forceRefresh: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        let backgroundTask = CredentialsBackgroundTask(name: "Auth0.getCredentials")
         if(forceRefresh) {
             credentialsManager.renew(parameters: parameters) { result in
+                defer { backgroundTask.end() }
                 switch result {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
@@ -247,6 +249,7 @@ public class NativeBridge: NSObject {
             }
         } else {
             credentialsManager.credentials(withScope: scope, minTTL: minTTL, parameters: parameters) { result in
+                defer { backgroundTask.end() }
                 switch result {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
@@ -297,7 +300,9 @@ public class NativeBridge: NSObject {
 
     @objc public func getSSOCredentials(parameters: [String: Any], headers: [String: Any], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let stringHeaders = headers.compactMapValues { $0 as? String }
+        let backgroundTask = CredentialsBackgroundTask(name: "Auth0.getSSOCredentials")
         credentialsManager.ssoCredentials(parameters: parameters, headers: stringHeaders) { result in
+            defer { backgroundTask.end() }
             switch result {
             case .success(let ssoCredentials):
                 var response: [String: Any] = [
@@ -405,7 +410,9 @@ public class NativeBridge: NSObject {
     }
     
     @objc public func getApiCredentials(audience: String, scope: String?, minTTL: Int, parameters: [String: Any], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        let backgroundTask = CredentialsBackgroundTask(name: "Auth0.getApiCredentials")
         credentialsManager.apiCredentials(forAudience: audience, scope: scope, minTTL: minTTL, parameters: parameters) { result in
+            defer { backgroundTask.end() }
             switch result {
             case .success(let credentials):
                 resolve(credentials.asDictionary())
