@@ -23,11 +23,11 @@ Apply these on every task in this repo — they keep changes correct, small, and
 
 **react-native-auth0** is a cross-platform React Native SDK that bridges Auth0's native SDKs (Auth0.swift, Auth0.Android) behind a unified TypeScript API, and wraps `@auth0/auth0-spa-js` on web.
 
-- **Language:** TypeScript 5.9 (strict mode, `verbatimModuleSyntax`)
+- **Language:** TypeScript 6.0 (strict mode, `verbatimModuleSyntax`)
 - **Tech Stack:** React Native (New Architecture / TurboModules), iOS (Swift + ObjC++), Android (Kotlin), web (auth0-spa-js)
 - **Package Manager:** Yarn (Berry, `.yarnrc.yml`); Node pinned via `.nvmrc` (v22.21.0)
 - **Minimum Platform Version:** React Native ≥ 0.78.0, React ≥ 19.0.0 (peer deps); iOS/Android minimums come from the native SDKs
-- **Dependencies:** `@auth0/auth0-spa-js` 2.24.0, `jwt-decode` 4, `base-64`, `url` · test: Jest 29 + `fetch-mock`, `@testing-library/react`. See `package.json` for the authoritative list.
+- **Dependencies:** `@auth0/auth0-spa-js` 2.29.0, `jwt-decode` 4, `base-64`, `url` · test: Jest 29 + `fetch-mock`, `@testing-library/react`. See `package.json` for the authoritative list.
 
 ---
 

@@ -155,7 +155,21 @@ Re-declare the activity manually with `tools:node="remove"` in your app's Androi
 
 #### iOS
 
-Inside the `ios` folder find the file `AppDelegate.[swift|m]` add the following to it:
+Forward incoming URLs to React Native so the login callback can be processed. Where to do that depends on your app's lifecycle.
+
+React Native 0.88 and later use the UIScene lifecycle. Inside the `ios` folder find the file `SceneDelegate.swift` and add the following to it (new projects already include these methods):
+
+```swift
+func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+  RCTLinkingManager.scene(scene, openURLContexts: URLContexts)
+}
+
+func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+  RCTLinkingManager.scene(scene, continue: userActivity)
+}
+```
+
+React Native 0.87 and earlier use the AppDelegate. Inside the `ios` folder find the file `AppDelegate.[swift|m]` and add the following to it:
 
 For Objective-C:
 

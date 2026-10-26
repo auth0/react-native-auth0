@@ -11,6 +11,7 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		815544A03F48449898D8605F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = C63DF729B29B9546313C3403 /* PrivacyInfo.xcprivacy */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		DEC82092E478053ACF00F791 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8D115037765DAD417155A /* SceneDelegate.swift */; };
 		E99D02CA2DCD372E003D3E67 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E99D02C92DCD372E003D3E67 /* AppDelegate.swift */; };
 		E99D02D32DCD3730003D3E67 /* PasskeyModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = E99D02D02DCD3730003D3E67 /* PasskeyModule.swift */; };
 		E99D02D42DCD3730003D3E67 /* PasskeyModule.m in Sources */ = {isa = PBXBuildFile; fileRef = E99D02D12DCD3730003D3E67 /* PasskeyModule.m */; };
@@ -36,6 +37,7 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-Auth0Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Auth0Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Auth0Example/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C63DF729B29B9546313C3403 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Auth0Example/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		D2D8D115037765DAD417155A /* SceneDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		E99D02C92DCD372E003D3E67 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E99D02D02DCD3730003D3E67 /* PasskeyModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PasskeyModule.swift; path = Auth0Example/PasskeyModule.swift; sourceTree = "<group>"; };
 		E99D02D12DCD3730003D3E67 /* PasskeyModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PasskeyModule.m; path = Auth0Example/PasskeyModule.m; sourceTree = "<group>"; };
@@ -73,6 +75,7 @@
 				E99D02D02DCD3730003D3E67 /* PasskeyModule.swift */,
 				E99D02D12DCD3730003D3E67 /* PasskeyModule.m */,
 				E99D02D22DCD3730003D3E67 /* Auth0Example-Bridging-Header.h */,
+				D2D8D115037765DAD417155A /* SceneDelegate.swift */,
 			);
 			name = Auth0Example;
 			sourceTree = "<group>";
@@ -333,6 +336,7 @@
 				E99D02CA2DCD372E003D3E67 /* AppDelegate.swift in Sources */,
 				E99D02D32DCD3730003D3E67 /* PasskeyModule.swift in Sources */,
 				E99D02D42DCD3730003D3E67 /* PasskeyModule.m in Sources */,
+				DEC82092E478053ACF00F791 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
