@@ -9,3 +9,5 @@ export {
   MyAccountError,
   TimeoutError,
 } from '../index';
+
+export { ApiCredentials } from '../core/models';
