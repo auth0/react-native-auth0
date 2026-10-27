@@ -12,7 +12,7 @@ import {
   type PushNotificationEnrollmentChallengeResponse as SpaPushEnrollmentChallengeResponse,
   type RecoveryCodeEnrollmentChallengeResponse as SpaRecoveryCodeEnrollmentChallengeResponse,
 } from '@auth0/auth0-spa-js';
-import type { IMyAccountClient } from '../../../core/interfaces';
+import type { MyAccountClient } from '../../../core/interfaces';
 import type {
   PasskeyEnrollmentChallengeParameters,
   PasskeyEnrollmentChallengeResponse,
@@ -54,7 +54,7 @@ import {
  * signed with its own keypair — so DPoP My Account calls only succeed when the
  * passed token was issued by this same spa-js client. Bearer tokens always work.
  */
-export class WebMyAccountClient implements IMyAccountClient {
+export class WebMyAccountClient implements MyAccountClient {
   private readonly spaClient: Auth0Client;
   private readonly apiBase: string;
   private readonly useDPoP: boolean;

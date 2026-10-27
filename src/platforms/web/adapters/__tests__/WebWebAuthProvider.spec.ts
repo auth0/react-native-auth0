@@ -79,6 +79,79 @@ describe('WebWebAuthProvider', () => {
       });
     });
 
+    it('should parse invitation and organization from invitationUrl', () => {
+      mockFinalizeScope.mockReturnValue('openid profile email');
+
+      provider.authorize({
+        invitationUrl:
+          'https://app.com/login?invitation=inv123&organization=org_abc',
+      });
+
+      expect(mockSpaClient.loginWithRedirect).toHaveBeenCalledWith({
+        authorizationParams: {
+          invitation: 'inv123',
+          organization: 'org_abc',
+          scope: 'openid profile email',
+          redirect_uri: undefined,
+        },
+      });
+    });
+
+    it('should map maxAge to the OIDC max_age param', () => {
+      mockFinalizeScope.mockReturnValue('openid profile email');
+
+      provider.authorize({ maxAge: 30 });
+
+      expect(mockSpaClient.loginWithRedirect).toHaveBeenCalledWith({
+        authorizationParams: {
+          max_age: 30,
+          scope: 'openid profile email',
+          redirect_uri: undefined,
+        },
+      });
+    });
+
+    it('should map maxAge of 0 to force re-authentication', () => {
+      mockFinalizeScope.mockReturnValue('openid profile email');
+
+      provider.authorize({ maxAge: 0 });
+
+      expect(mockSpaClient.loginWithRedirect).toHaveBeenCalledWith({
+        authorizationParams: {
+          max_age: 0,
+          scope: 'openid profile email',
+          redirect_uri: undefined,
+        },
+      });
+    });
+
+    it('should flatten additionalParameters onto authorizationParams', () => {
+      mockFinalizeScope.mockReturnValue('openid profile email');
+
+      provider.authorize({ additionalParameters: { prompt: 'login' } });
+
+      expect(mockSpaClient.loginWithRedirect).toHaveBeenCalledWith({
+        authorizationParams: {
+          prompt: 'login',
+          scope: 'openid profile email',
+          redirect_uri: undefined,
+        },
+      });
+    });
+
+    it('should not forward invitationUrl itself to spa-js', () => {
+      mockFinalizeScope.mockReturnValue('openid profile email');
+
+      provider.authorize({ invitationUrl: 'https://app.com/login' });
+
+      expect(mockSpaClient.loginWithRedirect).toHaveBeenCalledWith({
+        authorizationParams: {
+          scope: 'openid profile email',
+          redirect_uri: undefined,
+        },
+      });
+    });
+
     it('should return a never-resolving promise to simulate redirect behavior', async () => {
       const authorizePromise = provider.authorize({});
       const timeout = new Promise((resolve) => setTimeout(resolve, 100));

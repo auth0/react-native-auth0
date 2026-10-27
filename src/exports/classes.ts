@@ -1,9 +1,13 @@
 export {
+  Auth0,
   AuthError,
   CredentialsManagerError,
   WebAuthError,
   DPoPError,
+  MfaError,
   PasskeyError,
-} from '../core/models';
-export { default as Auth0 } from '../Auth0';
-export { TimeoutError } from '../core/utils/fetchWithTimeout';
+  MyAccountError,
+  TimeoutError,
+} from '../index';
+
+export { ApiCredentials } from '../core/models';

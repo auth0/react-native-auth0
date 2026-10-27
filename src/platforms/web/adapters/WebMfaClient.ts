@@ -1,5 +1,5 @@
 import type { MfaApiClient } from '@auth0/auth0-spa-js';
-import type { IMfaClient } from '../../../core/interfaces';
+import type { MfaClient } from '../../../core/interfaces';
 import type {
   Credentials,
   MfaAuthenticator,
@@ -15,7 +15,7 @@ import type {
 } from '../../../types';
 import { AuthError, MfaError } from '../../../core/models';
 
-export class WebMfaClient implements IMfaClient {
+export class WebMfaClient implements MfaClient {
   private readonly spaMfa: MfaApiClient;
   private readonly tokenType: string;
 

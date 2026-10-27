@@ -11,10 +11,6 @@ import type {
   LoginEmailParameters,
   PasswordlessSmsParameters,
   LoginSmsParameters,
-  MfaChallengeParameters,
-  LoginOobParameters,
-  LoginOtpParameters,
-  LoginRecoveryCodeParameters,
   ExchangeNativeSocialParameters,
   CustomTokenExchangeParameters,
   PasskeySignupChallengeParameters,
@@ -24,12 +20,11 @@ import type {
   SSOExchangeParameters,
   RevokeOptions,
   ResetPasswordParameters,
-  MfaChallengeResponse,
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   SessionTransferCredentials,
 } from '../types';
-import type { IMfaClient } from '../core/interfaces/IMfaClient';
-import type { IMyAccountClient } from '../core/interfaces';
+import type { MfaClient } from '../core/interfaces/MfaClient';
+import type { MyAccountClient } from '../core/interfaces';
 import type {
   PasswordlessChallenge,
   PasswordlessChallengeEmailParameters,
@@ -104,6 +99,18 @@ export interface Auth0ContextInterface extends AuthState {
    * @returns A promise that resolves when the credentials have been cleared.
    */
   clearCredentials: () => Promise<void>;
+
+  /**
+   * Clears all credentials from secure storage, including any API credentials for
+   * every audience, and logs the user out locally.
+   *
+   * @remarks
+   * **Platform specific:** on native this wipes the entire storage backing the
+   * credentials manager and may remove non-Auth0 data if that store is shared.
+   * On web it is equivalent to `clearCredentials`.
+   * @returns A promise that resolves when the storage has been cleared.
+   */
+  clearAll: () => Promise<void>;
 
   /**
    * Checks if a valid, non-expired set of credentials exists in storage.
@@ -291,7 +298,7 @@ export interface Auth0ContextInterface extends AuthState {
    * const methods = await myAccount.getAuthenticationMethods({ accessToken });
    * ```
    */
-  myAccount: IMyAccountClient;
+  myAccount: MyAccountClient;
 
   /**
    * Provides access to the Passwordless OTP flow for database connections.
@@ -355,51 +362,6 @@ export interface Auth0ContextInterface extends AuthState {
    */
   authorizeWithSMS: (parameters: LoginSmsParameters) => Promise<Credentials>;
 
-  /**
-   * Sends a multifactor challenge to the user.
-   * @param parameters The parameters for the multifactor challenge.
-   * @returns A promise that resolves when the challenge has been sent.
-   * @throws {AuthError} If sending the challenge fails.
-   *
-   * @deprecated Will be removed in v6. Use `mfa.challenge({ mfaToken, authenticatorId })`,
-   * where `authenticatorId` is required — list them with `mfa.getAuthenticators({ mfaToken })`.
-   */
-  sendMultifactorChallenge: (
-    parameters: MfaChallengeParameters
-  ) => Promise<MfaChallengeResponse>;
-
-  /**
-   * Authorizes a user with out-of-band (OOB) authentication.
-   * @param parameters The parameters for OOB authorization.
-   * @returns A promise that resolves with the user's credentials.
-   * @throws {AuthError} If the authorization fails.
-   *
-   * @deprecated Will be removed in v6. Use `mfa.verify({ mfaToken, oobCode, bindingCode })`.
-   */
-  authorizeWithOOB: (parameters: LoginOobParameters) => Promise<Credentials>;
-
-  /**
-   * Authorizes a user with a one-time password (OTP).
-   * @param parameters The parameters for OTP authorization.
-   * @returns A promise that resolves with the user's credentials.
-   * @throws {AuthError} If the authorization fails.
-   *
-   * @deprecated Will be removed in v6. Use `mfa.verify({ mfaToken, otp })`.
-   */
-  authorizeWithOTP: (parameters: LoginOtpParameters) => Promise<Credentials>;
-
-  /**
-   * Authorizes a user with a recovery code.
-   * @param parameters The parameters for recovery code authorization.
-   * @returns A promise that resolves with the user's credentials.
-   * @throws {AuthError} If the authorization fails.
-   *
-   * @deprecated Will be removed in v6. Use `mfa.verify({ mfaToken, recoveryCode })`.
-   */
-  authorizeWithRecoveryCode: (
-    parameters: LoginRecoveryCodeParameters
-  ) => Promise<Credentials>;
-
   // Token Management
   revokeRefreshToken: (parameters: RevokeOptions) => Promise<void>;
 
@@ -428,7 +390,7 @@ export interface Auth0ContextInterface extends AuthState {
    * ```
    */
   getDPoPHeaders: (
-    params: DPoPHeadersParams
+    params: DPoPHeadersParameters
   ) => Promise<Record<string, string>>;
 
   /**
@@ -495,7 +457,7 @@ export interface Auth0ContextInterface extends AuthState {
    * const credentials = await mfa.verify({ mfaToken, otp: '123456' });
    * ```
    */
-  mfa: IMfaClient;
+  mfa: MfaClient;
 
   /**
    * Exchanges a refresh token for session transfer credentials via the Authentication API.
@@ -531,6 +493,7 @@ const initialContext: Auth0ContextInterface = {
   saveCredentials: stub,
   getCredentials: stub,
   clearCredentials: stub,
+  clearAll: stub,
   hasValidCredentials: stub,
   getApiCredentials: stub,
   clearApiCredentials: stub,
@@ -539,7 +502,6 @@ const initialContext: Auth0ContextInterface = {
   resumeSession: stub,
   authorizeWithExchange: stub,
   createUser: stub,
-  authorizeWithRecoveryCode: stub,
   authorizeWithExchangeNativeSocial: stub,
   customTokenExchange: stub,
   passkeySignupChallenge: stub,
@@ -573,9 +535,6 @@ const initialContext: Auth0ContextInterface = {
   sendSMSCode: stub,
   authorizeWithEmail: stub,
   authorizeWithSMS: stub,
-  sendMultifactorChallenge: stub,
-  authorizeWithOOB: stub,
-  authorizeWithOTP: stub,
   resetPassword: stub,
   revokeRefreshToken: stub,
   getDPoPHeaders: stub,

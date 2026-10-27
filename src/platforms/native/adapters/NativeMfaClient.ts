@@ -1,5 +1,5 @@
-import type { IMfaClient } from '../../../core/interfaces';
-import type { INativeBridge } from '../bridge';
+import type { MfaClient } from '../../../core/interfaces';
+import type { NativeBridge } from '../bridge';
 import type {
   Credentials,
   MfaAuthenticator,
@@ -18,10 +18,10 @@ import type {
 } from '../../../types';
 import { AuthError, MfaError } from '../../../core/models';
 
-export class NativeMfaClient implements IMfaClient {
-  private readonly bridge: INativeBridge;
+export class NativeMfaClient implements MfaClient {
+  private readonly bridge: NativeBridge;
 
-  constructor(bridge: INativeBridge) {
+  constructor(bridge: NativeBridge) {
     this.bridge = bridge;
   }
 

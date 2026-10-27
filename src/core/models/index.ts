@@ -7,8 +7,15 @@ export {
   CredentialsManagerError,
   CredentialsManagerErrorCodes,
 } from './CredentialsManagerError';
+export type { CredentialsManagerErrorCode } from './CredentialsManagerError';
 export { WebAuthError, WebAuthErrorCodes } from './WebAuthError';
+export type { WebAuthErrorCode } from './WebAuthError';
 export { DPoPError, DPoPErrorCodes } from './DPoPError';
+export type { DPoPErrorCode } from './DPoPError';
 export { MfaError, MfaErrorCodes } from './MfaError';
+export type { MfaErrorCode } from './MfaError';
 export { PasskeyError, PasskeyErrorCodes } from './PasskeyError';
-export { MyAccountError } from './MyAccountError';
+export type { PasskeyErrorCode } from './PasskeyError';
+export { MyAccountError, MyAccountErrorCodes } from './MyAccountError';
+export type { MyAccountErrorCode } from './MyAccountError';
+export type { Auth0ErrorCode } from './errorCodes';

@@ -3,6 +3,7 @@ import {
   CredentialsManagerErrorCodes,
   DPoPErrorCodes,
   MfaErrorCodes,
+  MyAccountErrorCodes,
 } from '../';
 
 describe('Error Code Constants', () => {
@@ -23,18 +24,15 @@ describe('Error Code Constants', () => {
       );
       expect(WebAuthErrorCodes.FAILED_TO_LOAD_URL).toBe('FAILED_TO_LOAD_URL');
       expect(WebAuthErrorCodes.BROWSER_TERMINATED).toBe('BROWSER_TERMINATED');
-      expect(WebAuthErrorCodes.NO_BUNDLE_IDENTIFIER).toBe(
-        'NO_BUNDLE_IDENTIFIER'
-      );
       expect(WebAuthErrorCodes.TRANSACTION_ACTIVE_ALREADY).toBe(
         'TRANSACTION_ACTIVE_ALREADY'
       );
-      expect(WebAuthErrorCodes.NO_AUTHORIZATION_CODE).toBe(
-        'NO_AUTHORIZATION_CODE'
-      );
       expect(WebAuthErrorCodes.PKCE_NOT_ALLOWED).toBe('PKCE_NOT_ALLOWED');
-      expect(WebAuthErrorCodes.INVALID_INVITATION_URL).toBe(
-        'INVALID_INVITATION_URL'
+      expect(WebAuthErrorCodes.AUTHENTICATION_FAILED).toBe(
+        'AUTHENTICATION_FAILED'
+      );
+      expect(WebAuthErrorCodes.CODE_EXCHANGE_FAILED).toBe(
+        'CODE_EXCHANGE_FAILED'
       );
       expect(WebAuthErrorCodes.INVALID_STATE).toBe('INVALID_STATE');
       expect(WebAuthErrorCodes.INVALID_CALLBACK_URL).toBe(
@@ -48,9 +46,9 @@ describe('Error Code Constants', () => {
       expect(WebAuthErrorCodes.UNKNOWN_ERROR).toBe('UNKNOWN_ERROR');
     });
 
-    it('should have exactly 19 error codes', () => {
+    it('should have exactly 18 error codes', () => {
       const keys = Object.keys(WebAuthErrorCodes);
-      expect(keys).toHaveLength(19);
+      expect(keys).toHaveLength(18);
     });
 
     it('should be immutable (as const)', () => {
@@ -108,6 +106,10 @@ describe('Error Code Constants', () => {
       expect(CredentialsManagerErrorCodes.API_EXCHANGE_FAILED).toBe(
         'API_EXCHANGE_FAILED'
       );
+      expect(CredentialsManagerErrorCodes.SSO_EXCHANGE_FAILED).toBe(
+        'SSO_EXCHANGE_FAILED'
+      );
+      expect(CredentialsManagerErrorCodes.CLEAR_FAILED).toBe('CLEAR_FAILED');
       expect(CredentialsManagerErrorCodes.INCOMPATIBLE_DEVICE).toBe(
         'INCOMPATIBLE_DEVICE'
       );
@@ -126,9 +128,9 @@ describe('Error Code Constants', () => {
       );
     });
 
-    it('should have exactly 19 error codes', () => {
+    it('should have exactly 21 error codes', () => {
       const keys = Object.keys(CredentialsManagerErrorCodes);
-      expect(keys).toHaveLength(19);
+      expect(keys).toHaveLength(21);
     });
 
     it('should be immutable (as const)', () => {
@@ -209,6 +211,52 @@ describe('Error Code Constants', () => {
       }
 
       expect(result).toBe('generation_failed');
+    });
+  });
+
+  describe('MyAccountErrorCodes', () => {
+    it('should export all expected error code constants', () => {
+      expect(MyAccountErrorCodes.UNAUTHORIZED).toBe('UNAUTHORIZED');
+      expect(MyAccountErrorCodes.INVALID_REQUEST).toBe('INVALID_REQUEST');
+      expect(MyAccountErrorCodes.ENROLLMENT_FAILED).toBe('ENROLLMENT_FAILED');
+      expect(MyAccountErrorCodes.VERIFICATION_FAILED).toBe(
+        'VERIFICATION_FAILED'
+      );
+      expect(MyAccountErrorCodes.NOT_FOUND).toBe('NOT_FOUND');
+      expect(MyAccountErrorCodes.CONFLICT).toBe('CONFLICT');
+      expect(MyAccountErrorCodes.TOO_MANY_REQUESTS).toBe('TOO_MANY_REQUESTS');
+      expect(MyAccountErrorCodes.MY_ACCOUNT_ERROR).toBe('MY_ACCOUNT_ERROR');
+      expect(MyAccountErrorCodes.UNKNOWN_MY_ACCOUNT_ERROR).toBe(
+        'UNKNOWN_MY_ACCOUNT_ERROR'
+      );
+    });
+
+    it('should have exactly 9 error codes', () => {
+      const keys = Object.keys(MyAccountErrorCodes);
+      expect(keys).toHaveLength(9);
+    });
+
+    it('should be immutable (as const)', () => {
+      expect(MyAccountErrorCodes).toBeDefined();
+      expect(typeof MyAccountErrorCodes).toBe('object');
+    });
+
+    it('should be usable in switch statements', () => {
+      const testErrorType = 'UNAUTHORIZED';
+      let result = '';
+
+      switch (testErrorType) {
+        case MyAccountErrorCodes.UNAUTHORIZED:
+          result = 'unauthorized';
+          break;
+        case MyAccountErrorCodes.NOT_FOUND:
+          result = 'not_found';
+          break;
+        default:
+          result = 'unknown';
+      }
+
+      expect(result).toBe('unauthorized');
     });
   });
 
