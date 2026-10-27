@@ -41,7 +41,7 @@ export type Credentials = {
    * credential retrieval fails with a `SESSION_EXPIRED` `CredentialsManagerError` and the user must
    * re-authenticate. It is surfaced here for display purposes only.
    *
-   * @remarks Available on iOS, Android, and web. The value is derived from the `session_expiry`
+   * Available on iOS, Android, and web. The value is derived from the `session_expiry`
    * claim of the current ID token.
    *
    * **Android only**: the credentials manager reports the ceiling pinned at the initial login
