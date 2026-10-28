@@ -15,6 +15,7 @@ import type {
   MfaEnrollmentChallenge,
   MfaChallengeResult,
   DPoPHeadersParameters,
+  PasskeyVerificationMethod,
 } from 'react-native-auth0';
 
 import config from './auth0-configuration';
@@ -894,6 +895,15 @@ function MyAccountSection() {
 // Hooks — Passkeys (browser WebAuthn)
 // ============================================================
 
+// Asks the user for the one-time code Auth0 sent to each identifier.
+const promptForCodes = (methods: PasskeyVerificationMethod[]) =>
+  Object.fromEntries(
+    methods.map((method) => [
+      method,
+      window.prompt(`Enter the code sent to your ${method}`) ?? '',
+    ])
+  ) as Partial<Record<PasskeyVerificationMethod, string>>;
+
 function PasskeysSection() {
   const { passkeySignupChallenge, passkeyLoginChallenge, getTokenByPasskey } =
     useAuth0();
@@ -901,6 +911,7 @@ function PasskeysSection() {
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(false);
   const [passkeyEmail, setPasskeyEmail] = useState('');
+  const [passkeyPhone, setPasskeyPhone] = useState('');
 
   const onSignup = async () => {
     setResult(null);
@@ -909,8 +920,13 @@ function PasskeysSection() {
     try {
       const challenge = await passkeySignupChallenge({
         email: passkeyEmail || undefined,
+        phoneNumber: passkeyPhone || undefined,
         realm: 'Username-Password-Authentication',
       });
+      // Collect the one-time codes BEFORE creating the passkey, so the user can
+      // cancel before a passkey exists. Auth0 checks them only in
+      // getTokenByPasskey, so a failed exchange can still leave an unused one.
+      let verification = promptForCodes(challenge.verificationRequired ?? []);
       let credential: PublicKeyCredential;
       try {
         credential = (await navigator.credentials.create({
@@ -920,11 +936,31 @@ function PasskeysSection() {
       } catch (e) {
         throw new PasskeyError(e as Error);
       }
-      const creds = await getTokenByPasskey({
-        authSession: challenge.authSession,
-        authResponse: credential,
-        realm: 'Username-Password-Authentication',
-      });
+      // A wrong code can be retried with the SAME credential.
+      let authSession = challenge.authSession;
+      let creds;
+      for (let attempt = 1; ; attempt++) {
+        try {
+          creds = await getTokenByPasskey({
+            authSession,
+            authResponse: credential,
+            realm: 'Username-Password-Authentication',
+            verification,
+          });
+          break;
+        } catch (e) {
+          const retry =
+            e instanceof PasskeyError ? e.getVerificationRetryPayload() : null;
+          if (!retry || attempt >= 3) throw e;
+          authSession = retry.authSession ?? authSession;
+          verification = {
+            ...verification,
+            ...promptForCodes(
+              retry.verificationRequired ?? challenge.verificationRequired ?? []
+            ),
+          };
+        }
+      }
       setResult({
         success: true,
         accessToken: creds.accessToken.substring(0, 30) + '...',
@@ -982,10 +1018,16 @@ function PasskeysSection() {
           onChangeText={setPasskeyEmail}
           keyboardType="email-address"
         />
+        <TextInput
+          placeholder="Phone number (for signup, +12025550135)"
+          value={passkeyPhone}
+          onChangeText={setPasskeyPhone}
+          keyboardType="phone-pad"
+        />
         <Button
           title="passkeySignupChallenge() + getTokenByPasskey()"
           onPress={onSignup}
-          disabled={!passkeyEmail || loading}
+          disabled={(!passkeyEmail && !passkeyPhone) || loading}
         />
         <Button
           title="passkeyLoginChallenge() + getTokenByPasskey()"

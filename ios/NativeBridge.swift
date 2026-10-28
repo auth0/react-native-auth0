@@ -27,6 +27,7 @@ public class NativeBridge: NSObject {
     nonisolated static let dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     nonisolated static let credentialsManagerErrorCode = "CREDENTIAL_MANAGER_ERROR"
+    nonisolated static let passkeyVerificationRetryableErrorCode = "PASSKEY_VERIFICATION_RETRYABLE"
     nonisolated static let biometricsAuthenticationErrorCode = "BIOMETRICS_CONFIGURATION_ERROR"
 
     // DPoP error codes
@@ -476,7 +477,7 @@ public class NativeBridge: NSObject {
 
     // MARK: - Passkey Methods (challenge / exchange)
 
-    @objc public func passkeySignupChallenge(email: String?, phoneNumber: String?, username: String?, name: String?, givenName: String?, familyName: String?, nickname: String?, picture: String?, userMetadata: [String: String]?, realm: String?, organization: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func passkeySignupChallenge(email: String?, phoneNumber: String?, username: String?, name: String?, givenName: String?, familyName: String?, nickname: String?, picture: String?, userMetadata: [String: String]?, realm: String?, organization: String?, deliveryMethod: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         guard #available(iOS 16.6, *) else {
             reject("PASSKEY_NOT_AVAILABLE", "Passkeys require iOS 16.6 or later", nil)
             return
@@ -494,6 +495,8 @@ public class NativeBridge: NSObject {
         let userMetadataValue = userMetadata?.isEmpty == true ? nil : userMetadata
         let realmValue = realm?.isEmpty == true ? nil : realm
         let orgValue = organization?.isEmpty == true ? nil : organization
+        // An unknown value falls back to the server default, like `Passwordless.challengeWithPhoneNumber`.
+        let deliveryMethodValue = deliveryMethod.flatMap { DeliveryMethod(rawValue: $0) }
 
         var auth = Auth0.authentication(clientId: self.clientId, domain: self.domain)
         if self.useDPoP {
@@ -512,7 +515,8 @@ public class NativeBridge: NSObject {
             picture: pictureValue,
             userMetadata: userMetadataValue,
             connection: realmValue,
-            organization: orgValue
+            organization: orgValue,
+            deliveryMethod: deliveryMethodValue
         ).start { result in
             switch result {
             case .success(let challenge):
@@ -524,10 +528,15 @@ public class NativeBridge: NSObject {
                         "name": challenge.userName
                     ]
                 ]
-                let response: [String: Any] = [
+                var response: [String: Any] = [
                     "authSession": challenge.authenticationSession,
                     "authParamsPublicKey": authParamsPublicKey
                 ]
+                // Left out when no verification is needed, so existing signups see an unchanged response.
+                let verificationRequired = NativeBridge.verificationMethodNames(challenge.verificationRequired)
+                if !verificationRequired.isEmpty {
+                    response["verificationRequired"] = verificationRequired
+                }
                 resolve(response)
             case .failure(let error):
                 reject("PASSKEY_CHALLENGE_FAILED", error.localizedDescription, error)
@@ -571,7 +580,7 @@ public class NativeBridge: NSObject {
         }
     }
 
-    @objc public func getTokenByPasskey(authSession: String, authResponse: String, realm: String?, audience: String?, scope: String?, organization: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func getTokenByPasskey(authSession: String, authResponse: String, realm: String?, audience: String?, scope: String?, organization: String?, verification: [String: String]?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         guard #available(iOS 16.6, *) else {
             reject("PASSKEY_EXCHANGE_FAILED", "Passkeys require iOS 16.6 or later", nil)
             return
@@ -581,6 +590,15 @@ public class NativeBridge: NSObject {
         let audienceValue = audience?.isEmpty == true ? nil : audience
         let orgValue = organization?.isEmpty == true ? nil : organization
         let finalScope = scope?.isEmpty == true ? "openid profile email" : (scope ?? "openid profile email")
+        // Only the identifiers the SDK recognizes are forwarded, matching the Android bridge.
+        var verificationCodes: [PasskeyVerificationMethod: String] = [:]
+        for (identifier, code) in verification ?? [:] {
+            switch identifier {
+            case "email": verificationCodes[.email] = code
+            case "phone": verificationCodes[.phone] = code
+            default: break
+            }
+        }
 
         guard let responseData = authResponse.data(using: .utf8),
               let json = try? JSONSerialization.jsonObject(with: responseData) as? [String: Any],
@@ -623,13 +641,20 @@ public class NativeBridge: NSObject {
                 connection: realmValue,
                 audience: audienceValue,
                 scope: finalScope,
-                organization: orgValue
+                organization: orgValue,
+                verification: verificationCodes
             ).start { result in
                 switch result {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
                 case .failure(let error):
-                    reject("PASSKEY_EXCHANGE_FAILED", error.localizedDescription, error)
+                    if error.isPasskeyVerificationRetryable {
+                        reject(NativeBridge.passkeyVerificationRetryableErrorCode,
+                               error.localizedDescription,
+                               NativeBridge.passkeyVerificationRetryableError(from: error))
+                    } else {
+                        reject("PASSKEY_EXCHANGE_FAILED", error.localizedDescription, error)
+                    }
                 }
             }
         } else {
@@ -676,6 +701,31 @@ public class NativeBridge: NSObject {
                 }
             }
         }
+    }
+
+    /// The identifiers this SDK reports to JavaScript; ones it doesn't recognize are left out.
+    nonisolated private static func verificationMethodNames(_ methods: [PasskeyVerificationMethod]?) -> [String] {
+        return (methods ?? []).compactMap { method in
+            switch method {
+            case .email: return "email"
+            case .phone: return "phone"
+            case .unknown: return nil
+            }
+        }
+    }
+
+    /// An error whose `userInfo` reaches JavaScript with what a retry needs. React Native only forwards `userInfo`
+    /// from an `NSError`, and `AuthenticationError` doesn't carry it.
+    nonisolated private static func passkeyVerificationRetryableError(from error: AuthenticationError) -> NSError {
+        var userInfo: [String: Any] = [NSLocalizedDescriptionKey: error.localizedDescription]
+        if let authSession = error.passkeyAuthSession {
+            userInfo["authSession"] = authSession
+        }
+        let verificationRequired = verificationMethodNames(error.passkeyVerificationRequired)
+        if !verificationRequired.isEmpty {
+            userInfo["verificationRequired"] = verificationRequired
+        }
+        return NSError(domain: passkeyVerificationRetryableErrorCode, code: error.statusCode, userInfo: userInfo)
     }
 
     @objc public func getClientId() -> String {

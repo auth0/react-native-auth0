@@ -237,8 +237,13 @@ export interface Spec extends TurboModule {
     picture: string | undefined,
     userMetadata: { [key: string]: string } | undefined,
     realm: string | undefined,
-    organization: string | undefined
-  ): Promise<{ authSession: string; authParamsPublicKey: Object }>;
+    organization: string | undefined,
+    deliveryMethod: string | undefined
+  ): Promise<{
+    authSession: string;
+    authParamsPublicKey: Object;
+    verificationRequired?: string[];
+  }>;
 
   /**
    * Request a passkey login challenge from Auth0.
@@ -257,7 +262,8 @@ export interface Spec extends TurboModule {
     realm: string | undefined,
     audience: string | undefined,
     scope: string | undefined,
-    organization: string | undefined
+    organization: string | undefined,
+    verification: { [key: string]: string } | undefined
   ): Promise<Credentials>;
 
   /**

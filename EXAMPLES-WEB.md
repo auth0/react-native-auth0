@@ -285,6 +285,8 @@ Passkeys are supported on web via `@auth0/auth0-spa-js`. The flow is the same th
 
 Because `navigator.credentials.create()`/`.get()` require a user gesture, call `passkeySignupChallenge` / `passkeyLoginChallenge` from within a click handler (not, for example, from a `useEffect`).
 
+**Identifier verification.** When the database connection requires the user's email or phone number to be verified, `passkeySignupChallenge` returns `verificationRequired`. Collect a one-time code for each identifier **before** calling `navigator.credentials.create()`, then pass them as `verification` to `getTokenByPasskey`. A wrong code rejects with `PASSKEY_VERIFICATION_RETRYABLE`: read `error.getVerificationRetryPayload()` for `authSession` (the session to retry with) and `verificationRequired` (the identifiers to ask for again), then call `getTokenByPasskey` again with the same `PublicKeyCredential`. `deliveryMethod` (`'text'` or `'voice'`) chooses how a phone code is delivered. See [Signup with Passkey and Identifier Verification](./EXAMPLES.md#signup-with-passkey-identifier-verification) for the full flow.
+
 ```tsx
 import { useAuth0, PasskeyError } from 'react-native-auth0';
 

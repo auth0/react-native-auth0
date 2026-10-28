@@ -79,12 +79,12 @@ The library itself now builds with `targetSdk` 36. That does not change your app
 
 ### 4. iOS: Auth0.swift 3.0 ✅
 
-v6 adopts **Auth0.swift 3.0.1**, which is built with the **Swift 6** compiler.
+v6 adopts **Auth0.swift 3.2.0**, which is built with the **Swift 6** compiler.
 
 **✅ Action Required:**
 
 1. Your iOS deployment target must meet React Native 0.82's floor (`min_ios_version_supported`, currently **15.1**). The podspec inherits this value, so no explicit `platform :ios` bump is needed beyond what RN 0.82 already requires.
-2. Run `pod install --repo-update` in your `ios` directory to pick up Auth0.swift 3.0.1.
+2. Run `pod install --repo-update` in your `ios` directory to pick up Auth0.swift 3.2.0.
 3. Use **Xcode 16** or later.
 
 > See §9 for the public-API changes that come with these native majors.

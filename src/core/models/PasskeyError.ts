@@ -1,5 +1,7 @@
 import { AuthError } from './AuthError';
 import type { MfaRequiredErrorPayload } from '../../types/common';
+import { toVerificationMethods } from '../utils/passkeyVerification';
+import type { PasskeyVerificationRetryPayload } from '../../types/parameters';
 
 /**
  * Platform-agnostic error code constants for Passkey operations.
@@ -60,6 +62,14 @@ export const PasskeyErrorCodes = {
    * continue with the `mfa` client (`mfa.challenge()` / `mfa.verify()`).
    */
   MFA_REQUIRED: 'PASSKEY_MFA_REQUIRED',
+  /**
+   * A one-time code sent for passkey signup identifier verification was wrong
+   * while the session is still alive, so the signup can be retried.
+   * {@link PasskeyError.getVerificationRetryPayload} returns `authSession` (the
+   * session to retry with) and `verificationRequired` (the identifiers to ask
+   * for again). Call `getTokenByPasskey` again with the same credential.
+   */
+  VERIFICATION_RETRYABLE: 'PASSKEY_VERIFICATION_RETRYABLE',
   /** Unknown or uncategorized passkey error */
   UNKNOWN_ERROR: 'PASSKEY_UNKNOWN_ERROR',
 } as const;
@@ -83,6 +93,7 @@ const ERROR_CODE_MAP: Record<string, PasskeyErrorCode> = {
   PASSKEY_NOT_AVAILABLE: PasskeyErrorCodes.NOT_AVAILABLE,
   PASSKEY_CHALLENGE_FAILED: PasskeyErrorCodes.CHALLENGE_FAILED,
   PASSKEY_EXCHANGE_FAILED: PasskeyErrorCodes.EXCHANGE_FAILED,
+  PASSKEY_VERIFICATION_RETRYABLE: PasskeyErrorCodes.VERIFICATION_RETRYABLE,
   InvalidParameter: PasskeyErrorCodes.INVALID_PARAMETER,
 
   // --- Web platform (auth0-spa-js PasskeyApiClient / PasskeyClient) ---
@@ -92,6 +103,8 @@ const ERROR_CODE_MAP: Record<string, PasskeyErrorCode> = {
   passkey_challenge_error: PasskeyErrorCodes.CHALLENGE_FAILED,
   passkey_get_token_error: PasskeyErrorCodes.EXCHANGE_FAILED,
   passkey_invalid_credential: PasskeyErrorCodes.INVALID_CREDENTIAL,
+  // An OTP code in `verification` was empty; spa-js sends nothing.
+  missing_verification_code: PasskeyErrorCodes.INVALID_PARAMETER,
 
   // --- Web platform (auth0-spa-js token endpoint / OAuth2, surfaced via
   // GenericError and its subclasses during the token-exchange step —
@@ -213,6 +226,69 @@ export class PasskeyError extends AuthError {
       error: json.error ?? this.code,
       errorDescription: json.error_description ?? this.message,
       mfaRequirements: json.mfa_requirements,
+    };
+  }
+
+  /**
+   * Extracts what to retry with when this error is of type
+   * `PASSKEY_VERIFICATION_RETRYABLE`: a one-time code sent for passkey signup
+   * identifier verification was wrong, and the session is still usable.
+   *
+   * Collect the codes for `verificationRequired` again, then call
+   * `getTokenByPasskey` again with the **same** `authResponse` and the
+   * returned `authSession`. If `verificationRequired` is `undefined`, Auth0 did
+   * not say which identifiers failed: ask again for those of the original
+   * challenge.
+   *
+   * @returns The retry payload if this is a `VERIFICATION_RETRYABLE` error,
+   *   otherwise `null`.
+   *
+   * @example
+   * ```typescript
+   * let authSession = challenge.authSession;
+   * let verification = await promptForCodes(challenge.verificationRequired);
+   * for (let attempt = 1; ; attempt++) {
+   *   try {
+   *     return await auth0.getTokenByPasskey({
+   *       authSession,
+   *       authResponse: credential, // the same credential on every attempt
+   *       verification,
+   *     });
+   *   } catch (error) {
+   *     const retry =
+   *       error instanceof PasskeyError && error.getVerificationRetryPayload();
+   *     // not retryable, or out of attempts: restart the signup
+   *     if (!retry || attempt >= 3) throw error;
+   *     authSession = retry.authSession ?? authSession;
+   *     verification = {
+   *       ...verification,
+   *       ...(await promptForCodes(
+   *         retry.verificationRequired ?? challenge.verificationRequired
+   *       )),
+   *     };
+   *   }
+   * }
+   * ```
+   */
+  public getVerificationRetryPayload(): PasskeyVerificationRetryPayload | null {
+    if (this.type !== PasskeyErrorCodes.VERIFICATION_RETRYABLE) {
+      return null;
+    }
+
+    // Native: the bridge rejects with `userInfo`, and `NativeBridgeManager`
+    // keeps the whole native error on `json`. Web: `json` is the API error
+    // response of the failed token request (`auth_session`,
+    // `verification_required`), or the auth0-spa-js error itself (camelCase).
+    const json = this.json as Record<string, unknown> | undefined;
+    const source = (json?.userInfo ?? json) as
+      Record<string, unknown> | undefined;
+    const authSession = source?.authSession ?? source?.auth_session;
+    const verificationRequired =
+      source?.verificationRequired ?? source?.verification_required;
+
+    return {
+      authSession: typeof authSession === 'string' ? authSession : undefined,
+      verificationRequired: toVerificationMethods(verificationRequired),
     };
   }
 }

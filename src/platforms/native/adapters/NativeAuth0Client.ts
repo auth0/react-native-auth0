@@ -27,6 +27,7 @@ import { TokenType } from '../../../types/common';
 import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
 import {
   getConfigSignature,
+  toVerificationCodes,
   validateActorTokenParameters,
   validateTokenTypeUri,
 } from '../../../core/utils';
@@ -241,6 +242,7 @@ export class NativeAuth0Client implements Auth0Client {
       userMetadata,
       realm,
       organization,
+      deliveryMethod,
     } = parameters;
     try {
       return await this.guardedBridge.passkeySignupChallenge(
@@ -254,7 +256,8 @@ export class NativeAuth0Client implements Auth0Client {
         picture || undefined,
         userMetadata || undefined,
         realm || undefined,
-        organization || undefined
+        organization || undefined,
+        deliveryMethod || undefined
       );
     } catch (e) {
       if (e instanceof AuthError) {
@@ -284,8 +287,15 @@ export class NativeAuth0Client implements Auth0Client {
   async getTokenByPasskey(
     parameters: GetTokenByPasskeyParameters
   ): Promise<Credentials> {
-    const { authSession, authResponse, realm, audience, scope, organization } =
-      parameters;
+    const {
+      authSession,
+      authResponse,
+      realm,
+      audience,
+      scope,
+      organization,
+      verification,
+    } = parameters;
     if (typeof authResponse !== 'string') {
       throw new PasskeyError(
         new AuthError(
@@ -302,7 +312,8 @@ export class NativeAuth0Client implements Auth0Client {
         realm || undefined,
         audience || undefined,
         scope || undefined,
-        organization || undefined
+        organization || undefined,
+        toVerificationCodes(verification)
       );
     } catch (e) {
       if (e instanceof AuthError) {

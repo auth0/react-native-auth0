@@ -8,6 +8,7 @@ import {
 } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Auth0Provider, useAuth0 } from '..';
+import { AuthError, PasskeyError } from '../../core/models';
 import Auth0 from '../../Auth0';
 
 // Mock TurboModuleRegistry first
@@ -1507,6 +1508,140 @@ describe('Auth0Provider', () => {
       await waitFor(() => {
         expect(returnedCredentials).toEqual(mockExchangeCredentials);
       });
+    });
+  });
+
+  describe('getTokenByPasskey identifier verification retry', () => {
+    const mockCredentials = {
+      idToken: 'a.b.c',
+      accessToken: 'access-token-123',
+      tokenType: 'Bearer',
+      expiresAt: Date.now() / 1000 + 3600,
+    };
+
+    // A wrong code as the native bridge reports it: the retry details sit in `userInfo`.
+    const retryableError = () =>
+      new PasskeyError(
+        new AuthError(
+          'PASSKEY_VERIFICATION_RETRYABLE',
+          'Invalid or expired session',
+          {
+            code: 'PASSKEY_VERIFICATION_RETRYABLE',
+            json: {
+              userInfo: {
+                authSession: 'session-2',
+                verificationRequired: ['email'],
+              },
+            },
+          }
+        )
+      );
+
+    // What the caller of getTokenByPasskey() actually receives, captured outside React.
+    let outcomes: { thrown?: unknown; returned?: unknown }[];
+
+    const Consumer = () => {
+      const { getTokenByPasskey, user, error, isLoading } = useAuth0();
+
+      const verify = async () => {
+        const outcome: { thrown?: unknown; returned?: unknown } = {};
+        outcomes.push(outcome);
+        try {
+          outcome.returned = await getTokenByPasskey({
+            authSession: 'session-1',
+            authResponse: '{}',
+            verification: { email: '000000' },
+          });
+        } catch (e) {
+          outcome.thrown = e;
+        }
+      };
+
+      if (isLoading) return <Text testID="loading">Loading...</Text>;
+
+      return (
+        <View>
+          <Text testID="user-status">
+            {user ? `Logged in as: ${user.name}` : 'Not logged in'}
+          </Text>
+          <Text testID="error-status">
+            {error ? `Error: ${error.message}` : 'No error'}
+          </Text>
+          <Button title="Verify" onPress={verify} testID="verify-button" />
+        </View>
+      );
+    };
+
+    const renderConsumer = async () => {
+      await act(async () => {
+        render(
+          <Auth0Provider domain="test.com" clientId="123">
+            <Consumer />
+          </Auth0Provider>
+        );
+      });
+      await waitFor(() =>
+        expect(screen.getByTestId('user-status')).toHaveTextContent(
+          'Not logged in'
+        )
+      );
+    };
+
+    const clickVerify = async () => {
+      await act(async () => {
+        fireEvent.click(screen.getByTestId('verify-button'));
+      });
+    };
+
+    beforeEach(() => {
+      outcomes = [];
+    });
+
+    it('rethrows the same retryable PasskeyError with its payload intact, and records it in state', async () => {
+      const error = retryableError();
+      mockClientInstance.getTokenByPasskey = jest
+        .fn()
+        .mockRejectedValueOnce(error);
+
+      await renderConsumer();
+      await clickVerify();
+
+      await waitFor(() =>
+        expect(screen.getByTestId('error-status')).toHaveTextContent(
+          'Error: Invalid or expired session'
+        )
+      );
+      expect(outcomes[0].thrown).toBe(error);
+      expect(
+        (outcomes[0].thrown as PasskeyError).getVerificationRetryPayload()
+      ).toEqual({ authSession: 'session-2', verificationRequired: ['email'] });
+      expect(screen.getByTestId('user-status')).toHaveTextContent(
+        'Not logged in'
+      );
+    });
+
+    it('clears the error and signs the user in when the retry succeeds', async () => {
+      mockClientInstance.getTokenByPasskey = jest
+        .fn()
+        .mockRejectedValueOnce(retryableError())
+        .mockResolvedValueOnce(mockCredentials);
+
+      await renderConsumer();
+      await clickVerify();
+      await waitFor(() =>
+        expect(screen.getByTestId('error-status')).toHaveTextContent('Error:')
+      );
+
+      await clickVerify();
+
+      await waitFor(() =>
+        expect(screen.getByTestId('user-status')).toHaveTextContent(
+          'Logged in as: Test User'
+        )
+      );
+      expect(screen.getByTestId('error-status')).toHaveTextContent('No error');
+      expect(outcomes[1].returned).toEqual(mockCredentials);
+      expect(mockClientInstance.getTokenByPasskey).toHaveBeenCalledTimes(2);
     });
   });
 
