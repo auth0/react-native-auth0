@@ -308,6 +308,7 @@ export interface NativeBridge {
    * @param userMetadata Additional user metadata as key-value pairs.
    * @param realm The database connection name.
    * @param organization Optional organization ID or name.
+   * @param deliveryMethod How to deliver the one-time code for phone number verification: `'text'` or `'voice'`.
    * @returns A promise that resolves with the challenge response.
    */
   passkeySignupChallenge(
@@ -321,7 +322,8 @@ export interface NativeBridge {
     picture?: string,
     userMetadata?: Record<string, string>,
     realm?: string,
-    organization?: string
+    organization?: string,
+    deliveryMethod?: string
   ): Promise<PasskeyChallengeResponse>;
 
   /**
@@ -347,6 +349,8 @@ export interface NativeBridge {
    * @param audience Optional target API identifier.
    * @param scope Optional space-separated scopes.
    * @param organization Optional organization ID or name.
+   * @param verification Optional one-time codes keyed by the identifier they were sent to (`email`, `phone`).
+   * @param verificationRequired Optional identifiers that must have a code in `verification`; the native SDK checks this before sending.
    * @returns A promise that resolves with Auth0 credentials.
    */
   getTokenByPasskey(
@@ -355,7 +359,9 @@ export interface NativeBridge {
     realm?: string,
     audience?: string,
     scope?: string,
-    organization?: string
+    organization?: string,
+    verification?: Record<string, string>,
+    verificationRequired?: string[]
   ): Promise<Credentials>;
 
   /**

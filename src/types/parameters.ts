@@ -520,6 +520,14 @@ export interface PasskeySignupChallengeParameters {
   realm?: string;
   /** Organization ID or name for authenticating in an organization context. */
   organization?: string;
+  /**
+   * How to deliver the one-time code when the phone number must be verified, by
+   * SMS or voice call. When omitted, Auth0 chooses the delivery method.
+   *
+   * Only used when the connection requires identifier verification. See
+   * {@link PasskeyChallengeResponse.verificationRequired}.
+   */
+  deliveryMethod?: PasswordlessDeliveryMethod;
 }
 
 /**
@@ -546,6 +554,44 @@ export interface PasskeyChallengeResponse {
   authSession: string;
   /** The raw WebAuthn public key credential creation/request options as JSON. */
   authParamsPublicKey: Record<string, any>;
+  /**
+   * The identifiers the user must verify with a one-time code before the
+   * passkey signup can complete.
+   *
+   * Only present on a signup challenge, and only when the database connection
+   * requires identifier verification. Auth0 sends a code to each listed
+   * identifier. Collect the codes **before** creating the passkey credential,
+   * then pass them as `verification` to `getTokenByPasskey`. Identifiers this
+   * SDK does not recognize are left out.
+   */
+  verificationRequired?: PasskeyVerificationMethod[];
+}
+
+/**
+ * An identifier that Auth0 can require the user to verify with a one-time code
+ * while signing up with a passkey.
+ *
+ * @see {@link PasskeyChallengeResponse.verificationRequired}
+ */
+export type PasskeyVerificationMethod = 'email' | 'phone';
+
+/**
+ * What to retry a passkey signup exchange with after a one-time code was
+ * wrong. Returned by `PasskeyError.getVerificationRetryPayload()`.
+ */
+export interface PasskeyVerificationRetryPayload {
+  /**
+   * The auth session to retry with: the same, still valid session Auth0
+   * returned with the error. Always set on a retryable error; if it is ever
+   * absent, keep using the session from the original challenge.
+   */
+  authSession?: string;
+  /**
+   * The identifiers whose codes must be collected again. When `undefined`,
+   * Auth0 did not say which failed: collect the codes for the identifiers of
+   * the original challenge.
+   */
+  verificationRequired?: PasskeyVerificationMethod[];
 }
 
 /**
@@ -581,6 +627,57 @@ export interface GetTokenByPasskeyParameters {
   scope?: string;
   /** Organization ID or name for authenticating in an organization context. */
   organization?: string;
+  /**
+   * The one-time codes the user entered, keyed by the identifier each code was
+   * sent to (for example `{ email: '123456', phone: '654321' }`).
+   *
+   * Only meaningful when the database connection requires identifier
+   * verification, that is, when the signup challenge returned
+   * {@link PasskeyChallengeResponse.verificationRequired}: provide a code for
+   * each of those identifiers. Omitting it is always valid.
+   *
+   * Only codes for identifiers this SDK knows about (`email`, `phone`) are
+   * sent; others are ignored. A code that is empty or only whitespace rejects
+   * with a `PasskeyError` of type `PASSKEY_INVALID_PARAMETER` on every
+   * platform, before anything is sent.
+   *
+   * If a code is wrong while the session is still alive, the call rejects with
+   * a `PasskeyError` of type `PASSKEY_VERIFICATION_RETRYABLE`. To retry, read
+   * `error.getVerificationRetryPayload()` and call `getTokenByPasskey` again
+   * with:
+   * - the **same** `authResponse`, so the user does not create a second passkey;
+   * - its `authSession` (the same, still valid session);
+   * - its `verificationRequired` (only the identifiers whose code was wrong; if
+   *   it is `undefined`, those of the challenge) as `verificationRequired`;
+   * - fresh codes for those identifiers only as `verification`. The other
+   *   identifiers are already verified in this session.
+   *
+   * Only used when completing a passkey signup.
+   */
+  verification?: Record<string, string>;
+  /**
+   * The identifiers the codes in `verification` are for: on the first attempt,
+   * {@link PasskeyChallengeResponse.verificationRequired} from the signup
+   * challenge; on a retry, `verificationRequired` from
+   * `PasskeyError.getVerificationRetryPayload()` (see `verification`).
+   *
+   * Only meaningful when the database connection requires identifier
+   * verification. Omitting it is always valid: pass it only when the challenge
+   * or the retry payload has one.
+   *
+   * **iOS and Android:** passed to Auth0.swift / Auth0.Android, which check,
+   * before sending anything, that every listed identifier has a code in
+   * `verification`. If one has none, the call rejects with a `PasskeyError` of
+   * type `PASSKEY_EXCHANGE_FAILED`, and the session stays usable. When omitted,
+   * nothing is checked.
+   *
+   * **Web:** ignored (auth0-spa-js does not take it). A missing code is sent to
+   * Auth0 as is, and also rejects with `PASSKEY_EXCHANGE_FAILED`.
+   *
+   * Identifiers this SDK does not know about (other than `email`, `phone`) are
+   * ignored. Only used when completing a passkey signup.
+   */
+  verificationRequired?: string[];
 }
 
 // ========= Passkey Enrollment Parameters =========

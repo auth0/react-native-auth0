@@ -27,6 +27,8 @@ import { TokenType } from '../../../types/common';
 import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
 import {
   getConfigSignature,
+  toVerificationCodes,
+  toVerificationMethods,
   validateActorTokenParameters,
   validateTokenTypeUri,
 } from '../../../core/utils';
@@ -241,6 +243,7 @@ export class NativeAuth0Client implements Auth0Client {
       userMetadata,
       realm,
       organization,
+      deliveryMethod,
     } = parameters;
     try {
       return await this.guardedBridge.passkeySignupChallenge(
@@ -254,7 +257,8 @@ export class NativeAuth0Client implements Auth0Client {
         picture || undefined,
         userMetadata || undefined,
         realm || undefined,
-        organization || undefined
+        organization || undefined,
+        deliveryMethod || undefined
       );
     } catch (e) {
       if (e instanceof AuthError) {
@@ -284,8 +288,16 @@ export class NativeAuth0Client implements Auth0Client {
   async getTokenByPasskey(
     parameters: GetTokenByPasskeyParameters
   ): Promise<Credentials> {
-    const { authSession, authResponse, realm, audience, scope, organization } =
-      parameters;
+    const {
+      authSession,
+      authResponse,
+      realm,
+      audience,
+      scope,
+      organization,
+      verification,
+      verificationRequired,
+    } = parameters;
     if (typeof authResponse !== 'string') {
       throw new PasskeyError(
         new AuthError(
@@ -302,7 +314,10 @@ export class NativeAuth0Client implements Auth0Client {
         realm || undefined,
         audience || undefined,
         scope || undefined,
-        organization || undefined
+        organization || undefined,
+        toVerificationCodes(verification),
+        // Auth0.swift and Auth0.Android check the codes against this list.
+        toVerificationMethods(verificationRequired)
       );
     } catch (e) {
       if (e instanceof AuthError) {

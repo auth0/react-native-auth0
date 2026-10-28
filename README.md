@@ -75,7 +75,7 @@ Then, you need to run the following command to install the ios app pods with Coc
 
 #### iOS framework linkage (`use_frameworks!`)
 
-This SDK's native dependencies — Auth0 3.0.1, JWTDecode 4.0.0, and SimpleKeychain 1.3.0 — are Swift pods. They install with the default React Native static-library linkage (no `use_frameworks!`), so **most apps need no extra Podfile changes**.
+This SDK's native dependencies — Auth0 3.2.0, JWTDecode 4.0.0, and SimpleKeychain 1.3.0 — are Swift pods. They install with the default React Native static-library linkage (no `use_frameworks!`), so **most apps need no extra Podfile changes**.
 
 If your project requires `use_frameworks!` (for example, because another dependency ships as a framework), both linkage modes are supported — this was verified by building the example app under each:
 
@@ -1033,9 +1033,9 @@ This library provides a unified API across Native (iOS/Android) and Web platform
 | `auth.passwordless...()`                                               |          ✅          |      ❌       | **Not supported on Web.** Passwordless flows on the web should be configured via Universal Login and initiated with `webAuth.authorize()`.                               |
 | `auth.loginWith...()` (OTP/SMS etc)                                    |          ✅          |      ❌       | **Not supported on Web.** These direct grant flows are not secure for public clients like browsers.                                                                      |
 | **Passkeys**                                                           |                      |               | ---                                                                                                                                                                      |
-| `passkeySignupChallenge()`                                             |          ✅          |      ✅       | Gets a WebAuthn registration challenge from Auth0. Requires iOS 16.6+, Android API 28+, or a browser with WebAuthn support.                                              |
+| `passkeySignupChallenge()`                                             |          ✅          |      ✅       | Gets a WebAuthn registration challenge from Auth0. Requires iOS 16.6+, Android API 28+, or a browser with WebAuthn support. Supports identifier verification.            |
 | `passkeyLoginChallenge()`                                              |          ✅          |      ✅       | Gets a WebAuthn assertion challenge from Auth0. Requires iOS 16.6+, Android API 28+, or a browser with WebAuthn support.                                                 |
-| `getTokenByPasskey()`                                                  |          ✅          |      ✅       | Exchanges a passkey credential response for Auth0 tokens. On Web, uses `@auth0/auth0-spa-js`.                                                                            |
+| `getTokenByPasskey()`                                                  |          ✅          |      ✅       | Exchanges a passkey credential response for Auth0 tokens. On Web, uses `@auth0/auth0-spa-js`. Accepts identifier verification codes for signup.                          |
 | **Token & User Management**                                            |                      |               | ---                                                                                                                                                                      |
 | `auth.refreshToken()`                                                  |          ✅          |      ❌       | **Not supported on Web.** Token refresh is handled automatically by `getCredentials()` via `getTokenSilently()` on the web.                                              |
 | `auth.userInfo()`                                                      |          ✅          |      ✅       | Fetches the user's profile from the `/userinfo` endpoint using an access token.                                                                                          |

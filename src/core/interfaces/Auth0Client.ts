@@ -112,6 +112,12 @@ export interface Auth0Client {
    * credential manager to create a new passkey. After the credential is created,
    * call `getTokenByPasskey` with the auth session and credential response.
    *
+   * When the database connection requires identifier
+   * verification, the response lists the identifiers to verify in
+   * `verificationRequired`. Auth0 sends a one-time code to each of them: collect
+   * the codes before creating the passkey and pass them to `getTokenByPasskey`
+   * as `verification`.
+   *
    * @param parameters The passkey signup challenge parameters.
    * @returns A promise resolving with the challenge response.
    */
@@ -138,6 +144,18 @@ export interface Auth0Client {
    *
    * Call this after the platform credential manager returns the passkey
    * credential (either from signup or login flow).
+   *
+   * When completing a signup that requires identifier verification, pass the
+   * one-time codes as `verification` and the identifiers they are for as
+   * `verificationRequired` (checked by the iOS and Android SDKs, ignored on
+   * web). Both are optional: omit them when the challenge has no
+   * `verificationRequired`. If a code is wrong, this rejects with a
+   * `PasskeyError` of type `PASSKEY_VERIFICATION_RETRYABLE`. Read
+   * `error.getVerificationRetryPayload()` for `authSession` (the session to
+   * retry with) and `verificationRequired` (the identifiers whose code was
+   * wrong), then call this again with the same `authResponse`, those
+   * identifiers as `verificationRequired` and fresh codes for them as
+   * `verification`.
    *
    * @param parameters The exchange parameters including auth session and credential response.
    * @returns A promise resolving with Auth0 credentials.

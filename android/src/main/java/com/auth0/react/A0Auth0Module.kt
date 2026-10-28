@@ -12,6 +12,7 @@ import com.auth0.android.Auth0
 import com.auth0.android.Auth0Exception
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.authentication.passwordless.DeliveryMethod
 import com.auth0.android.authentication.request.ActorToken
 import com.auth0.android.authentication.storage.CredentialsManagerException
 import com.auth0.android.authentication.storage.LocalAuthenticationOptions
@@ -29,6 +30,7 @@ import com.auth0.android.result.APICredentials
 import com.auth0.android.result.Credentials
 import com.auth0.android.result.PasskeyChallenge
 import com.auth0.android.result.PasskeyRegistrationChallenge
+import com.auth0.android.result.PasskeyVerificationMethod
 import com.facebook.react.bridge.ActivityEventListener
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
@@ -56,6 +58,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
         private const val CREDENTIAL_MANAGER_ERROR_CODE = "CREDENTIAL_MANAGER_ERROR"
         private const val INVALID_NETWORKING_OPTIONS_CODE = "INVALID_NETWORKING_OPTIONS"
+        private const val PASSKEY_VERIFICATION_RETRYABLE_CODE = "PASSKEY_VERIFICATION_RETRYABLE"
         private const val BIOMETRICS_AUTHENTICATION_ERROR_CODE = "BIOMETRICS_CONFIGURATION_ERROR"
         
         // DPoP-specific error codes
@@ -100,6 +103,29 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             }
             return builder.build()
         }
+
+        // An unknown value falls back to the server default.
+        internal fun deliveryMethodFrom(value: String?): DeliveryMethod? =
+            DeliveryMethod.values().firstOrNull { it.value == value?.trim() }
+
+        // Only the identifiers the SDK recognizes are forwarded, matching the iOS bridge.
+        internal fun verificationCodes(codes: ReadableMap?): Map<PasskeyVerificationMethod, String> =
+            codes?.let {
+                PasskeyVerificationMethod.values().mapNotNull { method ->
+                    val code = if (it.hasKey(method.value)) it.getString(method.value) else null
+                    code?.let { method to it }
+                }.toMap()
+            }.orEmpty()
+
+        // Only the identifiers the SDK recognizes are kept, in order, matching the iOS bridge.
+        internal fun verificationMethods(names: ReadableArray?): List<PasskeyVerificationMethod> =
+            names?.toArrayList().orEmpty().mapNotNull { name ->
+                PasskeyVerificationMethod.values().firstOrNull { it.value == name }
+            }
+
+        // Gson leaves a null for an identifier the SDK doesn't know, despite the non-null element type.
+        internal fun verificationMethodNames(methods: List<PasskeyVerificationMethod?>?): List<String> =
+            methods.orEmpty().filterNotNull().map { it.value }
 
         // Auth0.getInstance() returns a shared singleton per clientId/domain: a sibling client
         // (or this same client on re-init) must not inherit another initialization's networking
@@ -782,6 +808,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         userMetadata: ReadableMap?,
         realm: String?,
         organization: String?,
+        deliveryMethod: String?,
         promise: Promise
     ) {
         val authClient = AuthenticationAPIClient(auth0!!)
@@ -800,6 +827,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         val finalUserMetadata = userMetadata?.toHashMap()?.mapValues { it.value?.toString() ?: "" }?.ifEmpty { null }
         val finalRealm = realm?.trim()?.ifEmpty { null }
         val finalOrg = organization?.trim()?.ifEmpty { null }
+        val finalDeliveryMethod = deliveryMethodFrom(deliveryMethod)
         val userData = UserData(
             email = finalEmail,
             phoneNumber = finalPhone,
@@ -812,13 +840,18 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             userMetadata = finalUserMetadata
         )
 
-        authClient.signupWithPasskey(userData, finalRealm, finalOrg)
+        authClient.signupWithPasskey(userData, finalRealm, finalOrg, finalDeliveryMethod)
             .start(object : com.auth0.android.callback.Callback<PasskeyRegistrationChallenge, AuthenticationException> {
                 override fun onSuccess(challenge: PasskeyRegistrationChallenge) {
                     val result = WritableNativeMap().apply {
                         putString("authSession", challenge.authSession)
                         val authParamsJson = Gson().toJson(challenge.authParamsPublicKey)
                         putMap("authParamsPublicKey", JsonUtils.jsonToWritableMap(authParamsJson))
+                        // Left out when no verification is needed, so existing signups see an unchanged response.
+                        val verificationRequired = verificationMethodNames(challenge.verificationRequired)
+                        if (verificationRequired.isNotEmpty()) {
+                            putArray("verificationRequired", Arguments.fromList(verificationRequired))
+                        }
                     }
                     promise.resolve(result)
                 }
@@ -868,6 +901,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         audience: String?,
         scope: String?,
         organization: String?,
+        verification: ReadableMap?,
+        verificationRequired: ReadableArray?,
         promise: Promise
     ) {
         val authClient = AuthenticationAPIClient(auth0!!)
@@ -879,6 +914,9 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         val finalRealm = realm?.trim()?.ifEmpty { null }
         val finalAudience = audience?.trim()?.ifEmpty { null }
         val finalOrg = organization?.trim()?.ifEmpty { null }
+        val finalVerification = verificationCodes(verification)
+        // Auth0.Android checks the codes against these identifiers before sending the request.
+        val finalVerificationRequired = verificationMethods(verificationRequired)
 
         val publicKeyCredentials = try {
             Gson().fromJson(authResponse, PublicKeyCredentials::class.java)
@@ -887,7 +925,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             return
         }
 
-        val request = authClient.signinWithPasskey(authSession, publicKeyCredentials, finalRealm, finalOrg)
+        val request = authClient.signinWithPasskey(authSession, publicKeyCredentials, finalRealm, finalOrg, finalVerification, finalVerificationRequired)
         finalAudience?.let { request.setAudience(it) }
         request.setScope(finalScope)
         request.validateClaims()
@@ -898,7 +936,19 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             }
 
             override fun onFailure(error: AuthenticationException) {
-                promise.reject("PASSKEY_EXCHANGE_FAILED", error.getDescription(), error)
+                if (error.isPasskeyVerificationRetryable) {
+                    // A code was wrong and the session is still usable: hand JS what a retry needs.
+                    val userInfo = WritableNativeMap().apply {
+                        error.passkeyAuthSession?.let { putString("authSession", it) }
+                        val verificationRequired = verificationMethodNames(error.passkeyVerificationRequired)
+                        if (verificationRequired.isNotEmpty()) {
+                            putArray("verificationRequired", Arguments.fromList(verificationRequired))
+                        }
+                    }
+                    promise.reject(PASSKEY_VERIFICATION_RETRYABLE_CODE, error.getDescription(), error, userInfo)
+                } else {
+                    promise.reject("PASSKEY_EXCHANGE_FAILED", error.getDescription(), error)
+                }
             }
         })
     }

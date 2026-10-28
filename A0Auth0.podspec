@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.resource_bundles = { 'A0Auth0_privacy' => 'ios/PrivacyInfo.xcprivacy' }
   s.requires_arc = true
 
-  s.dependency 'Auth0', '3.0.1'
+  s.dependency 'Auth0', '3.2.0'
   s.dependency 'JWTDecode', '4.0.0'
   s.dependency 'SimpleKeychain', '1.3.0'
 
