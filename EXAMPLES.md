@@ -215,7 +215,7 @@ authorize({}, { customScheme: 'YOUR_AUTH0_DOMAIN' })
 
 ### Login using MFA with One Time Password code
 
-This call requires the client to have the _MFA_ Client Grant Type enabled. Check [this article](https://auth0.com/docs/clients/client-grant-types) to learn how to enable it.
+This call requires the client to have the _MFA_ Client Grant Type enabled. Check [this article](https://auth0.com/docs/get-started/applications/application-grant-types) to learn how to enable it.
 
 When you sign in to a multifactor authentication enabled connection using the `passwordRealm` method, you receive an error stating that MFA is required for that user along with an `mfa_token` value. Pass that value to the [`mfa` client](#mfa-flexible-factors-grant) to complete the flow.
 
@@ -917,7 +917,7 @@ auth0.webAuth
 
 Users can be invited to your organization via a link. Tapping on the invitation link should open your app. Since invitations links are `https` only, is recommended that your Android app supports [Android App Links](https://developer.android.com/training/app-links). In the case of iOS, your app must support [Universal Links](https://developer.apple.com/documentation/xcode/allowing_apps_and_websites_to_link_to_your_content/supporting_universal_links_in_your_app).
 
-In [Enable Android App Links Support](https://auth0.com/docs/applications/enable-android-app-links-support) and [Enable Universal Links Support](https://auth0.com/docs/enable-universal-links-support-in-apple-xcode), you will find how to make the Auth0 server publish the Digital Asset Links file required by your applications.
+In [Enable Android App Links Support](https://auth0.com/docs/get-started/applications/enable-android-app-links-support) and [Enable Universal Links Support](https://auth0.com/docs/get-started/applications/enable-universal-links-support-in-apple-xcode), you will find how to make the Auth0 server publish the Digital Asset Links file required by your applications.
 
 When your app gets opened by an invitation link, grab the invitation URL and pass it as a parameter to the webauth call. Use the [Linking Module](https://reactnative.dev/docs/linking) method called `getInitialUrl()` to obtain the URL that launched your application.
 
@@ -2601,7 +2601,7 @@ try {
 
 ## Bot Protection
 
-If you are using the [Bot Protection](https://auth0.com/docs/anomaly-detection/bot-protection) feature and performing database login/signup via the Authentication API, you need to handle the `requires_verification` error. It indicates that the request was flagged as suspicious and an additional verification step is necessary to log the user in. That verification step is web-based, so you need to use Universal Login to complete it.
+If you are using the [Bot Detection](https://auth0.com/docs/secure/attack-protection/bot-detection) feature and performing database login/signup via the Authentication API, you need to handle the `requires_verification` error. It indicates that the request was flagged as suspicious and an additional verification step is necessary to log the user in. That verification step is web-based, so you need to use Universal Login to complete it.
 
 ```js
 const email = 'support@auth0.com';
