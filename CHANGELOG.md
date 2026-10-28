@@ -1,5 +1,55 @@
 # Change Log
 
+## [v6.0.0](https://github.com/auth0/react-native-auth0/tree/v6.0.0) (2026-10-27)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.11.4...v6.0.0)
+
+This is the stable release of the v6 major. It requires the React Native New Architecture (React Native 0.82 or later) and adds support for React Native 0.88. It also adopts the native SDK majors, Auth0.Android v4 and Auth0.swift v3. Read the [Migration Guide](https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md) before upgrading from v5.
+
+**Breaking changes**
+
+- feat: require React Native New Architecture, drop legacy bridge [\#1613](https://github.com/auth0/react-native-auth0/pull/1613) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: adopt native SDK majors (Android v4, Swift v3) for v6 [\#1619](https://github.com/auth0/react-native-auth0/pull/1619) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: make DPoP opt-in by defaulting useDPoP to false [\#1622](https://github.com/auth0/react-native-auth0/pull/1622) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: remove the client-side Management API surface [\#1623](https://github.com/auth0/react-native-auth0/pull/1623) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- refactor: remove the legacy MFA methods from the auth client [\#1627](https://github.com/auth0/react-native-auth0/pull/1627) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- refactor: audit the public API surface and freeze the error taxonomy [\#1634](https://github.com/auth0/react-native-auth0/pull/1634) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- refactor: drop the I prefix from TypeScript interfaces [\#1636](https://github.com/auth0/react-native-auth0/pull/1636) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+What this means for your app:
+
+- React Native 0.82+ with the New Architecture is required. Expo apps need SDK 55+.
+- Android needs `minSdkVersion` 26, JDK 17 and compileSdk 36. iOS needs a deployment target of 15.1 and builds with Auth0.swift 3 (Swift 6).
+- DPoP is off by default. Set `useDPoP: true` to keep using it.
+- `getCredentials()` and `getApiCredentials()` now default `minTtl` to 60 seconds.
+- The client-side Management API (`users()`) and the legacy MFA methods on the auth client are removed.
+- TypeScript interfaces no longer use the `I` prefix, `SSOCredentials.expiresIn` is now `expiresAt`, and some web auth and credentials manager error codes were renamed or added.
+- ID token claim validation is opt-in on direct token requests.
+
+**Added**
+
+- chore: upgrade to React Native 0.88 [\#1709](https://github.com/auth0/react-native-auth0/pull/1709) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat(android): make Auth Tab and TWA opt-in via JS bridge [\#1662](https://github.com/auth0/react-native-auth0/pull/1662) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- feat(ios): honor networkingOptions.enableLogging via Auth0.swift logging [\#1661](https://github.com/auth0/react-native-auth0/pull/1661) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: add credentialsManager.clearAll() and default minTtl to 60 [\#1660](https://github.com/auth0/react-native-auth0/pull/1660) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat(ios): ship a privacy manifest with the A0Auth0 pod [\#1641](https://github.com/auth0/react-native-auth0/pull/1641) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: allow configuring Auth0.Android's native networking client [\#1637](https://github.com/auth0/react-native-auth0/pull/1637) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- feat: support ephemeral sessions on Android [\#1626](https://github.com/auth0/react-native-auth0/pull/1626) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
+**Fixed**
+
+- fix(android): bump Auth0.Android to 4.2.1 to keep users logged in after upgrade [\#1708](https://github.com/auth0/react-native-auth0/pull/1708) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix(android): use underlying cause as the error message [\#1688](https://github.com/auth0/react-native-auth0/pull/1688) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix(plugin): skip ios linking override on expo sdk 58 [\#1687](https://github.com/auth0/react-native-auth0/pull/1687) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix: adopt withAuthTab() to fix spurious USER_CANCELLED on Android [\#1647](https://github.com/auth0/react-native-auth0/pull/1647) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
+**Documentation**
+
+- docs: group ApiCredentials under Classes and fix duplicate @remarks warning [\#1712](https://github.com/auth0/react-native-auth0/pull/1712) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- docs: correct migration guide — Auth Tab is opt-in via useAuthTab; split section 6 [\#1665](https://github.com/auth0/react-native-auth0/pull/1665) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- docs(example): restructure example app into per-feature hooks and class demos [\#1655](https://github.com/auth0/react-native-auth0/pull/1655) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- docs: document native v4/v3 adoption — linking, claim validation, build floors [\#1648](https://github.com/auth0/react-native-auth0/pull/1648) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
 ## [v5.11.4](https://github.com/auth0/react-native-auth0/tree/v5.11.4) (2026-10-26)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.11.3...v5.11.4)
