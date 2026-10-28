@@ -1439,7 +1439,7 @@ When your database connection requires the user's email address or phone number 
 The flow is the regular [signup](#signup-with-passkey) with two additions:
 
 1. The signup challenge lists the identifiers to verify in `verificationRequired` (`'email'` and/or `'phone'`). It is `undefined` when no verification is needed, so signups that don't need it behave exactly as before.
-2. You pass the codes the user entered to `getTokenByPasskey` as `verification`, a map from identifier to code.
+2. You pass the codes the user entered to `getTokenByPasskey` as `verification`, a map from identifier to code, and the identifiers they are for as `verificationRequired`. On iOS and Android, `verificationRequired` is passed to Auth0.swift / Auth0.Android, which check that every listed identifier has a code before sending anything. On web it is ignored. Both are optional: when the challenge has no `verificationRequired`, leave both out.
 
 > **Prerequisites:** the same as a [regular signup](#passkeys-prerequisites). In addition, identifier verification must be enabled for your tenant and required by the database connection. Otherwise `verificationRequired` is `undefined`.
 
@@ -1449,17 +1449,17 @@ If a code is wrong while its session is still alive, `getTokenByPasskey` rejects
 
 **What the retryable error carries.** Call `error.getVerificationRetryPayload()`. It is the same call on iOS, Android and web, so don't read `error.json` yourself. It returns `{ authSession, verificationRequired }` for this error, and `null` for any other error.
 
-| Field                  | Type                                  | What to do with it                                                                                                                                                                                     |
-| ---------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `authSession`          | `string \| undefined`                 | The session to send on the retry. Auth0 returns it with every retryable error: it is the same, still valid session. Fall back to the session of the original challenge when it is `undefined`.         |
-| `verificationRequired` | `('email' \| 'phone')[] \| undefined` | The identifiers whose codes must be asked for again. Keep the codes that were right. When it is `undefined`, Auth0 did not say which failed: ask again for every identifier of the original challenge. |
+| Field                  | Type                                  | What to do with it                                                                                                                                                                                                                         |
+| ---------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `authSession`          | `string \| undefined`                 | The session to send on the retry. Auth0 returns it with every retryable error: it is the same, still valid session. Fall back to the session of the original challenge when it is `undefined`.                                             |
+| `verificationRequired` | `('email' \| 'phone')[] \| undefined` | The identifiers whose code was wrong. Ask for new codes for these only: the others are already verified in this session. When it is `undefined`, Auth0 did not say which failed: ask again for every identifier of the original challenge. |
 
 To retry:
 
-- Call `getTokenByPasskey` again with the **same** `authResponse`, the returned `authSession` and the codes collected again, so the user is not asked to create the passkey a second time.
+- Call `getTokenByPasskey` again with the **same** `authResponse` (so the user is not asked to create the passkey a second time), the returned `authSession`, the returned `verificationRequired`, and the new codes for those identifiers only as `verification`. This is how Auth0.swift and auth0-spa-js document the retry.
 - With `useAuth0()`, a retryable error is also stored in the hook's `error` until a retry succeeds. Don't treat it as a final failure while you are retrying.
 
-Any other failure is not retryable: `getVerificationRetryPayload()` returns `null`, so handle the error by its `error.type`. Wrong codes after Auth0's attempt limit, an expired session and a missing code (the identifier's key is absent from `verification`), which Auth0 rejects as an `invalid_request` error, reject with `PASSKEY_EXCHANGE_FAILED` on every platform: start over from `passkeySignupChallenge`. An empty or whitespace-only code is caught on every platform before anything is sent and rejects with `PASSKEY_INVALID_PARAMETER`: the session is untouched, so ask for the code and call again. Auth0 limits wrong codes but doesn't say how many attempts are left, so cap the number of retries in your app.
+Any other failure is not retryable: `getVerificationRetryPayload()` returns `null`, so handle the error by its `error.type`. Wrong codes after Auth0's attempt limit and an expired session reject with `PASSKEY_EXCHANGE_FAILED` on every platform: start over from `passkeySignupChallenge`. A missing code (an identifier in `verificationRequired` whose key is absent from `verification`) also rejects with `PASSKEY_EXCHANGE_FAILED`: on iOS and Android, Auth0.swift / Auth0.Android catch it before sending anything, so the session is untouched and you can call again with the code; on web, or when you leave `verificationRequired` out, Auth0 rejects it as an `invalid_request` error. An empty or whitespace-only code is caught on every platform before anything is sent and rejects with `PASSKEY_INVALID_PARAMETER`: the session is untouched, so ask for the code and call again. Auth0 limits wrong codes but doesn't say how many attempts are left, so cap the number of retries in your app.
 
 ```tsx
 import {
@@ -1469,7 +1469,7 @@ import {
   type PasskeyVerificationMethod,
 } from 'react-native-auth0';
 
-type Codes = Partial<Record<PasskeyVerificationMethod, string>>;
+type Codes = Record<string, string>;
 
 const MAX_ATTEMPTS = 3; // retry limit; adjust it to suit your app
 
@@ -1487,8 +1487,10 @@ function PasskeySignupWithVerificationScreen() {
       });
 
       // Step 2: Collect a code for every identifier BEFORE creating the passkey.
+      let verificationRequired: PasskeyVerificationMethod[] | undefined =
+        challenge.verificationRequired; // undefined when nothing must be verified
       let verification: Codes = await promptForCodes(
-        challenge.verificationRequired ?? []
+        verificationRequired ?? []
       ); // app-defined
 
       // Step 3: Create the passkey once. The same credential is reused for every retry.
@@ -1504,6 +1506,7 @@ function PasskeySignupWithVerificationScreen() {
             authSession,
             authResponse: credentialJson,
             realm: 'Username-Password-Authentication',
+            verificationRequired,
             verification,
           });
           console.log('Signed up with passkey');
@@ -1515,14 +1518,11 @@ function PasskeySignupWithVerificationScreen() {
               : null;
           if (!retry || attempt >= MAX_ATTEMPTS) throw error; // not retryable: restart the signup
 
-          // A code was wrong. Ask again for the listed identifiers and keep the other codes.
+          // A code was wrong. Retry with new codes for the listed identifiers only.
           authSession = retry.authSession ?? authSession;
-          verification = {
-            ...verification,
-            ...(await promptForCodes(
-              retry.verificationRequired ?? challenge.verificationRequired ?? []
-            )),
-          };
+          verificationRequired =
+            retry.verificationRequired ?? challenge.verificationRequired;
+          verification = await promptForCodes(verificationRequired ?? []);
         }
       }
     } catch (error) {
@@ -1587,7 +1587,7 @@ function PasskeySigninScreen() {
 
 Web uses the **exact same `passkeySignupChallenge` / `passkeyLoginChallenge` / `getTokenByPasskey` functions as native** — no web-specific methods were added. Only step 2 (the WebAuthn ceremony) differs: the app calls the browser's built-in [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) — `navigator.credentials.create()` for signup and `navigator.credentials.get()` for login — instead of a native module or third-party library. Unlike native, `authResponse` on web accepts the raw `PublicKeyCredential` object returned directly by `navigator.credentials` — no manual serialization needed. (See [Auth Response Format](#passkeys-auth-response-format) for the native, JSON-string form.)
 
-> **Identifier verification** works on web too. Collect the one-time codes _before_ calling `navigator.credentials.create()`, then pass them as `verification` to `getTokenByPasskey` together with the `PublicKeyCredential`. See [Signup with Passkey and Identifier Verification](#signup-with-passkey-identifier-verification): the flow is the same, with the `PublicKeyCredential` as `authResponse`.
+> **Identifier verification** works on web too. Collect the one-time codes _before_ calling `navigator.credentials.create()`, then pass them as `verification` to `getTokenByPasskey` together with the `PublicKeyCredential`. See [Signup with Passkey and Identifier Verification](#signup-with-passkey-identifier-verification): the flow is the same, with the `PublicKeyCredential` as `authResponse`. `verificationRequired` is accepted but ignored on web, so the same code runs on every platform.
 
 ```tsx
 import { useAuth0, PasskeyError } from 'react-native-auth0';
@@ -1799,7 +1799,7 @@ Passkey operations throw `PasskeyError` (extends `AuthError`) with a normalized 
 | `PASSKEY_EXCHANGE_FAILED`        | Token exchange with credential response failed                                                                                                                                                                                                                                                                              |
 | `PASSKEY_NOT_AVAILABLE`          | Passkeys not available on this device/OS version, or WebAuthn is not supported in this browser                                                                                                                                                                                                                              |
 | `PASSKEY_UNSUPPORTED_PLATFORM`   | Passkeys not supported on this platform                                                                                                                                                                                                                                                                                     |
-| `PASSKEY_INVALID_PARAMETER`      | `authResponse` passed to `getTokenByPasskey` has the wrong type for the platform (a JSON string on web, a non-string on native), or a code in `verification` was empty (web)                                                                                                                                                |
+| `PASSKEY_INVALID_PARAMETER`      | `authResponse` passed to `getTokenByPasskey` has the wrong type for the platform (a JSON string on web, a non-string on native), or a code in `verification` was empty or only whitespace                                                                                                                                   |
 | `PASSKEY_INVALID_CREDENTIAL`     | **Web only.** The credential passed to `getTokenByPasskey` is neither a valid attestation (signup) nor assertion (login) response                                                                                                                                                                                           |
 | `PASSKEY_VERIFICATION_RETRYABLE` | A one-time code for [identifier verification](#signup-with-passkey-identifier-verification) was wrong while its session is still alive, so the signup can be retried. `error.getVerificationRetryPayload()` returns `{ authSession, verificationRequired }`: the session to retry with and the identifiers to ask for again |
 | `PASSKEY_MFA_REQUIRED`           | **Web only.** MFA is required to complete the exchange — use `error.getMfaRequiredPayload()` to extract `mfaToken` and `mfaRequirements`, then continue with `mfa.challenge()`/`mfa.verify()`                                                                                                                               |

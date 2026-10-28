@@ -24,6 +24,12 @@ export const toVerificationMethods = (
   return known.length > 0 ? known : undefined;
 };
 
+// Blank as JavaScript, Swift (`whitespacesAndNewlines`, which adds U+0085) and
+// Kotlin (`isBlank`, which adds U+001C-U+001F) see it, so that a blank code is
+// always rejected here, never by a native SDK with a different error.
+const isBlank = (code: string): boolean =>
+  /^[\s\u0085\u001c-\u001f]*$/.test(code);
+
 /**
  * Keeps the string codes for the identifiers this SDK knows about from a
  * `verification` map, and nothing else. Returns `undefined` when there is
@@ -42,7 +48,7 @@ export const toVerificationCodes = (
   for (const method of ['email', 'phone'] as const) {
     const code = verification?.[method];
     if (typeof code === 'string') {
-      if (code.trim() === '') {
+      if (isBlank(code)) {
         throw new AuthError(
           'InvalidParameter',
           `The verification code for '${method}' must not be empty.`,

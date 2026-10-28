@@ -18,11 +18,18 @@ const REALM = 'Username-Password-Authentication';
 type PendingSignup = {
   authSession: string;
   authParamsPublicKey: Record<string, any>;
+  // The challenge's identifiers, then only the ones the last wrong-code error flagged.
   verificationRequired: PasskeyVerificationMethod[];
   credentialJson?: string;
+  retries: number;
+  // What the last retryable error said; the session itself is not shown.
+  lastRetry?: {
+    flagged?: PasskeyVerificationMethod[];
+    hasAuthSession: boolean;
+  };
 };
 
-type Codes = Partial<Record<PasskeyVerificationMethod, string>>;
+type Codes = Record<string, string>;
 
 // Class-based reference for Passkeys. Same operations as PasskeysHooks.tsx,
 // expressed against the Auth0 class instance. Not imported by the app — kept
@@ -66,6 +73,7 @@ const PasskeysClass = () => {
         authSession: current.authSession,
         authResponse: credentialJson,
         realm: REALM,
+        verificationRequired: current.verificationRequired,
         verification: codes,
       });
       cancelSignup();
@@ -85,15 +93,14 @@ const PasskeysClass = () => {
         ...current,
         authSession: retry.authSession ?? current.authSession,
         verificationRequired: failed,
+        retries: current.retries + 1,
+        lastRetry: {
+          flagged: retry.verificationRequired,
+          hasAuthSession: retry.authSession !== undefined,
+        },
       });
-      // Keep the codes that were right; only the listed identifiers are asked for again.
-      setCodes((previous) =>
-        Object.fromEntries(
-          Object.entries(previous).filter(
-            ([method]) => !failed.includes(method as PasskeyVerificationMethod)
-          )
-        )
-      );
+      // The other identifiers are verified already: the retry sends fresh codes for the flagged ones only.
+      setCodes({});
       throw e;
     }
   };
@@ -113,6 +120,7 @@ const PasskeysClass = () => {
         authSession: challenge.authSession,
         authParamsPublicKey: challenge.authParamsPublicKey,
         verificationRequired: challenge.verificationRequired,
+        retries: 0,
       });
       return {
         verificationRequired: challenge.verificationRequired,
@@ -168,6 +176,16 @@ const PasskeysClass = () => {
             <Text>
               Enter the code sent to each identifier to finish the signup.
             </Text>
+            {pending.lastRetry && (
+              <Text>
+                {`Retry #${pending.retries}: wrong code for ${
+                  pending.lastRetry.flagged?.join(', ') ??
+                  '(not listed, asking for all again)'
+                }; authSession ${
+                  pending.lastRetry.hasAuthSession ? 'returned' : 'missing'
+                }.`}
+              </Text>
+            )}
             {pending.verificationRequired.map((method) => (
               <TextInput
                 key={method}

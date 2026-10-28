@@ -234,11 +234,11 @@ export class PasskeyError extends AuthError {
    * `PASSKEY_VERIFICATION_RETRYABLE`: a one-time code sent for passkey signup
    * identifier verification was wrong, and the session is still usable.
    *
-   * Collect the codes for `verificationRequired` again, then call
-   * `getTokenByPasskey` again with the **same** `authResponse` and the
-   * returned `authSession`. If `verificationRequired` is `undefined`, Auth0 did
-   * not say which identifiers failed: ask again for those of the original
-   * challenge.
+   * Collect new codes for `verificationRequired` only, then call
+   * `getTokenByPasskey` again with the **same** `authResponse`, the returned
+   * `authSession`, `verificationRequired`, and the new codes as
+   * `verification`. If `verificationRequired` is `undefined`, Auth0 did not say
+   * which identifiers failed: ask again for those of the original challenge.
    *
    * @returns The retry payload if this is a `VERIFICATION_RETRYABLE` error,
    *   otherwise `null`.
@@ -246,12 +246,14 @@ export class PasskeyError extends AuthError {
    * @example
    * ```typescript
    * let authSession = challenge.authSession;
-   * let verification = await promptForCodes(challenge.verificationRequired);
+   * let verificationRequired = challenge.verificationRequired;
+   * let verification = await promptForCodes(verificationRequired);
    * for (let attempt = 1; ; attempt++) {
    *   try {
    *     return await auth0.getTokenByPasskey({
    *       authSession,
    *       authResponse: credential, // the same credential on every attempt
+   *       verificationRequired,
    *       verification,
    *     });
    *   } catch (error) {
@@ -260,12 +262,10 @@ export class PasskeyError extends AuthError {
    *     // not retryable, or out of attempts: restart the signup
    *     if (!retry || attempt >= 3) throw error;
    *     authSession = retry.authSession ?? authSession;
-   *     verification = {
-   *       ...verification,
-   *       ...(await promptForCodes(
-   *         retry.verificationRequired ?? challenge.verificationRequired
-   *       )),
-   *     };
+   *     verificationRequired =
+   *       retry.verificationRequired ?? challenge.verificationRequired;
+   *     // fresh codes for the identifiers whose code was wrong, only
+   *     verification = await promptForCodes(verificationRequired);
    *   }
    * }
    * ```

@@ -263,7 +263,8 @@ export interface Spec extends TurboModule {
     audience: string | undefined,
     scope: string | undefined,
     organization: string | undefined,
-    verification: { [key: string]: string } | undefined
+    verification: { [key: string]: string } | undefined,
+    verificationRequired: string[] | undefined
   ): Promise<Credentials>;
 
   /**

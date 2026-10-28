@@ -580,7 +580,7 @@ public class NativeBridge: NSObject {
         }
     }
 
-    @objc public func getTokenByPasskey(authSession: String, authResponse: String, realm: String?, audience: String?, scope: String?, organization: String?, verification: [String: String]?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func getTokenByPasskey(authSession: String, authResponse: String, realm: String?, audience: String?, scope: String?, organization: String?, verification: [String: String]?, verificationRequired: [String]?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         guard #available(iOS 16.6, *) else {
             reject("PASSKEY_EXCHANGE_FAILED", "Passkeys require iOS 16.6 or later", nil)
             return
@@ -597,6 +597,14 @@ public class NativeBridge: NSObject {
             case "email": verificationCodes[.email] = code
             case "phone": verificationCodes[.phone] = code
             default: break
+            }
+        }
+        // Auth0.swift checks the codes against these identifiers before sending the request.
+        let verificationMethods: [PasskeyVerificationMethod] = (verificationRequired ?? []).compactMap { identifier in
+            switch identifier {
+            case "email": return .email
+            case "phone": return .phone
+            default: return nil
             }
         }
 
@@ -633,7 +641,8 @@ public class NativeBridge: NSObject {
                 relyingPartyId: self.domain,
                 userId: Data(),
                 userName: "",
-                challengeData: Data()
+                challengeData: Data(),
+                verificationRequired: verificationMethods
             )
             auth.login(
                 passkey: passkey,

@@ -2,6 +2,7 @@ package com.auth0.react
 
 import com.auth0.android.authentication.passwordless.DeliveryMethod
 import com.auth0.android.result.PasskeyVerificationMethod
+import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -63,6 +64,30 @@ class A0Auth0ModulePasskeyVerificationTest {
         assertEquals(
             emptyMap<PasskeyVerificationMethod, String>(),
             A0Auth0Module.verificationCodes(JavaOnlyMap.of("username", "111111"))
+        )
+    }
+
+    @Test
+    fun `verificationMethods maps the known identifiers in order`() {
+        val methods = A0Auth0Module.verificationMethods(JavaOnlyArray.of("phone", "email"))
+
+        assertEquals(listOf(PasskeyVerificationMethod.PHONE, PasskeyVerificationMethod.EMAIL), methods)
+    }
+
+    @Test
+    fun `verificationMethods drops unknown identifiers and values that are not strings`() {
+        val methods = A0Auth0Module.verificationMethods(JavaOnlyArray.of("email", "username", 7, null))
+
+        assertEquals(listOf(PasskeyVerificationMethod.EMAIL), methods)
+    }
+
+    @Test
+    fun `verificationMethods is empty for a missing array, an empty array or only unknown identifiers`() {
+        assertEquals(emptyList<PasskeyVerificationMethod>(), A0Auth0Module.verificationMethods(null))
+        assertEquals(emptyList<PasskeyVerificationMethod>(), A0Auth0Module.verificationMethods(JavaOnlyArray()))
+        assertEquals(
+            emptyList<PasskeyVerificationMethod>(),
+            A0Auth0Module.verificationMethods(JavaOnlyArray.of("username"))
         )
     }
 

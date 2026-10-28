@@ -1114,6 +1114,32 @@ describe('WebAuth0Client', () => {
         );
       });
 
+      it('should ignore verificationRequired and not send it to the SPA client', async () => {
+        mockSpaClient.passkey.getTokenWithPasskey.mockResolvedValue(
+          tokenResponse
+        );
+
+        for (const parameters of [
+          // a listed identifier without a code is not rejected either
+          { verificationRequired: ['email', 'phone'], verification: {} },
+          { verificationRequired: ['email'] },
+          {},
+        ]) {
+          await expect(
+            client.getTokenByPasskey({
+              authSession: 'auth-session-123',
+              authResponse: credential,
+              ...parameters,
+            })
+          ).resolves.toBeDefined();
+
+          const sent =
+            mockSpaClient.passkey.getTokenWithPasskey.mock.calls.at(-1)[0];
+          expect(sent).not.toHaveProperty('verificationRequired');
+          expect(sent.verification).toBeUndefined();
+        }
+      });
+
       it('should not send codes for identifiers the SDK does not know about', async () => {
         mockSpaClient.passkey.getTokenWithPasskey.mockResolvedValue(
           tokenResponse
@@ -1122,7 +1148,7 @@ describe('WebAuth0Client', () => {
         await client.getTokenByPasskey({
           authSession: 'auth-session-123',
           authResponse: credential,
-          verification: { email: '123456', username: '111111' } as any,
+          verification: { email: '123456', username: '111111' },
         });
 
         expect(lastVerificationSent()).toEqual({ email: '123456' });

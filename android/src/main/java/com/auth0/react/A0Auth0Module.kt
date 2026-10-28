@@ -117,6 +117,12 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 }.toMap()
             }.orEmpty()
 
+        // Only the identifiers the SDK recognizes are kept, in order, matching the iOS bridge.
+        internal fun verificationMethods(names: ReadableArray?): List<PasskeyVerificationMethod> =
+            names?.toArrayList().orEmpty().mapNotNull { name ->
+                PasskeyVerificationMethod.values().firstOrNull { it.value == name }
+            }
+
         // Gson leaves a null for an identifier the SDK doesn't know, despite the non-null element type.
         internal fun verificationMethodNames(methods: List<PasskeyVerificationMethod?>?): List<String> =
             methods.orEmpty().filterNotNull().map { it.value }
@@ -896,6 +902,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         scope: String?,
         organization: String?,
         verification: ReadableMap?,
+        verificationRequired: ReadableArray?,
         promise: Promise
     ) {
         val authClient = AuthenticationAPIClient(auth0!!)
@@ -908,6 +915,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         val finalAudience = audience?.trim()?.ifEmpty { null }
         val finalOrg = organization?.trim()?.ifEmpty { null }
         val finalVerification = verificationCodes(verification)
+        // Auth0.Android checks the codes against these identifiers before sending the request.
+        val finalVerificationRequired = verificationMethods(verificationRequired)
 
         val publicKeyCredentials = try {
             Gson().fromJson(authResponse, PublicKeyCredentials::class.java)
@@ -916,7 +925,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             return
         }
 
-        val request = authClient.signinWithPasskey(authSession, publicKeyCredentials, finalRealm, finalOrg, finalVerification)
+        val request = authClient.signinWithPasskey(authSession, publicKeyCredentials, finalRealm, finalOrg, finalVerification, finalVerificationRequired)
         finalAudience?.let { request.setAudience(it) }
         request.setScope(finalScope)
         request.validateClaims()

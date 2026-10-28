@@ -388,6 +388,7 @@ export class WebAuth0Client implements Auth0Client {
         scope: finalScope,
         organization,
         // auth0-spa-js rejects an empty code itself, before sending anything.
+        // It takes no `verificationRequired`, so that parameter is ignored here.
         verification: toVerificationCodes(verification),
       });
 

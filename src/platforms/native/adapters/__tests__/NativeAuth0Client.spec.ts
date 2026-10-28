@@ -622,6 +622,7 @@ describe('NativeAuth0Client', () => {
         'https://api.example.com',
         'openid profile email',
         'org_123',
+        undefined,
         undefined
       );
     });
@@ -644,17 +645,19 @@ describe('NativeAuth0Client', () => {
         undefined,
         undefined,
         undefined,
+        undefined,
         undefined
       );
     });
 
-    it('should pass the verification codes to the bridge', async () => {
+    it('should pass the verification codes and the identifiers they cover to the bridge', async () => {
       const client = new NativeAuth0Client(options);
       await new Promise(process.nextTick);
 
       await client.getTokenByPasskey({
         authSession: 'auth-session-123',
         authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
+        verificationRequired: ['email', 'phone'],
         verification: { email: '123456', phone: '654321' },
       });
 
@@ -667,23 +670,97 @@ describe('NativeAuth0Client', () => {
         undefined,
         undefined,
         undefined,
-        { email: '123456', phone: '654321' }
+        { email: '123456', phone: '654321' },
+        ['email', 'phone']
       );
     });
 
-    it('should not pass codes for identifiers the SDK does not know about', async () => {
+    it('should retry with only the flagged identifiers and their fresh codes', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await client.getTokenByPasskey({
+        authSession: 'session-2',
+        authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
+        verificationRequired: ['phone'],
+        verification: { phone: '222222' },
+      });
+
+      const args = (mockBridgeInstance as any).getTokenByPasskey.mock.calls.at(
+        -1
+      );
+      expect(args[0]).toBe('session-2');
+      expect(args[6]).toEqual({ phone: '222222' });
+      expect(args[7]).toEqual(['phone']);
+    });
+
+    it('should not pass codes or identifiers the SDK does not know about', async () => {
       const client = new NativeAuth0Client(options);
       await new Promise(process.nextTick);
 
       await client.getTokenByPasskey({
         authSession: 'auth-session-123',
         authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
-        verification: { email: '123456', username: '111111' } as any,
+        verificationRequired: ['email', 'username'],
+        verification: { email: '123456', username: '111111' },
       });
 
-      expect(
-        (mockBridgeInstance as any).getTokenByPasskey.mock.calls.at(-1)[6]
-      ).toEqual({ email: '123456' });
+      const args = (mockBridgeInstance as any).getTokenByPasskey.mock.calls.at(
+        -1
+      );
+      expect(args[6]).toEqual({ email: '123456' });
+      expect(args[7]).toEqual(['email']);
+    });
+
+    it('should pass the codes without verificationRequired, as before', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await client.getTokenByPasskey({
+        authSession: 'auth-session-123',
+        authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
+        verification: { email: '123456' },
+      });
+
+      const args = (mockBridgeInstance as any).getTokenByPasskey.mock.calls.at(
+        -1
+      );
+      expect(args[6]).toEqual({ email: '123456' });
+      expect(args[7]).toBeUndefined();
+    });
+
+    it('should pass verificationRequired without codes, leaving the check to the native SDK', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await client.getTokenByPasskey({
+        authSession: 'auth-session-123',
+        authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
+        verificationRequired: ['email'],
+      });
+
+      const args = (mockBridgeInstance as any).getTokenByPasskey.mock.calls.at(
+        -1
+      );
+      expect(args[6]).toBeUndefined();
+      expect(args[7]).toEqual(['email']);
+    });
+
+    it('should not pass an empty verificationRequired, nor one with only unknown identifiers', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      for (const verificationRequired of [[], ['username']]) {
+        await client.getTokenByPasskey({
+          authSession: 'auth-session-123',
+          authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
+          verificationRequired,
+        });
+
+        expect(
+          (mockBridgeInstance as any).getTokenByPasskey.mock.calls.at(-1)[7]
+        ).toBeUndefined();
+      }
     });
 
     it('should not pass codes that are not strings, nor an empty map', async () => {
@@ -718,7 +795,11 @@ describe('NativeAuth0Client', () => {
       const bridge = (mockBridgeInstance as any).getTokenByPasskey;
       bridge.mockClear();
 
-      for (const verification of [{ email: '' }, { phone: '  ' }]) {
+      const verifications: Record<string, string>[] = [
+        { email: '' },
+        { phone: '  ' },
+      ];
+      for (const verification of verifications) {
         const error = await client
           .getTokenByPasskey({
             authSession: 'auth-session-123',
@@ -794,6 +875,7 @@ describe('NativeAuth0Client', () => {
         .getTokenByPasskey({
           authSession: 'auth-session-123',
           authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
+          verificationRequired: ['email'],
           verification: { email: '000000' },
         })
         .catch((e: unknown) => e);

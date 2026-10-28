@@ -350,6 +350,7 @@ export interface NativeBridge {
    * @param scope Optional space-separated scopes.
    * @param organization Optional organization ID or name.
    * @param verification Optional one-time codes keyed by the identifier they were sent to (`email`, `phone`).
+   * @param verificationRequired Optional identifiers that must have a code in `verification`; the native SDK checks this before sending.
    * @returns A promise that resolves with Auth0 credentials.
    */
   getTokenByPasskey(
@@ -359,7 +360,8 @@ export interface NativeBridge {
     audience?: string,
     scope?: string,
     organization?: string,
-    verification?: Record<string, string>
+    verification?: Record<string, string>,
+    verificationRequired?: string[]
   ): Promise<Credentials>;
 
   /**

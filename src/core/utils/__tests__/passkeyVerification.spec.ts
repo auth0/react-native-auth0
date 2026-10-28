@@ -71,6 +71,19 @@ describe('toVerificationCodes', () => {
     }
   });
 
+  it('treats a code that Swift or Kotlin sees as blank as empty', () => {
+    // U+0085 is blank for Swift, U+001C-U+001F for Kotlin, but not for trim().
+    for (const code of ['\u0085', '\u001c', '\u001f', ' \u00a0\u3000']) {
+      expect(() => toVerificationCodes({ email: code })).toThrow(AuthError);
+    }
+  });
+
+  it('keeps a code with whitespace around it as is', () => {
+    expect(toVerificationCodes({ email: ' 123456 ' })).toEqual({
+      email: ' 123456 ',
+    });
+  });
+
   it('returns undefined when there is nothing to send', () => {
     expect(toVerificationCodes(undefined)).toBeUndefined();
     expect(toVerificationCodes({})).toBeUndefined();

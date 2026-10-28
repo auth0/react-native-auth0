@@ -902,7 +902,7 @@ const promptForCodes = (methods: PasskeyVerificationMethod[]) =>
       method,
       window.prompt(`Enter the code sent to your ${method}`) ?? '',
     ])
-  ) as Partial<Record<PasskeyVerificationMethod, string>>;
+  ) as Record<string, string>;
 
 function PasskeysSection() {
   const { passkeySignupChallenge, passkeyLoginChallenge, getTokenByPasskey } =
@@ -912,10 +912,13 @@ function PasskeysSection() {
   const [loading, setLoading] = useState(false);
   const [passkeyEmail, setPasskeyEmail] = useState('');
   const [passkeyPhone, setPasskeyPhone] = useState('');
+  // What each retryable wrong-code error said; the session itself is not shown.
+  const [retries, setRetries] = useState<string[]>([]);
 
   const onSignup = async () => {
     setResult(null);
     setError(null);
+    setRetries([]);
     setLoading(true);
     try {
       const challenge = await passkeySignupChallenge({
@@ -926,7 +929,8 @@ function PasskeysSection() {
       // Collect the one-time codes BEFORE creating the passkey, so the user can
       // cancel before a passkey exists. Auth0 checks them only in
       // getTokenByPasskey, so a failed exchange can still leave an unused one.
-      let verification = promptForCodes(challenge.verificationRequired ?? []);
+      let verificationRequired = challenge.verificationRequired;
+      let verification = promptForCodes(verificationRequired ?? []);
       let credential: PublicKeyCredential;
       try {
         credential = (await navigator.credentials.create({
@@ -945,6 +949,8 @@ function PasskeysSection() {
             authSession,
             authResponse: credential,
             realm: 'Username-Password-Authentication',
+            // Ignored on web, where spa-js works from the codes alone; kept for parity with native.
+            verificationRequired,
             verification,
           });
           break;
@@ -953,12 +959,17 @@ function PasskeysSection() {
             e instanceof PasskeyError ? e.getVerificationRetryPayload() : null;
           if (!retry || attempt >= 3) throw e;
           authSession = retry.authSession ?? authSession;
-          verification = {
-            ...verification,
-            ...promptForCodes(
-              retry.verificationRequired ?? challenge.verificationRequired ?? []
-            ),
-          };
+          verificationRequired =
+            retry.verificationRequired ?? challenge.verificationRequired;
+          setRetries((previous) => [
+            ...previous,
+            `Retry #${attempt}: wrong code for ${
+              retry.verificationRequired?.join(', ') ??
+              '(not listed, asking for all again)'
+            }; authSession ${retry.authSession ? 'returned' : 'missing'}.`,
+          ]);
+          // The other identifiers are verified already: fresh codes for the flagged ones only.
+          verification = promptForCodes(verificationRequired ?? []);
         }
       }
       setResult({
@@ -1034,6 +1045,9 @@ function PasskeysSection() {
           onPress={onLogin}
           disabled={loading}
         />
+        {retries.map((line) => (
+          <Text key={line}>{line}</Text>
+        ))}
       </View>
       <ResultView result={result} error={error} />
     </Section>

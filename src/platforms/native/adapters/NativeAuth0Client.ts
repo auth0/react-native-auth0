@@ -28,6 +28,7 @@ import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
 import {
   getConfigSignature,
   toVerificationCodes,
+  toVerificationMethods,
   validateActorTokenParameters,
   validateTokenTypeUri,
 } from '../../../core/utils';
@@ -295,6 +296,7 @@ export class NativeAuth0Client implements Auth0Client {
       scope,
       organization,
       verification,
+      verificationRequired,
     } = parameters;
     if (typeof authResponse !== 'string') {
       throw new PasskeyError(
@@ -313,7 +315,9 @@ export class NativeAuth0Client implements Auth0Client {
         audience || undefined,
         scope || undefined,
         organization || undefined,
-        toVerificationCodes(verification)
+        toVerificationCodes(verification),
+        // Auth0.swift and Auth0.Android check the codes against this list.
+        toVerificationMethods(verificationRequired)
       );
     } catch (e) {
       if (e instanceof AuthError) {

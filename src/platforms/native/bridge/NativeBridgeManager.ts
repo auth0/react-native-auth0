@@ -393,7 +393,8 @@ export class NativeBridgeManager implements NativeBridge {
     audience?: string,
     scope?: string,
     organization?: string,
-    verification?: Record<string, string>
+    verification?: Record<string, string>,
+    verificationRequired?: string[]
   ): Promise<Credentials> {
     const credential = await this.a0_call(
       Auth0NativeModule.getTokenByPasskey.bind(Auth0NativeModule),
@@ -403,7 +404,8 @@ export class NativeBridgeManager implements NativeBridge {
       audience,
       scope,
       organization,
-      verification
+      verification,
+      verificationRequired
     );
     return new CredentialsModel(credential);
   }

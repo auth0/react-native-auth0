@@ -849,7 +849,7 @@ describe('NativeBridgeManager', () => {
   });
 
   describe('getTokenByPasskey', () => {
-    it('forwards all parameters, including the verification codes, and transforms the response into a Credentials model', async () => {
+    it('forwards all parameters, including the verification codes and the identifiers they cover, and transforms the response into a Credentials model', async () => {
       MockedAuth0NativeModule.getTokenByPasskey.mockResolvedValueOnce(
         nativeSuccessCredentials as any
       );
@@ -861,7 +861,8 @@ describe('NativeBridgeManager', () => {
         'https://api.example.com',
         'openid profile',
         'org_123',
-        { email: '123456', phone: '654321' }
+        { email: '123456', phone: '654321' },
+        ['email', 'phone']
       );
 
       expect(MockedAuth0NativeModule.getTokenByPasskey).toHaveBeenCalledWith(
@@ -871,7 +872,8 @@ describe('NativeBridgeManager', () => {
         'https://api.example.com',
         'openid profile',
         'org_123',
-        { email: '123456', phone: '654321' }
+        { email: '123456', phone: '654321' },
+        ['email', 'phone']
       );
       expect(credentials).toBeInstanceOf(Credentials);
       expect(credentials.accessToken).toBe(

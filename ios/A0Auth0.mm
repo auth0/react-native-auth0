@@ -269,9 +269,10 @@ RCT_EXPORT_METHOD(getTokenByPasskey:(NSString *)authSession
                   scope:(NSString * _Nullable)scope
                   organization:(NSString * _Nullable)organization
                   verification:(NSDictionary * _Nullable)verification
+                  verificationRequired:(NSArray * _Nullable)verificationRequired
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-    [self.nativeBridge getTokenByPasskeyWithAuthSession:authSession authResponse:authResponse realm:realm audience:audience scope:scope organization:organization verification:verification resolve:resolve reject:reject];
+    [self.nativeBridge getTokenByPasskeyWithAuthSession:authSession authResponse:authResponse realm:realm audience:audience scope:scope organization:organization verification:verification verificationRequired:verificationRequired resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(passwordlessChallengeWithEmail:(NSString *)email

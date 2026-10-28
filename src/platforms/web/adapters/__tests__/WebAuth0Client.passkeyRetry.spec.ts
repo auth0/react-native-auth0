@@ -86,6 +86,64 @@ describe('WebAuth0Client passkey identifier verification (real PasskeyError)', (
     });
   });
 
+  it('retries a wrong one-time code with the flagged identifier only, on the same session and credential', async () => {
+    spaPasskey.getTokenWithPasskey
+      .mockRejectedValueOnce(
+        new PasskeyGetTokenError('Wrong phone number or verification code.', {
+          error: 'invalid_grant',
+          error_description: 'Wrong phone number or verification code.',
+          auth_session: 'session-1',
+          verification_required: ['phone'],
+        })
+      )
+      .mockResolvedValueOnce({
+        access_token: 'access-token',
+        id_token: 'id-token',
+        token_type: 'Bearer',
+        expires_in: 3600,
+      });
+
+    let verificationRequired: string[] | undefined = ['email', 'phone'];
+    const first = await client
+      .getTokenByPasskey({
+        authSession: 'session-1',
+        authResponse: credential,
+        verificationRequired,
+        verification: { email: '111111', phone: '000000' },
+      })
+      .catch((e: unknown) => e as PasskeyError);
+
+    const retry = first.getVerificationRetryPayload();
+    expect(retry).toEqual({
+      authSession: 'session-1',
+      verificationRequired: ['phone'],
+    });
+    verificationRequired = retry!.verificationRequired;
+
+    await client.getTokenByPasskey({
+      authSession: retry!.authSession!,
+      authResponse: credential,
+      verificationRequired,
+      verification: { phone: '222222' },
+    });
+
+    const [firstSent, retrySent] =
+      spaPasskey.getTokenWithPasskey.mock.calls.map(([options]) => options);
+    expect(firstSent.verification).toEqual({
+      email: '111111',
+      phone: '000000',
+    });
+    expect(retrySent).toEqual(
+      expect.objectContaining({
+        authSession: 'session-1',
+        credential,
+        verification: { phone: '222222' },
+      })
+    );
+    // auth0-spa-js takes no verificationRequired: the web adapter drops it.
+    expect(retrySent).not.toHaveProperty('verificationRequired');
+  });
+
   it('keeps a PasskeyGetTokenError that is not retryable as PASSKEY_EXCHANGE_FAILED, with no payload', async () => {
     spaPasskey.getTokenWithPasskey.mockRejectedValue(
       new PasskeyGetTokenError('Access denied', {
@@ -102,7 +160,11 @@ describe('WebAuth0Client passkey identifier verification (real PasskeyError)', (
   });
 
   it('rejects an empty or whitespace-only code with PASSKEY_INVALID_PARAMETER before calling spa-js', async () => {
-    for (const verification of [{ email: '' }, { phone: '  ' }]) {
+    const verifications: Record<string, string>[] = [
+      { email: '' },
+      { phone: '  ' },
+    ];
+    for (const verification of verifications) {
       const error = await client
         .getTokenByPasskey({
           authSession: 'session-1',
