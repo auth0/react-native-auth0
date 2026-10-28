@@ -416,8 +416,9 @@ describe('PasskeyError', () => {
     });
 
     describe('on web', () => {
-      // `WebAuth0Client` keeps the `cause` of the auth0-spa-js PasskeyGetTokenError
-      // (the API error response) on `json`, or the error itself when it has none.
+      // `WebAuth0Client` puts the `cause` of the auth0-spa-js PasskeyGetTokenError
+      // (the API error response) on `json`, merged with the error's own camelCase
+      // retry fields.
       const webRetryable = (json: unknown) =>
         new PasskeyError(
           new AuthError(

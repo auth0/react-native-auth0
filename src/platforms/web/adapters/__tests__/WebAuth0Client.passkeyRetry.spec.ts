@@ -86,6 +86,29 @@ describe('WebAuth0Client passkey identifier verification (real PasskeyError)', (
     });
   });
 
+  it('reads the retry payload off the spa-js error itself when its cause does not carry it', async () => {
+    const spaError = new PasskeyGetTokenError('Invalid or expired session', {
+      error: 'invalid_grant',
+      error_description: 'Invalid or expired session',
+      auth_session: 'session-2',
+      verification_required: ['phone'],
+    });
+    // A later spa-js version may stop copying the retry fields into `cause`.
+    spaError.cause = {
+      error: 'invalid_grant',
+      error_description: 'Invalid or expired session',
+    };
+    spaPasskey.getTokenWithPasskey.mockRejectedValue(spaError);
+
+    const error = await exchange();
+
+    expect(error.type).toBe(PasskeyErrorCodes.VERIFICATION_RETRYABLE);
+    expect(error.getVerificationRetryPayload()).toEqual({
+      authSession: 'session-2',
+      verificationRequired: ['phone'],
+    });
+  });
+
   it('retries a wrong one-time code with the flagged identifier only, on the same session and credential', async () => {
     spaPasskey.getTokenWithPasskey
       .mockRejectedValueOnce(

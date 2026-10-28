@@ -413,8 +413,9 @@ export class WebAuth0Client implements Auth0Client {
       //
       // The exception is a wrong identifier-verification code while the session
       // is still alive: spa-js flags that on a PasskeyGetTokenError
-      // (`isRetryable`), and the API error response (`auth_session`,
-      // `verification_required`) is its `cause`.
+      // (`isRetryable`). The retry details are on the API error response in its
+      // `cause` (`auth_session`, `verification_required`) and on the error itself
+      // (`authSession`, `verificationRequired`); keep both so either is enough.
       const code = e.isRetryable
         ? PasskeyErrorCodes.VERIFICATION_RETRYABLE
         : (e.code ?? e.error ?? 'passkey_exchange_failed');
@@ -423,7 +424,16 @@ export class WebAuth0Client implements Auth0Client {
         e.message ??
           e.error_description ??
           'Failed to exchange passkey credential for tokens',
-        { code, json: e.cause ?? e }
+        {
+          code,
+          json: e.isRetryable
+            ? {
+                ...e.cause,
+                authSession: e.authSession,
+                verificationRequired: e.verificationRequired,
+              }
+            : (e.cause ?? e),
+        }
       );
       throw new PasskeyError(authError);
     }

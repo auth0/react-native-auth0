@@ -278,7 +278,8 @@ export class PasskeyError extends AuthError {
     // Native: the bridge rejects with `userInfo`, and `NativeBridgeManager`
     // keeps the whole native error on `json`. Web: `json` is the API error
     // response of the failed token request (`auth_session`,
-    // `verification_required`), or the auth0-spa-js error itself (camelCase).
+    // `verification_required`) merged with the auth0-spa-js error's own
+    // camelCase fields, so either one is enough.
     const json = this.json as Record<string, unknown> | undefined;
     const source = (json?.userInfo ?? json) as
       Record<string, unknown> | undefined;
