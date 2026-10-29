@@ -1,5 +1,13 @@
 # Change Log
 
+## [v6.1.0](https://github.com/auth0/react-native-auth0/tree/v6.1.0) (2026-10-29)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v6.0.0...v6.1.0)
+
+**Added**
+
+- feat: support passkey identifier verification on iOS, Android and web [\#1702](https://github.com/auth0/react-native-auth0/pull/1702) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
 ## [v6.0.0](https://github.com/auth0/react-native-auth0/tree/v6.0.0) (2026-10-27)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.11.4...v6.0.0)
