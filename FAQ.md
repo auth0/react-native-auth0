@@ -1051,7 +1051,7 @@ On mobile this usually has one of two causes:
 
 ### How to reduce it
 
-- **Set a rotation overlap period.** In the Auth0 Dashboard, under your application's **Refresh Token Rotation** settings, set **Rotation Overlap Period** to at least 180 seconds. A retry or a second concurrent request within that window is accepted instead of revoking the family. Without it, any retry after a lost response is treated as reuse.
+- **Set a rotation overlap period.** In the Auth0 Dashboard, under your application's **Refresh Token Rotation** settings, set **Rotation Overlap Period** to at least 180 seconds. Within that window of the last rotation, a retry or a second concurrent request that uses the immediately previous refresh token is accepted instead of revoking the family. Older refresh tokens still trigger reuse detection, and without an overlap period any retry after a lost response is treated as reuse.
 - **Use one client.** Wrap your app in a single `Auth0Provider`, or share a single `Auth0` instance, and get tokens only through `getCredentials()`.
 - **Share one in-flight refresh.** The SDK doesn't de-duplicate concurrent `getCredentials()` calls made from JavaScript, so route them through one pending promise:
 
@@ -1085,7 +1085,7 @@ Turn on SDK network logging in a debug build:
 - **iOS:** open Console.app, select the device, enable **Action > Include Debug Messages**, and filter by the `NetworkTracing` category.
 - **Android:** run `adb logcat` and filter for `okhttp`. Logging is ignored in release builds.
 
-Reproduce the logout and look at the `/oauth/token` requests around it. Two requests with the same refresh token a few milliseconds apart point to concurrent refreshes. A request with no logged response, followed later by a request with the same refresh token, points to a lost response. Match the timestamps against the `ferrt` event in your tenant logs.
+Reproduce the logout and look at the `/oauth/token` requests around it. Two requests with the same refresh token where the second is sent before the first one's response arrives point to concurrent refreshes. A same-token request that follows an error response is an iOS `maxRetries` retry. A request with no logged response, followed later by a request with the same refresh token, points to a lost response. Match the timestamps against the `ferrt` event in your tenant logs.
 
 > [!WARNING]
 > These logs contain access, refresh, and ID tokens in plaintext. Enable logging only while debugging, never ship it in a production build, and redact tokens before sharing logs. See [Android Networking Configuration](EXAMPLES.md#android-networking-configuration) for details.
