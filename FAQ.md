@@ -18,6 +18,7 @@
 16. [What happens if I disable DPoP after enabling it?](#16-what-happens-if-i-disable-dpop-after-enabling-it)
 17. [Why does the app hang or freeze during Social Login (Google, Facebook, etc.)?](#17-why-does-the-app-hang-or-freeze-during-social-login-google-facebook-etc)
 18. [How do I refresh the user profile (e.g. `emailVerified`) after it changes on the server?](#18-how-do-i-refresh-the-user-profile-eg-emailverified-after-it-changes-on-the-server)
+19. [Why are users logged out with a "reused refresh token detected" error?](#19-why-are-users-logged-out-with-a-reused-refresh-token-detected-error)
 
 ## 1. How can I have separate Auth0 domains for each environment on Android?
 
@@ -1038,3 +1039,53 @@ function VerifyEmailScreen() {
 | `getCredentials` promise never resolves | Missing refresh token or network issue                       | Ensure `offline_access` is included during login, and check network connectivity.                                       |
 
 > **Note**: This behavior differs from the web SDK (`@auth0/auth0-spa-js`), where token refresh is handled automatically via silent authentication using iframes. On native platforms (iOS/Android), a refresh token is explicitly required.
+
+## 19. Why are users logged out with a "reused refresh token detected" error?
+
+With [Refresh Token Rotation](https://auth0.com/docs/secure/tokens/refresh-tokens/refresh-token-rotation) enabled, every refresh returns a new refresh token and invalidates the old one. If an already-used refresh token is sent again after the rotation overlap period has passed, Auth0 treats it as a possible token leak, revokes the whole token family, and logs a `ferrt` event with the description "Unsuccessful Refresh Token exchange, reused refresh token detected". The user then has to log in again.
+
+On mobile this usually has one of two causes:
+
+1. **Concurrent refreshes.** Two refreshes run at the same time with the same refresh token, for example when several screens or API calls each call `getCredentials()` right as the access token expires, when the app creates more than one `Auth0` instance, or when your own code calls `/oauth/token` with the stored refresh token outside the SDK. The first request rotates the token and the second one is detected as reuse.
+2. **A lost response.** The refresh succeeds on the server but the response never reaches the device (the app was backgrounded, or the network dropped). The device still holds the old refresh token and sends it again on the next refresh.
+
+### How to reduce it
+
+- **Set a rotation overlap period.** In the Auth0 Dashboard, under your application's **Refresh Token Rotation** settings, set **Rotation Overlap Period** to at least 180 seconds. Within that window of the last rotation, a retry or a second concurrent request that uses the immediately previous refresh token is accepted instead of revoking the family. Older refresh tokens still trigger reuse detection, and without an overlap period any retry after a lost response is treated as reuse.
+- **Use one client.** Wrap your app in a single `Auth0Provider`, or share a single `Auth0` instance, and get tokens only through `getCredentials()`.
+- **Share one in-flight refresh.** The SDK doesn't de-duplicate concurrent `getCredentials()` calls made from JavaScript, so route them through one pending promise:
+
+  ```javascript
+  let pending = null;
+
+  export function getCredentialsOnce(auth0) {
+    if (!pending) {
+      pending = auth0.credentialsManager
+        .getCredentials()
+        .finally(() => (pending = null));
+    }
+    return pending;
+  }
+  ```
+
+- **Retry transient failures (iOS).** Set `maxRetries` (2 is recommended) so a renewal that fails with a network error, HTTP 429, or HTTP 5xx is retried with the same refresh token while it's still inside the overlap period. See [Credential Renewal Retry](EXAMPLES.md#credential-renewal-retry).
+
+### Capturing logs to find the cause
+
+Turn on SDK network logging in a debug build:
+
+```jsx
+<Auth0Provider
+  domain="YOUR_AUTH0_DOMAIN"
+  clientId="YOUR_AUTH0_CLIENT_ID"
+  networkingOptions={{ enableLogging: true }}
+>
+```
+
+- **iOS:** open Console.app, select the device, enable **Action > Include Debug Messages**, and filter by the `NetworkTracing` category.
+- **Android:** run `adb logcat` and filter for `okhttp`. Logging is ignored in release builds.
+
+Reproduce the logout and look at the `/oauth/token` requests around it. Two requests with the same refresh token where the second is sent before the first one's response arrives point to concurrent refreshes. A same-token request that follows an error response is an iOS `maxRetries` retry. A request with no logged response, followed later by a request with the same refresh token, points to a lost response. Match the timestamps against the `ferrt` event in your tenant logs.
+
+> [!WARNING]
+> These logs contain access, refresh, and ID tokens in plaintext. Enable logging only while debugging, never ship it in a production build, and redact tokens before sharing logs. See [Android Networking Configuration](EXAMPLES.md#android-networking-configuration) for details.
