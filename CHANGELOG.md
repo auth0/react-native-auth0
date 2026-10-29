@@ -6,11 +6,11 @@
 
 **Added**
 
-- docs: add FAQ entry for reused refresh token errors [\#1721](https://github.com/auth0/react-native-auth0/pull/1721) ([subhankarmaiti](https://github.com/subhankarmaiti))
 - feat: support passkey identifier verification on iOS, Android and web [\#1702](https://github.com/auth0/react-native-auth0/pull/1702) ([NandanPrabhu](https://github.com/NandanPrabhu))
 
-**Fixed**
+**Documentation**
 
+- docs: add FAQ entry for reused refresh token errors [\#1721](https://github.com/auth0/react-native-auth0/pull/1721) ([subhankarmaiti](https://github.com/subhankarmaiti))
 - docs: fix broken Auth0 docs links in EXAMPLES.md [\#1719](https://github.com/auth0/react-native-auth0/pull/1719) ([seattlily](https://github.com/seattlily))
 
 ## [v6.0.0](https://github.com/auth0/react-native-auth0/tree/v6.0.0) (2026-10-27)
