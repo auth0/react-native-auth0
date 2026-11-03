@@ -98,3 +98,8 @@ dist/
 out/
 coverage/
 docs/
+
+# SwiftPM output (spm/ is a version-only manifest; pins are exact)
+spm/.build/
+spm/Package.resolved
+example/ios/*.xcworkspace/xcshareddata/swiftpm/
