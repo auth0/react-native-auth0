@@ -1,0 +1,36 @@
+## Can be removed once A0Auth0.podspec no longer duplicates the Auth0.swift version pins
+
+name: iOS dependencies
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+jobs:
+  check-ios-deps:
+    name: Check podspec dependency versions
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Run check
+        run: |
+          scripts/sync-ios-deps.sh
+
+          if git diff HEAD --quiet --diff-filter=ACDMRT; then
+              echo $'\nPodspec dependency versions are in sync with spm/Package.swift.'
+          else
+              echo $'\nThe podspec dependency versions are out of sync with spm/Package.swift.'
+              echo "Run 'scripts/sync-ios-deps.sh' from the repository root and commit the changes."
+              exit 1
+          fi

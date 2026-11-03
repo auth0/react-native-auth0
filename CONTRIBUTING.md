@@ -86,6 +86,10 @@ The `package.json` file contains various scripts for common tasks:
 - `yarn example android`: run the example app on Android.
 - `yarn example ios`: run the example app on iOS.
 
+### iOS dependency versions
+
+The Auth0.swift, JWTDecode.swift and SimpleKeychain versions are pinned in `spm/Package.swift`, which Dependabot updates. `A0Auth0.podspec` repeats them, so after a bump run `scripts/sync-ios-deps.sh` from the repo root and commit the result. The `iOS dependencies` workflow fails when they drift.
+
 ### Sending a pull request
 
 When you're sending a pull request:
