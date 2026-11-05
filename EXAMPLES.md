@@ -117,7 +117,7 @@
 
 ## iOS framework linkage (`use_frameworks!`)
 
-This SDK's native iOS dependencies — Auth0 3.2.0, JWTDecode 4.0.0, and SimpleKeychain 1.3.0 — are Swift pods. They install with the default React Native static-library linkage, so **most apps need no extra Podfile changes**:
+This SDK's native iOS dependencies — Auth0 3.3.0, JWTDecode 4.0.0, and SimpleKeychain 1.3.0 — are Swift pods. They install with the default React Native static-library linkage, so **most apps need no extra Podfile changes**:
 
 ```bash
 cd ios && pod install
@@ -2053,7 +2053,7 @@ const withoutPolicy = await myAccount.getUserProfile({
 });
 ```
 
-> 💡 `profilePolicy` is `undefined` when `profile_policy` is not part of the response: when `fields` does not list it, or when it is listed with `includeFields: false`.
+> 💡 `profilePolicy` is `undefined` when `profile_policy` is not part of the response. With `includeFields` `true` (the default), this is when `fields` is set and does not list it. With `includeFields: false`, this is when `fields` lists it.
 
 `updateUserProfile` changes only the fields you pass and returns the full, updated profile. Only `givenName`, `familyName`, `name`, `nickname`, and `picture` can be updated; `userId`, `email`, `emailVerified`, `phoneNumber`, `phoneVerified`, and `username` are read-only. Calling it with no fields is valid and returns the current profile. The update is all-or-nothing: if any field is read-only for the user or fails validation, the whole request is rejected with a `400` and nothing is changed.
 

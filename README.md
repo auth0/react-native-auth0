@@ -75,7 +75,7 @@ Then, you need to run the following command to install the ios app pods with Coc
 
 #### iOS framework linkage (`use_frameworks!`)
 
-This SDK's native dependencies — Auth0 3.2.0, JWTDecode 4.0.0, and SimpleKeychain 1.3.0 — are Swift pods. They install with the default React Native static-library linkage (no `use_frameworks!`), so **most apps need no extra Podfile changes**.
+This SDK's native dependencies — Auth0 3.3.0, JWTDecode 4.0.0, and SimpleKeychain 1.3.0 — are Swift pods. They install with the default React Native static-library linkage (no `use_frameworks!`), so **most apps need no extra Podfile changes**.
 
 If your project requires `use_frameworks!` (for example, because another dependency ships as a framework), both linkage modes are supported — this was verified by building the example app under each:
 

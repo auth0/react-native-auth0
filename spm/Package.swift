@@ -7,7 +7,7 @@ let package = Package(
     name: "A0Auth0Versions",
     platforms: [.iOS(.v15)],
     dependencies: [
-        .package(url: "https://github.com/auth0/Auth0.swift", exact: "3.2.0"),
+        .package(url: "https://github.com/auth0/Auth0.swift", exact: "3.3.0"),
         .package(url: "https://github.com/auth0/JWTDecode.swift", exact: "4.0.0"),
         .package(url: "https://github.com/auth0/SimpleKeychain", exact: "1.3.0"),
     ],

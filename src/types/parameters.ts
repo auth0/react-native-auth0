@@ -1231,9 +1231,10 @@ export interface MyAccountProfile {
    * The edit policy of each field, keyed by a JSON Pointer to the field
    * (e.g., `"/given_name"`).
    *
-   * `undefined` when `profile_policy` is not part of the response: when
-   * `fields` is set and does not list it, or when it is listed with
-   * `includeFields: false`.
+   * `undefined` when `profile_policy` is not part of the response. With
+   * `includeFields` `true` (the default), this is when `fields` is set and
+   * does not list it. With `includeFields: false`, this is when `fields`
+   * lists it.
    */
   profilePolicy?: Record<string, ProfileFieldPolicy>;
 }
