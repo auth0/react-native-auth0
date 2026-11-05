@@ -1174,16 +1174,22 @@ export interface Factor {
 
 /**
  * Whether the user can edit a profile field.
+ *
+ * This API is currently in Beta and might change before General Availability.
  */
 export type ProfileFieldAccess = 'read_only' | 'read_write';
 
 /**
  * Where the value of a profile field comes from.
+ *
+ * This API is currently in Beta and might change before General Availability.
  */
 export type ProfileFieldSource = 'user' | 'idp' | 'system';
 
 /**
  * Describes whether a profile field can be edited by the user, and why.
+ *
+ * This API is currently in Beta and might change before General Availability.
  */
 export interface ProfileFieldPolicy {
   /** Whether the field can be edited by the user. */
@@ -1199,6 +1205,8 @@ export interface ProfileFieldPolicy {
 
 /**
  * The current user's profile, as returned by the My Account API.
+ *
+ * This API is currently in Beta and might change before General Availability.
  */
 export interface MyAccountProfile {
   /** The user's unique identifier. Read-only. */
@@ -1241,6 +1249,8 @@ export interface MyAccountProfile {
 
 /**
  * Parameters for retrieving the current user's profile from the My Account API.
+ *
+ * This API is currently in Beta and might change before General Availability.
  */
 export interface GetUserProfileParameters {
   /**
@@ -1266,6 +1276,8 @@ export interface GetUserProfileParameters {
  * Parameters for updating the current user's profile with the My Account API.
  *
  * Fields left `undefined` are not sent and remain unchanged.
+ *
+ * This API is currently in Beta and might change before General Availability.
  */
 export interface UpdateUserProfileParameters {
   /**

@@ -77,7 +77,7 @@
   - [Recovery Code Enrollment](#recovery-code-enrollment)
   - [Managing Authentication Methods](#managing-authentication-methods)
   - [Getting Available Factors](#getting-available-factors)
-  - [Managing the User's Profile](#managing-the-users-profile)
+  - [Managing the User's Profile [Beta]](#managing-the-users-profile-beta)
   - [Error Handling](#error-handling-2)
   - [Platform Support](#platform-support-2)
 - [Native to Web SSO](#native-to-web-sso)
@@ -2022,9 +2022,12 @@ const factors = await myAccount.getFactors({ accessToken });
 // Returns available factor types (e.g., sms, email, totp, push-notification, webauthn-platform)
 ```
 
-### Managing the User's Profile
+### Managing the User's Profile [Beta]
 
-> ⚠️ The My Account profile API is currently available in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access). Please reach out to Auth0 support to get it enabled for your tenant. Once enabled, grant the `read:me:profile` and `update:me:profile` scopes of the **Auth0 My Account API** to your application under **Application Access** in the dashboard; they are not granted automatically.
+> [!NOTE]
+> The My Account Profile API is currently in [Beta](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#beta). It might change before General Availability, and Auth0 does not support beta functionality for production use. The feature must be enabled for your tenant.
+
+Once the feature is enabled, grant the `read:me:profile` and `update:me:profile` scopes of the **Auth0 My Account API** to your application under **Application Access** in the dashboard; they are not granted automatically.
 
 A signed-in user can read and update their own profile with `getUserProfile` and `updateUserProfile`. The access token must include the `read:me:profile` scope to read the profile, and `update:me:profile` to update it.
 
