@@ -77,6 +77,7 @@
   - [Recovery Code Enrollment](#recovery-code-enrollment)
   - [Managing Authentication Methods](#managing-authentication-methods)
   - [Getting Available Factors](#getting-available-factors)
+  - [Managing the User's Profile](#managing-the-users-profile)
   - [Error Handling](#error-handling-2)
   - [Platform Support](#platform-support-2)
 - [Native to Web SSO](#native-to-web-sso)
@@ -2021,6 +2022,63 @@ const factors = await myAccount.getFactors({ accessToken });
 // Returns available factor types (e.g., sms, email, totp, push-notification, webauthn-platform)
 ```
 
+### Managing the User's Profile
+
+> ⚠️ The My Account profile API is currently available in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access). Please reach out to Auth0 support to get it enabled for your tenant. Once enabled, grant the `read:me:profile` and `update:me:profile` scopes of the **Auth0 My Account API** to your application under **Application Access** in the dashboard; they are not granted automatically.
+
+A signed-in user can read and update their own profile with `getUserProfile` and `updateUserProfile`. The access token must include the `read:me:profile` scope to read the profile, and `update:me:profile` to update it.
+
+Every field of the returned `MyAccountProfile` comes with a `profilePolicy` entry, keyed by a JSON Pointer to the field (e.g. `/given_name`), that tells whether the user can edit it and why. Use it to render your profile UI without hardcoding which fields are editable for each connection type. For example, the `given_name` of a social user is read-only because it is managed by the identity provider.
+
+```typescript
+const profile = await myAccount.getUserProfile({ accessToken });
+
+const givenNamePolicy = profile.profilePolicy?.['/given_name'];
+if (givenNamePolicy?.access === 'read_only') {
+  // e.g. givenNamePolicy.reason === 'managed_by_identity_provider'
+  console.log(`given_name is read-only: ${givenNamePolicy.reason}`);
+}
+
+// Only return some fields (using the API field names)...
+const names = await myAccount.getUserProfile({
+  accessToken,
+  fields: ['given_name', 'family_name', 'profile_policy'],
+});
+
+// ...or every field except some.
+const withoutPolicy = await myAccount.getUserProfile({
+  accessToken,
+  fields: ['profile_policy'],
+  includeFields: false,
+});
+```
+
+> 💡 `profilePolicy` is `undefined` when `profile_policy` is not part of the response: when `fields` does not list it, or when it is listed with `includeFields: false`.
+
+`updateUserProfile` changes only the fields you pass and returns the full, updated profile. Only `givenName`, `familyName`, `name`, `nickname`, and `picture` can be updated; `userId`, `email`, `emailVerified`, `phoneNumber`, `phoneVerified`, and `username` are read-only. Calling it with no fields is valid and returns the current profile. The update is all-or-nothing: if any field is read-only for the user or fails validation, the whole request is rejected with a `400` and nothing is changed.
+
+```typescript
+import { MyAccountError, MyAccountErrorCodes } from 'react-native-auth0';
+
+try {
+  const updated = await myAccount.updateUserProfile({
+    accessToken,
+    givenName: 'Jane',
+    nickname: 'jane',
+  });
+  console.log(`Updated: ${updated.givenName}`);
+} catch (e) {
+  if (e instanceof MyAccountError && e.type === MyAccountErrorCodes.INVALID_REQUEST) {
+    // On a 400, each rejected field is described in `validationErrors`.
+    for (const error of e.validationErrors ?? []) {
+      console.log(`${error.pointer ?? error.field}: ${error.detail}`);
+    }
+  }
+}
+```
+
+> 💡 If the feature is not enabled for your tenant, or the token lacks the required scope, the call fails with a `MyAccountError` with `statusCode` `403` (`type` `UNAUTHORIZED`).
+
 ### Error Handling
 
 ```typescript
@@ -2069,6 +2127,8 @@ catch (e) {
   }
 }
 ```
+
+When the API rejects a request with a `400`, `validationErrors` describes each invalid field, if the response includes them. Only `detail` is always present; `pointer`, `field`, and `source` are optional.
 
 ### Platform Support
 

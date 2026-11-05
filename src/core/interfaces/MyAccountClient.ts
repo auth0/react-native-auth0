@@ -21,6 +21,9 @@ import type {
   TOTPEnrollmentChallenge,
   RecoveryCodeEnrollmentChallenge,
   Factor,
+  GetUserProfileParameters,
+  UpdateUserProfileParameters,
+  MyAccountProfile,
 } from '../../types';
 
 export interface MyAccountClient {
@@ -95,4 +98,14 @@ export interface MyAccountClient {
   // --- Factors ---
 
   getFactors(parameters: GetFactorsParameters): Promise<Factor[]>;
+
+  // --- Profile ---
+
+  getUserProfile(
+    parameters: GetUserProfileParameters
+  ): Promise<MyAccountProfile>;
+
+  updateUserProfile(
+    parameters: UpdateUserProfileParameters
+  ): Promise<MyAccountProfile>;
 }

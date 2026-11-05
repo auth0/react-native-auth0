@@ -525,6 +525,8 @@ const initialContext: Auth0ContextInterface = {
     updateAuthenticationMethodById: stub,
     deleteAuthenticationMethodById: stub,
     getFactors: stub,
+    getUserProfile: stub,
+    updateUserProfile: stub,
   },
   passwordless: {
     challengeWithEmail: stub,

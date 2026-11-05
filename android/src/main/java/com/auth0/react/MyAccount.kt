@@ -5,6 +5,8 @@ import com.auth0.android.myaccount.AuthenticationMethodType
 import com.auth0.android.myaccount.MyAccountAPIClient
 import com.auth0.android.myaccount.MyAccountException
 import com.auth0.android.myaccount.PhoneAuthenticationMethodType
+import com.auth0.android.myaccount.request.GetUserProfileOptions
+import com.auth0.android.myaccount.request.UpdateUserProfileRequest
 import com.auth0.android.request.PublicKeyCredentials
 import com.auth0.android.result.AuthenticationMethod
 import com.auth0.android.result.AuthenticatorSelection
@@ -12,6 +14,7 @@ import com.auth0.android.result.AuthnParamsPublicKey
 import com.auth0.android.result.EnrollmentChallenge
 import com.auth0.android.result.Factor
 import com.auth0.android.result.MfaEnrollmentChallenge
+import com.auth0.android.result.MyAccountProfile
 import com.auth0.android.result.OobEnrollmentChallenge
 import com.auth0.android.result.PasskeyAuthenticationMethod
 import com.auth0.android.result.PasskeyEnrollmentChallenge
@@ -41,12 +44,24 @@ class MyAccount(
 
     private fun rejectWithMyAccountError(promise: Promise, error: MyAccountException) {
         val code = error.type ?: "MY_ACCOUNT_ERROR"
-        val message = Gson().toJson(mapOf(
+        val info = mutableMapOf<String, Any?>(
             "type" to error.type,
             "title" to error.title,
             "detail" to error.detail,
             "statusCode" to error.statusCode
-        ))
+        )
+        error.validationErrors?.let { errors ->
+            info["validationErrors"] = errors.map {
+                mapOf(
+                    "detail" to it.detail,
+                    "field" to it.field,
+                    "pointer" to it.pointer,
+                    "source" to it.source
+                )
+            }
+        }
+        // Gson omits null values, so absent validation error fields stay undefined in JS.
+        val message = Gson().toJson(info)
         promise.reject(code, message, error)
     }
 
@@ -426,6 +441,85 @@ class MyAccount(
                     rejectWithMyAccountError(promise, error)
                 }
             })
+    }
+
+    fun getUserProfile(
+        accessToken: String,
+        fields: List<String>,
+        includeFields: Boolean,
+        promise: Promise
+    ) {
+        val myAccountClient = createClient(accessToken)
+
+        myAccountClient.getUserProfile(GetUserProfileOptions(fields, includeFields))
+            .start(object : com.auth0.android.callback.Callback<MyAccountProfile, MyAccountException> {
+                override fun onSuccess(profile: MyAccountProfile) {
+                    promise.resolve(profileToMap(profile))
+                }
+
+                override fun onFailure(error: MyAccountException) {
+                    rejectWithMyAccountError(promise, error)
+                }
+            })
+    }
+
+    fun updateUserProfile(
+        accessToken: String,
+        givenName: String?,
+        familyName: String?,
+        name: String?,
+        nickname: String?,
+        picture: String?,
+        promise: Promise
+    ) {
+        val myAccountClient = createClient(accessToken)
+        val request = UpdateUserProfileRequest(
+            givenName = givenName,
+            familyName = familyName,
+            name = name,
+            nickname = nickname,
+            picture = picture
+        )
+
+        myAccountClient.updateUserProfile(request)
+            .start(object : com.auth0.android.callback.Callback<MyAccountProfile, MyAccountException> {
+                override fun onSuccess(profile: MyAccountProfile) {
+                    promise.resolve(profileToMap(profile))
+                }
+
+                override fun onFailure(error: MyAccountException) {
+                    rejectWithMyAccountError(promise, error)
+                }
+            })
+    }
+
+    private fun profileToMap(profile: MyAccountProfile): WritableNativeMap {
+        return WritableNativeMap().apply {
+            profile.userId?.let { putString("userId", it) }
+            profile.givenName?.let { putString("givenName", it) }
+            profile.familyName?.let { putString("familyName", it) }
+            profile.name?.let { putString("name", it) }
+            profile.nickname?.let { putString("nickname", it) }
+            profile.picture?.let { putString("picture", it) }
+            profile.email?.let { putString("email", it) }
+            profile.emailVerified?.let { putBoolean("emailVerified", it) }
+            profile.phoneNumber?.let { putString("phoneNumber", it) }
+            profile.phoneVerified?.let { putBoolean("phoneVerified", it) }
+            profile.username?.let { putString("username", it) }
+            profile.createdAt?.let { putString("createdAt", it) }
+            profile.updatedAt?.let { putString("updatedAt", it) }
+            if (profile.profilePolicy.isNotEmpty()) {
+                val policies = WritableNativeMap()
+                profile.profilePolicy.forEach { (pointer, policy) ->
+                    policies.putMap(pointer, WritableNativeMap().apply {
+                        policy.access?.let { putString("access", it.value) }
+                        policy.source?.let { putString("source", it.value) }
+                        policy.reason?.let { putString("reason", it) }
+                    })
+                }
+                putMap("profilePolicy", policies)
+            }
+        }
     }
 
     private fun parseAuthenticationMethodType(type: String): AuthenticationMethodType? {

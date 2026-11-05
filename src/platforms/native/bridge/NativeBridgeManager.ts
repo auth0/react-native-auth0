@@ -619,4 +619,36 @@ export class NativeBridgeManager implements NativeBridge {
       accessToken
     );
   }
+
+  async getUserProfile(
+    accessToken: string,
+    fields: string[] | undefined,
+    includeFields: boolean
+  ): Promise<Record<string, any>> {
+    return this.a0_call(
+      Auth0NativeModule.getUserProfile.bind(Auth0NativeModule),
+      accessToken,
+      fields,
+      includeFields
+    );
+  }
+
+  async updateUserProfile(
+    accessToken: string,
+    givenName: string | null,
+    familyName: string | null,
+    name: string | null,
+    nickname: string | null,
+    picture: string | null
+  ): Promise<Record<string, any>> {
+    return this.a0_call(
+      Auth0NativeModule.updateUserProfile.bind(Auth0NativeModule),
+      accessToken,
+      givenName,
+      familyName,
+      name,
+      nickname,
+      picture
+    );
+  }
 }

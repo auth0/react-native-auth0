@@ -27,12 +27,21 @@ public class A0MyAccount: NSObject {
 
     private func rejectWithMyAccountError(reject: @escaping RCTPromiseRejectBlock, error: MyAccountError) {
         let code = error.code
-        let info: [String: Any] = [
+        var info: [String: Any] = [
             "type": error.code,
             "title": error.title,
             "detail": error.detail,
             "statusCode": error.statusCode
         ]
+        if let validationErrors = error.validationErrors {
+            info["validationErrors"] = validationErrors.map { validationError -> [String: Any] in
+                var entry: [String: Any] = ["detail": validationError.detail]
+                if let field = validationError.field { entry["field"] = field }
+                if let pointer = validationError.pointer { entry["pointer"] = pointer }
+                if let source = validationError.source { entry["source"] = source }
+                return entry
+            }
+        }
         let message: String
         if let data = try? JSONSerialization.data(withJSONObject: info),
            let json = String(data: data, encoding: .utf8) {
@@ -394,7 +403,69 @@ public class A0MyAccount: NSObject {
         }
     }
 
+    // MARK: - Profile
+
+    @objc public func getUserProfile(accessToken: String, fields: [String]?, includeFields: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        let myAccount = createClient(accessToken: accessToken)
+        let options = GetUserProfileOptions(fields: fields, includeFields: includeFields)
+
+        myAccount.authenticationMethods.getUserProfile(options: options).start { result in
+            switch result {
+            case .success(let profile):
+                resolve(self.profileToDict(profile))
+            case .failure(let error):
+                self.rejectWithMyAccountError(reject: reject, error: error)
+            }
+        }
+    }
+
+    @objc public func updateUserProfile(accessToken: String, givenName: String?, familyName: String?, name: String?, nickname: String?, picture: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        let myAccount = createClient(accessToken: accessToken)
+        let request = UpdateUserProfileRequest(givenName: givenName,
+                                               familyName: familyName,
+                                               name: name,
+                                               nickname: nickname,
+                                               picture: picture)
+
+        myAccount.authenticationMethods.updateUserProfile(request).start { result in
+            switch result {
+            case .success(let profile):
+                resolve(self.profileToDict(profile))
+            case .failure(let error):
+                self.rejectWithMyAccountError(reject: reject, error: error)
+            }
+        }
+    }
+
     // MARK: - Helpers
+
+    // Absent fields are left out (not sent as null), so they are `undefined` in JS.
+    private func profileToDict(_ profile: MyAccountProfile) -> [String: Any] {
+        let dict: [String: Any?] = [
+            "userId": profile.userId,
+            "givenName": profile.givenName,
+            "familyName": profile.familyName,
+            "name": profile.name,
+            "nickname": profile.nickname,
+            "picture": profile.picture,
+            "email": profile.email,
+            "emailVerified": profile.emailVerified,
+            "phoneNumber": profile.phoneNumber,
+            "phoneVerified": profile.phoneVerified,
+            "username": profile.username,
+            "createdAt": profile.createdAt,
+            "updatedAt": profile.updatedAt,
+            "profilePolicy": profile.profilePolicy?.mapValues { policy -> [String: Any] in
+                var entry: [String: Any] = [
+                    "access": policy.access.rawValue,
+                    "source": policy.source.rawValue
+                ]
+                if let reason = policy.reason { entry["reason"] = reason }
+                return entry
+            }
+        ]
+        return dict.compactMapValues { $0 }
+    }
 
     private func authenticationMethodToDict(_ method: Auth0.AuthenticationMethod) -> [String: Any?] {
         return [

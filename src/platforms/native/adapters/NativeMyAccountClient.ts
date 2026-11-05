@@ -22,6 +22,9 @@ import type {
   TOTPEnrollmentChallenge,
   RecoveryCodeEnrollmentChallenge,
   Factor,
+  GetUserProfileParameters,
+  UpdateUserProfileParameters,
+  MyAccountProfile,
 } from '../../../types';
 import type { NativeBridge } from '../bridge';
 import { AuthError, PasskeyError, MyAccountError } from '../../../core/models';
@@ -335,6 +338,48 @@ export class NativeMyAccountClient implements MyAccountClient {
     const { accessToken } = parameters;
     try {
       return (await this.bridge.getFactors(accessToken)) as Factor[];
+    } catch (e) {
+      if (e instanceof AuthError) {
+        throw new MyAccountError(e);
+      }
+      throw e;
+    }
+  }
+
+  // --- Profile (uses MyAccountError) ---
+
+  async getUserProfile(
+    parameters: GetUserProfileParameters
+  ): Promise<MyAccountProfile> {
+    const { accessToken, fields, includeFields } = parameters;
+    try {
+      return (await this.bridge.getUserProfile(
+        accessToken,
+        fields?.length ? fields : undefined,
+        includeFields ?? true
+      )) as MyAccountProfile;
+    } catch (e) {
+      if (e instanceof AuthError) {
+        throw new MyAccountError(e);
+      }
+      throw e;
+    }
+  }
+
+  async updateUserProfile(
+    parameters: UpdateUserProfileParameters
+  ): Promise<MyAccountProfile> {
+    const { accessToken, givenName, familyName, name, nickname, picture } =
+      parameters;
+    try {
+      return (await this.bridge.updateUserProfile(
+        accessToken,
+        givenName ?? null,
+        familyName ?? null,
+        name ?? null,
+        nickname ?? null,
+        picture ?? null
+      )) as MyAccountProfile;
     } catch (e) {
       if (e instanceof AuthError) {
         throw new MyAccountError(e);

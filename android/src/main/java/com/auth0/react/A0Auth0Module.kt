@@ -1126,6 +1126,30 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         myAccount!!.getFactors(accessToken, promise)
     }
 
+    @ReactMethod
+    override fun getUserProfile(
+        accessToken: String,
+        fields: ReadableArray?,
+        includeFields: Boolean,
+        promise: Promise
+    ) {
+        val fieldList = fields?.toArrayList()?.filterIsInstance<String>() ?: emptyList()
+        myAccount!!.getUserProfile(accessToken, fieldList, includeFields, promise)
+    }
+
+    @ReactMethod
+    override fun updateUserProfile(
+        accessToken: String,
+        givenName: String?,
+        familyName: String?,
+        name: String?,
+        nickname: String?,
+        picture: String?,
+        promise: Promise
+    ) {
+        myAccount!!.updateUserProfile(accessToken, givenName, familyName, name, nickname, picture, promise)
+    }
+
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         // No-op
     }

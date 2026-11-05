@@ -164,4 +164,42 @@ describe('MyAccountError', () => {
   it('is an AuthError', () => {
     expect(new MyAccountError(problemDetails({}))).toBeInstanceOf(AuthError);
   });
+
+  describe('validationErrors', () => {
+    it('parses validation errors, with optional pointer, field, and source', () => {
+      const validationErrors = [
+        { detail: 'given_name is read-only', pointer: '/given_name' },
+        { detail: 'Invalid picture', field: 'picture', source: 'body' },
+        { detail: 'Something else is wrong' },
+      ];
+      const error = new MyAccountError(
+        new AuthError(
+          'AuthError',
+          JSON.stringify({ statusCode: 400, validationErrors }),
+          { status: 400, code: 'https://auth0.com/api-errors/A0E-400-0001' }
+        )
+      );
+
+      expect(error.type).toBe(MyAccountErrorCodes.INVALID_REQUEST);
+      expect(error.validationErrors).toEqual(validationErrors);
+    });
+
+    it('is undefined when the response has no validation errors', () => {
+      const error = new MyAccountError(
+        problemDetails({ title: 'Bad Request', statusCode: 400 })
+      );
+
+      expect(error.validationErrors).toBeUndefined();
+    });
+
+    it('is undefined when the message is not JSON', () => {
+      const error = new MyAccountError(
+        new AuthError('AuthError', 'plain message', {
+          code: 'MY_ACCOUNT_ERROR',
+        })
+      );
+
+      expect(error.validationErrors).toBeUndefined();
+    });
+  });
 });
