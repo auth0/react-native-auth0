@@ -545,6 +545,49 @@ describe('NativeBridgeManager', () => {
         expect(authError.code).toBe('a0.session.user_cancelled');
       }
     });
+
+    it('should expose the mfa_required body like the HTTP-based logins', async () => {
+      const body = {
+        error: 'mfa_required',
+        error_description: 'Multifactor authentication required',
+        mfa_token: 'mfa_token_value',
+        mfa_requirements: { challenge: [{ type: 'otp' }] },
+      };
+      MockedAuth0NativeModule.getCredentials.mockRejectedValueOnce({
+        code: 'mfa_required',
+        message: body.error_description,
+        userInfo: body,
+      });
+
+      const error = await bridge
+        .getCredentials(undefined, 0, {}, false)
+        .catch((e) => e);
+
+      expect(error).toBeInstanceOf(AuthError);
+      expect(error).toMatchObject({
+        name: 'mfa_required',
+        code: 'mfa_required',
+        status: 403,
+        message: body.error_description,
+        json: body,
+      });
+    });
+
+    it('should keep the native error as json when mfa_required has no body', async () => {
+      const nativeError = {
+        code: 'mfa_required',
+        message: 'Multifactor authentication required',
+        userInfo: null,
+      };
+      MockedAuth0NativeModule.getCredentials.mockRejectedValueOnce(nativeError);
+
+      const error = await bridge
+        .getCredentials(undefined, 0, {}, false)
+        .catch((e) => e);
+
+      expect(error).toMatchObject({ code: 'mfa_required', status: 0 });
+      expect(error.json).toBe(nativeError);
+    });
   });
 
   describe('customTokenExchange', () => {

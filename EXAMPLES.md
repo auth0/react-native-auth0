@@ -394,6 +394,8 @@ Both challenge methods accept an optional `allowSignup` parameter (defaults to `
 
 The `challenge` object returned from a challenge call is opaque — pass it as-is to `loginWithOTP`. You can optionally provide `audience` and `scope` to `loginWithOTP`.
 
+If the user must complete MFA, `loginWithOTP` rejects with an `AuthError` whose `code` is `mfa_required`. Pass `error.json.mfa_token` to the [`mfa` client](#mfa-flexible-factors-grant) to finish signing in, as with [`passwordRealm`](#login-using-mfa-with-one-time-password-code). Any other failure rejects with `PASSWORDLESS_LOGIN_FAILED`.
+
 ### Create user in database connection
 
 ```js
@@ -660,6 +662,8 @@ function MyComponent() {
   // ...
 }
 ```
+
+If a post-login Action requires MFA when the refresh token is exchanged, `getCredentials` (and `getApiCredentials`) rejects with `code: 'mfa_required'` instead. Pass `error.json.mfa_token` to the [`mfa` client](#mfa-flexible-factors-grant) to finish the renewal rather than starting a new login.
 
 **Best Practices:**
 
@@ -1803,7 +1807,7 @@ Passkey operations throw `PasskeyError` (extends `AuthError`) with a normalized 
 | `PASSKEY_INVALID_PARAMETER`      | `authResponse` passed to `getTokenByPasskey` has the wrong type for the platform (a JSON string on web, a non-string on native), or a code in `verification` was empty or only whitespace                                                                                                                                   |
 | `PASSKEY_INVALID_CREDENTIAL`     | **Web only.** The credential passed to `getTokenByPasskey` is neither a valid attestation (signup) nor assertion (login) response                                                                                                                                                                                           |
 | `PASSKEY_VERIFICATION_RETRYABLE` | A one-time code for [identifier verification](#signup-with-passkey-identifier-verification) was wrong while its session is still alive, so the signup can be retried. `error.getVerificationRetryPayload()` returns `{ authSession, verificationRequired }`: the session to retry with and the identifiers to ask for again |
-| `PASSKEY_MFA_REQUIRED`           | **Web only.** MFA is required to complete the exchange — use `error.getMfaRequiredPayload()` to extract `mfaToken` and `mfaRequirements`, then continue with `mfa.challenge()`/`mfa.verify()`                                                                                                                               |
+| `PASSKEY_MFA_REQUIRED`           | MFA is required to complete the exchange — use `error.getMfaRequiredPayload()` to extract `mfaToken` and `mfaRequirements`, then continue with `mfa.challenge()`/`mfa.verify()`                                                                                                                                             |
 | `PASSKEY_UNKNOWN_ERROR`          | Unknown or uncategorized passkey error — check `error.message` for the underlying description                                                                                                                                                                                                                               |
 
 ```typescript
@@ -2071,7 +2075,10 @@ try {
   });
   console.log(`Updated: ${updated.givenName}`);
 } catch (e) {
-  if (e instanceof MyAccountError && e.type === MyAccountErrorCodes.INVALID_REQUEST) {
+  if (
+    e instanceof MyAccountError &&
+    e.type === MyAccountErrorCodes.INVALID_REQUEST
+  ) {
     // On a 400, each rejected field is described in `validationErrors`.
     for (const error of e.validationErrors ?? []) {
       console.log(`${error.pointer ?? error.field}: ${error.detail}`);
