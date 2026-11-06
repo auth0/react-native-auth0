@@ -1,5 +1,12 @@
 # Change Log
 
+## [v6.2.0](https://github.com/auth0/react-native-auth0/tree/v6.2.0) (2026-11-06)
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v6.1.0...v6.2.0)
+
+**Added**
+- feat(myaccount): add getUserProfile and updateUserProfile methods [\#1731](https://github.com/auth0/react-native-auth0/pull/1731) ([utkrishtsahu](https://github.com/utkrishtsahu))
+-  feat(ios): pull Auth0.swift via SPM and add dependabot sync [\#1727](https://github.com/auth0/react-native-auth0/pull/1727) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v6.1.0](https://github.com/auth0/react-native-auth0/tree/v6.1.0) (2026-10-29)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v6.0.0...v6.1.0)
