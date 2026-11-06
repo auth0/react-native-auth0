@@ -243,6 +243,7 @@ public class NativeBridge: NSObject {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
                 case .failure(let error):
+                    if error.rejectIfMultifactorRequired(reject) { return }
                     reject(error.reactNativeErrorCode(), error.errorDescription, error)
                 }
             }
@@ -252,6 +253,7 @@ public class NativeBridge: NSObject {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
                 case .failure(let error):
+                    if error.rejectIfMultifactorRequired(reject) { return }
                     reject(error.reactNativeErrorCode(), error.errorDescription, error)
                 }
             }
@@ -411,6 +413,7 @@ public class NativeBridge: NSObject {
             case .success(let credentials):
                 resolve(credentials.asDictionary())
             case .failure(let error):
+                if error.rejectIfMultifactorRequired(reject) { return }
                 reject(error.reactNativeErrorCode(), error.errorDescription, error)
             }
         }
@@ -452,6 +455,7 @@ public class NativeBridge: NSObject {
             case .success(let credentials):
                 resolve(credentials.asDictionary())
             case .failure(let error):
+                if error.rejectIfMultifactorRequired(reject) { return }
                 reject(error.code, error.localizedDescription, error)
             }
         }
@@ -657,6 +661,7 @@ public class NativeBridge: NSObject {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
                 case .failure(let error):
+                    if error.rejectIfMultifactorRequired(reject) { return }
                     if error.isPasskeyVerificationRetryable {
                         reject(NativeBridge.passkeyVerificationRetryableErrorCode,
                                error.localizedDescription,
@@ -706,6 +711,7 @@ public class NativeBridge: NSObject {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
                 case .failure(let error):
+                    if error.rejectIfMultifactorRequired(reject) { return }
                     reject("PASSKEY_EXCHANGE_FAILED", error.localizedDescription, error)
                 }
             }
@@ -847,7 +853,23 @@ extension DPoPError {
     }
 }
 
+extension AuthenticationError {
+    /// Rejects with `mfa_required` and the response body, which holds the `mfa_token` the app needs to continue.
+    /// React Native only forwards `userInfo` from an `NSError`, and `AuthenticationError` doesn't carry it.
+    func rejectIfMultifactorRequired(_ reject: RCTPromiseRejectBlock) -> Bool {
+        guard isMultifactorRequired else { return false }
+        // `statusCode` is added by Auth0.swift, not part of the body
+        let body = info.filter { $0.key != "statusCode" }
+        reject(code, localizedDescription, NSError(domain: code, code: statusCode, userInfo: body))
+        return true
+    }
+}
+
 extension CredentialsManagerError {
+    func rejectIfMultifactorRequired(_ reject: RCTPromiseRejectBlock) -> Bool {
+        return (cause as? AuthenticationError)?.rejectIfMultifactorRequired(reject) ?? false
+    }
+
     func reactNativeErrorCode() -> String {
         var code: String
         switch self {
