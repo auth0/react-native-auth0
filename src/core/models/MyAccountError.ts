@@ -1,4 +1,5 @@
 import { AuthError } from './AuthError';
+import type { MyAccountValidationError } from '../../types';
 
 /**
  * Platform-agnostic error code constants for My Account API operations.
@@ -140,6 +141,11 @@ export class MyAccountError extends AuthError {
   public readonly detail: string;
   /** HTTP status code of the error response */
   public readonly statusCode: number;
+  /**
+   * The fields rejected by the API, when a `400` response includes them.
+   * `undefined` when the response has no `validation_errors`.
+   */
+  public readonly validationErrors?: MyAccountValidationError[];
 
   constructor(originalError: AuthError) {
     super(originalError.name, originalError.message, {
@@ -162,6 +168,11 @@ export class MyAccountError extends AuthError {
       (parsed?.status as number) ??
       (parsed?.statusCode as number) ??
       originalError.status;
+
+    if (Array.isArray(parsed?.validationErrors)) {
+      this.validationErrors =
+        parsed.validationErrors as MyAccountValidationError[];
+    }
 
     this.type =
       ERROR_CODE_MAP[originalError.code] ??

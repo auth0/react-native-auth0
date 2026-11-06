@@ -11,6 +11,9 @@ import {
   type TotpEnrollmentChallengeResponse as SpaTotpEnrollmentChallengeResponse,
   type PushNotificationEnrollmentChallengeResponse as SpaPushEnrollmentChallengeResponse,
   type RecoveryCodeEnrollmentChallengeResponse as SpaRecoveryCodeEnrollmentChallengeResponse,
+  type UserProfile as SpaUserProfile,
+  type GetUserProfileOptions as SpaGetUserProfileOptions,
+  type UpdateUserProfileRequest as SpaUpdateUserProfileRequest,
 } from '@auth0/auth0-spa-js';
 import type { MyAccountClient } from '../../../core/interfaces';
 import type {
@@ -36,6 +39,9 @@ import type {
   TOTPEnrollmentChallenge,
   RecoveryCodeEnrollmentChallenge,
   Factor,
+  GetUserProfileParameters,
+  UpdateUserProfileParameters,
+  MyAccountProfile,
 } from '../../../types';
 import {
   AuthError,
@@ -99,6 +105,7 @@ export class WebMyAccountClient implements MyAccountClient {
             title: e.title,
             detail: e.detail,
             statusCode: e.status,
+            validationErrors: e.validation_errors,
           }),
           { status: e.status, code: e.type, json: e.validation_errors }
         );
@@ -477,6 +484,67 @@ export class WebMyAccountClient implements MyAccountClient {
         const res = await this.makeClient(accessToken).getFactors();
         return res.map((f: SpaFactor) => ({ type: f.type, usage: f.usage }));
       },
+      (e) => new MyAccountError(e)
+    );
+  }
+
+  // --- Profile (uses MyAccountError) ---
+
+  private mapProfile(p: SpaUserProfile): MyAccountProfile {
+    return {
+      userId: p.user_id,
+      givenName: p.given_name,
+      familyName: p.family_name,
+      name: p.name,
+      nickname: p.nickname,
+      picture: p.picture,
+      email: p.email,
+      emailVerified: p.email_verified,
+      phoneNumber: p.phone_number,
+      phoneVerified: p.phone_verified,
+      username: p.username,
+      createdAt: p.created_at,
+      updatedAt: p.updated_at,
+      // Keys are JSON Pointers (e.g. '/given_name') and are kept as-is.
+      profilePolicy: p.profile_policy,
+    };
+  }
+
+  async getUserProfile(
+    parameters: GetUserProfileParameters
+  ): Promise<MyAccountProfile> {
+    const { accessToken, fields, includeFields } = parameters;
+    // As on iOS and Android, `includeFields` only applies along with `fields`.
+    const options: SpaGetUserProfileOptions = fields?.length
+      ? { fields, ...(includeFields === false && { includeFields: false }) }
+      : {};
+    return this.run(
+      async () =>
+        this.mapProfile(
+          await this.makeClient(accessToken).getUserProfile(options)
+        ),
+      (e) => new MyAccountError(e)
+    );
+  }
+
+  async updateUserProfile(
+    parameters: UpdateUserProfileParameters
+  ): Promise<MyAccountProfile> {
+    const { accessToken, givenName, familyName, name, nickname, picture } =
+      parameters;
+    // Only provided fields are sent; an empty body is valid.
+    const data: SpaUpdateUserProfileRequest = {
+      ...(givenName !== undefined && { given_name: givenName }),
+      ...(familyName !== undefined && { family_name: familyName }),
+      ...(name !== undefined && { name }),
+      ...(nickname !== undefined && { nickname }),
+      ...(picture !== undefined && { picture }),
+    };
+    return this.run(
+      async () =>
+        this.mapProfile(
+          await this.makeClient(accessToken).updateUserProfile(data)
+        ),
       (e) => new MyAccountError(e)
     );
   }

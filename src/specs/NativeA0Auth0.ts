@@ -403,6 +403,27 @@ export interface Spec extends TurboModule {
    * Get available authentication factors.
    */
   getFactors(accessToken: string): Promise<Object[]>;
+
+  /**
+   * Get the current user's profile.
+   */
+  getUserProfile(
+    accessToken: string,
+    fields: string[] | undefined,
+    includeFields: boolean
+  ): Promise<Object>;
+
+  /**
+   * Update the current user's profile. Null fields are not sent.
+   */
+  updateUserProfile(
+    accessToken: string,
+    givenName: string | null | undefined,
+    familyName: string | null | undefined,
+    name: string | null | undefined,
+    nickname: string | null | undefined,
+    picture: string | null | undefined
+  ): Promise<Object>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('A0Auth0');

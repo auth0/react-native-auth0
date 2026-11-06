@@ -28,6 +28,8 @@ jest.mock('../../../../specs/NativeA0Auth0', () => ({
   passwordlessLoginWithOTP: jest.fn(),
   passkeySignupChallenge: jest.fn(),
   getTokenByPasskey: jest.fn(),
+  getUserProfile: jest.fn(),
+  updateUserProfile: jest.fn(),
 }));
 const MockedAuth0NativeModule = Auth0NativeModule as jest.Mocked<
   typeof Auth0NativeModule
@@ -896,6 +898,63 @@ describe('NativeBridgeManager', () => {
       expect(error).toBeInstanceOf(AuthError);
       expect(error.code).toBe('PASSKEY_VERIFICATION_RETRYABLE');
       expect(error.json).toBe(nativeError);
+    });
+  });
+
+  describe('getUserProfile', () => {
+    it('passes the arguments to the native module and returns the result', async () => {
+      const profile = { givenName: 'Jane' };
+      MockedAuth0NativeModule.getUserProfile.mockResolvedValue(profile);
+
+      const result = await bridge.getUserProfile(
+        'token',
+        ['given_name'],
+        false
+      );
+
+      expect(MockedAuth0NativeModule.getUserProfile).toHaveBeenCalledWith(
+        'token',
+        ['given_name'],
+        false
+      );
+      expect(result).toBe(profile);
+    });
+
+    it('wraps native errors in an AuthError', async () => {
+      MockedAuth0NativeModule.getUserProfile.mockRejectedValue({
+        code: 'MY_ACCOUNT_ERROR',
+        message: '{"statusCode":403}',
+      });
+
+      await expect(
+        bridge.getUserProfile('token', undefined, true)
+      ).rejects.toBeInstanceOf(AuthError);
+    });
+  });
+
+  describe('updateUserProfile', () => {
+    it('passes the arguments to the native module and returns the result', async () => {
+      const profile = { givenName: 'Jane' };
+      MockedAuth0NativeModule.updateUserProfile.mockResolvedValue(profile);
+
+      const result = await bridge.updateUserProfile(
+        'token',
+        'Jane',
+        null,
+        null,
+        '',
+        null
+      );
+
+      expect(MockedAuth0NativeModule.updateUserProfile).toHaveBeenCalledWith(
+        'token',
+        'Jane',
+        null,
+        null,
+        '',
+        null
+      );
+      expect(result).toBe(profile);
     });
   });
 });

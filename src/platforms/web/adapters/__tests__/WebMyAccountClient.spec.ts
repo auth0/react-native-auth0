@@ -14,6 +14,8 @@ const mockApiInstance = {
   deleteAuthenticationMethod: jest.fn(),
   enrollmentChallenge: jest.fn(),
   enrollmentVerify: jest.fn(),
+  getUserProfile: jest.fn(),
+  updateUserProfile: jest.fn(),
 };
 
 jest.mock('@auth0/auth0-spa-js', () => {
@@ -421,6 +423,205 @@ describe('WebMyAccountClient', () => {
       await expect(client.getFactors({ accessToken: TOKEN })).rejects.toBe(
         boom
       );
+    });
+  });
+
+  describe('profile', () => {
+    const rawProfile = {
+      user_id: 'auth0|123',
+      given_name: 'Jane',
+      family_name: 'Doe',
+      name: 'Jane Doe',
+      nickname: 'jane',
+      picture: 'https://example.com/jane.png',
+      email: 'jane@example.com',
+      email_verified: true,
+      phone_number: '+15555550100',
+      phone_verified: false,
+      username: 'janedoe',
+      created_at: '2026-01-01T00:00:00.000Z',
+      updated_at: '2026-02-01T00:00:00.000Z',
+      profile_policy: {
+        '/given_name': {
+          access: 'read_only',
+          source: 'idp',
+          reason: 'managed_by_identity_provider',
+        },
+        '/nickname': { access: 'read_write', source: 'user' },
+      },
+    };
+
+    const mappedProfile = {
+      userId: 'auth0|123',
+      givenName: 'Jane',
+      familyName: 'Doe',
+      name: 'Jane Doe',
+      nickname: 'jane',
+      picture: 'https://example.com/jane.png',
+      email: 'jane@example.com',
+      emailVerified: true,
+      phoneNumber: '+15555550100',
+      phoneVerified: false,
+      username: 'janedoe',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-02-01T00:00:00.000Z',
+      // JSON Pointer keys are kept as-is, not camelCased.
+      profilePolicy: rawProfile.profile_policy,
+    };
+
+    it('getUserProfile maps the response to camelCase', async () => {
+      const client = makeClient();
+      mockApiInstance.getUserProfile.mockResolvedValue(rawProfile);
+
+      const result = await client.getUserProfile({ accessToken: TOKEN });
+
+      expect(mockApiInstance.getUserProfile).toHaveBeenCalledWith({});
+      expect(result).toEqual(mappedProfile);
+    });
+
+    it('getUserProfile leaves profilePolicy undefined when absent', async () => {
+      const client = makeClient();
+      mockApiInstance.getUserProfile.mockResolvedValue({ given_name: 'Jane' });
+
+      const result = await client.getUserProfile({
+        accessToken: TOKEN,
+        fields: ['given_name'],
+      });
+
+      expect(result.givenName).toBe('Jane');
+      expect(result.profilePolicy).toBeUndefined();
+    });
+
+    it('getUserProfile passes fields, and includeFields only when false', async () => {
+      const client = makeClient();
+      mockApiInstance.getUserProfile.mockResolvedValue({});
+
+      await client.getUserProfile({
+        accessToken: TOKEN,
+        fields: ['given_name', 'profile_policy'],
+      });
+      expect(mockApiInstance.getUserProfile).toHaveBeenLastCalledWith({
+        fields: ['given_name', 'profile_policy'],
+      });
+
+      await client.getUserProfile({
+        accessToken: TOKEN,
+        fields: ['profile_policy'],
+        includeFields: false,
+      });
+      expect(mockApiInstance.getUserProfile).toHaveBeenLastCalledWith({
+        fields: ['profile_policy'],
+        includeFields: false,
+      });
+    });
+
+    it('getUserProfile ignores includeFields without fields, as on native', async () => {
+      const client = makeClient();
+      mockApiInstance.getUserProfile.mockResolvedValue({});
+
+      await client.getUserProfile({
+        accessToken: TOKEN,
+        fields: [],
+        includeFields: false,
+      });
+
+      expect(mockApiInstance.getUserProfile).toHaveBeenCalledWith({});
+    });
+
+    it('updateUserProfile sends only the provided fields in snake_case', async () => {
+      const client = makeClient();
+      mockApiInstance.updateUserProfile.mockResolvedValue(rawProfile);
+
+      const result = await client.updateUserProfile({
+        accessToken: TOKEN,
+        givenName: 'Jane',
+        nickname: '',
+      });
+
+      // An empty string is sent as-is, as on native.
+      expect(mockApiInstance.updateUserProfile).toHaveBeenCalledWith({
+        given_name: 'Jane',
+        nickname: '',
+      });
+      expect(result).toEqual(mappedProfile);
+    });
+
+    it('updateUserProfile maps every editable field', async () => {
+      const client = makeClient();
+      mockApiInstance.updateUserProfile.mockResolvedValue({});
+
+      await client.updateUserProfile({
+        accessToken: TOKEN,
+        givenName: 'Jane',
+        familyName: 'Doe',
+        name: 'Jane Doe',
+        nickname: 'jane',
+        picture: 'https://example.com/jane.png',
+      });
+
+      expect(mockApiInstance.updateUserProfile).toHaveBeenCalledWith({
+        given_name: 'Jane',
+        family_name: 'Doe',
+        name: 'Jane Doe',
+        nickname: 'jane',
+        picture: 'https://example.com/jane.png',
+      });
+    });
+
+    it('updateUserProfile sends an empty body when no field is provided', async () => {
+      const client = makeClient();
+      mockApiInstance.updateUserProfile.mockResolvedValue(rawProfile);
+
+      await client.updateUserProfile({ accessToken: TOKEN });
+
+      expect(mockApiInstance.updateUserProfile).toHaveBeenCalledWith({});
+    });
+
+    it('surfaces validation errors on a 400', async () => {
+      const client = makeClient();
+      const validationErrors = [
+        { detail: 'given_name is read-only', pointer: '/given_name' },
+        { detail: 'Invalid picture URL', field: 'picture', source: 'body' },
+      ];
+      mockApiInstance.updateUserProfile.mockRejectedValue(
+        new MyAccountApiError({
+          type: 'https://auth0.com/api-errors/A0E-400-0001',
+          status: 400,
+          title: 'Bad Request',
+          detail: 'Invalid request',
+          validation_errors: validationErrors,
+        })
+      );
+
+      await expect(
+        client.updateUserProfile({ accessToken: TOKEN, givenName: 'Jane' })
+      ).rejects.toMatchObject({
+        constructor: MyAccountError,
+        type: MyAccountErrorCodes.INVALID_REQUEST,
+        statusCode: 400,
+        validationErrors,
+      });
+    });
+
+    it('wraps a 403 (feature disabled or missing scope) as UNAUTHORIZED', async () => {
+      const client = makeClient();
+      mockApiInstance.getUserProfile.mockRejectedValue(
+        new MyAccountApiError({
+          type: 'https://auth0.com/api-errors/A0E-403-0002',
+          status: 403,
+          title: 'Forbidden',
+          detail: 'Insufficient scope',
+        })
+      );
+
+      const error = await client
+        .getUserProfile({ accessToken: TOKEN })
+        .catch((e: unknown) => e as MyAccountError);
+
+      expect(error).toBeInstanceOf(MyAccountError);
+      expect(error.type).toBe(MyAccountErrorCodes.UNAUTHORIZED);
+      expect(error.statusCode).toBe(403);
+      expect(error.validationErrors).toBeUndefined();
     });
   });
 });

@@ -1169,3 +1169,144 @@ export interface Factor {
   /** Usage classification (e.g., ["mfa"], ["first_factor", "mfa"]). */
   usage?: string[];
 }
+
+// ========= My Account — Profile =========
+
+/**
+ * Whether the user can edit a profile field.
+ *
+ * This API is currently in Beta and might change before General Availability.
+ */
+export type ProfileFieldAccess = 'read_only' | 'read_write';
+
+/**
+ * Where the value of a profile field comes from.
+ *
+ * This API is currently in Beta and might change before General Availability.
+ */
+export type ProfileFieldSource = 'user' | 'idp' | 'system';
+
+/**
+ * Describes whether a profile field can be edited by the user, and why.
+ *
+ * This API is currently in Beta and might change before General Availability.
+ */
+export interface ProfileFieldPolicy {
+  /** Whether the field can be edited by the user. */
+  access: ProfileFieldAccess;
+  /** Where the value of the field comes from. */
+  source: ProfileFieldSource;
+  /**
+   * Why the field is read-only (e.g., `"managed_by_identity_provider"`). Only
+   * set when `access` is `"read_only"`. The set of values may change.
+   */
+  reason?: string;
+}
+
+/**
+ * The current user's profile, as returned by the My Account API.
+ *
+ * This API is currently in Beta and might change before General Availability.
+ */
+export interface MyAccountProfile {
+  /** The user's unique identifier. Read-only. */
+  userId?: string;
+  /** The user's given name. */
+  givenName?: string;
+  /** The user's family name. */
+  familyName?: string;
+  /** The user's full name. */
+  name?: string;
+  /** The user's nickname. */
+  nickname?: string;
+  /** The URL of the user's picture. */
+  picture?: string;
+  /** The user's email address. Read-only. */
+  email?: string;
+  /** Whether the user's email address is verified. Read-only. */
+  emailVerified?: boolean;
+  /** The user's phone number. Read-only. */
+  phoneNumber?: string;
+  /** Whether the user's phone number is verified. Read-only. */
+  phoneVerified?: boolean;
+  /** The user's username. Read-only. */
+  username?: string;
+  /** When the user was created (ISO 8601). */
+  createdAt?: string;
+  /** When the user was last updated (ISO 8601). */
+  updatedAt?: string;
+  /**
+   * The edit policy of each field, keyed by a JSON Pointer to the field
+   * (e.g., `"/given_name"`).
+   *
+   * `undefined` when `profile_policy` is not part of the response. With
+   * `includeFields` `true` (the default), this is when `fields` is set and
+   * does not list it. With `includeFields: false`, this is when `fields`
+   * lists it.
+   */
+  profilePolicy?: Record<string, ProfileFieldPolicy>;
+}
+
+/**
+ * Parameters for retrieving the current user's profile from the My Account API.
+ *
+ * This API is currently in Beta and might change before General Availability.
+ */
+export interface GetUserProfileParameters {
+  /**
+   * Access token with the `read:me:profile` scope and the My Account API
+   * audience (`https://{domain}/me/`).
+   */
+  accessToken: string;
+  /**
+   * The fields to return, using the API field names
+   * (e.g., `['given_name', 'picture', 'profile_policy']`).
+   * When omitted or empty, every field is returned.
+   */
+  fields?: string[];
+  /**
+   * With `true` (the default), only the listed `fields` are returned. With
+   * `false`, every field *except* the listed ones is returned. Ignored when
+   * `fields` is omitted or empty.
+   */
+  includeFields?: boolean;
+}
+
+/**
+ * Parameters for updating the current user's profile with the My Account API.
+ *
+ * Fields left `undefined` are not sent and remain unchanged.
+ *
+ * This API is currently in Beta and might change before General Availability.
+ */
+export interface UpdateUserProfileParameters {
+  /**
+   * Access token with the `update:me:profile` scope and the My Account API
+   * audience (`https://{domain}/me/`).
+   */
+  accessToken: string;
+  /** The user's new given name. */
+  givenName?: string;
+  /** The user's new family name. */
+  familyName?: string;
+  /** The user's new full name. */
+  name?: string;
+  /** The user's new nickname. */
+  nickname?: string;
+  /** The URL of the user's new picture. */
+  picture?: string;
+}
+
+/**
+ * Describes a field rejected by the My Account API in a `400` response.
+ */
+export interface MyAccountValidationError {
+  /** Description of the validation failure. */
+  detail: string;
+  /** The name of the rejected field. */
+  field?: string;
+  /** An RFC 6901 JSON Pointer to the rejected field (e.g., `"/given_name"`). */
+  pointer?: string;
+  /** The source of the rejected value. */
+  source?: string;
+}

@@ -534,4 +534,25 @@ export interface NativeBridge {
    * Get available authentication factors.
    */
   getFactors(accessToken: string): Promise<Record<string, any>[]>;
+
+  /**
+   * Get the current user's profile.
+   */
+  getUserProfile(
+    accessToken: string,
+    fields: string[] | undefined,
+    includeFields: boolean
+  ): Promise<Record<string, any>>;
+
+  /**
+   * Update the current user's profile. Null fields are not sent.
+   */
+  updateUserProfile(
+    accessToken: string,
+    givenName: string | null,
+    familyName: string | null,
+    name: string | null,
+    nickname: string | null,
+    picture: string | null
+  ): Promise<Record<string, any>>;
 }

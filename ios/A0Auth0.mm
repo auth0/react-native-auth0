@@ -405,6 +405,25 @@ RCT_EXPORT_METHOD(getFactors:(NSString *)accessToken
     [self.myAccount getFactorsWithAccessToken:accessToken resolve:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(getUserProfile:(NSString *)accessToken
+                  fields:(NSArray * _Nullable)fields
+                  includeFields:(BOOL)includeFields
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.myAccount getUserProfileWithAccessToken:accessToken fields:fields includeFields:includeFields resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(updateUserProfile:(NSString *)accessToken
+                  givenName:(NSString * _Nullable)givenName
+                  familyName:(NSString * _Nullable)familyName
+                  name:(NSString * _Nullable)name
+                  nickname:(NSString * _Nullable)nickname
+                  picture:(NSString * _Nullable)picture
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    [self.myAccount updateUserProfileWithAccessToken:accessToken givenName:givenName familyName:familyName name:name nickname:nickname picture:picture resolve:resolve reject:reject];
+}
+
 - (NSDictionary *)constantsToExport {
     return @{ @"bundleIdentifier": [[NSBundle mainBundle] bundleIdentifier] };
 }
