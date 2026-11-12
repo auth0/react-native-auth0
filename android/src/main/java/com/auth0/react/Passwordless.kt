@@ -90,6 +90,7 @@ class Passwordless(
             }
 
             override fun onFailure(error: AuthenticationException) {
+                if (promise.rejectIfMultifactorRequired(error.mfaRequiredErrorPayload, error)) return
                 promise.reject("PASSWORDLESS_LOGIN_FAILED", error.getDescription(), error)
             }
         })

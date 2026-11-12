@@ -471,6 +471,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                     }
 
                     override fun onFailure(e: CredentialsManagerException) {
+                        if (promise.rejectIfMultifactorRequired(e.mfaRequiredErrorPayload, e)) return
                         val errorCode = deduceErrorCode(e)
                         promise.reject(errorCode, credentialsMessage(e), e)
                     }
@@ -546,6 +547,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                     }
 
                     override fun onFailure(e: CredentialsManagerException) {
+                        if (promise.rejectIfMultifactorRequired(e.mfaRequiredErrorPayload, e)) return
                         val errorCode = deduceErrorCode(e)
                         promise.reject(errorCode, credentialsMessage(e), e)
                     }
@@ -766,6 +768,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             }
 
             override fun onFailure(error: AuthenticationException) {
+                if (promise.rejectIfMultifactorRequired(error.mfaRequiredErrorPayload, error)) return
                 handleError(error, promise)
             }
         })
@@ -936,6 +939,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             }
 
             override fun onFailure(error: AuthenticationException) {
+                if (promise.rejectIfMultifactorRequired(error.mfaRequiredErrorPayload, error)) return
                 if (error.isPasskeyVerificationRetryable) {
                     // A code was wrong and the session is still usable: hand JS what a retry needs.
                     val userInfo = WritableNativeMap().apply {

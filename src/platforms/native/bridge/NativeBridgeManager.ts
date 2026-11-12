@@ -40,7 +40,18 @@ export class NativeBridgeManager implements NativeBridge {
     try {
       return await nativeMethod(...args);
     } catch (e) {
-      const { code, message } = e as NativeModuleError;
+      const { code, message, userInfo } = e as NativeModuleError & {
+        userInfo?: { mfa_token?: unknown } | null;
+      };
+      // The bridges reject mfa_required with the response body, so match the
+      // error the HTTP-based logins throw and `json.mfa_token` can feed the MFA client.
+      if (code === 'mfa_required' && userInfo?.mfa_token) {
+        throw new AuthError(code, message, {
+          status: 403,
+          code,
+          json: userInfo,
+        });
+      }
       throw new AuthError(code, message, { code, json: e });
     }
   }

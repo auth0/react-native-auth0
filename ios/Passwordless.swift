@@ -74,6 +74,7 @@ public class A0Passwordless: NSObject {
             case .success(let credentials):
                 resolve(credentials.asDictionary())
             case .failure(let error):
+                if error.rejectIfMultifactorRequired(reject) { return }
                 reject("PASSWORDLESS_LOGIN_FAILED", error.localizedDescription, error)
             }
         }

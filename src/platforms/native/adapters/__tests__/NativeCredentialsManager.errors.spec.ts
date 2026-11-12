@@ -1,6 +1,6 @@
 import { NativeCredentialsManager } from '../NativeCredentialsManager';
 import { NativeBridge } from '../../bridge';
-import { CredentialsManagerError } from '../../../../core/models';
+import { AuthError, CredentialsManagerError } from '../../../../core/models';
 
 // Mock the native bridge
 const mockBridge: jest.Mocked<NativeBridge> = {
@@ -342,6 +342,27 @@ describe('Common Error Handling - NativeCredentialsManager', () => {
           expect(err.message).toBe(`Biometric error: ${errorCode}`);
         }
       });
+    });
+  });
+
+  it('keeps the mfa_required body so the MFA client can continue', async () => {
+    const body = { error: 'mfa_required', mfa_token: 'mfa_token_value' };
+    mockBridge.getCredentials.mockRejectedValueOnce(
+      new AuthError('mfa_required', 'Multifactor authentication required', {
+        status: 403,
+        code: 'mfa_required',
+        json: body,
+      })
+    );
+
+    const error = await manager.getCredentials().catch((e) => e);
+
+    expect(error).toBeInstanceOf(CredentialsManagerError);
+    expect(error).toMatchObject({
+      type: 'RENEW_FAILED',
+      code: 'mfa_required',
+      status: 403,
+      json: body,
     });
   });
 });
