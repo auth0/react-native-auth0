@@ -224,6 +224,29 @@ export interface NativeAuthorizeOptions {
    * ```
    */
   useAuthTab?: boolean;
+  /**
+   * **Android only:** How many times the code exchange that follows the browser redirect is
+   * retried when it fails before reaching Auth0, for example because the OS hasn't restored
+   * the app's network access yet after it was in the background. Requests that may have
+   * reached Auth0 are never retried. Must be between 0 and 4; `0` disables retries. Invalid
+   * values reject `authorize()` with an `INVALID_CONFIGURATION` error. No effect on iOS or Web.
+   *
+   * @default 2
+   *
+   * @example
+   * ```typescript
+   * await authorize({}, { tokenExchangeMaxRetries: 3, tokenExchangeRetryDelay: 3 });
+   * ```
+   */
+  tokenExchangeMaxRetries?: number;
+  /**
+   * **Android only:** Seconds to wait between code exchange retries. See
+   * {@link NativeAuthorizeOptions.tokenExchangeMaxRetries}. Must not be negative. No effect
+   * on iOS or Web.
+   *
+   * @default 2
+   */
+  tokenExchangeRetryDelay?: number;
 }
 
 /**

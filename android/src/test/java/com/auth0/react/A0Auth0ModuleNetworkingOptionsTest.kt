@@ -122,6 +122,19 @@ class A0Auth0ModuleNetworkingOptionsTest {
     }
 
     @Test
+    fun `unsetAsNull maps the not-set marker and null to null`() {
+        assertNull(A0Auth0Module.unsetAsNull(null))
+        assertNull(A0Auth0Module.unsetAsNull(-1.0))
+    }
+
+    @Test
+    fun `unsetAsNull keeps zero and other values for the builder to validate`() {
+        assertEquals(0, A0Auth0Module.unsetAsNull(0.0))
+        assertEquals(3, A0Auth0Module.unsetAsNull(3.0))
+        assertEquals(-3, A0Auth0Module.unsetAsNull(-3.0))
+    }
+
+    @Test
     fun `invalidTimeoutOption accepts zero, positive and missing timeouts`() {
         assertNull(A0Auth0Module.invalidTimeoutOption(JavaOnlyMap.of("connectTimeout", 0, "writeTimeout", 30)))
         assertNull(A0Auth0Module.invalidTimeoutOption(JavaOnlyMap()))

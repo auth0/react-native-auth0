@@ -155,6 +155,8 @@ additionalParameters:(NSDictionary * _Nullable)additionalParameters
  allowedBrowserPackages:(NSArray * _Nullable)allowedBrowserPackages
  useTrustedWebActivity:(BOOL)useTrustedWebActivity
         useAuthTab:(BOOL)useAuthTab
+tokenExchangeMaxRetries:(nonnull NSNumber *)tokenExchangeMaxRetries
+tokenExchangeRetryDelay:(nonnull NSNumber *)tokenExchangeRetryDelay
         resolve:(RCTPromiseResolveBlock)resolve
          reject:(RCTPromiseRejectBlock)reject) {
     NSInteger maxAgeValue = maxAge != nil ? (NSInteger)[maxAge doubleValue] : 0;
