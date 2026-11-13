@@ -102,7 +102,9 @@ describe('NativeBridgeManager', () => {
         parameters.additionalParameters,
         undefined, // allowedBrowserPackages
         false, // useTrustedWebActivity
-        false // useAuthTab (default)
+        false, // useAuthTab (default)
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
       );
     });
 
@@ -133,7 +135,9 @@ describe('NativeBridgeManager', () => {
         {}, // additionalParameters
         undefined, // allowedBrowserPackages
         false, // useTrustedWebActivity
-        false // useAuthTab (default)
+        false, // useAuthTab (default)
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
       );
     });
 
@@ -168,7 +172,9 @@ describe('NativeBridgeManager', () => {
         {},
         allowedBrowserPackages,
         false, // useTrustedWebActivity
-        false // useAuthTab (default)
+        false, // useAuthTab (default)
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
       );
     });
 
@@ -199,7 +205,9 @@ describe('NativeBridgeManager', () => {
         {},
         undefined, // allowedBrowserPackages
         true, // useTrustedWebActivity
-        false // useAuthTab (default)
+        false, // useAuthTab (default)
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
       );
     });
 
@@ -230,7 +238,9 @@ describe('NativeBridgeManager', () => {
         {},
         undefined, // allowedBrowserPackages
         false, // useTrustedWebActivity
-        false // useAuthTab (default)
+        false, // useAuthTab (default)
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
       );
     });
 
@@ -261,8 +271,28 @@ describe('NativeBridgeManager', () => {
         {},
         undefined, // allowedBrowserPackages
         false, // useTrustedWebActivity
-        true // useAuthTab
+        true, // useAuthTab
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
       );
+    });
+
+    it('should pass the token exchange retry options to native webAuth, including 0 retries', async () => {
+      MockedAuth0NativeModule.webAuth.mockResolvedValueOnce(
+        nativeSuccessCredentials as any
+      );
+
+      await bridge.authorize(
+        { redirectUrl: 'com.myapp://cb' },
+        {
+          customScheme: 'com.myapp',
+          tokenExchangeMaxRetries: 0,
+          tokenExchangeRetryDelay: 3,
+        }
+      );
+
+      const args = MockedAuth0NativeModule.webAuth.mock.calls[0];
+      expect(args.slice(-2)).toEqual([0, 3]);
     });
 
     it('should correctly transform the native response to a Credentials model', async () => {

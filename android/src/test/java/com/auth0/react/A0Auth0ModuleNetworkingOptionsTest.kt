@@ -9,6 +9,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
@@ -119,6 +120,23 @@ class A0Auth0ModuleNetworkingOptionsTest {
         val options = JavaOnlyMap.of("connectTimeout", 10, "readTimeout", -1, "callTimeout", -5)
 
         assertEquals("readTimeout", A0Auth0Module.invalidTimeoutOption(options))
+    }
+
+    @Test
+    fun `wholeNumber keeps whole numbers, including zero and negatives, for the builder to validate`() {
+        assertEquals(0, A0Auth0Module.wholeNumber("option", 0.0))
+        assertEquals(3, A0Auth0Module.wholeNumber("option", 3.0))
+        assertEquals(-3, A0Auth0Module.wholeNumber("option", -3.0))
+    }
+
+    @Test
+    fun `wholeNumber rejects values that are not whole numbers instead of truncating them`() {
+        listOf(4.9, -0.5, -1.5, Double.NaN, Double.POSITIVE_INFINITY).forEach { value ->
+            val error = assertThrows(IllegalArgumentException::class.java) {
+                A0Auth0Module.wholeNumber("tokenExchangeRetryDelay", value)
+            }
+            assertEquals("tokenExchangeRetryDelay must be a whole number", error.message)
+        }
     }
 
     @Test

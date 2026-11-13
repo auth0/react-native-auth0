@@ -127,7 +127,9 @@ export class NativeBridgeManager implements NativeBridge {
       parameters.additionalParameters ?? {},
       options.allowedBrowserPackages,
       options.useTrustedWebActivity ?? false,
-      options.useAuthTab ?? false
+      options.useAuthTab ?? false,
+      options.tokenExchangeMaxRetries,
+      options.tokenExchangeRetryDelay
     );
     return new CredentialsModel(credential);
   }
