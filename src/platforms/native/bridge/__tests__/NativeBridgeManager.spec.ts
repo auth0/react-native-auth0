@@ -103,8 +103,8 @@ describe('NativeBridgeManager', () => {
         undefined, // allowedBrowserPackages
         false, // useTrustedWebActivity
         false, // useAuthTab (default)
-        -1, // tokenExchangeMaxRetries (default)
-        -1 // tokenExchangeRetryDelay (default)
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
       );
     });
 
@@ -136,8 +136,8 @@ describe('NativeBridgeManager', () => {
         undefined, // allowedBrowserPackages
         false, // useTrustedWebActivity
         false, // useAuthTab (default)
-        -1, // tokenExchangeMaxRetries (default)
-        -1 // tokenExchangeRetryDelay (default)
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
       );
     });
 
@@ -173,8 +173,8 @@ describe('NativeBridgeManager', () => {
         allowedBrowserPackages,
         false, // useTrustedWebActivity
         false, // useAuthTab (default)
-        -1, // tokenExchangeMaxRetries (default)
-        -1 // tokenExchangeRetryDelay (default)
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
       );
     });
 
@@ -206,8 +206,8 @@ describe('NativeBridgeManager', () => {
         undefined, // allowedBrowserPackages
         true, // useTrustedWebActivity
         false, // useAuthTab (default)
-        -1, // tokenExchangeMaxRetries (default)
-        -1 // tokenExchangeRetryDelay (default)
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
       );
     });
 
@@ -239,8 +239,8 @@ describe('NativeBridgeManager', () => {
         undefined, // allowedBrowserPackages
         false, // useTrustedWebActivity
         false, // useAuthTab (default)
-        -1, // tokenExchangeMaxRetries (default)
-        -1 // tokenExchangeRetryDelay (default)
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
       );
     });
 
@@ -272,8 +272,8 @@ describe('NativeBridgeManager', () => {
         undefined, // allowedBrowserPackages
         false, // useTrustedWebActivity
         true, // useAuthTab
-        -1, // tokenExchangeMaxRetries (default)
-        -1 // tokenExchangeRetryDelay (default)
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
       );
     });
 

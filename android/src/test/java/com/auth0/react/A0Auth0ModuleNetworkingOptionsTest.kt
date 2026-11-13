@@ -123,32 +123,20 @@ class A0Auth0ModuleNetworkingOptionsTest {
     }
 
     @Test
-    fun `unsetAsNull maps the not-set marker and null to null`() {
-        assertNull(A0Auth0Module.unsetAsNull("option", null))
-        assertNull(A0Auth0Module.unsetAsNull("option", -1.0))
+    fun `wholeNumber keeps whole numbers, including zero and negatives, for the builder to validate`() {
+        assertEquals(0, A0Auth0Module.wholeNumber("option", 0.0))
+        assertEquals(3, A0Auth0Module.wholeNumber("option", 3.0))
+        assertEquals(-3, A0Auth0Module.wholeNumber("option", -3.0))
     }
 
     @Test
-    fun `unsetAsNull keeps whole numbers, including zero, for the builder to validate`() {
-        assertEquals(0, A0Auth0Module.unsetAsNull("option", 0.0))
-        assertEquals(3, A0Auth0Module.unsetAsNull("option", 3.0))
-        assertEquals(-3, A0Auth0Module.unsetAsNull("option", -3.0))
-    }
-
-    @Test
-    fun `unsetAsNull rejects values that are not whole numbers instead of truncating them`() {
+    fun `wholeNumber rejects values that are not whole numbers instead of truncating them`() {
         listOf(4.9, -0.5, -1.5, Double.NaN, Double.POSITIVE_INFINITY).forEach { value ->
             val error = assertThrows(IllegalArgumentException::class.java) {
-                A0Auth0Module.unsetAsNull("tokenExchangeRetryDelay", value)
+                A0Auth0Module.wholeNumber("tokenExchangeRetryDelay", value)
             }
             assertEquals("tokenExchangeRetryDelay must be a whole number", error.message)
         }
-    }
-
-    @Test
-    fun `resumeGraceMs waits longer only when a login was in progress`() {
-        assertEquals(5000L, A0Auth0Module.resumeGraceMs(loginInProgress = false))
-        assertEquals(30000L, A0Auth0Module.resumeGraceMs(loginInProgress = true))
     }
 
     @Test
