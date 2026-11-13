@@ -1,6 +1,7 @@
 package com.auth0.react
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Build
@@ -53,6 +54,11 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         // Grace window (ms) for an in-flight restored token exchange to complete before
         // resumeWebAuthSession resolves null.
         private const val RESUME_SESSION_GRACE_MS = 5000L
+        // Used instead when a login was running as the process died: its restored token exchange
+        // may still be retrying (about 4 s with the default retry settings, plus the requests).
+        private const val RESTORED_EXCHANGE_GRACE_MS = 30000L
+        private const val LOGIN_PREFS = "a0_auth0_react_web_auth"
+        private const val KEY_LOGIN_ATTEMPT = "login_attempt"
 
         private const val MAX_CAUSE_DEPTH = 10
 
@@ -73,6 +79,12 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         private const val DPOP_INVALID_TOKEN_TYPE_CODE = "DPOP_INVALID_TOKEN_TYPE"
         private const val DPOP_MISSING_PARAMETER_CODE = "DPOP_MISSING_PARAMETER"
         private const val DPOP_CLEAR_KEY_FAILED_CODE = "DPOP_CLEAR_KEY_FAILED"
+
+        // JS numbers arrive as Double; toInt() would silently truncate 4.9 to 4 and -0.5 to 0.
+        internal fun wholeNumber(name: String, value: Double): Int {
+            require(value % 1.0 == 0.0) { "$name must be a whole number" }
+            return value.toInt()
+        }
 
         // OkHttp throws IllegalArgumentException for a negative timeout, which would otherwise
         // surface after initialization has already stored the Auth0 instance.
@@ -213,6 +225,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         allowedBrowserPackages: ReadableArray?,
         useTrustedWebActivity: Boolean,
         useAuthTab: Boolean,
+        tokenExchangeMaxRetries: Double?,
+        tokenExchangeRetryDelay: Double?,
         promise: Promise
     ) {
         webAuthPromise = promise
@@ -269,6 +283,15 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
 
         builder.withParameters(cleanedParameters)
 
+        try {
+            tokenExchangeMaxRetries?.let { builder.withTokenExchangeMaxRetries(wholeNumber("tokenExchangeMaxRetries", it)) }
+            tokenExchangeRetryDelay?.let { builder.withTokenExchangeRetryDelay(wholeNumber("tokenExchangeRetryDelay", it)) }
+        } catch (e: IllegalArgumentException) {
+            promise.reject("a0.invalid_configuration", e.message, e)
+            webAuthPromise = null
+            return
+        }
+
         val activity = reactContext.currentActivity
         if (activity == null) {
             promise.reject("a0.activity_not_available", "Current Activity is not available")
@@ -278,15 +301,18 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         // start() registers a LifecycleObserver internally (Auth0.Android 3.19.0+ for
         // process-death recovery), which must happen on the main thread.
         UiThreadUtil.runOnUiThread {
+            val attempt = startLoginAttempt()
             builder.start(activity,
                 object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
                     override fun onSuccess(result: Credentials) {
+                        endLoginAttempt(attempt)
                         val map = CredentialsParser.toMap(result)
                         promise.resolve(map)
                         webAuthPromise = null
                     }
 
                     override fun onFailure(error: AuthenticationException) {
+                        endLoginAttempt(attempt)
                         handleError(error, promise)
                         webAuthPromise = null
                     }
@@ -303,6 +329,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             return
         }
         val lifecycleOwner = activity as LifecycleOwner
+        val attempt = loginPrefs.getLong(KEY_LOGIN_ATTEMPT, 0L)
 
         UiThreadUtil.runOnUiThread {
             val resolved = java.util.concurrent.atomic.AtomicBoolean(false)
@@ -315,6 +342,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 override fun onSuccess(result: Credentials) {
                     if (resolved.compareAndSet(false, true)) {
                         timeoutHandler.removeCallbacksAndMessages(null)
+                        endLoginAttempt(attempt)
                         promise.resolve(CredentialsParser.toMap(result))
                     }
                 }
@@ -322,6 +350,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 override fun onFailure(error: AuthenticationException) {
                     if (resolved.compareAndSet(false, true)) {
                         timeoutHandler.removeCallbacksAndMessages(null)
+                        endLoginAttempt(attempt)
                         handleError(error, promise)
                     }
                 }
@@ -338,15 +367,30 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             WebAuthProvider.registerCallbacks(lifecycleOwner, loginCallback, logoutCallback)
 
             // Safety net for the rare case where the restored token exchange is still in
-            // flight: give it a short grace window, then resolve null if nothing arrived.
+            // flight: give it a grace window, then resolve null if nothing arrived.
             // The login callback cancels this timeout if it settles first.
             if (!resolved.get()) {
                 timeoutHandler.postDelayed({
                     if (resolved.compareAndSet(false, true)) {
+                        endLoginAttempt(attempt)
                         promise.resolve(null)
                     }
-                }, RESUME_SESSION_GRACE_MS)
+                }, if (attempt != 0L) RESTORED_EXCHANGE_GRACE_MS else RESUME_SESSION_GRACE_MS)
             }
+        }
+    }
+
+    // Persisted so a restarted process knows a login was running when the previous one died. Each
+    // login stores its own id, and ending one only clears that id, so a recovery that finishes
+    // late can't clear the record of a newer login.
+    private val loginPrefs get() = reactContext.getSharedPreferences(LOGIN_PREFS, Context.MODE_PRIVATE)
+
+    private fun startLoginAttempt(): Long =
+        System.currentTimeMillis().also { loginPrefs.edit().putLong(KEY_LOGIN_ATTEMPT, it).apply() }
+
+    private fun endLoginAttempt(attempt: Long) {
+        if (loginPrefs.getLong(KEY_LOGIN_ATTEMPT, 0L) == attempt) {
+            loginPrefs.edit().remove(KEY_LOGIN_ATTEMPT).apply()
         }
     }
 

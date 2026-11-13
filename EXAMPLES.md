@@ -108,6 +108,7 @@
 - [Recovering Login After Process Death (Android)](#recovering-login-after-process-death-android)
   - [Using with Hooks](#recovering-login-using-hooks)
   - [Using with Auth0 Class](#recovering-login-using-the-auth0-class)
+- [Token Exchange Retry (Android)](#token-exchange-retry-android)
 - [DPoP (Demonstrating Proof-of-Possession)](#dpop-demonstrating-proof-of-possession)
   - [Enabling DPoP](#enabling-dpop)
   - [Making API calls with DPoP](#making-api-calls-with-dpop)
@@ -3151,6 +3152,28 @@ if (credentials) {
   // The user is logged in — route them into the app.
 }
 ```
+
+## Token Exchange Retry (Android)
+
+After the browser redirects back, the SDK exchanges the authorization code for tokens. On Android 15+ and on devices with aggressive battery optimization, the OS blocks network access for apps in the background and restores it a moment after the app returns to the foreground. If the exchange fails before reaching Auth0 for this reason, the SDK retries it 2 times, 2 seconds apart, so the login doesn't fail with a `NETWORK_ERROR`. Requests that may have reached Auth0 are never retried, because the authorization code can only be used once.
+
+You can change the number of retries (a whole number from 0 to 4, where `0` disables retrying) and the delay between them in seconds:
+
+```js
+await authorize(
+  {},
+  {
+    tokenExchangeMaxRetries: 3,
+    tokenExchangeRetryDelay: 3,
+  }
+);
+```
+
+Values outside these ranges reject `authorize()` with an `INVALID_CONFIGURATION` error.
+
+> **Note:** If you use [`resumeSession()`](#recovering-login-after-process-death-android) to recover a login interrupted by process death, the restored token exchange uses the same retry settings, and `resumeSession()` waits up to 30 seconds for it when a login was in progress as the process died (5 seconds otherwise). The defaults (2 retries, 2 seconds apart) finish in about 4 seconds plus the request time. Keep any custom retries × delay well under 30 seconds, because a token exchange that succeeds after the wait is discarded.
+
+> **Platform Support:** Android only. These options are ignored on iOS and web.
 
 ## DPoP (Demonstrating Proof-of-Possession)
 

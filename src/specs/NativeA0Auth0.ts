@@ -103,7 +103,9 @@ export interface Spec extends TurboModule {
     additionalParameters: { [key: string]: string } | undefined,
     allowedBrowserPackages: string[] | undefined,
     useTrustedWebActivity: boolean,
-    useAuthTab: boolean
+    useAuthTab: boolean,
+    tokenExchangeMaxRetries: Int32 | undefined,
+    tokenExchangeRetryDelay: Int32 | undefined
   ): Promise<Credentials>;
 
   /**

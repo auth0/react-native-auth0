@@ -224,6 +224,35 @@ export interface NativeAuthorizeOptions {
    * ```
    */
   useAuthTab?: boolean;
+  /**
+   * **Android only:** How many times the code exchange that follows the browser redirect is
+   * retried when it fails before reaching Auth0, for example because the OS hasn't restored
+   * the app's network access yet after it was in the background. Requests that may have
+   * reached Auth0 are never retried. Must be a whole number from 0 to 4; `0` disables retries.
+   * Invalid values reject `authorize()` with an `INVALID_CONFIGURATION` error. No effect on iOS or Web.
+   *
+   * If you recover logins interrupted by process death with `resumeSession()`, the restored
+   * exchange keeps retrying while `resumeSession()` waits for it, up to 30 seconds when a login
+   * was in progress as the process died. Keep the whole retry time (retries × delay, plus the
+   * request itself) under that, as a token exchange that succeeds later is discarded.
+   *
+   * @default 2
+   *
+   * @example
+   * ```typescript
+   * await authorize({}, { tokenExchangeMaxRetries: 3, tokenExchangeRetryDelay: 3 });
+   * ```
+   */
+  tokenExchangeMaxRetries?: number;
+  /**
+   * **Android only:** Seconds to wait between code exchange retries. See
+   * {@link NativeAuthorizeOptions.tokenExchangeMaxRetries}. Must be a whole number of 0 or
+   * more. No effect on iOS or Web. See the note on `tokenExchangeMaxRetries` about
+   * `resumeSession()`.
+   *
+   * @default 2
+   */
+  tokenExchangeRetryDelay?: number;
 }
 
 /**
