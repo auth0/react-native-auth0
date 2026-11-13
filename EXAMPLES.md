@@ -117,7 +117,7 @@
 
 ## iOS framework linkage (`use_frameworks!`)
 
-This SDK's native iOS dependencies — Auth0 3.3.0, JWTDecode 4.0.0, and SimpleKeychain 1.3.0 — are Swift pods. They install with the default React Native static-library linkage, so **most apps need no extra Podfile changes**:
+This SDK's native iOS dependencies — Auth0 3.3.1, JWTDecode 4.0.0, and SimpleKeychain 1.3.0 — are Swift pods. They install with the default React Native static-library linkage, so **most apps need no extra Podfile changes**:
 
 ```bash
 cd ios && pod install
