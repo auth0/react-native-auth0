@@ -25,6 +25,20 @@ import {
 import Auth0NativeModule from '../../../specs/NativeA0Auth0';
 import type { NativeModuleError } from '../../../core/interfaces';
 
+// Native reads -1 as "not set", so an explicit negative or fractional value is rejected here
+// before it can be mistaken for that marker or truncated. The upper limit stays with Auth0.Android.
+const tokenExchangeOption = (name: string, value?: number): number => {
+  if (value === undefined) return -1;
+  if (!Number.isInteger(value) || value < 0) {
+    throw new AuthError(
+      'a0.invalid_configuration',
+      `${name} must be a whole number of 0 or more`,
+      { code: 'a0.invalid_configuration' }
+    );
+  }
+  return value;
+};
+
 /**
  * Manages the direct communication with the native Auth0 module.
  * It implements the NativeBridge interface and is responsible for:
@@ -128,8 +142,14 @@ export class NativeBridgeManager implements NativeBridge {
       options.allowedBrowserPackages,
       options.useTrustedWebActivity ?? false,
       options.useAuthTab ?? false,
-      options.tokenExchangeMaxRetries ?? -1, // -1 means not set, as 0 retries is a valid value
-      options.tokenExchangeRetryDelay ?? -1
+      tokenExchangeOption(
+        'tokenExchangeMaxRetries',
+        options.tokenExchangeMaxRetries
+      ),
+      tokenExchangeOption(
+        'tokenExchangeRetryDelay',
+        options.tokenExchangeRetryDelay
+      )
     );
     return new CredentialsModel(credential);
   }

@@ -3157,7 +3157,7 @@ if (credentials) {
 
 After the browser redirects back, the SDK exchanges the authorization code for tokens. On Android 15+ and on devices with aggressive battery optimization, the OS blocks network access for apps in the background and restores it a moment after the app returns to the foreground. If the exchange fails before reaching Auth0 for this reason, the SDK retries it 2 times, 2 seconds apart, so the login doesn't fail with a `NETWORK_ERROR`. Requests that may have reached Auth0 are never retried, because the authorization code can only be used once.
 
-You can change the number of retries (0 to 4, where `0` disables retrying) and the delay between them in seconds:
+You can change the number of retries (a whole number from 0 to 4, where `0` disables retrying) and the delay between them in seconds:
 
 ```js
 await authorize(
