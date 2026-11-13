@@ -146,6 +146,12 @@ class A0Auth0ModuleNetworkingOptionsTest {
     }
 
     @Test
+    fun `resumeGraceMs waits longer only when a login was in progress`() {
+        assertEquals(5000L, A0Auth0Module.resumeGraceMs(loginInProgress = false))
+        assertEquals(30000L, A0Auth0Module.resumeGraceMs(loginInProgress = true))
+    }
+
+    @Test
     fun `invalidTimeoutOption accepts zero, positive and missing timeouts`() {
         assertNull(A0Auth0Module.invalidTimeoutOption(JavaOnlyMap.of("connectTimeout", 0, "writeTimeout", 30)))
         assertNull(A0Auth0Module.invalidTimeoutOption(JavaOnlyMap()))

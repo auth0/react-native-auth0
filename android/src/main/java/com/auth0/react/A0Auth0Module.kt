@@ -1,6 +1,7 @@
 package com.auth0.react
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Build
@@ -53,6 +54,11 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         // Grace window (ms) for an in-flight restored token exchange to complete before
         // resumeWebAuthSession resolves null.
         private const val RESUME_SESSION_GRACE_MS = 5000L
+        // Used instead when a login was running as the process died: its restored token exchange
+        // may still be retrying (about 4 s with the default retry settings, plus the requests).
+        private const val RESTORED_EXCHANGE_GRACE_MS = 30000L
+        private const val LOGIN_PREFS = "a0_auth0_react_web_auth"
+        private const val KEY_LOGIN_IN_PROGRESS = "login_in_progress"
 
         private const val MAX_CAUSE_DEPTH = 10
 
@@ -73,6 +79,9 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         private const val DPOP_INVALID_TOKEN_TYPE_CODE = "DPOP_INVALID_TOKEN_TYPE"
         private const val DPOP_MISSING_PARAMETER_CODE = "DPOP_MISSING_PARAMETER"
         private const val DPOP_CLEAR_KEY_FAILED_CODE = "DPOP_CLEAR_KEY_FAILED"
+
+        internal fun resumeGraceMs(loginInProgress: Boolean): Long =
+            if (loginInProgress) RESTORED_EXCHANGE_GRACE_MS else RESUME_SESSION_GRACE_MS
 
         // JS sends -1 for a numeric option the app didn't set, as 0 can be a valid value. Anything
         // else must be a whole number: toInt() would silently truncate 4.9 to 4 and -0.5 to 0.
@@ -297,15 +306,18 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         // start() registers a LifecycleObserver internally (Auth0.Android 3.19.0+ for
         // process-death recovery), which must happen on the main thread.
         UiThreadUtil.runOnUiThread {
+            setLoginInProgress(true)
             builder.start(activity,
                 object : com.auth0.android.callback.Callback<Credentials, AuthenticationException> {
                     override fun onSuccess(result: Credentials) {
+                        setLoginInProgress(false)
                         val map = CredentialsParser.toMap(result)
                         promise.resolve(map)
                         webAuthPromise = null
                     }
 
                     override fun onFailure(error: AuthenticationException) {
+                        setLoginInProgress(false)
                         handleError(error, promise)
                         webAuthPromise = null
                     }
@@ -322,6 +334,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             return
         }
         val lifecycleOwner = activity as LifecycleOwner
+        val loginInProgress = loginPrefs.getBoolean(KEY_LOGIN_IN_PROGRESS, false)
 
         UiThreadUtil.runOnUiThread {
             val resolved = java.util.concurrent.atomic.AtomicBoolean(false)
@@ -334,6 +347,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 override fun onSuccess(result: Credentials) {
                     if (resolved.compareAndSet(false, true)) {
                         timeoutHandler.removeCallbacksAndMessages(null)
+                        setLoginInProgress(false)
                         promise.resolve(CredentialsParser.toMap(result))
                     }
                 }
@@ -341,6 +355,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 override fun onFailure(error: AuthenticationException) {
                     if (resolved.compareAndSet(false, true)) {
                         timeoutHandler.removeCallbacksAndMessages(null)
+                        setLoginInProgress(false)
                         handleError(error, promise)
                     }
                 }
@@ -357,17 +372,24 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
             WebAuthProvider.registerCallbacks(lifecycleOwner, loginCallback, logoutCallback)
 
             // Safety net for the rare case where the restored token exchange is still in
-            // flight: give it a short grace window, then resolve null if nothing arrived.
+            // flight: give it a grace window, then resolve null if nothing arrived.
             // The login callback cancels this timeout if it settles first.
             if (!resolved.get()) {
                 timeoutHandler.postDelayed({
                     if (resolved.compareAndSet(false, true)) {
+                        setLoginInProgress(false)
                         promise.resolve(null)
                     }
-                }, RESUME_SESSION_GRACE_MS)
+                }, resumeGraceMs(loginInProgress))
             }
         }
     }
+
+    // Persisted so a restarted process knows a login was running when the previous one died.
+    private val loginPrefs get() = reactContext.getSharedPreferences(LOGIN_PREFS, Context.MODE_PRIVATE)
+
+    private fun setLoginInProgress(value: Boolean) =
+        loginPrefs.edit().putBoolean(KEY_LOGIN_IN_PROGRESS, value).apply()
 
     @ReactMethod
     override fun getBundleIdentifier(promise: Promise) {

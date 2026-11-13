@@ -3171,7 +3171,7 @@ await authorize(
 
 Values outside these ranges reject `authorize()` with an `INVALID_CONFIGURATION` error.
 
-> **Note:** If you use [`resumeSession()`](#recovering-login-after-process-death-android) to recover a login interrupted by process death, the restored token exchange uses the same retry settings, but `resumeSession()` resolves with `null` after 5 seconds and discards a token exchange that succeeds later. The defaults (2 retries, 2 seconds apart) finish in about 4 seconds plus the request time, so keep any custom retries × delay under 5 seconds.
+> **Note:** If you use [`resumeSession()`](#recovering-login-after-process-death-android) to recover a login interrupted by process death, the restored token exchange uses the same retry settings, and `resumeSession()` waits up to 30 seconds for it when a login was in progress as the process died (5 seconds otherwise). The defaults (2 retries, 2 seconds apart) finish in about 4 seconds plus the request time. Keep any custom retries × delay well under 30 seconds, because a token exchange that succeeds after the wait is discarded.
 
 > **Platform Support:** Android only. These options are ignored on iOS and web.
 
