@@ -231,6 +231,10 @@ export interface NativeAuthorizeOptions {
    * reached Auth0 are never retried. Must be a whole number from 0 to 4; `0` disables retries.
    * Invalid values reject `authorize()` with an `INVALID_CONFIGURATION` error. No effect on iOS or Web.
    *
+   * If you recover logins interrupted by process death with `resumeSession()`, keep the whole
+   * retry time (retries × delay, plus the request itself) under 5 seconds. `resumeSession()`
+   * resolves with `null` after 5 seconds, and a token exchange that succeeds later is discarded.
+   *
    * @default 2
    *
    * @example
@@ -242,7 +246,8 @@ export interface NativeAuthorizeOptions {
   /**
    * **Android only:** Seconds to wait between code exchange retries. See
    * {@link NativeAuthorizeOptions.tokenExchangeMaxRetries}. Must be a whole number of 0 or
-   * more. No effect on iOS or Web.
+   * more. No effect on iOS or Web. See the note on `tokenExchangeMaxRetries` about
+   * `resumeSession()`.
    *
    * @default 2
    */
