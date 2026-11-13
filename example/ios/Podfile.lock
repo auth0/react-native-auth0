@@ -1,5 +1,5 @@
 PODS:
-  - A0Auth0 (6.1.0):
+  - A0Auth0 (6.2.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2112,7 +2112,7 @@ EXTERNAL SOURCES:
     :path: build/rncore-facades/Yoga
 
 SPEC CHECKSUMS:
-  A0Auth0: 1b5e9fe32351372335be026512ca6f7a5fc09fca
+  A0Auth0: 379192a7baa06b0e60a6497c37caf125379ba3a8
   boost: 8502bfdc46e2804408af2e163049ece181009af4
   DoubleConversion: 501a575c40c0b50c89685762dd3e415e6bb26fb0
   fast_float: 7c925d1cebf8328d4018d061f49377e9f887e3b4
