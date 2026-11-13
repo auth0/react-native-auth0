@@ -74,8 +74,13 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         private const val DPOP_MISSING_PARAMETER_CODE = "DPOP_MISSING_PARAMETER"
         private const val DPOP_CLEAR_KEY_FAILED_CODE = "DPOP_CLEAR_KEY_FAILED"
 
-        // JS sends -1 for a numeric option the app didn't set, as 0 can be a valid value.
-        internal fun unsetAsNull(value: Double?): Int? = value?.toInt()?.takeIf { it != -1 }
+        // JS sends -1 for a numeric option the app didn't set, as 0 can be a valid value. Anything
+        // else must be a whole number: toInt() would silently truncate 4.9 to 4 and -0.5 to 0.
+        internal fun unsetAsNull(name: String, value: Double?): Int? {
+            if (value == null || value == -1.0) return null
+            require(value == value.toInt().toDouble()) { "$name must be a whole number" }
+            return value.toInt()
+        }
 
         // OkHttp throws IllegalArgumentException for a negative timeout, which would otherwise
         // surface after initialization has already stored the Auth0 instance.
@@ -275,8 +280,8 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
         builder.withParameters(cleanedParameters)
 
         try {
-            unsetAsNull(tokenExchangeMaxRetries)?.let { builder.withTokenExchangeMaxRetries(it) }
-            unsetAsNull(tokenExchangeRetryDelay)?.let { builder.withTokenExchangeRetryDelay(it) }
+            unsetAsNull("tokenExchangeMaxRetries", tokenExchangeMaxRetries)?.let { builder.withTokenExchangeMaxRetries(it) }
+            unsetAsNull("tokenExchangeRetryDelay", tokenExchangeRetryDelay)?.let { builder.withTokenExchangeRetryDelay(it) }
         } catch (e: IllegalArgumentException) {
             promise.reject("a0.invalid_configuration", e.message, e)
             webAuthPromise = null

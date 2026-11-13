@@ -9,6 +9,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
@@ -123,15 +124,25 @@ class A0Auth0ModuleNetworkingOptionsTest {
 
     @Test
     fun `unsetAsNull maps the not-set marker and null to null`() {
-        assertNull(A0Auth0Module.unsetAsNull(null))
-        assertNull(A0Auth0Module.unsetAsNull(-1.0))
+        assertNull(A0Auth0Module.unsetAsNull("option", null))
+        assertNull(A0Auth0Module.unsetAsNull("option", -1.0))
     }
 
     @Test
-    fun `unsetAsNull keeps zero and other values for the builder to validate`() {
-        assertEquals(0, A0Auth0Module.unsetAsNull(0.0))
-        assertEquals(3, A0Auth0Module.unsetAsNull(3.0))
-        assertEquals(-3, A0Auth0Module.unsetAsNull(-3.0))
+    fun `unsetAsNull keeps whole numbers, including zero, for the builder to validate`() {
+        assertEquals(0, A0Auth0Module.unsetAsNull("option", 0.0))
+        assertEquals(3, A0Auth0Module.unsetAsNull("option", 3.0))
+        assertEquals(-3, A0Auth0Module.unsetAsNull("option", -3.0))
+    }
+
+    @Test
+    fun `unsetAsNull rejects values that are not whole numbers instead of truncating them`() {
+        listOf(4.9, -0.5, -1.5, Double.NaN, Double.POSITIVE_INFINITY).forEach { value ->
+            val error = assertThrows(IllegalArgumentException::class.java) {
+                A0Auth0Module.unsetAsNull("tokenExchangeRetryDelay", value)
+            }
+            assertEquals("tokenExchangeRetryDelay must be a whole number", error.message)
+        }
     }
 
     @Test

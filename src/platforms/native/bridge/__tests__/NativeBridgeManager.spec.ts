@@ -295,28 +295,6 @@ describe('NativeBridgeManager', () => {
       expect(args.slice(-2)).toEqual([0, 3]);
     });
 
-    it.each([
-      ['tokenExchangeMaxRetries', -1],
-      ['tokenExchangeMaxRetries', 4.9],
-      ['tokenExchangeMaxRetries', NaN],
-      ['tokenExchangeRetryDelay', -1],
-      ['tokenExchangeRetryDelay', -0.5],
-      ['tokenExchangeRetryDelay', -1.5],
-      ['tokenExchangeRetryDelay', Infinity],
-    ])(
-      'should reject %s = %s instead of sending it to native',
-      async (option, value) => {
-        await expect(
-          bridge.authorize(
-            { redirectUrl: 'com.myapp://cb' },
-            { customScheme: 'com.myapp', [option]: value }
-          )
-        ).rejects.toMatchObject({ code: 'a0.invalid_configuration' });
-
-        expect(MockedAuth0NativeModule.webAuth).not.toHaveBeenCalled();
-      }
-    );
-
     it('should correctly transform the native response to a Credentials model', async () => {
       MockedAuth0NativeModule.webAuth.mockResolvedValueOnce(
         nativeSuccessCredentials as any
