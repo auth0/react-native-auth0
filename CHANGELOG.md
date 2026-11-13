@@ -1,11 +1,24 @@
 # Change Log
 
+## [v6.2.1](https://github.com/auth0/react-native-auth0/tree/v6.2.1) (2026-11-13)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v6.2.0...v6.2.1)
+
+**Fixed**
+
+- fix(ios): match CodeGen nullability on webAuth token exchange params [\#1741](https://github.com/auth0/react-native-auth0/pull/1741) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix(ios): bump Auth0.swift to 3.3.1 to finish token refresh in background [\#1738](https://github.com/auth0/react-native-auth0/pull/1738) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix(android): retry code exchange on network errors, add retry options [\#1737](https://github.com/auth0/react-native-auth0/pull/1737) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix: forward mfa_token when a native token request requires MFA [\#1733](https://github.com/auth0/react-native-auth0/pull/1733) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v6.2.0](https://github.com/auth0/react-native-auth0/tree/v6.2.0) (2026-11-06)
+
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v6.1.0...v6.2.0)
 
 **Added**
+
 - feat(myaccount): add getUserProfile and updateUserProfile methods [\#1731](https://github.com/auth0/react-native-auth0/pull/1731) ([utkrishtsahu](https://github.com/utkrishtsahu))
--  feat(ios): pull Auth0.swift via SPM and add dependabot sync [\#1727](https://github.com/auth0/react-native-auth0/pull/1727) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat(ios): pull Auth0.swift via SPM and add dependabot sync [\#1727](https://github.com/auth0/react-native-auth0/pull/1727) ([subhankarmaiti](https://github.com/subhankarmaiti))
 
 ## [v6.1.0](https://github.com/auth0/react-native-auth0/tree/v6.1.0) (2026-10-29)
 
