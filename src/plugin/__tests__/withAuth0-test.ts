@@ -8,6 +8,8 @@ import {
 // Import Swift AppDelegate fixtures for Expo 53+
 import swiftAppDelegateFixtureWithLinking from './fixtures/swiftappdelegate-withlinking';
 import swiftAppDelegateFixtureWithoutLinking from './fixtures/swiftappdelegate-withoutlinking';
+import swiftAppDelegateFixtureSceneLifecycle from './fixtures/swiftappdelegate-scene-lifecycle';
+import { mergeContents } from '../generateCode';
 import type { ModConfig } from '@expo/config-plugins';
 
 const getConfig = () => {
@@ -61,6 +63,34 @@ describe(addAuth0AppDelegateCode, () => {
     expect(
       addAuth0AppDelegateCode(swiftAppDelegateFixtureWithoutLinking, 'swift')
     ).toMatchSnapshot();
+  });
+
+  it(`does not modify Swift AppDelegate that uses the scene life cycle`, () => {
+    expect(
+      addAuth0AppDelegateCode(swiftAppDelegateFixtureSceneLifecycle, 'swift')
+    ).toBe(swiftAppDelegateFixtureSceneLifecycle);
+  });
+
+  it(`removes the linking block that earlier versions added to a scene life cycle AppDelegate`, () => {
+    // What 5.11.2 generated on Expo SDK 58: the override inside ReactNativeDelegate
+    const previouslyGenerated = mergeContents({
+      src: swiftAppDelegateFixtureSceneLifecycle,
+      newSrc: [
+        '  // Handle URL schemes for Auth0 authentication',
+        '  override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {',
+        '    return RCTLinkingManager.application(app, open: url, options: options)',
+        '  }',
+      ].join('\n'),
+      tag: 'react-native-auth0-linking-swift',
+      anchor: /override func sourceURL\(for bridge: RCTBridge\)/,
+      comment: '//',
+      offset: -1,
+    }).contents;
+    expect(previouslyGenerated).toContain('react-native-auth0-linking-swift');
+
+    expect(addAuth0AppDelegateCode(previouslyGenerated, 'swift')).toBe(
+      swiftAppDelegateFixtureSceneLifecycle
+    );
   });
 });
 

@@ -1,2 +1,2 @@
-export * from './INativeBridge';
+export * from './NativeBridge';
 export * from './NativeBridgeManager';

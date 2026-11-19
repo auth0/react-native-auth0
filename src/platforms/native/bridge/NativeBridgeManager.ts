@@ -1,16 +1,17 @@
-import type { INativeBridge } from './INativeBridge';
+import type { NativeBridge } from './NativeBridge';
 import type {
   ApiCredentials,
   Credentials,
   WebAuthorizeParameters,
   ClearSessionParameters,
   NativeClearSessionOptions,
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   SessionTransferCredentials,
   MfaAuthenticator,
   MfaEnrollmentChallenge,
   MfaChallengeResult,
   PasskeyChallengeResponse,
+  NetworkingOptions,
 } from '../../../types';
 import {
   SafariViewControllerPresentationStyle,
@@ -26,12 +27,12 @@ import type { NativeModuleError } from '../../../core/interfaces';
 
 /**
  * Manages the direct communication with the native Auth0 module.
- * It implements the INativeBridge interface and is responsible for:
+ * It implements the NativeBridge interface and is responsible for:
  * - Calling the actual native methods.
  *-  Normalizing data and parameters between JS and Native.
  * - Catching native errors and re-throwing them as structured AuthError objects.
  */
-export class NativeBridgeManager implements INativeBridge {
+export class NativeBridgeManager implements NativeBridge {
   private async a0_call<T>(
     nativeMethod: (...args: any[]) => Promise<T>,
     ...args: any[]
@@ -39,7 +40,18 @@ export class NativeBridgeManager implements INativeBridge {
     try {
       return await nativeMethod(...args);
     } catch (e) {
-      const { code, message } = e as NativeModuleError;
+      const { code, message, userInfo } = e as NativeModuleError & {
+        userInfo?: { mfa_token?: unknown } | null;
+      };
+      // The bridges reject mfa_required with the response body, so match the
+      // error the HTTP-based logins throw and `json.mfa_token` can feed the MFA client.
+      if (code === 'mfa_required' && userInfo?.mfa_token) {
+        throw new AuthError(code, message, {
+          status: 403,
+          code,
+          json: userInfo,
+        });
+      }
       throw new AuthError(code, message, { code, json: e });
     }
   }
@@ -58,9 +70,10 @@ export class NativeBridgeManager implements INativeBridge {
     clientId: string,
     domain: string,
     localAuthenticationOptions?: LocalAuthenticationOptions,
-    useDPoP: boolean = true,
+    useDPoP: boolean = false,
     maxRetries: number = 0,
-    credentialsManagerStorageKey?: string
+    credentialsManagerStorageKey?: string,
+    networkingOptions?: NetworkingOptions
   ): Promise<void> {
     // This is a new method we'd add to the native side to ensure the
     // underlying Auth0.swift/Auth0.android SDKs are configured.
@@ -73,7 +86,8 @@ export class NativeBridgeManager implements INativeBridge {
       localAuthenticationOptions,
       useDPoP,
       maxRetries,
-      credentialsManagerStorageKey
+      credentialsManagerStorageKey,
+      networkingOptions
     );
   }
 
@@ -112,7 +126,10 @@ export class NativeBridgeManager implements INativeBridge {
       // //The native layer will check for this and ignore if the value is 99
       parameters.additionalParameters ?? {},
       options.allowedBrowserPackages,
-      options.useTrustedWebActivity ?? false
+      options.useTrustedWebActivity ?? false,
+      options.useAuthTab ?? false,
+      options.tokenExchangeMaxRetries,
+      options.tokenExchangeRetryDelay
     );
     return new CredentialsModel(credential);
   }
@@ -127,7 +144,8 @@ export class NativeBridgeManager implements INativeBridge {
       parameters.federated ?? false,
       parameters.returnToUrl,
       options.allowedBrowserPackages,
-      options.useTrustedWebActivity ?? false
+      options.useTrustedWebActivity ?? false,
+      options.useAuthTab ?? false
     );
   }
 
@@ -162,7 +180,7 @@ export class NativeBridgeManager implements INativeBridge {
     return this.a0_call(
       Auth0NativeModule.getCredentials.bind(Auth0NativeModule),
       scope,
-      minTtl ?? 0,
+      minTtl ?? 60,
       params,
       forceRefresh ?? false
     );
@@ -179,7 +197,7 @@ export class NativeBridgeManager implements INativeBridge {
       Auth0NativeModule.getApiCredentials.bind(Auth0NativeModule),
       audience,
       scope,
-      minTtl ?? 0,
+      minTtl ?? 60,
       params
     );
   }
@@ -205,6 +223,10 @@ export class NativeBridgeManager implements INativeBridge {
     );
   }
 
+  async clearAll(): Promise<void> {
+    return this.a0_call(Auth0NativeModule.clearAll.bind(Auth0NativeModule));
+  }
+
   async resumeWebAuth(url: string): Promise<void> {
     return this.a0_call(
       Auth0NativeModule.resumeWebAuth.bind(Auth0NativeModule),
@@ -213,7 +235,7 @@ export class NativeBridgeManager implements INativeBridge {
   }
 
   async getDPoPHeaders(
-    params: DPoPHeadersParams
+    params: DPoPHeadersParameters
   ): Promise<Record<string, string>> {
     return this.a0_call(
       Auth0NativeModule.getDPoPHeaders.bind(Auth0NativeModule),
@@ -343,9 +365,10 @@ export class NativeBridgeManager implements INativeBridge {
     picture?: string,
     userMetadata?: Record<string, string>,
     realm?: string,
-    organization?: string
+    organization?: string,
+    deliveryMethod?: string
   ): Promise<PasskeyChallengeResponse> {
-    return this.a0_call(
+    const challenge = await this.a0_call(
       Auth0NativeModule.passkeySignupChallenge.bind(Auth0NativeModule),
       email,
       phoneNumber,
@@ -357,8 +380,12 @@ export class NativeBridgeManager implements INativeBridge {
       picture,
       userMetadata,
       realm,
-      organization
+      organization,
+      deliveryMethod
     );
+    // The TurboModule spec can only type `verificationRequired` as `string[]`;
+    // the native modules only ever report the identifiers they recognize.
+    return challenge as PasskeyChallengeResponse;
   }
 
   async passkeyLoginChallenge(
@@ -378,7 +405,9 @@ export class NativeBridgeManager implements INativeBridge {
     realm?: string,
     audience?: string,
     scope?: string,
-    organization?: string
+    organization?: string,
+    verification?: Record<string, string>,
+    verificationRequired?: string[]
   ): Promise<Credentials> {
     const credential = await this.a0_call(
       Auth0NativeModule.getTokenByPasskey.bind(Auth0NativeModule),
@@ -387,7 +416,9 @@ export class NativeBridgeManager implements INativeBridge {
       realm,
       audience,
       scope,
-      organization
+      organization,
+      verification,
+      verificationRequired
     );
     return new CredentialsModel(credential);
   }
@@ -599,6 +630,38 @@ export class NativeBridgeManager implements INativeBridge {
     return this.a0_call(
       Auth0NativeModule.getFactors.bind(Auth0NativeModule),
       accessToken
+    );
+  }
+
+  async getUserProfile(
+    accessToken: string,
+    fields: string[] | undefined,
+    includeFields: boolean
+  ): Promise<Record<string, any>> {
+    return this.a0_call(
+      Auth0NativeModule.getUserProfile.bind(Auth0NativeModule),
+      accessToken,
+      fields,
+      includeFields
+    );
+  }
+
+  async updateUserProfile(
+    accessToken: string,
+    givenName: string | null,
+    familyName: string | null,
+    name: string | null,
+    nickname: string | null,
+    picture: string | null
+  ): Promise<Record<string, any>> {
+    return this.a0_call(
+      Auth0NativeModule.updateUserProfile.bind(Auth0NativeModule),
+      accessToken,
+      givenName,
+      familyName,
+      name,
+      nickname,
+      picture
     );
   }
 }

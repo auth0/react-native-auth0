@@ -1,5 +1,5 @@
 import type {
-  Credentials as ICredentials,
+  Credentials as CredentialsData,
   NativeCredentialsResponse,
 } from '../../types';
 
@@ -7,7 +7,7 @@ import type {
  * A class representation of user credentials.
  * It encapsulates the tokens and provides helper methods for convenience.
  */
-export class Credentials implements ICredentials {
+export class Credentials implements CredentialsData {
   public idToken: string;
   public accessToken: string;
   public tokenType: string;
@@ -25,7 +25,7 @@ export class Credentials implements ICredentials {
    *
    * @param params An object conforming to the Credentials type definition.
    */
-  constructor(params: ICredentials) {
+  constructor(params: CredentialsData) {
     this.idToken = params.idToken;
     this.accessToken = params.accessToken;
     this.tokenType = params.tokenType;

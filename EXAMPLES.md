@@ -1,5 +1,6 @@
 # Examples using react-native-auth0
 
+- [iOS framework linkage (`use_frameworks!`)](#ios-framework-linkage-use_frameworks)
 - [Authentication API](#authentication-api)
   - [Login with Password Realm Grant](#login-with-password-realm-grant)
   - [Get user information using user's access_token](#get-user-information-using-users-access_token)
@@ -21,6 +22,9 @@
   - [Using Retry with Auth0 Class](#using-retry-with-auth0-class)
   - [Platform Support](#platform-support)
   - [Error Handling](#error-handling)
+- [Android Networking Configuration](#android-networking-configuration)
+  - [Using Networking Options with Hooks](#using-networking-options-with-hooks)
+  - [Using Networking Options with Auth0 Class](#using-networking-options-with-auth0-class)
 - [IPSIE Session Expiry](#ipsie-session-expiry)
 - [Biometric Authentication](#biometric-authentication)
   - [Biometric Policy Types](#biometric-policy-types)
@@ -30,9 +34,6 @@
     - [Android](#android)
     - [iOS](#ios)
   - [Migration from Previous Behavior](#migration-from-previous-behavior)
-- [Management API (Users)](#management-api-users)
-  - [Patch user with user_metadata](#patch-user-with-user_metadata)
-  - [Get full user profile](#get-full-user-profile)
 - [Organizations](#organizations)
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
@@ -57,6 +58,7 @@
   - [Overview](#overview-1)
   - [Prerequisites](#prerequisites-1)
   - [Signup with Passkey](#signup-with-passkey)
+  - [Signup with Passkey and Identifier Verification](#signup-with-passkey-identifier-verification)
   - [Signin with Passkey](#signin-with-passkey)
   - [Signup with Passkey (Web)](#signup-with-passkey-web)
   - [Signin with Passkey (Web)](#signin-with-passkey-web)
@@ -75,6 +77,7 @@
   - [Recovery Code Enrollment](#recovery-code-enrollment)
   - [Managing Authentication Methods](#managing-authentication-methods)
   - [Getting Available Factors](#getting-available-factors)
+  - [Managing the User's Profile [Beta]](#managing-the-users-profile-beta)
   - [Error Handling](#error-handling-2)
   - [Platform Support](#platform-support-2)
 - [Native to Web SSO](#native-to-web-sso)
@@ -100,15 +103,42 @@
 - [Allowed Browsers (Android)](#allowed-browsers-android)
   - [Using with Hooks](#using-with-hooks)
   - [Using with Auth0 Class](#using-with-auth0-class-1)
+- [Trusted Web Activity (Android)](#trusted-web-activity-android)
+- [Ephemeral Sessions](#ephemeral-sessions)
 - [Recovering Login After Process Death (Android)](#recovering-login-after-process-death-android)
   - [Using with Hooks](#recovering-login-using-hooks)
   - [Using with Auth0 Class](#recovering-login-using-the-auth0-class)
+- [Token Exchange Retry (Android)](#token-exchange-retry-android)
 - [DPoP (Demonstrating Proof-of-Possession)](#dpop-demonstrating-proof-of-possession)
   - [Enabling DPoP](#enabling-dpop)
   - [Making API calls with DPoP](#making-api-calls-with-dpop)
   - [Handling DPoP token migration](#handling-dpop-token-migration)
   - [Checking token type](#checking-token-type)
   - [Handling nonce errors](#handling-nonce-errors)
+
+## iOS framework linkage (`use_frameworks!`)
+
+This SDK's native iOS dependencies — Auth0 3.3.1, JWTDecode 4.0.0, and SimpleKeychain 1.3.0 — are Swift pods. They install with the default React Native static-library linkage, so **most apps need no extra Podfile changes**:
+
+```bash
+cd ios && pod install
+```
+
+If another dependency forces `use_frameworks!`, both linkage modes are supported (verified by building the example app under each). Pick one in your `Podfile`:
+
+```ruby
+# Static frameworks
+use_frameworks! :linkage => :static
+
+# ...or dynamic frameworks
+use_frameworks! :linkage => :dynamic
+```
+
+No SDK-specific `post_install` step is required beyond what React Native already generates. After changing linkage, reinstall the pods — delete only `Pods` so `Podfile.lock` isn't re-resolved and unrelated dependencies aren't bumped:
+
+```bash
+cd ios && rm -rf Pods && pod install
+```
 
 ## Authentication API
 
@@ -187,29 +217,15 @@ authorize({}, { customScheme: 'YOUR_AUTH0_DOMAIN' })
 
 ### Login using MFA with One Time Password code
 
-> **Deprecated — will be removed in v6.** The MFA methods on the auth client (`auth0.auth.loginWithOTP`, `auth0.auth.loginWithOOB`, `auth0.auth.loginWithRecoveryCode`, `auth0.auth.multifactorChallenge`) are superseded by the [`mfa` client](#mfa-flexible-factors-grant), which also lets you list and enrol authenticators. See the mapping table in the [Migration Guide](MIGRATION_GUIDE.md#mfa-methods-on-the-auth-client).
+This call requires the client to have the _MFA_ Client Grant Type enabled. Check [this article](https://auth0.com/docs/get-started/applications/application-grant-types) to learn how to enable it.
 
-This call requires the client to have the _MFA_ Client Grant Type enabled. Check [this article](https://auth0.com/docs/clients/client-grant-types) to learn how to enable it.
-
-When you sign in to a multifactor authentication enabled connection using the `passwordRealm` method, you receive an error stating that MFA is required for that user along with an `mfa_token` value. Use this value to complete the MFA flow, passing the One Time Password from the enrolled MFA code generator app.
+When you sign in to a multifactor authentication enabled connection using the `passwordRealm` method, you receive an error stating that MFA is required for that user along with an `mfa_token` value. Pass that value to the [`mfa` client](#mfa-flexible-factors-grant) to complete the flow.
 
 ```js
-// Recommended: the `mfa` client
 const credentials = await auth0.mfa.verify({
   mfaToken: error.json.mfa_token,
   otp: '{user entered OTP}',
 });
-```
-
-```js
-// Deprecated: removed in v6
-auth0.auth
-  .loginWithOTP({
-    mfaToken: error.json.mfa_token,
-    otp: '{user entered OTP}',
-  })
-  .then(console.log)
-  .catch(console.error);
 ```
 
 ### Login with Passwordless
@@ -378,6 +394,8 @@ const credentials = await auth0.passwordless.loginWithOTP({
 Both challenge methods accept an optional `allowSignup` parameter (defaults to `false`). When set to `true`, a new user is created for the given email or phone number if one does not already exist on the connection; when `false`, the challenge is rejected for unknown identifiers.
 
 The `challenge` object returned from a challenge call is opaque — pass it as-is to `loginWithOTP`. You can optionally provide `audience` and `scope` to `loginWithOTP`.
+
+If the user must complete MFA, `loginWithOTP` rejects with an `AuthError` whose `code` is `mfa_required`. Pass `error.json.mfa_token` to the [`mfa` client](#mfa-flexible-factors-grant) to finish signing in, as with [`passwordRealm`](#login-using-mfa-with-one-time-password-code). Any other failure rejects with `PASSWORDLESS_LOGIN_FAILED`.
 
 ### Create user in database connection
 
@@ -646,11 +664,74 @@ function MyComponent() {
 }
 ```
 
+If a post-login Action requires MFA when the refresh token is exchanged, `getCredentials` (and `getApiCredentials`) rejects with `code: 'mfa_required'` instead. Pass `error.json.mfa_token` to the [`mfa` client](#mfa-flexible-factors-grant) to finish the renewal rather than starting a new login.
+
 **Best Practices:**
 
 1. **Use moderate retry counts**: Recommended maximum of 2 retries to balance reliability with performance
 2. **Configure adequate overlap period**: Ensure your Auth0 tenant has at least 180 seconds token overlap configured
 3. **Test on real devices**: Simulate network instability during testing to validate retry behavior
+
+## Android Networking Configuration
+
+> **Platform Support:** The timeout and header fields are Android only and have no effect on iOS. `enableLogging` is honored on both iOS and Android.
+
+The `networkingOptions` configuration option lets you tune the native networking client (`DefaultClient` from Auth0.Android's OkHttp-based stack) used for every request the native SDK makes on your behalf — web auth token exchange, credential renewal, MFA, passkeys, and My Account API calls.
+
+```ts
+networkingOptions?: {
+  connectTimeout?: number; // seconds, default 10
+  readTimeout?: number; // seconds, default 10
+  writeTimeout?: number; // seconds, default 10
+  callTimeout?: number; // seconds, default 0 (no limit)
+  defaultHeaders?: Record<string, string>; // sent on every request, default {}
+  enableLogging?: boolean; // default false
+};
+```
+
+Any option you omit falls back to Auth0.Android's own default.
+
+> [!WARNING]
+> On **Android**, `enableLogging` is **debug-only**: Auth0.Android logs full HTTP request and response bodies to Logcat — including access, refresh, and ID tokens from token-endpoint calls, in plaintext — and the flag is ignored on release builds. Never enable it in a production build.
+> On **iOS**, `enableLogging` maps to Auth0.swift's `.logging(enabled:)`, which traces requests and responses to the unified logging system (OSLog). Request headers and bodies are logged as-is, including refresh tokens, authorization codes, and credentials; only response bodies are redacted by Auth0.swift. There is no release-build gate, so enable it only while debugging and never in production.
+
+### Using Networking Options with Hooks
+
+```jsx
+import React from 'react';
+import { Auth0Provider } from 'react-native-auth0';
+
+function App() {
+  return (
+    <Auth0Provider
+      domain="YOUR_AUTH0_DOMAIN"
+      clientId="YOUR_AUTH0_CLIENT_ID"
+      networkingOptions={{
+        connectTimeout: 30,
+        readTimeout: 30,
+        defaultHeaders: { 'X-App-Version': '1.2.3' },
+      }}
+    >
+      <MyComponent />
+    </Auth0Provider>
+  );
+}
+```
+
+### Using Networking Options with Auth0 Class
+
+```js
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+  networkingOptions: {
+    connectTimeout: 30,
+    readTimeout: 30,
+  },
+});
+```
 
 ## IPSIE Session Expiry
 
@@ -822,66 +903,6 @@ const credentials = await auth0.credentialsManager.getCredentials();
 
 If you were not explicitly configuring biometric authentication before, the new `BiometricPolicy.default` maintains backward-compatible behavior. To enforce stricter biometric requirements, switch to `BiometricPolicy.always`.
 
-## Management API (Users)
-
-> **Deprecated — will be removed in v6.** Calling the Management API from a client requires an access token with over-privileged scopes (`read:current_user`, `update:current_user_metadata`) that cannot be kept secret in a mobile app or a browser. Move these operations to a backend you control (a BFF): your app sends its own access token, the backend validates it and calls the Management API with its own credentials. Both native SDKs have already dropped their Management clients.
->
-> Reading the current user's profile does **not** need the Management API — use `auth0.auth.userInfo({ token })`, or the `user` object from `useAuth0()`, which is decoded from the ID token.
-
-### Patch user with user_metadata
-
-**Recommended —** update metadata through your own backend, which holds the Management API credentials:
-
-```js
-const credentials = await auth0.credentialsManager.getCredentials();
-
-await fetch('https://your-api.example.com/me/metadata', {
-  method: 'PATCH',
-  headers: {
-    'Authorization': `Bearer ${credentials.accessToken}`,
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({ first_name: 'John', last_name: 'Doe' }),
-});
-```
-
-**Legacy (v5 only) —** deprecated, and removed in v6:
-
-```js
-auth0
-  .users('the user access_token')
-  .patchUser({
-    id: 'user_id',
-    metadata: { first_name: 'John', last_name: 'Doe' },
-  })
-  .then(console.log)
-  .catch(console.error);
-```
-
-### Get full user profile
-
-**Recommended —** reading the signed-in user's profile needs no Management API and no backend:
-
-```js
-const credentials = await auth0.credentialsManager.getCredentials();
-const profile = await auth0.auth.userInfo({ token: credentials.accessToken });
-
-// Or, inside a component, the `user` object decoded from the ID token:
-const { user } = useAuth0();
-```
-
-**Legacy (v5 only) —** deprecated, and removed in v6:
-
-```js
-auth0
-  .users('{ACCESS_TOKEN}')
-  .getUser({ id: 'user_id' })
-  .then(console.log)
-  .catch(console.error);
-```
-
-For more info please check our generated [documentation](https://auth0.github.io/react-native-auth0/index.html)
-
 ## Organizations
 
 [Organizations](https://auth0.com/docs/organizations) is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.
@@ -902,7 +923,7 @@ auth0.webAuth
 
 Users can be invited to your organization via a link. Tapping on the invitation link should open your app. Since invitations links are `https` only, is recommended that your Android app supports [Android App Links](https://developer.android.com/training/app-links). In the case of iOS, your app must support [Universal Links](https://developer.apple.com/documentation/xcode/allowing_apps_and_websites_to_link_to_your_content/supporting_universal_links_in_your_app).
 
-In [Enable Android App Links Support](https://auth0.com/docs/applications/enable-android-app-links-support) and [Enable Universal Links Support](https://auth0.com/docs/enable-universal-links-support-in-apple-xcode), you will find how to make the Auth0 server publish the Digital Asset Links file required by your applications.
+In [Enable Android App Links Support](https://auth0.com/docs/get-started/applications/enable-android-app-links-support) and [Enable Universal Links Support](https://auth0.com/docs/get-started/applications/enable-universal-links-support-in-apple-xcode), you will find how to make the Auth0 server publish the Digital Asset Links file required by your applications.
 
 When your app gets opened by an invitation link, grab the invitation URL and pass it as a parameter to the webauth call. Use the [Linking Module](https://reactnative.dev/docs/linking) method called `getInitialUrl()` to obtain the URL that launched your application.
 
@@ -917,6 +938,8 @@ auth0.webAuth
 ```
 
 If the URL doesn't contain the expected values, an error will be raised through the provided callback.
+
+On the web, pass the same `invitationUrl` to `authorize()`; see [Organizations and invitations (Web)](./EXAMPLES-WEB.md#organizations-and-invitations-web).
 
 ## Multi-Resource Refresh Tokens (MRRT)
 
@@ -1026,6 +1049,12 @@ await auth0.credentialsManager.clearApiCredentials(
   'https://first-api.example.com',
   'read:data write:data'
 );
+
+// Clear everything in one call — the session credentials plus API credentials
+// for every audience. On native this wipes the entire credentials store, so keep
+// it dedicated to Auth0 (see the storage-key note below); on web it is the same
+// as clearCredentials().
+await auth0.credentialsManager.clearAll();
 ```
 
 ### Web Platform Configuration
@@ -1060,11 +1089,7 @@ Custom Token Exchange allows you to exchange external identity provider tokens f
 ```typescript
 import React from 'react';
 import { Button, Alert } from 'react-native';
-import {
-  useAuth0,
-  AuthenticationException,
-  AuthenticationErrorCodes,
-} from 'react-native-auth0';
+import { useAuth0, AuthError } from 'react-native-auth0';
 
 function TokenExchangeScreen() {
   const { customTokenExchange, user, error } = useAuth0();
@@ -1081,25 +1106,28 @@ function TokenExchangeScreen() {
 
       Alert.alert('Success', `Logged in as ${user?.name}`);
     } catch (e) {
-      if (e instanceof AuthenticationException) {
-        switch (e.type) {
-          case AuthenticationErrorCodes.INVALID_SUBJECT_TOKEN:
-            Alert.alert('Error', 'The external token is invalid or expired');
+      if (e instanceof AuthError) {
+        // Custom Token Exchange surfaces the OAuth 2.0 error from the token
+        // endpoint on `code`. See the RFC 8693 error responses and your Action's
+        // own failure reasons.
+        switch (e.code) {
+          case 'invalid_request':
+            Alert.alert('Error', 'The external token or token type is invalid');
             break;
-          case AuthenticationErrorCodes.UNSUPPORTED_TOKEN_TYPE:
-            Alert.alert('Error', 'The token type is not supported');
+          case 'invalid_grant':
+            Alert.alert('Error', 'The external token was rejected or expired');
             break;
-          case AuthenticationErrorCodes.TOKEN_EXCHANGE_NOT_CONFIGURED:
+          case 'unsupported_token_type':
+            Alert.alert('Error', 'The external token type is not supported');
+            break;
+          case 'unauthorized_client':
             Alert.alert(
               'Error',
-              'Custom Token Exchange is not configured for this tenant'
+              'Custom Token Exchange is not enabled for this client'
             );
             break;
-          case AuthenticationErrorCodes.TOKEN_VALIDATION_FAILED:
-            Alert.alert('Error', 'Token validation failed in Auth0 Action');
-            break;
-          case AuthenticationErrorCodes.NETWORK_ERROR:
-            Alert.alert('Error', 'Network error. Please check your connection.');
+          case 'access_denied':
+            Alert.alert('Error', 'Token validation failed in the Auth0 Action');
             break;
           default:
             Alert.alert('Error', e.message);
@@ -1117,10 +1145,7 @@ function TokenExchangeScreen() {
 ### Using Custom Token Exchange with Auth0 Class
 
 ```typescript
-import Auth0, {
-  AuthenticationException,
-  AuthenticationErrorCodes,
-} from 'react-native-auth0';
+import Auth0, { AuthError } from 'react-native-auth0';
 
 const auth0 = new Auth0({
   domain: 'YOUR_AUTH0_DOMAIN',
@@ -1139,14 +1164,14 @@ async function exchangeExternalToken(externalToken: string) {
     console.log('Exchange successful:', credentials);
     return credentials;
   } catch (error) {
-    if (error instanceof AuthenticationException) {
+    if (error instanceof AuthError) {
       // Access the underlying error details
-      console.error('Error type:', error.type);
+      console.error('Error code:', error.code);
       console.error('Error message:', error.message);
-      console.error('Underlying error code:', error.underlyingError.code);
+      console.error('HTTP status:', error.status);
 
-      // Handle specific error types
-      if (error.type === AuthenticationErrorCodes.INVALID_SUBJECT_TOKEN) {
+      // Handle specific error codes
+      if (error.code === 'invalid_grant') {
         // Token is invalid or expired - prompt user to re-authenticate
         throw new Error('Please authenticate again with the external provider');
       }
@@ -1409,6 +1434,114 @@ function PasskeySignupScreen() {
 }
 ```
 
+<a name="signup-with-passkey-identifier-verification"></a>
+
+### Signup with Passkey and Identifier Verification
+
+When your database connection requires the user's email address or phone number to be verified, Auth0 sends a one-time code (OTP) to each identifier that needs verification when you request the signup challenge. The user has to enter those codes before the signup can complete.
+
+> **iOS, Android and web.** The WebAuthn ceremony is the only difference: on native, `authResponse` is the JSON string from your credential manager; on web it is the `PublicKeyCredential` from `navigator.credentials.create()` (see [Signup with Passkey (Web)](#signup-with-passkey-web)).
+
+The flow is the regular [signup](#signup-with-passkey) with two additions:
+
+1. The signup challenge lists the identifiers to verify in `verificationRequired` (`'email'` and/or `'phone'`). It is `undefined` when no verification is needed, so signups that don't need it behave exactly as before.
+2. You pass the codes the user entered to `getTokenByPasskey` as `verification`, a map from identifier to code, and the identifiers they are for as `verificationRequired`. On iOS and Android, `verificationRequired` is passed to Auth0.swift / Auth0.Android, which check that every listed identifier has a code before sending anything. On web it is ignored. Both are optional: when the challenge has no `verificationRequired`, leave both out.
+
+> **Prerequisites:** the same as a [regular signup](#passkeys-prerequisites). In addition, identifier verification must be enabled for your tenant and required by the database connection. Otherwise `verificationRequired` is `undefined`.
+
+**Collect the codes before you create the passkey.** Auth0 checks the codes only in `getTokenByPasskey`, after the passkey exists. Collecting them first lets the user cancel before a passkey is created, but it does not prevent an unused passkey if the exchange fails without a retry. A retryable failure reuses the same `authResponse`, so it does not prompt for a second passkey.
+
+If a code is wrong while its session is still alive, `getTokenByPasskey` rejects with a `PasskeyError` of type `PASSKEY_VERIFICATION_RETRYABLE`, and the signup can be retried without starting over.
+
+**What the retryable error carries.** Call `error.getVerificationRetryPayload()`. It is the same call on iOS, Android and web, so don't read `error.json` yourself. It returns `{ authSession, verificationRequired }` for this error, and `null` for any other error.
+
+| Field                  | Type                                  | What to do with it                                                                                                                                                                                                                         |
+| ---------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `authSession`          | `string \| undefined`                 | The session to send on the retry. Auth0 returns it with every retryable error: it is the same, still valid session. Fall back to the session of the original challenge when it is `undefined`.                                             |
+| `verificationRequired` | `('email' \| 'phone')[] \| undefined` | The identifiers whose code was wrong. Ask for new codes for these only: the others are already verified in this session. When it is `undefined`, Auth0 did not say which failed: ask again for every identifier of the original challenge. |
+
+To retry:
+
+- Call `getTokenByPasskey` again with the **same** `authResponse` (so the user is not asked to create the passkey a second time), the returned `authSession`, the returned `verificationRequired`, and the new codes for those identifiers only as `verification`. This is how Auth0.swift and auth0-spa-js document the retry.
+- With `useAuth0()`, a retryable error is also stored in the hook's `error` until a retry succeeds. Don't treat it as a final failure while you are retrying.
+
+Any other failure is not retryable: `getVerificationRetryPayload()` returns `null`, so handle the error by its `error.type`. Wrong codes after Auth0's attempt limit and an expired session reject with `PASSKEY_EXCHANGE_FAILED` on every platform: start over from `passkeySignupChallenge`. A missing code (an identifier in `verificationRequired` whose key is absent from `verification`) also rejects with `PASSKEY_EXCHANGE_FAILED`: on iOS and Android, Auth0.swift / Auth0.Android catch it before sending anything, so the session is untouched and you can call again with the code; on web, or when you leave `verificationRequired` out, Auth0 rejects it as an `invalid_request` error. An empty or whitespace-only code is caught on every platform before anything is sent and rejects with `PASSKEY_INVALID_PARAMETER`: the session is untouched, so ask for the code and call again. Auth0 limits wrong codes but doesn't say how many attempts are left, so cap the number of retries in your app.
+
+```tsx
+import {
+  useAuth0,
+  PasskeyError,
+  DeliveryMethod,
+  type PasskeyVerificationMethod,
+} from 'react-native-auth0';
+
+type Codes = Record<string, string>;
+
+const MAX_ATTEMPTS = 3; // retry limit; adjust it to suit your app
+
+function PasskeySignupWithVerificationScreen() {
+  const { passkeySignupChallenge, getTokenByPasskey } = useAuth0();
+
+  const handleSignup = async () => {
+    try {
+      // Step 1: Request the challenge. Auth0 sends a code to each identifier that must be verified.
+      const challenge = await passkeySignupChallenge({
+        email: 'user@example.com',
+        phoneNumber: '+14155552671',
+        realm: 'Username-Password-Authentication',
+        deliveryMethod: DeliveryMethod.TEXT, // optional: how the phone code is delivered ('text' or 'voice')
+      });
+
+      // Step 2: Collect a code for every identifier BEFORE creating the passkey.
+      let verificationRequired: PasskeyVerificationMethod[] | undefined =
+        challenge.verificationRequired; // undefined when nothing must be verified
+      let verification: Codes = await promptForCodes(
+        verificationRequired ?? []
+      ); // app-defined
+
+      // Step 3: Create the passkey once. The same credential is reused for every retry.
+      const credentialJson = await yourCredentialManagerCreate(
+        challenge.authParamsPublicKey
+      );
+
+      // Step 4: Exchange the credential and the codes for tokens.
+      let authSession = challenge.authSession;
+      for (let attempt = 1; ; attempt++) {
+        try {
+          const credentials = await getTokenByPasskey({
+            authSession,
+            authResponse: credentialJson,
+            realm: 'Username-Password-Authentication',
+            verificationRequired,
+            verification,
+          });
+          console.log('Signed up with passkey');
+          return credentials;
+        } catch (error) {
+          const retry =
+            error instanceof PasskeyError
+              ? error.getVerificationRetryPayload()
+              : null;
+          if (!retry || attempt >= MAX_ATTEMPTS) throw error; // not retryable: restart the signup
+
+          // A code was wrong. Retry with new codes for the listed identifiers only.
+          authSession = retry.authSession ?? authSession;
+          verificationRequired =
+            retry.verificationRequired ?? challenge.verificationRequired;
+          verification = await promptForCodes(verificationRequired ?? []);
+        }
+      }
+    } catch (error) {
+      if (error instanceof PasskeyError) {
+        console.error('Passkey signup failed:', error.type, error.message);
+      }
+    }
+  };
+
+  return <Button title="Sign Up with Passkey" onPress={handleSignup} />;
+}
+```
+
 ### Signin with Passkey
 
 The login flow requests an assertion challenge from Auth0, then you use the platform credential manager to assert an existing passkey, and finally exchange the credential for Auth0 tokens.
@@ -1459,6 +1592,8 @@ function PasskeySigninScreen() {
 ### Signup with Passkey (Web)
 
 Web uses the **exact same `passkeySignupChallenge` / `passkeyLoginChallenge` / `getTokenByPasskey` functions as native** — no web-specific methods were added. Only step 2 (the WebAuthn ceremony) differs: the app calls the browser's built-in [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) — `navigator.credentials.create()` for signup and `navigator.credentials.get()` for login — instead of a native module or third-party library. Unlike native, `authResponse` on web accepts the raw `PublicKeyCredential` object returned directly by `navigator.credentials` — no manual serialization needed. (See [Auth Response Format](#passkeys-auth-response-format) for the native, JSON-string form.)
+
+> **Identifier verification** works on web too. Collect the one-time codes _before_ calling `navigator.credentials.create()`, then pass them as `verification` to `getTokenByPasskey` together with the `PublicKeyCredential`. See [Signup with Passkey and Identifier Verification](#signup-with-passkey-identifier-verification): the flow is the same, with the `PublicKeyCredential` as `authResponse`. `verificationRequired` is accepted but ignored on web, so the same code runs on every platform.
 
 ```tsx
 import { useAuth0, PasskeyError } from 'react-native-auth0';
@@ -1643,19 +1778,20 @@ const loginCredentials = await auth0.getTokenByPasskey({
 
 The `passkeySignupChallenge` method accepts the following parameters to create a user profile along with the passkey. At least one of `email`, `phoneNumber`, or `username` is required — which of these your database connection actually accepts depends on its configuration (e.g. **Flexible Identifiers**). The SDK does not validate this client-side; an unsupported or missing identifier is rejected by the Auth0 API and surfaces as a `PASSKEY_CHALLENGE_FAILED` error.
 
-| Parameter      | Type                      | Description                          |
-| -------------- | ------------------------- | ------------------------------------ |
-| `email`        | `string?`                 | User's email address                 |
-| `phoneNumber`  | `string?`                 | User's phone number                  |
-| `username`     | `string?`                 | Username                             |
-| `name`         | `string?`                 | Full name                            |
-| `givenName`    | `string?`                 | First/given name                     |
-| `familyName`   | `string?`                 | Last/family name                     |
-| `nickname`     | `string?`                 | Nickname                             |
-| `picture`      | `string?`                 | Profile picture URL                  |
-| `userMetadata` | `Record<string, string>?` | Custom user metadata key-value pairs |
-| `realm`        | `string?`                 | Database connection name             |
-| `organization` | `string?`                 | Auth0 organization ID                |
+| Parameter        | Type                      | Description                                                                                                  |
+| ---------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `email`          | `string?`                 | User's email address                                                                                         |
+| `phoneNumber`    | `string?`                 | User's phone number                                                                                          |
+| `username`       | `string?`                 | Username                                                                                                     |
+| `name`           | `string?`                 | Full name                                                                                                    |
+| `givenName`      | `string?`                 | First/given name                                                                                             |
+| `familyName`     | `string?`                 | Last/family name                                                                                             |
+| `nickname`       | `string?`                 | Nickname                                                                                                     |
+| `picture`        | `string?`                 | Profile picture URL                                                                                          |
+| `userMetadata`   | `Record<string, string>?` | Custom user metadata key-value pairs                                                                         |
+| `realm`          | `string?`                 | Database connection name                                                                                     |
+| `organization`   | `string?`                 | Auth0 organization ID                                                                                        |
+| `deliveryMethod` | `'text' \| 'voice'`?      | How to deliver the code when a phone number must be [verified](#signup-with-passkey-identifier-verification) |
 
 <a name="passkeys-error-handling"></a>
 
@@ -1663,16 +1799,17 @@ The `passkeySignupChallenge` method accepts the following parameters to create a
 
 Passkey operations throw `PasskeyError` (extends `AuthError`) with a normalized `type` property. Use `PasskeyErrorCodes` for type-safe error handling:
 
-| Error Code                     | Description                                                                                                                                                                                   |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PASSKEY_CHALLENGE_FAILED`     | Auth0 challenge request failed                                                                                                                                                                |
-| `PASSKEY_EXCHANGE_FAILED`      | Token exchange with credential response failed                                                                                                                                                |
-| `PASSKEY_NOT_AVAILABLE`        | Passkeys not available on this device/OS version, or WebAuthn is not supported in this browser                                                                                                |
-| `PASSKEY_UNSUPPORTED_PLATFORM` | Passkeys not supported on this platform                                                                                                                                                       |
-| `PASSKEY_INVALID_PARAMETER`    | **Native only.** `authResponse` passed to `getTokenByPasskey` was not a JSON string                                                                                                           |
-| `PASSKEY_INVALID_CREDENTIAL`   | **Web only.** The credential passed to `getTokenByPasskey` is neither a valid attestation (signup) nor assertion (login) response                                                             |
-| `PASSKEY_MFA_REQUIRED`         | **Web only.** MFA is required to complete the exchange — use `error.getMfaRequiredPayload()` to extract `mfaToken` and `mfaRequirements`, then continue with `mfa.challenge()`/`mfa.verify()` |
-| `PASSKEY_UNKNOWN_ERROR`        | Unknown or uncategorized passkey error — check `error.message` for the underlying description                                                                                                 |
+| Error Code                       | Description                                                                                                                                                                                                                                                                                                                 |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PASSKEY_CHALLENGE_FAILED`       | Auth0 challenge request failed                                                                                                                                                                                                                                                                                              |
+| `PASSKEY_EXCHANGE_FAILED`        | Token exchange with credential response failed                                                                                                                                                                                                                                                                              |
+| `PASSKEY_NOT_AVAILABLE`          | Passkeys not available on this device/OS version, or WebAuthn is not supported in this browser                                                                                                                                                                                                                              |
+| `PASSKEY_UNSUPPORTED_PLATFORM`   | Passkeys not supported on this platform                                                                                                                                                                                                                                                                                     |
+| `PASSKEY_INVALID_PARAMETER`      | `authResponse` passed to `getTokenByPasskey` has the wrong type for the platform (a JSON string on web, a non-string on native), or a code in `verification` was empty or only whitespace                                                                                                                                   |
+| `PASSKEY_INVALID_CREDENTIAL`     | **Web only.** The credential passed to `getTokenByPasskey` is neither a valid attestation (signup) nor assertion (login) response                                                                                                                                                                                           |
+| `PASSKEY_VERIFICATION_RETRYABLE` | A one-time code for [identifier verification](#signup-with-passkey-identifier-verification) was wrong while its session is still alive, so the signup can be retried. `error.getVerificationRetryPayload()` returns `{ authSession, verificationRequired }`: the session to retry with and the identifiers to ask for again |
+| `PASSKEY_MFA_REQUIRED`           | MFA is required to complete the exchange — use `error.getMfaRequiredPayload()` to extract `mfaToken` and `mfaRequirements`, then continue with `mfa.challenge()`/`mfa.verify()`                                                                                                                                             |
+| `PASSKEY_UNKNOWN_ERROR`          | Unknown or uncategorized passkey error — check `error.message` for the underlying description                                                                                                                                                                                                                               |
 
 ```typescript
 import { PasskeyError, PasskeyErrorCodes } from 'react-native-auth0';
@@ -1721,7 +1858,7 @@ The My Account API allows authenticated users to manage their own authentication
 
 Access the My Account client via the `myAccount` property from `useAuth0()` or the `Auth0` class instance.
 
-The My Account API is supported on Native (iOS/Android) and Web. The same `myAccount` API is used on all platforms; only the passkey credential ceremony differs (native passkey module vs. the browser's WebAuthn APIs). On Web, when DPoP is enabled (the default), the supplied access token must have been issued by the same client instance, since the DPoP proof is signed with that client's keypair; when the client is not configured with DPoP, plain bearer tokens are used and any valid access token works.
+The My Account API is supported on Native (iOS/Android) and Web. The same `myAccount` API is used on all platforms; only the passkey credential ceremony differs (native passkey module vs. the browser's WebAuthn APIs). On Web, when DPoP is enabled, the supplied access token must have been issued by the same client instance, since the DPoP proof is signed with that client's keypair; when the client is not configured with DPoP, plain bearer tokens are used and any valid access token works.
 
 ### Prerequisites
 
@@ -1890,6 +2027,69 @@ const factors = await myAccount.getFactors({ accessToken });
 // Returns available factor types (e.g., sms, email, totp, push-notification, webauthn-platform)
 ```
 
+### Managing the User's Profile [Beta]
+
+> [!NOTE]
+> The My Account Profile API is currently in [Beta](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#beta). It might change before General Availability, and Auth0 does not support beta functionality for production use. The feature must be enabled for your tenant.
+
+Once the feature is enabled, grant the `read:me:profile` and `update:me:profile` scopes of the **Auth0 My Account API** to your application under **Application Access** in the dashboard; they are not granted automatically.
+
+A signed-in user can read and update their own profile with `getUserProfile` and `updateUserProfile`. The access token must include the `read:me:profile` scope to read the profile, and `update:me:profile` to update it.
+
+Every field of the returned `MyAccountProfile` comes with a `profilePolicy` entry, keyed by a JSON Pointer to the field (e.g. `/given_name`), that tells whether the user can edit it and why. Use it to render your profile UI without hardcoding which fields are editable for each connection type. For example, the `given_name` of a social user is read-only because it is managed by the identity provider.
+
+```typescript
+const profile = await myAccount.getUserProfile({ accessToken });
+
+const givenNamePolicy = profile.profilePolicy?.['/given_name'];
+if (givenNamePolicy?.access === 'read_only') {
+  // e.g. givenNamePolicy.reason === 'managed_by_identity_provider'
+  console.log(`given_name is read-only: ${givenNamePolicy.reason}`);
+}
+
+// Only return some fields (using the API field names)...
+const names = await myAccount.getUserProfile({
+  accessToken,
+  fields: ['given_name', 'family_name', 'profile_policy'],
+});
+
+// ...or every field except some.
+const withoutPolicy = await myAccount.getUserProfile({
+  accessToken,
+  fields: ['profile_policy'],
+  includeFields: false,
+});
+```
+
+> 💡 `profilePolicy` is `undefined` when `profile_policy` is not part of the response. With `includeFields` `true` (the default), this is when `fields` is set and does not list it. With `includeFields: false`, this is when `fields` lists it.
+
+`updateUserProfile` changes only the fields you pass and returns the full, updated profile. Only `givenName`, `familyName`, `name`, `nickname`, and `picture` can be updated; `userId`, `email`, `emailVerified`, `phoneNumber`, `phoneVerified`, and `username` are read-only. Calling it with no fields is valid and returns the current profile. The update is all-or-nothing: if any field is read-only for the user or fails validation, the whole request is rejected with a `400` and nothing is changed.
+
+```typescript
+import { MyAccountError, MyAccountErrorCodes } from 'react-native-auth0';
+
+try {
+  const updated = await myAccount.updateUserProfile({
+    accessToken,
+    givenName: 'Jane',
+    nickname: 'jane',
+  });
+  console.log(`Updated: ${updated.givenName}`);
+} catch (e) {
+  if (
+    e instanceof MyAccountError &&
+    e.type === MyAccountErrorCodes.INVALID_REQUEST
+  ) {
+    // On a 400, each rejected field is described in `validationErrors`.
+    for (const error of e.validationErrors ?? []) {
+      console.log(`${error.pointer ?? error.field}: ${error.detail}`);
+    }
+  }
+}
+```
+
+> 💡 If the feature is not enabled for your tenant, or the token lacks the required scope, the call fails with a `MyAccountError` with `statusCode` `403` (`type` `UNAUTHORIZED`).
+
 ### Error Handling
 
 ```typescript
@@ -1923,6 +2123,23 @@ try {
   }
 }
 ```
+
+The My Account API reports failures as [RFC 7807](https://datatracker.ietf.org/doc/html/rfc7807)
+type URIs. `MyAccountError` normalizes those to a `MyAccountErrorCodes` value on `type` so your
+error handling matches every other error class in the SDK, and preserves the original URI on
+`typeUri` for logging or support tickets:
+
+```typescript
+catch (e) {
+  if (e instanceof MyAccountError) {
+    console.log(e.type);       // "UNAUTHORIZED" — normalized, switch on this
+    console.log(e.typeUri);    // "https://auth0.com/api-errors/A0E-401-0001" — raw, log this
+    console.log(e.statusCode); // 401
+  }
+}
+```
+
+When the API rejects a request with a `400`, `validationErrors` describes each invalid field, if the response includes them. Only `detail` is always present; `pointer`, `field`, and `source` are optional.
 
 ### Platform Support
 
@@ -1977,7 +2194,7 @@ function MyComponent() {
 
       console.log('Session Transfer Token:', ssoCredentials.sessionTransferToken);
       console.log('Token Type:', ssoCredentials.tokenType);
-      console.log('Expires In:', ssoCredentials.expiresIn, 'seconds');
+      console.log('Expires At:', ssoCredentials.expiresAt, '(UNIX seconds)');
 
       // Open web app with session transfer token as query parameter
       const webAppUrl = `https://your-web-app.com/login?session_transfer_token=${ssoCredentials.sessionTransferToken}`;
@@ -2014,7 +2231,7 @@ const ssoCredentials = await auth0.credentialsManager.getSSOCredentials();
 
 console.log('Session Transfer Token:', ssoCredentials.sessionTransferToken);
 console.log('Token Type:', ssoCredentials.tokenType);
-console.log('Expires In:', ssoCredentials.expiresIn);
+console.log('Expires At:', ssoCredentials.expiresAt, '(UNIX seconds)');
 
 // Optional: ID Token and Refresh Token may be returned if RTR is enabled
 if (ssoCredentials.idToken) {
@@ -2056,7 +2273,7 @@ function SSOExchangeScreen() {
 
       console.log('Session Transfer Token:', ssoCredentials.sessionTransferToken);
       console.log('Token Type:', ssoCredentials.tokenType);
-      console.log('Expires In:', ssoCredentials.expiresIn);
+      console.log('Expires At:', ssoCredentials.expiresAt, '(UNIX seconds)');
 
       // Open your web application with the session transfer token
       const webAppUrl = `https://your-web-app.com/login?session_transfer_token=${ssoCredentials.sessionTransferToken}`;
@@ -2091,7 +2308,7 @@ const ssoCredentials = await auth0.auth.ssoExchange({ refreshToken });
 
 console.log('Session Transfer Token:', ssoCredentials.sessionTransferToken);
 console.log('Token Type:', ssoCredentials.tokenType);
-console.log('Expires In:', ssoCredentials.expiresIn);
+console.log('Expires At:', ssoCredentials.expiresAt, '(UNIX seconds)');
 
 // Open your web application with the session transfer token
 const webAppUrl = `https://your-web-app.com/login?session_transfer_token=${ssoCredentials.sessionTransferToken}`;
@@ -2455,7 +2672,7 @@ try {
 
 ## Bot Protection
 
-If you are using the [Bot Protection](https://auth0.com/docs/anomaly-detection/bot-protection) feature and performing database login/signup via the Authentication API, you need to handle the `requires_verification` error. It indicates that the request was flagged as suspicious and an additional verification step is necessary to log the user in. That verification step is web-based, so you need to use Universal Login to complete it.
+If you are using the [Bot Detection](https://auth0.com/docs/secure/attack-protection/bot-detection) feature and performing database login/signup via the Authentication API, you need to handle the `requires_verification` error. It indicates that the request was flagged as suspicious and an additional verification step is necessary to log the user in. That verification step is web-based, so you need to use Universal Login to complete it.
 
 ```js
 const email = 'support@auth0.com';
@@ -2784,6 +3001,8 @@ On Android, web authentication defaults to a Custom Tab, which shows a read-only
 
 > **Platform Support:** Android only. This option is ignored on iOS and web.
 
+> **Note:** On Android, web authentication uses a standard Custom Tab by default. Since v6 you can opt in to **Auth Tab** with `useAuthTab: true` — a Custom Tab launch mode that delivers proper `ActivityResult` callbacks instead of inferring cancellation from lifecycle events. This fixes the spurious `USER_CANCELLED` error ([#1584](https://github.com/auth0/react-native-auth0/issues/1584)) when users tap Chrome's minimize button (Chrome 122+). Auth Tab requires **Chrome 137 or later**; on older browser versions it automatically falls back to a standard Custom Tab. Auth Tab and TWA are both opt-in; TWA renders full-screen with no URL bar. Because they use different launch mechanisms, enabling `useTrustedWebActivity: true` makes TWA take precedence and Auth Tab is not used. Note also that [`ephemeralSession: true`](#ephemeral-sessions) is honoured on both Auth Tab and a plain Custom Tab (on a browser that supports ephemeral browsing), but a TWA does **not** support it — so enabling `useTrustedWebActivity: true` disables ephemeral browsing.
+
 ### Required setup
 
 TWA will only render full-screen if your app's signing certificate is registered with your Auth0 tenant. Without this, Digital Asset Links verification fails and the flow falls back to a Custom Tab.
@@ -2836,6 +3055,49 @@ await auth0.webAuth.authorize(
 ```
 
 The same `useTrustedWebActivity` option is also accepted by `clearSession` so the logout flow opens in a Trusted Web Activity as well.
+
+## Ephemeral Sessions
+
+Pass `ephemeralSession: true` to run web authentication in an isolated browser session, so no shared session cookie is left behind. When the browser honours the request, Single Sign-On (SSO) does not apply.
+
+**Behaviour:**
+
+- **iOS:** sets `prefersEphemeralWebBrowserSession` on `ASWebAuthenticationSession`. Because there is no shared cookie to consent to, this also suppresses the SSO alert box. Requires iOS 13+.
+- **Android:** opens the browser (Auth Tab or a plain Custom Tab) with ephemeral browsing. Requires **Chrome 136+** or another browser that supports it; on unsupported browsers a warning is logged and the flow falls back to a regular (non-ephemeral) session — login still completes, but the session is not ephemeral.
+
+> **Platform Support:** iOS and Android. This option is ignored on web.
+
+> **Warning:** On Android, ephemeral browsing is supported on both [Auth Tab](#trusted-web-activity-android) (opt-in with `useAuthTab: true`) and a plain Custom Tab (the default), as long as the browser supports ephemeral browsing (Chrome 136+). A [Trusted Web Activity](#trusted-web-activity-android) does **not** support it, so when `useTrustedWebActivity: true` is set the session will **not** be ephemeral. On a browser too old to support ephemeral browsing, a warning is logged and the session is not ephemeral.
+
+> **Note:** Android support for ephemeral sessions was added in v6. In earlier versions the option was accepted but only took effect on iOS.
+
+### Using with Hooks
+
+```typescript
+import { useAuth0 } from 'react-native-auth0';
+
+const { authorize } = useAuth0();
+
+await authorize({ scope: 'openid profile email' }, { ephemeralSession: true });
+```
+
+### Using with Auth0 Class
+
+```typescript
+import Auth0 from 'react-native-auth0';
+
+const auth0 = new Auth0({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+});
+
+await auth0.webAuth.authorize(
+  { scope: 'openid profile email' },
+  { ephemeralSession: true }
+);
+```
+
+Because no shared session cookie is stored, you do not need to call `clearSession` to log the user out of the browser session — clearing the stored credentials is enough. Note that this holds only when the browser actually honoured the ephemeral request; on an Android browser that fell back to a regular Custom Tab, a shared cookie may still be present.
 
 ## Recovering Login After Process Death (Android)
 
@@ -2891,28 +3153,43 @@ if (credentials) {
 }
 ```
 
+## Token Exchange Retry (Android)
+
+After the browser redirects back, the SDK exchanges the authorization code for tokens. On Android 15+ and on devices with aggressive battery optimization, the OS blocks network access for apps in the background and restores it a moment after the app returns to the foreground. If the exchange fails before reaching Auth0 for this reason, the SDK retries it 2 times, 2 seconds apart, so the login doesn't fail with a `NETWORK_ERROR`. Requests that may have reached Auth0 are never retried, because the authorization code can only be used once.
+
+You can change the number of retries (a whole number from 0 to 4, where `0` disables retrying) and the delay between them in seconds:
+
+```js
+await authorize(
+  {},
+  {
+    tokenExchangeMaxRetries: 3,
+    tokenExchangeRetryDelay: 3,
+  }
+);
+```
+
+Values outside these ranges reject `authorize()` with an `INVALID_CONFIGURATION` error.
+
+> **Note:** If you use [`resumeSession()`](#recovering-login-after-process-death-android) to recover a login interrupted by process death, the restored token exchange uses the same retry settings, and `resumeSession()` waits up to 30 seconds for it when a login was in progress as the process died (5 seconds otherwise). The defaults (2 retries, 2 seconds apart) finish in about 4 seconds plus the request time. Keep any custom retries × delay well under 30 seconds, because a token exchange that succeeds after the wait is discarded.
+
+> **Platform Support:** Android only. These options are ignored on iOS and web.
+
 ## DPoP (Demonstrating Proof-of-Possession)
 
 [DPoP](https://datatracker.ietf.org/doc/html/rfc9449) (Demonstrating Proof-of-Possession) is an OAuth 2.0 extension that cryptographically binds access and refresh tokens to a client-specific key pair. This prevents token theft and replay attacks by ensuring that even if a token is intercepted, it cannot be used from a different device.
 
 ### Enabling DPoP
 
-DPoP is enabled by default (`useDPoP: true`) when you initialize the Auth0 client:
+DPoP is opt-in (`useDPoP` defaults to `false`). Set `useDPoP: true` when you initialize the Auth0 client, and make sure DPoP is enabled for your application in the Auth0 Dashboard:
 
 ```js
 import Auth0 from 'react-native-auth0';
 
-// DPoP is enabled by default
 const auth0 = new Auth0({
   domain: 'YOUR_AUTH0_DOMAIN',
   clientId: 'YOUR_AUTH0_CLIENT_ID',
-});
-
-// Or explicitly enable it
-const auth0 = new Auth0({
-  domain: 'YOUR_AUTH0_DOMAIN',
-  clientId: 'YOUR_AUTH0_CLIENT_ID',
-  useDPoP: true, // Explicitly enable DPoP
+  useDPoP: true,
 });
 ```
 
@@ -2926,7 +3203,7 @@ function App() {
     <Auth0Provider
       domain="YOUR_AUTH0_DOMAIN"
       clientId="YOUR_AUTH0_CLIENT_ID"
-      // DPoP is enabled by default
+      useDPoP={true}
     >
       {/* Your app components */}
     </Auth0Provider>
@@ -2935,6 +3212,8 @@ function App() {
 ```
 
 > **Important**: DPoP will only be used for **new user sessions** created after enabling it. Existing sessions with Bearer tokens will continue to work until the user logs in again. See [Handling DPoP token migration](#handling-dpop-token-migration) for how to handle this transition.
+
+> **Turning DPoP off again**: if you previously ran with DPoP enabled, stored credentials are DPoP-bound. Reading them back with `useDPoP` unset (or `false`) fails with `DPOP_NOT_CONFIGURED`, because the credentials manager is no longer configured to prove possession of the key. Clear the stored credentials and have the user log in again when you turn DPoP off.
 
 ### Making API calls with DPoP
 

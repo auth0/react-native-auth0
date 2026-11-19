@@ -74,6 +74,15 @@ export interface LocalAuthenticationOptions {
   evaluationPolicy?: LocalAuthenticationStrategy;
   authenticationLevel?: LocalAuthenticationLevel;
   fallbackTitle?: string;
+  /**
+   * Allow the device PIN, pattern, or password as a fallback when biometric
+   * authentication fails.
+   *
+   * On iOS this is equivalent to setting {@link LocalAuthenticationOptions.evaluationPolicy}
+   * to {@link LocalAuthenticationStrategy.deviceOwner}.
+   *
+   * @default false
+   */
   deviceCredentialFallback?: boolean;
   /**
    * Controls when biometric authentication prompts are shown when accessing stored credentials.
@@ -110,8 +119,26 @@ export interface NativeAuthorizeOptions {
    */
   leeway?: number;
   /**
-   * **iOS only**: Disable Single-Sign-On (SSO). It only affects iOS with versions 13 and above.
+   * Run web authentication in an isolated browser session, so no shared session
+   * cookie is left behind. When the browser honours the request, Single Sign-On
+   * (SSO) does not apply.
+   *
+   * - **iOS:** sets `prefersEphemeralWebBrowserSession` on `ASWebAuthenticationSession`,
+   *   which also suppresses the SSO consent alert box. Requires iOS 13+.
+   * - **Android:** opens the Custom Tab with ephemeral browsing. Requires Chrome 136+
+   *   (or another browser that supports it); on unsupported browsers the flow falls back
+   *   to a regular Custom Tab, so login still completes but the session is not ephemeral.
+   *   Ignored when {@link NativeAuthorizeOptions.useTrustedWebActivity} is also enabled,
+   *   as a Trusted Web Activity does not support ephemeral browsing.
+   *
+   * No effect on Web.
+   *
    * @default `false`
+   *
+   * @example
+   * ```typescript
+   * await authorize({ scope: 'openid profile email' }, { ephemeralSession: true });
+   * ```
    */
   ephemeralSession?: boolean;
   /**
@@ -126,6 +153,8 @@ export interface NativeAuthorizeOptions {
    * **iOS only:** Uses `SFSafariViewController` instead of `ASWebAuthenticationSession`. If empty object is set, the presentationStyle defaults to {@link SafariViewControllerPresentationStyle.fullScreen}
    *
    * This can be used as a boolean value or as an object which sets the `presentationStyle`. See the examples below for reference
+   *
+   * Ignored when {@link NativeAuthorizeOptions.ephemeralSession} is enabled or the callback scheme is `https` (taken from `redirectUrl` when set, otherwise from `customScheme`), because Auth0.swift only supports those with `ASWebAuthenticationSession`.
    *
    * @example
    * ```typescript
@@ -178,6 +207,52 @@ export interface NativeAuthorizeOptions {
    * ```
    */
   useTrustedWebActivity?: boolean;
+  /**
+   * **Android only:** Use the Auth Tab launch mechanism (Chrome Custom Tabs Activity Result
+   * API) instead of the legacy lifecycle-inference approach. Requires Chrome 137+; older
+   * browsers fall back to a standard Custom Tab automatically. Eliminates spurious
+   * `USER_CANCELLED` errors caused by Chrome minimization. No effect on iOS or Web.
+   *
+   * Mutually exclusive with {@link NativeAuthorizeOptions.useTrustedWebActivity} — when both
+   * are set, TWA takes precedence.
+   *
+   * @default false
+   *
+   * @example
+   * ```typescript
+   * await authorize({}, { useAuthTab: true }); // opt in
+   * ```
+   */
+  useAuthTab?: boolean;
+  /**
+   * **Android only:** How many times the code exchange that follows the browser redirect is
+   * retried when it fails before reaching Auth0, for example because the OS hasn't restored
+   * the app's network access yet after it was in the background. Requests that may have
+   * reached Auth0 are never retried. Must be a whole number from 0 to 4; `0` disables retries.
+   * Invalid values reject `authorize()` with an `INVALID_CONFIGURATION` error. No effect on iOS or Web.
+   *
+   * If you recover logins interrupted by process death with `resumeSession()`, the restored
+   * exchange keeps retrying while `resumeSession()` waits for it, up to 30 seconds when a login
+   * was in progress as the process died. Keep the whole retry time (retries × delay, plus the
+   * request itself) under that, as a token exchange that succeeds later is discarded.
+   *
+   * @default 2
+   *
+   * @example
+   * ```typescript
+   * await authorize({}, { tokenExchangeMaxRetries: 3, tokenExchangeRetryDelay: 3 });
+   * ```
+   */
+  tokenExchangeMaxRetries?: number;
+  /**
+   * **Android only:** Seconds to wait between code exchange retries. See
+   * {@link NativeAuthorizeOptions.tokenExchangeMaxRetries}. Must be a whole number of 0 or
+   * more. No effect on iOS or Web. See the note on `tokenExchangeMaxRetries` about
+   * `resumeSession()`.
+   *
+   * @default 2
+   */
+  tokenExchangeRetryDelay?: number;
 }
 
 /**
@@ -208,6 +283,13 @@ export interface NativeClearSessionOptions {
    * {@link NativeAuthorizeOptions} for details. No effect on iOS or Web.
    */
   useTrustedWebActivity?: boolean;
+  /**
+   * **Android only:** Use the Auth Tab launch mechanism for logout. See the same option on
+   * {@link NativeAuthorizeOptions} for full details. No effect on iOS or Web.
+   *
+   * @default false
+   */
+  useAuthTab?: boolean;
 }
 
 // ========= Web-Specific Options =========

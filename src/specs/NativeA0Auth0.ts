@@ -26,7 +26,8 @@ export interface Spec extends TurboModule {
       { [key: string]: string | Int32 | boolean } | undefined,
     useDPoP: boolean | undefined,
     maxRetries: Int32,
-    credentialsManagerStorageKey: string | undefined
+    credentialsManagerStorageKey: string | undefined,
+    networkingOptions: Object | undefined
   ): Promise<void>;
 
   /**
@@ -55,6 +56,12 @@ export interface Spec extends TurboModule {
    * Clear credentials
    */
   clearCredentials(): Promise<void>;
+
+  /**
+   * Clear all credentials from the underlying secure storage, including any API
+   * credentials for every audience. May remove non-Auth0 data if the store is shared.
+   */
+  clearAll(): Promise<void>;
 
   /**
    * Get API credentials for a specific audience
@@ -95,7 +102,10 @@ export interface Spec extends TurboModule {
     safariViewControllerPresentationStyle: Int32 | undefined,
     additionalParameters: { [key: string]: string } | undefined,
     allowedBrowserPackages: string[] | undefined,
-    useTrustedWebActivity: boolean
+    useTrustedWebActivity: boolean,
+    useAuthTab: boolean,
+    tokenExchangeMaxRetries: Int32 | undefined,
+    tokenExchangeRetryDelay: Int32 | undefined
   ): Promise<Credentials>;
 
   /**
@@ -106,7 +116,8 @@ export interface Spec extends TurboModule {
     federated: boolean,
     redirectUri: string,
     allowedBrowserPackages: string[] | undefined,
-    useTrustedWebActivity: boolean
+    useTrustedWebActivity: boolean,
+    useAuthTab: boolean
   ): Promise<void>;
 
   /**
@@ -152,7 +163,7 @@ export interface Spec extends TurboModule {
   ): Promise<{
     sessionTransferToken: string;
     tokenType: string;
-    expiresIn: Int32;
+    expiresAt: number;
     idToken?: string;
     refreshToken?: string;
   }>;
@@ -228,8 +239,13 @@ export interface Spec extends TurboModule {
     picture: string | undefined,
     userMetadata: { [key: string]: string } | undefined,
     realm: string | undefined,
-    organization: string | undefined
-  ): Promise<{ authSession: string; authParamsPublicKey: Object }>;
+    organization: string | undefined,
+    deliveryMethod: string | undefined
+  ): Promise<{
+    authSession: string;
+    authParamsPublicKey: Object;
+    verificationRequired?: string[];
+  }>;
 
   /**
    * Request a passkey login challenge from Auth0.
@@ -248,7 +264,9 @@ export interface Spec extends TurboModule {
     realm: string | undefined,
     audience: string | undefined,
     scope: string | undefined,
-    organization: string | undefined
+    organization: string | undefined,
+    verification: { [key: string]: string } | undefined,
+    verificationRequired: string[] | undefined
   ): Promise<Credentials>;
 
   /**
@@ -387,6 +405,27 @@ export interface Spec extends TurboModule {
    * Get available authentication factors.
    */
   getFactors(accessToken: string): Promise<Object[]>;
+
+  /**
+   * Get the current user's profile.
+   */
+  getUserProfile(
+    accessToken: string,
+    fields: string[] | undefined,
+    includeFields: boolean
+  ): Promise<Object>;
+
+  /**
+   * Update the current user's profile. Null fields are not sent.
+   */
+  updateUserProfile(
+    accessToken: string,
+    givenName: string | null | undefined,
+    familyName: string | null | undefined,
+    name: string | null | undefined,
+    nickname: string | null | undefined,
+    picture: string | null | undefined
+  ): Promise<Object>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('A0Auth0');

@@ -3,10 +3,7 @@ import { WebAuth0Client } from '../WebAuth0Client';
 import { WebWebAuthProvider } from '../WebWebAuthProvider';
 import { WebCredentialsManager } from '../WebCredentialsManager';
 import { WebMyAccountClient } from '../WebMyAccountClient';
-import {
-  AuthenticationOrchestrator,
-  ManagementApiOrchestrator,
-} from '../../../../core/services';
+import { AuthenticationOrchestrator } from '../../../../core/services';
 import { HttpClient } from '../../../../core/services/HttpClient';
 
 // Mock all dependencies
@@ -14,7 +11,6 @@ jest.mock('@auth0/auth0-spa-js');
 jest.mock('../WebWebAuthProvider');
 jest.mock('../WebCredentialsManager');
 jest.mock('../../../../core/services/AuthenticationOrchestrator');
-jest.mock('../../../../core/services/ManagementApiOrchestrator');
 jest.mock('../../../../core/services/HttpClient');
 
 // Mock AuthError and AuthenticationException properly to support inheritance
@@ -67,6 +63,7 @@ jest.mock('../../../../core/models', () => {
       // Simplified ERROR_CODE_MAP matching the real PasskeyError
       const codeMap: Record<string, string> = {
         InvalidParameter: 'PASSKEY_INVALID_PARAMETER',
+        PASSKEY_VERIFICATION_RETRYABLE: 'PASSKEY_VERIFICATION_RETRYABLE',
         passkey_challenge_error: 'PASSKEY_CHALLENGE_FAILED',
         passkey_get_token_error: 'PASSKEY_EXCHANGE_FAILED',
         passkey_invalid_credential: 'PASSKEY_INVALID_CREDENTIAL',
@@ -93,6 +90,9 @@ jest.mock('../../../../core/models', () => {
     AuthError: MockAuthError,
     AuthenticationException: MockAuthenticationException,
     PasskeyError: MockPasskeyError,
+    PasskeyErrorCodes: {
+      VERIFICATION_RETRYABLE: 'PASSKEY_VERIFICATION_RETRYABLE',
+    },
     // Add other exports from models if needed
     Credentials: jest.fn(),
     Auth0User: jest.fn(),
@@ -109,10 +109,6 @@ const MockWebCredentialsManager = WebCredentialsManager as jest.MockedClass<
 const MockAuthenticationOrchestrator =
   AuthenticationOrchestrator as jest.MockedClass<
     typeof AuthenticationOrchestrator
-  >;
-const MockManagementApiOrchestrator =
-  ManagementApiOrchestrator as jest.MockedClass<
-    typeof ManagementApiOrchestrator
   >;
 const MockHttpClient = HttpClient as jest.MockedClass<typeof HttpClient>;
 
@@ -164,7 +160,6 @@ describe('WebAuth0Client', () => {
     MockAuth0Client.mockImplementation(() => mockSpaClient);
     MockHttpClient.mockImplementation(() => mockHttpClient);
     MockAuthenticationOrchestrator.mockImplementation(() => ({}) as any);
-    MockManagementApiOrchestrator.mockImplementation(() => ({}) as any);
     MockWebWebAuthProvider.mockImplementation(() => ({}) as any);
     MockWebCredentialsManager.mockImplementation(() => ({}) as any);
 
@@ -187,13 +182,30 @@ describe('WebAuth0Client', () => {
         expect.objectContaining({
           clientId: defaultOptions.clientId,
           httpClient: mockHttpClient,
-          tokenType: 'DPoP',
+          tokenType: 'Bearer',
           baseUrl: `https://${defaultOptions.domain}`,
         })
       );
 
       expect(MockWebWebAuthProvider).toHaveBeenCalledWith(mockSpaClient);
       expect(MockWebCredentialsManager).toHaveBeenCalledWith(mockSpaClient);
+    });
+
+    it('should use DPoP token type when useDPoP is enabled', () => {
+      MockAuthenticationOrchestrator.mockClear();
+
+      const dpopClient = new WebAuth0Client({
+        ...defaultOptions,
+        useDPoP: true,
+      });
+
+      expect(dpopClient).toBeDefined();
+      expect(MockAuthenticationOrchestrator).toHaveBeenCalledWith(
+        expect.objectContaining({
+          tokenType: 'DPoP',
+          getDPoPHeaders: expect.any(Function),
+        })
+      );
     });
 
     it('should initialize with custom options', () => {
@@ -246,48 +258,6 @@ describe('WebAuth0Client', () => {
 
     it('should provide a WebMyAccountClient wired with the shared spa-js client', () => {
       expect(client.myAccount).toBeInstanceOf(WebMyAccountClient);
-    });
-  });
-
-  describe('users method', () => {
-    it('should create and return ManagementApiOrchestrator instance', () => {
-      const token = 'access_token_123';
-      const usersClient = client.users(token);
-
-      expect(MockManagementApiOrchestrator).toHaveBeenCalledWith({
-        token,
-        httpClient: mockHttpClient,
-        tokenType: 'DPoP',
-        baseUrl: `https://${defaultOptions.domain}`,
-        getDPoPHeaders: expect.any(Function),
-      });
-      expect(usersClient).toBeDefined();
-    });
-
-    it('should create new instance for each call', () => {
-      MockManagementApiOrchestrator.mockClear();
-
-      const token1 = 'token1';
-      const token2 = 'token2';
-
-      client.users(token1);
-      client.users(token2);
-
-      expect(MockManagementApiOrchestrator).toHaveBeenCalledTimes(2);
-      expect(MockManagementApiOrchestrator).toHaveBeenNthCalledWith(1, {
-        token: token1,
-        httpClient: mockHttpClient,
-        tokenType: 'DPoP',
-        baseUrl: `https://${defaultOptions.domain}`,
-        getDPoPHeaders: expect.any(Function),
-      });
-      expect(MockManagementApiOrchestrator).toHaveBeenNthCalledWith(2, {
-        token: token2,
-        httpClient: mockHttpClient,
-        tokenType: 'DPoP',
-        baseUrl: `https://${defaultOptions.domain}`,
-        getDPoPHeaders: expect.any(Function),
-      });
     });
   });
 
@@ -363,15 +333,7 @@ describe('WebAuth0Client', () => {
           httpClient: mockHttpClient,
         })
       );
-
-      const token = 'test_token';
-      client.users(token);
-
-      expect(MockManagementApiOrchestrator).toHaveBeenCalledWith(
-        expect.objectContaining({
-          httpClient: mockHttpClient,
-        })
-      );
+      expect(MockHttpClient).toHaveBeenCalledTimes(1);
     });
 
     it('should pass the same SPA client instance to all web adapters', () => {
@@ -465,17 +427,21 @@ describe('WebAuth0Client', () => {
     });
 
     it('should use client tokenType as fallback when response token_type is missing', async () => {
+      const dpopClient = new WebAuth0Client({
+        ...defaultOptions,
+        useDPoP: true,
+      });
       mockSpaClient.loginWithCustomTokenExchange.mockResolvedValueOnce({
         ...mockExchangeResponse,
         token_type: undefined,
       });
 
-      const result = await client.customTokenExchange({
+      const result = await dpopClient.customTokenExchange({
         subjectToken: 'external-token',
         subjectTokenType: 'urn:acme:legacy-token',
       });
 
-      // Should use client's default tokenType (DPoP)
+      // Should use client's configured tokenType (DPoP)
       expect(result.tokenType).toBe('DPoP');
     });
 
@@ -644,6 +610,82 @@ describe('WebAuth0Client', () => {
         authSession: 'auth-session-123',
         authParamsPublicKey: mockPublicKey,
       });
+    });
+
+    it('should forward deliveryMethod to the SPA client', async () => {
+      mockSpaClient.passkey.getSignupChallenge.mockResolvedValue({
+        authSession: 'auth-session-123',
+        publicKey: mockPublicKey,
+      });
+
+      await client.passkeySignupChallenge({
+        phoneNumber: '+15551234567',
+        deliveryMethod: 'voice',
+      });
+
+      expect(mockSpaClient.passkey.getSignupChallenge).toHaveBeenCalledWith(
+        expect.objectContaining({
+          phoneNumber: '+15551234567',
+          deliveryMethod: 'voice',
+        })
+      );
+    });
+
+    it('should return the identifiers to verify when the connection requires verification', async () => {
+      mockSpaClient.passkey.getSignupChallenge.mockResolvedValue({
+        authSession: 'auth-session-123',
+        publicKey: mockPublicKey,
+        verificationRequired: ['email', 'phone'],
+      });
+
+      const result = await client.passkeySignupChallenge({
+        email: 'user@example.com',
+        phoneNumber: '+15551234567',
+      });
+
+      expect(result).toEqual({
+        authSession: 'auth-session-123',
+        authParamsPublicKey: mockPublicKey,
+        verificationRequired: ['email', 'phone'],
+      });
+    });
+
+    it('should only return the identifiers the SDK knows about', async () => {
+      mockSpaClient.passkey.getSignupChallenge.mockResolvedValue({
+        authSession: 'auth-session-123',
+        publicKey: mockPublicKey,
+        verificationRequired: ['email', 'username'],
+      });
+      const result = await client.passkeySignupChallenge({
+        email: 'user@example.com',
+      });
+      expect(result.verificationRequired).toEqual(['email']);
+
+      mockSpaClient.passkey.getSignupChallenge.mockResolvedValue({
+        authSession: 'auth-session-123',
+        publicKey: mockPublicKey,
+        verificationRequired: ['username'],
+      });
+      const unrecognized = await client.passkeySignupChallenge({
+        email: 'user@example.com',
+      });
+      expect(unrecognized).not.toHaveProperty('verificationRequired');
+    });
+
+    it('should leave verificationRequired out when no verification is needed', async () => {
+      for (const verificationRequired of [undefined, []]) {
+        mockSpaClient.passkey.getSignupChallenge.mockResolvedValue({
+          authSession: 'auth-session-123',
+          publicKey: mockPublicKey,
+          verificationRequired,
+        });
+
+        const result = await client.passkeySignupChallenge({
+          email: 'user@example.com',
+        });
+
+        expect(result).not.toHaveProperty('verificationRequired');
+      }
     });
 
     it('should throw PasskeyError when the challenge request fails', async () => {
@@ -1039,6 +1081,152 @@ describe('WebAuth0Client', () => {
       });
 
       expect(mockSpaClient.passkey.getTokenWithPasskey).not.toHaveBeenCalled();
+    });
+
+    describe('identifier verification', () => {
+      const tokenResponse = {
+        access_token: 'access-token',
+        id_token: 'id-token',
+        token_type: 'Bearer',
+        expires_in: 3600,
+        scope: 'openid profile email',
+      };
+      const credential = { id: 'credential-id' } as any;
+      const lastVerificationSent = () =>
+        mockSpaClient.passkey.getTokenWithPasskey.mock.calls.at(-1)[0]
+          .verification;
+
+      it('should forward the verification codes to the SPA client', async () => {
+        mockSpaClient.passkey.getTokenWithPasskey.mockResolvedValue(
+          tokenResponse
+        );
+
+        await client.getTokenByPasskey({
+          authSession: 'auth-session-123',
+          authResponse: credential,
+          verification: { email: '123456', phone: '654321' },
+        });
+
+        expect(mockSpaClient.passkey.getTokenWithPasskey).toHaveBeenCalledWith(
+          expect.objectContaining({
+            verification: { email: '123456', phone: '654321' },
+          })
+        );
+      });
+
+      it('should ignore verificationRequired and not send it to the SPA client', async () => {
+        mockSpaClient.passkey.getTokenWithPasskey.mockResolvedValue(
+          tokenResponse
+        );
+
+        for (const parameters of [
+          // a listed identifier without a code is not rejected either
+          { verificationRequired: ['email', 'phone'], verification: {} },
+          { verificationRequired: ['email'] },
+          {},
+        ]) {
+          await expect(
+            client.getTokenByPasskey({
+              authSession: 'auth-session-123',
+              authResponse: credential,
+              ...parameters,
+            })
+          ).resolves.toBeDefined();
+
+          const sent =
+            mockSpaClient.passkey.getTokenWithPasskey.mock.calls.at(-1)[0];
+          expect(sent).not.toHaveProperty('verificationRequired');
+          expect(sent.verification).toBeUndefined();
+        }
+      });
+
+      it('should not send codes for identifiers the SDK does not know about', async () => {
+        mockSpaClient.passkey.getTokenWithPasskey.mockResolvedValue(
+          tokenResponse
+        );
+
+        await client.getTokenByPasskey({
+          authSession: 'auth-session-123',
+          authResponse: credential,
+          verification: { email: '123456', username: '111111' },
+        });
+
+        expect(lastVerificationSent()).toEqual({ email: '123456' });
+      });
+
+      it('should not send codes that are not strings, nor an empty map', async () => {
+        mockSpaClient.passkey.getTokenWithPasskey.mockResolvedValue(
+          tokenResponse
+        );
+        const exchange = (verification: any) =>
+          client.getTokenByPasskey({
+            authSession: 'auth-session-123',
+            authResponse: credential,
+            verification,
+          });
+
+        await exchange({ email: '123456', phone: undefined });
+        expect(lastVerificationSent()).toEqual({ email: '123456' });
+
+        await exchange({});
+        expect(lastVerificationSent()).toBeUndefined();
+
+        await exchange(undefined);
+        expect(lastVerificationSent()).toBeUndefined();
+      });
+
+      it('should map a wrong code with a live session to PASSKEY_VERIFICATION_RETRYABLE', async () => {
+        const cause = {
+          error: 'invalid_grant',
+          error_description: 'Invalid or expired session',
+          auth_session: 'session-2',
+          verification_required: ['email'],
+        };
+        // What auth0-spa-js throws (PasskeyGetTokenError): the retry state is on
+        // the error itself, and the API error response is its `cause`.
+        mockSpaClient.passkey.getTokenWithPasskey.mockRejectedValue(
+          Object.assign(new Error('Invalid or expired session'), {
+            code: 'passkey_get_token_error',
+            isRetryable: true,
+            authSession: 'session-2',
+            verificationRequired: ['email'],
+            cause,
+          })
+        );
+
+        await expect(
+          client.getTokenByPasskey({
+            authSession: 'auth-session-123',
+            authResponse: credential,
+            verification: { email: '000000' },
+          })
+        ).rejects.toMatchObject({
+          name: 'PasskeyError',
+          code: 'PASSKEY_VERIFICATION_RETRYABLE',
+          type: 'PASSKEY_VERIFICATION_RETRYABLE',
+          json: cause,
+        });
+      });
+
+      it('should keep PASSKEY_EXCHANGE_FAILED for a token error that is not retryable', async () => {
+        mockSpaClient.passkey.getTokenWithPasskey.mockRejectedValue(
+          Object.assign(new Error('Invalid or expired session'), {
+            code: 'passkey_get_token_error',
+            isRetryable: false,
+          })
+        );
+
+        await expect(
+          client.getTokenByPasskey({
+            authSession: 'auth-session-123',
+            authResponse: credential,
+            verification: { email: '000000' },
+          })
+        ).rejects.toMatchObject({
+          code: 'passkey_get_token_error',
+          type: 'PASSKEY_EXCHANGE_FAILED',
+        });
+      });
     });
   });
 

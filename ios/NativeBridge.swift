@@ -13,54 +13,59 @@ import LocalAuthentication
 import SimpleKeychain
 
 @objc
+@MainActor
 public class NativeBridge: NSObject {
-    
-    static let accessTokenKey = "accessToken";
-    static let idTokenKey = "idToken";
-    static let expiresAtKey = "expiresAt";
-    static let sessionExpiresAtKey = "sessionExpiresAt";
-    static let scopeKey = "scope";
-    static let refreshTokenKey = "refreshToken";
-    static let typeKey = "type";
-    static let tokenTypeKey = "tokenType";
-    static let dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    
-    static let credentialsManagerErrorCode = "CREDENTIAL_MANAGER_ERROR"
-    static let biometricsAuthenticationErrorCode = "BIOMETRICS_CONFIGURATION_ERROR"
-    
+
+    nonisolated static let accessTokenKey = "accessToken";
+    nonisolated static let idTokenKey = "idToken";
+    nonisolated static let expiresAtKey = "expiresAt";
+    nonisolated static let sessionExpiresAtKey = "sessionExpiresAt";
+    nonisolated static let scopeKey = "scope";
+    nonisolated static let refreshTokenKey = "refreshToken";
+    nonisolated static let typeKey = "type";
+    nonisolated static let tokenTypeKey = "tokenType";
+    nonisolated static let dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
+    nonisolated static let credentialsManagerErrorCode = "CREDENTIAL_MANAGER_ERROR"
+    nonisolated static let passkeyVerificationRetryableErrorCode = "PASSKEY_VERIFICATION_RETRYABLE"
+    nonisolated static let biometricsAuthenticationErrorCode = "BIOMETRICS_CONFIGURATION_ERROR"
+
     // DPoP error codes
-    static let dpopErrorCode = "DPOP_ERROR"
-    static let dpopKeyGenerationFailedCode = "DPOP_KEY_GENERATION_FAILED"
-    static let dpopKeyStorageFailedCode = "DPOP_KEY_STORAGE_FAILED"
-    static let dpopKeyRetrievalFailedCode = "DPOP_KEY_RETRIEVAL_FAILED"
-    static let dpopKeyNotFoundCode = "DPOP_KEY_NOT_FOUND"
-    static let dpopKeychainErrorCode = "DPOP_KEYCHAIN_ERROR"
-    static let dpopGenerationFailedCode = "DPOP_GENERATION_FAILED"
-    static let dpopProofFailedCode = "DPOP_PROOF_FAILED"
-    static let dpopNonceMismatchCode = "DPOP_NONCE_MISMATCH"
-    static let dpopInvalidTokenTypeCode = "DPOP_INVALID_TOKEN_TYPE"
-    static let dpopMissingParameterCode = "DPOP_MISSING_PARAMETER"
-    static let dpopClearKeyFailedCode = "DPOP_CLEAR_KEY_FAILED"
+    nonisolated static let dpopErrorCode = "DPOP_ERROR"
+    nonisolated static let dpopKeyGenerationFailedCode = "DPOP_KEY_GENERATION_FAILED"
+    nonisolated static let dpopKeyStorageFailedCode = "DPOP_KEY_STORAGE_FAILED"
+    nonisolated static let dpopKeyRetrievalFailedCode = "DPOP_KEY_RETRIEVAL_FAILED"
+    nonisolated static let dpopKeyNotFoundCode = "DPOP_KEY_NOT_FOUND"
+    nonisolated static let dpopKeychainErrorCode = "DPOP_KEYCHAIN_ERROR"
+    nonisolated static let dpopGenerationFailedCode = "DPOP_GENERATION_FAILED"
+    nonisolated static let dpopProofFailedCode = "DPOP_PROOF_FAILED"
+    nonisolated static let dpopNonceMismatchCode = "DPOP_NONCE_MISMATCH"
+    nonisolated static let dpopInvalidTokenTypeCode = "DPOP_INVALID_TOKEN_TYPE"
+    nonisolated static let dpopMissingParameterCode = "DPOP_MISSING_PARAMETER"
+    nonisolated static let dpopClearKeyFailedCode = "DPOP_CLEAR_KEY_FAILED"
     
     var credentialsManager: CredentialsManager
     var clientId: String
     var domain: String
     var useDPoP: Bool
     var maxRetries: Int
+    var enableLogging: Bool
     private(set) lazy var mfaClient: A0MfaClient = {
-        A0MfaClient(clientId: self.clientId, domain: self.domain, useDPoP: self.useDPoP)
+        A0MfaClient(clientId: self.clientId, domain: self.domain, useDPoP: self.useDPoP, enableLogging: self.enableLogging)
     }()
-    
-    @objc public init(clientId: String, domain: String, localAuthenticationOptions: [String: Any]?, useDPoP: Bool, maxRetries: Int, credentialsManagerStorageKey: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+
+    @objc public init(clientId: String, domain: String, localAuthenticationOptions: [String: Any]?, useDPoP: Bool, maxRetries: Int, credentialsManagerStorageKey: String?, enableLogging: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         var auth0 = Auth0
             .authentication(clientId: clientId, domain: domain)
         self.clientId = clientId
         self.domain = domain
         self.useDPoP = useDPoP
         self.maxRetries = maxRetries
+        self.enableLogging = enableLogging
         if self.useDPoP {
             auth0 = auth0.useDPoP()
         }
+        auth0 = auth0.logging(enabled: enableLogging)
         // Namespace the keychain per client when a storage key is provided, else use the default service.
         if let key = credentialsManagerStorageKey, !key.isEmpty {
             self.credentialsManager = CredentialsManager(authentication: auth0, storage: SimpleKeychain(service: key), maxRetries: maxRetries)
@@ -73,6 +78,11 @@ public class NativeBridge: NSObject {
                 var evaluationPolicy = LAPolicy.deviceOwnerAuthenticationWithBiometrics
                 if let evaluationPolicyInt = localAuthenticationOptions["evaluationPolicy"] as? Int {
                     evaluationPolicy = convert(policyInt: evaluationPolicyInt)
+                }
+                // Mirror Android's deviceCredentialFallback: allow the device passcode
+                // as a fallback when biometrics fail (LAPolicy has no separate flag for this).
+                if let deviceCredentialFallback = localAuthenticationOptions["deviceCredentialFallback"] as? Bool, deviceCredentialFallback {
+                    evaluationPolicy = .deviceOwnerAuthentication
                 }
 
                 // Parse biometric policy
@@ -98,51 +108,53 @@ public class NativeBridge: NSObject {
         if self.useDPoP {
             builder = builder.useDPoP()
         }
+        builder = builder.logging(enabled: self.enableLogging)
         if let value = URL(string: redirectUri) {
-            let _ = builder.redirectURL(value)
+            builder = builder.redirectURL(value)
         }
         if let value = state {
-            let _ = builder.state(value)
+            builder = builder.state(value)
         }
         if let value = nonce {
-            let _ = builder.nonce(value)
+            builder = builder.nonce(value)
         }
         if let value = audience {
-            let _ = builder.audience(value)
+            builder = builder.audience(value)
         }
         if let value = scope {
-            let _ = builder.scope(value)
+            builder = builder.scope(value)
         }
         if let value = connection {
-            let _ = builder.connection(value)
+            builder = builder.connection(value)
         }
         if(maxAge != 0) {
-            let _ = builder.maxAge(maxAge)
+            builder = builder.maxAge(maxAge)
         }
         if let value = organization {
-            let _ = builder.organization(value)
+            builder = builder.organization(value)
         }
         if let value = invitationUrl, let invitationURL = URL(string: value) {
-            let _ = builder.invitationURL(invitationURL)
+            builder = builder.invitationURL(invitationURL)
         }
         if(leeway != 0) {
-            let _ = builder.leeway(leeway)
+            builder = builder.leeway(leeway)
         }
         if(ephemeralSession) {
-            let _ = builder.useEphemeralSession()
+            builder = builder.useEphemeralSession()
         }
-        
+
         // Check if scheme starts with https and use HTTPS if it does
         if scheme.starts(with: "https") {
-            let _ = builder.useHTTPS()
+            builder = builder.useHTTPS()
         }
-        
-        //Since we cannot have a null value here, the JS layer sends 99 if we have to ignore setting this value
-        if let presentationStyle = UIModalPresentationStyle(rawValue: safariViewControllerPresentationStyle), safariViewControllerPresentationStyle != 99 {
-            let _ = builder.provider(WebAuthentication.safariProvider(style: presentationStyle))
+
+        //Since we cannot have a null value here, the JS layer sends 99 if we have to ignore setting this value.
+        //Auth0.swift only honors useEphemeralSession() and useHTTPS() with its default provider, so keep the default in those cases.
+        let keepsDefaultProvider = ephemeralSession || scheme.starts(with: "https")
+        if let presentationStyle = UIModalPresentationStyle(rawValue: safariViewControllerPresentationStyle), safariViewControllerPresentationStyle != 99, !keepsDefaultProvider {
+            builder = builder.provider(WebAuthentication.safariProvider(style: presentationStyle))
         }
-        let _ = builder
-            .parameters(additionalParameters)
+        builder = builder.parameters(additionalParameters)
         builder.start { result in
             switch result {
             case .success(let credentials):
@@ -154,17 +166,18 @@ public class NativeBridge: NSObject {
     }
 
     @objc public func webAuthLogout(scheme: String, federated: Bool, redirectUri: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        let builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
+        var builder = Auth0.webAuth(clientId: self.clientId, domain: self.domain)
+        builder = builder.logging(enabled: self.enableLogging)
         if let value = URL(string: redirectUri) {
-            let _ = builder.redirectURL(value)
+            builder = builder.redirectURL(value)
         }
-        
+
         // Check if scheme starts with https and use HTTPS if it does
         if scheme.starts(with: "https") {
-            let _ = builder.useHTTPS()
+            builder = builder.useHTTPS()
         }
-        
-        builder.clearSession(federated: federated) { result in
+
+        builder.logout(federated: federated) { result in
                 switch result {
                 case .success:
                     resolve(true)
@@ -208,14 +221,15 @@ public class NativeBridge: NSObject {
                 tokenType: tokenType,
                 idToken:  idToken,
                 refreshToken: refreshToken,
-                expiresIn: expiresIn,
+                expiresAt: expiresIn,
                 scope: scope,
                 recoveryCode: nil
             )
-            if (credentialsManager.store(credentials: credentials)) {
+            do {
+                try credentialsManager.store(credentials: credentials)
                 resolve(true)
-            } else {
-                reject("STORE_FAILED", "Failed to store credentials in the Keychain.", nil)
+            } catch {
+                reject("STORE_FAILED", "Failed to store credentials in the Keychain.", error)
             }
         } else {
             reject(NativeBridge.credentialsManagerErrorCode, "Incomplete information provided for credentials - 'expiresIn' not found", NSError.init(domain: NativeBridge.credentialsManagerErrorCode, code: -99999, userInfo: nil));
@@ -229,6 +243,7 @@ public class NativeBridge: NSObject {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
                 case .failure(let error):
+                    if error.rejectIfMultifactorRequired(reject) { return }
                     reject(error.reactNativeErrorCode(), error.errorDescription, error)
                 }
             }
@@ -238,6 +253,7 @@ public class NativeBridge: NSObject {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
                 case .failure(let error):
+                    if error.rejectIfMultifactorRequired(reject) { return }
                     reject(error.reactNativeErrorCode(), error.errorDescription, error)
                 }
             }
@@ -249,8 +265,14 @@ public class NativeBridge: NSObject {
     }
     
     @objc public func clearCredentials(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        let removed = credentialsManager.clear()
-        
+        let removed: Bool
+        do {
+            try credentialsManager.clear()
+            removed = true
+        } catch {
+            removed = false
+        }
+
         // Also clear DPoP key if DPoP is enabled
         if self.useDPoP {
             do {
@@ -260,10 +282,22 @@ public class NativeBridge: NSObject {
                 print("Warning: Failed to clear DPoP key: \(error.localizedDescription)")
             }
         }
-        
+
         resolve(removed)
     }
-    
+
+    @objc public func clearAll(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        do {
+            // clearAll() also clears the DPoP key pair internally.
+            try credentialsManager.clearAll()
+        } catch {
+            reject(NativeBridge.credentialsManagerErrorCode, "Failed to clear credentials from secure storage.", error)
+            return
+        }
+
+        resolve(true)
+    }
+
     @objc public func getSSOCredentials(parameters: [String: Any], headers: [String: Any], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         let stringHeaders = headers.compactMapValues { $0 as? String }
         credentialsManager.ssoCredentials(parameters: parameters, headers: stringHeaders) { result in
@@ -272,19 +306,19 @@ public class NativeBridge: NSObject {
                 var response: [String: Any] = [
                     "sessionTransferToken": ssoCredentials.sessionTransferToken,
                     "tokenType": ssoCredentials.issuedTokenType,
-                    "expiresIn": ssoCredentials.expiresIn,
+                    NativeBridge.expiresAtKey: floor(ssoCredentials.expiresAt.timeIntervalSince1970),
                     "idToken": ssoCredentials.idToken
                 ]
-                
+
                 // Add optional fields if present
                 if let refreshToken = ssoCredentials.refreshToken {
                     response["refreshToken"] = refreshToken
                 }
-                
+
                 resolve(response)
             case .failure(let error):
                 reject(
-                    NativeBridge.credentialsManagerErrorCode,
+                    error.reactNativeErrorCode(),
                     error.localizedDescription,
                     error
                 )
@@ -379,6 +413,7 @@ public class NativeBridge: NSObject {
             case .success(let credentials):
                 resolve(credentials.asDictionary())
             case .failure(let error):
+                if error.rejectIfMultifactorRequired(reject) { return }
                 reject(error.reactNativeErrorCode(), error.errorDescription, error)
             }
         }
@@ -386,9 +421,12 @@ public class NativeBridge: NSObject {
 
     
     @objc public func clearApiCredentials(audience: String, scope: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        // The clear(forAudience:scope:) method returns a boolean indicating success.
-        // We can resolve the promise with this boolean value.
-        resolve(credentialsManager.clear(forAudience: audience, scope: scope))
+        do {
+            try credentialsManager.clear(forAudience: audience, scope: scope)
+            resolve(true)
+        } catch {
+            resolve(false)
+        }
     }
     
     @objc public func customTokenExchange(subjectToken: String, subjectTokenType: String, audience: String?, scope: String?, organization: String?, actorToken actorTokenValue: String?, actorTokenType: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
@@ -396,6 +434,7 @@ public class NativeBridge: NSObject {
         if self.useDPoP {
             auth = auth.useDPoP()
         }
+        auth = auth.logging(enabled: self.enableLogging)
 
         let finalScope = scope ?? "openid profile email"
 
@@ -416,6 +455,7 @@ public class NativeBridge: NSObject {
             case .success(let credentials):
                 resolve(credentials.asDictionary())
             case .failure(let error):
+                if error.rejectIfMultifactorRequired(reject) { return }
                 reject(error.code, error.localizedDescription, error)
             }
         }
@@ -441,7 +481,7 @@ public class NativeBridge: NSObject {
 
     // MARK: - Passkey Methods (challenge / exchange)
 
-    @objc public func passkeySignupChallenge(email: String?, phoneNumber: String?, username: String?, name: String?, givenName: String?, familyName: String?, nickname: String?, picture: String?, userMetadata: [String: String]?, realm: String?, organization: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func passkeySignupChallenge(email: String?, phoneNumber: String?, username: String?, name: String?, givenName: String?, familyName: String?, nickname: String?, picture: String?, userMetadata: [String: String]?, realm: String?, organization: String?, deliveryMethod: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         guard #available(iOS 16.6, *) else {
             reject("PASSKEY_NOT_AVAILABLE", "Passkeys require iOS 16.6 or later", nil)
             return
@@ -459,11 +499,14 @@ public class NativeBridge: NSObject {
         let userMetadataValue = userMetadata?.isEmpty == true ? nil : userMetadata
         let realmValue = realm?.isEmpty == true ? nil : realm
         let orgValue = organization?.isEmpty == true ? nil : organization
+        // An unknown value falls back to the server default, like `Passwordless.challengeWithPhoneNumber`.
+        let deliveryMethodValue = deliveryMethod.flatMap { DeliveryMethod(rawValue: $0) }
 
         var auth = Auth0.authentication(clientId: self.clientId, domain: self.domain)
         if self.useDPoP {
             auth = auth.useDPoP()
         }
+        auth = auth.logging(enabled: self.enableLogging)
 
         auth.passkeySignupChallenge(
             email: finalEmail,
@@ -476,7 +519,8 @@ public class NativeBridge: NSObject {
             picture: pictureValue,
             userMetadata: userMetadataValue,
             connection: realmValue,
-            organization: orgValue
+            organization: orgValue,
+            deliveryMethod: deliveryMethodValue
         ).start { result in
             switch result {
             case .success(let challenge):
@@ -488,10 +532,15 @@ public class NativeBridge: NSObject {
                         "name": challenge.userName
                     ]
                 ]
-                let response: [String: Any] = [
+                var response: [String: Any] = [
                     "authSession": challenge.authenticationSession,
                     "authParamsPublicKey": authParamsPublicKey
                 ]
+                // Left out when no verification is needed, so existing signups see an unchanged response.
+                let verificationRequired = NativeBridge.verificationMethodNames(challenge.verificationRequired)
+                if !verificationRequired.isEmpty {
+                    response["verificationRequired"] = verificationRequired
+                }
                 resolve(response)
             case .failure(let error):
                 reject("PASSKEY_CHALLENGE_FAILED", error.localizedDescription, error)
@@ -512,6 +561,7 @@ public class NativeBridge: NSObject {
         if self.useDPoP {
             auth = auth.useDPoP()
         }
+        auth = auth.logging(enabled: self.enableLogging)
 
         auth.passkeyLoginChallenge(
             connection: realmValue,
@@ -534,7 +584,7 @@ public class NativeBridge: NSObject {
         }
     }
 
-    @objc public func getTokenByPasskey(authSession: String, authResponse: String, realm: String?, audience: String?, scope: String?, organization: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc public func getTokenByPasskey(authSession: String, authResponse: String, realm: String?, audience: String?, scope: String?, organization: String?, verification: [String: String]?, verificationRequired: [String]?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         guard #available(iOS 16.6, *) else {
             reject("PASSKEY_EXCHANGE_FAILED", "Passkeys require iOS 16.6 or later", nil)
             return
@@ -544,6 +594,23 @@ public class NativeBridge: NSObject {
         let audienceValue = audience?.isEmpty == true ? nil : audience
         let orgValue = organization?.isEmpty == true ? nil : organization
         let finalScope = scope?.isEmpty == true ? "openid profile email" : (scope ?? "openid profile email")
+        // Only the identifiers the SDK recognizes are forwarded, matching the Android bridge.
+        var verificationCodes: [PasskeyVerificationMethod: String] = [:]
+        for (identifier, code) in verification ?? [:] {
+            switch identifier {
+            case "email": verificationCodes[.email] = code
+            case "phone": verificationCodes[.phone] = code
+            default: break
+            }
+        }
+        // Auth0.swift checks the codes against these identifiers before sending the request.
+        let verificationMethods: [PasskeyVerificationMethod] = (verificationRequired ?? []).compactMap { identifier in
+            switch identifier {
+            case "email": return .email
+            case "phone": return .phone
+            default: return nil
+            }
+        }
 
         guard let responseData = authResponse.data(using: .utf8),
               let json = try? JSONSerialization.jsonObject(with: responseData) as? [String: Any],
@@ -563,6 +630,7 @@ public class NativeBridge: NSObject {
         if self.useDPoP {
             auth = auth.useDPoP()
         }
+        auth = auth.logging(enabled: self.enableLogging)
 
         if let attestationObjectString = responseDict["attestationObject"] as? String {
             let attestationObject = Data(base64URLEncoded: attestationObjectString)
@@ -577,7 +645,8 @@ public class NativeBridge: NSObject {
                 relyingPartyId: self.domain,
                 userId: Data(),
                 userName: "",
-                challengeData: Data()
+                challengeData: Data(),
+                verificationRequired: verificationMethods
             )
             auth.login(
                 passkey: passkey,
@@ -585,13 +654,21 @@ public class NativeBridge: NSObject {
                 connection: realmValue,
                 audience: audienceValue,
                 scope: finalScope,
-                organization: orgValue
+                organization: orgValue,
+                verification: verificationCodes
             ).start { result in
                 switch result {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
                 case .failure(let error):
-                    reject("PASSKEY_EXCHANGE_FAILED", error.localizedDescription, error)
+                    if error.rejectIfMultifactorRequired(reject) { return }
+                    if error.isPasskeyVerificationRetryable {
+                        reject(NativeBridge.passkeyVerificationRetryableErrorCode,
+                               error.localizedDescription,
+                               NativeBridge.passkeyVerificationRetryableError(from: error))
+                    } else {
+                        reject("PASSKEY_EXCHANGE_FAILED", error.localizedDescription, error)
+                    }
                 }
             }
         } else {
@@ -618,6 +695,8 @@ public class NativeBridge: NSObject {
                 relyingPartyId: self.domain,
                 challengeData: Data()
             )
+            // ID token claim validation is opt-in on `TokenRequestable` in Auth0.swift 3.0.
+            // Android validates this path too (`A0Auth0Module.signinWithPasskey`).
             auth.login(
                 passkey: passkey,
                 challenge: challenge,
@@ -625,15 +704,43 @@ public class NativeBridge: NSObject {
                 audience: audienceValue,
                 scope: finalScope,
                 organization: orgValue
-            ).start { result in
+            )
+            .validateClaims()
+            .start { result in
                 switch result {
                 case .success(let credentials):
                     resolve(credentials.asDictionary())
                 case .failure(let error):
+                    if error.rejectIfMultifactorRequired(reject) { return }
                     reject("PASSKEY_EXCHANGE_FAILED", error.localizedDescription, error)
                 }
             }
         }
+    }
+
+    /// The identifiers this SDK reports to JavaScript; ones it doesn't recognize are left out.
+    nonisolated private static func verificationMethodNames(_ methods: [PasskeyVerificationMethod]?) -> [String] {
+        return (methods ?? []).compactMap { method in
+            switch method {
+            case .email: return "email"
+            case .phone: return "phone"
+            case .unknown: return nil
+            }
+        }
+    }
+
+    /// An error whose `userInfo` reaches JavaScript with what a retry needs. React Native only forwards `userInfo`
+    /// from an `NSError`, and `AuthenticationError` doesn't carry it.
+    nonisolated private static func passkeyVerificationRetryableError(from error: AuthenticationError) -> NSError {
+        var userInfo: [String: Any] = [NSLocalizedDescriptionKey: error.localizedDescription]
+        if let authSession = error.passkeyAuthSession {
+            userInfo["authSession"] = authSession
+        }
+        let verificationRequired = verificationMethodNames(error.passkeyVerificationRequired)
+        if !verificationRequired.isEmpty {
+            userInfo["verificationRequired"] = verificationRequired
+        }
+        return NSError(domain: passkeyVerificationRetryableErrorCode, code: error.statusCode, userInfo: userInfo)
     }
 
     @objc public func getClientId() -> String {
@@ -676,7 +783,7 @@ extension Credentials {
             NativeBridge.tokenTypeKey: self.tokenType,
             NativeBridge.idTokenKey: self.idToken,
             NativeBridge.refreshTokenKey: self.refreshToken as Any,
-            NativeBridge.expiresAtKey: floor(self.expiresIn.timeIntervalSince1970),
+            NativeBridge.expiresAtKey: floor(self.expiresAt.timeIntervalSince1970),
             NativeBridge.scopeKey: self.scope as Any
         ]
         if let sessionExpiresAt = self.sessionExpiresAt {
@@ -691,7 +798,7 @@ extension APICredentials {
         return [
             NativeBridge.accessTokenKey: self.accessToken,
             NativeBridge.tokenTypeKey: self.tokenType,
-            NativeBridge.expiresAtKey: floor(self.expiresIn.timeIntervalSince1970),
+            NativeBridge.expiresAtKey: floor(self.expiresAt.timeIntervalSince1970),
             NativeBridge.scopeKey: self.scope
         ]
     }
@@ -699,20 +806,23 @@ extension APICredentials {
 
 extension WebAuthError {
     func reactNativeErrorCode() -> String {
+        // Server-returned errors (`access_denied`, `invalid_request`, ...) travel in the
+        // cause, not the case, so prefer the underlying code when one is present.
+        func causeCode(fallback: String) -> String {
+            (self.cause as? AuthenticationError)?.code ?? fallback
+        }
+
         var code: String
         switch self {
-            case WebAuthError.noBundleIdentifier: code = "NO_BUNDLE_IDENTIFIER"
             case WebAuthError.transactionActiveAlready: code = "TRANSACTION_ACTIVE_ALREADY"
-            case WebAuthError.invalidInvitationURL: code = "INVALID_INVITATION_URL"
             case WebAuthError.userCancelled: code = "USER_CANCELLED"
-            case WebAuthError.noAuthorizationCode: code = "NO_AUTHORIZATION_CODE"
-            case WebAuthError.pkceNotAllowed: code = "PKCE_NOT_ALLOWED"
             case WebAuthError.idTokenValidationFailed: code = "ID_TOKEN_VALIDATION_FAILED"
-            case WebAuthError.other: if let cause = self.cause as? AuthenticationError {
-                code = cause.code
-            } else {
-                code = "OTHER"
-            }
+            // Auth0.swift 3.0 splits v2's `.other` into `.authenticationFailed` (the
+            // callback URL carried an `error` param) and `.codeExchangeFailed` (the
+            // /oauth/token call for the authorization code failed).
+            case WebAuthError.authenticationFailed: code = causeCode(fallback: "AUTHENTICATION_FAILED")
+            case WebAuthError.codeExchangeFailed: code = causeCode(fallback: "CODE_EXCHANGE_FAILED")
+            case WebAuthError.other: code = causeCode(fallback: "OTHER")
             default:
                 // Auth0.swift surfaces a callback-URL mismatch as `.unknown("Invalid callback URL: ...")`
                 // with no dedicated enum case, so message matching is the only available hook.
@@ -743,7 +853,23 @@ extension DPoPError {
     }
 }
 
+extension AuthenticationError {
+    /// Rejects with `mfa_required` and the response body, which holds the `mfa_token` the app needs to continue.
+    /// React Native only forwards `userInfo` from an `NSError`, and `AuthenticationError` doesn't carry it.
+    func rejectIfMultifactorRequired(_ reject: RCTPromiseRejectBlock) -> Bool {
+        guard isMultifactorRequired else { return false }
+        // `statusCode` is added by Auth0.swift, not part of the body
+        let body = info.filter { $0.key != "statusCode" }
+        reject(code, localizedDescription, NSError(domain: code, code: statusCode, userInfo: body))
+        return true
+    }
+}
+
 extension CredentialsManagerError {
+    func rejectIfMultifactorRequired(_ reject: RCTPromiseRejectBlock) -> Bool {
+        return (cause as? AuthenticationError)?.rejectIfMultifactorRequired(reject) ?? false
+    }
+
     func reactNativeErrorCode() -> String {
         var code: String
         switch self {
@@ -754,7 +880,18 @@ extension CredentialsManagerError {
             } else {
                 code = "RENEW_FAILED"
             }
+            case CredentialsManagerError.apiExchangeFailed: if let cause = self.cause as? AuthenticationError {
+                code = cause.code
+            } else {
+                code = "API_EXCHANGE_FAILED"
+            }
+            case CredentialsManagerError.ssoExchangeFailed: if let cause = self.cause as? AuthenticationError {
+                code = cause.code
+            } else {
+                code = "SSO_EXCHANGE_FAILED"
+            }
             case CredentialsManagerError.storeFailed: code = "STORE_FAILED"
+            case CredentialsManagerError.clearFailed: code = "CLEAR_FAILED"
             case CredentialsManagerError.biometricsFailed: code = "BIOMETRICS_FAILED"
             case CredentialsManagerError.revokeFailed: if let cause = self.cause as? AuthenticationError {
                 code = cause.code

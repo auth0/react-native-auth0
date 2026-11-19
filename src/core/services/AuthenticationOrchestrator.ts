@@ -1,9 +1,8 @@
-import type { IAuthenticationProvider } from '../interfaces';
+import type { AuthenticationProvider } from '../interfaces';
 import type {
   Credentials,
   SessionTransferCredentials,
   User,
-  MfaChallengeResponse,
   PasswordRealmParameters,
   RefreshTokenParameters,
   UserInfoParameters,
@@ -15,10 +14,6 @@ import type {
   PasswordlessSmsParameters,
   LoginEmailParameters,
   LoginSmsParameters,
-  LoginOtpParameters,
-  LoginOobParameters,
-  LoginRecoveryCodeParameters,
-  MfaChallengeParameters,
   ResetPasswordParameters,
   CreateUserParameters,
   NativeCredentialsResponse,
@@ -72,7 +67,7 @@ function includeRequiredScope(scope?: string): string {
  * Orchestrates all direct authentication flows by making calls to the Auth0 Authentication API.
  * This class is platform-agnostic and relies on an injected HttpClient.
  */
-export class AuthenticationOrchestrator implements IAuthenticationProvider {
+export class AuthenticationOrchestrator implements AuthenticationProvider {
   private readonly client: HttpClient;
   private readonly clientId: string;
   private readonly tokenType: TokenType;
@@ -290,114 +285,6 @@ export class AuthenticationOrchestrator implements IAuthenticationProvider {
       );
     if (!response.ok) throw AuthError.fromResponse(response, json);
     return CredentialsModel.fromResponse(json);
-  }
-
-  /**
-   * @deprecated Will be removed in v6. Use `auth0.mfa.verify({ mfaToken, otp })`.
-   */
-  async loginWithOTP(parameters: LoginOtpParameters): Promise<Credentials> {
-    console.warn(
-      '`auth.loginWithOTP()` is deprecated and will be removed in v6. Use `mfa.verify({ mfaToken, otp })` instead.'
-    );
-    validateParameters(parameters, ['mfaToken', 'otp']);
-    const { headers, ...payload } = parameters;
-    const body = {
-      grant_type: 'http://auth0.com/oauth/grant-type/mfa-otp',
-      client_id: this.clientId,
-      mfa_token: payload.mfaToken,
-      otp: payload.otp,
-    };
-    const { json, response } =
-      await this.client.post<NativeCredentialsResponse>(
-        '/oauth/token',
-        body,
-        headers
-      );
-    if (!response.ok) throw AuthError.fromResponse(response, json);
-    return CredentialsModel.fromResponse(json);
-  }
-
-  /**
-   * @deprecated Will be removed in v6. Use
-   * `auth0.mfa.verify({ mfaToken, oobCode, bindingCode })`.
-   */
-  async loginWithOOB(parameters: LoginOobParameters): Promise<Credentials> {
-    console.warn(
-      '`auth.loginWithOOB()` is deprecated and will be removed in v6. Use `mfa.verify({ mfaToken, oobCode, bindingCode })` instead.'
-    );
-    validateParameters(parameters, ['mfaToken', 'oobCode']);
-    const { headers, ...payload } = parameters;
-    const body = {
-      grant_type: 'http://auth0.com/oauth/grant-type/mfa-oob',
-      client_id: this.clientId,
-      mfa_token: payload.mfaToken,
-      oob_code: payload.oobCode,
-      binding_code: payload.bindingCode,
-    };
-    const { json, response } =
-      await this.client.post<NativeCredentialsResponse>(
-        '/oauth/token',
-        body,
-        headers
-      );
-    if (!response.ok) throw AuthError.fromResponse(response, json);
-    return CredentialsModel.fromResponse(json);
-  }
-
-  /**
-   * @deprecated Will be removed in v6. Use
-   * `auth0.mfa.verify({ mfaToken, recoveryCode })`.
-   */
-  async loginWithRecoveryCode(
-    parameters: LoginRecoveryCodeParameters
-  ): Promise<Credentials> {
-    console.warn(
-      '`auth.loginWithRecoveryCode()` is deprecated and will be removed in v6. Use `mfa.verify({ mfaToken, recoveryCode })` instead.'
-    );
-    validateParameters(parameters, ['mfaToken', 'recoveryCode']);
-    const { headers, ...payload } = parameters;
-    const body = {
-      grant_type: 'http://auth0.com/oauth/grant-type/mfa-recovery-code',
-      client_id: this.clientId,
-      mfa_token: payload.mfaToken,
-      recovery_code: payload.recoveryCode,
-    };
-    const { json, response } =
-      await this.client.post<NativeCredentialsResponse>(
-        '/oauth/token',
-        body,
-        headers
-      );
-    if (!response.ok) throw AuthError.fromResponse(response, json);
-    return CredentialsModel.fromResponse(json);
-  }
-
-  /**
-   * @deprecated Will be removed in v6. Use
-   * `auth0.mfa.challenge({ mfaToken, authenticatorId })`, where `authenticatorId`
-   * is required — list them with `auth0.mfa.getAuthenticators({ mfaToken })`.
-   */
-  async multifactorChallenge(
-    parameters: MfaChallengeParameters
-  ): Promise<MfaChallengeResponse> {
-    console.warn(
-      '`auth.multifactorChallenge()` is deprecated and will be removed in v6. Use `mfa.challenge({ mfaToken, authenticatorId })` instead; list authenticators with `mfa.getAuthenticators({ mfaToken })`.'
-    );
-    validateParameters(parameters, ['mfaToken']);
-    const { headers, ...payload } = parameters;
-    const body = {
-      client_id: this.clientId,
-      mfa_token: payload.mfaToken,
-      challenge_type: payload.challengeType,
-      authenticator_id: payload.authenticatorId,
-    };
-    const { json, response } = await this.client.post<any>(
-      '/mfa/challenge',
-      body,
-      headers
-    );
-    if (!response.ok) throw AuthError.fromResponse(response, json);
-    return deepCamelCase<MfaChallengeResponse>(json);
   }
 
   async revoke(parameters: RevokeOptions): Promise<void> {

@@ -1,5 +1,148 @@
 # Change Log
 
+## [v6.2.1](https://github.com/auth0/react-native-auth0/tree/v6.2.1) (2026-11-13)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v6.2.0...v6.2.1)
+
+**Fixed**
+
+- fix(ios): match CodeGen nullability on webAuth token exchange params [\#1741](https://github.com/auth0/react-native-auth0/pull/1741) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix(ios): bump Auth0.swift to 3.3.1 to finish token refresh in background [\#1738](https://github.com/auth0/react-native-auth0/pull/1738) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix(android): retry code exchange on network errors, add retry options [\#1737](https://github.com/auth0/react-native-auth0/pull/1737) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix: forward mfa_token when a native token request requires MFA [\#1733](https://github.com/auth0/react-native-auth0/pull/1733) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+## [v6.2.0](https://github.com/auth0/react-native-auth0/tree/v6.2.0) (2026-11-06)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v6.1.0...v6.2.0)
+
+**Added**
+
+- feat(myaccount): add getUserProfile and updateUserProfile methods [\#1731](https://github.com/auth0/react-native-auth0/pull/1731) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat(ios): pull Auth0.swift via SPM and add dependabot sync [\#1727](https://github.com/auth0/react-native-auth0/pull/1727) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+## [v6.1.0](https://github.com/auth0/react-native-auth0/tree/v6.1.0) (2026-10-29)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v6.0.0...v6.1.0)
+
+**Added**
+
+- feat: support passkey identifier verification on iOS, Android and web [\#1702](https://github.com/auth0/react-native-auth0/pull/1702) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
+**Documentation**
+
+- docs: add FAQ entry for reused refresh token errors [\#1721](https://github.com/auth0/react-native-auth0/pull/1721) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- docs: fix broken Auth0 docs links in EXAMPLES.md [\#1719](https://github.com/auth0/react-native-auth0/pull/1719) ([seattlily](https://github.com/seattlily))
+
+## [v6.0.0](https://github.com/auth0/react-native-auth0/tree/v6.0.0) (2026-10-27)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.11.4...v6.0.0)
+
+This is the stable release of the v6 major. It requires the React Native New Architecture (React Native 0.82 or later) and adds support for React Native 0.88. It also adopts the native SDK majors, Auth0.Android v4 and Auth0.swift v3. Read the [Migration Guide](https://github.com/auth0/react-native-auth0/blob/master/MIGRATION_GUIDE.md) before upgrading from v5.
+
+**Breaking changes**
+
+- feat: require React Native New Architecture, drop legacy bridge [\#1613](https://github.com/auth0/react-native-auth0/pull/1613) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: adopt native SDK majors (Android v4, Swift v3) for v6 [\#1619](https://github.com/auth0/react-native-auth0/pull/1619) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: make DPoP opt-in by defaulting useDPoP to false [\#1622](https://github.com/auth0/react-native-auth0/pull/1622) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: remove the client-side Management API surface [\#1623](https://github.com/auth0/react-native-auth0/pull/1623) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- refactor: remove the legacy MFA methods from the auth client [\#1627](https://github.com/auth0/react-native-auth0/pull/1627) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- refactor: audit the public API surface and freeze the error taxonomy [\#1634](https://github.com/auth0/react-native-auth0/pull/1634) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- refactor: drop the I prefix from TypeScript interfaces [\#1636](https://github.com/auth0/react-native-auth0/pull/1636) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+What this means for your app:
+
+- React Native 0.82+ with the New Architecture is required. Expo apps need SDK 55+.
+- Android needs `minSdkVersion` 26, JDK 17 and compileSdk 36. iOS needs a deployment target of 15.1 and builds with Auth0.swift 3 (Swift 6).
+- DPoP is off by default. Set `useDPoP: true` to keep using it.
+- `getCredentials()` and `getApiCredentials()` now default `minTtl` to 60 seconds.
+- The client-side Management API (`users()`) and the legacy MFA methods on the auth client are removed.
+- TypeScript interfaces no longer use the `I` prefix, `SSOCredentials.expiresIn` is now `expiresAt`, and some web auth and credentials manager error codes were renamed or added.
+- ID token claim validation is opt-in on direct token requests.
+
+**Added**
+
+- chore: upgrade to React Native 0.88 [\#1709](https://github.com/auth0/react-native-auth0/pull/1709) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat(android): make Auth Tab and TWA opt-in via JS bridge [\#1662](https://github.com/auth0/react-native-auth0/pull/1662) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- feat(ios): honor networkingOptions.enableLogging via Auth0.swift logging [\#1661](https://github.com/auth0/react-native-auth0/pull/1661) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: add credentialsManager.clearAll() and default minTtl to 60 [\#1660](https://github.com/auth0/react-native-auth0/pull/1660) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat(ios): ship a privacy manifest with the A0Auth0 pod [\#1641](https://github.com/auth0/react-native-auth0/pull/1641) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: allow configuring Auth0.Android's native networking client [\#1637](https://github.com/auth0/react-native-auth0/pull/1637) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- feat: support ephemeral sessions on Android [\#1626](https://github.com/auth0/react-native-auth0/pull/1626) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
+**Fixed**
+
+- fix(android): bump Auth0.Android to 4.2.1 to keep users logged in after upgrade [\#1708](https://github.com/auth0/react-native-auth0/pull/1708) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix(android): use underlying cause as the error message [\#1688](https://github.com/auth0/react-native-auth0/pull/1688) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix(plugin): skip ios linking override on expo sdk 58 [\#1687](https://github.com/auth0/react-native-auth0/pull/1687) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix: adopt withAuthTab() to fix spurious USER_CANCELLED on Android [\#1647](https://github.com/auth0/react-native-auth0/pull/1647) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
+**Documentation**
+
+- docs: group ApiCredentials under Classes and fix duplicate @remarks warning [\#1712](https://github.com/auth0/react-native-auth0/pull/1712) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- docs: correct migration guide — Auth Tab is opt-in via useAuthTab; split section 6 [\#1665](https://github.com/auth0/react-native-auth0/pull/1665) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- docs(example): restructure example app into per-feature hooks and class demos [\#1655](https://github.com/auth0/react-native-auth0/pull/1655) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- docs: document native v4/v3 adoption — linking, claim validation, build floors [\#1648](https://github.com/auth0/react-native-auth0/pull/1648) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
+## [v5.11.4](https://github.com/auth0/react-native-auth0/tree/v5.11.4) (2026-10-26)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.11.3...v5.11.4)
+
+**Fixed**
+
+- fix(android): bump Auth0.Android to 3.21.3 to keep users logged in after upgrade [\#1706](https://github.com/auth0/react-native-auth0/pull/1706) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+## [v5.11.3](https://github.com/auth0/react-native-auth0/tree/v5.11.3) (2026-10-22)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.11.2...v5.11.3)
+
+**Fixed**
+
+- fix(plugin): skip ios linking override on expo sdk 58 [\#1687](https://github.com/auth0/react-native-auth0/pull/1687) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix(android): bump Auth0.Android to 3.21.2 for unrecognized biometric fix [\#1690](https://github.com/auth0/react-native-auth0/pull/1690) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- fix(android): include underlying cause in error messages for parity with iOS [\#1686](https://github.com/auth0/react-native-auth0/pull/1686) ([daft2](https://github.com/daft2))
+
+## [v5.11.2](https://github.com/auth0/react-native-auth0/tree/v5.11.2) (2026-10-14)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.11.1...v5.11.2)
+
+**Fixed**
+
+- fix(android): bump Auth0.Android to 3.21.1 for Keystore2 INCOMPATIBL_DEVICE fix [\#1677](https://github.com/auth0/react-native-auth0/pull/1677) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
+## [v6.0.0-beta.0](https://github.com/auth0/react-native-auth0/tree/v6.0.0-beta.0) (2026-09-16)
+
+[Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.11.1...v6.0.0-beta.0)
+
+This is the first beta of the v6 major. It requires the React Native New Architecture and adopts the native SDK majors (Auth0.Android v4, Auth0.swift v3). See the migration guide before upgrading.
+
+**Breaking changes**
+
+- feat: require React Native New Architecture, drop legacy bridge [\#1613](https://github.com/auth0/react-native-auth0/pull/1613) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: adopt native SDK majors (Android v4, Swift v3) for v6 [\#1619](https://github.com/auth0/react-native-auth0/pull/1619) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: make DPoP opt-in by defaulting useDPoP to false [\#1622](https://github.com/auth0/react-native-auth0/pull/1622) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: remove the client-side Management API surface [\#1623](https://github.com/auth0/react-native-auth0/pull/1623) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- refactor: remove the legacy MFA methods from the auth client [\#1627](https://github.com/auth0/react-native-auth0/pull/1627) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- refactor: audit the public API surface and freeze the error taxonomy [\#1634](https://github.com/auth0/react-native-auth0/pull/1634) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- refactor: drop the I prefix from TypeScript interfaces [\#1636](https://github.com/auth0/react-native-auth0/pull/1636) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
+**Added**
+
+- feat(android): make Auth Tab and TWA opt-in via JS bridge [\#1662](https://github.com/auth0/react-native-auth0/pull/1662) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- feat(ios): honor networkingOptions.enableLogging via Auth0.swift logging [\#1661](https://github.com/auth0/react-native-auth0/pull/1661) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: add credentialsManager.clearAll() and default minTtl to 60 [\#1660](https://github.com/auth0/react-native-auth0/pull/1660) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat(ios): ship a privacy manifest with the A0Auth0 pod [\#1641](https://github.com/auth0/react-native-auth0/pull/1641) ([subhankarmaiti](https://github.com/subhankarmaiti))
+- feat: allow configuring Auth0.Android's native networking client [\#1637](https://github.com/auth0/react-native-auth0/pull/1637) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- feat: support ephemeral sessions on Android [\#1626](https://github.com/auth0/react-native-auth0/pull/1626) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
+**Fixed**
+
+- fix: adopt withAuthTab() to fix spurious USER_CANCELLED on Android [\#1647](https://github.com/auth0/react-native-auth0/pull/1647) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
+**Documentation**
+
+- docs: document native v4/v3 adoption — linking, claim validation, build floors [\#1648](https://github.com/auth0/react-native-auth0/pull/1648) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- docs(example): restructure example app into per-feature hooks and class demos [\#1655](https://github.com/auth0/react-native-auth0/pull/1655) ([subhankarmaiti](https://github.com/subhankarmaiti))
+
 ## [v5.11.1](https://github.com/auth0/react-native-auth0/tree/v5.11.1) (2026-09-08)
 
 [Full Changelog](https://github.com/auth0/react-native-auth0/compare/v5.11.0...v5.11.1)

@@ -562,143 +562,6 @@ describe('AuthenticationOrchestrator', () => {
     });
   });
 
-  // New tests for MFA flows
-  describe('MFA flows', () => {
-    // These methods are deprecated in favour of the `mfa` client and warn on
-    // every call; silence the noise but assert the warning separately below.
-    let warnSpy: jest.SpyInstance;
-
-    beforeEach(() => {
-      warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    });
-
-    afterEach(() => {
-      warnSpy.mockRestore();
-    });
-
-    it.each([
-      [
-        'loginWithOTP',
-        { mfaToken: 'mfa_token_123', otp: '123456' },
-        'mfa.verify',
-      ],
-      [
-        'loginWithOOB',
-        { mfaToken: 'mfa_token_123', oobCode: 'oob_123' },
-        'mfa.verify',
-      ],
-      [
-        'loginWithRecoveryCode',
-        { mfaToken: 'mfa_token_123', recoveryCode: 'rec_123' },
-        'mfa.verify',
-      ],
-      ['multifactorChallenge', { mfaToken: 'mfa_token_123' }, 'mfa.challenge'],
-    ])(
-      '%s warns that it is deprecated and names its replacement',
-      async (method, parameters, replacement) => {
-        mockHttpClientInstance.post.mockResolvedValueOnce({
-          json: tokensResponse,
-          response: new Response(null, { status: 200 }),
-        });
-
-        await (orchestrator as any)[method](parameters);
-
-        expect(warnSpy).toHaveBeenCalledTimes(1);
-        const message = warnSpy.mock.calls[0]?.[0] as string;
-        expect(message).toContain(method);
-        expect(message).toContain('v6');
-        expect(message).toContain(replacement);
-      }
-    );
-
-    it('loginWithOTP should send correct payload', async () => {
-      mockHttpClientInstance.post.mockResolvedValueOnce({
-        json: tokensResponse,
-        response: new Response(null, { status: 200 }),
-      });
-      await orchestrator.loginWithOTP({
-        mfaToken: 'mfa_token_123',
-        otp: '123456',
-      });
-      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
-        '/oauth/token',
-        expect.objectContaining({
-          grant_type: 'http://auth0.com/oauth/grant-type/mfa-otp',
-          mfa_token: 'mfa_token_123',
-          otp: '123456',
-        }),
-        undefined
-      );
-    });
-
-    it('loginWithOOB should send correct payload', async () => {
-      mockHttpClientInstance.post.mockResolvedValueOnce({
-        json: tokensResponse,
-        response: new Response(null, { status: 200 }),
-      });
-      await orchestrator.loginWithOOB({
-        mfaToken: 'mfa_token_123',
-        oobCode: 'oob_code_abc',
-        bindingCode: '123',
-      });
-      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
-        '/oauth/token',
-        expect.objectContaining({
-          grant_type: 'http://auth0.com/oauth/grant-type/mfa-oob',
-          mfa_token: 'mfa_token_123',
-          oob_code: 'oob_code_abc',
-          binding_code: '123',
-        }),
-        undefined
-      );
-    });
-
-    it('loginWithRecoveryCode should send correct payload', async () => {
-      mockHttpClientInstance.post.mockResolvedValueOnce({
-        json: tokensResponse,
-        response: new Response(null, { status: 200 }),
-      });
-      await orchestrator.loginWithRecoveryCode({
-        mfaToken: 'mfa_token_123',
-        recoveryCode: 'recovery123',
-      });
-      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
-        '/oauth/token',
-        expect.objectContaining({
-          grant_type: 'http://auth0.com/oauth/grant-type/mfa-recovery-code',
-          mfa_token: 'mfa_token_123',
-          recovery_code: 'recovery123',
-        }),
-        undefined
-      );
-    });
-
-    it('multifactorChallenge should send correct payload and return response', async () => {
-      const challengeResponse = { challengeType: 'oob', oobCode: 'abc' };
-      mockHttpClientInstance.post.mockResolvedValueOnce({
-        json: challengeResponse,
-        response: new Response(null, { status: 200 }),
-      });
-      const result = await orchestrator.multifactorChallenge({
-        mfaToken: 'mfa_token_123',
-        challengeType: 'oob',
-        authenticatorId: 'auth_id_1',
-      });
-
-      expect(mockHttpClientInstance.post).toHaveBeenCalledWith(
-        '/mfa/challenge',
-        {
-          client_id: clientId,
-          mfa_token: 'mfa_token_123',
-          challenge_type: 'oob',
-          authenticator_id: 'auth_id_1',
-        },
-        undefined
-      );
-      expect(result).toEqual(challengeResponse);
-    });
-  });
-
   describe('user management', () => {
     it('resetPassword should send correct payload', async () => {
       mockHttpClientInstance.post.mockResolvedValueOnce({
@@ -950,14 +813,26 @@ describe('AuthenticationOrchestrator', () => {
         response: new Response(null, { status: 200 }),
       });
 
-      const result = await orchestrator.ssoExchange(parameters);
+      // Freeze the clock: the implementation derives `expiresAt` from
+      // `Date.now()`, so a real clock crossing a second boundary between the
+      // call and the assertion would make this flaky.
+      const now = 1893456000000;
+      jest.spyOn(Date, 'now').mockReturnValue(now);
 
-      expect(result).toBeInstanceOf(SSOCredentials);
-      expect(result.sessionTransferToken).toBe(ssoResponse.access_token);
-      expect(result.tokenType).toBe(ssoResponse.issued_token_type);
-      expect(result.expiresIn).toBe(ssoResponse.expires_in);
-      expect(result.idToken).toBe(ssoResponse.id_token);
-      expect(result.refreshToken).toBe(ssoResponse.refresh_token);
+      try {
+        const result = await orchestrator.ssoExchange(parameters);
+
+        expect(result).toBeInstanceOf(SSOCredentials);
+        expect(result.sessionTransferToken).toBe(ssoResponse.access_token);
+        expect(result.tokenType).toBe(ssoResponse.issued_token_type);
+        expect(result.expiresAt).toBe(
+          Math.floor(now / 1000) + ssoResponse.expires_in
+        );
+        expect(result.idToken).toBe(ssoResponse.id_token);
+        expect(result.refreshToken).toBe(ssoResponse.refresh_token);
+      } finally {
+        jest.spyOn(Date, 'now').mockRestore();
+      }
     });
 
     it('should handle oauth error', async () => {

@@ -41,7 +41,7 @@ export type Credentials = {
    * credential retrieval fails with a `SESSION_EXPIRED` `CredentialsManagerError` and the user must
    * re-authenticate. It is surfaced here for display purposes only.
    *
-   * @remarks Available on iOS, Android, and web. The value is derived from the `session_expiry`
+   * Available on iOS, Android, and web. The value is derived from the `session_expiry`
    * claim of the current ID token.
    *
    * **Android only**: the credentials manager reports the ceiling pinned at the initial login
@@ -84,8 +84,8 @@ export type SessionTransferCredentials = {
   sessionTransferToken: string;
   /** The type of the token issued */
   tokenType: string;
-  /** The expiration time of the session transfer token in seconds. */
-  expiresIn: number;
+  /** When the session transfer token expires, as a UNIX timestamp (in seconds). */
+  expiresAt: number;
   /**
    * A new ID token, if one was issued during the token exchange.
    * This is typically present when Refresh Token Rotation is enabled.
@@ -191,7 +191,8 @@ export interface Auth0Options {
   /**
    * Enables DPoP (Demonstrating Proof-of-Possession) for enhanced token security.
    * When enabled, access and refresh tokens are cryptographically bound to a client-specific key pair.
-   * @default true
+   * Requires DPoP to be enabled for your application in the Auth0 Dashboard.
+   * @default false
    * @see https://datatracker.ietf.org/doc/html/rfc9449
    */
   useDPoP?: boolean;
@@ -213,30 +214,63 @@ export interface Auth0Options {
    * @remarks Native only (iOS/Android). Has no effect on the web platform.
    */
   credentialsManagerStorageKey?: string;
+  /**
+   * Configures the native networking client (OkHttp) that Auth0.Android uses for every
+   * request it makes (web auth token exchange, credential renewal, MFA, passkeys, etc.).
+   * @remarks The timeout and header fields are Android only and have no effect on iOS.
+   * `enableLogging` is honored on both platforms (see {@link NetworkingOptions.enableLogging}).
+   */
+  networkingOptions?: NetworkingOptions;
   // Telemetry and localAuthenticationOptions are platform-specific extensions
 }
 
-// ========= MFA Challenge Response Types =========
-
-/** Base response for an MFA challenge request. */
-export type MfaChallengeOtpResponse = { challengeType: 'otp' };
-
-/** Response for an Out-of-Band (OOB) MFA challenge, containing the OOB code. */
-export type MfaChallengeOobResponse = {
-  challengeType: 'oob';
-  oobCode: string;
-};
-
-/** Response for an OOB MFA challenge that requires a binding code. */
-export type MfaChallengeOobWithBindingResponse = MfaChallengeOobResponse & {
-  bindingMethod: string;
-};
-
-/** A union type representing all possible successful responses from an MFA challenge request. */
-export type MfaChallengeResponse =
-  | MfaChallengeOtpResponse
-  | MfaChallengeOobResponse
-  | MfaChallengeOobWithBindingResponse;
+/**
+ * Configuration for the native networking client used by Auth0.Android.
+ * Mirrors `DefaultClient.Builder` from the Auth0.Android SDK.
+ *
+ * @remarks The timeout and header fields are Android only and have no effect on iOS or web.
+ * `enableLogging` is honored on iOS as well (it maps to Auth0.swift's `.logging(enabled:)`).
+ *
+ * @example
+ * ```ts
+ * networkingOptions: {
+ *   connectTimeout: 30,
+ *   readTimeout: 30,
+ *   defaultHeaders: { 'X-App-Version': '1.2.3' }
+ * }
+ * ```
+ */
+export interface NetworkingOptions {
+  /** Connection timeout, in seconds. @default 10 */
+  connectTimeout?: number;
+  /** Read timeout, in seconds. @default 10 */
+  readTimeout?: number;
+  /** Write timeout, in seconds. @default 10 */
+  writeTimeout?: number;
+  /** Overall timeout for the entire call, in seconds. `0` means no timeout. @default 0 */
+  callTimeout?: number;
+  /**
+   * Headers sent on every request made by the native networking client. If a specific
+   * request sets a header with the same name, the request-level header takes precedence.
+   * @default {}
+   */
+  defaultHeaders?: Record<string, string>;
+  /**
+   * Enables verbose HTTP request/response logging for the native SDKs.
+   *
+   * @remarks
+   * On **Android** this maps to the OkHttp logging interceptor and writes full request and
+   * response bodies to Logcat — including access, refresh, and ID tokens in plaintext — so it is
+   * **debug-only** (ignored on release builds) and must never be enabled in production.
+   *
+   * On **iOS** this maps to Auth0.swift's `.logging(enabled:)`, which traces requests and responses
+   * to the unified logging system (OSLog). Request headers and bodies are logged as-is — including
+   * refresh tokens, authorization codes, and credentials — and only response bodies are redacted by
+   * Auth0.swift. It has no build-type gate, so enable it only while debugging and never in production.
+   * @default false
+   */
+  enableLogging?: boolean;
+}
 
 // ========= MFA Flexible Factors Grant Types =========
 
@@ -433,7 +467,7 @@ export enum TokenType {
  * Parameters required to generate DPoP headers for custom API requests.
  * These headers cryptographically bind the access token to the specific HTTP request.
  */
-export interface DPoPHeadersParams {
+export interface DPoPHeadersParameters {
   /** The full URL of the API endpoint being called. */
   url: string;
   /** The HTTP method of the request (e.g., 'GET', 'POST'). */
@@ -445,3 +479,10 @@ export interface DPoPHeadersParams {
   /** Optional nonce value */
   nonce?: string;
 }
+
+/**
+ * @deprecated Renamed to {@link DPoPHeadersParameters} for consistency with the
+ * other `...Parameters` types. This alias will be removed in a future major
+ * version.
+ */
+export type DPoPHeadersParams = DPoPHeadersParameters;

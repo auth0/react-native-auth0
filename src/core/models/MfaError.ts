@@ -67,7 +67,15 @@ export const MfaErrorCodes = {
   UNKNOWN_MFA_ERROR: 'UNKNOWN_MFA_ERROR',
 } as const;
 
-const ERROR_CODE_MAP: Record<string, string> = {
+/**
+ * A normalized MFA error code.
+ *
+ * Derived from {@link MfaErrorCodes} so the union and the runtime constants
+ * cannot drift apart.
+ */
+export type MfaErrorCode = (typeof MfaErrorCodes)[keyof typeof MfaErrorCodes];
+
+const ERROR_CODE_MAP: Record<string, MfaErrorCode> = {
   // --- Auth0 API error codes (returned by both native SDKs and web) ---
   invalid_otp: MfaErrorCodes.INVALID_OTP,
   invalid_oob_code: MfaErrorCodes.INVALID_OOB_CODE,
@@ -145,7 +153,7 @@ export class MfaError extends AuthError {
    * A normalized error type that is consistent across platforms.
    * This can be used for reliable error handling in application code.
    */
-  public readonly type: string;
+  public readonly type: MfaErrorCode;
 
   constructor(originalError: AuthError) {
     super(originalError.name, originalError.message, {

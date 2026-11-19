@@ -13,6 +13,7 @@ jest.mock('../../../../specs/NativeA0Auth0', () => ({
   saveCredentials: jest.fn(),
   hasValidCredentials: jest.fn(),
   clearCredentials: jest.fn(),
+  clearAll: jest.fn(),
   cancelWebAuth: jest.fn(),
   resumeWebAuth: jest.fn(),
   resumeWebAuthSession: jest.fn(),
@@ -25,6 +26,10 @@ jest.mock('../../../../specs/NativeA0Auth0', () => ({
   passwordlessChallengeWithEmail: jest.fn(),
   passwordlessChallengeWithPhoneNumber: jest.fn(),
   passwordlessLoginWithOTP: jest.fn(),
+  passkeySignupChallenge: jest.fn(),
+  getTokenByPasskey: jest.fn(),
+  getUserProfile: jest.fn(),
+  updateUserProfile: jest.fn(),
 }));
 const MockedAuth0NativeModule = Auth0NativeModule as jest.Mocked<
   typeof Auth0NativeModule
@@ -96,7 +101,10 @@ describe('NativeBridgeManager', () => {
         1, // presentationStyle
         parameters.additionalParameters,
         undefined, // allowedBrowserPackages
-        false // useTrustedWebActivity
+        false, // useTrustedWebActivity
+        false, // useAuthTab (default)
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
       );
     });
 
@@ -126,7 +134,10 @@ describe('NativeBridgeManager', () => {
         99, // presentationStyle
         {}, // additionalParameters
         undefined, // allowedBrowserPackages
-        false // useTrustedWebActivity
+        false, // useTrustedWebActivity
+        false, // useAuthTab (default)
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
       );
     });
 
@@ -160,7 +171,10 @@ describe('NativeBridgeManager', () => {
         99,
         {},
         allowedBrowserPackages,
-        false // useTrustedWebActivity
+        false, // useTrustedWebActivity
+        false, // useAuthTab (default)
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
       );
     });
 
@@ -190,8 +204,95 @@ describe('NativeBridgeManager', () => {
         99,
         {},
         undefined, // allowedBrowserPackages
-        true // useTrustedWebActivity
+        true, // useTrustedWebActivity
+        false, // useAuthTab (default)
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
       );
+    });
+
+    it('should pass ephemeralSession to native webAuth when provided', async () => {
+      MockedAuth0NativeModule.webAuth.mockResolvedValueOnce(
+        nativeSuccessCredentials as any
+      );
+
+      await bridge.authorize(
+        { redirectUrl: 'com.myapp://cb' },
+        { customScheme: 'com.myapp', ephemeralSession: true }
+      );
+
+      expect(MockedAuth0NativeModule.webAuth).toHaveBeenCalledWith(
+        'com.myapp',
+        'com.myapp://cb',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        0,
+        undefined,
+        undefined,
+        0,
+        true, // ephemeralSession
+        99,
+        {},
+        undefined, // allowedBrowserPackages
+        false, // useTrustedWebActivity
+        false, // useAuthTab (default)
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
+      );
+    });
+
+    it('should pass useAuthTab to native webAuth when provided', async () => {
+      MockedAuth0NativeModule.webAuth.mockResolvedValueOnce(
+        nativeSuccessCredentials as any
+      );
+
+      await bridge.authorize(
+        { redirectUrl: 'com.myapp://cb' },
+        { customScheme: 'com.myapp', useAuthTab: true }
+      );
+
+      expect(MockedAuth0NativeModule.webAuth).toHaveBeenCalledWith(
+        'com.myapp',
+        'com.myapp://cb',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        0,
+        undefined,
+        undefined,
+        0,
+        false,
+        99,
+        {},
+        undefined, // allowedBrowserPackages
+        false, // useTrustedWebActivity
+        true, // useAuthTab
+        undefined, // tokenExchangeMaxRetries
+        undefined // tokenExchangeRetryDelay
+      );
+    });
+
+    it('should pass the token exchange retry options to native webAuth, including 0 retries', async () => {
+      MockedAuth0NativeModule.webAuth.mockResolvedValueOnce(
+        nativeSuccessCredentials as any
+      );
+
+      await bridge.authorize(
+        { redirectUrl: 'com.myapp://cb' },
+        {
+          customScheme: 'com.myapp',
+          tokenExchangeMaxRetries: 0,
+          tokenExchangeRetryDelay: 3,
+        }
+      );
+
+      const args = MockedAuth0NativeModule.webAuth.mock.calls[0];
+      expect(args.slice(-2)).toEqual([0, 3]);
     });
 
     it('should correctly transform the native response to a Credentials model', async () => {
@@ -237,7 +338,8 @@ describe('NativeBridgeManager', () => {
         undefined,
         true,
         0,
-        'tenant-b'
+        'tenant-b',
+        undefined
       );
     });
 
@@ -250,9 +352,40 @@ describe('NativeBridgeManager', () => {
         'client-id',
         'tenant-a.auth0.com',
         undefined, // localAuthenticationOptions
-        true, // useDPoP default
+        false, // useDPoP default
         0, // maxRetries default
-        undefined // credentialsManagerStorageKey
+        undefined, // credentialsManagerStorageKey
+        undefined // networkingOptions
+      );
+    });
+
+    it('forwards networkingOptions to the native module when provided', async () => {
+      const networkingOptions = {
+        connectTimeout: 30,
+        readTimeout: 30,
+        defaultHeaders: { 'X-Custom': 'value' },
+      };
+
+      await bridge.initialize(
+        'client-id',
+        'tenant-c.auth0.com',
+        undefined,
+        false,
+        0,
+        undefined,
+        networkingOptions
+      );
+
+      expect(
+        MockedAuth0NativeModule.initializeAuth0WithConfiguration
+      ).toHaveBeenCalledWith(
+        'client-id',
+        'tenant-c.auth0.com',
+        undefined,
+        false,
+        0,
+        undefined,
+        networkingOptions
       );
     });
 
@@ -281,7 +414,8 @@ describe('NativeBridgeManager', () => {
         parameters.federated,
         parameters.returnToUrl,
         undefined, // allowedBrowserPackages
-        false // useTrustedWebActivity
+        false, // useTrustedWebActivity
+        false // useAuthTab (default)
       );
     });
 
@@ -300,7 +434,8 @@ describe('NativeBridgeManager', () => {
         parameters.federated,
         parameters.returnToUrl,
         allowedBrowserPackages,
-        false // useTrustedWebActivity
+        false, // useTrustedWebActivity
+        false // useAuthTab (default)
       );
     });
 
@@ -321,7 +456,27 @@ describe('NativeBridgeManager', () => {
         parameters.federated,
         parameters.returnToUrl,
         undefined, // allowedBrowserPackages
-        true // useTrustedWebActivity
+        true, // useTrustedWebActivity
+        false // useAuthTab (default)
+      );
+    });
+
+    it('should pass useAuthTab to native webAuthLogout when provided', async () => {
+      const parameters = {
+        federated: false,
+        returnToUrl: 'com.myapp://logout',
+      };
+      const options = { customScheme: 'com.myapp', useAuthTab: true };
+
+      await bridge.clearSession(parameters, options);
+
+      expect(MockedAuth0NativeModule.webAuthLogout).toHaveBeenCalledWith(
+        options.customScheme,
+        parameters.federated,
+        parameters.returnToUrl,
+        undefined, // allowedBrowserPackages
+        false, // useTrustedWebActivity
+        true // useAuthTab
       );
     });
   });
@@ -376,6 +531,27 @@ describe('NativeBridgeManager', () => {
         forceRefresh
       );
     });
+
+    it('should default minTtl to 60 when omitted', async () => {
+      await bridge.getCredentials();
+
+      expect(MockedAuth0NativeModule.getCredentials).toHaveBeenCalledWith(
+        undefined,
+        60,
+        {},
+        false
+      );
+    });
+  });
+
+  describe('clearAll', () => {
+    it('should call the native clearAll', async () => {
+      MockedAuth0NativeModule.clearAll.mockResolvedValueOnce(undefined);
+
+      await bridge.clearAll();
+
+      expect(MockedAuth0NativeModule.clearAll).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('error handling', () => {
@@ -398,6 +574,49 @@ describe('NativeBridgeManager', () => {
         expect(authError.message).toBe('User cancelled the Auth');
         expect(authError.code).toBe('a0.session.user_cancelled');
       }
+    });
+
+    it('should expose the mfa_required body like the HTTP-based logins', async () => {
+      const body = {
+        error: 'mfa_required',
+        error_description: 'Multifactor authentication required',
+        mfa_token: 'mfa_token_value',
+        mfa_requirements: { challenge: [{ type: 'otp' }] },
+      };
+      MockedAuth0NativeModule.getCredentials.mockRejectedValueOnce({
+        code: 'mfa_required',
+        message: body.error_description,
+        userInfo: body,
+      });
+
+      const error = await bridge
+        .getCredentials(undefined, 0, {}, false)
+        .catch((e) => e);
+
+      expect(error).toBeInstanceOf(AuthError);
+      expect(error).toMatchObject({
+        name: 'mfa_required',
+        code: 'mfa_required',
+        status: 403,
+        message: body.error_description,
+        json: body,
+      });
+    });
+
+    it('should keep the native error as json when mfa_required has no body', async () => {
+      const nativeError = {
+        code: 'mfa_required',
+        message: 'Multifactor authentication required',
+        userInfo: null,
+      };
+      MockedAuth0NativeModule.getCredentials.mockRejectedValueOnce(nativeError);
+
+      const error = await bridge
+        .getCredentials(undefined, 0, {}, false)
+        .catch((e) => e);
+
+      expect(error).toMatchObject({ code: 'mfa_required', status: 0 });
+      expect(error.json).toBe(nativeError);
     });
   });
 
@@ -644,6 +863,171 @@ describe('NativeBridgeManager', () => {
       await expect(
         bridge.passwordlessLoginWithOTP('session_login', '000000')
       ).rejects.toThrow(AuthError);
+    });
+  });
+
+  describe('passkeySignupChallenge', () => {
+    it('forwards all parameters, including the delivery method, and returns the identifiers to verify', async () => {
+      const challenge = {
+        authSession: 'session_signup',
+        authParamsPublicKey: { challenge: 'Y2hhbGxlbmdl' },
+        verificationRequired: ['email', 'phone'],
+      };
+      MockedAuth0NativeModule.passkeySignupChallenge.mockResolvedValueOnce(
+        challenge as any
+      );
+
+      const result = await bridge.passkeySignupChallenge(
+        'user@example.com',
+        '+15555550123',
+        'johndoe',
+        'John Doe',
+        'John',
+        'Doe',
+        'johnny',
+        'https://example.com/photo.png',
+        { signup_source: 'mobile_app' },
+        'Username-Password-Authentication',
+        'org_123',
+        'voice'
+      );
+
+      expect(
+        MockedAuth0NativeModule.passkeySignupChallenge
+      ).toHaveBeenCalledWith(
+        'user@example.com',
+        '+15555550123',
+        'johndoe',
+        'John Doe',
+        'John',
+        'Doe',
+        'johnny',
+        'https://example.com/photo.png',
+        { signup_source: 'mobile_app' },
+        'Username-Password-Authentication',
+        'org_123',
+        'voice'
+      );
+      expect(result).toEqual(challenge);
+    });
+
+    it('wraps a native error in an AuthError', async () => {
+      MockedAuth0NativeModule.passkeySignupChallenge.mockRejectedValue({
+        code: 'PASSKEY_CHALLENGE_FAILED',
+        message: 'boom',
+      });
+
+      await expect(
+        bridge.passkeySignupChallenge('user@example.com')
+      ).rejects.toThrow(AuthError);
+    });
+  });
+
+  describe('getTokenByPasskey', () => {
+    it('forwards all parameters, including the verification codes and the identifiers they cover, and transforms the response into a Credentials model', async () => {
+      MockedAuth0NativeModule.getTokenByPasskey.mockResolvedValueOnce(
+        nativeSuccessCredentials as any
+      );
+
+      const credentials = await bridge.getTokenByPasskey(
+        'session_signup',
+        '{"id":"cred-id"}',
+        'Username-Password-Authentication',
+        'https://api.example.com',
+        'openid profile',
+        'org_123',
+        { email: '123456', phone: '654321' },
+        ['email', 'phone']
+      );
+
+      expect(MockedAuth0NativeModule.getTokenByPasskey).toHaveBeenCalledWith(
+        'session_signup',
+        '{"id":"cred-id"}',
+        'Username-Password-Authentication',
+        'https://api.example.com',
+        'openid profile',
+        'org_123',
+        { email: '123456', phone: '654321' },
+        ['email', 'phone']
+      );
+      expect(credentials).toBeInstanceOf(Credentials);
+      expect(credentials.accessToken).toBe(
+        nativeSuccessCredentials.accessToken
+      );
+    });
+
+    it('keeps the native error, including its userInfo, on the AuthError', async () => {
+      const nativeError = {
+        code: 'PASSKEY_VERIFICATION_RETRYABLE',
+        message: 'Incorrect code',
+        userInfo: { authSession: 'session_2', verificationRequired: ['email'] },
+      };
+      MockedAuth0NativeModule.getTokenByPasskey.mockRejectedValue(nativeError);
+
+      const error = await bridge
+        .getTokenByPasskey('session_signup', '{"id":"cred-id"}')
+        .catch((e: unknown) => e as AuthError);
+
+      expect(error).toBeInstanceOf(AuthError);
+      expect(error.code).toBe('PASSKEY_VERIFICATION_RETRYABLE');
+      expect(error.json).toBe(nativeError);
+    });
+  });
+
+  describe('getUserProfile', () => {
+    it('passes the arguments to the native module and returns the result', async () => {
+      const profile = { givenName: 'Jane' };
+      MockedAuth0NativeModule.getUserProfile.mockResolvedValue(profile);
+
+      const result = await bridge.getUserProfile(
+        'token',
+        ['given_name'],
+        false
+      );
+
+      expect(MockedAuth0NativeModule.getUserProfile).toHaveBeenCalledWith(
+        'token',
+        ['given_name'],
+        false
+      );
+      expect(result).toBe(profile);
+    });
+
+    it('wraps native errors in an AuthError', async () => {
+      MockedAuth0NativeModule.getUserProfile.mockRejectedValue({
+        code: 'MY_ACCOUNT_ERROR',
+        message: '{"statusCode":403}',
+      });
+
+      await expect(
+        bridge.getUserProfile('token', undefined, true)
+      ).rejects.toBeInstanceOf(AuthError);
+    });
+  });
+
+  describe('updateUserProfile', () => {
+    it('passes the arguments to the native module and returns the result', async () => {
+      const profile = { givenName: 'Jane' };
+      MockedAuth0NativeModule.updateUserProfile.mockResolvedValue(profile);
+
+      const result = await bridge.updateUserProfile(
+        'token',
+        'Jane',
+        null,
+        null,
+        '',
+        null
+      );
+
+      expect(MockedAuth0NativeModule.updateUserProfile).toHaveBeenCalledWith(
+        'token',
+        'Jane',
+        null,
+        null,
+        '',
+        null
+      );
+      expect(result).toBe(profile);
     });
   });
 });

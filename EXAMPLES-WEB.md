@@ -285,6 +285,8 @@ Passkeys are supported on web via `@auth0/auth0-spa-js`. The flow is the same th
 
 Because `navigator.credentials.create()`/`.get()` require a user gesture, call `passkeySignupChallenge` / `passkeyLoginChallenge` from within a click handler (not, for example, from a `useEffect`).
 
+**Identifier verification.** When the database connection requires the user's email or phone number to be verified, `passkeySignupChallenge` returns `verificationRequired`. Collect a one-time code for each identifier **before** calling `navigator.credentials.create()`, then pass them as `verification` to `getTokenByPasskey`. Pass a non-empty code for every identifier in `verificationRequired`: an empty or whitespace-only code is rejected before anything is sent (`PASSKEY_INVALID_PARAMETER`), but on web a missing code is not checked locally, so it is sent and Auth0 rejects the exchange (`PASSKEY_EXCHANGE_FAILED`). `verificationRequired` is accepted but ignored on web (auth0-spa-js works from `verification` alone); passing it keeps one code path for native and web. A wrong code rejects with `PASSKEY_VERIFICATION_RETRYABLE`: read `error.getVerificationRetryPayload()` for `authSession` (the session to retry with) and `verificationRequired` (the identifiers whose code was wrong), then call `getTokenByPasskey` again with the same `PublicKeyCredential` and new codes for those identifiers only. `deliveryMethod` (`'text'` or `'voice'`) chooses how a phone code is delivered. See [Signup with Passkey and Identifier Verification](./EXAMPLES.md#signup-with-passkey-identifier-verification) for the full flow.
+
 ```tsx
 import { useAuth0, PasskeyError } from 'react-native-auth0';
 
@@ -340,8 +342,27 @@ The web platform supports direct authentication grants including `auth.passwordR
 
 Token refresh is handled automatically by `credentialsManager.getCredentials()` on the web. The `auth.refreshToken()` method is not available.
 
+### Organizations and invitations (Web)
+
+Organization login works the same as on native — pass `organization` to `authorize()`:
+
+```js
+await authorize({ organization: 'org_id' });
+```
+
+Accepting an invitation is also supported. Pass the full invitation URL as `invitationUrl`; the SDK extracts the `invitation` and `organization` query parameters and forwards them to Auth0:
+
+```js
+await authorize({
+  invitationUrl:
+    'https://myapp.com/login?invitation=inv123&organization=org123',
+});
+```
+
+On the web the invitation link opens your app in the browser, so read the current URL (e.g. `window.location.href`) and pass it as `invitationUrl`.
+
 ### My Account API (Web)
 
 The [My Account API](./EXAMPLES.md#my-account-api) is supported on the web platform. The `auth0.myAccount` client works the same way as on native, so the examples in [EXAMPLES.md](./EXAMPLES.md#my-account-api) apply. Passkey enrollment on the web uses the browser's [WebAuthn](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) APIs instead of a native passkey module.
 
-When DPoP is enabled (the default), a My Account call on the web only succeeds when the supplied access token was issued by the same client instance, because the DPoP proof is signed with that client's keypair. When the client is not configured with DPoP, plain bearer tokens are used and any valid access token works.
+When DPoP is enabled, a My Account call on the web only succeeds when the supplied access token was issued by the same client instance, because the DPoP proof is signed with that client's keypair. When the client is not configured with DPoP, plain bearer tokens are used and any valid access token works.

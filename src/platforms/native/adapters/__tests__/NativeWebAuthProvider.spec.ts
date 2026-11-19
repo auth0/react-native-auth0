@@ -1,6 +1,6 @@
 import { Linking, Platform } from 'react-native';
 import { NativeWebAuthProvider } from '../NativeWebAuthProvider';
-import { INativeBridge } from '../../bridge';
+import { NativeBridge } from '../../bridge';
 import { finalizeScope } from '../../../../core/utils';
 import { AuthError, WebAuthError } from '../../../../core/models';
 
@@ -14,7 +14,7 @@ jest.mock('react-native', () => ({
 
 jest.mock('../../../../core/utils/scope');
 
-const mockBridge: jest.Mocked<INativeBridge> = {
+const mockBridge: jest.Mocked<NativeBridge> = {
   authorize: jest.fn(),
   clearSession: jest.fn(),
   cancelWebAuth: jest.fn(),

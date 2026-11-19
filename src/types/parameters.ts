@@ -274,35 +274,6 @@ export interface LoginSmsParameters extends RequestOptions {
   scope?: string;
 }
 
-// ========= Multi-Factor Authentication (MFA) Parameters =========
-
-/** Parameters for logging in with an OTP code after an MFA challenge. */
-export interface LoginOtpParameters extends RequestOptions {
-  mfaToken: string;
-  otp: string;
-  audience?: string;
-}
-
-/** Parameters for logging in with an Out-of-Band (OOB) code after an MFA challenge. */
-export interface LoginOobParameters extends RequestOptions {
-  mfaToken: string;
-  oobCode: string;
-  bindingCode?: string;
-}
-
-/** Parameters for logging in with a recovery code after an MFA challenge. */
-export interface LoginRecoveryCodeParameters extends RequestOptions {
-  mfaToken: string;
-  recoveryCode: string;
-}
-
-/** Parameters for requesting an MFA challenge. */
-export interface MfaChallengeParameters extends RequestOptions {
-  mfaToken: string;
-  challengeType?: 'oob' | 'otp';
-  authenticatorId?: string;
-}
-
 // ========= MFA Flexible Factors Grant Parameters =========
 
 /** Parameters for listing enrolled MFA authenticators. */
@@ -549,6 +520,14 @@ export interface PasskeySignupChallengeParameters {
   realm?: string;
   /** Organization ID or name for authenticating in an organization context. */
   organization?: string;
+  /**
+   * How to deliver the one-time code when the phone number must be verified, by
+   * SMS or voice call. When omitted, Auth0 chooses the delivery method.
+   *
+   * Only used when the connection requires identifier verification. See
+   * {@link PasskeyChallengeResponse.verificationRequired}.
+   */
+  deliveryMethod?: PasswordlessDeliveryMethod;
 }
 
 /**
@@ -575,6 +554,44 @@ export interface PasskeyChallengeResponse {
   authSession: string;
   /** The raw WebAuthn public key credential creation/request options as JSON. */
   authParamsPublicKey: Record<string, any>;
+  /**
+   * The identifiers the user must verify with a one-time code before the
+   * passkey signup can complete.
+   *
+   * Only present on a signup challenge, and only when the database connection
+   * requires identifier verification. Auth0 sends a code to each listed
+   * identifier. Collect the codes **before** creating the passkey credential,
+   * then pass them as `verification` to `getTokenByPasskey`. Identifiers this
+   * SDK does not recognize are left out.
+   */
+  verificationRequired?: PasskeyVerificationMethod[];
+}
+
+/**
+ * An identifier that Auth0 can require the user to verify with a one-time code
+ * while signing up with a passkey.
+ *
+ * @see {@link PasskeyChallengeResponse.verificationRequired}
+ */
+export type PasskeyVerificationMethod = 'email' | 'phone';
+
+/**
+ * What to retry a passkey signup exchange with after a one-time code was
+ * wrong. Returned by `PasskeyError.getVerificationRetryPayload()`.
+ */
+export interface PasskeyVerificationRetryPayload {
+  /**
+   * The auth session to retry with: the same, still valid session Auth0
+   * returned with the error. Always set on a retryable error; if it is ever
+   * absent, keep using the session from the original challenge.
+   */
+  authSession?: string;
+  /**
+   * The identifiers whose codes must be collected again. When `undefined`,
+   * Auth0 did not say which failed: collect the codes for the identifiers of
+   * the original challenge.
+   */
+  verificationRequired?: PasskeyVerificationMethod[];
 }
 
 /**
@@ -610,6 +627,57 @@ export interface GetTokenByPasskeyParameters {
   scope?: string;
   /** Organization ID or name for authenticating in an organization context. */
   organization?: string;
+  /**
+   * The one-time codes the user entered, keyed by the identifier each code was
+   * sent to (for example `{ email: '123456', phone: '654321' }`).
+   *
+   * Only meaningful when the database connection requires identifier
+   * verification, that is, when the signup challenge returned
+   * {@link PasskeyChallengeResponse.verificationRequired}: provide a code for
+   * each of those identifiers. Omitting it is always valid.
+   *
+   * Only codes for identifiers this SDK knows about (`email`, `phone`) are
+   * sent; others are ignored. A code that is empty or only whitespace rejects
+   * with a `PasskeyError` of type `PASSKEY_INVALID_PARAMETER` on every
+   * platform, before anything is sent.
+   *
+   * If a code is wrong while the session is still alive, the call rejects with
+   * a `PasskeyError` of type `PASSKEY_VERIFICATION_RETRYABLE`. To retry, read
+   * `error.getVerificationRetryPayload()` and call `getTokenByPasskey` again
+   * with:
+   * - the **same** `authResponse`, so the user does not create a second passkey;
+   * - its `authSession` (the same, still valid session);
+   * - its `verificationRequired` (only the identifiers whose code was wrong; if
+   *   it is `undefined`, those of the challenge) as `verificationRequired`;
+   * - fresh codes for those identifiers only as `verification`. The other
+   *   identifiers are already verified in this session.
+   *
+   * Only used when completing a passkey signup.
+   */
+  verification?: Record<string, string>;
+  /**
+   * The identifiers the codes in `verification` are for: on the first attempt,
+   * {@link PasskeyChallengeResponse.verificationRequired} from the signup
+   * challenge; on a retry, `verificationRequired` from
+   * `PasskeyError.getVerificationRetryPayload()` (see `verification`).
+   *
+   * Only meaningful when the database connection requires identifier
+   * verification. Omitting it is always valid: pass it only when the challenge
+   * or the retry payload has one.
+   *
+   * **iOS and Android:** passed to Auth0.swift / Auth0.Android, which check,
+   * before sending anything, that every listed identifier has a code in
+   * `verification`. If one has none, the call rejects with a `PasskeyError` of
+   * type `PASSKEY_EXCHANGE_FAILED`, and the session stays usable. When omitted,
+   * nothing is checked.
+   *
+   * **Web:** ignored (auth0-spa-js does not take it). A missing code is sent to
+   * Auth0 as is, and also rejects with `PASSKEY_EXCHANGE_FAILED`.
+   *
+   * Identifiers this SDK does not know about (other than `email`, `phone`) are
+   * ignored. Only used when completing a passkey signup.
+   */
+  verificationRequired?: string[];
 }
 
 // ========= Passkey Enrollment Parameters =========
@@ -1102,28 +1170,143 @@ export interface Factor {
   usage?: string[];
 }
 
-// ========= User Management & Profile Parameters =========
+// ========= My Account — Profile =========
 
 /**
- * Parameters for patching a user's metadata via the Management API.
- * Requires an access token with `update:current_user_metadata` scope.
+ * Whether the user can edit a profile field.
  *
- * @deprecated Will be removed in v6, along with `Auth0.users()`.
+ * This API is currently in Beta and might change before General Availability.
  */
-export interface PatchUserParameters {
-  /** The ID of the user to update (e.g., `auth0|12345`). */
-  id: string;
-  /** An object containing the metadata to set or update. */
-  metadata: Record<string, any>;
+export type ProfileFieldAccess = 'read_only' | 'read_write';
+
+/**
+ * Where the value of a profile field comes from.
+ *
+ * This API is currently in Beta and might change before General Availability.
+ */
+export type ProfileFieldSource = 'user' | 'idp' | 'system';
+
+/**
+ * Describes whether a profile field can be edited by the user, and why.
+ *
+ * This API is currently in Beta and might change before General Availability.
+ */
+export interface ProfileFieldPolicy {
+  /** Whether the field can be edited by the user. */
+  access: ProfileFieldAccess;
+  /** Where the value of the field comes from. */
+  source: ProfileFieldSource;
+  /**
+   * Why the field is read-only (e.g., `"managed_by_identity_provider"`). Only
+   * set when `access` is `"read_only"`. The set of values may change.
+   */
+  reason?: string;
 }
 
 /**
- * Parameters for retrieving a user's full profile from the Management API.
- * Requires an access token with `read:current_user` scope.
+ * The current user's profile, as returned by the My Account API.
  *
- * @deprecated Will be removed in v6, along with `Auth0.users()`.
+ * This API is currently in Beta and might change before General Availability.
  */
-export interface GetUserParameters {
-  /** The ID of the user to retrieve. */
-  id: string;
+export interface MyAccountProfile {
+  /** The user's unique identifier. Read-only. */
+  userId?: string;
+  /** The user's given name. */
+  givenName?: string;
+  /** The user's family name. */
+  familyName?: string;
+  /** The user's full name. */
+  name?: string;
+  /** The user's nickname. */
+  nickname?: string;
+  /** The URL of the user's picture. */
+  picture?: string;
+  /** The user's email address. Read-only. */
+  email?: string;
+  /** Whether the user's email address is verified. Read-only. */
+  emailVerified?: boolean;
+  /** The user's phone number. Read-only. */
+  phoneNumber?: string;
+  /** Whether the user's phone number is verified. Read-only. */
+  phoneVerified?: boolean;
+  /** The user's username. Read-only. */
+  username?: string;
+  /** When the user was created (ISO 8601). */
+  createdAt?: string;
+  /** When the user was last updated (ISO 8601). */
+  updatedAt?: string;
+  /**
+   * The edit policy of each field, keyed by a JSON Pointer to the field
+   * (e.g., `"/given_name"`).
+   *
+   * `undefined` when `profile_policy` is not part of the response. With
+   * `includeFields` `true` (the default), this is when `fields` is set and
+   * does not list it. With `includeFields: false`, this is when `fields`
+   * lists it.
+   */
+  profilePolicy?: Record<string, ProfileFieldPolicy>;
+}
+
+/**
+ * Parameters for retrieving the current user's profile from the My Account API.
+ *
+ * This API is currently in Beta and might change before General Availability.
+ */
+export interface GetUserProfileParameters {
+  /**
+   * Access token with the `read:me:profile` scope and the My Account API
+   * audience (`https://{domain}/me/`).
+   */
+  accessToken: string;
+  /**
+   * The fields to return, using the API field names
+   * (e.g., `['given_name', 'picture', 'profile_policy']`).
+   * When omitted or empty, every field is returned.
+   */
+  fields?: string[];
+  /**
+   * With `true` (the default), only the listed `fields` are returned. With
+   * `false`, every field *except* the listed ones is returned. Ignored when
+   * `fields` is omitted or empty.
+   */
+  includeFields?: boolean;
+}
+
+/**
+ * Parameters for updating the current user's profile with the My Account API.
+ *
+ * Fields left `undefined` are not sent and remain unchanged.
+ *
+ * This API is currently in Beta and might change before General Availability.
+ */
+export interface UpdateUserProfileParameters {
+  /**
+   * Access token with the `update:me:profile` scope and the My Account API
+   * audience (`https://{domain}/me/`).
+   */
+  accessToken: string;
+  /** The user's new given name. */
+  givenName?: string;
+  /** The user's new family name. */
+  familyName?: string;
+  /** The user's new full name. */
+  name?: string;
+  /** The user's new nickname. */
+  nickname?: string;
+  /** The URL of the user's new picture. */
+  picture?: string;
+}
+
+/**
+ * Describes a field rejected by the My Account API in a `400` response.
+ */
+export interface MyAccountValidationError {
+  /** Description of the validation failure. */
+  detail: string;
+  /** The name of the rejected field. */
+  field?: string;
+  /** An RFC 6901 JSON Pointer to the rejected field (e.g., `"/given_name"`). */
+  pointer?: string;
+  /** The source of the rejected value. */
+  source?: string;
 }

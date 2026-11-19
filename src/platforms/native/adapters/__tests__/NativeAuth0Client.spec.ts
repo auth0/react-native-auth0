@@ -118,9 +118,10 @@ describe('NativeAuth0Client', () => {
       options.clientId,
       options.domain,
       undefined, // No local auth options provided in this test
-      true, // useDPoP defaults to true
+      false, // useDPoP defaults to false
       undefined, // maxRetries not provided
-      undefined // credentialsManagerStorageKey not provided
+      undefined, // credentialsManagerStorageKey not provided
+      undefined // networkingOptions not provided
     );
 
     // Use client to avoid unused variable warning
@@ -140,9 +141,10 @@ describe('NativeAuth0Client', () => {
       options.clientId,
       options.domain,
       undefined,
-      true,
+      false,
       undefined,
-      'tenant-b'
+      'tenant-b',
+      undefined
     );
     expect(client).toBeDefined();
   });
@@ -161,12 +163,36 @@ describe('NativeAuth0Client', () => {
       options.clientId,
       options.domain,
       localAuthOptions,
-      true, // useDPoP defaults to true
+      false, // useDPoP defaults to false
       undefined, // maxRetries not provided
-      undefined // credentialsManagerStorageKey not provided
+      undefined, // credentialsManagerStorageKey not provided
+      undefined // networkingOptions not provided
     );
 
     // Use client to avoid unused variable warning
+    expect(client).toBeDefined();
+  });
+
+  it('should pass networkingOptions to initialize when provided', async () => {
+    mockBridgeInstance.hasValidInstance.mockResolvedValue(false);
+    const networkingOptions = { connectTimeout: 30, readTimeout: 30 };
+
+    const client = new NativeAuth0Client({
+      ...options,
+      networkingOptions,
+    });
+    await new Promise(process.nextTick);
+
+    expect(mockBridgeInstance.initialize).toHaveBeenCalledWith(
+      options.clientId,
+      options.domain,
+      undefined,
+      false,
+      undefined,
+      undefined,
+      networkingOptions
+    );
+
     expect(client).toBeDefined();
   });
 
@@ -386,6 +412,7 @@ describe('NativeAuth0Client', () => {
         userMetadata: { signup_source: 'mobile_app' },
         realm: 'Username-Password-Authentication',
         organization: 'org_123',
+        deliveryMethod: 'voice',
       });
 
       expect(
@@ -401,7 +428,8 @@ describe('NativeAuth0Client', () => {
         'https://example.com/photo.png',
         { signup_source: 'mobile_app' },
         'Username-Password-Authentication',
-        'org_123'
+        'org_123',
+        'voice'
       );
     });
 
@@ -430,8 +458,30 @@ describe('NativeAuth0Client', () => {
         undefined,
         undefined,
         'Username-Password-Authentication',
+        undefined,
         undefined
       );
+    });
+
+    it('should return the identifiers to verify when the connection requires verification', async () => {
+      const withVerification = {
+        ...mockChallengeResponse,
+        verificationRequired: ['email', 'phone'],
+      };
+      (mockBridgeInstance as any).passkeySignupChallenge = jest
+        .fn()
+        .mockResolvedValue(withVerification);
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      const result = await client.passkeySignupChallenge({
+        email: 'user@example.com',
+        phoneNumber: '+1234567890',
+        realm: 'Username-Password-Authentication',
+        deliveryMethod: 'text',
+      });
+
+      expect(result.verificationRequired).toEqual(['email', 'phone']);
     });
 
     it('should return challenge response from passkeySignupChallenge', async () => {
@@ -571,7 +621,9 @@ describe('NativeAuth0Client', () => {
         'Username-Password-Authentication',
         'https://api.example.com',
         'openid profile email',
-        'org_123'
+        'org_123',
+        undefined,
+        undefined
       );
     });
 
@@ -592,8 +644,176 @@ describe('NativeAuth0Client', () => {
         undefined,
         undefined,
         undefined,
+        undefined,
+        undefined,
         undefined
       );
+    });
+
+    it('should pass the verification codes and the identifiers they cover to the bridge', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await client.getTokenByPasskey({
+        authSession: 'auth-session-123',
+        authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
+        verificationRequired: ['email', 'phone'],
+        verification: { email: '123456', phone: '654321' },
+      });
+
+      expect(
+        (mockBridgeInstance as any).getTokenByPasskey
+      ).toHaveBeenCalledWith(
+        'auth-session-123',
+        '{"id":"cred-id","type":"public-key","response":{}}',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        { email: '123456', phone: '654321' },
+        ['email', 'phone']
+      );
+    });
+
+    it('should retry with only the flagged identifiers and their fresh codes', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await client.getTokenByPasskey({
+        authSession: 'session-2',
+        authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
+        verificationRequired: ['phone'],
+        verification: { phone: '222222' },
+      });
+
+      const args = (mockBridgeInstance as any).getTokenByPasskey.mock.calls.at(
+        -1
+      );
+      expect(args[0]).toBe('session-2');
+      expect(args[6]).toEqual({ phone: '222222' });
+      expect(args[7]).toEqual(['phone']);
+    });
+
+    it('should not pass codes or identifiers the SDK does not know about', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await client.getTokenByPasskey({
+        authSession: 'auth-session-123',
+        authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
+        verificationRequired: ['email', 'username'],
+        verification: { email: '123456', username: '111111' },
+      });
+
+      const args = (mockBridgeInstance as any).getTokenByPasskey.mock.calls.at(
+        -1
+      );
+      expect(args[6]).toEqual({ email: '123456' });
+      expect(args[7]).toEqual(['email']);
+    });
+
+    it('should pass the codes without verificationRequired, as before', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await client.getTokenByPasskey({
+        authSession: 'auth-session-123',
+        authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
+        verification: { email: '123456' },
+      });
+
+      const args = (mockBridgeInstance as any).getTokenByPasskey.mock.calls.at(
+        -1
+      );
+      expect(args[6]).toEqual({ email: '123456' });
+      expect(args[7]).toBeUndefined();
+    });
+
+    it('should pass verificationRequired without codes, leaving the check to the native SDK', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      await client.getTokenByPasskey({
+        authSession: 'auth-session-123',
+        authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
+        verificationRequired: ['email'],
+      });
+
+      const args = (mockBridgeInstance as any).getTokenByPasskey.mock.calls.at(
+        -1
+      );
+      expect(args[6]).toBeUndefined();
+      expect(args[7]).toEqual(['email']);
+    });
+
+    it('should not pass an empty verificationRequired, nor one with only unknown identifiers', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      for (const verificationRequired of [[], ['username']]) {
+        await client.getTokenByPasskey({
+          authSession: 'auth-session-123',
+          authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
+          verificationRequired,
+        });
+
+        expect(
+          (mockBridgeInstance as any).getTokenByPasskey.mock.calls.at(-1)[7]
+        ).toBeUndefined();
+      }
+    });
+
+    it('should not pass codes that are not strings, nor an empty map', async () => {
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+      const call = (verification: any) =>
+        client.getTokenByPasskey({
+          authSession: 'auth-session-123',
+          authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
+          verification,
+        });
+      const lastVerificationArg = () =>
+        (mockBridgeInstance as any).getTokenByPasskey.mock.calls.at(-1)[6];
+
+      await call({ email: '123456', phone: undefined });
+      expect(lastVerificationArg()).toEqual({ email: '123456' });
+
+      await call({ email: undefined });
+      expect(lastVerificationArg()).toBeUndefined();
+
+      await call({});
+      expect(lastVerificationArg()).toBeUndefined();
+    });
+
+    it('should reject an empty or whitespace-only code with PASSKEY_INVALID_PARAMETER without calling the bridge', async () => {
+      const {
+        PasskeyError,
+        PasskeyErrorCodes,
+      } = require('../../../../core/models');
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+      const bridge = (mockBridgeInstance as any).getTokenByPasskey;
+      bridge.mockClear();
+
+      const verifications: Record<string, string>[] = [
+        { email: '' },
+        { phone: '  ' },
+      ];
+      for (const verification of verifications) {
+        const error = await client
+          .getTokenByPasskey({
+            authSession: 'auth-session-123',
+            authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
+            verification,
+          })
+          .catch((e: unknown) => e);
+
+        expect(error).toBeInstanceOf(PasskeyError);
+        expect((error as PasskeyError).type).toBe(
+          PasskeyErrorCodes.INVALID_PARAMETER
+        );
+      }
+      expect(bridge).not.toHaveBeenCalled();
     });
 
     it('should return credentials from getTokenByPasskey', async () => {
@@ -627,6 +847,45 @@ describe('NativeAuth0Client', () => {
           authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
         })
       ).rejects.toBeInstanceOf(PasskeyError);
+    });
+
+    it('should throw a retryable PasskeyError carrying the retry payload when a verification code is wrong', async () => {
+      const {
+        AuthError,
+        PasskeyError,
+        PasskeyErrorCodes,
+      } = require('../../../../core/models');
+
+      mockBridgeInstance.getTokenByPasskey = jest.fn().mockRejectedValue(
+        new AuthError('PASSKEY_VERIFICATION_RETRYABLE', 'Incorrect code', {
+          code: 'PASSKEY_VERIFICATION_RETRYABLE',
+          json: {
+            userInfo: {
+              authSession: 'session-2',
+              verificationRequired: ['email'],
+            },
+          },
+        })
+      );
+
+      const client = new NativeAuth0Client(options);
+      await new Promise(process.nextTick);
+
+      const error = await client
+        .getTokenByPasskey({
+          authSession: 'auth-session-123',
+          authResponse: '{"id":"cred-id","type":"public-key","response":{}}',
+          verificationRequired: ['email'],
+          verification: { email: '000000' },
+        })
+        .catch((e: unknown) => e);
+
+      expect(error).toBeInstanceOf(PasskeyError);
+      expect(error.type).toBe(PasskeyErrorCodes.VERIFICATION_RETRYABLE);
+      expect(error.getVerificationRetryPayload()).toEqual({
+        authSession: 'session-2',
+        verificationRequired: ['email'],
+      });
     });
 
     it('should reject with PasskeyError and not call the bridge when authResponse is not a string', async () => {
@@ -684,7 +943,8 @@ describe('NativeAuth0Client', () => {
         options.clientId,
         options.domain,
         undefined,
-        true,
+        false,
+        undefined,
         undefined,
         undefined
       );
@@ -728,6 +988,7 @@ describe('NativeAuth0Client', () => {
         options.domain,
         undefined,
         false, // useDPoP flipped to false
+        undefined,
         undefined,
         undefined
       );

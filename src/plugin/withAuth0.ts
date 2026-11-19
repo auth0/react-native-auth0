@@ -10,7 +10,7 @@ import type {
   ExportedConfigWithProps,
   InfoPlist,
 } from 'expo/config-plugins';
-import { mergeContents } from './generateCode';
+import { mergeContents, removeContents } from './generateCode';
 
 let APPLICATION_ID_SUFFIX = '.auth0';
 let pkg: { name: string; version?: string } = {
@@ -167,11 +167,20 @@ export const addAuth0AppDelegateCode = (
   if (!isSwift) {
     // Throw error for non-Swift files, since we're only supporting Swift app delegates (RN 78+)
     throw new Error(
-      'This plugin only supports expo 53 or greater. If you are using older version 4.x'
+      'This plugin requires a Swift AppDelegate, which means Expo SDK 55 or greater. On older Expo versions, use react-native-auth0 5.x or earlier.'
     );
   }
 
   // Swift handling for Expo 53+
+  // Expo SDK 58+ uses the UIScene life cycle, where Expo's scene delegate already
+  // forwards URLs to Linking. Drop the block that earlier versions generated there.
+  if (src.includes('ExpoReactNativeFactoryProvider')) {
+    return removeContents({
+      src,
+      tag: 'react-native-auth0-linking-swift',
+    }).contents;
+  }
+
   // Add URL handling method if it doesn't exist
   if (!src.includes('RCTLinkingManager.application')) {
     tempSrc = mergeContents({

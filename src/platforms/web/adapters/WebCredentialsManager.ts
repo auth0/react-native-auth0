@@ -1,4 +1,4 @@
-import type { ICredentialsManager } from '../../../core/interfaces';
+import type { CredentialsManager } from '../../../core/interfaces';
 import type { Credentials, SessionTransferCredentials } from '../../../types';
 import {
   AuthError,
@@ -8,7 +8,7 @@ import {
 } from '../../../core/models';
 import type { Auth0Client } from '@auth0/auth0-spa-js';
 
-export class WebCredentialsManager implements ICredentialsManager {
+export class WebCredentialsManager implements CredentialsManager {
   constructor(private client: Auth0Client) {}
 
   // @auth0/auth0-spa-js (>= ^2.22.0) enforces the IPSIE `session_expiry` ceiling
@@ -154,6 +154,13 @@ export class WebCredentialsManager implements ICredentialsManager {
       });
       throw new CredentialsManagerError(authError);
     }
+  }
+
+  // @auth0/auth0-spa-js manages a single cache, so wiping "all" storage is the
+  // same as clearing the session. Delegates to clearCredentials for parity with
+  // native's clearAll().
+  async clearAll(): Promise<void> {
+    return this.clearCredentials();
   }
 
   async getSSOCredentials(

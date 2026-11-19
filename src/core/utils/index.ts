@@ -4,3 +4,4 @@ export * from './conversion';
 export * from './fetchWithTimeout';
 export * from './parseIdToken';
 export * from './scope';
+export * from './passkeyVerification';

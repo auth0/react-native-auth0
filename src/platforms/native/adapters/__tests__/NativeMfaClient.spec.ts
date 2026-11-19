@@ -1,8 +1,8 @@
 import { NativeMfaClient } from '../NativeMfaClient';
-import type { INativeBridge } from '../../bridge';
+import type { NativeBridge } from '../../bridge';
 import { AuthError, MfaError, MfaErrorCodes } from '../../../../core/models';
 
-const mockBridge: jest.Mocked<INativeBridge> = {
+const mockBridge: jest.Mocked<NativeBridge> = {
   getMfaAuthenticators: jest.fn(),
   mfaEnroll: jest.fn(),
   mfaChallenge: jest.fn(),

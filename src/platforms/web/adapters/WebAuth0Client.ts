@@ -1,19 +1,18 @@
 import {
-  Auth0Client,
+  Auth0Client as SpaAuth0Client,
   type Auth0ClientOptions,
   type LogoutOptions,
 } from '@auth0/auth0-spa-js';
 import type {
-  IAuth0Client,
-  IAuthenticationProvider,
-  IMyAccountClient,
-  IPasswordlessClient,
-  IUsersClient,
-  IMfaClient,
+  Auth0Client,
+  AuthenticationProvider,
+  MyAccountClient,
+  PasswordlessClient,
+  MfaClient,
 } from '../../../core/interfaces';
 import type { WebAuth0Options } from '../../../types/platform-specific';
 import type {
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   CustomTokenExchangeParameters,
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
@@ -27,39 +26,38 @@ import { WebMfaClient } from './WebMfaClient';
 import { WebMyAccountClient } from './WebMyAccountClient';
 import { WebPasswordlessClient } from './WebPasswordlessClient';
 import { ssoExchangeNotSupported } from './WebAuthenticationProvider';
-import {
-  AuthenticationOrchestrator,
-  ManagementApiOrchestrator,
-} from '../../../core/services';
+import { AuthenticationOrchestrator } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
-import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
 import {
+  AuthError,
+  DPoPError,
+  PasskeyError,
+  PasskeyErrorCodes,
+} from '../../../core/models';
+import {
+  toVerificationCodes,
+  toVerificationMethods,
   validateActorTokenParameters,
   validateTokenTypeUri,
 } from '../../../core/utils';
 
-export class WebAuth0Client implements IAuth0Client {
+export class WebAuth0Client implements Auth0Client {
   readonly webAuth: WebWebAuthProvider;
   readonly credentialsManager: WebCredentialsManager;
-  readonly auth: IAuthenticationProvider;
-  readonly mfa: IMfaClient;
-  readonly myAccount: IMyAccountClient;
+  readonly auth: AuthenticationProvider;
+  readonly mfa: MfaClient;
+  readonly myAccount: MyAccountClient;
 
   private readonly httpClient: HttpClient;
   private readonly tokenType: TokenType;
-  private readonly baseUrl: string;
-  private readonly getDPoPHeadersForOrchestrator?: (
-    params: DPoPHeadersParams
-  ) => Promise<Record<string, string>>;
-  public readonly client: Auth0Client;
+  public readonly client: SpaAuth0Client;
 
   private logoutInProgress = false;
 
   constructor(options: WebAuth0Options) {
     const baseUrl = `https://${options.domain}`;
-    this.baseUrl = baseUrl;
-    const useDPoP = options.useDPoP ?? true;
+    const useDPoP = options.useDPoP ?? false;
     this.tokenType = useDPoP ? TokenType.dpop : TokenType.bearer;
 
     this.httpClient = new HttpClient({
@@ -76,7 +74,7 @@ export class WebAuth0Client implements IAuth0Client {
       // MRRT requires refresh tokens to work - automatically enable if useMrrt is true
       useRefreshTokens: options.useRefreshTokens ?? options.useMrrt ?? false,
       useRefreshTokensFallback: options.useRefreshTokensFallback ?? true,
-      useDpop: options.useDPoP ?? true,
+      useDpop: useDPoP,
       authorizationParams: {
         redirect_uri:
           typeof window !== 'undefined' ? window.location.origin : '',
@@ -86,15 +84,14 @@ export class WebAuth0Client implements IAuth0Client {
 
     // One client per instance: a shared one would leak its token cache
     // to the next request on a server.
-    this.client = new Auth0Client(clientOptions);
+    this.client = new SpaAuth0Client(clientOptions);
 
     // Create a bound getDPoPHeaders function for the orchestrator
-    const getDPoPHeadersForOrchestrator = async (params: DPoPHeadersParams) => {
+    const getDPoPHeadersForOrchestrator = async (
+      params: DPoPHeadersParameters
+    ) => {
       return this.getDPoPHeaders(params);
     };
-    this.getDPoPHeadersForOrchestrator = useDPoP
-      ? getDPoPHeadersForOrchestrator
-      : undefined;
 
     const orchestrator = new AuthenticationOrchestrator({
       clientId: options.clientId,
@@ -119,29 +116,7 @@ export class WebAuth0Client implements IAuth0Client {
     );
   }
 
-  /**
-   * @deprecated Will be removed in v6. Move Management API operations to a backend
-   * you control (a BFF).
-   */
-  users(token: string, tokenType?: TokenType): IUsersClient {
-    // Use provided tokenType or fall back to client's default
-    const effectiveTokenType = tokenType ?? this.tokenType;
-    // Only provide getDPoPHeaders if the effective token type is DPoP
-    const getDPoPHeaders =
-      effectiveTokenType === TokenType.dpop
-        ? this.getDPoPHeadersForOrchestrator
-        : undefined;
-
-    return new ManagementApiOrchestrator({
-      token: token,
-      httpClient: this.httpClient,
-      tokenType: effectiveTokenType,
-      baseUrl: this.baseUrl,
-      getDPoPHeaders,
-    });
-  }
-
-  readonly passwordless: IPasswordlessClient = new WebPasswordlessClient();
+  readonly passwordless: PasswordlessClient = new WebPasswordlessClient();
 
   public async logout(options?: LogoutOptions): Promise<void> {
     // If a logout process has already started, do nothing.
@@ -164,7 +139,7 @@ export class WebAuth0Client implements IAuth0Client {
   }
 
   async getDPoPHeaders(
-    params: DPoPHeadersParams
+    params: DPoPHeadersParameters
   ): Promise<Record<string, string>> {
     // For web platform, we need to get the access token and use the underlying
     // auth0-spa-js DPoP utilities to generate the headers
@@ -288,6 +263,7 @@ export class WebAuth0Client implements IAuth0Client {
         userMetadata,
         realm,
         organization,
+        deliveryMethod,
       } = parameters;
 
       // auth0-spa-js's PasskeySignupChallengeOptions type requires at
@@ -309,7 +285,11 @@ export class WebAuth0Client implements IAuth0Client {
         userMetadata,
         realm,
         organization,
+        deliveryMethod,
       } as Parameters<typeof this.client.passkey.getSignupChallenge>[0]);
+      const verificationRequired = toVerificationMethods(
+        challenge.verificationRequired
+      );
 
       return {
         authSession: challenge.authSession,
@@ -317,6 +297,8 @@ export class WebAuth0Client implements IAuth0Client {
           string,
           any
         >,
+        // Left out when no verification is needed, like on native.
+        ...(verificationRequired && { verificationRequired }),
       };
     } catch (e: any) {
       if (e instanceof PasskeyError) throw e;
@@ -378,6 +360,7 @@ export class WebAuth0Client implements IAuth0Client {
         audience,
         scope,
         organization,
+        verification,
       } = parameters;
 
       // Apply default scope if not provided, for consistency with native
@@ -404,6 +387,9 @@ export class WebAuth0Client implements IAuth0Client {
         audience,
         scope: finalScope,
         organization,
+        // auth0-spa-js rejects an empty code itself, before sending anything.
+        // It takes no `verificationRequired`, so that parameter is ignored here.
+        verification: toVerificationCodes(verification),
       });
 
       const expiresAt = Math.floor(Date.now() / 1000) + response.expires_in;
@@ -424,13 +410,30 @@ export class WebAuth0Client implements IAuth0Client {
       // bare Error from ID token verification — none of these set `.code`,
       // only `.error` (OAuth2-style), so check both before falling back to
       // a generic code. See PasskeyErrorCodes for the resulting mapping.
-      const code = e.code ?? e.error ?? 'passkey_exchange_failed';
+      //
+      // The exception is a wrong identifier-verification code while the session
+      // is still alive: spa-js flags that on a PasskeyGetTokenError
+      // (`isRetryable`). The retry details are on the API error response in its
+      // `cause` (`auth_session`, `verification_required`) and on the error itself
+      // (`authSession`, `verificationRequired`); keep both so either is enough.
+      const code = e.isRetryable
+        ? PasskeyErrorCodes.VERIFICATION_RETRYABLE
+        : (e.code ?? e.error ?? 'passkey_exchange_failed');
       const authError = new AuthError(
         code,
         e.message ??
           e.error_description ??
           'Failed to exchange passkey credential for tokens',
-        { code, json: e.cause ?? e }
+        {
+          code,
+          json: e.isRetryable
+            ? {
+                ...e.cause,
+                authSession: e.authSession,
+                verificationRequired: e.verificationRequired,
+              }
+            : (e.cause ?? e),
+        }
       );
       throw new PasskeyError(authError);
     }

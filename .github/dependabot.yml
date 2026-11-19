@@ -21,3 +21,14 @@ updates:
     ignore:
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
+  - package-ecosystem: swift
+    directory: /spm
+    schedule:
+      interval: daily
+    allow:
+      - dependency-name: 'github.com/auth0/auth0.swift'
+      - dependency-name: 'github.com/auth0/jwtdecode.swift'
+      - dependency-name: 'github.com/auth0/simplekeychain'
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']

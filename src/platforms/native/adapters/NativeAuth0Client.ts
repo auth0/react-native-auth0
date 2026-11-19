@@ -1,14 +1,13 @@
 import type {
-  IAuth0Client,
-  IAuthenticationProvider,
-  IMyAccountClient,
-  IPasswordlessClient,
-  IUsersClient,
-  IMfaClient,
+  Auth0Client,
+  AuthenticationProvider,
+  MyAccountClient,
+  PasswordlessClient,
+  MfaClient,
 } from '../../../core/interfaces';
 import type { NativeAuth0Options } from '../../../types/platform-specific';
 import type {
-  DPoPHeadersParams,
+  DPoPHeadersParameters,
   CustomTokenExchangeParameters,
   PasskeySignupChallengeParameters,
   PasskeyLoginChallengeParameters,
@@ -21,38 +20,33 @@ import { NativeCredentialsManager } from './NativeCredentialsManager';
 import { NativeMfaClient } from './NativeMfaClient';
 import { NativeMyAccountClient } from './NativeMyAccountClient';
 import { NativePasswordlessClient } from './NativePasswordlessClient';
-import { type INativeBridge, NativeBridgeManager } from '../bridge';
-import {
-  AuthenticationOrchestrator,
-  ManagementApiOrchestrator,
-} from '../../../core/services';
+import { type NativeBridge, NativeBridgeManager } from '../bridge';
+import { AuthenticationOrchestrator } from '../../../core/services';
 import { HttpClient } from '../../../core/services/HttpClient';
 import { TokenType } from '../../../types/common';
 import { AuthError, DPoPError, PasskeyError } from '../../../core/models';
 import {
   getConfigSignature,
+  toVerificationCodes,
+  toVerificationMethods,
   validateActorTokenParameters,
   validateTokenTypeUri,
 } from '../../../core/utils';
 
-export class NativeAuth0Client implements IAuth0Client {
+export class NativeAuth0Client implements Auth0Client {
   readonly webAuth: NativeWebAuthProvider;
   readonly credentialsManager: NativeCredentialsManager;
-  readonly auth: IAuthenticationProvider;
-  readonly mfa: IMfaClient;
-  readonly passwordless: IPasswordlessClient;
+  readonly auth: AuthenticationProvider;
+  readonly mfa: MfaClient;
+  readonly passwordless: PasswordlessClient;
   private ready: Promise<void>;
   private readonly httpClient: HttpClient;
   private readonly tokenType: TokenType;
-  private readonly bridge: INativeBridge;
-  private readonly baseUrl: string;
+  private readonly bridge: NativeBridge;
   private readonly options: NativeAuth0Options;
   private readonly configSignature: string;
   private syncLock: Promise<void> = Promise.resolve();
-  private guardedBridge!: INativeBridge;
-  private readonly getDPoPHeadersForOrchestrator?: (
-    params: DPoPHeadersParams
-  ) => Promise<Record<string, string>>;
+  private guardedBridge!: NativeBridge;
 
   // Signature last applied to the shared native singleton. `hasValidInstance`
   // only checks domain/clientId, so this tracks other identity options
@@ -63,8 +57,7 @@ export class NativeAuth0Client implements IAuth0Client {
     this.options = options;
     this.configSignature = getConfigSignature(options);
     const baseUrl = `https://${options.domain}`;
-    this.baseUrl = baseUrl;
-    const useDPoP = options.useDPoP ?? true;
+    const useDPoP = options.useDPoP ?? false;
     this.tokenType = useDPoP ? TokenType.dpop : TokenType.bearer;
 
     this.httpClient = new HttpClient({
@@ -77,13 +70,12 @@ export class NativeAuth0Client implements IAuth0Client {
     this.bridge = bridge;
 
     // Create a bound getDPoPHeaders function for the orchestrator
-    const getDPoPHeadersForOrchestrator = async (params: DPoPHeadersParams) => {
+    const getDPoPHeadersForOrchestrator = async (
+      params: DPoPHeadersParameters
+    ) => {
       await this.ready;
       return this.bridge.getDPoPHeaders(params);
     };
-    this.getDPoPHeadersForOrchestrator = useDPoP
-      ? getDPoPHeadersForOrchestrator
-      : undefined;
 
     this.ready = this.initialize(bridge, options);
 
@@ -109,16 +101,17 @@ export class NativeAuth0Client implements IAuth0Client {
   }
 
   private async initialize(
-    bridge: INativeBridge,
+    bridge: NativeBridge,
     options: NativeAuth0Options
   ): Promise<void> {
     const {
       clientId,
       domain,
       localAuthenticationOptions,
-      useDPoP = true,
+      useDPoP = false,
       maxRetries,
       credentialsManagerStorageKey,
+      networkingOptions,
     } = options;
     // Re-init when domain/clientId differ (hasValidInstance) or any other
     // identity option drifted from what was last applied to the native side.
@@ -135,7 +128,8 @@ export class NativeAuth0Client implements IAuth0Client {
         localAuthenticationOptions,
         useDPoP,
         maxRetries,
-        credentialsManagerStorageKey
+        credentialsManagerStorageKey,
+        networkingOptions
       );
     }
     // Record even on the skip path so siblings differing only in a
@@ -153,32 +147,10 @@ export class NativeAuth0Client implements IAuth0Client {
     return this.syncLock;
   }
 
-  /**
-   * @deprecated Will be removed in v6. Move Management API operations to a backend
-   * you control (a BFF).
-   */
-  users(token: string, tokenType?: TokenType): IUsersClient {
-    // Use provided tokenType or fall back to client's default
-    const effectiveTokenType = tokenType ?? this.tokenType;
-    // Only provide getDPoPHeaders if the effective token type is DPoP
-    const getDPoPHeaders =
-      effectiveTokenType === TokenType.dpop
-        ? this.getDPoPHeadersForOrchestrator
-        : undefined;
-
-    return new ManagementApiOrchestrator({
-      token: token,
-      httpClient: this.httpClient,
-      tokenType: effectiveTokenType,
-      baseUrl: this.baseUrl,
-      getDPoPHeaders,
-    });
-  }
-
-  readonly myAccount: IMyAccountClient;
+  readonly myAccount: MyAccountClient;
 
   async getDPoPHeaders(
-    params: DPoPHeadersParams
+    params: DPoPHeadersParameters
   ): Promise<Record<string, string>> {
     await this.ready;
     try {
@@ -192,7 +164,7 @@ export class NativeAuth0Client implements IAuth0Client {
     }
   }
 
-  private createGuardedBridge(bridge: INativeBridge): INativeBridge {
+  private createGuardedBridge(bridge: NativeBridge): NativeBridge {
     const guarded: any = {};
 
     // Get the prototype of the bridge instance to access its methods.
@@ -223,7 +195,7 @@ export class NativeAuth0Client implements IAuth0Client {
       };
     }
 
-    return guarded as INativeBridge;
+    return guarded as NativeBridge;
   }
 
   /**
@@ -271,6 +243,7 @@ export class NativeAuth0Client implements IAuth0Client {
       userMetadata,
       realm,
       organization,
+      deliveryMethod,
     } = parameters;
     try {
       return await this.guardedBridge.passkeySignupChallenge(
@@ -284,7 +257,8 @@ export class NativeAuth0Client implements IAuth0Client {
         picture || undefined,
         userMetadata || undefined,
         realm || undefined,
-        organization || undefined
+        organization || undefined,
+        deliveryMethod || undefined
       );
     } catch (e) {
       if (e instanceof AuthError) {
@@ -314,8 +288,16 @@ export class NativeAuth0Client implements IAuth0Client {
   async getTokenByPasskey(
     parameters: GetTokenByPasskeyParameters
   ): Promise<Credentials> {
-    const { authSession, authResponse, realm, audience, scope, organization } =
-      parameters;
+    const {
+      authSession,
+      authResponse,
+      realm,
+      audience,
+      scope,
+      organization,
+      verification,
+      verificationRequired,
+    } = parameters;
     if (typeof authResponse !== 'string') {
       throw new PasskeyError(
         new AuthError(
@@ -332,7 +314,10 @@ export class NativeAuth0Client implements IAuth0Client {
         realm || undefined,
         audience || undefined,
         scope || undefined,
-        organization || undefined
+        organization || undefined,
+        toVerificationCodes(verification),
+        // Auth0.swift and Auth0.Android check the codes against this list.
+        toVerificationMethods(verificationRequired)
       );
     } catch (e) {
       if (e instanceof AuthError) {

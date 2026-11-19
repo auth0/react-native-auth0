@@ -49,6 +49,6 @@ export default defineConfig([
     },
   },
   {
-    ignores: ['node_modules/', 'lib/', 'docs', 'example/', 'coverage/'],
+    ignores: ['node_modules/', 'lib/', 'docs', 'example/', 'coverage/', 'spm/'],
   },
 ]);

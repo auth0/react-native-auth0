@@ -1,19 +1,20 @@
 import { NativeCredentialsManager } from '../NativeCredentialsManager';
-import { INativeBridge } from '../../bridge';
+import { NativeBridge } from '../../bridge';
 import { AuthError, CredentialsManagerError } from '../../../../core/models';
 
-// 1. Create a mock of the INativeBridge dependency.
-const mockBridge: jest.Mocked<INativeBridge> = {
+// 1. Create a mock of the NativeBridge dependency.
+const mockBridge: jest.Mocked<NativeBridge> = {
   // We only need to mock the methods that this specific adapter uses.
   saveCredentials: jest.fn(),
   getCredentials: jest.fn(),
   hasValidCredentials: jest.fn(),
   clearCredentials: jest.fn(),
+  clearAll: jest.fn(),
   clearDPoPKey: jest.fn(),
   getSSOCredentials: jest.fn(),
   getApiCredentials: jest.fn(),
   clearApiCredentials: jest.fn(),
-  // Add stubs for other INativeBridge methods to satisfy the type.
+  // Add stubs for other NativeBridge methods to satisfy the type.
   initialize: jest.fn(),
   hasValidInstance: jest.fn(),
   getBundleIdentifier: jest.fn(),
@@ -151,11 +152,27 @@ describe('NativeCredentialsManager', () => {
     });
   });
 
+  describe('clearAll', () => {
+    it('should call the bridge to clear all storage', async () => {
+      mockBridge.clearAll.mockResolvedValueOnce();
+      await manager.clearAll();
+      expect(mockBridge.clearAll).toHaveBeenCalledTimes(1);
+    });
+
+    it('should wrap bridge errors in CredentialsManagerError', async () => {
+      const authError = new AuthError('CLEAR_FAILED', 'Clear failed', {
+        code: 'CLEAR_FAILED',
+      });
+      mockBridge.clearAll.mockRejectedValueOnce(authError);
+      await expect(manager.clearAll()).rejects.toThrow(CredentialsManagerError);
+    });
+  });
+
   describe('getSSOCredentials', () => {
     const validSSOCredentials = {
       sessionTransferToken: 'stt_xyz123',
       tokenType: 'Bearer',
-      expiresIn: 3600,
+      expiresAt: 1893456000,
       idToken: 'id_token_123',
       refreshToken: 'refresh_token_789',
     };
@@ -219,11 +236,23 @@ describe('NativeCredentialsManager', () => {
       expect(result).toEqual(validSSOCredentials);
     });
 
+    it('should surface expiresAt as an absolute UNIX timestamp in seconds', async () => {
+      mockBridge.getSSOCredentials.mockResolvedValueOnce(validSSOCredentials);
+
+      const result = await manager.getSSOCredentials();
+
+      // Both native SDKs return an absolute `Date`, which the bridges convert to
+      // epoch seconds. A relative TTL (e.g. 3600) would fall well below this floor.
+      expect(typeof result.expiresAt).toBe('number');
+      expect(result.expiresAt).toBeGreaterThan(1_600_000_000);
+      expect(result.expiresAt).toBeLessThan(10_000_000_000);
+    });
+
     it('should return SSO credentials without optional tokens', async () => {
       const minimalSSOCredentials = {
         sessionTransferToken: 'stt_xyz123',
         tokenType: 'Bearer',
-        expiresIn: 3600,
+        expiresAt: 1893456000,
       };
       mockBridge.getSSOCredentials.mockResolvedValueOnce(minimalSSOCredentials);
 
@@ -354,7 +383,7 @@ describe('NativeCredentialsManager', () => {
       expect(mockBridge.getApiCredentials).toHaveBeenCalledWith(
         'https://api.example.com',
         'read:data',
-        0,
+        60,
         undefined
       );
     });
