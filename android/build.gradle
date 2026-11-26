@@ -52,6 +52,11 @@ android {
     }
   }
 
+  testOptions {
+    // AuthenticationException calls android.text.TextUtils, which plain JVM tests only have as a stub.
+    unitTests.returnDefaultValues = true
+  }
+
   lintOptions {
     disable "GradleCompatible"
     abortOnError false

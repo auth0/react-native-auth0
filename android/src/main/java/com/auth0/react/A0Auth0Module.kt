@@ -40,6 +40,7 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.bridge.WritableNativeMap
 import com.google.gson.Gson
@@ -114,6 +115,23 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 builder.enableLogging(options.getBoolean("enableLogging"))
             }
             return builder.build()
+        }
+
+        /**
+         * The Auth0 error behind a failed renewal or exchange, for the rejection's userInfo, so apps can tell a refusal
+         * (for example access_denied) from a server error, which Auth0.Android both reports as API_ERROR.
+         * Null when the cause is not an Auth0 API error. statusCode is 0 when there was no HTTP response.
+         */
+        internal fun authenticationErrorInfo(
+            cause: Throwable?,
+            newMap: () -> WritableMap = Arguments::createMap
+        ): WritableMap? {
+            if (cause !is AuthenticationException) return null
+            return newMap().apply {
+                putString("error", cause.getCode())
+                putString("error_description", cause.getDescription())
+                putInt("statusCode", cause.statusCode)
+            }
         }
 
         // An unknown value falls back to the server default.
@@ -517,7 +535,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                     override fun onFailure(e: CredentialsManagerException) {
                         if (promise.rejectIfMultifactorRequired(e.mfaRequiredErrorPayload, e)) return
                         val errorCode = deduceErrorCode(e)
-                        promise.reject(errorCode, credentialsMessage(e), e)
+                        promise.reject(errorCode, credentialsMessage(e), e, authenticationErrorInfo(e.cause))
                     }
                 }
             )
@@ -593,7 +611,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                     override fun onFailure(e: CredentialsManagerException) {
                         if (promise.rejectIfMultifactorRequired(e.mfaRequiredErrorPayload, e)) return
                         val errorCode = deduceErrorCode(e)
-                        promise.reject(errorCode, credentialsMessage(e), e)
+                        promise.reject(errorCode, credentialsMessage(e), e, authenticationErrorInfo(e.cause))
                     }
                 }
             )
@@ -764,7 +782,7 @@ class A0Auth0Module(private val reactContext: ReactApplicationContext) : A0Auth0
                 
                 override fun onFailure(error: CredentialsManagerException) {
                     val errorCode = deduceErrorCode(error)
-                    promise.reject(errorCode, credentialsMessage(error), error)
+                    promise.reject(errorCode, credentialsMessage(error), error, authenticationErrorInfo(error.cause))
                 }
             }
         )
