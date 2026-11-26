@@ -214,6 +214,11 @@ const ERROR_CODE_MAP: Record<string, CredentialsManagerErrorCode> = {
  * - `NO_NETWORK`: Network connectivity issue
  * - `API_ERROR`: Generic API error
  *
+ * On Android, a rejection caused by an Auth0 error also has `json.userInfo` with its `error`,
+ * `error_description` and `statusCode` (0 without an HTTP response). This tells a refusal such as
+ * `access_denied` from a server error, which both have the type `API_ERROR`. iOS puts the Auth0 error
+ * of a failed renewal in `code` instead.
+ *
  * ### DPoP Credential State:
  * - `DPOP_KEY_MISSING`: DPoP key pair no longer available in keystore/keychain
  * - `DPOP_NOT_CONFIGURED`: Credentials are DPoP-bound but client not configured with DPoP
